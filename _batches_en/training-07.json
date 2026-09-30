@@ -1,0 +1,113 @@
+{
+  "batch": "training-07",
+  "terms": [
+    {
+      "key": "training-07#0",
+      "name_en": "Privileged Information",
+      "aliases": ["Privileged Observation", "Learning Using Privileged Information", "LUPI"],
+      "one_liner": "Extra information available only during training, not at deployment, like a simulator's exact terrain shape or friction values.",
+      "explanation": "This term comes from Vapnik and Vashist's 2009 “learning using privileged information” (LUPI): extra information helps during training but is unavailable at test time. In robotics, it usually refers to quantities a simulator can read directly but a real robot's sensors cannot measure — terrain height, foot contact forces, friction coefficients, external disturbances. Training with reinforcement learning using only what a real robot can actually observe often fails to learn at all, so a common approach is to first train a teacher policy that can see the privileged information, then distill it into a student policy that uses only proprioception or camera input (teacher-student distillation); alternatively, only the critic (the network estimating value) is given privileged information, called an asymmetric actor-critic.",
+      "example": "ETH's ANYmal quadruped (Lee et al., Science Robotics 2020): the teacher policy sees terrain shape, foot contact state and contact forces, friction coefficients, and external disturbances in simulation; the student policy imitates the teacher using only a history of proprioception like joint states and IMU readings, and deploys directly to the real robot, walking across mud, snow, rubble, and dense vegetation.",
+      "related": ["Teacher-Student Distillation", "Asymmetric Actor-Critic", "Sim-to-Real Transfer", "Rapid Motor Adaptation", "Proprioception", "Knowledge Distillation"]
+    },
+    {
+      "key": "training-07#1",
+      "name_en": "Q-Function",
+      "aliases": ["Action-Value Function", "Q-value", "Q(s,a)"],
+      "one_liner": "The expected return of taking a specific action in a state and then following the policy from then on.",
+      "explanation": "The Q-function is written Q(s,a): the expected return — the discounted sum of future rewards — from taking action a in state s and then following policy π forever after. Compared with the value function V(s), it takes an extra action input, so it can directly compare how good different actions are in the same state; once the optimal Q-function is known, picking the action with the highest Q-value at every step is the optimal policy. The Q-function satisfies the Bellman equation: the current Q-value equals the immediate reward plus the discounted Q-value of what follows. Q-learning, DQN, SAC, and TD3 all learn it; the critic in an actor-critic algorithm is often literally a Q-network, and the advantage function A(s,a) = Q(s,a) − V(s) is derived from it too.",
+      "example": "QT-Opt uses a convolutional network to estimate Q-values: it takes the current camera image and a candidate gripper action as input and outputs the probability that this action ultimately leads to a successful grasp; at every step it searches for the action with the highest Q-value using a cross-entropy method.",
+      "related": ["Value Function", "Advantage Function", "Bellman Equation", "Q-Learning", "Deep Q-Network", "Return"]
+    },
+    {
+      "key": "training-07#2",
+      "name_en": "Q-Learning",
+      "aliases": ["Tabular Q-Learning"],
+      "one_liner": "A classic model-free reinforcement-learning algorithm that repeatedly corrects its Q-values toward the immediate reward plus the next state's best Q-value.",
+      "explanation": "Q-learning was introduced by Chris Watkins in his 1989 doctoral thesis, with a convergence proof given with Peter Dayan in 1992. It needs no environment model: at every step, it uses “immediate reward plus discount times the next state's maximum Q-value” as a target and nudges the current Q-value toward it, a self-referential update that makes it a form of temporal-difference learning. It's an off-policy algorithm: it explores randomly with ε-greedy while collecting data, but learns the greedy, optimal policy anyway, so old data can be reused repeatedly. Early implementations stored Q-values in a table, which only worked for small discrete problems; DeepMind's DQN replaced the table with a neural network. The max operation tends to bias Q-values upward, and double Q-learning was designed specifically to correct this.",
+      "example": "QT-Opt (Google, 2018) trained a Q-learning-based visual grasping policy on more than 580,000 real grasp attempts, reaching a 96% success rate on objects it had never seen during training.",
+      "related": ["Q-Function", "Temporal-Difference Learning", "Deep Q-Network", "Off-Policy", "Q-value Overestimation", "QT-Opt"]
+    },
+    {
+      "key": "training-07#3",
+      "name_en": "Random Seed and Reproducibility",
+      "aliases": ["Random Seed", "Reproducibility", "Multi-seed Experiments"],
+      "one_liner": "Fixing the random number generator's starting point so runs can be repeated, and checking results across several seeds to rule out luck.",
+      "explanation": "Many parts of deep learning involve randomness: network initialization, data shuffling, dropout, reinforcement learning's exploration noise, and a simulator's domain randomization. A random seed is the starting point for a random number generator; fixing the seed in Python, NumPy, and PyTorch lets the same code produce close to the same result, though PyTorch's own documentation notes exact reproducibility isn't guaranteed across versions or platforms. Reproducibility also has a second meaning: whether a conclusion can be trusted. Henderson and colleagues (2018) found that in deep reinforcement learning, changing only the random seed can shift results enough to flip which algorithm looks better. Because of this, results should be reported as a mean and confidence interval across multiple seeds; Agarwal and colleagues (2021) further recommend using the interquartile mean (IQM) and bootstrap confidence intervals.",
+      "example": "In PyTorch, fixing seeds looks like torch.manual_seed(0), np.random.seed(0), random.seed(0), plus setting torch.backends.cudnn.benchmark=False and torch.use_deterministic_algorithms(True); when comparing two reinforcement-learning algorithms, each is run once per seed across 5 different seeds, and the mean and confidence interval are reported.",
+      "related": ["Hyperparameter", "Ablation Study", "Statistical Significance in Evaluation (Confidence Intervals / Sequential Testing / Multi-seed)", "Benchmark", "Training / Validation / Test Set"]
+    },
+    {
+      "key": "training-07#4",
+      "name_en": "Real-World Reinforcement Learning",
+      "aliases": ["Real-world RL"],
+      "one_liner": "Letting a robot learn by trial and error directly in the real environment, rather than only training in simulation.",
+      "explanation": "Real-world reinforcement learning means a policy's reinforcement-learning training happens, at least in part, directly on a physical robot. It skips simulator modeling and sidesteps the sim-to-real gap, which suits tasks with complex contact that's hard to simulate, like connector insertion or cable routing. The difficulties are that real-robot data is slow and expensive, so the algorithm must be highly sample-efficient; the scene has to be reset after every episode, by a person or a mechanism; rewards need to be judged automatically from camera images; and exploration can't be allowed to damage the robot. Dulac-Arnold and colleagues (2019) summarized this class of problems as nine challenges. Common countermeasures include off-policy algorithms with experience replay, warm-starting from demonstration data, training a success detector to serve as the reward, and keeping a human in the loop to correct mistakes; UC Berkeley's SERL and HIL-SERL are notable examples.",
+      "example": "SERL (ICRA 2024) learns PCB component insertion, cable routing, and object relocation on a real robot arm, training each policy in 25–50 minutes on average; its successor HIL-SERL adds human demonstration and correction, learning precision assembly, dynamic manipulation, and bimanual coordination in 1–2.5 hours with success rates near 100%.",
+      "related": ["Reinforcement Learning", "Sample Efficiency", "Human-in-the-Loop", "Reset-Free Reinforcement Learning", "HIL-SERL", "Sim-to-Real Transfer"]
+    },
+    {
+      "key": "training-07#5",
+      "name_en": "Regularization",
+      "aliases": ["Regularization Term"],
+      "one_liner": "Adding constraints or penalties during training to keep a model from memorizing training data, improving performance on new data.",
+      "explanation": "Regularization is a broad category of techniques for preventing overfitting: whenever a model keeps improving on the training set but gets worse on new data, regularization is used to limit the model's effective complexity. Explicit regularization adds a penalty term to the loss function, such as L2 regularization (also called weight decay, which penalizes the sum of squared weights and shrinks them overall) and L1 regularization (which penalizes absolute value and pushes many weights to exactly zero); implicit regularization includes early stopping, dropout (randomly zeroing some neurons during training), and data augmentation. Reinforcement learning has several regularizers of its own: entropy regularization encourages the policy to stay somewhat random to keep exploring, KL regularization keeps a fine-tuned policy from drifting too far from the original model, and behavior regularization keeps an offline reinforcement-learning policy close to the actions in the dataset.",
+      "example": "Training a visuomotor policy applies random cropping to camera images (data augmentation) and sets weight decay in the AdamW optimizer; RLHF subtracts a KL penalty term from the reward, keeping the model from drifting away from the original language model just to rack up a higher score.",
+      "related": ["Overfitting", "Dropout", "Early Stopping", "Data Augmentation", "Entropy Regularization", "KL Regularization"]
+    },
+    {
+      "key": "training-07#6",
+      "name_en": "Reinforcement Fine-Tuning (RL Fine-Tuning)",
+      "aliases": ["RFT", "RL Fine-tuning", "RL Post-training"],
+      "one_liner": "Further improving a pretrained or supervised-fine-tuned model with reinforcement learning driven by a reward signal.",
+      "explanation": "Reinforcement fine-tuning takes a model that's already been pretrained or supervised-fine-tuned (SFT) as its starting policy, lets it generate its own answers or actions, scores them with a reward, and updates the parameters with an algorithm such as policy gradient. Unlike SFT, which only imitates demonstrations, this lets the model learn from its own successes and failures, discovering behaviors the demonstrations never showed. The term “RFT” became popular through OpenAI's reinforcement fine-tuning service for its o-series reasoning models: the user supplies a grader, and the model samples several answers per question and reinforces the higher-scoring ones. Since 2025, a wave of work has applied this to VLA models, usually with a binary success/failure reward and algorithms like PPO or GRPO; because a flow-matching action head can't compute an action's probability directly, it needs special adaptation, as in πRL.",
+      "example": "πRL fine-tunes flow-matching VLAs with online reinforcement learning: π0 first reaches 57.6% success on LIBERO after SFT on a handful of demonstrations, then rises to 97.6% after reinforcement learning; π0.5 goes from 77.1% to 98.3%. SimpleVLA-RL instead trains OpenVLA-OFT with just a “1 for success, 0 for failure” reward combined with GRPO.",
+      "related": ["Post-training", "Supervised Fine-Tuning", "Proximal Policy Optimization", "Group Relative Policy Optimization", "πRL", "SimpleVLA-RL"]
+    },
+    {
+      "key": "training-07#7",
+      "name_en": "Reinforcement Learning from Human Feedback",
+      "aliases": ["RLHF", "Preference Alignment"],
+      "one_liner": "Having people compare pairs of model outputs to train a reward model, then using reinforcement learning to optimize toward human preference.",
+      "explanation": "RLHF was introduced by Christiano and colleagues (OpenAI and DeepMind) in 2017: a reward function can be learned just from people comparing which of two trajectories is better, needing human feedback on less than 1% of the total interactions. OpenAI's InstructGPT (2022) applied it to large language models in three steps: supervised fine-tuning; training a reward model on human rankings of multiple candidate answers; and optimizing the model with PPO, adding a KL penalty to keep it from drifting too far from the original model — a recipe ChatGPT continued to use. It suits goals that are hard to write as a formula but easy for a person to judge at a glance; the downsides are that labeling is expensive and the model can learn to exploit the reward model's blind spots. DPO skips the reward model and trains directly on preference data instead; in embodied AI, GRAPE aligns a VLA using trajectory-level preferences.",
+      "example": "In InstructGPT's human evaluations, a version with only 1.3 billion parameters that went through RLHF was preferred over the 175-billion-parameter GPT-3.",
+      "related": ["Reward Model", "Direct Preference Optimization", "Proximal Policy Optimization", "KL Regularization", "Reward Hacking", "GRAPE"]
+    },
+    {
+      "key": "training-07#8",
+      "name_en": "Representation Learning",
+      "aliases": ["Feature Learning"],
+      "one_liner": "Letting a model automatically learn useful feature vectors from raw data, instead of hand-designing the features.",
+      "explanation": "Representation learning studies how to turn raw data — images, text, sensor readings — into a set of numbers (a representation, also called a feature or embedding vector) that's easier for downstream tasks to use. Bengio and colleagues' 2013 survey treats this as deep learning's central problem: a good representation should separate out the different underlying factors of variation behind the data. There are many ways to learn one: supervised classification, self-supervised learning (contrastive learning, masked autoencoders), and image-text alignment (as in CLIP). In embodied AI, because robot data is scarce, it's common to first pretrain a visual encoder on large-scale images or human video, then freeze or fine-tune it while learning a policy, so only a small number of demonstrations are needed — R3M, VC-1, and DINOv2 all follow this path. A world model's latent space and its latent actions are also products of representation learning.",
+      "example": "R3M pretrains a visual representation on Ego4D first-person human video using time-contrastive learning and video-language alignment; once frozen and attached to a policy for a Franka arm, it learns manipulation tasks in a real, cluttered apartment from just 20 demonstrations.",
+      "related": ["Self-Supervised Learning", "Contrastive Learning", "Pretrained Visual Representation", "Embedding Vector", "Latent Space", "R3M"]
+    },
+    {
+      "key": "training-07#9",
+      "name_en": "Return",
+      "aliases": ["Cumulative Reward", "Discounted Return", "G_t"],
+      "one_liner": "The sum of all rewards from a given moment onward, usually discounted so that later rewards count for less.",
+      "explanation": "Return is the quantity reinforcement learning aims to maximize. A reward is the immediate score the environment gives at each step; the return is the total of all rewards from the current moment onward, often written G_t or R(τ). When an episode has a fixed length, these can just be added up directly; for long or never-ending tasks, a discounted return is normally used instead: a reward k steps in the future is multiplied by the discount factor γ raised to the k-th power (γ is between 0 and 1, commonly 0.95–0.99), so more distant rewards count for less — this both keeps the sum finite and makes the agent weigh near-term outcomes more. Reinforcement learning's objective is to maximize expected return; the value function and Q-function are exactly estimates of expected future return. Methods like return conditioning even feed a target return in as an input, so the policy acts at a specified performance level.",
+      "example": "A grasping task gives +1 only on success and 0 otherwise, with γ = 0.99: succeeding at step 10 gives a discounted return from the start of about 0.99^10 ≈ 0.904, while dragging it out to step 50 gives only about 0.605 — so the policy is pushed toward finishing faster.",
+      "related": ["Reward Function", "Discount Factor", "Value Function", "Q-Function", "Episode", "Return Conditioning"]
+    },
+    {
+      "key": "training-07#10",
+      "name_en": "Reward Engineering",
+      "aliases": ["Reward Design"],
+      "one_liner": "Designing and debugging a reward function for reinforcement learning so the robot actually learns the intended behavior.",
+      "explanation": "Reward engineering covers the whole job of designing a reward function for a reinforcement-learning task: which terms to include, how heavily to weight each one, when to award them, and how to prevent the agent from gaming them. With only a sparse reward like “+1 on success,” the agent rarely stumbles onto positive feedback by chance, so dense intermediate rewards are often added instead — reward shaping — such as scoring higher the closer the agent gets to the goal. A robot locomotion reward often has a dozen or more terms: rewarding tracking of a commanded velocity while penalizing excessive torque, jerky motion, and body collisions, with weights that need extensive trial and error — get it wrong and reward hacking follows. Recent work also has large models write rewards automatically: Eureka has GPT-4 iteratively generate reward code, beating reward functions written by human experts on 83% of 29 tasks.",
+      "example": "legged_gym's default quadruped-walking reward: tracking linear-velocity commands (weight 1.0), tracking angular velocity (0.5), penalizing vertical velocity (−2.0), penalizing joint torque and acceleration, penalizing the rate of change of actions (−0.01) and body collisions (−1), and rewarding time each foot spends airborne (1.0).",
+      "related": ["Reward Function", "Reward Shaping", "Sparse Reward", "Dense Reward", "Reward Hacking", "Eureka"]
+    },
+    {
+      "key": "training-07#11",
+      "name_en": "Reward Hacking",
+      "aliases": ["Reward Exploitation", "Specification Gaming"],
+      "one_liner": "An agent finding a loophole in the reward function to score high without actually accomplishing what the designer intended.",
+      "explanation": "Reward hacking means a reinforcement-learning agent exploits a flaw in the reward function to earn high reward without truly learning the intended task. Amodei and colleagues' 2016 paper “Concrete Problems in AI Safety” lists it as one of five concrete problems in AI safety; DeepMind called the same phenomenon “specification gaming” in 2020: satisfying the literal specification of the goal without achieving what was actually meant. The root cause is that the reward is only an approximation of the real objective, and the harder that approximation gets optimized, the more the gap tends to widen — a pattern known as Goodhart's law — with more capable agents typically better at finding the loopholes. In robot simulation this often shows up as exploiting a quirk in the physics engine; in RLHF, a model may learn to flatter the reward model instead. Responses include repeatedly auditing the reward, watching rollout videos by hand, and adding constraint terms.",
+      "example": "A case DeepMind lists: told to stack a red block on a blue one with reward based on the red block's bottom-face height, a robot arm learned to simply flip the red block over instead; in another case, a simulated robot hand learned to hover between the camera and the object so it merely looked like a successful grasp.",
+      "related": ["Reward Engineering", "Reward Shaping", "Reward Model", "Reinforcement Learning from Human Feedback", "Safe Reinforcement Learning"]
+    }
+  ]
+}

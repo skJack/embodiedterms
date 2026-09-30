@@ -1,0 +1,113 @@
+{
+  "batch": "named_model-02",
+  "terms": [
+    {
+      "key": "named_model-02#0",
+      "name_en": "AgiBot GO-2",
+      "aliases": ["Genie Operator-2", "GO-2 (ViLLA)"],
+      "one_liner": "AgiBot's 2026 second-generation embodied foundation model: it first plans a coarse action sequence, then executes it.",
+      "explanation": "GO-2 is the embodied foundation model AgiBot released on April 17, 2026, at its “2026 Partner Conference” in Shanghai — the successor to 2025's GO-1, which the company describes as a ViLLA-style embodied foundation model. Two ideas are central. First, “action chain-of-thought”: instead of first writing text or generating an image and only then deriving actions, the model directly generates a sequence of coarse-grained action intentions in action space as a high-level plan; the related paper, ACoT-VLA, was accepted at CVPR 2026. Second, an asynchronous two-system design: a low-frequency semantic planning module produces the plan, and a high-frequency action-following module combines it with real-time observations to output control signals — this part was accepted at ACL 2026. AgiBot reports an average LIBERO success rate of 98.5% and 86.6% zero-shot on LIBERO-Plus. Released alongside it was GE-2, a world-action model used to test policies in virtual environments.",
+      "example": "AgiBot reports that GO-2, trained only on simulated data, reached an 82.9% success rate in real-robot testing.",
+      "related": ["AgiBot GO-1 (Genie Operator-1)", "Vision-Language-Latent-Action (ViLLA)", "Action Chain-of-Thought", "Fast-Slow Dual System", "AgiBot", "LIBERO"]
+    },
+    {
+      "key": "named_model-02#1",
+      "name_en": "ASAP",
+      "aliases": ["ASAP: Aligning Simulation and Real-World Physics for Learning Agile Humanoid Whole-Body Skills"],
+      "one_liner": "Uses real-robot data to train a correction model that closes the sim-to-real gap for agile humanoid moves.",
+      "explanation": "ASAP is a whole-body humanoid control method released by Carnegie Mellon University and NVIDIA in February 2025, published at RSS 2025. Motions trained in simulation often look distorted on the real robot, because simulated physics doesn't match real motors and contact dynamics — the sim-to-real gap. ASAP works in two stages. First, it trains a motion-tracking policy in simulation on retargeted human motion data. Then it deploys that policy on the real robot to collect trajectories, and trains a delta (residual) action model that learns how much extra action the simulator needs to add to match real-robot behavior; this residual is plugged back into the simulator to fine-tune the original policy. On the Unitree G1, it outperforms common approaches like system identification and domain randomization, and the code is open-sourced.",
+      "example": "With ASAP, a Unitree G1 reproduced signature celebration moves from athletes like Cristiano Ronaldo, Kobe Bryant, and LeBron James, as well as forward and side jumps over a meter high.",
+      "related": ["Sim-to-Real Transfer", "Sim-to-Real Gap", "Residual Policy", "Motion Tracking", "Unitree G1", "Domain Randomization"]
+    },
+    {
+      "key": "named_model-02#2",
+      "name_en": "BeyondMimic",
+      "aliases": ["BeyondMimic: From Motion Tracking to Versatile Humanoid Control via Guided Diffusion"],
+      "one_liner": "Trains a humanoid to reproduce human motion, then distills that into a guided diffusion model for new tasks.",
+      "explanation": "BeyondMimic is a whole-body humanoid control framework released in August 2025 by Koushil Sreenath's group at UC Berkeley and C. Karen Liu's group at Stanford, built in two stages. The first stage is motion tracking: a simple, unified reinforcement-learning recipe learns in simulation to reproduce motions from the LAFAN1 motion-capture dataset, then deploys zero-shot to a real Unitree G1, performing highly dynamic moves like aerial cartwheels, spinning kicks, and sprinting. The second stage distills a chosen set of tracking policies into a single latent-space diffusion model; at inference, sampling is guided with a simple cost function, letting it handle new tasks — waypoint navigation, joystick teleoperation, obstacle avoidance — with no retraining. It pushes “imitating motion” forward into “using motion as a prior for general-purpose control,” and the motion-tracking code is open-sourced.",
+      "example": "The same diffusion model can switch from “follow the joystick” to “walk around obstacles to a target point” just by swapping in a different cost function.",
+      "related": ["Motion Tracking", "Diffusion Model", "DeepMimic", "ASAP", "Unitree G1", "LAFAN1 Motion Capture Dataset"]
+    },
+    {
+      "key": "named_model-02#3",
+      "name_en": "Code as Policies",
+      "aliases": ["CaP", "Code as Policies: Language Model Programs for Embodied Control"],
+      "one_liner": "Has a large language model write Python code directly, calling perception and control APIs to command a robot.",
+      "explanation": "Code as Policies was released by Robotics at Google in September 2022. Earlier work using LLMs to control robots, such as SayCan, mostly had the model pick the next step from a fixed list of skills. Code as Policies instead has an LLM — good at writing code — generate a Python program directly from a natural-language instruction: it calls perception APIs like object detection to get positions, uses NumPy to compute coordinates, then calls control primitives such as grasp or move, and can even write loops and conditionals. When it hits an undefined function, it recursively generates that function too, a process called hierarchical code generation. This lets it handle vague instructions that need spatial reasoning or concrete numeric values. The paper demonstrated this on tabletop manipulation, whiteboard drawing, and mobile robots, and the idea of an LLM writing code to drive a robot resurfaces later in VoxPoser and Eureka.",
+      "example": "Given the instruction “arrange the blocks in a horizontal line near the top,” the generated code first detects every block's position, computes a row of evenly spaced target points above the table, then calls the pick-and-place function for each one in turn.",
+      "related": ["Large Language Model", "SayCan", "LLM Task Planning", "VoxPoser", "Eureka", "Atomic Skill"]
+    },
+    {
+      "key": "named_model-02#4",
+      "name_en": "DeepMimic",
+      "aliases": ["DeepMimic: Example-Guided Deep Reinforcement Learning of Physics-Based Character Skills"],
+      "one_liner": "Uses reinforcement learning to make a simulated character imitate motion-capture clips, learning physically realistic flips and martial arts.",
+      "explanation": "DeepMimic was published at SIGGRAPH 2018 by Xue Bin Peng and colleagues at UC Berkeley and the University of British Columbia. Simulated characters trained with reinforcement learning alone often move stiffly and unnaturally. DeepMimic adds an imitation reward: at every step in physics simulation, the character scores higher the closer its pose is to a reference motion clip (such as motion-capture data), and this can be combined with an additional task reward. Two of its training tricks later became standard practice: reference state initialization, which starts each episode from a random frame of the reference motion, and early termination, which ends an episode as soon as the character falls. It taught humanoid characters, the Atlas robot, and even a dinosaur to walk, flip, and perform martial-arts moves. Today's motion-tracking approaches for humanoid robots, such as ASAP and BeyondMimic, continue this same line of thinking.",
+      "example": "Given a motion-capture clip of a human backflip, a simulated humanoid character trained this way learns to perform the backflip in physics simulation and land on its feet.",
+      "related": ["Motion Tracking", "Reinforcement Learning", "Reference State Initialization", "Early Termination", "Adversarial Motion Prior", "Motion Capture"]
+    },
+    {
+      "key": "named_model-02#5",
+      "name_en": "DreamerV3",
+      "aliases": ["Dreamer Series", "DreamerV1", "DreamerV2"],
+      "one_liner": "A world-model reinforcement-learning algorithm that trains a policy by imagining rollouts, using one fixed set of hyperparameters.",
+      "explanation": "The Dreamer series is led by Danijar Hafner. The original 2019 Dreamer proposed learning behavior by “imagining” the future inside a latent space; 2020's DreamerV2 switched to discrete latent variables and was the first world-model-based agent to reach human-level performance on Atari, beating top single-GPU model-free methods like Rainbow and IQN; DreamerV3 was posted publicly in January 2023 and published in Nature in 2025. The approach: first learn a world model from interaction experience that predicts the next latent state and reward, then train the policy on imagined trajectories generated by that model, using the real environment mainly to collect data. Through robustness tricks like normalization, balancing, and transformations, it solves more than 150 different tasks with the same fixed hyperparameters, and it became the first algorithm to mine diamonds in Minecraft from scratch without human data or a curriculum.",
+      "example": "In Minecraft, DreamerV3 learned from scratch, without human demonstrations, to chop trees, craft tools, and eventually mine a diamond.",
+      "related": ["World Model", "Recurrent State-Space Model", "Learning in Imagination", "Model-Based Reinforcement Learning", "DayDreamer", "Dreamer 4"]
+    },
+    {
+      "key": "named_model-02#6",
+      "name_en": "Eureka",
+      "aliases": ["Eureka: Human-Level Reward Design via Coding Large Language Models"],
+      "one_liner": "Has GPT-4 write reward-function code and repeatedly refine it, automating the reward design that reinforcement learning depends on.",
+      "explanation": "Eureka was released in October 2023 by NVIDIA together with the University of Pennsylvania, Caltech, and UT Austin, and published at ICLR 2024. Reinforcement learning's performance depends heavily on its reward function, and writing one by hand is slow and relies on expert intuition. Eureka gives GPT-4 the environment's source code and a task description and has it write several candidate reward functions in one pass; each is used to train a policy in parallel GPU simulation, and statistics from training on each reward term are fed back to the model (“reward reflection”) so it can rewrite an improved version for the next round, iterating like an evolutionary search. Across 10 robot embodiments and 29 open-source reinforcement-learning environments, its rewards beat human expert-designed ones on 83% of tasks, for an average normalized improvement of 52%. A follow-up, DrEureka, applies the same idea to sim-to-real transfer.",
+      "example": "Using a reward Eureka designed, a simulated Shadow dexterous hand learned to spin a pen rapidly and continuously between its fingers.",
+      "related": ["Reward Function", "Reward Engineering", "Large Language Model", "DrEureka", "Code as Policies", "Isaac Gym"]
+    },
+    {
+      "key": "named_model-02#7",
+      "name_en": "Figure Helix 02",
+      "aliases": ["Helix-02", "Helix 02 (Full-Body Autonomy)"],
+      "one_liner": "Figure's 2026 full-body humanoid control model, mapping raw pixels directly to whole-body control for long-horizon tasks.",
+      "explanation": "Figure AI released this in the US on January 27, 2026, as the successor to February 2025's Helix. The original Helix used a fast-slow two-system design to control the upper body; Helix 02 extends this to the whole robot, coordinating walking and manipulation together, and restructures it into three layers. System 2 understands the scene and language and sets behavioral goals; System 1 runs at 200Hz, mapping all sensor input directly into whole-body joint commands; a new System 0 runs at 1kHz with about 10 million parameters, trained on more than 1,000 hours of human motion data, and handles balance, contact, and whole-body coordination. On the hardware side, it adds palm cameras and fingertip touch sensing that can detect about 3 grams of force. In an official demo, it performed a 4-minute, fully autonomous, end-to-end task around a dishwasher made up of 61 separate loco-manipulation actions.",
+      "example": "Taking a pill out of a blister pack, precisely dispensing 5 milliliters of liquid with a syringe, and unscrewing a bottle cap are all dexterous tasks Figure showed Helix 02 performing.",
+      "related": ["Figure Helix", "Figure AI", "Fast-Slow Dual System", "System 0 (Three-Tier System Architecture)", "Loco-manipulation", "Whole-Body Control"]
+    },
+    {
+      "key": "named_model-02#8",
+      "name_en": "Gemini Robotics 1.5",
+      "aliases": [],
+      "one_liner": "Google DeepMind's VLA that thinks in words before acting, with skills that transfer across different kinds of robots.",
+      "explanation": "Google DeepMind released this on September 25, 2025, as an upgraded vision-language-action model (VLA) building on the original Gemini Robotics from March of that year. It adds two new capabilities. First, think-before-acting: before producing actions, it generates an internal chain of reasoning in natural language, breaking a semantically complex instruction down into simple steps. Second, Motion Transfer: a task trained only on the bimanual ALOHA 2 platform can run directly on the Apptronik Apollo humanoid or a dual-arm Franka setup, and vice versa — reusing skills across different robot embodiments. It works together with Gemini Robotics-ER 1.5, an embodied-reasoning model released at the same time: ER 1.5 handles high-level planning, directing 1.5 step by step in natural language. At launch, 1.5 was available only to select partners.",
+      "example": "A task taught only on the ALOHA 2 bimanual platform can be carried out on the Apollo humanoid robot with no additional training.",
+      "related": ["Gemini Robotics", "Gemini Robotics-ER", "Vision-Language-Action Model", "Cross-Embodiment", "Embodied Chain-of-Thought", "Apptronik Apollo"]
+    },
+    {
+      "key": "named_model-02#9",
+      "name_en": "Gemini Robotics 2",
+      "aliases": [],
+      "one_liner": "Google DeepMind's 2026 robotics model generation, with the new ability to control a humanoid's whole body.",
+      "explanation": "Google DeepMind released this on July 30, 2026, as the generation following 1.5, made up of three models: the VLA model Gemini Robotics 2, the embodied-reasoning model Gemini Robotics ER 2, and an On-Device 2 version that runs locally on the robot. The main new capability is full-body control: it can drive an entire humanoid robot while it walks, crouches, and manipulates objects at the same time, and Google demonstrated multistep tasks such as retrieving items from a shelf on the Apptronik Apollo 2. It can also control the 22-degree-of-freedom, five-fingered SharpaWave dexterous hand, as well as ordinary two-finger grippers; adapting On-Device 2 to a new dual-arm embodiment takes only a few hours. The VLA and On-Device versions are currently available only to early partners, while ER 2 is accessible through Google AI Studio.",
+      "example": "Under Gemini Robotics 2's control, an Apptronik Apollo 2 humanoid walks to a shelf, crouches, and retrieves an item, completing a multistep task.",
+      "related": ["Gemini Robotics 1.5", "Gemini Robotics-ER", "Gemini Robotics On-Device", "Whole-Body Control", "Apptronik Apollo", "SharpaWave Dexterous Hand"]
+    },
+    {
+      "key": "named_model-02#10",
+      "name_en": "Gemini Robotics-ER",
+      "aliases": ["Gemini Robotics-ER 1.5", "Gemini Robotics-ER 1.6", "Gemini Robotics ER 2"],
+      "one_liner": "Google DeepMind's embodied-reasoning model, which understands spatial layouts, makes plans, and judges whether a robot task is done.",
+      "explanation": "ER stands for Embodied Reasoning. Google DeepMind introduced it in March 2025 alongside the original Gemini Robotics: a vision-language model built on Gemini with strengthened 3D perception and spatial understanding, able to point out object locations and predict grasp points and trajectories. It generally doesn't output joint-level actions directly; instead it answers questions like where something is, which step comes first, and whether a step is complete, then hands the plan to a VLA or robot interface to execute — functioning as the “slow” system in a fast-slow dual-system setup. ER 1.5, from September 2025, is available through the Gemini API, later updated to 1.6; ER 2, from July 2026, adds video understanding and progress tracking, and can orchestrate action models through multistep tasks, coordinate multiple robots, and call tools such as Google Search.",
+      "example": "ER 2 watches a video of a robot at work, judges whether the current step is finished, has the robot retry if not, and moves on to the next step once it is.",
+      "related": ["Embodied Reasoning", "Embodied Reasoning Model", "Gemini Robotics", "Gemini Robotics 1.5", "ERQA Benchmark", "Brain-Cerebellum Architecture"]
+    },
+    {
+      "key": "named_model-02#11",
+      "name_en": "GEN-0",
+      "aliases": ["GEN-0: Embodied Foundation Models That Scale with Physical Interaction", "Generalist AI GEN-0"],
+      "one_liner": "Generalist AI's embodied foundation model, trained on more than 270,000 hours of real-world interaction data from homes and workplaces.",
+      "explanation": "GEN-0 is an embodied foundation model that the US robotics company Generalist AI released on November 4, 2025, trained on more than 270,000 hours of real manipulation trajectories collected from thousands of homes, warehouses, and workplaces worldwide, with the company saying it was adding roughly 10,000 more hours each week. Its main finding is a scaling law: downstream performance improves as a power law with more pretraining data. Model size shows a “phase transition” around 7 billion parameters — a 1-billion-parameter model “ossifies” when faced with massive data, losing the ability to learn new things, while larger models keep improving. Architecturally it uses what the company calls Harmonic Reasoning, letting perception and action tokens flow in parallel, asynchronous, continuous time rather than relying on a fast-slow dual-system design. It was followed by GEN-1 in April 2026 and GEN-1.5 in August 2026.",
+      "example": "In the company's experiments, a 1-billion-parameter model plateaus when trained on large-scale data, while models of 7 billion parameters or more keep improving as more data is added.",
+      "related": ["GEN-1", "Generalist AI", "Scaling Law", "Model Ossification", "Embodied Foundation Model", "Real-Robot Data"]
+    }
+  ]
+}

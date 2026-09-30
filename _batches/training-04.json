@@ -1,0 +1,431 @@
+{
+  "category": "training",
+  "batch": 4,
+  "terms": [
+    {
+      "name_zh": "折扣因子",
+      "name_en": "Discount Factor",
+      "abbr": "γ",
+      "aliases": [
+        "gamma",
+        "折扣率"
+      ],
+      "tier": 2,
+      "one_liner": "强化学习里给未来奖励打折的系数，决定智能体多看重长远回报。",
+      "explanation": "折扣因子是强化学习的基础超参数，写作 γ，取值在 0 到 1 之间。计算回报（从当前时刻起累计的奖励）时，k 步之后的奖励要乘上 γ 的 k 次方。它有两个作用：一是表达「眼前的奖励比远处的更确定、更值钱」；二是让无限长的奖励求和收敛成有限值，方便用贝尔曼方程（价值函数的递推关系）来求解。γ 越接近 1，智能体越看重长远结果，但价值估计也更难、方差更大；γ 越小越短视。机器人强化学习里常取 0.99 左右。它出现在回报、价值函数和优势函数的定义中。",
+      "example": "legged_gym（ETH 开源的足式机器人强化学习训练框架）的 PPO 配置里 gamma = 0.99：100 步之后的奖励权重约为 0.99 的 100 次方 ≈ 0.37。",
+      "related": [
+        "回报",
+        "奖励函数",
+        "价值函数",
+        "贝尔曼方程",
+        "广义优势估计",
+        "马尔可夫决策过程"
+      ],
+      "sources": [
+        {
+          "title": "OpenAI Spinning Up: Key Concepts in RL",
+          "url": "https://spinningup.openai.com/en/latest/spinningup/rl_intro.html"
+        },
+        {
+          "title": "legged_gym: legged_robot_config.py (PPO gamma = 0.99)",
+          "url": "https://github.com/leggedrobotics/legged_gym/blob/master/legged_gym/envs/base/legged_robot_config.py"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "分布式训练（数据并行 / 模型并行）",
+      "name_en": "Distributed Training (Data / Model Parallelism)",
+      "abbr": "",
+      "aliases": [
+        "多卡训练",
+        "数据并行",
+        "模型并行",
+        "Data Parallelism",
+        "Model Parallelism",
+        "张量并行",
+        "流水线并行"
+      ],
+      "tier": 2,
+      "one_liner": "把一次训练拆到多张 GPU 或多台机器上同时算，以训更大的模型和更多数据。",
+      "explanation": "模型或数据大到一张 GPU 装不下、算不完时，就要把训练拆到多卡多机上。常见拆法有两类：数据并行是每张卡放一份完整模型、各算一部分数据，反向传播后把各卡梯度汇总求平均再同步更新，PyTorch 的 DDP（分布式数据并行）就是这种；模型并行是把模型本身切开放到不同卡上，比如英伟达 Megatron-LM 把 Transformer 每层的矩阵切到多卡（张量并行），也有按层分段的流水线并行。FSDP（全分片数据并行）仍按数据切分，但把参数、梯度和优化器状态也分片存到各卡，显存占用明显下降。数十亿参数的 VLA 预训练和全参数微调都离不开这些手段。",
+      "example": "OpenVLA（7B 参数）预训练用了 64 张 A100、训练 14 天；论文里全参数微调也要 8 张 A100 跑 5–15 小时，其中显存测试是用 FSDP 把模型分到 2 张卡上完成的。",
+      "related": [
+        "分布式数据并行",
+        "全分片数据并行",
+        "DeepSpeed",
+        "混合精度训练",
+        "梯度累积",
+        "批大小"
+      ],
+      "sources": [
+        {
+          "title": "PyTorch Tutorial: Getting Started with Distributed Data Parallel",
+          "url": "https://docs.pytorch.org/tutorials/intermediate/ddp_tutorial.html"
+        },
+        {
+          "title": "PyTorch Tutorial: Getting Started with Fully Sharded Data Parallel (FSDP)",
+          "url": "https://docs.pytorch.org/tutorials/intermediate/FSDP_tutorial.html"
+        },
+        {
+          "title": "Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism",
+          "url": "https://arxiv.org/abs/1909.08053"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "随机失活",
+      "name_en": "Dropout",
+      "abbr": "",
+      "aliases": [
+        "丢弃法",
+        "Dropout 正则化"
+      ],
+      "tier": 2,
+      "one_liner": "训练时随机「关掉」一部分神经元，防止网络死记训练数据的正则化方法。",
+      "explanation": "Dropout 出自 Hinton 团队，2014 年 Srivastava、Hinton 等人在 JMLR 发表了系统论文。训练时每一步按设定概率随机把一部分神经元的输出置零，相当于每次都在训练一个不同的「子网络」；测试时关闭丢弃，用完整网络并对权重做相应缩放，近似这些子网络的平均。这样神经元不能过度依赖彼此，从而减轻过拟合（在训练集上表现好、换新数据就变差）。它常和权重衰减、数据增强、早停一起用，Transformer 里常见的丢弃概率是 0.1。机器人演示数据往往只有几十到几百条，容易过拟合，dropout 是常见配置。",
+      "example": "ACT（Action Chunking with Transformers）官方代码中 Transformer 的 dropout 默认为 0.1；强化学习算法 DroQ 在 Q 网络里加入 dropout 和层归一化，用小集成达到与大集成方法 REDQ 相当的样本效率，计算量却接近 SAC。",
+      "related": [
+        "正则化",
+        "过拟合",
+        "早停",
+        "数据增强",
+        "归一化层（层归一化 / RMSNorm / 批归一化）"
+      ],
+      "sources": [
+        {
+          "title": "Dropout: A Simple Way to Prevent Neural Networks from Overfitting (JMLR 2014)",
+          "url": "https://jmlr.org/papers/v15/srivastava14a.html"
+        },
+        {
+          "title": "ACT 官方代码 detr/main.py（--dropout 默认 0.1）",
+          "url": "https://github.com/tonyzhaozh/act/blob/main/detr/main.py"
+        },
+        {
+          "title": "Dropout Q-Functions for Doubly Efficient Reinforcement Learning (DroQ)",
+          "url": "https://arxiv.org/abs/2110.02034"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "早停",
+      "name_en": "Early Stopping",
+      "abbr": "",
+      "aliases": [
+        "提前停止"
+      ],
+      "tier": 2,
+      "one_liner": "验证集表现不再变好时就停止训练，取表现最好的那一版模型。",
+      "explanation": "早停是最常用的正则化手段之一。训练时定期在验证集（不参与训练、专门用来挑模型的数据）上评估：训练损失还在降、验证损失却开始回升，说明模型开始过拟合，这时停止训练并退回验证表现最好的检查点。实践中常设一个「耐心值」，连续若干轮没有改善才停，避免被波动误导。机器人模仿学习要特别注意：验证损失低不等于真机成功率高，robomimic 的研究指出训练目标和评测目标不一致，停在哪一步对结果影响很大，很多工作会存多个检查点，再用仿真或真机推演来挑。注意别和强化学习里的「提前终止」（回合中摔倒等情况就结束该回合）混淆。",
+      "example": "假设训练一个抓取策略，每个 epoch 算一次验证集动作误差：第 30 轮最低，之后连续 10 轮都没再降，于是停止训练，取第 30 轮的检查点。",
+      "related": [
+        "过拟合",
+        "训练集 / 验证集 / 测试集",
+        "检查点",
+        "正则化",
+        "训练轮次",
+        "提前终止"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Early stopping",
+          "url": "https://en.wikipedia.org/wiki/Early_stopping"
+        },
+        {
+          "title": "What Matters in Learning from Offline Human Demonstrations for Robot Manipulation (robomimic)",
+          "url": "https://arxiv.org/abs/2108.03298"
+        },
+        {
+          "title": "Google Machine Learning Glossary",
+          "url": "https://developers.google.com/machine-learning/glossary"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "训练轮次",
+      "name_en": "Epoch",
+      "abbr": "",
+      "aliases": [
+        "epoch",
+        "轮数",
+        "轮"
+      ],
+      "tier": 2,
+      "one_liner": "模型把整个训练集完整看过一遍，称为一个 epoch。",
+      "explanation": "epoch 是描述训练进度的单位。训练数据被切成若干批次（batch），每处理一个批次、更新一次参数叫一次迭代（iteration，也叫 step）；训练集里所有样本都过一遍就是一个 epoch，所以每个 epoch 的迭代数约等于样本总数除以批大小。轮数太少会欠拟合，太多会过拟合，常配合早停决定停在哪。大模型预训练数据量极大，往往只把数据过一到几遍，所以更常用「训练步数」或「看过的 token 数」计量；小规模机器人演示数据则往往要训练很多个 epoch。强化学习里用法稍有不同：PPO 会把同一批推演数据反复利用几遍，每一遍也叫一个 epoch。",
+      "example": "50 条演示共 2 万帧、批大小 64 时，一个 epoch 约 313 步；legged_gym 的 PPO 配置里每批推演数据训练 5 个 epoch（num_learning_epochs = 5）。",
+      "related": [
+        "批大小",
+        "梯度下降",
+        "早停",
+        "过拟合",
+        "欠拟合",
+        "近端策略优化"
+      ],
+      "sources": [
+        {
+          "title": "Google Machine Learning Glossary",
+          "url": "https://developers.google.com/machine-learning/glossary"
+        },
+        {
+          "title": "GeeksforGeeks: Epoch in Machine Learning",
+          "url": "https://www.geeksforgeeks.org/machine-learning/epoch-in-machine-learning/"
+        },
+        {
+          "title": "legged_gym: legged_robot_config.py (num_learning_epochs = 5)",
+          "url": "https://github.com/leggedrobotics/legged_gym/blob/master/legged_gym/envs/base/legged_robot_config.py"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "经验回放",
+      "name_en": "Experience Replay (Replay Buffer)",
+      "abbr": "",
+      "aliases": [
+        "回放缓冲区",
+        "Replay Buffer",
+        "经验池",
+        "回放池"
+      ],
+      "tier": 2,
+      "one_liner": "把智能体过去的交互数据存进缓冲区，训练时随机抽出来重复利用。",
+      "explanation": "经验回放是强化学习里的数据复用机制，由 Long-Ji Lin 在 1990 年代初提出，2013 年 DeepMind 的 DQN（深度 Q 网络）把它和深度网络结合后广为人知。智能体每走一步，就把「状态、动作、奖励、下一状态」这条转移存进一个容量有限的缓冲区，满了就覆盖最旧的；训练时从中随机抽小批量来更新网络。好处有两点：一条数据能反复用多次，样本效率更高；随机抽样打乱了相邻步之间的强相关，训练更稳定。抽到的数据来自旧策略，所以用它的算法须是异策略（off-policy）方法，如 DQN、SAC。真机强化学习样本昂贵，更依赖它。",
+      "example": "DQN 玩 Atari 游戏时回放缓冲区保存最近 100 万帧；HIL-SERL 用两个缓冲区，一个存人类演示和人工干预数据，一个存策略自己的交互数据，训练时各抽一半。",
+      "related": [
+        "异策略",
+        "深度 Q 网络",
+        "软演员-评论家",
+        "后见之明经验回放",
+        "样本效率",
+        "HIL-SERL"
+      ],
+      "sources": [
+        {
+          "title": "Playing Atari with Deep Reinforcement Learning (DQN, 2013)",
+          "url": "https://arxiv.org/abs/1312.5602"
+        },
+        {
+          "title": "Precise and Dexterous Robotic Manipulation via Human-in-the-Loop Reinforcement Learning (HIL-SERL)",
+          "url": "https://arxiv.org/abs/2410.21845"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "探索与利用",
+      "name_en": "Exploration vs. Exploitation",
+      "abbr": "",
+      "aliases": [
+        "探索-利用权衡",
+        "探索-利用困境",
+        "Exploration-Exploitation Trade-off"
+      ],
+      "tier": 2,
+      "one_liner": "在「试新动作找更好办法」和「用已知最好的动作拿奖励」之间做权衡。",
+      "explanation": "这是强化学习和序贯决策里的基本矛盾。利用是按当前认知选看起来最好的动作；探索是去试不确定的新动作，短期可能吃亏，但可能发现更好的策略。只利用容易卡在次优解，只探索又拿不到回报。经典研究框架是多臂老虎机问题，常见策略有 ε-贪心（以小概率 ε 随机选动作）、UCB（上置信界，优先试不确定性大的选项）和汤普森采样；深度强化学习里还有熵正则化（鼓励策略保持随机性）和内在奖励（奖励「好奇心」）。机器人上的探索更难：真机乱试可能撞坏设备，所以常先用演示数据或仿真把策略带到合理区域，再有控制地探索。",
+      "example": "SimpleVLA-RL 用强化学习微调 VLA 时，把推演采样温度从 1.0 提到 1.6，并把裁剪上限从 0.2 放宽到 0.28，让模型生成更多样的轨迹，以加强探索。",
+      "related": [
+        "内在奖励",
+        "熵正则化",
+        "强化学习",
+        "样本效率",
+        "安全强化学习",
+        "真机强化学习"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Exploration–exploitation dilemma",
+          "url": "https://en.wikipedia.org/wiki/Exploration%E2%80%93exploitation_dilemma"
+        },
+        {
+          "title": "SimpleVLA-RL: Scaling VLA Training via Reinforcement Learning",
+          "url": "https://arxiv.org/abs/2509.09674"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "全参数微调",
+      "name_en": "Full Fine-Tuning",
+      "abbr": "",
+      "aliases": [
+        "全量微调",
+        "全参微调",
+        "Full-parameter Fine-Tuning"
+      ],
+      "tier": 2,
+      "one_liner": "微调时更新预训练模型的全部参数，而不是只训练其中一小部分。",
+      "explanation": "微调是在预训练好的模型上，用下游任务数据继续训练。全参数微调指所有权重都参与更新，与之相对的是参数高效微调（PEFT，只训练少量新增或选定的参数，如 LoRA 低秩适配）。全参数微调可调的自由度最大，数据充足、目标任务和预训练差异大时往往效果最好，但代价高：每个参数都要存梯度和优化器状态，显存需求是推理的数倍，每个任务还得保存一整份模型；数据少时也更容易过拟合或出现灾难性遗忘（学了新任务、丢了旧能力）。VLA 迁移到新机器人或新任务时，全参数微调和 LoRA 是最常见的两种选择，要按显卡和数据量取舍。",
+      "example": "OpenVLA（7B）论文里全参数微调要 8 张 A100 跑 5–15 小时，成功率 69.7%；LoRA 只训练 1.4% 的参数、单张 A100 即可，成功率 68.2%。openpi 仓库标注 π0 全参数微调需要 70 GB 以上显存，LoRA 约 22.5 GB。",
+      "related": [
+        "微调",
+        "参数高效微调",
+        "低秩适配",
+        "灾难性遗忘",
+        "冻结骨干网络",
+        "监督微调"
+      ],
+      "sources": [
+        {
+          "title": "LoRA: Low-Rank Adaptation of Large Language Models",
+          "url": "https://arxiv.org/abs/2106.09685"
+        },
+        {
+          "title": "OpenVLA: An Open-Source Vision-Language-Action Model",
+          "url": "https://arxiv.org/abs/2406.09246"
+        },
+        {
+          "title": "openpi GitHub README（显存需求表）",
+          "url": "https://github.com/Physical-Intelligence/openpi"
+        }
+      ],
+      "as_of": "2025"
+    },
+    {
+      "name_zh": "梯度下降",
+      "name_en": "Gradient Descent",
+      "abbr": "",
+      "aliases": [
+        "随机梯度下降",
+        "SGD",
+        "小批量梯度下降",
+        "Mini-batch Gradient Descent"
+      ],
+      "tier": 2,
+      "one_liner": "沿损失函数梯度的反方向一步步调参数，让损失越来越小的优化方法。",
+      "explanation": "梯度下降是训练神经网络的核心优化方法，一般认为由数学家柯西在 1847 年最早提出。梯度是损失函数对每个参数的偏导数，指向损失上升最快的方向；每一步把参数往反方向挪一点，挪多少由学习率决定：太小收敛慢，太大会来回震荡甚至发散。深度学习数据量大，每步只用一小批数据估算梯度，这叫随机（小批量）梯度下降，即 SGD。梯度本身由反向传播算出。现在训练 VLA 等大模型常用的 Adam、AdamW 优化器，是在梯度下降基础上加了动量和自适应步长的改进版。",
+      "example": "训练一个行为克隆策略：每步取 64 帧演示，算预测动作和演示动作之间的均方误差，反向传播得到梯度，再按「参数 ← 参数 − 学习率 × 梯度」更新一次。",
+      "related": [
+        "反向传播",
+        "学习率",
+        "优化器",
+        "损失函数",
+        "批大小",
+        "AdamW 优化器"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Gradient descent",
+          "url": "https://en.wikipedia.org/wiki/Gradient_descent"
+        },
+        {
+          "title": "Google Machine Learning Glossary",
+          "url": "https://developers.google.com/machine-learning/glossary"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "真值",
+      "name_en": "Ground Truth",
+      "abbr": "GT",
+      "aliases": [
+        "标注真值",
+        "真实标签",
+        "真值标签"
+      ],
+      "tier": 2,
+      "one_liner": "被当作「标准答案」的真实数据，用来训练和评估模型。",
+      "explanation": "Ground Truth 原是遥感领域的术语，指在地面实地采集、用来校准卫星测量的数据，后来被统计建模和机器学习借用，泛指训练和评测时当作标准答案的数据，比如图像的类别标签、物体的真实位置。GT 不一定绝对正确：人工标注会出错，传感器测量有误差，所以数据质量直接决定模型上限。具身智能里，模仿学习把人类遥操作记录下的动作当作动作真值；仿真器能直接读出物体位姿、接触力等精确状态，常用来当感知模块的训练真值，或作为教师策略的特权信息；真机实验则常用动作捕捉系统测得的位姿作为真值来评估算法。",
+      "example": "用仿真渲染的图像训练 6D 位姿估计模型时，每张图里物体的真实位姿由仿真器直接给出，这就是 GT，不需要人工标注。",
+      "related": [
+        "数据标注",
+        "特权信息",
+        "监督学习",
+        "动作标签",
+        "合成数据",
+        "动作捕捉"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Ground truth",
+          "url": "https://en.wikipedia.org/wiki/Ground_truth"
+        },
+        {
+          "title": "Google Machine Learning Glossary",
+          "url": "https://developers.google.com/machine-learning/glossary"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "组相对策略优化",
+      "name_en": "Group Relative Policy Optimization",
+      "abbr": "GRPO",
+      "aliases": [
+        "群组相对策略优化"
+      ],
+      "tier": 2,
+      "one_liner": "对同一输入采样一组结果，用组内相对得分代替价值网络的强化学习算法。",
+      "explanation": "GRPO 由 DeepSeek 团队在 2024 年 2 月的 DeepSeekMath 论文中提出，是 PPO（近端策略优化）的变体。PPO 要额外训练一个和策略差不多大的价值网络（评论家）估计基线，GRPO 去掉了它：对同一个输入采样一组输出，分别打分，再用「得分减组内均值、除以组内标准差」作为每个输出的优势，省下大量显存。它还把与参考模型的 KL 散度（偏离程度）直接加进损失，约束更新幅度。DeepSeek-R1 用 GRPO 训练推理能力后，它被广泛采用。具身领域也开始用它对 VLA 做强化学习微调：同一任务推演多条轨迹，按成功与否给 0 或 1 的奖励。",
+      "example": "SimpleVLA-RL 用 GRPO 训练 OpenVLA-OFT：每个任务采样 8 条轨迹，成功记 1、失败记 0，去掉 KL 项，并过滤全成功或全失败的组，LIBERO 平均成功率从 91.0% 提到 99.1%。",
+      "related": [
+        "近端策略优化",
+        "优势函数",
+        "强化学习微调",
+        "基于可验证奖励的强化学习",
+        "KL 正则化",
+        "SimpleVLA-RL"
+      ],
+      "sources": [
+        {
+          "title": "DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models",
+          "url": "https://arxiv.org/abs/2402.03300"
+        },
+        {
+          "title": "DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning",
+          "url": "https://arxiv.org/abs/2501.12948"
+        },
+        {
+          "title": "SimpleVLA-RL: Scaling VLA Training via Reinforcement Learning",
+          "url": "https://arxiv.org/abs/2509.09674"
+        }
+      ],
+      "as_of": "2025-09"
+    },
+    {
+      "name_zh": "人在回路",
+      "name_en": "Human-in-the-Loop",
+      "abbr": "HITL",
+      "aliases": [
+        "人机回环",
+        "人在环路",
+        "人工干预",
+        "人工接管",
+        "Human Intervention"
+      ],
+      "tier": 2,
+      "one_liner": "让人参与到机器人训练或运行的循环中，实时纠正、接管或给反馈。",
+      "explanation": "人在回路泛指系统运行时需要人参与：机器人出错时人来接管控制、给出纠正动作、给结果打分或确认关键决策。在机器人学习里，它主要补离线模仿学习的短板：策略走到演示里没见过的状态就容易越错越远（复合误差），人在这些状态下的纠正正好补上缺的数据。代表方法有 DAgger 和 2018 年的 HG-DAgger（人判断要出问题时接管，接管段数据加入训练集），以及伯克利 2024 年的 HIL-SERL（人用 3D 鼠标随时干预真机强化学习，1 到 2.5 小时即可学会精密装配、双臂协作等任务）。部署时的人工接管、远程遥控兜底也属于这一范畴，干预率是衡量自主程度的常用指标。",
+      "example": "HIL-SERL 训练时，操作员手握 SpaceMouse 在旁看护，机器人快要失败时接管；干预数据同时放进演示缓冲区和强化学习缓冲区，加快学习。",
+      "related": [
+        "DAgger（数据集聚合）",
+        "人工门控 DAgger",
+        "HIL-SERL",
+        "干预数据",
+        "干预率",
+        "共享自主"
+      ],
+      "sources": [
+        {
+          "title": "Precise and Dexterous Robotic Manipulation via Human-in-the-Loop Reinforcement Learning (HIL-SERL)",
+          "url": "https://arxiv.org/abs/2410.21845"
+        },
+        {
+          "title": "HG-DAgger: Interactive Imitation Learning with Human Experts",
+          "url": "https://arxiv.org/abs/1810.02890"
+        },
+        {
+          "title": "Wikipedia: Human-in-the-loop",
+          "url": "https://en.wikipedia.org/wiki/Human-in-the-loop"
+        }
+      ],
+      "as_of": ""
+    }
+  ]
+}

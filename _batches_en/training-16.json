@@ -1,0 +1,235 @@
+{
+  "batch": "training-16",
+  "terms": [
+    {
+      "key": "training-16#0",
+      "name_en": "Reinforcement Learning with Verifiable Rewards",
+      "aliases": [
+        "RLVR"
+      ],
+      "one_liner": "Training a model with reinforcement learning using rewards a program can automatically check as correct or wrong.",
+      "explanation": "The name RLVR comes from the Allen Institute for AI's (Ai2) Tülu 3 paper in November 2024: for tasks such as math problems or automatically checkable instruction constraints, a rule or program judges whether the model's output is correct, gives a fixed reward for a correct answer and zero otherwise, and then updates the model with an algorithm such as PPO. It needs no separately trained reward model, the network that scores answers in RLHF, so the reward source is more reliable and harder for the model to game. DeepSeek-R1 (2025) used a rule-based accuracy reward to train reasoning ability, bringing this approach wide attention. Applied to robots, “did the task succeed or not” is a naturally verifiable reward, and work such as SimpleVLA-RL and VLA-RFT uses a binary success/failure reward to fine-tune VLAs with reinforcement learning.",
+      "example": "SimpleVLA-RL fine-tunes OpenVLA-OFT with reinforcement learning using only an outcome reward — success is rewarded, failure is not — reaching leading results on LIBERO, beating π0 on RoboTwin 1.0 and 2.0, and also outperforming a purely supervised-fine-tuned version on a real robot.",
+      "related": [
+        "RL Fine-Tuning",
+        "Reward Model",
+        "Reinforcement Learning from Human Feedback",
+        "Group Relative Policy Optimization",
+        "Sparse Reward",
+        "SimpleVLA-RL"
+      ]
+    },
+    {
+      "key": "training-16#1",
+      "name_en": "Rejection Sampling Fine-Tuning",
+      "aliases": [
+        "RFT",
+        "Filtered Behavior Cloning",
+        "Filtered BC",
+        "Percentile Behavior Cloning (%BC)"
+      ],
+      "one_liner": "Letting a model attempt a task many times, keeping only the successful or high-scoring results, and training on those.",
+      "explanation": "Rejection sampling fine-tuning and filtered behavior cloning describe the same basic idea: let an existing model generate multiple results for a task, use answer-checking, success detection, or return ranking to throw out the bad ones, and use only the good samples as supervised fine-tuning or behavior-cloning data. In large-model work, Yuan and colleagues' 2023 paper is often cited, using it to expand math-reasoning training data; the 2021 Decision Transformer paper also used “percentile behavior cloning” (%BC), cloning only the top X% of data by return, as a baseline. It is simple to implement and trains stably, though information in the failed samples is simply thrown away. In robotics it is commonly used to keep only successful autonomous trajectories, or, as with ByteDance's GR-RL, to use a learned task-progress function to filter out demonstration segments that made no progress on the task. Note that the abbreviation RFT is also commonly used for RL fine-tuning.",
+      "example": "Yuan and colleagues had multiple models answer GSM8K math problems repeatedly, keeping only the reasoning traces that reached the correct answer for the training set; LLaMA-7B's accuracy rose from 35.9% with plain supervised fine-tuning to 49.3%.",
+      "related": [
+        "Behavior Cloning",
+        "Supervised Fine-Tuning",
+        "Self-improvement",
+        "Best-of-N Sampling",
+        "Suboptimal / Noisy Demonstrations",
+        "Advantage Conditioning"
+      ]
+    },
+    {
+      "key": "training-16#2",
+      "name_en": "Representation Alignment",
+      "aliases": [
+        "REPA",
+        "REPA Regularization"
+      ],
+      "one_liner": "Training a model so its intermediate features match those of an existing pretrained encoder.",
+      "explanation": "REPA was proposed by Sihyun Yu, Saining Xie, and colleagues in October 2024 (an ICLR 2025 Oral), targeting the slow training of diffusion Transformers such as DiT and SiT. It adds an auxiliary loss: the network's intermediate hidden state while processing a noisy image, after passing through a small projection layer, is aligned with that same clean image's features from a pretrained visual encoder such as DINOv2. The authors argue that one bottleneck in diffusion-model training is having to learn good visual representations from scratch, and that borrowing an already-good representation saves that effort — SiT's training sped up by more than 17.5x. This “REPA-style” alignment has since been extended to video generation and robotics: Spatial Forcing, for example, aligns a VLA's intermediate visual tokens with features from the 3D foundation model VGGT, letting a VLA that has only ever seen 2D data implicitly pick up spatial awareness.",
+      "example": "Spatial Forcing adds a cosine-similarity alignment loss against VGGT features on top of OpenVLA-OFT and π0, with no extra depth-map or point-cloud input, speeding up training by up to 3.8x and improving data efficiency.",
+      "related": [
+        "Representation Learning",
+        "Diffusion Transformer",
+        "DINOv2",
+        "Auxiliary Loss / Auxiliary Task",
+        "VGGT",
+        "Pre-trained Visual Representation"
+      ]
+    },
+    {
+      "key": "training-16#3",
+      "name_en": "Reset-Free Reinforcement Learning",
+      "aliases": [
+        "Autonomous RL",
+        "Autonomous Reinforcement Learning"
+      ],
+      "one_liner": "Letting a robot keep learning through continuous interaction, without a person resetting the environment every episode.",
+      "explanation": "Standard reinforcement learning assumes the environment resets to its initial state after every episode, trivial in simulation, but on a real robot it usually means a person has to put the objects back, which is one of the main bottlenecks of real-robot RL. Reset-free reinforcement learning studies how to learn with as little manual resetting as possible. Eysenbach and colleagues' 2017 “Leave no Trace” learns a forward policy and a reset policy together, using the reset policy's value function to tell when the agent is about to enter an unrecoverable state. Gupta and colleagues (2021) had multiple tasks reset each other, treating it as a multi-task learning problem. That same year, Sharma, Finn, and colleagues formalized this as “autonomous reinforcement learning” and released the EARL benchmark, finding that ordinary episodic algorithms perform noticeably worse once manual intervention is reduced. It is closely related to failure recovery and autonomous data collection.",
+      "example": "Training an arm to open a drawer while also learning to close it: after opening, the “close” policy restores the environment, so the robot can practice continuously without anyone standing by to reset it.",
+      "related": [
+        "Real-World Reinforcement Learning",
+        "Episode",
+        "Failure Recovery",
+        "Autonomous Data Collection",
+        "Multi-Task Learning",
+        "Online Reinforcement Learning"
+      ]
+    },
+    {
+      "key": "training-16#4",
+      "name_en": "Residual Reinforcement Learning",
+      "aliases": [
+        "Residual Policy Learning",
+        "RPL",
+        "Residual RL"
+      ],
+      "one_liner": "Keeping an existing base controller and using reinforcement learning to learn only a correction on top of its output.",
+      "explanation": "Residual reinforcement learning was proposed in two nearly simultaneous papers at the end of 2018: UC Berkeley's Levine group working with Siemens on “Residual Reinforcement Learning for Robot Control,” and MIT's “Residual Policy Learning.” The final action equals the base policy's action plus a correction output by a residual policy; the base policy can be a hand-written controller, model-predictive control, or a policy learned through imitation, and reinforcement learning only has to fill in hard-to-model parts such as friction and contact. Because it starts from a point that already roughly works, exploration is safer and more sample-efficient, making it well suited to training directly on a real robot. In recent years it is often used to refine behavior-cloning policies: train and freeze a diffusion or action-chunking policy on demonstrations, then train a small closed-loop residual policy on top of it for real-time correction.",
+      "example": "MIT's ResiP freezes a demonstration-trained action-chunking policy and uses it as a trajectory planner, then trains a closed-loop residual policy with reinforcement learning for real-time correction, applied to precision-assembly tasks where adding more behavior-cloning data no longer raises success rate.",
+      "related": [
+        "Residual Policy",
+        "Behavior Cloning",
+        "Real-World Reinforcement Learning",
+        "RL Fine-Tuning",
+        "Action Chunking",
+        "Noise-Space Policy Steering"
+      ]
+    },
+    {
+      "key": "training-16#5",
+      "name_en": "Return Conditioning",
+      "aliases": [
+        "Return-Conditioned Policy",
+        "Return-Conditioned Supervised Learning (RCSL)"
+      ],
+      "one_liner": "Feeding a policy the return you want it to achieve, so it acts toward that target return.",
+      "explanation": "Return conditioning rewrites reinforcement learning as supervised learning: during training, the remaining cumulative reward from each step onward in a trajectory, the return-to-go, is fed into the policy alongside the observation, and the policy is trained to imitate the action actually taken; at test time, a high target return is given, hoping the policy produces high-return behavior. Schmidhuber's 2019 Upside-Down RL and 2021's Decision Transformer are representative: the latter arranges return, state, and action into a sequence for a Transformer to predict actions from, matching mainstream methods on offline RL benchmarks. It needs no learned value function, so training is stable, but Brandfonbrener and colleagues (2022) showed it can fail to find the optimal policy when the environment is very stochastic or data coverage is poor. The advantage conditioning used in π*0.6's RECAP is a variant of the same idea.",
+      "example": "At test time, Decision Transformer is given a target return, such as 1 for task success, and after every step it subtracts the actual reward received from the target, then predicts the next action conditioned on the remaining target return.",
+      "related": [
+        "Decision Transformer",
+        "Advantage Conditioning",
+        "Return",
+        "Offline Reinforcement Learning",
+        "RECAP",
+        "Goal-conditioned Policy"
+      ]
+    },
+    {
+      "key": "training-16#6",
+      "name_en": "Safe Reinforcement Learning",
+      "aliases": [
+        "Safe RL",
+        "Constrained Reinforcement Learning",
+        "Constrained RL"
+      ],
+      "one_liner": "Maximizing reward while guaranteeing safety constraints are not violated, during both training and deployment.",
+      "explanation": "García and Fernández's 2015 survey defines safe reinforcement learning as maximizing expected return, during learning and/or deployment, in problems that require reasonable performance guarantees or must respect safety constraints. Two broad approaches are common. One changes the optimization objective, for example by formulating the problem as a constrained Markov decision process, which adds an upper limit on “cost” alongside reward, and solving it with Lagrangian multipliers or a method such as 2017's Constrained Policy Optimization (CPO). The other changes the exploration process itself, for example by injecting prior knowledge, or by using a safety filter or control barrier function to intercept dangerous actions before they execute. This matters enormously for real-robot RL and for humanoid or legged locomotion control, where falling, collisions, or exceeding a joint's limits can damage hardware or even injure people.",
+      "example": "The CaT method rewrites every constraint in a legged robot's locomotion control as “end the episode early, with some probability, the moment it's violated”; with only a small change to PPO, it learned to cross obstacles on a real Solo quadruped robot.",
+      "related": [
+        "Embodied Safety",
+        "Control Barrier Function",
+        "Safety Filter",
+        "Real-World Reinforcement Learning",
+        "Proximal Policy Optimization",
+        "Reward Shaping"
+      ]
+    },
+    {
+      "key": "training-16#7",
+      "name_en": "Score Matching",
+      "aliases": [
+        "Score Function",
+        "Denoising Score Matching"
+      ],
+      "one_liner": "Training a network to estimate the gradient of a data distribution's log-density, without needing its normalizing constant.",
+      "explanation": "The score is the gradient of the log probability density with respect to the input, ∇x log p(x), and it points toward where data is more likely to occur. Hyvärinen proposed score matching in 2005: train a model's score to fit the data's score, which sidesteps the normalizing constant that is hard to compute in energy-based models. Later, denoising score matching turned the problem into “add noise to data, then learn to denoise it.” In 2019, Song and Ermon used score estimation under multiple noise levels plus Langevin dynamics sampling for image generation; in 2020, Song and colleagues unified score-based models and diffusion models using stochastic differential equations, where the reverse denoising process depends only on the score at each noise level. DDPM's noise prediction and flow matching's velocity prediction can both be converted into score estimates, so the training behind generative robot policies such as Diffusion Policy is, underneath, score matching.",
+      "example": "Diffusion Policy trains by adding Gaussian noise of varying strength to expert actions and having the network predict the noise that was added; dividing that prediction by the noise's standard deviation and negating it gives a score estimate for the noisy-action distribution.",
+      "related": [
+        "Diffusion Model",
+        "Denoising Diffusion Probabilistic Model",
+        "Denoising Loss",
+        "Flow Matching",
+        "Energy-Based Model",
+        "Prediction Target Parameterization"
+      ]
+    },
+    {
+      "key": "training-16#8",
+      "name_en": "Self Forcing",
+      "aliases": [
+        "Self-Forcing Training"
+      ],
+      "one_liner": "Training a video model by having it keep generating from its own previously generated frames, removing the train-test mismatch.",
+      "explanation": "Self Forcing was proposed by Adobe Research and UT Austin's Xun Huang and colleagues in June 2025 (NeurIPS 2025 Spotlight), as an autoregressive video-diffusion training method. Autoregressive video models generate a segment at a time; earlier training used teacher forcing, conditioning on real preceding frames, or diffusion forcing, conditioning on noised real preceding frames, but at inference time the model can only condition on its own previously generated, imperfect frames, a mismatch called exposure bias that makes long videos degrade further and further. Self Forcing instead unrolls the model autoregressively during training the same way it will run at inference, using a KV cache and conditioning on its own generated frames, then computes one overall loss across the whole video. Built on Wan2.1-T2V-1.3B, it achieves sub-second-latency, real-time streaming generation on a single GPU, which matters for interactive world models that need to generate video while responding to actions.",
+      "example": "According to the project page, the Self Forcing model generates 480p video at about 16 frames per second on a single H100, with a first-frame latency of about 0.8 seconds, and can also stream in real time on a single RTX 4090.",
+      "related": [
+        "Teacher Forcing",
+        "Diffusion Forcing",
+        "Exposure Bias",
+        "Autoregressive Video Generation",
+        "Key-Value Cache",
+        "Diffusion Step Distillation"
+      ]
+    },
+    {
+      "key": "training-16#9",
+      "name_en": "Self-improvement",
+      "aliases": [
+        "Self-Improving",
+        "Autonomous Improvement"
+      ],
+      "one_liner": "A robot retrains itself on data from its own practice, getting steadily better with less reliance on human data.",
+      "explanation": "Self-improvement refers to a loop in which a model, after starting from a small amount of human data, generates new data by interacting with the environment on its own, automatically judges whether it did well, and retrains on that, aiming to stop data growth from depending entirely on human demonstrations. The key is automatically judging success or failure: common tools are success detectors, reward models, or value functions, paired with filtered behavior cloning or reinforcement learning to update the policy. Representative work includes DeepMind's 2023 RoboCat, which trains its next generation on data from its own practice, and Ghasemipour and colleagues' 2025 Self-Improving Embodied Foundation Models, which has the model predict how many steps remain, yielding both a reward and a success detector at once so a fleet of robots can practice autonomously, more sample-efficient than simply collecting more demonstrations. π*0.6, which learns from autonomous experience and human corrections using RECAP, belongs to this category too.",
+      "example": "One round of RoboCat's loop: humans teleoperate 100 to 1,000 new demonstrations for a task, a specialist branch model is fine-tuned from them, the branch practices autonomously about 10,000 times on average, and the new and old data are merged to train the next RoboCat generation.",
+      "related": [
+        "RoboCat",
+        "Data Flywheel",
+        "Success Detector",
+        "Real-World Reinforcement Learning",
+        "π*0.6",
+        "Rejection Sampling Fine-Tuning"
+      ]
+    },
+    {
+      "key": "training-16#10",
+      "name_en": "Self-Play",
+      "aliases": [
+        "Self-Competition"
+      ],
+      "one_liner": "Having an agent compete against itself, or past versions of itself, to keep improving through the outcomes.",
+      "explanation": "Self-play is a training approach within multi-agent reinforcement learning where the opponent is not a human or a fixed script but the agent's own current or past self. As the agent gets stronger, its opponent gets stronger in lockstep, which amounts to an automatically generated curriculum of rising difficulty, and it needs no human match data at all. The most famous example is DeepMind's 2017 AlphaGo Zero: starting from random moves and using only self-play plus Monte Carlo tree search, after three days of training it beat the earlier AlphaGo version that had defeated the human champion, 100 games to 0. In robotics, adversarial tasks commonly use it: DeepMind trained the small humanoid robot OP3 to play one-on-one soccer by first training standing-up and scoring skills separately, distilling both into one policy, and then having it compete against snapshots of its own past self. Playing only against the very latest version of itself tends to cause cycling, so opponents are usually drawn from a pool of historical versions instead.",
+      "example": "In OP3's soccer training, opponents were drawn from a pool of the agent's own periodically saved historical snapshots; an ablation study showed that an agent trained without self-play performed worse even against a fixed opponent.",
+      "related": [
+        "Multi-Agent Reinforcement Learning",
+        "Reinforcement Learning",
+        "Monte Carlo Tree Search",
+        "Curriculum Learning",
+        "Population-Based Training",
+        "OP3 Soccer (DeepMind Bipedal Soccer)"
+      ]
+    },
+    {
+      "key": "training-16#11",
+      "name_en": "Stop-Gradient",
+      "aliases": [
+        "stop-grad",
+        "detach",
+        "sg(·)"
+      ],
+      "one_liner": "A value is used normally in the forward pass but treated as a constant during backpropagation, blocking its gradient.",
+      "explanation": "Stop-gradient is a basic deep-learning operation: some quantity is used normally in the forward computation, but during backpropagation it is treated as a constant, so no gradient flows back through it to earlier parameters. Papers often write it as sg(·); PyTorch uses .detach(), and JAX uses jax.lax.stop_gradient. It has many uses: in reinforcement learning it stabilizes temporal-difference learning by blocking gradients into the target value; VQ-VAE uses it so the codebook and the encoder can be updated separately; and SimSiam found it to be the key ingredient that stops self-supervised learning's representations from collapsing. In VLAs, Physical Intelligence's 2025 knowledge insulation blocks the gradient flowing from the action expert back into the VLM backbone, so a newly initialized action expert doesn't disrupt the backbone's pretrained knowledge, and the backbone instead learns from discretized action tokens. Note this is not the same as gradient clipping, which limits gradient magnitude rather than blocking it.",
+      "example": "In knowledge-insulation training, the continuous action expert reads features from the VLM backbone to generate actions, but its loss is never backpropagated into the backbone; the backbone adapts to robot data only through the next-token-prediction loss on discretized action tokens.",
+      "related": [
+        "Knowledge Insulation",
+        "Target Network",
+        "Representation Collapse",
+        "Backbone Freezing",
+        "Backpropagation",
+        "Vector-Quantized Variational Autoencoder"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "batch": "model-07",
+  "terms": [
+    {
+      "key": "model-07#0",
+      "name_en": "Projector / Connector",
+      "aliases": ["Projector", "Connector", "Vision-Language Connector"],
+      "one_liner": "A small network that maps features from a vision encoder into the input space of a language model.",
+      "explanation": "A projector is a small network in a multimodal model that connects two separately pretrained components — most commonly, it maps the image features a vision encoder produces into vectors a large language model can read directly. It's needed because the two sides were pretrained independently, so their feature dimensions and distributions don't match. The original LLaVA used just a single linear layer; LLaVA-1.5 switched to a two-layer MLP (multilayer perceptron) and got better results. More elaborate designs, such as a Q-Former or a Perceiver Resampler, also compress the number of tokens along the way. When training a VLM, it's common to freeze both pretrained sides and train only the projector, which is the modality-alignment stage. The same idea shows up in VLAs for robot state and action too: a linear layer or MLP projects low-dimensional vectors like joint angles into the model's embedding dimension.",
+      "example": "OpenVLA concatenates SigLIP and DINOv2 image features channel-wise, then passes them through a two-layer MLP projector before feeding them into the Llama 2 7B language model.",
+      "related": ["Vision Encoder", "Multimodal Fusion", "Q-Former", "Perceiver Resampler", "Modality Alignment", "LLaVA"]
+    },
+    {
+      "key": "model-07#1",
+      "name_en": "Prompt / Prompt Engineering",
+      "aliases": ["Prompt", "Prompting"],
+      "one_liner": "A prompt is the text fed into a model; prompt engineering is designing it to get the output you want.",
+      "explanation": "A prompt is the text given as input to a large language model or multimodal model, which can include task instructions, background context, examples, and formatting requirements for the output. Prompt engineering is the practice of iterating on and testing prompts so the model reliably produces the desired result, without changing the model's parameters; common techniques include giving a few examples (few-shot), having the model write out its reasoning first (chain-of-thought), and specifying the output format. In embodied AI it shows up in two main ways. First, when using a large model for task planning, the prompt tells the model what skills the robot has and what's in the scene — SayCan and Code as Policies both depend on carefully designed prompts. Second, the natural-language instruction a VLA receives is also often just called the 'prompt' in the code. By contrast, a soft prompt is a trainable vector rather than text.",
+      "example": "Calling π0.5 through openpi, the input includes camera images plus a prompt field reading 'pick up the fork'; the model outputs an action chunk for picking up the fork based on it.",
+      "related": ["Large Language Model", "Chain-of-Thought", "In-Context Learning", "Code as Policies", "SayCan", "Prompt Tuning / Soft Prompt"]
+    },
+    {
+      "key": "model-07#2",
+      "name_en": "Qwen-VL",
+      "aliases": ["Qwen2-VL", "Qwen2.5-VL", "Qwen3-VL"],
+      "one_liner": "Alibaba's Qwen team's open-source vision-language model series, frequently used as a backbone for VLA models.",
+      "explanation": "Qwen-VL is the vision-language model series from Alibaba's Qwen team, able to look at images and video and answer in text. The first version was released in August 2023. Qwen2.5-VL came out in early 2025, in sizes from 3B to 72B, supports dynamic-resolution input, and can localize objects with boxes or points. Qwen3-VL began rolling out from September 2025, with dense versions from 2B to 32B and two mixture-of-experts versions, 30B-A3B and 235B-A22B, with native support for a 256K context window. Open weights, small model sizes, and strong grounding ability have made it a popular choice as the vision-language backbone for VLA models. Starting with Qwen3.5 in February 2026, Alibaba's mainline models natively support image input themselves.",
+      "example": "Xiaomi's Xiaomi-Robotics-0 uses Qwen3-VL-4B-Instruct as its vision-language backbone, followed by a diffusion Transformer that generates actions; Shanghai AI Lab's InternVLA-M1 uses Qwen2.5-VL-3B as its System 2.",
+      "related": ["Vision-Language Model", "Multimodal Large Language Model", "PaliGemma", "InternVL", "Vision-Language-Action Model", "Dynamic / Native Resolution"]
+    },
+    {
+      "key": "model-07#3",
+      "name_en": "Real-Time Chunking",
+      "aliases": ["RTC", "Real-Time Execution of Action Chunking Flow Policies"],
+      "one_liner": "A method that computes the next action chunk while still executing the current one, blended smoothly into what's already running.",
+      "explanation": "Real-Time Chunking was proposed in 2025 by Kevin Black and colleagues at Physical Intelligence as an inference-time algorithm (NeurIPS 2025). Computing one action chunk with a large model takes on the order of a hundred milliseconds; executing chunks synchronously leaves a pause between them, while executing them asynchronously risks a jump where the new chunk doesn't match the old one. RTC starts computing the next chunk while the current one is still executing: the few steps that will inevitably run during inference are 'frozen,' and the rest is treated as an inpainting problem — a guidance term is added during flow-matching denoising, with a soft mask that gradually relaxes the constraint, so the new chunk blends smoothly with the old one. It needs no retraining; the paper demonstrated on π0.5 that the robot could still strike a match and light a candle with more than 300 ms of latency. A training-time version of RTC followed in December 2025, which simulates latency during training and removes the need for guidance computation at inference time.",
+      "example": "Turning on the RTC setting for π0.5 in LeRobot, and setting the delay-step count to match measured inference time, means the robot no longer pauses between action chunks while executing them.",
+      "related": ["Action Chunking", "Asynchronous Inference", "Inference Latency", "Flow Matching", "Temporal Ensembling", "π0.5"]
+    },
+    {
+      "key": "model-07#4",
+      "name_en": "Recurrent Neural Network",
+      "aliases": ["RNN"],
+      "one_liner": "A neural network that processes a sequence one step at a time, using a hidden state to remember the past.",
+      "explanation": "A recurrent neural network is a class of network for processing sequences: at each time step, it combines the new input with the hidden state from the previous step (a vector that records history) to compute a new state, reusing the same parameters at every step. Plain RNNs suffer from vanishing gradients on long sequences and struggle to remember anything from far back, which led to gated variants: Hochreiter and Schmidhuber proposed Long Short-Term Memory (LSTM) in 1997, and Cho and colleagues proposed the simpler Gated Recurrent Unit (GRU) in 2014. RNNs must be computed step by step and are hard to parallelize during training, so Transformers have largely replaced them in language tasks; but because an RNN only needs to update a single state at each inference step, which is cheap, they're still commonly used in robotics for policies that need to remember history.",
+      "example": "The imitation-learning library robomimic offers a BC-RNN algorithm: an LSTM reads in observations from the past several steps and outputs the current action, and it's often used as a comparison baseline for newer methods like Diffusion Policy.",
+      "related": ["Transformer", "Long Short-Term Memory / Gated Recurrent Unit", "Vanishing / Exploding Gradients", "State Space Model", "Recurrent State-Space Model", "History Encoder"]
+    },
+    {
+      "key": "model-07#5",
+      "name_en": "Residual Network",
+      "aliases": ["ResNet", "ResNet-18", "ResNet-50", "Residual Connection", "Skip Connection"],
+      "one_liner": "A convolutional network with skip connections that let each layer just learn the difference between input and output, enabling very deep networks.",
+      "explanation": "Residual networks were introduced in 2015 by Kaiming He and colleagues at Microsoft Research Asia, and the paper won the CVPR 2016 Best Paper Award. Before this, adding more layers to a convolutional network actually made it harder to train and hurt accuracy. ResNet adds a skip connection inside each block that adds the input directly to the output, so the block only needs to learn the 'residual' between input and target, and gradients can also flow straight back along this shortcut. This design allowed networks as deep as 152 layers and won the ILSVRC 2015 image classification competition. Residual connections later became standard in nearly all deep networks — each Transformer layer has them too. In robot learning, small ResNets such as ResNet-18 are commonly used as image encoders; both ACT and Diffusion Policy use one to turn camera images into features.",
+      "example": "ACT uses a ResNet-18 to compress each 480×640 camera image into a 15×20×512 feature map, then flattens it into 300 tokens fed into the Transformer.",
+      "related": ["Convolutional Neural Network", "Backbone Network", "Vision Encoder", "Vanishing / Exploding Gradients", "ACT", "Diffusion Policy"]
+    },
+    {
+      "key": "model-07#6",
+      "name_en": "Self-Attention",
+      "aliases": ["Intra-Attention", "Multi-Head Self-Attention"],
+      "one_liner": "A mechanism where every element in a sequence gathers information from every other element, weighted by relevance.",
+      "explanation": "Self-attention is the core operation inside a Transformer, popularized by Vaswani and colleagues' 2017 paper 'Attention Is All You Need.' For each token in a sequence, learnable matrices first produce a query (Q), key (K), and value (V) vector; that token's query is dotted with every token's key, the results are turned into weights with a softmax, and those weights are used to compute a weighted sum of the value vectors, giving the token its new representation. 'Self' means the queries, keys, and values all come from the same sequence; when they come from two different sequences, it's called cross-attention instead. Self-attention can connect any two positions in a single step and is easy to parallelize, but its compute cost grows with the square of sequence length. In VLA models, image, text, and state tokens are often mixed into the same self-attention operation, with an attention mask specifying who is allowed to see whom.",
+      "example": "π0 concatenates image, language instruction, robot state, and noisy action tokens into one sequence, lets them exchange information via self-attention, and reads the action back out of the action tokens' output.",
+      "related": ["Attention Mechanism", "Transformer", "Cross-Attention", "Attention Mask", "Softmax", "Positional Encoding"]
+    },
+    {
+      "key": "model-07#7",
+      "name_en": "SigLIP",
+      "aliases": ["Sigmoid Loss for Language-Image Pre-training", "SigLIP 2", "SigLIP-So400m"],
+      "one_liner": "Google's image-text model trained with a sigmoid loss instead of softmax; its image encoder is used by many VLAs.",
+      "explanation": "SigLIP is an image-text pretraining method proposed in 2023 by Xiaohua Zhai and colleagues at Google (ICCV 2023). Like CLIP, it trains an image encoder and a text encoder so that matched image-text pairs end up close together as vectors; the difference is the loss function. CLIP uses a softmax normalized across the whole batch, while SigLIP treats each image-text pair independently as a binary 'do they match or not' classification problem with a sigmoid loss, which doesn't depend on batch-wide normalization, so it trains well even with small batches and uses less GPU memory. Its vision encoder (such as the roughly 400-million-parameter So400m) is the image input stage for many VLMs and VLAs. SigLIP 2, released in February 2025, added objectives like captioning and self-distillation during training, improving multilingual ability, localization, and dense features.",
+      "example": "π0's backbone, PaliGemma, is made of a SigLIP-So400m vision encoder and a Gemma-2B language model; OpenVLA instead concatenates SigLIP features together with DINOv2 features.",
+      "related": ["CLIP", "Contrastive Learning", "Vision Encoder", "PaliGemma", "DINOv2", "Softmax"]
+    },
+    {
+      "key": "model-07#8",
+      "name_en": "Softmax",
+      "aliases": ["Softmax Function", "Temperature Softmax"],
+      "one_liner": "A function that turns a set of arbitrary real numbers into a probability distribution: all positive, summing to 1.",
+      "explanation": "Softmax exponentiates each element of a real-valued vector, then divides by the sum of all the exponentials, producing a set of numbers that are all positive and sum to 1, so they can be treated as probabilities; larger input values get proportionally larger probabilities, and the exponential stretches the gaps between them. It has two main uses in deep learning. First, in a classification output layer, it turns the model's raw scores (logits) into per-class probabilities, which are then trained with cross-entropy loss. Second, inside attention mechanisms, it turns the similarity between a query and each key into attention weights. Dividing the scores by a temperature parameter before applying softmax lets you control how sharp the distribution is: a low temperature makes it close to picking only the largest value, while a high temperature makes it closer to uniform. RT-2 and OpenVLA, which discretize continuous actions into bins, also use softmax to give a probability to each bin.",
+      "example": "A classifier scores 'cup,' 'bowl,' and 'plate' as 2.0, 1.0, and 0.1; softmax turns these into probabilities of roughly 0.66, 0.24, and 0.10.",
+      "related": ["Cross-Entropy", "Attention Mechanism", "Self-Attention", "Decoding Strategies", "Spatial Softmax", "Action Binning / Discretization"]
+    },
+    {
+      "key": "model-07#9",
+      "name_en": "State / Proprioception Encoder",
+      "aliases": ["Proprioception Encoder", "State Encoder", "State Projector"],
+      "one_liner": "A small network that turns a robot's own state — joint angles, gripper opening — into a vector the model can use.",
+      "explanation": "A state encoder processes a robot's proprioception — information about its own state that doesn't need a camera, such as joint angles, end-effector pose, and gripper opening. These are numeric vectors of a few to a few dozen dimensions, and they first need to be mapped into the model's embedding dimension before they can be fed into a Transformer alongside image and text tokens. The implementation is usually simple: π0 and ACT each use a single linear layer, while GR00T N1 gives each embodiment its own MLP to handle robots with different state dimensions. State input lets the policy know where the arm currently is, but it has a side effect too: the Octo team found that adding proprioceptive state often hurt performance, likely because the model over-relies on the strong correlation between state and action — a form of causal confusion.",
+      "example": "The bimanual ALOHA robot's state is 14 joint positions across both arms; ACT projects this 14-dimensional vector to 512 dimensions with a single linear layer and feeds it as one token into the Transformer encoder alongside the image features.",
+      "related": ["Proprioception", "Projector / Connector", "Embodiment-specific Head", "Action / State Normalization", "Causal Confusion", "History Encoder"]
+    },
+    {
+      "key": "model-07#10",
+      "name_en": "Temporal Ensembling",
+      "aliases": ["Temporal Ensemble", "Action Ensemble"],
+      "one_liner": "Predicting an action chunk at every step, then averaging the overlapping chunks' predictions for the same moment before executing.",
+      "explanation": "Temporal ensembling is a way of executing action chunks introduced in the 2023 ACT paper (Tony Zhao and colleagues). Naive action chunking only looks at a new observation every k steps, so the action can jump abruptly when it switches to a new chunk. Temporal ensembling instead calls the policy at every control step, so at any given moment there are several overlapping chunks' predictions for it; these are combined with exponential weights w_i = exp(-m·i), where i=0 is the earliest prediction, and the weighted average is what actually gets executed — a smaller m lets new observations take effect faster. It adds no training cost, only extra inference compute, and in ACT's ablations it improved success rate by about 3.3 percentage points. The cost is that it requires an inference call at every step, which is hard to afford when a large model has high latency; the later Real-Time Chunking (RTC) method uses it as a comparison baseline.",
+      "example": "ACT predicts the next k steps of action at every step; at time t, it has already received several predictions for t from the calls made at t, t-1, t-2, and so on, and averages them before sending the result to the arm, which is why ALOHA's bimanual motion looks smoother.",
+      "related": ["Action Chunking", "ACT", "Real-Time Chunking", "Action Smoothing", "Compounding Error", "Action Horizon"]
+    },
+    {
+      "key": "model-07#11",
+      "name_en": "Text Encoder",
+      "aliases": ["Language Encoder", "Instruction Encoder"],
+      "one_liner": "A network that turns a text instruction into a sequence of vectors for the rest of the model to use.",
+      "explanation": "A text encoder splits a piece of text (such as 'put the cup in the sink') into tokens and turns them into vectors, used as a conditioning input for a policy or generative model. It's usually a pretrained language model, and it's often kept frozen when training a robot policy: Octo uses a roughly 110-million-parameter T5-base, RDT-1B uses a frozen T5-XXL, and CLIP and SigLIP each come with their own text encoder aligned to their image encoder; text-to-image and text-to-video models rely on one too, to understand the prompt. It brings pretrained language knowledge into the policy, helping the model tell different instructions apart. VLA models built on a large language model backbone, such as OpenVLA and π0, don't have a separate text encoder at all — text goes directly into the language model itself as tokens.",
+      "example": "Octo encodes instructions into 16 language tokens using a frozen t5-base, fed into the Transformer alongside image tokens; the paper tried swapping in a larger T5 or fine-tuning it, and neither improved performance.",
+      "related": ["Language-conditioned Policy", "CLIP", "SigLIP", "Large Language Model", "Embedding", "Feature-wise Linear Modulation"]
+    }
+  ]
+}

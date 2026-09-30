@@ -1,0 +1,113 @@
+{
+  "batch": "perception-15",
+  "terms": [
+    {
+      "key": "perception-15#0",
+      "name_en": "Foot Force Sensor",
+      "aliases": ["Foot Contact Sensor"],
+      "one_liner": "A sensor mounted on a legged robot’s foot or ankle that measures the contact force between foot and ground.",
+      "explanation": "A foot force sensor measures ground-contact force at a legged robot’s foot; common forms include a single-axis force or pressure sensor at a quadruped’s foot tip, a six-axis force sensor at a humanoid’s ankle, or a pressure array laid across the sole. It answers two questions: is this foot on the ground, and how large is the ground reaction force? The first answer feeds contact estimation and leg odometry (you need to know which foot is bearing weight to infer how the body is moving); the second lets you compute the center of pressure and zero-moment point for judging balance. The foot takes an impact every step, so the sensor wears out and its readings drift, which is why many quadruped products skip it and instead do sensorless force estimation from joint torque or motor current. On the Unitree Go2, for example, only the EDU version has foot force sensors.",
+      "example": "Older Unitree Go1-generation quadruped SDKs (unitree_legged_sdk) provide a footForce field in the low-level LowState message with one force reading per foot, which the control program can use to judge each foot’s touchdown moment.",
+      "related": ["Contact Estimation", "Six-Axis Force Sensor", "Ground Reaction Force", "Zero-Moment Point", "Leg Odometry", "Sensorless Force Estimation"]
+    },
+    {
+      "key": "perception-15#1",
+      "name_en": "FoundationStereo",
+      "aliases": ["FoundationStereo: Zero-Shot Stereo Matching", "Fast-FoundationStereo"],
+      "one_liner": "NVIDIA’s stereo-matching foundation model that produces depth in a new scene with no fine-tuning needed.",
+      "explanation": "FoundationStereo is a stereo-matching model proposed by Bowen Wen and colleagues at NVIDIA, published at CVPR 2025. Given left and right camera images, it outputs a dense disparity map, which is then converted to depth or a point cloud using the baseline and focal length. Earlier stereo-matching networks usually needed re-fine-tuning to work in a new scene; FoundationStereo is trained on about 1 million pairs of photorealistic synthetic stereo images (the FSD dataset) and uses side-tuning to bring in monocular-depth priors from a vision foundation model, narrowing the sim-to-real gap and achieving zero-shot generalization — NVIDIA said it ranked first on the Middlebury and ETH3D leaderboards at release. In robotics it’s commonly used to get more complete depth from stereo images for grasping and pose estimation; a real-time version, Fast-FoundationStereo, followed in December 2025.",
+      "example": "Photographing a tabletop with a stereo camera and feeding the left and right images into FoundationStereo produces a depth map and point cloud, which is then passed to FoundationPose to estimate a target object’s 6D pose.",
+      "related": ["Stereo Matching", "Disparity", "Stereo Camera", "Depth Estimation", "FoundationPose", "Depth Anything"]
+    },
+    {
+      "key": "perception-15#2",
+      "name_en": "Frequency-Modulated Continuous-Wave LiDAR",
+      "aliases": ["FMCW LiDAR", "Coherent LiDAR", "4D LiDAR"],
+      "one_liner": "A lidar that continuously emits frequency-swept laser light, measuring both distance and velocity at every point.",
+      "explanation": "This is one of the ranging methods used in lidar. The common time-of-flight (ToF) lidar emits short pulses and times the round trip of the echo; FMCW lidar instead continuously emits laser light whose frequency sweeps periodically over time, mixes the returning echo coherently with a local copy of the light, and reads distance from the resulting frequency difference, while the Doppler shift directly gives that point’s velocity along the line of sight — which is why vendors often call it 4D lidar. It only responds to light matching its own frequency and wavelength, so it’s much less affected by sunlight or crosstalk from other lidars; it commonly operates in the 1550 nm band, where eye-safety limits allow higher power. The cost is that it needs coherent transceiver components, making it structurally complex and expensive. It’s currently used mainly in autonomous driving, with vendors like Aeva and Aurora; robots still mostly use ToF lidar.",
+      "example": "Every point from an Aeva FMCW lidar carries a velocity value in addition to its 3D coordinates, so a single frame can separate a walking pedestrian from a stationary pole without comparing two consecutive frames.",
+      "related": ["Lidar", "Time of Flight", "Solid-State Lidar", "Millimeter-Wave Radar", "Autonomous Driving", "Multi-Sensor Fusion"]
+    },
+    {
+      "key": "perception-15#3",
+      "name_en": "Gaussian Splatting SLAM",
+      "aliases": ["3DGS SLAM", "SplaTAM", "MonoGS"],
+      "one_liner": "A family of SLAM methods that use 3D Gaussian splatting as the map, building a photorealistically renderable scene while localizing.",
+      "explanation": "This is a family of SLAM methods that use 3D Gaussian splatting — representing a scene with a large number of colored, translucent 3D Gaussian ellipsoids that render very fast — as the map representation, appearing in a cluster starting in late 2023. Landmark examples include SplaTAM (Carnegie Mellon University and others, CVPR 2024, taking RGB-D video as input) and MonoGS (Imperial College London, Andrew Davison’s group, CVPR 2024, the first monocular version, running in real time at about 3 frames per second). During tracking, the current map is rendered into an image and compared against the real observation, optimizing the camera pose in reverse; during mapping, Gaussians are added, removed, and adjusted. Compared with a point-cloud or TSDF map, this approach gets a dense map that can be rendered from any new viewpoint at the same time as localization, which suits reality-to-simulation, digital twins, and navigation mapping for robots.",
+      "example": "SplaTAM scans a room once with a handheld RGB-D camera, estimating the camera trajectory while building a Gaussian map at the same time; afterward, the room can be rendered from a viewpoint that was never actually photographed.",
+      "related": ["3D Gaussian Splatting", "Simultaneous Localization and Mapping", "Visual SLAM", "Neural Radiance Field", "Novel View Synthesis", "Reality-to-Simulation"]
+    },
+    {
+      "key": "perception-15#4",
+      "name_en": "GelSight Mini",
+      "aliases": [],
+      "one_liner": "GelSight’s commercial compact vision-based tactile sensor, ready to use over USB.",
+      "explanation": "GelSight Mini is a compact vision-based tactile sensor from the company GelSight, which grew out of the GelSight technology developed in Edward Adelson’s group at MIT. A camera inside the sensor photographs how a soft silicone pad deforms under pressure, and photometric stereo recovers the contact surface’s 3D shape; when the gel surface carries markers, tracking their displacement can estimate shear force and slip. The company describes it as the first commercial tactile sensor with spatial resolution exceeding human touch. According to the official GitHub, it uses a single USB 3 cable for both power and data, runs at 25 FPS, and ships with Python examples for 3D point cloud reconstruction and marker tracking. It’s compact, priced for researchers and hobbyists, and suits mounting directly on a gripper fingertip — one of the most commonly used vision-based tactile sensors in labs.",
+      "example": "Mounting two GelSight Mini sensors on the two fingertips of a parallel gripper lets you watch the contact region and marker displacement in the tactile image after picking up an object, to judge whether it is starting to slip.",
+      "related": ["GelSight", "Vision-Based Tactile Sensor", "Photometric Stereo", "Marker Tracking", "Tactile Image", "Slip Detection"]
+    },
+    {
+      "key": "perception-15#5",
+      "name_en": "GelSlim",
+      "aliases": ["GelSlim 3.0"],
+      "one_liner": "A slim, finger-shaped vision-based tactile sensor from MIT that can be mounted on a gripper for grasping.",
+      "explanation": "GelSlim is a series of finger-shaped vision-based tactile sensors from Alberto Rodriguez’s group (the MCube Lab) at MIT, developed with Edward Adelson and others, part of the GelSight family. The original GelSight has a long optical path and a bulky body, making it hard to fit into cluttered environments; the first GelSlim (Donlon and colleagues, 2018) redesigned the optical path with mirrors and light guides to make the sensor a slim finger, swapped in a more wear-resistant gel and fabric skin, and used calibration to keep imaging stable. GelSlim 3.0 (Taylor, Dong, Rodriguez, 2021) shrank it further, measuring contact shape in real time, estimating a 3D distributed contact-force field, and detecting incipient slip; its fingertip module is swappable, and the design and software are open source.",
+      "example": "Mounting GelSlim 3.0 on a small parallel gripper for bin picking uses the tactile image to estimate the object’s position in the hand and detect whether it’s starting to slip.",
+      "related": ["GelSight", "Vision-Based Tactile Sensor", "Slip Detection", "Bin Picking", "Two-Finger Gripper", "GelSight Mini"]
+    },
+    {
+      "key": "perception-15#6",
+      "name_en": "Gesture Recognition",
+      "aliases": ["Hand Gesture Recognition"],
+      "one_liner": "Lets a machine recognize a gesture a person makes from images or sensor signals and understand its meaning.",
+      "explanation": "Gesture recognition is a task in computer vision and human-robot interaction: recognizing a person’s hand gesture — a fist, a thumbs-up, pointing somewhere — from an ordinary camera, a depth camera, a data glove, or EMG signals. A static gesture looks only at the hand’s shape at one moment; a dynamic gesture needs to look at a motion trajectory over time, like waving. The common approach today is to detect hand keypoints first, then classify based on those keypoints. It differs from hand pose estimation: the latter recovers the complete 3D hand shape, while gesture recognition only outputs a category. In embodied AI, gesture recognition is used for human-robot interaction — for example, using a gesture to make a robot stop, follow, or fetch a pointed-at object; teleoperation systems also map specific gestures to control commands, such as opening and closing a gripper or switching modes.",
+      "example": "Google’s MediaPipe Gesture Recognizer can recognize a closed fist, an open palm, a pointing index finger, thumbs up, thumbs down, a victory sign, and more by default, while also outputting hand keypoints, which can be used to implement “open palm makes the robot stop.”",
+      "related": ["Hand Pose Estimation", "Human-Robot Interaction", "Keypoint Detection", "MediaPipe (Hand / Body Keypoints)", "Data Glove", "Teleoperation"]
+    },
+    {
+      "key": "perception-15#7",
+      "name_en": "Gigabit Multimedia Serial Link",
+      "aliases": ["GMSL", "GMSL2", "GMSL3"],
+      "one_liner": "An automotive-grade serial link that powers a camera and carries high-speed image data over a single coaxial cable.",
+      "explanation": "GMSL is an automotive serial transmission technology introduced by Maxim in 2008, now owned by Analog Devices (ADI) since it acquired Maxim in 2021. A serializer at the camera end packs image data and sends it over a single coaxial cable or shielded twisted pair to a deserializer at the host end, which converts it to MIPI CSI-2 for the processor; the same cable also carries power and bidirectional control signals, over cable runs of up to 15 meters. GMSL2 offers 6 Gb/s of bandwidth, and GMSL3 offers 12 Gb/s. USB cameras have short cable runs, connectors that come loose easily, and poor noise immunity; GMSL comes out of automotive driver-assistance systems, with good electromagnetic interference resistance, and multiple camera streams can be combined into the same deserializer — which is why multi-camera setups in autonomous driving as well as humanoid and mobile robots commonly use it to connect cameras to a controller like a Jetson.",
+      "example": "On a Jetson AGX Orin, multiple GMSL cameras connect through a deserializer into the same CSI port, distinguished by virtual channels; NVIDIA’s documentation states the AGX Orin series supports up to 16 virtual channels when using the ISP.",
+      "related": ["MIPI CSI-2 Camera Interface", "NVIDIA Jetson", "Multi-Sensor Time Synchronization", "CMOS Image Sensor", "Autonomous Driving", "RGB Camera"]
+    },
+    {
+      "key": "perception-15#8",
+      "name_en": "Global Shutter / Rolling Shutter",
+      "aliases": ["Global Exposure", "Rolling Exposure", "Jello Effect"],
+      "one_liner": "The two ways a camera can expose an image: all pixels at once, or row by row in sequence.",
+      "explanation": "These are the two exposure and readout schemes an image sensor can use. A global shutter exposes all pixels at the same instant; a rolling shutter exposes and reads out row by row from top to bottom, with a time gap between rows. Many CMOS cameras use a rolling shutter because it is structurally simpler, cheaper, and more light-sensitive. But when photographing a fast-moving object, or when the camera itself is shaking, the image skews, warps, or judders — this is the “jello effect”; under a flash, only part of the frame may get lit. For robots, a wrist camera moving with the arm, or a legged robot’s body shaking while walking, means a rolling shutter introduces errors into SLAM, visual-inertial odometry, and camera calibration, which is why these scenarios often use a global-shutter camera instead, or model and compensate for the rolling shutter’s row-by-row time offset in the algorithm.",
+      "example": "Photographing a fast-spinning propeller with a rolling-shutter camera makes the blades come out bent or even broken up into strange shapes; a global-shutter camera doesn’t show this.",
+      "related": ["CMOS Image Sensor", "RGB Camera", "Visual-Inertial Odometry", "Wrist Camera", "Event Camera", "Camera Calibration"]
+    },
+    {
+      "key": "perception-15#9",
+      "name_en": "GNSS / Real-Time Kinematic Positioning",
+      "aliases": ["RTK", "Carrier-Phase Differential GPS", "Satellite Positioning"],
+      "one_liner": "Combines satellite navigation with base-station differential correction to achieve centimeter-level positioning outdoors.",
+      "explanation": "GNSS is the umbrella term for global navigation satellite systems, including GPS, BeiDou, GLONASS, and Galileo; used alone, positioning error is typically at the meter level. RTK (real-time kinematic positioning) sets up a base station at a known location, streams its observed satellite carrier-phase data to a mobile receiver in real time, differences the two to cancel out most shared errors, and then resolves the carrier-phase integer ambiguity, achieving centimeter-level accuracy; network RTK uses multiple base stations to widen coverage. Its limitation is that it needs a clear view of the sky — it fails indoors, between buildings, and under tree cover due to blockage and multipath reflection, so real systems are usually fused with an IMU, wheel odometry, or lidar SLAM. In embodied AI, this is mainly used on outdoor robots: inspection quadrupeds, agricultural and lawn-mowing robots, drones, and self-driving vehicles.",
+      "example": "An outdoor inspection quadruped robot carries an RTK antenna on its back, fusing it with IMU and lidar for localization, and autonomously patrols a campus following preset latitude-longitude waypoints.",
+      "related": ["Inertial Measurement Unit", "Multi-Sensor Fusion", "State Estimation", "Lidar SLAM", "Inspection Robot", "Autonomous Driving"]
+    },
+    {
+      "key": "perception-15#10",
+      "name_en": "GraspGen",
+      "aliases": ["GraspGen: A Diffusion-based Framework for 6-DOF Grasping with On-Generator Training"],
+      "one_liner": "NVIDIA’s framework that generates 6-DoF grasp poses with a diffusion model, then scores and filters them.",
+      "explanation": "GraspGen is a 6-DoF grasp-generation framework NVIDIA released publicly in July 2025 (Murali, Fox, Eppner, and colleagues). Given an object’s point cloud, it first uses a diffusion Transformer to generate a large batch of candidate grasp poses (the gripper’s 3D position and orientation), then uses a discriminator to score each grasp and filter out the poor ones; the discriminator is trained directly on grasps sampled from the generator, which the paper calls on-generator training. It was released alongside a dataset of over 53 million simulated grasps, covering the Franka gripper, the Robotiq 2F-140, suction cups, and other end effectors, aimed at the problem that learned grasping models often don’t transfer well to a new gripper or a new real scene. The paper reports state-of-the-art results on the FetchBench simulation benchmark, and it also works on noisy real-world point clouds.",
+      "example": "A segmentation model first cuts the target object out of a depth point cloud; the object’s point cloud is fed into GraspGen to get a batch of scored grasp poses, and the highest-scoring reachable one is passed to cuRobo to plan an arm trajectory to execute.",
+      "related": ["Grasp Pose Detection", "Diffusion Model", "Contact-GraspNet", "AnyGrasp", "Grasp Planning", "cuRobo"]
+    },
+    {
+      "key": "perception-15#11",
+      "name_en": "Grounded SAM",
+      "aliases": ["Grounded SAM: Assembling Open-World Models for Diverse Visual Tasks", "Grounded-Segment-Anything"],
+      "one_liner": "An open-source pipeline that boxes and finely segments the object a text phrase refers to in an image.",
+      "explanation": "Grounded SAM is an open-world vision pipeline from IDEA Research, with a technical report released in January 2024. Its core idea is chaining two models together: Grounding DINO finds an object from a text description and outputs a detection box, and SAM (the Segment Anything Model) takes that box and outputs a pixel-level mask. This means any text — say, “red cup” — can produce a mask for the matching object, with no retraining needed for a new category; it can also connect to RAM and BLIP for automatic labeling, and to Stable Diffusion for image editing. The report states it reaches 48.7 mAP on the SegInW zero-shot segmentation benchmark. In robotics, it’s commonly used to specify a target by language and extract that object’s point cloud for grasping or pose estimation, and also for automatic data labeling; the later Grounded SAM 2 connects to SAM 2 and can track objects across video.",
+      "example": "Given the instruction “put the banana in the bowl,” a robot first uses Grounded-SAM to segment masks for “banana” and “bowl” separately, then combines these with a depth map to compute both objects’ 3D positions, handing this to the grasping and motion-planning modules.",
+      "related": ["Grounding DINO", "Segment Anything Model", "Open-Vocabulary Segmentation", "Open-Vocabulary Detection", "SAM 2 (Segment Anything in Video)", "Automatic Annotation"]
+    }
+  ]
+}

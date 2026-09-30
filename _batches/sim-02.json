@@ -1,0 +1,439 @@
+{
+ "category": "sim",
+ "batch": 2,
+ "terms": [
+  {
+   "name_zh": "仿真到现实迁移",
+   "name_en": "Sim-to-Real Transfer",
+   "abbr": "Sim2Real",
+   "aliases": [
+    "Sim-to-Real",
+    "sim2real",
+    "虚实迁移",
+    "仿真到真实迁移"
+   ],
+   "tier": 1,
+   "one_liner": "把在仿真里训练好的策略搬到真机上，并让它照样能用。",
+   "explanation": "仿真到现实迁移指先在仿真器里训练机器人策略，再部署到真实机器人上。仿真里能同时跑成千上万个环境，摔坏了也不花钱，所以四足、人形行走和灵巧手的强化学习策略大多先在仿真里练。难点是虚实差距：仿真中的摩擦、质量、电机响应和画面与现实不完全一致，策略到了真机可能失效。常用对策有域随机化（训练时随机改物理和视觉参数，让现实只是其中一种情况）、系统辨识（用真机数据校准仿真参数）、执行器建模（按真机数据给仿真里的电机建模，让它响应得像真电机）和教师-学生蒸馏（先训练能看到仿真全部状态的教师策略，再让只用真机上也有的传感器输入的学生策略模仿它）。2017 年 Tobin 等人只用随机纹理的仿真图像训练物体检测器，在真实场景定位误差约 1.5 厘米，是早期代表。",
+   "example": "ETH 苏黎世的 ANYmal 四足机器人：在仿真里用强化学习训练行走策略，并接入从真机数据学到的执行器网络，之后直接部署到真机，跑得比以往方法更快，还能摔倒后自己爬起。",
+   "related": [
+    "虚实差距",
+    "域随机化",
+    "系统辨识",
+    "执行器建模",
+    "现实到仿真",
+    "教师-学生蒸馏"
+   ],
+   "sources": [
+    {
+     "title": "Domain Randomization for Transferring Deep Neural Networks from Simulation to the Real World (Tobin et al., 2017)",
+     "url": "https://arxiv.org/abs/1703.06907"
+    },
+    {
+     "title": "Sim-to-Real Transfer in Deep Reinforcement Learning for Robotics: a Survey (Zhao et al., 2020)",
+     "url": "https://arxiv.org/abs/2009.13303"
+    },
+    {
+     "title": "Learning agile and dynamic motor skills for legged robots (Hwangbo et al., 2019)",
+     "url": "https://arxiv.org/abs/1901.08652"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "SimplerEnv",
+   "name_en": "SimplerEnv (SIMPLER: Simulated Manipulation Policy Evaluation for Real Robot Setups)",
+   "abbr": "",
+   "aliases": [
+    "SIMPLER",
+    "Simpler Env"
+   ],
+   "tier": 1,
+   "one_liner": "照着常用真机场景复刻的仿真评测套件，用来低成本给操作策略打分。",
+   "explanation": "SimplerEnv（论文名 SIMPLER）由 UC San Diego、斯坦福、UC Berkeley 和 Google DeepMind 的研究者于 2024 年提出，发表于 CoRL 2024。它在 SAPIEN / ManiSkill 仿真器里复刻了两套常用真机设定：谷歌采集 RT-1 数据用的 Google Robot 和 Bridge 数据集用的 WidowX 机械臂，让用真机数据训练的策略不上真机也能打分。为缩小虚实差距，它校准了控制器参数，并提供「视觉匹配」（把仿真物体叠在真实背景上）和「变体聚合」（做出换了背景、光照、桌面纹理等的多个仿真变体，把成绩取平均）两种设定。作者验证了仿真与真机的成绩排序高度一致，此后许多 VLA 论文都在上面报成功率。",
+   "example": "评测一个 WidowX 策略时，可以直接在 SimplerEnv 里跑「把勺子放到毛巾上」「把胡萝卜放到盘子上」「把茄子放进篮子」等任务统计成功率，不用在真机前一次次摆物体。",
+   "related": [
+    "仿真评测",
+    "视觉匹配",
+    "变体聚合",
+    "平均最大排名违背",
+    "仿真-真机相关性",
+    "ManiSkill"
+   ],
+   "sources": [
+    {
+     "title": "Evaluating Real-World Robot Manipulation Policies in Simulation (SIMPLER, arXiv 2405.05941)",
+     "url": "https://arxiv.org/abs/2405.05941"
+    },
+    {
+     "title": "SIMPLER 项目主页",
+     "url": "https://simpler-env.github.io/"
+    },
+    {
+     "title": "simpler-env/SimplerEnv (GitHub)",
+     "url": "https://github.com/simpler-env/SimplerEnv"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "仿真评测",
+   "name_en": "Simulation-based Evaluation",
+   "abbr": "",
+   "aliases": [
+    "仿真测评",
+    "仿真基准评测",
+    "Sim Evaluation"
+   ],
+   "tier": 1,
+   "one_liner": "把策略放进仿真环境里批量跑任务、统计成功率，代替或补充真机测试。",
+   "explanation": "仿真评测指把训练好的机器人策略放进仿真器，按统一的初始条件和判定规则执行任务，统计成功率等指标。真机评测要人工摆物体、复位场景，每个策略跑几十上百次很费时，不同实验室的场地也难复现；仿真评测能自动、批量、可重复地跑，常用于比较算法、做消融实验和挑选检查点。常见基准有 LIBERO、CALVIN、SimplerEnv、RoboTwin 等。主要问题是仿真成绩未必反映真机表现：画面、物理和控制器都与现实有差距，而且不少基准已接近满分。因此研究者会检查仿真与真机成绩的相关性，并用真机评测或世界模型评测作补充。",
+   "example": "OpenVLA-OFT 论文在 LIBERO 的四个任务套件上做仿真评测，把 OpenVLA 的平均成功率从 76.5% 提到了 97.1%。",
+   "related": [
+    "真机评测",
+    "基准测试",
+    "成功率",
+    "SimplerEnv",
+    "LIBERO",
+    "仿真-真机相关性"
+   ],
+   "sources": [
+    {
+     "title": "Evaluating Real-World Robot Manipulation Policies in Simulation (SIMPLER)",
+     "url": "https://arxiv.org/abs/2405.05941"
+    },
+    {
+     "title": "LIBERO: Benchmarking Knowledge Transfer for Lifelong Robot Learning",
+     "url": "https://arxiv.org/abs/2306.03310"
+    },
+    {
+     "title": "Fine-Tuning Vision-Language-Action Models: Optimizing Speed and Success (OpenVLA-OFT)",
+     "url": "https://arxiv.org/abs/2502.19645"
+    }
+   ],
+   "as_of": "2025-02"
+  },
+  {
+   "name_zh": "仿真器",
+   "name_en": "Simulator",
+   "abbr": "",
+   "aliases": [
+    "仿真",
+    "模拟器",
+    "Simulation",
+    "仿真平台",
+    "机器人仿真器"
+   ],
+   "tier": 1,
+   "one_liner": "在电脑里模拟机器人、物体和传感器怎么运动、怎么相互作用的软件。",
+   "explanation": "仿真器是在计算机里重现机器人及其环境的软件，通常包括：物理引擎，每一步计算受力、碰撞和接触，把状态往前推进；渲染器，生成相机图像、深度等传感器数据；场景和资产，即机器人模型和各种物体；以及供算法调用的接口，如重置环境、执行一步动作、返回观测和奖励。在具身智能里，它用来训练强化学习策略、生成合成数据和做仿真评测，好处是便宜、安全、能并行、可复现。常见的有 MuJoCo（Google DeepMind 维护，2022 年开源）、英伟达 Isaac Sim / Isaac Lab、PyBullet、Genesis、SAPIEN 等。核心难题是它与现实之间的差距。",
+   "example": "ACT 论文在 MuJoCo 里搭了双臂「传递方块」和「空中插销」两个仿真任务，别人不用买 ALOHA 硬件也能复现实验。",
+   "related": [
+    "物理引擎",
+    "渲染",
+    "仿真到现实迁移",
+    "MuJoCo",
+    "Isaac Sim",
+    "仿真评测"
+   ],
+   "sources": [
+    {
+     "title": "MuJoCo Documentation: Overview",
+     "url": "https://mujoco.readthedocs.io/en/stable/overview.html"
+    },
+    {
+     "title": "NVIDIA Isaac Sim Documentation",
+     "url": "https://docs.isaacsim.omniverse.nvidia.com/latest/index.html"
+    },
+    {
+     "title": "Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware (ACT, arXiv 2304.13705)",
+     "url": "https://arxiv.org/abs/2304.13705"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "最先进水平",
+   "name_en": "State of the Art",
+   "abbr": "SOTA",
+   "aliases": [
+    "SOTA",
+    "SotA",
+    "当前最佳",
+    "state-of-the-art"
+   ],
+   "tier": 1,
+   "one_liner": "某个任务或基准上当前公开报告的最好结果，常缩写为 SOTA。",
+   "explanation": "State of the Art 原指某一领域在某个时间达到的最高技术水平，这个英文说法在 20 世纪初的工程文献里就已出现。在机器学习论文里，SOTA 特指在某个公开基准上、按同一评测协议得到的当前最好成绩，比如「在 LIBERO 上取得 SOTA」。它是比较方法的简便标尺，但要注意三点：只在特定基准和设置下成立，换数据、换机器人未必保持；具身智能的仿真基准容易饱和，领先零点几个百分点可能在统计误差之内；真机结果因场地、物体不同很难横向比较。过去 Papers with Code 网站汇总各任务的排行榜，现在该域名已跳转到 Hugging Face 论文页。",
+   "example": "2025 年 OpenVLA-OFT 在 LIBERO 四个任务套件上把平均成功率做到 97.1%，论文称在该基准上创下新的 SOTA。",
+   "related": [
+    "基准测试",
+    "基准饱和",
+    "刷榜",
+    "成功率",
+    "消融实验"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: State of the art",
+     "url": "https://en.wikipedia.org/wiki/State_of_the_art"
+    },
+    {
+     "title": "Fine-Tuning Vision-Language-Action Models: Optimizing Speed and Success (OpenVLA-OFT)",
+     "url": "https://arxiv.org/abs/2502.19645"
+    },
+    {
+     "title": "paperswithcode-data issue #116: paperswithcode.com now redirects to huggingface (2025-08)",
+     "url": "https://github.com/paperswithcode/paperswithcode-data/issues/116"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "成功率",
+   "name_en": "Success Rate",
+   "abbr": "SR",
+   "aliases": [
+    "任务成功率"
+   ],
+   "tier": 1,
+   "one_liner": "策略多次试做同一任务时成功的比例，是最常用的机器人评测指标。",
+   "explanation": "成功率是机器人学习里最常用的评测指标：让策略在同一任务上反复执行 N 次（每次叫一个回合，物体初始位置通常随机），按事先定义的判据（如方块被放进目标区域）数出成功次数，再除以 N。它直观、便于跨方法比较，但信息量有限：只看最终结果，不区分差一点成功和完全失败，所以常配合子任务成功率、进度分数或平均完成长度一起报告。试验次数少时成功率波动很大，25 次试验里多成功一次就差 4 个百分点，所以严谨的论文会写明试验次数和随机种子数，最好再给置信区间。仿真里一次能跑成百上千个回合，真机通常只有几十次。",
+   "example": "ACT 论文的仿真任务用 3 个随机种子、每个种子 50 次试验取平均成功率；真机任务每个跑 25 次试验，其中「拉开密封袋」成功率 88%。",
+   "related": [
+    "进度分数",
+    "平均完成长度",
+    "回合",
+    "仿真评测",
+    "真机评测",
+    "评测统计显著性（置信区间 / 序贯检验 / 多随机种子）"
+   ],
+   "sources": [
+    {
+     "title": "Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware (ACT)",
+     "url": "https://arxiv.org/abs/2304.13705"
+    },
+    {
+     "title": "Evaluating Real-World Robot Manipulation Policies in Simulation (SIMPLER)",
+     "url": "https://arxiv.org/abs/2405.05941"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "消融实验",
+   "name_en": "Ablation Study",
+   "abbr": "",
+   "aliases": [
+    "消融研究",
+    "消融分析",
+    "Ablation"
+   ],
+   "tier": 2,
+   "one_liner": "去掉或替换方法里的某个组件，看性能怎么变，以判断它到底有没有用。",
+   "explanation": "消融实验是在完整方法的基础上，一次去掉或替换一个组件（某个模块、损失项、输入模态、数据来源或训练技巧），在同样的设置下重新训练和评测，比较性能变化，从而判断每个设计各自贡献多少。这个说法借自生物学里切除部分组织来研究其功能的做法；据维基百科，AI 先驱 Allen Newell 在 1974 年一篇语音识别教程里就用过。它是论文说明「为什么这样设计」的主要证据：去掉某模块后性能几乎不变，就说明它不是关键。做消融时要保持其他变量不动，并用足够多的试验次数比较，否则差异可能只是噪声。",
+   "example": "ACT 论文的消融实验分别拿掉动作分块、时序集成和 CVAE 训练，发现用人类演示数据训练时，去掉 CVAE 会让成功率明显下降。",
+   "related": [
+    "基线方法",
+    "最先进水平",
+    "成功率",
+    "动作分块",
+    "时序集成"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Ablation (artificial intelligence)",
+     "url": "https://en.wikipedia.org/wiki/Ablation_(artificial_intelligence)"
+    },
+    {
+     "title": "Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware (ACT)",
+     "url": "https://arxiv.org/abs/2304.13705"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "执行器建模",
+   "name_en": "Actuator Modeling (Actuator Network)",
+   "abbr": "",
+   "aliases": [
+    "执行器网络",
+    "Actuator Net",
+    "隐式执行器",
+    "显式执行器",
+    "电机建模"
+   ],
+   "tier": 2,
+   "one_liner": "在仿真里模拟真实电机从收到指令到输出力矩的响应，缩小虚实差距。",
+   "explanation": "执行器建模指在仿真里描述真实电机和减速器的行为：给出目标关节位置后，实际能输出多大力矩、有多少延迟和饱和。仿真器默认的理想 PD 控制比真实电机响应更快更干净，策略上真机后容易抖动或跟不上，这是虚实差距的重要来源。做法有两类：一是带力矩上限、转速饱和或指令延迟的解析电机模型；二是执行器网络，出自 ETH 苏黎世与英特尔 2019 年的 ANYmal 工作，用真机上不到 4 分钟采集的数据，训练小型神经网络由关节位置误差和速度的短历史预测力矩，再接进仿真里训练策略。Isaac Lab 把由物理引擎内部计算 PD 的叫隐式执行器，把这类自定义模型叫显式执行器。",
+   "example": "Isaac Lab 提供 DCMotor（带转速-力矩饱和）、DelayedPDActuator（带指令延迟）、ActuatorNetMLP 和 ActuatorNetLSTM（神经网络执行器）等执行器类，训练四足策略时按真机电机特性选用。",
+   "related": [
+    "仿真到现实迁移",
+    "虚实差距",
+    "系统辨识",
+    "PD 控制",
+    "串联弹性驱动器",
+    "Isaac Lab"
+   ],
+   "sources": [
+    {
+     "title": "Learning agile and dynamic motor skills for legged robots (Hwangbo et al., Science Robotics 2019)",
+     "url": "https://arxiv.org/abs/1901.08652"
+    },
+    {
+     "title": "Isaac Lab Docs: Actuators",
+     "url": "https://isaac-sim.github.io/IsaacLab/main/source/overview/core-concepts/actuators.html"
+    },
+    {
+     "title": "Isaac Lab API: isaaclab.actuators",
+     "url": "https://isaac-sim.github.io/IsaacLab/main/source/api/lab/isaaclab.actuators.html"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "AI2-THOR",
+   "name_en": "AI2-THOR",
+   "abbr": "",
+   "aliases": [
+    "ai2thor",
+    "iTHOR"
+   ],
+   "tier": 2,
+   "one_liner": "艾伦人工智能研究所的可交互室内 3D 仿真环境，常用于导航和家务任务研究。",
+   "explanation": "AI2-THOR 是艾伦人工智能研究所（Ai2）开发的开源室内仿真平台，论文 2017 年发布，基于 Unity 引擎。它提供接近照片级的厨房、卧室、浴室、客厅场景，智能体可以在里面走动并与物体交互，如开关柜门、拿起放下物品、开关电器，物体的开合、冷热等状态会随之改变。它侧重高层语义交互而不是精细的接触物理，因此多用于视觉导航、具身问答、指令跟随和任务规划。它包含几个子框架：iTHOR（120 个房间、2000 多种物体）、RoboTHOR（配有实体场地的公寓场景）、ManipulaTHOR（加入机械臂操作）和 ProcTHOR（程序化生成大量房屋）。",
+   "example": "在 iTHOR 的厨房场景里，智能体可以依次执行「走到冰箱前」「打开冰箱」「拿起苹果」等动作，冰箱门的开合状态会随之改变。",
+   "related": [
+    "ProcTHOR",
+    "ALFRED",
+    "Habitat",
+    "物体目标导航",
+    "具身问答",
+    "艾伦人工智能研究所"
+   ],
+   "sources": [
+    {
+     "title": "AI2-THOR 官网",
+     "url": "https://ai2thor.allenai.org/"
+    },
+    {
+     "title": "AI2-THOR: An Interactive 3D Environment for Visual AI (arXiv 1712.05474)",
+     "url": "https://arxiv.org/abs/1712.05474"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "ALOHA 仿真任务",
+   "name_en": "ALOHA Sim (Transfer Cube / Insertion)",
+   "abbr": "",
+   "aliases": [
+    "gym-aloha",
+    "Transfer Cube",
+    "Insertion",
+    "传递方块",
+    "双臂插销",
+    "AlohaTransferCube-v0",
+    "AlohaInsertion-v0"
+   ],
+   "tier": 2,
+   "one_liner": "ACT 论文在 MuJoCo 里搭的两个双臂仿真任务：交接方块和空中插销。",
+   "explanation": "ALOHA 仿真任务是 Tony Zhao 等人在 2023 年 ACT（动作分块 Transformer）论文里用 MuJoCo 搭的两个双臂精细操作任务，方便别人复现。Transfer Cube 要求右臂夹起桌上的红色方块，再放进左臂夹爪，间隙约 1 厘米；Insertion 要求左右臂分别拿起插座和插销，在空中对插，间隙约 5 毫米。每个任务各有 50 条脚本演示和 50 条人类遥操作演示。Hugging Face 把它封装成 gym-aloha 环境（动作为两臂各 6 个关节加 1 个夹爪，共 14 维），并在 LeRobot 上提供数据集，成了模仿学习入门常用的测试台。",
+   "example": "ACT 官方代码的说明写道：用 50 条脚本演示训练后，传递方块的成功率应在 90% 左右，插销任务在 50% 左右。",
+   "related": [
+    "ACT",
+    "ALOHA 双臂平台",
+    "双臂操作",
+    "LeRobot",
+    "MuJoCo",
+    "模仿学习"
+   ],
+   "sources": [
+    {
+     "title": "Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware (ACT)",
+     "url": "https://arxiv.org/abs/2304.13705"
+    },
+    {
+     "title": "huggingface/gym-aloha (GitHub)",
+     "url": "https://github.com/huggingface/gym-aloha"
+    },
+    {
+     "title": "tonyzhaozh/act (GitHub)",
+     "url": "https://github.com/tonyzhaozh/act"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "Atari 游戏基准（街机学习环境 / Atari 100k）",
+   "name_en": "Arcade Learning Environment / Atari 100k",
+   "abbr": "ALE",
+   "aliases": [
+    "街机学习环境",
+    "Atari 100k",
+    "Atari 2600 基准",
+    "雅达利游戏基准"
+   ],
+   "tier": 2,
+   "one_liner": "用雅达利 2600 游戏测试强化学习的标准平台；Atari 100k 是小样本版。",
+   "explanation": "街机学习环境（ALE）由 Bellemare 等人提出，论文 2013 年发表于 JAIR。它基于 Stella 模拟器，把上百款雅达利 2600 游戏包装成统一接口：智能体看屏幕像素、选手柄动作、以得分作奖励。2015 年 DQN 在这里达到人类水平后，它成了深度强化学习最常用的基准，现由 Farama 基金会维护。Atari 100k 出自 2019 年的 SimPLe 论文：在 26 款游戏上只许交互约 10 万步（约两小时游戏时间），专门考察样本效率，DreamerV3、DIAMOND 等世界模型方法常在这里比较。不少具身智能用到的强化学习和世界模型技术最早在这里验证。",
+   "example": "在 Atari 100k 设定下玩《打砖块》（Breakout），智能体只能用大约两小时游戏量的交互数据学习，最后比较它的得分相对人类玩家的归一化分数。",
+   "related": [
+    "强化学习",
+    "深度 Q 网络",
+    "样本效率",
+    "世界模型",
+    "DreamerV3",
+    "DIAMOND（扩散世界模型）"
+   ],
+   "sources": [
+    {
+     "title": "The Arcade Learning Environment: An Evaluation Platform for General Agents (Bellemare et al.)",
+     "url": "https://arxiv.org/abs/1207.4708"
+    },
+    {
+     "title": "Arcade Learning Environment 文档（Farama Foundation）",
+     "url": "https://ale.farama.org/"
+    },
+    {
+     "title": "Model-Based Reinforcement Learning for Atari (SimPLe, Kaiser et al., 2019)",
+     "url": "https://arxiv.org/abs/1903.00374"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "铰接物体",
+   "name_en": "Articulated Object",
+   "abbr": "",
+   "aliases": [
+    "可动物体",
+    "关节物体",
+    "带关节物体"
+   ],
+   "tier": 2,
+   "one_liner": "由关节连接、部件能相对转动或滑动的物体，如柜门、抽屉、笔记本电脑。",
+   "explanation": "铰接物体指由两个以上刚性部件通过关节相连、部件之间能相对运动的物体，比如绕合页转动的柜门和冰箱门（转动关节）、沿滑轨拉出的抽屉（移动关节），还有笔记本电脑、剪刀、水龙头。家里需要机器人处理的东西很多属于这一类。操作它们比抓单个刚体难：机器人要认出哪个部件能动、关节轴在哪、能动多大范围，再沿受约束的轨迹施力，拉偏了就会卡住。在仿真里，铰接物体通常用 URDF 等格式描述成「连杆 + 关节」的树，常用资产库是 SAPIEN 团队 2020 年发布的 PartNet-Mobility，含 46 个类别、2346 个带关节标注的物体模型。",
+   "example": "SimplerEnv 里 Google Robot 的「打开 / 关上抽屉」任务：抽屉通过移动关节与柜体相连，机器人要沿滑轨方向把它拉出或推回。",
+   "related": [
+    "铰接物体操作",
+    "PartNet-Mobility 数据集",
+    "转动关节",
+    "移动关节",
+    "铰接结构估计",
+    "统一机器人描述格式"
+   ],
+   "sources": [
+    {
+     "title": "SAPIEN: A SimulAted Part-based Interactive ENvironment (PartNet-Mobility)",
+     "url": "https://arxiv.org/abs/2003.08515"
+    },
+    {
+     "title": "simpler-env/SimplerEnv (GitHub)",
+     "url": "https://github.com/simpler-env/SimplerEnv"
+    }
+   ],
+   "as_of": ""
+  }
+ ]
+}

@@ -1,0 +1,117 @@
+{
+  "batch": "named_model-27",
+  "terms": [
+    {
+      "key": "named_model-27#0",
+      "name_en": "Visual Dexterity",
+      "aliases": ["Visual Dexterity: In-Hand Reorientation of Novel and Complex Object Shapes"],
+      "one_liner": "MIT's system that uses a single depth camera to let a low-cost dexterous hand reorient unseen objects in the air in real time.",
+      "explanation": "Visual Dexterity is work by Tao Chen, Pulkit Agrawal, and colleagues at MIT CSAIL's Improbable AI Lab, posted to arXiv in November 2022 and published in Science Robotics in 2023. In-hand reorientation means turning an object to any target orientation using only the fingers, with no tabletop to rest on — a hard problem because of complex contact and self-occlusion by the hand. The method first trains a 'teacher' in simulation with reinforcement learning that can read the object's true state, then distills it into a 'student' that works only from depth-camera point clouds (processed with a sparse convolutional network, running at about 12 Hz in real time). Training used about 150 objects, on hardware built from the open-source D'Claw three-fingered (9-DoF) or four-fingered hand, for a total system cost under $5,000; it can even reorient objects while palm-down, fighting gravity, with a median completion time of about 7 seconds. This shows that simulation training combined with visual input can generalize to novel object shapes, making it a landmark in in-hand manipulation after Dactyl.",
+      "example": "With its palm facing down, the robot hand holds a plastic duck it never saw during training in midair and reorients it to a target pose using only depth-camera point clouds; the duck was dropped in 56% of trials, and when it wasn't dropped, about 75% of trials landed within 23 degrees of the target.",
+      "related": ["In-hand Manipulation", "Dexterous Manipulation", "Teacher-Student Distillation", "Sim-to-Real Transfer", "OpenAI Dactyl (Learning Dexterous In-Hand Manipulation / Solving Rubik's Cube with a Robot Hand)", "HORA: In-Hand Object Rotation via Rapid Motor Adaptation"]
+    },
+    {
+      "key": "named_model-27#1",
+      "name_en": "VLMaps",
+      "aliases": ["Visual Language Maps", "Visual Language Maps for Robot Navigation"],
+      "one_liner": "A system that writes vision-language features into a 3D map, letting a robot navigate using phrases like 'three meters to the right of the chair.'",
+      "explanation": "VLMaps was proposed by Chenguang Huang, Oier Mees, Andy Zeng, and Wolfram Burgard at the University of Freiburg, Google Research, and the Nuremberg Institute of Technology, posted to arXiv in October 2022 and published at ICRA 2023. As it moves through an environment, the robot builds a map from RGB-D video: an open-vocabulary segmentation model, LSeg, computes a vision-language feature for every pixel, which is projected onto 3D surfaces using depth and pose and then compressed into a top-down grid map. At query time, words like 'sofa' or 'fridge' are encoded with a text encoder and compared against the map's features by similarity, letting the system locate any object — an open-vocabulary semantic map. Complex instructions are first handed to a large language model (the GPT-3 family), which writes code that calls the map's interface, so the system can handle spatial relations like 'between two objects' or 'three meters to the right.' The same map can also generate a separate obstacle map for each different robot. VLMaps is an early representative of connecting foundation models to navigation maps.",
+      "example": "Told to 'move to the spot three meters to the right of the chair,' the language model turns the instruction into code that first looks up the chair's position on the map, then computes the point three meters to its right for the robot to head toward.",
+      "related": ["Semantic Map", "Vision-and-Language Navigation", "Open-vocabulary", "Code as Policies: Language Model Programs for Embodied Control", "CLIP", "VLFM: Vision-Language Frontier Maps for Zero-Shot Semantic Navigation"]
+    },
+    {
+      "key": "named_model-27#2",
+      "name_en": "VLA-0",
+      "abbr": "VLA-0",
+      "aliases": ["VLA-0 (Action as Text)", "VLA-0: Building State-of-the-Art VLAs with Zero Modification"],
+      "one_liner": "NVIDIA's minimalist VLA that makes no architecture changes at all, having the VLM write out actions directly as plain digit text.",
+      "explanation": "VLA-0 is work by Ankit Goyal and colleagues at NVIDIA, released in October 2025. Typical VLAs (vision-language-action models) either add special action tokens to the vision-language model's vocabulary or attach a separate action head; VLA-0 changes nothing at all, having Qwen2.5-VL-3B output actions in plain text: each continuous action dimension is normalized into an integer between 0 and 1000, written out as digits, and decoded back afterward. The paper points out that making this work well needs a couple of tricks: during training, characters in the target digit string are randomly masked to force the model to actually look at the image rather than just continuing the text; at inference, predictions from adjacent timesteps are ensembled and averaged. The result is 94.7% average success on LIBERO, beating OpenVLA-OFT and SmolVLA when trained only on that benchmark's own data, and also beating models pretrained on large-scale robot data such as π0 and GR00T N1; on a real SO-100 robot it beats SmolVLA by 12.5 points. It is a reminder to get the simple baseline solid before reaching for something fancier.",
+      "example": "Given a camera image and an instruction, the model answers like a question, outputting a string of integers between 0 and 1000 as text, with each number corresponding to one action dimension; these are un-normalized and handed to the robot arm for execution.",
+      "related": ["Vision-Language-Action Model", "Action Tokenizer", "Action Binning / Discretization", "Qwen-VL series (Qwen-VL / Qwen2-VL / Qwen2.5-VL / Qwen3-VL)", "LIBERO", "SmolVLA"]
+    },
+    {
+      "key": "named_model-27#3",
+      "name_en": "VLA-Adapter",
+      "aliases": ["VLA-Adapter-Pro", "VLA-Adapter: An Effective Paradigm for Tiny-Scale Vision-Language-Action Model"],
+      "one_liner": "A VLA that reaches top-tier performance without any robot pretraining, using a 0.5B small model plus a lightweight policy module.",
+      "explanation": "VLA-Adapter was released in September 2025 by Beijing University of Posts and Telecommunications, Westlake University, Zhejiang University, HKUST (Guangzhou), the OpenHelix team, and others, with code and weights open-sourced. Typical VLAs rely on large vision-language models (VLMs) and pretraining on massive robot datasets, which is expensive. The authors systematically compared which layers and features of a VLM are best suited to condition action generation, and designed a roughly 97-million-parameter policy module accordingly: Bridge Attention injects raw vision-language features from various VLM layers, along with features from a set of learnable queries (ActionQuery), into the action space, with the amount injected controlled by learnable parameters. Using only Qwen2.5-0.5B as the backbone and no robot-data pretraining, it reaches 97.3% average success on LIBERO (98.5% for the Pro version) and an average completed length of 4.50 on CALVIN ABC→D (Pro version). This sharply lowers the barrier to training and deploying a VLA, and later work such as VLA-RFT builds on it.",
+      "example": "The paper reports a usable model can be trained on a single consumer GPU in about 8 hours; inference throughput reaches 219.2 Hz, compared with 71.4 Hz for OpenVLA-OFT under the same conditions.",
+      "related": ["Vision-Language-Action Model", "Learnable Query / Action Query", "Adapter", "OpenVLA-OFT", "LIBERO", "VLA-RFT"]
+    },
+    {
+      "key": "named_model-27#4",
+      "name_en": "VLA-OPD",
+      "abbr": "VLA-OPD",
+      "aliases": ["On-Policy VLA Distillation", "VLA-OPD: Bridging Offline SFT and Online RL for Vision-Language-Action Models via On-Policy Distillation"],
+      "one_liner": "A VLA post-training method where a strong teacher corrects the student token by token on trajectories the student generated itself.",
+      "explanation": "VLA-OPD is a VLA post-training framework proposed by a team at HKUST (Guangzhou) in March 2026. Offline supervised fine-tuning (SFT) learns only from demonstration data and has no way to handle states the model drifts into on its own, and it is also prone to catastrophic forgetting of pretrained abilities; online reinforcement learning, meanwhile, is held back by sparse rewards and poor sample efficiency. VLA-OPD takes a middle path — on-policy distillation: the student policy runs in the environment on its own, and a stronger teacher policy provides dense, token-by-token supervision on exactly the states the student itself reaches, with no dependence on environment reward. The loss uses reverse KL divergence, which the authors argue biases the model toward 'committing to one mode,' making it more stable than forward KL (prone to exploding entropy) or hard cross-entropy (prone to premature entropy collapse). In experiments, the teacher is an expert trained by SimpleVLA-RL and the student is OpenVLA-OFT; on LIBERO and RoboTwin 2.0, VLA-OPD is more sample-efficient than reinforcement learning, more robust than SFT, and forgets less.",
+      "example": "On LIBERO, a student fine-tuned on just one demonstration per task starts at 48.9% average success; distilling it with VLA-OPD raises this to 87.4%, and following up with GRPO reinforcement learning brings it to 93.4%, close to the teacher's 93.9%.",
+      "related": ["On-Policy Distillation", "Supervised Fine-Tuning", "Reinforcement Fine-Tuning (RL Fine-Tuning)", "Catastrophic Forgetting", "Kullback-Leibler Divergence", "SimpleVLA-RL"]
+    },
+    {
+      "key": "named_model-27#5",
+      "name_en": "VLA-RFT",
+      "aliases": ["VLA Reinforcement Fine-Tuning in World Simulators", "VLA-RFT: Vision-Language-Action Reinforcement Fine-tuning with Verified Rewards in World Simulators"],
+      "one_liner": "A method that runs reinforcement learning inside a learned world model to make a VLA more robust in just a few hundred steps.",
+      "explanation": "VLA-RFT was proposed in October 2025 by Westlake University, Zhejiang University, the OpenHelix team, and others. A VLA trained with imitation learning alone tends to accumulate errors and fail under perturbations; reinforcement learning can help, but real-robot interaction is expensive and traditional simulators still have a sim-to-real gap. The method first trains a roughly 138-million-parameter autoregressive world model on real interaction data, predicting future frames from the current image and action, and uses it as a controllable simulator; the policy then rolls out whole trajectories inside it, with reward computed from the pixel-level (L1) and perceptual (LPIPS) error between the predicted frames and the expert reference trajectory's frames — a verifiable reward — and the policy is updated with GRPO (Group Relative Policy Optimization). The base policy is VLA-Adapter. Fine-tuning for under 400 steps already beats the supervised fine-tuning baseline, and the result is more robust to perturbations in object position and initial state, showing that a world model can serve as a practical environment for VLA post-training.",
+      "example": "On LIBERO, the VLA-Adapter supervised fine-tuning baseline reaches 86.6% average success; after 400 steps of reinforcement fine-tuning inside the world model, this rises to 91.1%.",
+      "related": ["World Model", "Reinforcement Fine-Tuning (RL Fine-Tuning)", "Group Relative Policy Optimization", "VLA-Adapter", "WMPO: World Model-based Policy Optimization for Vision-Language-Action Models", "Learning in Imagination (World-Model-Based RL)"]
+    },
+    {
+      "key": "named_model-27#6",
+      "name_en": "VLA-RL",
+      "aliases": ["VLA-RL: Towards Masterful and General Robotic Manipulation with Scalable Reinforcement Learning"],
+      "one_liner": "An early framework that further improves an autoregressive VLA, such as OpenVLA, using online reinforcement learning.",
+      "explanation": "VLA-RL was proposed in May 2025 by researchers at Tsinghua Shenzhen International Graduate School and Nanyang Technological University, with code open-sourced. A VLA trained purely by imitating demonstrations has only seen a limited set of states, and tends to fail as soon as it drifts out of distribution; VLA-RL instead lets a pretrained autoregressive VLA keep improving online by trying things itself in the environment. It treats one robot manipulation trajectory as a multi-turn multimodal conversation and applies trajectory-level reinforcement learning with PPO (Proximal Policy Optimization); to ease the sparse-reward problem, it fine-tunes a vision-language model into a robotic process reward model, with training labels coming from automatically segmented task stages (using keyframes such as moments when the gripper becomes stable). On the engineering side, it also uses curriculum-based task selection, GPU-load-balanced parallel environments, batched decoding, and value-network warm-up. VLA-RL is one of the earlier works to systematically demonstrate that 'VLA plus online RL' is workable, and the authors also observed that increasing test-time optimization keeps improving results further.",
+      "example": "Across 40 manipulation tasks in LIBERO, VLA-RL raised OpenVLA-7B's average success rate from 76.5% to 81.0%, on par with π0-FAST.",
+      "related": ["Reinforcement Fine-Tuning (RL Fine-Tuning)", "Proximal Policy Optimization", "Reward Model", "OpenVLA", "LIBERO", "SimpleVLA-RL"]
+    },
+    {
+      "key": "named_model-27#7",
+      "name_en": "VLFM",
+      "abbr": "VLFM",
+      "aliases": ["Vision-Language Frontier Maps", "VLFM: Vision-Language Frontier Maps for Zero-Shot Semantic Navigation"],
+      "one_liner": "A method that scores exploration frontiers with a vision-language model to find a specified object in an unfamiliar environment, zero-shot.",
+      "explanation": "VLFM was proposed by Naoki Yokoyama, Dhruv Batra, Bernadette Bucher, and colleagues at Georgia Tech and the Boston Dynamics AI Institute, posted to arXiv in December 2023 and published at ICRA 2024, where it won best paper in cognitive robotics. The task is object-goal navigation: finding an object of a given category in an environment the robot has never visited. It builds an occupancy map from depth data and identifies the frontier between known and unknown regions; at the same time, it uses BLIP-2 to compute the similarity between the current image and text prompts like 'the target is likely to be nearby,' recording this in a language value map, and then chooses the highest-value frontier to explore. Once the target is spotted, YOLOv7 or Grounding DINO detects it and Mobile-SAM segments it out for the robot to approach. The whole pipeline needs no navigation-specific training and achieved state-of-the-art results at the time by SPL (success weighted by path length) on Gibson, HM3D, and MP3D, and was deployed directly on a Boston Dynamics Spot.",
+      "example": "In an office building with no pre-built map, once Spot is given the category of object to find, it preferentially heads in the direction the vision-language model judges more likely to contain that object, and stops next to it once found.",
+      "related": ["Object-Goal Navigation", "Frontier-based Exploration", "Zero-shot", "Success weighted by Path Length", "Occupancy Grid Map", "VLMaps"]
+    },
+    {
+      "key": "named_model-27#8",
+      "name_en": "Voyager",
+      "aliases": ["MineDojo Voyager", "Voyager: An Open-Ended Embodied Agent with Large Language Models"],
+      "one_liner": "A GPT-4-driven, lifelong-learning agent in Minecraft that sets its own goals and builds up a library of skills by writing code.",
+      "explanation": "Voyager was released in May 2023 by Guanzhi Wang, Linxi Fan, Yuke Zhu, Anima Anandkumar, and colleagues at NVIDIA, Caltech, UT Austin, Stanford, and Arizona State University, later accepted at TMLR, with code open-sourced. It is an agent that runs in Minecraft without fine-tuning any model parameters, working purely by calling GPT-4. It has three core components: an automatic curriculum that proposes the next exploration goal based on the current state; a skill library that stores validated, successful behaviors as executable code, retrievable and composable by description; and iterative prompting, which feeds environment feedback, execution errors, and self-checks back to GPT-4 to revise the code. Because skills accumulate as code, they are easy to reuse and this also mitigates catastrophic forgetting. Compared with prior methods, Voyager obtains 3.3 times more distinct items, travels 2.3 times farther, and unlocks key tech-tree milestones up to 15.3 times faster, making it a representative example of the 'large model plus code skill library' style of embodied agent.",
+      "example": "After learning to craft a workbench and a wooden pickaxe, Voyager stores that code in its skill library; dropped into a brand-new Minecraft world, it directly retrieves and composes these skills to tackle new tasks.",
+      "related": ["Embodied Agent", "Large Language Model", "Minecraft Environments (MineDojo / MineRL)", "Code as Policies", "Curriculum Learning", "Continual Learning"]
+    },
+    {
+      "key": "named_model-27#9",
+      "name_en": "VRB",
+      "abbr": "VRB",
+      "aliases": ["Vision-Robotics Bridge", "VRB: Affordances from Human Videos as a Versatile Representation for Robotics"],
+      "one_liner": "A method that learns 'where to grasp and which way to move afterward' from human video and hands that affordance directly to a robot.",
+      "explanation": "VRB (Vision-Robotics Bridge) is work by Shikhar Bahl, Russell Mendonca, and colleagues in Deepak Pathak's group at Carnegie Mellon University, together with Meta AI, posted to arXiv in April 2023 and published at CVPR 2023. Affordance refers to what an object 'can be used for' — a drawer handle, for instance, affords pulling. VRB trains a visual affordance model on large amounts of first-person human video from datasets like EPIC-KITCHENS and Ego4D: given a scene image, it outputs two things — a contact heatmap (where a person is most likely to reach) and the wrist's post-contact motion trajectory (which direction the hand moves after making contact). Because this representation does not depend on any particular robot's body, it can plug into many different robot-learning setups: offline imitation learning, exploration, goal-conditioned learning, and as an action parameterization for reinforcement learning. The paper validated it across 4 real-world environments, more than 10 tasks, and 2 robot platforms, an early example of using human video to make up for scarce robot data.",
+      "example": "Given a kitchen photo, the model marks a high contact probability at the cabinet handle and predicts a trajectory of 'grasp, then pull outward'; the robot reaches for that spot and follows the trajectory to attempt opening the cabinet.",
+      "related": ["Affordance", "Human Video Data", "Egocentric Video", "EPIC-KITCHENS", "Imitation from Observation", "Affordance Detection / Affordance Grounding"]
+    },
+    {
+      "key": "named_model-27#10",
+      "name_en": "Walk These Ways",
+      "aliases": ["Multiplicity of Behavior (MoB) Controller", "Walk These Ways: Tuning Robot Control for Generalization with Multiplicity of Behavior"],
+      "one_liner": "A quadruped locomotion controller that learns many gaits in one policy and can be retuned live at deployment to handle new terrain.",
+      "explanation": "Walk These Ways is a quadruped locomotion method from Gabriel Margolis and Pulkit Agrawal at MIT's Improbable AI Lab, posted to arXiv in December 2022 and an oral-presentation paper at CoRL 2022. When a reinforcement-learning-trained walking policy fails outside its training distribution, the usual fix is to go back, tweak the reward or environment, and retrain — a slow cycle. The authors instead propose 'Multiplicity of Behavior' (MoB): train a single policy that takes both a velocity command and a set of behavior parameters, including footfall timing (which can switch between trotting, bounding, pacing, and other gaits), stepping frequency, body height, body pitch, stance width, and foot-lift height. Different parameter combinations complete the same task in different ways with different generalization properties, and a person or a script can switch between them live at deployment without retraining. The policy is trained in Isaac Gym and deployed on the Unitree Go1 at a 50 Hz control rate; the code is open-sourced and has often served as a starting point for quadruped locomotion work since.",
+      "example": "The paper shows that raising the stepping frequency helps when sprinting on slippery ground; climbing stairs works better with a low stepping frequency and high foot lift; and when pushed by a person, lowering the foot lift and widening the stance improves stability.",
+      "related": ["Legged Locomotion", "Gait", "RL-based Locomotion Control", "Isaac Gym", "Unitree Go1", "Sim-to-Real Transfer"]
+    },
+    {
+      "key": "named_model-27#11",
+      "name_en": "WALL-A",
+      "aliases": ["WALL-A Manipulation Foundation Model", "WALL-A series"],
+      "one_liner": "X Square Robot's in-house, closed-source embodied manipulation model series, running end-to-end from perception to motor control.",
+      "explanation": "WALL-A is a series of in-house manipulation foundation models built by Shenzhen-based embodied AI company X Square Robot (自变量机器人); it is not open-sourced. The company's website describes it as achieving 'unified intelligence across the full pipeline, from perception and understanding to action control' — in other words, an end-to-end vision-language-action approach. According to a January 2026 report from Zhidongxi, the WALL-A series combines a VLA with a world model, using the world model to predict how the environment's state changes over time and reasoning jointly with vision to decide on actions. The WALL-OSS paper, open-sourced in September 2025, describes WALL-A's architecture as a tightly coupled design with shared self-attention and separate feed-forward layers per modality, and WALL-OSS follows the same idea, making it viewable as an open-source version of the WALL-A approach. In April 2026 the company released a further 'world unified model' called WALL-B, and its later public demonstrations — housework, logistics sorting — have mostly been driven by WALL-B. WALL-A's initial release date and parameter count could not be verified from public sources for this entry.",
+      "example": "According to Zhidongxi's report, X Square Robot's 'Quantum No. 1' used its models to demonstrate mobile manipulation across both outdoor and indoor settings: breaking down and recycling a takeout box outdoors, then making its own way through a building door and elevator to deliver it indoors.",
+      "related": ["X Square Robot", "WALL-OSS (X Square Robot open-source embodied foundation model)", "Vision-Language-Action Model", "World Model", "Embodied Foundation Model", "Mixture of Experts"]
+    }
+  ]
+}

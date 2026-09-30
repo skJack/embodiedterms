@@ -1,0 +1,113 @@
+{
+  "batch": "software-14",
+  "terms": [
+    {
+      "key": "software-14#0",
+      "name_en": "NVIDIA OSMO",
+      "aliases": ["OSMO"],
+      "one_liner": "NVIDIA's cloud orchestration platform that schedules robotics and physical-AI training, simulation, and data generation across different compute.",
+      "explanation": "OSMO is a cloud-native orchestration platform from NVIDIA for robotics and physical-AI development. A robotics project usually chains together many steps — synthetic data generation, model training, simulation-based evaluation, and software-in-the-loop/hardware-in-the-loop testing — often running on different machines: cloud GPU clusters, local workstations, or edge devices like Jetson. OSMO lets developers describe this pipeline as a configuration file, and the platform handles allocating compute, queuing jobs, and tracking data, removing the need to manually move data and coordinate jobs across machines by hand. It's one piece of NVIDIA's “three computers” strategy, the layer that connects training and simulation, and is commonly used alongside Isaac Sim, Isaac Lab, and Cosmos.",
+      "example": "Turn “Isaac Sim generates synthetic data → train a grasping policy → Isaac Lab runs batch evaluation” into a single OSMO workflow, submit it once, and the platform automatically distributes the jobs across different GPU nodes.",
+      "related": ["NVIDIA's Three Computers", "Isaac Sim", "Isaac Lab", "Cosmos", "Synthetic Data", "Hardware-in-the-loop / software-in-the-loop simulation"]
+    },
+    {
+      "key": "software-14#1",
+      "name_en": "NVIDIA TensorRT Edge-LLM",
+      "aliases": ["Edge-LLM"],
+      "one_liner": "NVIDIA's on-device inference framework for running large language and vision-language models on automotive and robotics chips.",
+      "explanation": "TensorRT Edge-LLM is an open-source C++ inference framework from NVIDIA, built to run large language models and vision-language models on embedded platforms such as Jetson Thor and DRIVE AGX Thor. NVIDIA's data-center library for this, TensorRT-LLM, depends on a Python environment and targets high throughput across many GPUs; automotive and robotics deployments instead need low per-request latency, a small memory footprint, and lightweight deployment without Python, which is what Edge-LLM is built for. It reportedly supports low-precision quantization formats such as FP8 and NVFP4, along with speculative decoding (predicting several tokens ahead to speed up generation). For embodied AI, it is one option for running a VLA's or VLM's “brain” directly on the robot itself, rather than on a remote server.",
+      "example": "Quantize a multi-billion-parameter VLM and deploy it on a Jetson Thor with TensorRT Edge-LLM, so the robot can do scene understanding and task planning locally.",
+      "related": ["TensorRT", "TensorRT-LLM", "Jetson Thor", "On-device deployment", "On-device model", "Post-training quantization"]
+    },
+    {
+      "key": "software-14#2",
+      "name_en": "NVIDIA TensorRT-LLM",
+      "aliases": ["TRT-LLM"],
+      "one_liner": "NVIDIA's open-source library that speeds up large language model inference on NVIDIA GPUs.",
+      "explanation": "TensorRT-LLM is an open-source large language model inference library that NVIDIA released in 2023, built on top of TensorRT with a Python interface. It packages together the optimizations commonly used for LLM inference: paged management of the KV cache (the stored attention keys and values from previous steps, kept so they don't need recomputing), dynamic batching, quantization formats like FP8 and INT4, speculative decoding, multi-GPU tensor parallelism, and hand-written high-performance kernels for operations such as attention. Users load model weights in a format such as Hugging Face's, and get back an inference service that runs much faster than native PyTorch. In embodied AI, it is often used to accelerate the language-model backbone of a VLA, or a cloud-hosted “brain” service that a robot calls over the network.",
+      "example": "Deploy a Llama model at FP8 precision on an H100 GPU using TensorRT-LLM, as a cloud service for robot task planning.",
+      "related": ["TensorRT", "vLLM", "KV cache", "Speculative decoding", "Post-training quantization", "Inference deployment"]
+    },
+    {
+      "key": "software-14#3",
+      "name_en": "NVIDIA Warp",
+      "aliases": ["Warp"],
+      "one_liner": "NVIDIA's Python framework that compiles ordinary Python functions into GPU code for writing simulations.",
+      "explanation": "Warp is an open-source Python framework from NVIDIA for writing high-performance simulation and graphics code. Developers write ordinary Python functions and mark them with the @wp.kernel decorator; Warp then just-in-time compiles them into CUDA or CPU code that runs in parallel, so there is no need to write C++/CUDA by hand. It also supports automatic differentiation, so a simulation written in Warp can be differentiated with respect to its inputs — an approach known as differentiable simulation. Warp includes built-in tools for geometry, collision, and particles, and can exchange data directly with PyTorch and JAX. NVIDIA's Newton physics engine and MuJoCo Warp are both built on top of it.",
+      "example": "Write a cloth simulation in a few dozen lines of Warp code, advance thousands of parallel environments at once on the GPU, and backpropagate gradients into PyTorch to optimize a grasping trajectory.",
+      "related": ["Newton physics engine", "MuJoCo Warp", "Differentiable simulation", "CUDA", "GPU-parallel simulation", "Operator / Kernel"]
+    },
+    {
+      "key": "software-14#4",
+      "name_en": "OM1",
+      "aliases": ["OpenMind OM1", "OpenMind Modular AI Runtime"],
+      "one_liner": "OpenMind's open-source, modular AI runtime that connects large language models to different robot bodies.",
+      "explanation": "OM1 is an open-source, modular AI runtime from OpenMind, a U.S. startup. It's often called a “robot operating system,” but it doesn't replace low-level communication layers such as ROS — instead it runs on top of them: it turns sensor input like camera and microphone feeds into text descriptions, hands that to a large language model or vision-language model for decision-making, and converts the model's output back into robot actions or speech. Each piece plugs in as a module, so the underlying model or hardware can be swapped out. According to OpenMind, OM1 supports various robot platforms, including humanoids and quadrupeds such as Unitree's G1 and Go2, and can connect to lower-level layers through protocols like ROS 2 and Zenoh. It reflects one approach to building an LLM-driven interaction layer for robots that works across different hardware.",
+      "example": "Run OM1 on a Unitree Go2 with a multimodal large language model plugged in, so the robot dog can understand spoken commands and describe what it sees.",
+      "related": ["Robot operating system", "ROS 2", "Large language model", "Zenoh", "Unitree Go2", "Lingqu OS (AgiBot's embodied AI operating system)"]
+    },
+    {
+      "key": "software-14#5",
+      "name_en": "ONNX Runtime",
+      "aliases": ["ORT", "onnxruntime"],
+      "one_liner": "Microsoft's open-source, cross-platform engine for running models saved in the ONNX format.",
+      "explanation": "ONNX Runtime is an open-source inference engine from Microsoft that executes models in the ONNX format, a general-purpose file format for exchanging neural networks between frameworks. After a model is trained in a framework like PyTorch, it can be exported to ONNX and then run with ONNX Runtime on Windows, Linux, phones, and embedded devices, without needing the original training framework installed. It connects to different hardware backends through “execution providers” — CPU, CUDA, TensorRT, OpenVINO, CoreML, and others — so the same model can use the right hardware acceleration just by changing a setting. In robotics, control policies trained with reinforcement learning are often deployed as ONNX files and run in real time on an onboard computer using ONNX Runtime.",
+      "example": "Export a quadruped walking policy trained in Isaac Lab to policy.onnx, then run it at 50 Hz on the robot dog's onboard CPU with ONNX Runtime.",
+      "related": ["ONNX", "TensorRT", "OpenVINO", "Inference deployment", "On-device deployment", "RL-based locomotion control"]
+    },
+    {
+      "key": "software-14#6",
+      "name_en": "onshape-to-robot",
+      "aliases": [],
+      "one_liner": "Open-source tool that exports robot assemblies built in Onshape directly into URDF or MJCF files.",
+      "explanation": "onshape-to-robot is an open-source Python tool from the Rhoban team at the University of Bordeaux, France. Robot structures are often designed in CAD software, but simulators and ROS need robot description files such as URDF, SDF, or MJCF, and manually transcribing links, joints, mass, and inertia from a CAD model is slow and error-prone. This tool reads an assembly through the API of Onshape, a cloud-based CAD platform, identifies joints from a naming convention, and automatically generates the description files and meshes, including mass and inertia data. Open-hardware projects commonly use it to move a design straight into simulators like MuJoCo or PyBullet.",
+      "example": "Name the joint mates in Onshape something like dof_knee, run onshape-to-robot, and get an MJCF file plus STL meshes ready to load directly into MuJoCo.",
+      "related": ["Unified Robot Description Format (URDF)", "MJCF", "SolidWorks to URDF Exporter", "CAD software (SolidWorks / Onshape / Fusion 360)", "Mesh file", "SDFormat simulation description format"]
+    },
+    {
+      "key": "software-14#7",
+      "name_en": "Operator / Kernel",
+      "aliases": ["kernel", "CUDA kernel"],
+      "one_liner": "The basic computational building block of a neural network — like matmul or softmax — and its hardware implementation.",
+      "explanation": "An operator is the smallest unit of computation in a deep learning framework — for example, matrix multiplication, convolution, normalization, or softmax. A model's forward pass is a computation graph made of operators wired together. A “kernel” is the actual implementation code for a given operator on a specific piece of hardware, such as a CUDA kernel that runs on a GPU. How fast a model runs at inference depends heavily on how well these kernels are written, and on whether several small operators can be “fused” into a single kernel to cut down on memory reads and writes. This fusing, and picking the fastest kernel, is largely what TensorRT and torch.compile do; when engineers talk about “operator support” while porting a model to a Chinese domestic chip, they mean whether that hardware has a matching implementation for each operator the model uses.",
+      "example": "FlashAttention fuses several steps inside attention — matrix multiply, softmax, then multiplying by the value matrix — into a single CUDA kernel, substantially cutting memory access and speeding up inference on long sequences.",
+      "related": ["CUDA", "FlashAttention", "TensorRT", "torch.compile", "Huawei Ascend CANN", "CUDA Graph"]
+    },
+    {
+      "key": "software-14#8",
+      "name_en": "OSQP",
+      "aliases": ["Operator Splitting Quadratic Program solver"],
+      "one_liner": "Open-source quadratic-program solver based on operator splitting, widely used in MPC and whole-body control.",
+      "explanation": "OSQP is an open-source solver for quadratic programs (QPs) — optimization problems with a quadratic objective and linear inequality constraints. It was developed by researchers at Oxford and Stanford (Stellato, Banjac, Goulart, Bemporad, Boyd, and others), with the paper published in 2020. In robotics, model predictive control, whole-body control, and contact-force allocation are all commonly formulated as QPs that must be solved within a single control cycle, often just a few milliseconds. OSQP uses ADMM (Alternating Direction Method of Multipliers), an algorithm that splits a large problem into simpler subproblems solved in alternation. It's implemented in pure C with no external dependencies, supports warm-starting (using the previous time step's solution as the initial guess), and can generate embedded C code, which makes it well suited to real-time control. It also has Python, MATLAB, and C++ interfaces.",
+      "example": "A quadruped robot's convex MPC controller formulates the foot-force optimization for the next ten steps as a QP on every control cycle, and solves it with warm-started OSQP in a few milliseconds.",
+      "related": ["Quadratic programming", "Model predictive control", "Convex MPC", "Whole-body control", "qpOASES", "Convex optimization"]
+    },
+    {
+      "key": "software-14#9",
+      "name_en": "OCS2",
+      "aliases": ["Optimal Control for Switched Systems"],
+      "one_liner": "Open-source C++ optimal-control toolbox from ETH Zurich, commonly used for MPC on legged robots.",
+      "explanation": "OCS2 is an open-source C++ toolbox developed by the Robotic Systems Lab (RSL) at ETH Zurich for solving optimal control problems in “switched systems” — systems whose dynamics change as they switch between modes. A legged robot is one example: each leg alternates between stance and swing, and the dynamics change with the contact state. OCS2 provides algorithms including SLQ, iLQR, and multiple-shooting SQP, generates derivatives via automatic differentiation, and uses Pinocchio for rigid-body dynamics, which lets it run nonlinear model predictive control (MPC) in real time. It ships with examples for quadrupeds and mobile manipulators, plus a ROS interface, and underlies many legged-robot MPC projects, including legged_control.",
+      "example": "legged_control uses OCS2 to run nonlinear MPC for a quadruped robot, computing the center-of-mass trajectory and foot forces for the near future, which are then handed to a whole-body controller for execution.",
+      "related": ["Nonlinear model predictive control", "legged_control", "ETH Zurich Robotic Systems Lab", "Iterative Linear Quadratic Regulator (iLQR)", "Pinocchio", "Multiple shooting"]
+    },
+    {
+      "key": "software-14#10",
+      "name_en": "Orocos KDL",
+      "aliases": ["KDL", "Orocos Kinematics and Dynamics Library"],
+      "one_liner": "A C++ kinematics and dynamics library from the Orocos project, long a default choice for kinematics in ROS.",
+      "explanation": "KDL is part of Orocos, an open-source robot control software project originally developed at institutions including KU Leuven in Belgium. It's implemented in C++, with Python bindings also available. KDL models a robot as a kinematic chain of links connected by joints, and provides solvers for forward kinematics, inverse kinematics, the Jacobian matrix, and inverse dynamics. It's used extremely widely across the ROS ecosystem: kdl_parser converts a URDF into a KDL model, robot_state_publisher uses it to compute the pose of every link, and MoveIt's default kinematics plugin is also built on it. Its numerical inverse-kinematics solver tends to fail near joint limits, which is why it's often replaced by TRAC-IK; newer projects are also increasingly switching to Pinocchio.",
+      "example": "After a robot arm publishes its joint angles in ROS, robot_state_publisher calls KDL to compute the pose of the end effector and every link, then publishes them to the TF transform tree.",
+      "related": ["Forward kinematics", "Inverse kinematics", "Jacobian matrix", "TRAC-IK", "MoveIt", "robot_state_publisher"]
+    },
+    {
+      "key": "software-14#11",
+      "name_en": "ROS Parameter Server",
+      "aliases": ["Parameter Server", "rosparam"],
+      "one_liner": "A shared key-value store in ROS 1 that holds global configuration values any node can read or write.",
+      "explanation": "The Parameter Server is a mechanism in ROS 1: the ROS master (roscore) maintains a globally shared key-value dictionary, and nodes read and write entries in it over the network — things like control gains, a camera's topic name, or a robot's physical dimensions. Parameters are typically loaded in bulk from launch files or YAML files, and can also be viewed or changed from the command line with rosparam. It's meant for static configuration that rarely changes, not high-frequency data. ROS 2 removed the global parameter server; instead, each node declares and holds its own parameters, accessed via ros2 param, with callbacks that can fire when a parameter changes. Note that distributed machine learning has an unrelated concept with the same name, referring to servers that store model parameters during training — that's a different thing.",
+      "example": "A launch file uses rosparam to load pid.yaml, so the control node reads gains such as /arm_controller/kp on startup.",
+      "related": ["Robot operating system", "ROS 2", "ROS Master (roscore)", "Node", "Launch file", "Topic"]
+    }
+  ]
+}

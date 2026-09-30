@@ -1,0 +1,197 @@
+{"category": "named_model", "batch": 16, "terms": [
+{
+  "name_zh": "书生 InternVL",
+  "name_en": "InternVL (Shanghai AI Laboratory open VLM series)",
+  "abbr": "InternVL",
+  "aliases": ["书生·万象", "InternVL-Chat", "OpenGVLab InternVL"],
+  "tier": 3,
+  "one_liner": "上海 AI 实验室开源的视觉语言模型系列，起点是一个 60 亿参数的视觉编码器。",
+  "explanation": "InternVL 是上海人工智能实验室 OpenGVLab 团队开源的视觉语言模型系列，中文名「书生·万象」。初代论文 2023 年 12 月发布，入选 CVPR 2024 口头报告，思路是把视觉编码器 InternViT 放大到 60 亿参数，再逐步与大语言模型对齐，在 32 个视觉-语言基准上评测。此后的 1.5、2、2.5、3、3.5 版沿用「视觉编码器 + MLP 投影层 + 大语言模型」结构，尺寸从 10 亿到 2410 亿总参数不等，代码以 MIT 协议开源，截至 2026 年 9 月最新是 3.5 系列。具身领域常把它当作 VLA（视觉-语言-动作模型）的视觉语言骨干。",
+  "example": "智元 GO-1 的潜在规划器以 InternVL2.5-2B 为骨干：它读入多路相机画面和指令，先预测潜在动作 token，再交给动作专家生成连续动作。",
+  "related": ["视觉语言模型", "多模态大语言模型", "上海人工智能实验室", "InternVL（书生·万象）", "上海AI实验室 InternVLA 系列", "智元 GO-1（启元大模型）"],
+  "sources": [
+    {"title": "InternVL: Scaling up Vision Foundation Models and Aligning for Generic Visual-Linguistic Tasks (arXiv 2312.14238)", "url": "https://arxiv.org/abs/2312.14238"},
+    {"title": "OpenGVLab/InternVL (GitHub)", "url": "https://github.com/OpenGVLab/InternVL"}
+  ],
+  "as_of": "2026-09"
+},
+{
+  "name_zh": "InternVL（书生·万象）",
+  "name_en": "InternVL series (Shanghai AI Lab open VLM, e.g. InternVL3 / InternVL3.5)",
+  "abbr": "InternVL",
+  "aliases": ["书生·万象", "InternVL2.5", "InternVL3", "InternVL3.5"],
+  "tier": 3,
+  "one_liner": "书生·万象的版本线，InternVL3 和 3.5 是 2025 年发布的主力开源版本。",
+  "explanation": "本条侧重 InternVL 的版本演进，与「书生 InternVL」指同一系列。2024 年 12 月的 InternVL2.5 提供 1B 到 78B 多个尺寸；2025 年 4 月的 InternVL3 改用「原生多模态预训练」，在同一阶段同时学纯文本和图文数据，而不是先训好语言模型再补视觉，InternVL3-78B 在大学水平图文推理基准 MMMU 上得 72.2 分；2025 年 8 月的 InternVL3.5 加入级联强化学习（先离线、后在线）提升推理，并用视觉分辨率路由按需减少视觉 token，最大版本是总参数 2410 亿、每次激活约 280 亿的混合专家模型。各尺寸权重都可下载，小尺寸版本常被具身团队拿来微调。",
+  "example": "想让机械臂回答「桌上哪个杯子离夹爪最近」，可以直接下载 InternVL3.5-2B 权重，用自己的场景图文数据微调，不必从头训练视觉语言模型。",
+  "related": ["视觉语言模型", "书生 InternVL", "原生多模态", "通义千问 Qwen-VL", "混合专家模型", "强化学习微调"],
+  "sources": [
+    {"title": "InternVL3: Exploring Advanced Training and Test-Time Recipes for Open-Source Multimodal Models (arXiv 2504.10479)", "url": "https://arxiv.org/abs/2504.10479"},
+    {"title": "InternVL3.5: Advancing Open-Source Multimodal Models in Versatility, Reasoning, and Efficiency (arXiv 2508.18265)", "url": "https://arxiv.org/abs/2508.18265"},
+    {"title": "OpenGVLab/InternVL (GitHub)", "url": "https://github.com/OpenGVLab/InternVL"}
+  ],
+  "as_of": "2026-09"
+},
+{
+  "name_zh": "上海AI实验室 InternVLA 系列",
+  "name_en": "InternVLA (Shanghai AI Laboratory: InternVLA-M1 / A1 / A1.5 / N1)",
+  "abbr": "",
+  "aliases": ["InternVLA-M1", "InternVLA-A1", "InternVLA-A1.5", "InternVLA-N1"],
+  "tier": 3,
+  "one_liner": "上海 AI 实验室开源的一组具身模型：M1、A1 做操作，N1 做导航。",
+  "explanation": "InternVLA 是上海人工智能实验室具身团队（GitHub 组织 InternRobotics）开源的一组 VLA（视觉-语言-动作模型）。InternVLA-M1（2025 年 10 月）以 Qwen2.5-VL 为骨干，先用 230 万条框、点、轨迹标注做空间定位预训练，再用空间提示引导扩散 Transformer 动作专家出动作。InternVLA-A1（2026 年 1 月，有 2B 和 3B 两个尺寸）用混合 Transformer 架构把理解、未来画面预测、动作三个专家放进一个模型，在真机数据、合成仿真数据（如 InternData-A1）和人类视频上预训练，共 6.92 亿帧。A1.5（2026 年 7 月）改用 Qwen3.5-2B，训练时让冻结的 Wan2.2 视频模型监督「预见 token」，推理时不生成视频。InternVLA-N1 用于导航：慢系统在图像上标出路点，快系统用扩散策略以 30Hz 以上出轨迹。",
+  "example": "InternVLA-A1 做传送带分拣时，要先预判物体下一刻移到哪里再去抓；论文当前版本称在这类动态任务上比 π0.5 高 26.7%。",
+  "related": ["视觉-语言-动作模型", "快慢双系统", "InternData-A1 数据集", "视觉语言导航", "上海人工智能实验室", "世界动作模型"],
+  "sources": [
+    {"title": "InternVLA-M1: A Spatially Guided Vision-Language-Action Framework for Generalist Robot Policy (arXiv 2510.13778)", "url": "https://arxiv.org/abs/2510.13778"},
+    {"title": "InternVLA-A1: Unifying Understanding, Generation and Action for Robotic Manipulation (arXiv 2601.02456)", "url": "https://arxiv.org/abs/2601.02456"},
+    {"title": "InternVLA-N1 项目主页", "url": "https://internrobotics.github.io/internvla-n1.github.io/"}
+  ],
+  "as_of": "2026-07"
+},
+{
+  "name_zh": "Perceptron Isaac 0.5",
+  "name_en": "Isaac 0.5 (Perceptron AI open-weight embodied foundation model)",
+  "abbr": "",
+  "aliases": ["Isaac 0.5", "Perceptron Isaac", "Isaac 0.1", "Isaac 0.2"],
+  "tier": 3,
+  "one_liner": "Perceptron 2026 年开放权重的 360 亿参数机器人基础模型，看、想、动一体。",
+  "explanation": "Isaac 0.5 是美国创业公司 Perceptron 在 2026 年 8 月以 Apache 2.0 协议开放权重的机器人基础模型；公司由参与过 Meta Chameleon 多模态模型的团队创立，此前发布过 1B–2B 参数级的感知语言模型 Isaac 0.1、0.2。它与英伟达的 Isaac 平台无关。模型共 360 亿参数，以 Qwen 系列视觉语言模型为骨干、加入稀疏混合专家层，输入图像、视频、指令、机器人状态和历史动作，可输出文字、坐标、任务进度或动作：连续动作由流匹配专家生成，离散动作用 FAST 动作 token。官方称训练数据含 35 种以上机器人的 10 万小时经验和 100 万小时普通视频。",
+  "example": "官方拟合的数据配比规律：要达到同样的动作预测损失，只有 1000 小时普通视频时约需 5900 小时遥操作数据，普通视频增加到 100 万小时后只需约 28 小时。",
+  "related": ["视觉-语言-动作模型", "具身大模型", "开放权重", "流匹配", "缩放定律", "π0-FAST"],
+  "sources": [
+    {"title": "PerceptronAI/Isaac-0.5 模型卡 (Hugging Face)", "url": "https://huggingface.co/PerceptronAI/Isaac-0.5"},
+    {"title": "PerceptronAI/Isaac-0.1 模型卡 (Hugging Face)", "url": "https://huggingface.co/PerceptronAI/Isaac-0.1"}
+  ],
+  "as_of": "2026-08"
+},
+{
+  "name_zh": "大晓机器人 开悟世界模型",
+  "name_en": "Kairos: A Native World Model Stack for Physical AI (Daxiao Robotics / ACE Robotics)",
+  "abbr": "",
+  "aliases": ["Kairos", "开悟世界模型 3.0", "开悟世界模型 3.1", "Kairos: A Regret-Aware Native World-Action Model Stack for Physical AI"],
+  "tier": 3,
+  "one_liner": "大晓机器人开源的 40 亿参数具身世界模型，同时做理解、视频生成和动作预测。",
+  "explanation": "开悟世界模型（英文名 Kairos）是上海具身智能公司大晓机器人（ACE Robotics）的世界模型，技术报告作者包括王晓刚、陶大程，据报道公司由商汤联合创始人王晓刚牵头。开悟 3.0 于 2025 年 12 月发布并开源 40 亿参数预训练权重，2026 年 6 月发布技术报告，7 月开源 3.1 版及世界-动作模型推理代码。它主张世界模型不必逼真生成全部像素，而要保留对控制有用的信息，如物体状态、接触、任务进度和动作后果。具体做法：按「看普通视频→看人类行为→机器人交互」的顺序安排训练数据；用统一架构同时做理解、生成和预测；用混合线性时序注意力降低长时推理的开销。",
+  "example": "开源的 kairos-4B-robot-RoboTwin2.0 权重在 RoboTwin 2.0 的 50 多个双臂任务上同时预测未来画面和动作，官方称取得该基准最好成绩。",
+  "related": ["世界模型", "世界动作模型", "具身大模型", "视频生成模型", "大晓机器人", "RoboTwin"],
+  "sources": [
+    {"title": "Kairos: A Regret-Aware Native World-Action Model Stack for Physical AI (arXiv 2606.16533，v1 题为 A Native World Model Stack for Physical AI)", "url": "https://arxiv.org/abs/2606.16533"},
+    {"title": "kairos-agi/kairos (GitHub)", "url": "https://github.com/kairos-agi/kairos"},
+    {"title": "大晓机器人官网", "url": "https://www.acerobotics.com"}
+  ],
+  "as_of": "2026-07"
+},
+{
+  "name_zh": "KnowNo（会求助的机器人）",
+  "name_en": "KnowNo: Robots That Ask For Help (Uncertainty Alignment for LLM Planners)",
+  "abbr": "",
+  "aliases": ["KnowNo", "Robots That Ask For Help", "会求助的机器人"],
+  "tier": 3,
+  "one_liner": "让大模型规划器在拿不准时主动问人，并用共形预测给成功率打统计保证。",
+  "explanation": "KnowNo 是普林斯顿大学与 Google DeepMind 2023 年 7 月发布的工作，获 CoRL 2023 最佳学生论文。大语言模型做机器人任务规划时，遇到含糊指令常会自信地给出错误计划。KnowNo 把每一步规划变成选择题：先让模型列出几个候选动作，再用共形预测（一种只需少量标定数据、能给统计覆盖保证的方法）筛出候选集合，保证正确选项以用户设定的概率（如 80%）落在集合里。集合里只剩一个选项就直接执行，有多个就停下来问人。它无需微调模型，在移动操作、桌面重排、双臂操作上做了验证，能在保证成功率的同时尽量少求助。",
+  "example": "移动操作场景里用户说「把薯片放进抽屉」，但现场不止一种薯片、也不止一个抽屉，候选集合里剩多个选项，机器人就先问清楚再动手。",
+  "related": ["大语言模型", "大模型任务规划", "不确定性估计", "幻觉", "人在回路", "SayCan"],
+  "sources": [
+    {"title": "Robots That Ask For Help: Uncertainty Alignment for Large Language Model Planners (arXiv 2307.01928)", "url": "https://arxiv.org/abs/2307.01928"},
+    {"title": "KnowNo 项目页", "url": "https://robot-help.github.io/"}
+  ],
+  "as_of": "2023-11"
+},
+{
+  "name_zh": "KungfuBot",
+  "name_en": "KungfuBot: Physics-Based Humanoid Whole-Body Control for Learning Highly-Dynamic Skills",
+  "abbr": "PBHC",
+  "aliases": ["KungfuBot2", "PBHC", "VMS"],
+  "tier": 3,
+  "one_liner": "让宇树 G1 学会功夫、舞蹈等高动态动作的人形全身动作模仿框架。",
+  "explanation": "KungfuBot 由中国电信人工智能研究院（TeleAI）联合上海交大、华东理工、哈工大、上海科技大学于 2025 年 6 月发布，入选 NeurIPS 2025，方法名 PBHC，代码开源。此前的人形运动跟踪大多只能模仿平缓、低速的动作。PBHC 先处理数据：从视频提取 SMPL 人体姿态，用物理指标剔除机器人做不到的动作、修正脚部接触，再重定向到宇树 G1；再用强化学习训练跟踪策略，把跟踪误差的容忍度做成随误差自适应调整的双层优化，相当于自动课程。2025 年 9 月的续作 KungfuBot2 用正交混合专家让一个策略掌握多种技能，并能稳定跟踪长达数分钟的动作。",
+  "example": "G1 照着人类视频做出跳踢、回旋踢、马步冲拳和太极等动作，项目页一共展示了 15 种这类高动态技能。",
+  "related": ["运动跟踪", "动作重定向", "宇树 G1", "SMPL 人体模型", "非对称演员-评论家", "学习型全身控制"],
+  "sources": [
+    {"title": "KungfuBot: Physics-Based Humanoid Whole-Body Control for Learning Highly-Dynamic Skills (arXiv 2506.12851)", "url": "https://arxiv.org/abs/2506.12851"},
+    {"title": "KungfuBot 项目页", "url": "https://kungfubot.github.io"},
+    {"title": "KungfuBot2: Learning Versatile Motion Skills for Humanoid Whole-Body Control (arXiv 2509.16638)", "url": "https://arxiv.org/abs/2509.16638"}
+  ],
+  "as_of": "2025-10"
+},
+{
+  "name_zh": "Language to Rewards（L2R）",
+  "name_en": "Language to Rewards for Robotic Skill Synthesis",
+  "abbr": "L2R",
+  "aliases": ["Language to Rewards", "语言到奖励"],
+  "tier": 3,
+  "one_liner": "让大语言模型把人话翻译成奖励函数，再交给实时优化器生成机器人动作。",
+  "explanation": "Language to Rewards 是 Google DeepMind 2023 年 6 月发布的工作，CoRL 2023 口头报告。让大模型直接出动作或调用预设技能，很难做出「站起来」「太空步」这类底层动作。L2R 改让大模型写奖励函数：奖励翻译器先把指令展开成动作描述，再写成奖励代码（各项目标及权重）；运动控制器用 MuJoCo MPC（基于模型预测控制的实时优化器）按奖励求解动作，并随用户追加的纠正实时重规划。在模拟四足机器人和灵巧机械手的 17 个任务上它完成了 90%，基于预设技能原语的基线为 50%；在真实机械臂上也演示了推动物体。它和 Eureka 同属「让大模型写奖励」的路线。",
+  "example": "用户让模拟四足机器人「像跳太空步一样后退」，看效果后再补几句纠正，几轮对话后机器人学会了太空步。",
+  "related": ["奖励函数", "模型预测控制", "大语言模型", "代码即策略", "Eureka", "MuJoCo"],
+  "sources": [
+    {"title": "Language to Rewards for Robotic Skill Synthesis (arXiv 2306.08647)", "url": "https://arxiv.org/abs/2306.08647"},
+    {"title": "Language to Rewards 项目页", "url": "https://language-to-reward.github.io/"}
+  ],
+  "as_of": "2023-11"
+},
+{
+  "name_zh": "OP3 足球（DeepMind 双足踢球）",
+  "name_en": "Learning Agile Soccer Skills for a Bipedal Robot with Deep Reinforcement Learning (OP3 Soccer)",
+  "abbr": "",
+  "aliases": ["OP3 Soccer", "DeepMind 机器人足球", "Learning Agile Soccer Skills"],
+  "tier": 3,
+  "one_liner": "DeepMind 用深度强化学习教小型人形机器人 OP3 一对一踢足球。",
+  "explanation": "这是 Google DeepMind 的工作，2023 年 4 月上 arXiv，2024 年 4 月发表于 Science Robotics。机器人是 Robotis 公司的 OP3，一款有 20 个可驱动关节的低成本小型人形机器人，任务是简化的一对一足球。训练全在 MuJoCo 仿真中进行：先分别训练起身、射门等技能，再蒸馏进一个策略，并与自己的历史版本对打（自博弈）继续提升。靠较高的控制频率、有针对性的动力学随机化和训练时施加扰动，策略零样本迁移到真机。与脚本控制器相比，行走快 181%、转身快 302%、起身时间少 63%、踢球快 34%。它是深度强化学习让双足机器人做敏捷全身动作的早期代表。",
+  "example": "比赛中机器人会预判球的走向、侧身挡住对手的射门；被撞倒后能迅速爬起来继续追球。",
+  "related": ["强化学习", "仿真到现实迁移", "域随机化", "自博弈", "策略蒸馏", "谷歌 DeepMind"],
+  "sources": [
+    {"title": "Learning Agile Soccer Skills for a Bipedal Robot with Deep Reinforcement Learning (arXiv 2304.13653)", "url": "https://arxiv.org/abs/2304.13653"},
+    {"title": "OP3 Soccer 项目页", "url": "https://sites.google.com/view/op3-soccer"}
+  ],
+  "as_of": "2024-04"
+},
+{
+  "name_zh": "Google 机械臂农场（大规模抓取自监督）",
+  "name_en": "Learning Hand-Eye Coordination for Robotic Grasping with Deep Learning and Large-Scale Data Collection (Google Arm Farm)",
+  "abbr": "",
+  "aliases": ["Arm Farm", "机械臂农场", "谷歌抓取农场"],
+  "tier": 3,
+  "one_liner": "谷歌 2016 年让十几台机械臂反复试抓 80 多万次、从数据中自学抓取。",
+  "explanation": "这是谷歌 Sergey Levine、Peter Pastor、Alex Krizhevsky、Deirdre Quillen 于 2016 年 3 月发布的工作（ISER 2016 论文的扩展版），因一排机械臂同时干活的场景被称作「机械臂农场」。他们让 6 到 14 台机械臂在约两个月里自主尝试抓取 80 多万次，成败自动判定，不靠人工标注。用这些数据训练卷积神经网络：输入单目相机图像和一个候选的夹爪运动，预测这样动能否抓成功；执行时不断挑选最优运动、边看边调（视觉伺服），无需相机标定。闭环抓取的失败率从开环的 34% 降到 18%。它开启了「大规模真机数据 + 深度学习」路线，QT-Opt、MT-Opt 都沿用这一思路。",
+  "example": "抓取途中发现夹爪偏了，机器人会根据画面实时修正；面对挤在一起的一堆物体，它还会先把其中一个拨开再抓。",
+  "related": ["机械臂农场", "手眼协调", "视觉伺服", "自监督学习", "QT-Opt", "MT-Opt"],
+  "sources": [
+    {"title": "Learning Hand-Eye Coordination for Robotic Grasping with Deep Learning and Large-Scale Data Collection (arXiv 1603.02199)", "url": "https://arxiv.org/abs/1603.02199"},
+    {"title": "Deep Learning for Robots: Learning from Large-Scale Interaction (Google Research Blog, 2016-03)", "url": "https://research.google/blog/deep-learning-for-robots-learning-from-large-scale-interaction/"}
+  ],
+  "as_of": "2016-03"
+},
+{
+  "name_zh": "LEO（3D 具身通才智能体）",
+  "name_en": "LEO: An Embodied Generalist Agent in 3D World (BIGAI)",
+  "abbr": "LEO",
+  "aliases": ["An Embodied Generalist Agent in 3D World", "LEO 智能体"],
+  "tier": 3,
+  "one_liner": "北京通研院提出的 3D 具身通才模型，能看懂三维场景、回答问题、导航和操作。",
+  "explanation": "LEO 由北京通用人工智能研究院（BIGAI）联合北大、卡内基梅隆大学和清华提出，2023 年 11 月发布，发表于 ICML 2024。当时的多模态大模型多只处理 2D 图片，难以完成定义在三维场景里的任务。LEO 把第一人称图像、以物体为中心的 3D token（每个物体的点云经 PointNet++ 编码，再用空间 Transformer 建模物体间关系）和文字指令拼成一个序列，交给用 LoRA 微调的 Vicuna-7B，动作也离散成 token 输出。训练分两阶段：先做 3D 视觉-语言对齐，再做 3D 视觉-语言-动作指令微调，数据靠大模型辅助生成。它能做 3D 描述、问答、具身推理、导航和操作，是 3D VLA 的早期代表。",
+  "example": "给 LEO 一个房间的 3D 扫描，问「沙发旁边的桌子上有什么」，它用文字回答；做物体导航时，它看第一人称画面逐步输出前进、左转等动作去找目标。",
+  "related": ["3D VLA", "3D-LLM", "北京通用人工智能研究院", "具身智能体", "以物体为中心的表示", "低秩适配"],
+  "sources": [
+    {"title": "An Embodied Generalist Agent in 3D World (arXiv 2311.12871)", "url": "https://arxiv.org/abs/2311.12871"},
+    {"title": "LEO 项目页", "url": "https://embodied-generalist.github.io/"}
+  ],
+  "as_of": "2024-07"
+},
+{
+  "name_zh": "LeVERB",
+  "name_en": "LeVERB: Humanoid Whole-Body Control with Latent Vision-Language Instruction",
+  "abbr": "",
+  "aliases": ["Latent Vision-Language-Encoded Robot Behavior", "LeVERB-Bench"],
+  "tier": 3,
+  "one_liner": "用「潜在动词」把视觉语言模型和人形全身控制器连起来的双系统框架。",
+  "explanation": "LeVERB 由加州大学伯克利分校牵头，合作者包括彭学斌、Trevor Darrell、Koushil Sreenath 等，2025 年 6 月发布。已有 VLA 多假定底层控制器只接收末端位姿、底盘速度这类人工定义的指令，只能做准静态任务。LeVERB 分两层：上层 LeVERB-VL（System 2，10Hz）用 SigLIP 编码第一、第三人称图像和指令，通过条件变分自编码器学出一个「潜在动词」空间；下层 LeVERB-A（System 1，50Hz）是全身控制器，先用 PPO 训练跟踪参考动作的教师，再用 DAgger 蒸馏成以潜在动词为条件的学生。作者用 IsaacSim 渲染动捕回放，建了 150 多个任务的 LeVERB-Bench。在宇树 G1 上零样本部署，简单视觉导航成功率 80%，整体 58.5%，是朴素分层方案的 7.8 倍。",
+  "example": "对机器人说「走到红色椅子前坐下」，上层模型看相机画面输出潜在动词，下层控制器据此让 G1 走过去、转身坐下。",
+  "related": ["学习型全身控制", "快慢双系统", "潜在动作", "条件变分自编码器", "宇树 G1", "DAgger（数据集聚合）"],
+  "sources": [
+    {"title": "LeVERB: Humanoid Whole-Body Control with Latent Vision-Language Instruction (arXiv 2506.13751)", "url": "https://arxiv.org/abs/2506.13751"}
+  ],
+  "as_of": "2025-09"
+}
+]}

@@ -1,0 +1,237 @@
+{
+ "batch": "model-02",
+ "terms": [
+  {
+   "key": "model-02#0",
+   "name_en": "Foundation Model",
+   "aliases": [
+    "Foundation Models"
+   ],
+   "one_liner": "A large model pretrained on massive data that can later adapt to many different downstream tasks.",
+   "explanation": "The term “foundation model” was coined by more than a hundred Stanford researchers in a long 2021 survey: a model trained on large-scale, diverse data, usually with self-supervised learning, which builds training targets from the data itself rather than from human labels, and that can then adapt to many downstream tasks through fine-tuning or prompting; the paper's examples are BERT, GPT-3, and DALL-E. It changed the old habit of training one model per task: spend a lot of compute once on a general-purpose base, then adjust it a little for each task, at the cost that any flaw in the base gets inherited by every downstream model. In embodied AI, VLAs are usually built on a vision-language model base, and a model pretrained on large amounts of robot data that can adapt to many robots and tasks is commonly called a robot foundation model or embodied foundation model.",
+   "example": "π0 is built on PaliGemma, Google's open-source vision-language model with 3 billion parameters, adding a 300-million-parameter action expert, and is trained on robot data into a robot foundation model that can then be fine-tuned further for specific tasks.",
+   "related": [
+    "Large Language Model",
+    "Vision-Language Model",
+    "Embodied Foundation Model",
+    "Pre-training",
+    "Fine-tuning",
+    "Vision-Language-Action Model"
+   ]
+  },
+  {
+   "key": "model-02#1",
+   "name_en": "Generalist Robot Policy",
+   "aliases": [
+    "Generalist Policy"
+   ],
+   "one_liner": "A single model that can output actions across many tasks, scenes, or even many different robots.",
+   "explanation": "A policy is a function that decides the next action from the current observation, usually a neural network in robot learning. Traditionally, a separate specialist policy is trained per task and per robot, and changing the object or the scene often means recollecting data and retraining. A generalist policy goes the other way: train one large model on large-scale data spanning many robots and many tasks, so it can follow a language instruction to complete many different tasks, and generalize somewhat to new settings, needing only a little data to fine-tune when it meets a new robot or new task. A typical example is Octo, open-sourced by Berkeley and collaborators in 2024, trained on 800,000 trajectories from Open X-Embodiment, a cross-robot dataset pooled from many institutions, and validated on 9 robot platforms. Later VLAs such as OpenVLA and Physical Intelligence's π0 series also aim to be generalist policies.",
+   "example": "After Octo is pretrained, researchers collect only a small amount of demonstration data on a new robot and fine-tune it for a few hours on a consumer GPU, letting it adapt to new camera inputs and a new action space.",
+   "related": [
+    "Policy",
+    "Specialist Policy",
+    "Octo",
+    "Cross-Embodiment",
+    "Vision-Language-Action Model",
+    "Generalization"
+   ]
+  },
+  {
+   "key": "model-02#2",
+   "name_en": "Hierarchical Architecture",
+   "aliases": [
+    "Hierarchical Policy",
+    "Hierarchical Scheme",
+    "High-Level Planning + Low-Level Execution",
+    "Hierarchical VLA"
+   ],
+   "one_liner": "Splitting robot decision-making into a high-level planner and a low-level executor, run by two different models.",
+   "explanation": "A hierarchical architecture splits “what to do” from “how to do it”: the high level is usually a large language model or vision-language model that understands the instruction and the scene and breaks a long task into steps, running at low frequency; the low level is a skill library, a VLA policy, or a motion controller that turns each step into motor commands, running at high frequency. The two levels can exchange language instructions, keypoints, or a latent vector. An early example is Google's 2022 SayCan, which has a large language model pick the next step from a robot's existing skill library; 2025's Hi Robot, from Physical Intelligence with Stanford and Berkeley, has a vision-language model output short language instructions for π0 to carry out. It is often contrasted with end-to-end approaches, where one model goes directly from input to action, but the two are not mutually exclusive: China's “brain-cerebellum” framing and dual-system architectures are both hierarchical in spirit, and a dual-system model such as Helix, despite having two layers, is trained end-to-end jointly.",
+   "example": "Figure's Helix splits into two layers: a 7-billion-parameter vision-language model understands the scene and the instruction at 7 to 9Hz, and an 80-million-parameter low-level policy turns what it outputs into continuous actions at 200Hz.",
+   "related": [
+    "Dual-System Architecture",
+    "Robot Brain / Cerebellum (Brain-Cerebellum Architecture)",
+    "End-to-End",
+    "SayCan",
+    "Hi Robot",
+    "Long-horizon Task"
+   ]
+  },
+  {
+   "key": "model-02#3",
+   "name_en": "Inference Latency",
+   "aliases": [
+    "Inference Delay",
+    "Model Latency"
+   ],
+   "one_liner": "The time a model takes from receiving input to producing output, which determines how quickly a robot can react.",
+   "explanation": "Inference latency is the time a model takes, after receiving one frame of observation — image, joint state, instruction — to finish its forward computation and produce an action, usually measured in milliseconds. Large models are compute-heavy, and their latency often can't keep up with a robot's control frequency of tens to hundreds of hertz: the 7-billion-parameter OpenVLA produces an action at only about 6Hz on an RTX 4090; the π0 paper measured about 73 milliseconds for one full inference with 3 camera views on the same GPU, or about 86 milliseconds when computed on a separate computer and sent over Wi-Fi. Too much latency makes a robot pause between action segments, or fail to keep up with a moving object. Common fixes include action chunking, outputting dozens of steps at once; asynchronous inference, computing the next segment while the current one executes; quantization and inference acceleration; and splitting large and small models into layers that each run at their own frequency.",
+   "example": "π0 controls a 50Hz robot by outputting 50 steps of action per inference call, executing 25 of them, 0.5 seconds, before running inference again for the next segment, instead of running the large model at every single step.",
+   "related": [
+    "Inference (Forward Pass)",
+    "Action Chunking",
+    "Asynchronous Inference",
+    "Real-Time Chunking",
+    "Control Frequency",
+    "Post-Training Quantization"
+   ]
+  },
+  {
+   "key": "model-02#4",
+   "name_en": "Large Language Model",
+   "aliases": [
+    "LLM",
+    "Large Model",
+    "Language Large Model"
+   ],
+   "one_liner": "A very large neural network trained on massive text that can understand and generate natural language.",
+   "explanation": "A large language model is a neural network trained on massive amounts of text, generally based on the Transformer architecture, with next-token prediction — predicting the next token, the smallest unit of text a model processes — as its main training objective. At sufficient scale, these models can perform new tasks just from a few examples in the prompt, without changing their weights: OpenAI's 2020 GPT-3, with 175 billion parameters, demonstrated this few-shot ability in its paper, and after ChatGPT launched in late 2022, large language models saw widespread adoption. In robotics, they are mainly used to understand human instructions, break long tasks into steps, as in SayCan, and generate control code, as in code-as-policies. Most VLA backbones are also large language models — OpenVLA, for instance, is built on Llama 2 with a vision encoder attached.",
+   "example": "Told “I spilled my Coke, can you bring me something to clean it up,” SayCan has a large language model score every skill the robot knows, combines that with an estimate of how likely each step is to succeed right now, and picks, in order, find the sponge, pick up the sponge, bring it over, done, which the robot then carries out step by step.",
+   "related": [
+    "Transformer",
+    "Token",
+    "Next-Token Prediction",
+    "Vision-Language Model",
+    "LLM-based Task Planning",
+    "SayCan"
+   ]
+  },
+  {
+   "key": "model-02#5",
+   "name_en": "Neural Network",
+   "aliases": [
+    "Deep Neural Network",
+    "Artificial Neural Network",
+    "ANN",
+    "DNN"
+   ],
+   "one_liner": "A model made of many connected artificial neurons that learns by adjusting the strength of those connections.",
+   "explanation": "A neural network is a class of machine-learning model built from many simple computing units, artificial neurons, connected together: each unit takes a weighted sum of its inputs and passes it through a nonlinear function, the activation function, into the next layer. The strength of a connection is its weight, which is the model's parameter. Training measures the gap between the output and the correct answer with a loss function, then uses backpropagation to compute which direction to nudge each weight, repeating until the error shrinks. A network with at least two hidden layers between its input and output layers is generally called a deep neural network. AlexNet's decisive win over traditional methods at the 2012 ImageNet competition kicked off the deep-learning boom. Today's vision encoders, Transformers, VLAs, and reinforcement-learning policies in embodied AI are all, underneath, neural networks.",
+   "example": "A common reinforcement-learning walking policy for a legged robot is often just a multilayer perceptron a few layers deep: it takes in joint angles, IMU readings, and a velocity command, and outputs a target angle for every joint.",
+   "related": [
+    "Multilayer Perceptron",
+    "Convolutional Neural Network",
+    "Transformer",
+    "Backpropagation",
+    "Parameter Count",
+    "Loss Function"
+   ]
+  },
+  {
+   "key": "model-02#6",
+   "name_en": "Parameter Count (Model Size)",
+   "aliases": [
+    "Model Scale",
+    "Model Size",
+    "B (billion parameters)",
+    "M (million parameters)"
+   ],
+   "one_liner": "The total number of trainable numbers, or weights, in a model, usually written with B for billion or M for million.",
+   "explanation": "Parameters are the numbers a neural network learns through training, mainly the weights and biases of each layer, and the parameter count is simply how many of them there are. 7B means 7 billion parameters; 300M means 300 million. Parameter count broadly determines a model's capacity, and how much compute, memory, and time training and deployment cost. Counting weights alone, memory can be roughly estimated as parameter count times bytes per parameter: OpenVLA, despite being called “7B,” actually has about 7.5 billion parameters, taking roughly 15GB loaded in bfloat16 (2 bytes per parameter), plus more at runtime. Robot models vary enormously in size: RT-2's largest version has 55 billion parameters, π0 has about 3.3 billion, and Hugging Face's SmolVLA has only 450 million. More parameters isn't always better: OpenVLA, with roughly a seventh of RT-2-X's 55 billion parameters, actually scored 16.5 percentage points higher in overall success rate across 29 tasks.",
+   "example": "Figure's Helix splits its two parts at very different scales: the 7-billion-parameter vision-language model handling understanding runs only 7 to 9 times per second, while the 80-million-parameter policy producing actions runs 200 times per second.",
+   "related": [
+    "Neural Network",
+    "Scaling Law",
+    "Inference Latency",
+    "Post-Training Quantization",
+    "On-device Model",
+    "Foundation Model"
+   ]
+  },
+  {
+   "key": "model-02#7",
+   "name_en": "Robot Brain / Cerebellum (Brain-Cerebellum Architecture)",
+   "aliases": [
+    "Brain-Cerebellum Architecture",
+    "Brain-Cerebellum",
+    "Embodied Brain",
+    "Motor Cerebellum"
+   ],
+   "one_liner": "A term used in China's robotics industry for a layered robot system: the ‘brain’ understands and plans, the ‘cerebellum’ controls motion.",
+   "explanation": "This is a popular term used in China's embodied-AI industry, borrowed from the division of labor in the human brain; at its core it is one kind of hierarchical architecture. The “brain” is usually a multimodal large model, one that can process both images and text at once, responsible for understanding the scene, understanding the instruction, breaking down the task, and correcting errors, running at low frequency; the “cerebellum” turns subtasks into continuous, stable joint motion, and can be a VLA policy, a skill library, or a motion controller trained with reinforcement learning or model-predictive control, running at high frequency and closer to the hardware. BAAI's 2025 RoboOS uses its multimodal large model RoboBrain as the brain and calls its pluggable skill library the cerebellum. Different companies draw the boundary of the “cerebellum” differently: some mean only locomotion and balance, others include the grasping policy too. China's Ministry of Industry and Information Technology's 2023 guidance on humanoid robots also organizes key technologies as brain, cerebellum, and limbs, with the brain built on AI foundation models and the cerebellum handling motor control.",
+   "example": "In a BAAI RoboOS restaurant demo, a customer says “I'm hungry, I'd like a plain burger,” and RoboBrain breaks this into subtasks such as preparing and delivering the food, assigning them to a humanoid robot and a dual-arm robot, each of which then calls skills from its own cerebellum skill library to execute.",
+   "related": [
+    "Hierarchical Architecture",
+    "Dual-System Architecture",
+    "Brain–Cerebellum Architecture",
+    "RoboBrain (BAAI embodied brain model)",
+    "Motion Control / Locomotion Control",
+    "Whole-Body Control"
+   ]
+  },
+  {
+   "key": "model-02#8",
+   "name_en": "Token",
+   "aliases": [
+    "Marker"
+   ],
+   "one_liner": "The basic unit a model processes data in; text, image patches, and actions can all be broken into tokens.",
+   "explanation": "A token is the basic unit that Transformer-style models read and produce. Text is first cut by a tokenizer into words or sub-word pieces; each piece has an index in a vocabulary, which is then turned into a vector, an embedding, and fed into the model — a large language model's training objective is exactly to predict the next token. In English, a token is often a word or part of a word; in Chinese, a single character may be its own token, or may get split up or merged with neighboring characters, depending on the tokenizer. The idea has since spread to other modalities: ViT cuts an image into 16×16-pixel patches, each one becoming a visual token; RT-2 and OpenVLA discretize each action dimension into 256 bins, each bin becoming a token, so a language model can output actions the same way it writes text. Context length is measured in tokens, and inference time grows with token count too.",
+   "example": "OpenVLA repurposes the 256 least-used tokens in the Llama tokenizer's vocabulary as action bins, so a 7-dimensional action — position, orientation, and gripper open/close — comes out as 7 tokens.",
+   "related": [
+    "Tokenizer",
+    "Embedding",
+    "Visual Token",
+    "Action Tokenizer",
+    "Next-Token Prediction",
+    "Context Length"
+   ]
+  },
+  {
+   "key": "model-02#9",
+   "name_en": "Transformer",
+   "aliases": [
+    "Transformer Architecture"
+   ],
+   "one_liner": "A neural network architecture built entirely around attention, the shared backbone of large language models and VLAs.",
+   "explanation": "The Transformer was introduced by a Google team in the 2017 paper “Attention Is All You Need,” originally for machine translation. It does away with recurrence and convolution entirely, processing sequences purely through attention, which lets every token in a sequence directly weigh and pull in information from every other token by relevance. Compared with a recurrent network, which processes a sequence step by step, it can be computed in parallel, trains faster, and scales up far more easily, which made it the shared architecture behind large language models such as GPT and Llama, and vision models such as ViT. The original design is an encoder-decoder; GPT-style models use only the decoder half. Robotics started adopting it heavily around 2022, with Google's RT-1 (Robotics Transformer) a notable early example; today's VLAs, world models, and many diffusion policies are all built on a Transformer backbone.",
+   "example": "OpenVLA's backbone, Llama 2, is a decoder-only Transformer: image tokens and instruction tokens are arranged into one sequence as input, and the model outputs, one token at a time, the tokens that represent the action.",
+   "related": [
+    "Attention Mechanism",
+    "Self-Attention",
+    "Decoder-only Architecture",
+    "Encoder-Decoder",
+    "Vision Transformer",
+    "RT-1"
+   ]
+  },
+  {
+   "key": "model-02#10",
+   "name_en": "Vision Encoder",
+   "aliases": [
+    "Image Encoder",
+    "Visual Backbone Network"
+   ],
+   "one_liner": "A network that turns an image into a set of feature vectors, or visual tokens, for downstream models to use.",
+   "explanation": "A vision encoder turns pixels into features a model can use: given an image, it outputs a set of vectors, each summarizing the content of a small region. Early designs mostly used convolutional networks such as ResNet; the mainstream today is the Vision Transformer (ViT), which cuts an image into patches — 16×16 pixels in the original ViT — turns each patch into a vector, and uses attention to let the patches exchange information. An encoder's ability mostly comes from pretraining: OpenAI's 2021 CLIP trained on 400 million web image-text pairs to align images and text in the same space; SigLIP is Google's improved version built on that idea; and Meta's DINOv2 trains purely on images with self-supervision, preserving more spatial and geometric detail. VLAs usually use an off-the-shelf vision encoder as is, connecting its features to the language model through a projection layer, and may freeze it or fine-tune it jointly during training.",
+   "example": "OpenVLA feeds a 224×224 image into both SigLIP and DINOv2 at once, concatenates the two sets of features channel-wise, and passes them through a two-layer MLP projection layer to turn them into visual tokens the language model can read.",
+   "related": [
+    "Vision Transformer",
+    "CLIP",
+    "SigLIP",
+    "DINOv2",
+    "Projector / Connector",
+    "Visual Token"
+   ]
+  },
+  {
+   "key": "model-02#11",
+   "name_en": "Vision-Language Model",
+   "aliases": [
+    "VLM"
+   ],
+   "one_liner": "A model that takes in both images and text and answers in text; the base that most VLAs build on.",
+   "explanation": "A vision-language model takes in an image and text and outputs text: it can describe a picture, answer questions about it, or point out where an object is. Three parts are common: a vision encoder turns the image into features, a projection layer aligns those features to the language model's input space, and the language model handles understanding and generating the text. 2023's LLaVA, for instance, is a CLIP encoder plus a projection layer plus the Vicuna language model; Google's 2024 open-source PaliGemma combines a SigLIP encoder with Gemma-2B, at about 3 billion parameters. The objects, common sense, and spatial knowledge a VLM picks up from internet image-text data are exactly what robots lack, which is why most VLAs start from a VLM: RT-2 adds robot data on top of PaLI-X and PaLM-E through joint fine-tuning, and π0 is built on PaliGemma. VLMs are also commonly used on their own as the high-level planner in a hierarchical architecture.",
+   "example": "Ask a VLM about a kitchen photo, “what's to the left of the sink,” and it answers in text; swap the output for action tokens and train it further on robot data, and you get a VLA like RT-2.",
+   "related": [
+    "Vision-Language-Action Model",
+    "Vision Encoder",
+    "Projector / Connector",
+    "Large Language Model",
+    "PaliGemma",
+    "Multimodal Large Language Model"
+   ]
+  }
+ ]
+}

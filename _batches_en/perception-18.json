@@ -1,0 +1,113 @@
+{
+  "batch": "perception-18",
+  "terms": [
+    {
+      "key": "perception-18#0",
+      "name_en": "Luxonis OAK-D",
+      "aliases": ["OAK 4", "OpenCV AI Kit", "DepthAI Camera"],
+      "one_liner": "A stereo depth camera from Luxonis with a built-in AI chip, letting neural networks run directly on the camera.",
+      "explanation": "OAK is Luxonis’s camera product line, with the OAK-D as its most common model: two global-shutter monochrome cameras do stereo depth sensing (a 7.5 cm baseline, with an official ideal range of about 0.8–12 meters), a color camera sits in the middle, a 9-axis IMU is built in, and it connects to a computer over USB. Its distinguishing feature is an onboard compute chip (the RVC2 platform, rated at 4 TOPS, with 1.4 TOPS available for AI), so depth computation and neural networks like object detection can run entirely on the camera, sending only the results to the host — well suited to small robots with limited onboard compute. The newer OAK 4 series switches to a Qualcomm QCS8550 chip (the RVC4 platform, 48 INT8 TOPS) with a 6-core ARM CPU running Linux, letting it operate independently without a host computer. Its companion open-source library is called DepthAI (written in C++, with Python bindings, MIT licensed), with an official ROS driver, depthai-ros, also available.",
+      "example": "Mounting an OAK-D on a low-cost mobile robot, the official ROS driver publishes color and depth images to ROS topics while an object-detection network runs on the camera itself, so the host only receives detection results, saving onboard compute.",
+      "related": ["Depth Camera", "Stereo Camera", "RealSense Depth Camera (D435i / D405)", "Orbbec Gemini 330 Series", "ZED Stereo Camera", "Edge Deployment"]
+    },
+    {
+      "key": "perception-18#1",
+      "name_en": "Magnetic Tactile Sensing",
+      "aliases": ["Hall-Effect Tactile Sensing", "Magnetic Tactile Skin"],
+      "one_liner": "Mixes magnetic particles into a soft gel and uses a magnetometer to sense contact from the magnetic-field change deformation causes.",
+      "explanation": "Magnetic tactile sensing is one approach to building tactile sensors: magnetized particles or small magnets are embedded in a soft elastomer, with a Hall-effect sensor or magnetometer placed underneath. When the elastomer touches an object it deforms, the embedded magnetic source moves with it, and the magnetic-field reading changes accordingly; calibration or machine learning then converts this reading into contact location, pressure, and shear force (force along the surface). The advantage is that the soft gel layer is separate from the circuit board, so a worn gel pad can simply be swapped out, keeping cost low and shape easy to customize; the drawback is susceptibility to external magnetic fields and nearby motors, with spatial resolution usually lower than a vision-based tactile sensor’s. Landmark examples include ReSkin (CoRL 2021), a collaboration between Carnegie Mellon University and Meta, and Lerrel Pinto’s group’s AnySkin (2024), the latter built around the idea that swapping in a fresh skin lets an already-trained manipulation policy keep working without recalibration.",
+      "example": "The AnySkin paper mounts magnetic skin on gripper fingertips for slip detection and policy learning, and shows that after swapping in a different, fresh skin the policy still works directly.",
+      "related": ["Tactile Sensor", "ReSkin / AnySkin", "uSkin", "Vision-Based Tactile Sensor", "Electronic Skin", "Slip Detection"]
+    },
+    {
+      "key": "perception-18#2",
+      "name_en": "MapAnything",
+      "aliases": ["MapAnything: Universal Feed-Forward Metric 3D Reconstruction", "Map Anything"],
+      "one_liner": "Meta and CMU’s general-purpose feed-forward 3D reconstruction model that directly outputs true-scale scene structure.",
+      "explanation": "MapAnything was released by Meta Reality Labs and Carnegie Mellon University in September 2025, a Transformer-based feed-forward 3D reconstruction model: given one or more images, optionally supplemented with camera intrinsics, poses, depth, or partial reconstruction results, a single forward pass outputs each image’s depth map, local ray map, camera pose, and a unified metric scale factor — together forming a 3D scene at true, meter-based scale. Tasks that used to each need their own algorithm — uncalibrated structure from motion, multi-view stereo, monocular depth estimation, camera localization, depth completion — are all covered by this one model. It belongs to the same feed-forward reconstruction lineage as DUSt3R and VGGT, with code and weights open-sourced (including an Apache-licensed version). For robotics, it can turn a handful of photos into a metric point cloud that is directly usable for planning.",
+      "example": "Taking a few phone photos around a tabletop with no camera parameters provided, MapAnything can output a metric-scale point cloud and each photo’s camera pose; if camera intrinsics are known, they can also be supplied as a constraint.",
+      "related": ["Feed-Forward 3D Reconstruction", "DUSt3R", "VGGT", "MASt3R", "Structure from Motion", "Metric Depth / Relative Depth"]
+    },
+    {
+      "key": "perception-18#3",
+      "name_en": "Marker Tracking",
+      "aliases": ["Tactile Markers", "Marker Displacement", "Marker Flow"],
+      "one_liner": "Prints a dot pattern on a vision-based tactile sensor’s soft gel and tracks the dots’ displacement to estimate shear force and slip.",
+      "explanation": "Marker tracking is a common signal-processing method for vision-based tactile sensors (which photograph a soft gel’s deformation with a camera, like GelSight): rows of black dots are printed between the elastomer and its reflective coating, and on contact the camera captures how these dots shift laterally across the gel surface, with point-by-point tracking giving a displacement field. The 2017 GelSight paper by Yuan, Dong, and Adelson summarized how to read it: under normal pressure the markers spread outward from the contact center; under shear force they shift together in the shear direction; a rotational pattern indicates an in-plane torque; and displacement magnitude is roughly proportional to force. When an object is about to slip, points near the edge of the contact region start moving first while the center stays still — this non-uniformity can be used to detect slip before it fully happens. Looking only at the gel’s surface bumps (photometric stereo) gives shape alone; markers add tangential-force information. Sensors like TacTip instead use the displacement of internal pins as their main signal.",
+      "example": "Gripping a cup with a gripper fitted with GelSight Mini sensors, if the outer-ring markers start moving in the same direction while the center markers stay roughly still, that signals the cup is about to slip, so the gripper can increase its grip force.",
+      "related": ["Vision-Based Tactile Sensor", "GelSight", "Slip Detection", "Photometric Stereo", "Normal Force and Tangential Force (Shear Force)", "Tactile Image"]
+    },
+    {
+      "key": "perception-18#4",
+      "name_en": "Mask R-CNN",
+      "aliases": [],
+      "one_liner": "An instance segmentation model from 2017, proposed by Kaiming He and colleagues, that outputs both detection boxes and a per-object mask.",
+      "explanation": "Mask R-CNN was proposed in 2017 by Kaiming He, Georgia Gkioxari, Piotr Dollár, and Ross Girshick at Facebook AI Research, winning the Marr Prize (best paper) at ICCV 2017. Building on the two-stage detector Faster R-CNN, it adds a branch to each candidate region that predicts a pixel-level mask in parallel, so one network does object detection and instance segmentation (separating out which pixels belong to each object) at the same time; an additional branch can also do human keypoint detection. The paper introduces RoIAlign, which replaces RoIPool’s rounding with bilinear interpolation, removing the misalignment between features and pixels, which noticeably improves mask accuracy. The ResNet-101-FPN version reaches a mask AP of 35.7 on COCO at about 5 frames per second. In robotics, it was long the standard baseline for segmenting objects in grasping and picking pipelines, though it is now often replaced by or paired with open-vocabulary methods like the SAM family and Grounded-SAM.",
+      "example": "In a bin-picking pipeline, a Mask R-CNN fine-tuned on photos of the company’s own parts first segments a mask for every part in the bin, and the point cloud corresponding to each mask is then passed to the grasp-pose-detection module.",
+      "related": ["Instance Segmentation", "Object Detection", "Mask", "Segment Anything Model", "Grounded-SAM", "Mean Average Precision"]
+    },
+    {
+      "key": "perception-18#5",
+      "name_en": "MASt3R-SLAM",
+      "aliases": ["MASt3R-SLAM: Real-Time Dense SLAM with 3D Reconstruction Priors"],
+      "one_liner": "A real-time monocular dense SLAM system built on MASt3R as a prior, able to map and localize from ordinary uncalibrated video.",
+      "explanation": "MASt3R-SLAM was proposed by Andrew Davison’s group at Imperial College London (Riku Murai, Eric Dexheimer, and colleagues), published at CVPR 2025 as a Highlight paper. It is a real-time monocular dense SLAM (simultaneous localization and mapping) system designed from the ground up around MASt3R, a two-view 3D reconstruction and matching model: for each new frame, it uses MASt3R to predict the point map and dense correspondences between that frame and the keyframes, then performs camera tracking, local fusion, loop closure, and a second-order global optimization, yielding a globally consistent camera trajectory and dense 3D geometry at about 15 frames per second. Traditional monocular SLAM usually needs the camera intrinsics calibrated beforehand; this system only assumes a single optical center and doesn’t depend on a fixed parametric camera model, so it can run on uncalibrated video too — and with known calibration, a small modification lets it reach the state of the art at the time. The open-source code supports live RealSense input, MP4 video, and folders of images.",
+      "example": "Recording a video indoors with a phone, with no camera calibration done, MASt3R-SLAM can estimate the camera trajectory and reconstruct a dense point cloud of the room.",
+      "related": ["MASt3R", "DUSt3R", "Simultaneous Localization and Mapping", "Visual SLAM", "DROID-SLAM", "Point Map"]
+    },
+    {
+      "key": "perception-18#6",
+      "name_en": "MASt3R",
+      "aliases": ["MASt3R: Grounding Image Matching in 3D"],
+      "one_liner": "Naver’s model that adds a matching head onto DUSt3R, outputting both a 3D point map and dense matching features.",
+      "explanation": "MASt3R was proposed by Vincent Leroy, Yohann Cabon, and Jérôme Revaud at Naver in 2024, published at ECCV 2024. Its starting premise is that image matching — finding the pixels in two images that correspond to the same physical point — is fundamentally a 3D problem, tightly bound up with camera pose and scene geometry. It builds on DUSt3R, which takes two images and directly regresses a 3D coordinate for every pixel (a point map), robust to large viewpoint changes but with limited matching accuracy — and adds a new head that outputs dense local features, trained with an additional matching loss, paired with a fast mutual-nearest-neighbor matching algorithm that speeds up matching by several orders of magnitude. It substantially leads on several matching benchmarks, with a 30-point absolute improvement in VCRE AUC on the Map-free localization dataset. Both MASt3R-SfM and MASt3R-SLAM are built around it. The code is released under a CC BY-NC-SA 4.0 license, non-commercial use only.",
+      "example": "Given two tabletop photos of a robot’s workspace taken from very different viewpoints, MASt3R can directly output the pixel correspondences between the two images along with each one’s 3D point map, from which the relative pose between the two viewpoints can be computed.",
+      "related": ["DUSt3R", "MASt3R-SLAM", "Feature Matching", "Point Map", "Feed-Forward 3D Reconstruction", "VGGT"]
+    },
+    {
+      "key": "perception-18#7",
+      "name_en": "Mean Average Precision",
+      "aliases": ["mAP", "AP", "mAP50", "mAP50-95"],
+      "one_liner": "The most common accuracy metric for object detection and segmentation: average precision (AP) per class, averaged across classes.",
+      "explanation": "Mean average precision (mAP) is the most common combined metric for object detection and instance segmentation. For a given class, all predictions are sorted by confidence, and a prediction only counts as correct if its intersection-over-union (IoU — the overlap area between predicted and ground-truth box, divided by their union area) with a ground-truth box exceeds a threshold; plotting this gives a precision-recall curve, and the area under that curve is the AP for that class, and averaging over all classes gives mAP. The number varies a lot depending on the threshold: the PASCAL VOC era commonly used IoU = 0.5 (mAP50), while COCO instead computes it at ten thresholds from 0.5 to 0.95 in steps of 0.05 and averages those (mAP50-95), which is a much stricter test of localization accuracy. Note that the “AP” reported in the COCO paper and its leaderboard has already been averaged over classes — the official documentation states explicitly that it makes no distinction between AP and mAP. When reading a robot perception paper, first check which threshold convention and which dataset the reported number uses.",
+      "example": "The Mask R-CNN paper reports a mask AP of 35.7 for the ResNet-101-FPN version on COCO — here, “AP” is the mAP averaged over 10 IoU thresholds and every class.",
+      "related": ["Intersection over Union", "Precision / Recall", "Object Detection", "COCO / LVIS Dataset", "Non-Maximum Suppression", "Mask R-CNN"]
+    },
+    {
+      "key": "perception-18#8",
+      "name_en": "MegaPose",
+      "aliases": ["MegaPose: 6D Pose Estimation of Novel Objects via Render & Compare"],
+      "one_liner": "A method that estimates 6D pose for a new object given only its CAD model, with no retraining needed.",
+      "explanation": "MegaPose was proposed by Yann Labbé, Dieter Fox, Josef Sivic, and colleagues at Inria, NVIDIA, and other institutions, published at CoRL 2022. 6D pose estimation computes an object’s 3D position and orientation in the camera’s coordinate frame; earlier methods mostly needed to be trained separately for each object, so a new part meant starting over. MegaPose takes a “render and compare” approach: given the region of the image containing the object and its CAD model, it first roughly estimates a pose, renders a synthetic image of the model at that pose, compares it against the real image, and has a network predict how to correct the pose, repeating this iteratively. It is trained on large-scale, photorealistic synthetic data covering thousands of different objects; the paper argues that this object diversity is the key to generalization, letting the method work directly on hundreds of new objects with no retraining, achieving competitive results on benchmarks like YCB-Video and BOP. NVIDIA’s later FoundationPose used a similar render-and-compare refinement step and compared itself against MegaPose.",
+      "example": "A factory receives a new type of part; given only its CAD file, a detector first boxes the part, then MegaPose estimates its 6D pose for a robot arm to grasp, with no need to collect and train on data specific to this part.",
+      "related": ["6D Pose Estimation", "FoundationPose", "SAM-6D", "BOP (Benchmark for 6D Object Pose Estimation)", "YCB Object Set", "Pose Tracking"]
+    },
+    {
+      "key": "perception-18#9",
+      "name_en": "Metric Depth / Relative Depth",
+      "aliases": ["Absolute Depth", "Scale Ambiguity", "Affine-Invariant Depth"],
+      "one_liner": "Metric depth gives true distance in meters; relative depth only gives near/far ordering, off by an unknown scale and offset.",
+      "explanation": "Depth estimation output comes in two kinds. Metric depth (also called absolute depth) gives every pixel’s true distance from the camera, in meters — this is what a depth camera or lidar directly measures; relative depth only tells you what’s nearer and what’s farther, with values differing from true distance by an unknown scale and offset. A monocular image inherently has scale ambiguity: the same photo could be a nearby scale model or a distant real house, and different cameras have different focal lengths, so training on a mix of these without accounting for it creates contradictions. This is why methods like MiDaS use a loss insensitive to scale and offset, training on large mixed datasets to predict relative depth — generalizing well, but without metric scale — while ZoeDepth, Metric3D, and Depth Pro instead find ways to output metric depth directly. Robot grasping and obstacle avoidance need to know exactly how far an object is, so they need metric depth, or need a few real range measurements to align relative depth to true scale.",
+      "example": "Given the same tabletop photo, a relative-depth model can only tell you the cup is closer than the wall behind it; a metric-depth model gives roughly how many meters the cup is from the camera, which a robot arm needs in order to plan a grasp.",
+      "related": ["Monocular Depth Estimation", "Depth Estimation", "Metric3D", "Depth Anything", "Depth Pro", "Depth Camera"]
+    },
+    {
+      "key": "perception-18#10",
+      "name_en": "Metric3D",
+      "aliases": ["Metric3D v2", "Metric3Dv2"],
+      "one_liner": "A model that estimates metric depth from a single image, resolving scale ambiguity across cameras with a canonical camera-space transform.",
+      "explanation": "Metric3D was proposed by Wei Yin, Chunhua Shen, and colleagues, published at ICCV 2023, aiming to estimate depth at true scale from a single photo in a zero-shot setting. The difficulty is that different cameras have different focal lengths, so objects of the same size appear at different apparent distances on the image, and training on data mixed together from many cameras creates conflicting scale signals. Its solution is a “canonical camera-space transform”: during training, every sample is converted according to its focal length into a shared virtual canonical camera, and at inference time the result is converted back using the real camera’s intrinsics. This lets it train on over 8 million images from more than a thousand different cameras, giving metric depth even for unseen cameras, and it achieved the best results at the time on seven zero-shot benchmarks. The 2024 Metric3D v2 (TPAMI) switched to a DINOv2 backbone, expanded training data to over 16 million images, and added surface normal estimation. The code is open source under a BSD license.",
+      "example": "Monocular SLAM using just an ordinary camera has no way to know the scene’s true scale; the Metric3D repository recommends an open-source implementation that feeds its predicted depth into DROID-SLAM to get a mapping result at metric scale.",
+      "related": ["Monocular Depth Estimation", "Metric Depth / Relative Depth", "Camera Intrinsics", "Depth Anything", "Depth Pro", "MoGe"]
+    },
+    {
+      "key": "perception-18#11",
+      "name_en": "Microphone Array",
+      "aliases": ["Sound Source Localization", "Beamforming"],
+      "one_liner": "Multiple microphones arranged in a fixed geometry working together to pick up sound directionally and judge where it comes from.",
+      "explanation": "A microphone array is a set of microphones arranged in a known geometry — a line, a ring, and so on — that capture and jointly process signals together. Sound reaches each microphone at a slightly different time, which can be used to estimate the direction a sound came from (sound source localization, also called direction-of-arrival or DOA estimation); delaying and weighting the different channels before combining them can boost sound from one particular direction while suppressing noise from others — this is called beamforming. A single microphone can do neither of these. Microphone arrays are widely used in phones, smart speakers, hearing aids, and as the front end for speech recognition. For robots, a microphone array lets it pick out a command clearly in a noisy environment, judge where a speaker is and turn to face them, and it is also the hardware foundation for “listen to find the target” research like audio-visual navigation. Many humanoid robots treat it as standard equipment — for instance, Unitree’s G1 spec sheet lists a 4-microphone array.",
+      "example": "A user calls the robot’s name from across the living room; the robot estimates the sound’s direction with its microphone array, turns to face the user, then uses beamforming to boost speech from that direction before sending it to speech recognition.",
+      "related": ["Automatic Speech Recognition", "Audio-Visual Navigation", "Multimodal Perception", "Human-Robot Interaction", "Multi-Sensor Fusion", "Contact Microphone (Audio as Tactile Signal)"]
+    }
+  ]
+}

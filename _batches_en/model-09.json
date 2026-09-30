@@ -1,0 +1,232 @@
+{
+ "batch": "model-09",
+ "terms": [
+  {
+   "key": "model-09#0",
+   "name_en": "3D VLA",
+   "aliases": [
+    "Spatial VLA",
+    "SpatialVLA",
+    "3D-VLA"
+   ],
+   "one_liner": "A VLA that explicitly feeds spatial information — depth, point clouds, 3D position — into the model.",
+   "explanation": "A standard VLA (vision-language-action model, which looks at an image, hears an instruction, and outputs an action directly) mostly takes only 2D images as input, but a robot's actions happen in 3D space, where distance, height, and occlusion are hard to judge accurately from a 2D image alone. 3D VLA is a general term for VLAs that add depth, point clouds, or 3D positional encoding to the input or an intermediate representation. Two papers are representative. 3D-VLA, from a UMass Amherst team in March 2024, adds interaction tokens on top of a 3D large language model and uses a diffusion model to generate a goal image and goal point cloud, 'imagining' the scene after manipulation. SpatialVLA (RSS 2025), by Qu and colleagues in January 2025, is built on PaliGemma2, uses Ego3D position encoding to inject 3D spatial information into visual features, discretizes continuous actions into spatial tokens with an adaptive action grid, and is pretrained on 1.1 million real-robot trajectories from OXE and RH20T. The main goal of this line of work is more stable spatial judgment when the camera viewpoint or the robot changes.",
+   "example": "SpatialVLA-4B encodes each image patch's 3D position into its visual token, needs no camera calibration, and can re-partition its action grid to adapt when moved to a new robot.",
+   "related": [
+    "Vision-Language-Action Model",
+    "Spatial Reasoning",
+    "Point Cloud",
+    "Depth Estimation",
+    "3D Diffusion Policy",
+    "World Model"
+   ]
+  },
+  {
+   "key": "model-09#1",
+   "name_en": "4D World Model",
+   "aliases": [
+    "4D Embodied World Model"
+   ],
+   "one_liner": "A world model that predicts how a 3D scene changes over time — 3D space plus time.",
+   "explanation": "A world model predicts what the world will look like next, given the current observation and an action. Most video world models only generate 2D frames, with no depth or geometry, making it hard for a robot to read an object's precise position in space from them. A 4D world model instead predicts '3D space plus time': every frame carries geometric information, and the frames can be assembled into a 3D scene that evolves over time. The representative work is TesserAct, released in April 2025 by a UMass Amherst-led team: it fine-tunes the CogVideoX video generation model to jointly predict RGB, depth, and normal-vector video (RGB-DN), then reconstructs it into a temporally consistent 4D scene; actions are then computed by an inverse dynamics model (a network that infers the action from before-and-after states) from point-cloud features, producing 7-DOF robot-arm actions. It overlaps with 4D reconstruction, video generation, and spatial intelligence.",
+   "example": "Given the current view and a language instruction, TesserAct generates a future video with depth and normals, converts it into a 4D scene, encodes the resulting point cloud with PointNet, combines it with the instruction, and outputs a 7-DOF action.",
+   "related": [
+    "World Model",
+    "4D Reconstruction",
+    "Video Generation Model",
+    "Inverse Dynamics Model",
+    "3D VLA",
+    "Spatial Intelligence"
+   ]
+  },
+  {
+   "key": "model-09#2",
+   "name_en": "Action Chain-of-Thought",
+   "aliases": [
+    "ACoT",
+    "ACoT-VLA"
+   ],
+   "one_liner": "Having a VLA first reason out a coarse trajectory in action space, then generate the fine-grained action from it.",
+   "explanation": "Chain-of-thought originally meant having a large model write out intermediate reasoning steps before giving an answer. Existing reasoning approaches in VLAs mostly predict subtask text or generate a goal image as the intermediate step — neither of which is an action itself. In January 2026, a team from Beihang University and AgiBot proposed ACoT-VLA (accepted to CVPR 2026), arguing for reasoning directly in action space: an Explicit Action Reasoner (EAR) uses flow matching to first generate a coarse reference trajectory; an Implicit Action Reasoner (IAR) uses learnable queries to extract a latent action prior from the VLM's internal features; the two are then combined via cross-attention to guide the action head in producing the final action sequence. The paper reports a 98.5% average success rate on LIBERO. It can be seen as another form of reasoning alongside embodied chain-of-thought and visual chain-of-thought. Separately, some 2026 navigation work also uses 'Action-CoT' to refer to step-by-step action reasoning.",
+   "example": "ACoT-VLA reports a 66.7% average success rate across three manipulation tasks on a real AgiBot G1 robot, and an 88.0% average success rate on LIBERO-Plus after supervised fine-tuning.",
+   "related": [
+    "Chain-of-Thought",
+    "Embodied Chain-of-Thought",
+    "Visual Chain-of-Thought",
+    "Vision-Language-Action Model",
+    "Action Head",
+    "Flow Matching"
+   ]
+  },
+  {
+   "key": "model-09#3",
+   "name_en": "Adaptive Layer Normalization",
+   "aliases": [
+    "AdaLN",
+    "adaLN-Zero",
+    "adaRMS"
+   ],
+   "one_liner": "Computing layer normalization's scale and shift dynamically from conditioning information, such as a diffusion timestep, instead of fixing them.",
+   "explanation": "Layer normalization standardizes each token's features, then multiplies by a scale γ and adds a shift β; ordinarily these two parameters are fixed after training. Adaptive layer normalization instead has a small MLP regress γ and β from a conditioning vector — a diffusion timestep, a class label, a language feature — so that whenever the condition changes, the distribution of the whole layer's features changes with it, 'injecting' the condition into the network; the idea is the same as FiLM. It builds on the adaptive normalization used in GANs and U-Net diffusion models. Peebles and Xie used it systematically in the diffusion Transformer (DiT) in 2022 and introduced adaLN-Zero: an extra gating coefficient is regressed and initialized to zero, so each Transformer block starts out as an identity mapping, which makes training more stable. In embodied AI, NVIDIA's GR00T N1 uses AdaLN in its DiT action module to inject the denoising step, while using cross-attention to receive VLM features.",
+   "example": "The openpi implementation of π0.5 encodes the flow-matching timestep with a two-layer MLP into 'adarms_cond,' which modulates the normalization layers on the action tokens using adaptive RMSNorm.",
+   "related": [
+    "Feature-wise Linear Modulation",
+    "Diffusion Transformer",
+    "Normalization Layers",
+    "Action Expert",
+    "NVIDIA Isaac GR00T N1",
+    "Cross-Attention"
+   ]
+  },
+  {
+   "key": "model-09#4",
+   "name_en": "Attention Mask",
+   "aliases": [
+    "Block-wise Causal Mask",
+    "Blockwise Causal Attention Mask"
+   ],
+   "one_liner": "A matrix specifying which tokens each token in a sequence is allowed to 'see.'",
+   "explanation": "By default, self-attention in a Transformer lets every token attend to every other token in the sequence. An attention mask blocks out disallowed positions when computing attention scores — typically by adding negative infinity, which becomes a weight of zero after softmax — controlling how information can flow. Two kinds are most common: a causal mask, where each token can only see itself and earlier tokens, used in GPT-style models that generate one token at a time; and a padding mask, which blocks out empty positions added just to pad the sequence to a fixed length. VLA models commonly use a block-wise causal mask: the input is split into blocks, tokens within a block can all see each other, but a block can only see blocks before it. This both protects the input distribution the pretrained VLM originally saw and lets earlier blocks' KV cache be reused across multiple denoising steps, saving inference time.",
+   "example": "π0 splits its sequence into three blocks — 'image + language,' 'robot state,' and 'noisy action' — where the first block can't see the inputs added after it, to limit disruption to PaliGemma's pretrained distribution, and the state block can't see the action block, so its KV can be cached during sampling.",
+   "related": [
+    "Attention Mechanism",
+    "Causal Attention",
+    "Self-Attention",
+    "Key-Value Cache",
+    "Action Expert",
+    "π0"
+   ]
+  },
+  {
+   "key": "model-09#5",
+   "name_en": "Autoregressive Video Generation",
+   "aliases": [
+    "Causal Video Generation",
+    "Streaming Video Generation"
+   ],
+   "one_liner": "Generating video forward in time, one frame or chunk at a time, so it can be played as it's produced.",
+   "explanation": "Many video diffusion models generate a whole clip at once, with frames attending to each other in both directions, so they must finish the entire computation before producing any output, and it's hard to feed in new actions partway through. Autoregressive video generation instead writes forward in time: each frame or short chunk is conditioned only on what's already been generated, and combined with causal attention and a KV cache, this lets the model stream output and respond in real time to a user's or robot's actions — exactly what an interactive world model needs. The main difficulty is error accumulation, called exposure bias: during training the model sees real history, but at inference it sees its own generated, imperfect history, and image quality can collapse over time. CausVid (CVPR 2025) distills a bidirectional model into a 4-step causal model, running at 9.4 frames per second on a single GPU; Self Forcing (NeurIPS 2025) uses the model's own outputs as history during training, closing the gap between training and inference.",
+   "example": "Google DeepMind's Genie 3 generates frames autoregressively one at a time, with each new frame conditioned on an ever-growing history, and can run interactively in real time at 720p and 24 frames per second.",
+   "related": [
+    "Diffusion Forcing",
+    "Self Forcing",
+    "Interactive World Model",
+    "Video Generation Model",
+    "Exposure Bias",
+    "Key-Value Cache"
+   ]
+  },
+  {
+   "key": "model-09#6",
+   "name_en": "BAGEL",
+   "aliases": [
+    "BAGEL-7B-MoT",
+    "Emerging Properties in Unified Multimodal Pretraining"
+   ],
+   "one_liner": "ByteDance Seed's open-source unified multimodal model that can both understand images and generate or edit them.",
+   "explanation": "BAGEL is a unified multimodal foundation model ByteDance's Seed team open-sourced in May 2025, with code and weights released under the Apache 2.0 license; a single model handles image-text understanding, text-to-image generation, and image editing all at once. It's built on the Qwen2.5 large language model and uses a Mixture-of-Transformers (MoT) design: understanding and generation each get their own set of parameters, but every token shares the same self-attention at each layer, giving it 7B active parameters and 14B total. The understanding side uses a SigLIP2 vision encoder; the generation side uses FLUX's VAE to compress images into latent space. The model was pretrained on trillions of tokens of interleaved image-text, video, and web data, and the paper reports that capabilities such as free-form image editing, future-frame prediction, viewpoint rotation, and 'world navigation' emerge as scale increases. It demonstrates putting understanding and generation into one model, which is relevant to the unified-multimodal-model and world-model directions in embodied AI.",
+   "example": "Given BAGEL an image and an editing instruction in words, it can output the edited image directly; given navigation commands like 'move forward' or 'turn,' it can generate the view after that viewpoint change.",
+   "related": [
+    "Unified Multimodal Model",
+    "Mixture-of-Transformers",
+    "SigLIP",
+    "Variational Autoencoder",
+    "World Model",
+    "ByteDance Seed"
+   ]
+  },
+  {
+   "key": "model-09#7",
+   "name_en": "Behavior Foundation Model",
+   "aliases": [
+    "BFM",
+    "Behavioral Foundation Model"
+   ],
+   "one_liner": "A large-pretrained humanoid whole-body control model that can adapt to many motion tasks zero-shot or with little tuning.",
+   "explanation": "Behavior foundation model is a term that has emerged over the past two years in humanoid whole-body control (low-level motor control that coordinates the legs, torso, and arms together). The traditional approach trains a separate reinforcement-learning controller for each task; a BFM is instead pretrained first on large amounts of human motion data and a wide variety of tasks, learning reusable base skills and behavioral priors, and then adapts to a new task zero-shot or with minimal tuning through a 'prompt' — a reference motion clip, a target pose, or a reward function — playing a role similar to a foundation model in language. Representative work includes Meta researchers' Meta Motivo in April 2025 (based on unsupervised reinforcement learning with forward-backward representations) and BFM-Zero in November 2025 (deployed on a real Unitree G1, where the same policy can be used for motion tracking, reaching a target pose, and reward optimization). In a hierarchical architecture, it can serve as the lower-level motor controller that takes commands from a higher-level layer.",
+   "example": "BFM-Zero runs a single pretrained policy on the Unitree G1, with no retraining, and can switch by prompt between tracking a human motion clip or walking to a specified pose.",
+   "related": [
+    "Whole-Body Control",
+    "Motion Tracking",
+    "BFM-Zero",
+    "Meta Motivo",
+    "Foundation Model",
+    "Unsupervised Skill Discovery"
+   ]
+  },
+  {
+   "key": "model-09#8",
+   "name_en": "Byte-Pair Encoding",
+   "aliases": [
+    "BPE",
+    "Byte-level BPE"
+   ],
+   "one_liner": "A tokenization algorithm that builds a subword vocabulary by repeatedly merging the most frequent adjacent symbol pair.",
+   "explanation": "Byte-pair encoding was first proposed by Philip Gage in 1994 as a text-compression algorithm; in 2016, Sennrich and colleagues applied it to tokenization for neural machine translation (ACL 2016), and it has since become the dominant scheme for tokenizers in large language models like GPT. The procedure starts from individual characters or bytes, counts the most frequent adjacent symbol pair in the corpus, merges it into a new symbol added to the vocabulary, and repeats until the vocabulary reaches a target size. This way, common words become a single token while rare words split into a few subwords, so the model never hits an out-of-vocabulary word and sequences don't get as long as character-by-character splitting would make them. Byte-level BPE first converts text into UTF-8 bytes before merging, so it can encode any text. In embodied AI, Physical Intelligence's FAST action tokenizer also uses BPE to compress action sequences.",
+   "example": "FAST first applies a discrete cosine transform to each action dimension, scales and rounds the result, flattens it, and trains BPE on top (the paper defaults to a scale of 10 and a vocabulary of 1,024), compressing a stretch of action into a short token sequence for a VLA to predict autoregressively.",
+   "related": [
+    "Tokenizer",
+    "Token",
+    "Action Tokenizer",
+    "Discrete Cosine Transform",
+    "π0-FAST",
+    "Large Language Model"
+   ]
+  },
+  {
+   "key": "model-09#9",
+   "name_en": "Classifier-Free Guidance",
+   "aliases": [
+    "CFG",
+    "Guidance Scale"
+   ],
+   "one_liner": "Computing both a conditional and an unconditional prediction and extrapolating between them so generation follows the condition more closely.",
+   "explanation": "Classifier-free guidance was proposed by Jonathan Ho and Tim Salimans (a 2021 NeurIPS workshop paper, with a full arXiv version in 2022), for use with diffusion models, flow matching, and other generative models that denoise step by step. During training, the condition (such as a text prompt) is randomly dropped for some examples, so the same network learns to make both conditional and unconditional predictions; during generation, both are computed at every step, and the final direction is 'unconditional result + w × (conditional result − unconditional result),' where w is called the guidance scale. A larger w follows the condition more closely but reduces diversity, and too large a value introduces artifacts. It replaces the earlier 'classifier guidance,' which needed training a separate classifier, and has become a standard setting in text-to-image and text-to-video models, at the cost of one extra forward pass per step. In embodied AI, diffusion-based video world models and action generation models can also use it to control how closely they follow a language instruction.",
+   "example": "Generating an image from text with Stable Diffusion v1.5 in Diffusers, turning guidance_scale up from 2.5 to 10.5 makes the image follow the prompt more and more closely, though artifacts start to appear once it's too high.",
+   "related": [
+    "Diffusion Model",
+    "Flow Matching",
+    "Denoising Steps / Number of Function Evaluations",
+    "Text-to-Video / Image-to-Video",
+    "Generative Model",
+    "Video Generation Model"
+   ]
+  },
+  {
+   "key": "model-09#10",
+   "name_en": "Consistency Model",
+   "aliases": [
+    "Consistency Distillation"
+   ],
+   "one_liner": "A generative model that maps noise back to data in one step, used to compress diffusion's many sampling steps into one or two.",
+   "explanation": "Consistency models were proposed by OpenAI's Yang Song and colleagues in 2023 (ICML 2023). Generating from a diffusion model means walking step by step along a denoising trajectory, which often takes tens to a hundred steps and is slow. A consistency model instead trains a function so that noisy samples at any point along the same trajectory all map to the same endpoint (the clean data) — a property called 'self-consistency' — so a sample can be produced from pure noise in a single step, or refined further with a few more steps for higher quality. There are two ways to train it: distilling from an already-trained diffusion model (consistency distillation), or training from scratch directly. In robotics, Prasad, Bohg, and colleagues' 2024 Consistency Policy distills Diffusion Policy into a consistency policy, running roughly an order of magnitude faster than even the fastest alternative speedup methods at comparable success rate, which suits robots with limited compute; work such as ConRFT also uses a consistency policy for reinforcement fine-tuning of VLAs.",
+   "example": "Consistency Policy was run on a laptop GPU across 6 simulated tasks and 3 real-robot tasks, at roughly 10x the speed of other acceleration methods and a success rate close to the original Diffusion Policy.",
+   "related": [
+    "Diffusion Model",
+    "Diffusion Policy",
+    "One-step Generation",
+    "Knowledge Distillation",
+    "MeanFlow",
+    "ConRFT"
+   ]
+  },
+  {
+   "key": "model-09#11",
+   "name_en": "Context Length",
+   "aliases": [
+    "Context Window"
+   ],
+   "one_liner": "The maximum number of tokens a model can process at once, which sets how much input it can 'see' at a time.",
+   "explanation": "Context length, also called the context window, is the upper limit on the total number of tokens a Transformer-style model can process at once — measured in tokens, not characters or words. Anything beyond that limit either gets truncated or has to be summarized before being fed in. The compute cost of self-attention grows with the square of sequence length, and the GPU memory used by the KV cache grows linearly with it, so a longer context means slower inference and more memory used. According to an IBM roundup from October 2024, GPT-4o and Llama 3.1 support 128K tokens, while Gemini 1.5 Pro supports up to 2 million. For a VLA, images eat up context especially fast: at 224×224 resolution, PaliGemma turns a single image into 256 visual tokens, and multiple cameras plus a history of several frames can make the sequence grow very quickly — one reason many VLAs only look at the current frame, or need a separate memory module or visual-token pruning instead.",
+   "example": "Encoding 3 camera views at 224×224 with PaliGemma uses 768 tokens for images alone; adding 4 frames of history per camera brings that to 12 images and 3,072 tokens.",
+   "related": [
+    "Token",
+    "Key-Value Cache",
+    "Visual Token",
+    "Embodied Memory",
+    "Memory-Augmented VLA",
+    "Visual Token Pruning"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,113 @@
+{
+  "batch": "named_model-08",
+  "terms": [
+    {
+      "key": "named_model-08#0",
+      "name_en": "Consistency Policy",
+      "aliases": ["Consistency Policy: Accelerated Visuomotor Policies via Consistency Distillation"],
+      "one_liner": "Distills a diffusion policy into a fast visuomotor policy that generates an action in a single step.",
+      "explanation": "Consistency Policy was proposed in May 2024 by Jeannette Bohg's group at Stanford (first author Aaditya Prasad) with Jimmy Wu and others at Princeton, published at RSS 2024. Diffusion Policy produces high-quality actions, but generating one requires tens to hundreds of denoising steps, too slow for a laptop GPU or onboard computer. Consistency Policy treats a trained diffusion policy as a “teacher” and distills it using the consistency trajectory model (CTM) objective: the student network is trained so that starting from any point along the denoising trajectory, it can jump straight to the same endpoint (“self-consistency”), so at inference it generates an entire action in one step. Tested across 6 simulated tasks (Robomimic, Push-T, Franka Kitchen) and 3 real-robot tasks, it runs an order of magnitude faster than comparable methods with roughly the same success rate. It's a representative approach for speeding up diffusion policies, and later work such as ConRFT uses it as the policy backbone.",
+      "example": "In real-robot experiments, a robot running Consistency Policy on just a laptop-class GPU completed tasks like plugging in a cord and cleaning up trash, using single-step generation in place of Diffusion Policy's many denoising steps.",
+      "related": ["Diffusion Policy", "Consistency Model", "Single-Step Generation", "Knowledge Distillation", "Inference Latency", "ConRFT"]
+    },
+    {
+      "key": "named_model-08#1",
+      "name_en": "CoPa",
+      "aliases": ["Spatial Constraints of Parts", "CoPa: General Robotic Manipulation through Spatial Constraints of Parts with Foundation Models"],
+      "one_liner": "A training-free framework where GPT-4V finds relevant object parts and writes spatial constraints to follow open-ended manipulation instructions.",
+      "explanation": "CoPa was proposed in March 2024 by Yang Gao's group at Tsinghua University, the Shanghai Qi Zhi Institute, Shanghai Jiao Tong University, and the Shanghai AI Lab. Rather than training a robot policy, it has a foundation model (a general-purpose large model pretrained on massive data) directly supply the geometric information manipulation needs. A manipulation is split into two steps. First, task-oriented grasping: GPT-4V, combined with Set-of-Mark visual prompting, picks where to grasp by narrowing from the whole object down to a specific part, and GraspNet then generates the grasp pose. Second, task-oriented motion planning: a vision-language model identifies the task-relevant parts (such as a hammer's head and a nail), writes out the spatial constraints they should satisfy, solves for the target pose after grasping, and hands it to a motion planner to execute. Like VoxPoser and ReKep, it belongs to the “large model supplies constraints, classical planner executes” approach, and it can handle open-ended instructions and unseen objects.",
+      "example": "Given the instruction “hammer in the nail,” CoPa first has GPT-4V select the hammer's handle as the grasp part, then locates the hammer's striking face and the nail, constrains the striking face to align with the nail with the swing direction matching the nail's axis, solves for the hammer's pose right before striking, and executes it.",
+      "related": ["ReKep", "VoxPoser", "OmniManip", "Visual Prompting (Set-of-Mark)", "Task-Oriented Grasping (Functional Grasping)", "Affordance"]
+    },
+    {
+      "key": "named_model-08#2",
+      "name_en": "Cosmos 3",
+      "aliases": ["Cosmos3", "NVIDIA Cosmos 3", "Cosmos 3: Omnimodal World Models for Physical AI"],
+      "one_liner": "NVIDIA's third-generation omnimodal world model: a single model that understands video, generates it, and also outputs actions.",
+      "explanation": "This is the third generation of NVIDIA's Cosmos world foundation model family, released in May 2026, with the technical report posted to arXiv in June 2026. The first two generations split understanding (Cosmos Reason) and video generation (Cosmos Predict) into separate models; Cosmos 3 merges them into one using a mixture-of-transformers (MoT) architecture: an autoregressive language tower reads text and reasons, a diffusion generation tower outputs images, video, audio, and action sequences, and the two towers share attention. The same set of weights can act as a vision-language model, a text-to-video or image-to-video model, a world simulator that predicts future frames from actions, and can also be post-trained into a robot policy. It's released in Super (64B) and Nano (16B) sizes, with an Edge (4B) version for Jetson edge devices added in July 2026; code and weights use the OpenMDW-1.1 license.",
+      "example": "According to the technical report, Cosmos3-Nano-Policy, post-trained on DROID data, ranked first on the RoboArena real-robot leaderboard (a snapshot from May 30, 2026) with an Elo of 1870.",
+      "related": ["NVIDIA Cosmos", "World Foundation Model", "Mixture-of-Transformers Architecture", "Unified Multimodal Model", "World-Action Model", "Cosmos Policy"]
+    },
+    {
+      "key": "named_model-08#3",
+      "name_en": "Cosmos Policy",
+      "aliases": ["Cosmos Policy: Fine-Tuning Video Models for Visuomotor Control and Planning"],
+      "one_liner": "Fine-tunes a video generation model directly into a robot policy that predicts actions, future frames, and success confidence together.",
+      "explanation": "Cosmos Policy was proposed by NVIDIA and Stanford in January 2026, first author Moo Jin Kim (also first author of OpenVLA-OFT), and accepted at ICLR 2026. It starts from the video generation model Cosmos-Predict2-2B and, without changing its architecture or adding an action head, post-trains it just once on robot demonstration data: proprioceptive state, action chunks, and value (expected return) are all encoded as “latent frames” and inserted into the video diffusion model's latent sequence, denoised together with the image frames. This way, one pass gives three things at once: the action to execute, the future frames that will result, and how confident the model is that this step succeeds. At inference, it can execute the action directly, or sample several candidates and use the predicted future and value to pick the best one (test-time planning). It reaches 98.5% average success on LIBERO and 67.1% on RoboCasa (50 demonstrations per task), representative of the “fine-tune a video model directly into a policy” approach.",
+      "example": "On real ALOHA bimanual tasks such as putting candy into a sealed bag, in planning mode Cosmos Policy first samples 8 candidate action chunks, then scores them using its own predicted future frames and value, and executes whichever one it's most confident in.",
+      "related": ["Cosmos Predict", "Video Generation Model", "World-Action Model", "Value Function", "OpenVLA-OFT", "LIBERO"]
+    },
+    {
+      "key": "named_model-08#4",
+      "name_en": "CoT-VLA",
+      "aliases": ["CoT-VLA: Visual Chain-of-Thought Reasoning for Vision-Language-Action Models", "Visual Chain-of-Thought VLA"],
+      "one_liner": "A 7-billion-parameter VLA that first generates a future subgoal image as its “thought,” then outputs an action to reach it.",
+      "explanation": "CoT-VLA was proposed in March 2025 by NVIDIA, Stanford, MIT, and others, published at CVPR 2025. Earlier VLAs mapped images and instructions directly to actions with no reasoning step in between. CoT-VLA replaces chain-of-thought with a visual form: the model first autoregressively generates a subgoal frame several steps into the future — what the scene should look like once part of the task is done — then generates an action chunk targeting that image, executing it in closed loop. Its backbone is VILA-U, a multimodal model that can both understand and generate images, at 7B parameters total; image generation uses causal attention, while action decoding uses full attention. Because predicting a subgoal image needs no action labels, action-label-free video like EPIC-KITCHENS can be used for training too. The paper reports beating the strongest VLA baseline of the time by 17% on real-robot tasks and 6% on simulation benchmarks.",
+      "example": "Given “put the bowl in the drawer,” CoT-VLA first draws what the scene should look like a few steps ahead — the bowl already picked up and near the drawer — then outputs a chunk of arm actions to reach that image; after executing, it looks at the new image and repeats.",
+      "related": ["Visual Chain-of-Thought", "Vision-Language-Action Model", "Chain-of-Thought", "Action Chunking", "Action-Label-Free Video", "SuSIE"]
+    },
+    {
+      "key": "named_model-08#5",
+      "name_en": "CLIP on Wheels",
+      "aliases": ["CoW", "CoWs on Pasture"],
+      "one_liner": "A baseline that bolts an open-vocabulary model like CLIP onto a mobile robot to find objects from text, with no navigation training.",
+      "explanation": "CoW was proposed by Shuran Song's group at Columbia University with the University of Washington in 2022, published at CVPR 2023. It studies “language-driven zero-shot object navigation”: a robot must find a target described in a sentence (such as “the toy airplane under the bed”) in an unfamiliar house, with no navigation training on those specific objects or scenes. CoW's approach is deliberately simple: while it's not yet confident it recognizes the target, it wanders using a classical exploration strategy; once an open-vocabulary model like CLIP (which can recognize objects from arbitrary text) locates the target in view with enough confidence, it plans a path there. The authors evaluated 21 CoW variants and proposed the Pasture benchmark, testing rare objects, objects described by appearance or spatial relation, and occluded objects. The best CoW beat the previous best method by 15.6 percentage points on a RoboTHOR object subset.",
+      "example": "For a goal like “tie-dye surfboard” — a category absent from navigation datasets — CoW first explores the room, and once CLIP judges some view a good enough match for that phrase, it plans a path to that location as the target.",
+      "related": ["Object-Goal Navigation", "CLIP", "Open Vocabulary", "Zero-shot", "Frontier Exploration", "VLFM (Vision-Language Frontier Maps)"]
+    },
+    {
+      "key": "named_model-08#6",
+      "name_en": "CrossFormer",
+      "aliases": ["Scaling Cross-Embodied Learning", "CrossFormer: Scaling Cross-Embodied Learning (One Policy for Manipulation, Navigation, Locomotion and Aviation)"],
+      "one_liner": "A single set of weights that controls single arms, bimanual arms, quadrupeds, ground vehicles, and drones with one cross-embodiment Transformer.",
+      "explanation": "CrossFormer was proposed in August 2024 by Sergey Levine's group at Berkeley with CMU, an oral presentation at CoRL 2024. Different robots vary in camera count, proprioception, action dimensionality, and control frequency, and earlier cross-embodiment training often had to hand-align observation and action spaces, or drop some inputs. CrossFormer instead cuts multi-camera images, proprioception, and the task (language or a goal image) all into tokens arranged in a sequence, fed into a single decoder-only Transformer shared across all embodiments; readout tokens are inserted into the sequence, then routed to different action heads by embodiment category, each outputting an action chunk of the matching dimensionality — such as a 7D end-effector delta for a single arm, 14D joint positions for a bimanual robot, or a 2D waypoint for navigation. The model, about 130 million parameters, is trained on 900,000 trajectories across 20 embodiments; on real robots it matches embodiment-specific policies and clearly beats earlier cross-embodiment methods.",
+      "example": "The same CrossFormer outputs a 4-step, 7-dimensional end-effector action chunk when connected to a single-arm WidowX, a 100-step, 14-dimensional joint-position chunk when connected to a bimanual ALOHA, and a 12-dimensional joint target at every step when connected to a Go1 quadruped.",
+      "related": ["Cross-Embodiment", "Octo", "Embodiment-Specific Head", "Open X-Embodiment Dataset", "Heterogeneous Pretrained Transformer", "Action Chunking"]
+    },
+    {
+      "key": "named_model-08#7",
+      "name_en": "Ctrl-World",
+      "aliases": ["Ctrl-World: A Controllable Generative World Model for Robot Manipulation"],
+      "one_liner": "A manipulation world model that generates multi-view future frames from actions, used to evaluate and improve policies “in imagination.”",
+      "explanation": "Ctrl-World was proposed in October 2025 by Chelsea Finn's group at Stanford with Jianyu Chen's group at Tsinghua, accepted at ICLR 2026. Evaluating and improving a general-purpose robot policy usually needs a large number of real-robot trials, which is slow and expensive. Ctrl-World is initialized from the 1.5-billion-parameter video diffusion model Stable Video Diffusion, and trained on the DROID dataset (about 95,000 trajectories across 564 scenes) into a world model that generates future frames given an action, with three modifications: jointly predicting two third-person views plus a wrist camera; sparsely sampling history frames and embedding the arm's pose so the model can retrieve relevant past frames by pose and stay consistent over long horizons; and injecting actions frame by frame for centimeter-level control precision. A policy can interact inside it continuously for more than 20 seconds; it's used to rank π0, π0-FAST, and π0.5, matching real-robot results, and fine-tuning π0.5 on successful trajectories picked from imagined rollouts raised its success rate on unfamiliar instructions and objects from 38.7% to 83.4%.",
+      "example": "Given π0.5 an instruction it hasn't practiced, running 400 imagined trials in Ctrl-World with reworded instructions and randomized arm resets, then manually picking 25–50 successful trajectories and fine-tuning the policy on them for 2,000 steps, is enough to meaningfully improve it.",
+      "related": ["World Model", "World Model Evaluation", "DROID Dataset", "π0.5", "Stable Video Diffusion", "Synthetic Data"]
+    },
+    {
+      "key": "named_model-08#8",
+      "name_en": "DayDreamer",
+      "aliases": ["DayDreamer: World Models for Physical Robot Learning"],
+      "one_liner": "Runs the Dreamer world model directly on real robots; a quadruped learns to walk from scratch in an hour.",
+      "explanation": "DayDreamer was proposed in June 2022 by Pieter Abbeel and Ken Goldberg's groups at Berkeley, with authors including Danijar Hafner of the Dreamer series, published at CoRL 2022. The hard part of real-robot reinforcement learning is that trial and error is expensive, so most work trains in simulation first and transfers afterward. DayDreamer instead moves the Dreamer algorithm directly onto the real robot: as the robot interacts, it uses the collected data to learn a world model (predicting “what I'll see and what reward I'll get if I take this action”), and the policy learns mostly from imagined rollouts inside that world model, sharply reducing real-world trial and error. The same hyperparameters worked across four robots: an A1 quadruped learned to roll over, stand up, and walk from scratch in about 1 hour, and learned to resist being pushed in about 10 minutes; UR5 and xArm arms learned pick-and-place from camera images; a Sphero wheeled robot learned to navigate to a goal. It demonstrated the sample efficiency of world-model-based reinforcement learning in the real physical world.",
+      "example": "With no simulation pretraining and no manual resets, an A1 quadruped robot learned to roll over, stand up, and walk forward from scratch after about 1 hour of learning on real ground.",
+      "related": ["World Model", "Learning in Imagination", "Model-Based Reinforcement Learning", "Real-Robot Reinforcement Learning", "Recurrent State-Space Model", "DreamerV3"]
+    },
+    {
+      "key": "named_model-08#9",
+      "name_en": "Decision Diffuser",
+      "aliases": ["Is Conditional Generative Modeling all you need for Decision-Making?"],
+      "one_liner": "Generates future state trajectories with a return-conditioned diffusion model, then infers actions from them, skipping dynamic programming.",
+      "explanation": "Decision Diffuser was proposed in November 2022 by Pulkit Agrawal's group (Improbable AI Lab) and CSAIL at MIT, an oral presentation at ICLR 2023. Offline reinforcement learning usually needs to learn a value function and do dynamic programming (repeatedly using the Bellman equation to estimate long-term return), which tends to be unstable to train. Decision Diffuser instead treats decision-making as conditional generation: a diffusion model generates only a sequence of future states, conditioned on a desired return, a constraint, or a skill, strengthened with classifier-free guidance; an inverse-dynamics model then infers the action to take from each pair of adjacent states. It beat the leading methods of the time on the D4RL offline reinforcement-learning benchmark, and even though it only ever saw a single constraint or skill at training time, at test time it could combine multiple conditions together. It's a representative follow-up to Diffuser in using diffusion models for decision-making, in the same lineage as later “generate the future, then infer actions with inverse dynamics” approaches like UniPi.",
+      "example": "In a Kuka-arm block-stacking experiment, each training trajectory satisfies only a single constraint of the form “A is on top of B,” but at test time several constraints are given as conditions together, and Decision Diffuser generates a stacking plan that satisfies all of them at once.",
+      "related": ["Diffuser", "Diffusion Model", "Classifier-Free Guidance", "Inverse Dynamics Model", "Offline Reinforcement Learning", "Return Conditioning"]
+    },
+    {
+      "key": "named_model-08#10",
+      "name_en": "Decision Transformer",
+      "aliases": ["DT"],
+      "one_liner": "Treats reinforcement learning as sequence modeling: given a target return, a GPT-style model predicts actions one step at a time.",
+      "explanation": "Decision Transformer was proposed in June 2021 by Lili Chen, Kevin Lu, and colleagues at Berkeley, Facebook AI Research, and Google Brain, published at NeurIPS 2021. It doesn't fit a value function or compute policy gradients; instead, it writes a trajectory as a sequence of tokens alternating “return-to-go” (how much reward is still wanted from this point to the end), state, and action, and trains a GPT-style Transformer with causal masking, using supervised learning, to predict the next action. At test time, a target return is set at the start, and the reward received at each step is subtracted from it as the episode goes on. Using only offline data, it matched or beat the leading model-free offline reinforcement-learning methods of the time on Atari, OpenAI Gym, and Key-to-Door tasks, helping make “treat decision-making as sequence modeling” one of the mainstream approaches.",
+      "example": "In an Atari game, a fairly high target return is set at the start; the model reads in the most recent frames, past actions, and remaining return-to-go, and outputs the next button press; every time points are scored, the remaining return-to-go drops accordingly before the next action is generated.",
+      "related": ["Offline Reinforcement Learning", "Transformer", "Return Conditioning", "Causal Attention", "Decision Diffuser", "Gato"]
+    },
+    {
+      "key": "named_model-08#11",
+      "name_en": "Denoising World Model Learning",
+      "aliases": ["DWL", "Advancing Humanoid Locomotion: Mastering Challenging Terrains with DWL"],
+      "one_liner": "An end-to-end reinforcement-learning walking framework using only proprioception, letting a humanoid cross snow, slopes, and stairs.",
+      "explanation": "DWL was proposed in 2024 by RobotEra together with Jianyu Chen's group at Tsinghua University and the Shanghai Qi Zhi Institute, and was a best-paper finalist at RSS 2024. When a humanoid moves from simulation to a real robot, it faces environmental disturbances, inaccurate dynamics modeling, sensor noise, and quantities like linear velocity or contact force that simply can't be measured directly. DWL treats all of this as noise added to the true state: during simulated training, noise is added to observations and unmeasurable quantities are masked out, a GRU encoder extracts a latent state from a window of history, and a decoder reconstructs the full state — including privileged information like friction coefficient, external force, and terrain height — a kind of “denoising” world model; the policy is trained on the latent state with PPO, while the critic sees the full state directly (asymmetric actor-critic). With no camera or lidar, the policy transfers zero-shot to the 1.2-meter XBot-S and the 1.65-meter XBot-L, walking over snow, slopes, stairs, and rough ground with the same set of parameters.",
+      "example": "In indoor tests, DWL reached 100% success climbing and descending 10-centimeter-high steps, on slopes, and on uneven ground; PPO with the denoising loss removed managed only 20% success climbing stairs.",
+      "related": ["Asymmetric Actor-Critic", "Privileged Information", "Sim-to-Real Transfer", "Domain Randomization", "Blind Locomotion", "RobotEra"]
+    }
+  ]
+}

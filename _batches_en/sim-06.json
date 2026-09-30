@@ -1,0 +1,113 @@
+{
+  "batch": "sim-06",
+  "terms": [
+    {
+      "key": "sim-06#0",
+      "name_en": "Open-Vocabulary Mobile Manipulation",
+      "aliases": ["OVMM", "HomeRobot", "HomeRobot OVMM", "OVMM Challenge"],
+      "one_liner": "A benchmark that has a robot find any named object in an unfamiliar house and place it on a specified piece of furniture.",
+      "explanation": "HomeRobot OVMM is a benchmark released in 2023 by Meta FAIR, Georgia Tech, Carnegie Mellon, and Simon Fraser University, and it also served as a NeurIPS 2023 competition. Tasks take the form “move object X from furniture A to furniture B”: the object is specified in text and may belong to a category never seen during training (open vocabulary), and the robot must, in an unfamiliar house, find the object, pick it up, locate the target furniture, and place the object there. The simulated portion is built on Habitat and synthetic HSSD scenes, covering 60 multi-room homes with 2,535 objects across 129 categories; the real-robot portion uses the low-cost Hello Robot Stretch, paired with the open-source HomeRobot software stack. It evaluates navigation, perception, and grasping together as one pipeline, and the paper's baseline achieved a real-robot success rate of about 20%.",
+      "example": "Given the instruction “move the toy elephant from the chair to the table,” where the toy elephant belongs to a category never seen during training, the robot earns 1 point for each stage it completes — finding the object, picking it up, finding the table, and placing it down — and only counts as fully successful once all four stages are done.",
+      "related": ["Mobile Manipulation", "Open Vocabulary", "Habitat", "Hello Robot Stretch", "Object Rearrangement", "Progress Score"]
+    },
+    {
+      "key": "sim-06#1",
+      "name_en": "Photorealistic Rendering",
+      "aliases": ["Photo-realistic Rendering"],
+      "one_liner": "Computing an image by simulating real optical behavior, so a simulated picture looks like a photo from a real camera.",
+      "explanation": "Photorealistic rendering simulates how light travels, reflects, and refracts through a scene so the resulting image approaches a real photograph, commonly using path tracing (a Monte Carlo method that randomly samples many light paths to compute global illumination) combined with physically based materials. In embodied AI it is mainly used to narrow the visual sim-to-real gap: the more a vision policy's simulated images resemble a real camera's output, the less likely it is to fail after deployment simply because the imagery looks different; it also underlies synthetic training-data generation and camera-sensor simulation. The cost is speed — it is computationally expensive, so massively parallel training often falls back to faster rasterization or lower image quality. NVIDIA's Omniverse / Isaac Sim RTX renderer offers both a real-time mode and a path-traced mode; a separate approach reconstructs a scene from real photos with 3D Gaussian Splatting to get photorealistic imagery directly.",
+      "example": "Galbot's GraspVLA used ray-traced rendering in Isaac Sim to generate SynGrasp-1B, a synthetic grasping dataset of about 1 billion frames, while randomizing point lights, directional lights, ambient light, and roughly 2,000 tabletop, floor, and wall textures — a run that took about 10 days on 160 RTX 4090 GPUs.",
+      "related": ["Rendering", "Path Tracing", "Physically Based Rendering", "Sim-to-Real Gap", "Gaussian Splatting-based Simulation", "Synthetic Data"]
+    },
+    {
+      "key": "sim-06#2",
+      "name_en": "Procedural Generation",
+      "aliases": ["Procedural Scene Generation", "Procedural Content Generation", "PCG"],
+      "one_liner": "Automatically producing large numbers of scenes, objects, or terrain from rules plus randomness, instead of building each one by hand.",
+      "explanation": "Procedural generation originated in the game industry: content is produced automatically by an algorithm plus randomness, the way Minecraft generates an entire map from a single random seed. In embodied AI, it is used to mass-produce simulated training environments: rules are written first (how to partition a floor plan, where furniture goes, which materials and textures to use, how to light the scene), and then thousands of distinct scenes are randomly sampled from those rules. Building one interactive 3D house by hand is slow, and too few scenes make a policy prone to overfitting, so procedural generation trades rule-writing effort for quantity and diversity, making it a standard tool for improving generalization across scenes. Notable projects include the Allen Institute for AI's ProcTHOR and Princeton's Infinigen; the randomly generated stairs and slopes used in quadruped reinforcement learning also fall into this category. Its counterpart is generative simulation, which instead uses a large model to build scenes from text descriptions.",
+      "example": "ProcTHOR can randomly generate floor plans of 1 to 10 rooms, sampling and arranging from 108 categories, 1,633 interactive objects, and 3,278 materials; the paper pretrained an embodied agent on 10,000 generated houses, and without any fine-tuning on downstream data it often beat the previous best methods.",
+      "related": ["ProcTHOR", "Infinigen", "Domain Randomization", "Generative Simulation", "Scene Generalization", "Terrain Curriculum"]
+    },
+    {
+      "key": "sim-06#3",
+      "name_en": "Progress Score",
+      "aliases": ["Task Progress", "Partial Success", "Partial Credit"],
+      "one_liner": "A metric that scores how many steps of a task a robot completed, rather than just recording binary success or failure.",
+      "explanation": "Progress score is a class of evaluation metric: a task is broken into stages or sub-goals ahead of time, and a robot earns credit for each stage it completes, usually normalized to a 0–1 or 0–100 scale. It complements binary success rate. On long-horizon, difficult tasks, every policy's success rate can sit near 0, which makes it impossible to tell them apart; scoring by progress reveals which policy got further and where exactly it got stuck. The downside is that the scoring rubric is defined by whichever researchers wrote it, so scores are not directly comparable across different papers. Physical Intelligence's π0 paper designed a separate scoring rubric for each task; HomeRobot OVMM uses partial success, awarding 1 point per completed stage, as one basis for its ranking; and RoboArena has evaluators assign a 0–100 progress score to each trial.",
+      "example": "In the π0 paper's laundry-folding task, taking a garment out of the basket, laying it flat, folding it, and stacking it neatly each earn 1 point; completing all of them is a perfect score, while only laying it flat earns half credit.",
+      "related": ["Success Rate", "Evaluation Protocol", "Long-Horizon Task", "Real-robot Evaluation", "RoboArena", "Average Completion Length"]
+    },
+    {
+      "key": "sim-06#4",
+      "name_en": "Push-T",
+      "aliases": ["PushT", "gym-pusht"],
+      "one_liner": "A 2D task where a round pusher must push a T-shaped block to a target pose, commonly used to test imitation-learning policies.",
+      "explanation": "Push-T is a 2D tabletop pushing task: an agent controls a round pusher that can only move the T-shaped block on the table through point contact, and must push it into a fixed target position and orientation. It first appeared in Google's 2021 Implicit Behavioral Cloning (IBC) work, and became a standard imitation-learning benchmark after Diffusion Policy adapted it in 2023; Hugging Face later packaged it as the gym-pusht environment. The task looks simple, but the block's pose has to be adjusted bit by bit through contact, and the same situation often has several equally valid human strategies, such as pushing from the left or from the right (action multimodality), which makes it well suited for testing whether a policy can represent a multimodal action distribution. The metric is the overlap ratio between the T block and the target region; in gym-pusht, 95% overlap counts as success. Observations can be either keypoints or 96×96 images.",
+      "example": "The Diffusion Policy paper compared its method against IBC, LSTM-GMM, and others on simulated Push-T, and also built a real-robot version: trained with a UR5 arm and 136 human demonstrations, requiring more precise multi-stage pushing.",
+      "related": ["Diffusion Policy", "Action Multimodality", "Imitation Learning", "LeRobot", "Non-prehensile Manipulation", "ALOHA Simulation Tasks"]
+    },
+    {
+      "key": "sim-06#5",
+      "name_en": "PyBullet",
+      "aliases": ["Bullet", "Bullet Physics", "Bullet Physics SDK"],
+      "one_liner": "The Python interface to the Bullet physics engine, and one of the most widely used simulators in early robot reinforcement learning.",
+      "explanation": "Bullet is an open-source physics engine (written in C++, zlib license) led by Erwin Coumans, supporting collision detection along with rigid-body and soft-body (cloth, rope) dynamics; it has been widely used in games and film visual effects, and Coumans received a Sci-Tech Academy Award for it. PyBullet is its Python wrapper, installable with a single pip command, and it can load URDF, SDF, and MJCF robot models directly, with built-in forward/inverse kinematics, inverse dynamics, and basic rendering. Before GPU-parallel simulation became common, a large amount of robot reinforcement-learning and sim-to-real work was done in PyBullet. It runs mainly on the CPU, so its parallel scale falls well short of Isaac Lab, MJX, and similar platforms, and new large-scale training has largely moved to those instead — though PyBullet remains common for teaching and lightweight experiments. The latest version on PyPI, 3.2.7, was released in January 2025.",
+      "example": "Google's 2018 paper “Sim-to-Real: Learning Agile Locomotion for Quadruped Robots” trained trotting and galloping gaits for the Minitaur quadruped in PyBullet, then deployed the policy directly to the real robot after system identification, actuator modeling, and randomization.",
+      "related": ["Physics Engine", "MuJoCo", "Isaac Gym", "Sim-to-Real Transfer", "Unified Robot Description Format", "Rigid-Body Simulation"]
+    },
+    {
+      "key": "sim-06#6",
+      "name_en": "Real-to-Sim",
+      "aliases": ["Real2Sim", "Real-to-Sim Reconstruction"],
+      "one_liner": "Recreating a real scene, its objects, and the robot inside a simulator, so the simulation matches reality as closely as possible.",
+      "explanation": "Real-to-sim is the reverse step of sim-to-real: information is captured from the real world and used to build a matching version inside a simulator. It involves geometry and appearance reconstruction (scanning a room and its objects with a phone, NeRF, or 3D Gaussian Splatting), identifying physical parameters (mass, friction, joint damping, and so on), and aligning the robot's controller; the resulting simulated version is often called a digital twin. It serves two main purposes. One is evaluation: a real test setup is recreated in simulation, and the simulated score is used to predict real-robot performance, saving a large amount of real-robot testing. The other is training: data is generated or reinforcement learning is run inside the recreated scene, and the result is transferred back to the real robot — this full loop is called real-to-sim-to-real. The difficulty is that any error in the reconstructed visuals or physics becomes a new sim-to-real gap of its own.",
+      "example": "SIMPLER (SimplerEnv) builds matching simulated environments for real experiments with the Google Robot and the WidowX arm, focusing on narrowing both control and visual gaps; the paper shows that policy performance inside it correlates strongly with real-robot results and can even reproduce how sensitive a policy is to various distribution shifts.",
+      "related": ["Real-to-Sim-to-Real", "Digital Twin", "Sim-to-Real Transfer", "Sim-to-Real Gap", "SimplerEnv", "Gaussian Splatting-based Simulation"]
+    },
+    {
+      "key": "sim-06#7",
+      "name_en": "Real-to-Sim-to-Real",
+      "aliases": ["Real2Sim2Real"],
+      "one_liner": "Recreating a real scene in simulation, training or generating data there, and then deploying the resulting policy back to the real robot.",
+      "explanation": "Real-to-sim-to-real chains real-to-sim and sim-to-real into a single pipeline: a real environment is scanned and rebuilt as a digital twin inside a simulator; reinforcement learning, large-scale synthetic-data generation, or safe evaluation is then carried out in that recreated scene; and the resulting policy is finally transferred back to the real robot. Compared with plain sim-to-real, the training scene is a direct copy of the deployment scene, so the sim-to-real gap is smaller; compared with using only real-robot data, simulation allows cheap trial and error and deliberately introduced perturbations, which improves robustness. A common recent approach reconstructs photorealistic imagery with 3D Gaussian Splatting and pairs it with a physics engine to handle interaction. The limitation is that every new scene requires reconstructing it again from scratch, and physical parameters such as friction and softness remain hard to identify accurately.",
+      "example": "MIT's RialTo builds a scene's digital twin in about 25 minutes using scanning tools like Polycam, brings roughly 15 real demonstrations into simulation to fine-tune with reinforcement learning, and then distills the result back into a vision-based real-robot policy; the paper reports over 67% higher robustness than pure imitation learning across 8 tasks such as stacking plates and placing books on a shelf.",
+      "related": ["Real-to-Sim", "Sim-to-Real Transfer", "Digital Twin", "Gaussian Splatting-based Simulation", "Reinforcement Learning Fine-tuning", "Sim-to-Real Gap"]
+    },
+    {
+      "key": "sim-06#8",
+      "name_en": "Rendering",
+      "aliases": ["Rendering Engine", "Renderer"],
+      "one_liner": "The process of computing a camera image from a 3D scene; it produces all of a simulator's camera-based sensor data.",
+      "explanation": "Rendering is a computer-graphics term for computing a 2D image from 3D models, materials, lighting, and camera parameters. The main methods are rasterization (projecting triangles onto the screen and shading pixel by pixel, which is fast and used by games and most real-time simulators) and ray tracing or path tracing (simulating how light actually travels, which is more realistic but slower). In robot simulation, the physics engine handles how objects move while the renderer handles “taking the picture”: producing RGB images, depth maps, and segmentation masks as camera observations for training and evaluating vision policies, as well as for visualizations meant for humans to watch. Rendering quality determines the size of the visual sim-to-real gap, while rendering speed is often the bottleneck for vision-based reinforcement learning, which is why ManiSkill3, Isaac Lab, and others all implement batched GPU rendering. Running a simulation without opening a graphical window is called headless mode.",
+      "example": "ManiSkill3 runs both physics simulation and rendering in parallel on the GPU; its paper reports that simulation with rendering reaches over 30,000 frames per second on its benchmark environments, 10 to 1000 times faster than other platforms and using 2 to 3 times less GPU memory.",
+      "related": ["Rasterization", "Ray Tracing", "Path Tracing", "Photorealistic Rendering", "Batched Rendering", "Headless Mode"]
+    },
+    {
+      "key": "sim-06#9",
+      "name_en": "Rigid-Body Simulation",
+      "aliases": ["Rigid-Body Dynamics Simulation"],
+      "one_liner": "Physics simulation that assumes objects never deform, computing only their translation, rotation, and collisions with each other.",
+      "explanation": "Rigid-body simulation is the most basic and most widely used part of a physics engine. It assumes an object's shape never changes under force, so each object's state can be described with just its position, orientation, velocity, and angular velocity. Simulation advances in fixed timesteps: each step first runs collision detection to find contact points, then a contact model and constraint solver compute contact forces, friction, and joint constraint forces, and finally an integrator updates the state using the Newton-Euler equations. Robots are usually modeled as several rigid links connected by joints (an articulated body), which is why tasks like quadruped locomotion or an arm stacking blocks are all handled within rigid-body simulation. MuJoCo, PhysX, and Bullet all build rigid-body simulation as their core. It cannot handle cloth, rope, liquids, or soft objects, which instead require soft-body, cloth, or fluid simulation; even contact and friction are only approximations, making them one of the main sources of the sim-to-real gap.",
+      "example": "When a robot arm pushes a block off a table, both the block and the table are treated as rigid bodies that never deform; each step, the engine detects collisions between the block and the table edge or the ground, computes contact and friction forces, and integrates the block's next position and rotation.",
+      "related": ["Physics Engine", "Rigid-Body Dynamics", "Articulated-Body Simulation", "Contact Model", "Soft-Body Simulation", "MuJoCo"]
+    },
+    {
+      "key": "sim-06#10",
+      "name_en": "RLBench",
+      "aliases": ["RLBench-18 (PerAct subset)"],
+      "one_liner": "A simulation benchmark of 100 robot-arm manipulation tasks from Imperial College London, built on CoppeliaSim.",
+      "explanation": "RLBench was released in 2019 (IEEE RA-L 2020) by Stephen James, Andrew Davison, and colleagues at Imperial College London's Dyson Robotics Lab. It contains 100 hand-designed manipulation tasks, ranging from simple reaching to multi-step tasks like opening a door or an oven, using a Franka Panda arm by default and running on the CoppeliaSim simulator. Each task provides multi-camera RGB, depth, segmentation-mask, and proprioceptive observations, can automatically generate any number of demonstrations via motion planning, and many tasks also have variants that change color, position, and similar attributes. It was originally aimed at reinforcement learning, imitation learning, and few-shot learning, and later became one of the main simulation benchmarks for 3D manipulation policies: the 18-task subset selected by PerAct has since been reused by a large body of work including RVT and 3D Diffuser Actor.",
+      "example": "PerAct trained a single multi-task Transformer on 18 RLBench tasks (249 variants), voxelizing multi-view RGB-D observations to predict the end effector's next keyframe pose; later work such as RVT-2 and 3D Diffuser Actor compares success rates on the same set of tasks.",
+      "related": ["PerAct", "RVT-2", "3D Diffuser Actor", "CoppeliaSim", "Keyframe Action Prediction", "The Colosseum"]
+    },
+    {
+      "key": "sim-06#11",
+      "name_en": "RoboArena",
+      "aliases": ["Robo Arena", "RoboArena Distributed Real-Robot Evaluation"],
+      "one_liner": "A generalist-robot-policy evaluation platform where multiple labs run blind head-to-head real-robot comparisons that get aggregated into a ranking.",
+      "explanation": "RoboArena is a real-robot evaluation framework released in June 2025 by Karl Pertsch, Chelsea Finn, Sergey Levine, and colleagues from 7 academic institutions. It borrows the “arena” approach used to evaluate large language models: an evaluator freely sets up a scene and gives a task in their own lab, the system sends two anonymous policies to each run once from the same starting condition, and the evaluator provides a preference, a 0–100 progress score, and a written rationale; a Bradley-Terry model extended to account for task difficulty then aggregates a large number of these pairwise comparisons into a ranking. Policies connect as remote inference servers, so the evaluating site only needs a robot and a network connection. The first round standardized on the DROID platform (a Franka arm), and the paper reports that its ranking was closer to the reference ranking obtained from exhaustive testing than traditional single-lab, fixed-task evaluation was.",
+      "example": "The first evaluation round compared π0-flow-DROID, π0-FAST-DROID, and 5 other DROID policies built on PaliGemma with different action representations, completing over 600 blind pairwise comparisons across the 7 participating institutions.",
+      "related": ["Blind Pairwise Comparison", "Elo Rating", "Real-robot Evaluation", "DROID Dataset", "Progress Score", "Policy Server"]
+    }
+  ]
+}

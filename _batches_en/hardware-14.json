@@ -1,0 +1,113 @@
+{
+  "batch": "hardware-14",
+  "terms": [
+    {
+      "key": "hardware-14#0",
+      "name_en": "Regenerative Braking and Brake (Shunt) Resistor",
+      "aliases": ["Regenerative Braking", "Brake Resistor", "Shunt Resistor", "Dump Module"],
+      "one_liner": "A motor slowing down feeds energy back like a generator; a shunt resistor burns off the excess as heat.",
+      "explanation": "When a motor decelerates or is driven backward by an external force — for instance, when a robot lands, crouches, or comes to an emergency stop — it briefly acts as a generator, feeding energy back onto the driver's DC bus; this is called regenerative braking. The bus voltage rises as a result, and if the battery or power supply can't absorb it, a shunt (or “dump”) circuit — a switching transistor plus a power resistor, also called a brake chopper — burns off the excess energy as heat once voltage crosses a threshold; otherwise the driver would trip an overvoltage fault or even be damaged. A battery-powered robot can recover some of that energy, but when the battery is already full, or the robot is powered from a lab DC supply that can't absorb reverse current, a shunt module becomes essential. It's directly tied to motor driver and power-supply design, as well as emergency-stop strategy.",
+      "example": "A legged robot connected to a lab DC power supply for jump testing has its joint motors feed energy backward on landing, spiking the bus voltage and tripping an overvoltage fault on the driver; adding a shunt module across the bus resolves the problem.",
+      "related": ["Servo Drive / Motor Driver", "Brushless DC Motor", "Battery Management System", "Emergency Stop", "Holding Brake"]
+    },
+    {
+      "key": "hardware-14#1",
+      "name_en": "Remote Center Compliance (RCC) Device",
+      "aliases": ["RCC"],
+      "one_liner": "A passive spring mechanism between wrist and gripper that lets a part self-align into a hole during insertion.",
+      "explanation": "RCC is a passive compliance mechanism proposed in the late 1970s by Draper Laboratory (Whitney and colleagues), built from elastic elements and mounted between a robot arm's wrist and its gripper. Its defining feature is that its center of compliance sits outside the device itself, near the tip of the part being held, so the moment the part's edge touches the side of a hole during insertion, the part automatically shifts sideways and tilts to align itself, rather than jamming. It needs no force sensor and no active compliance control (a control algorithm that regulates contact force) — the mechanical structure alone absorbs a few millimeters of position error — and it's still used in industrial assembly today. In learning-based assembly research, it's commonly compared against active compliance control.",
+      "example": "When a robot arm inserts a pin into a tightly toleranced hole, adding an RCC device between the flange and the gripper lets a slightly misaligned pin slide in instead of jamming at the opening.",
+      "related": ["Peg-in-Hole Insertion", "Compliance", "Compliance Control", "Impedance Control", "Robotic Assembly"]
+    },
+    {
+      "key": "hardware-14#2",
+      "name_en": "Replacing Steel with Engineering Plastics (Plastic-for-Steel Substitution)",
+      "aliases": ["Plastic-for-Steel Substitution", "Plastic-for-Metal Substitution"],
+      "one_liner": "Using PEEK and other engineering plastics instead of metal for robot structural and transmission parts, to cut weight and cost.",
+      "explanation": "This refers to substituting engineering plastics — such as PEEK (polyether ether ketone), POM, fiber-reinforced nylon, and carbon-fiber composites — for steel and aluminum in structural parts and some transmission parts, such as housings, frames, gears, and bearing cages. Humanoid robots chase both lightweighting and lower mass-production cost, which has drawn attention to this approach; reports say programs such as Tesla's Optimus have been evaluating PEEK components, which has driven interest in related stocks. The benefits are a density far below steel's and the ability to be injection-molded in bulk; the trade-offs are stiffness, heat resistance, and creep resistance (slow deformation under sustained load) that fall short of metal, so parts usually need to be redesigned rather than simply swapped one for one.",
+      "example": "Switching a joint housing from machined aluminum alloy to an injection-molded, carbon-fiber-reinforced PEEK part makes it lighter and lets it be formed in a single shot, instead of CNC-machined piece by piece.",
+      "related": ["Polyether Ether Ketone (PEEK)", "Lightweighting (Magnesium Alloy / Carbon Fiber)", "Bill of Materials (BOM) Cost", "Mass Production", "Humanoid Robot"]
+    },
+    {
+      "key": "hardware-14#3",
+      "name_en": "Resolver",
+      "aliases": ["Rotary Transformer"],
+      "one_liner": "An electromagnetic sensor, built like a small transformer, that measures motor shaft angle and resists heat and vibration.",
+      "explanation": "A resolver is an electromagnetic sensor for measuring rotation angle: an AC signal is applied to an excitation winding on the stator, and as the rotor turns, two output windings pick up signals proportional to the sine and cosine of the rotation angle, which a dedicated decoder chip (an RDC) converts into an angle. It has no optical components, and no electronics on the rotor itself, so it tolerates high temperatures, vibration, oil, and shock, and has long been used in electric-vehicle drive motors, aerospace, and industrial servo systems. Compared with optical or magnetic encoders, a resolver is tougher, but its accuracy and resolution usually fall short of a high-end optical encoder, and it needs extra decoding circuitry. Magnetic encoders are more common in robot joints; resolvers show up more often in high-power applications where reliability matters most.",
+      "example": "Electric-vehicle drive motors commonly use a resolver to supply the rotor angle needed for field-oriented control.",
+      "related": ["Rotary Encoder", "Magnetic Encoder", "Optical Encoder", "Permanent Magnet Synchronous Motor", "Field-Oriented Control (FOC)"]
+    },
+    {
+      "key": "hardware-14#4",
+      "name_en": "Reverse-Knee (Digitigrade, Bird-Like) Leg",
+      "aliases": ["Digitigrade Leg", "Bird Leg"],
+      "one_liner": "A leg that looks like its knee bends backward, but is actually walking on its toes, like a bird.",
+      "explanation": "A reverse-knee leg looks like its “knee” bends the wrong way, but it's actually mimicking a bird's digitigrade structure: the joint that appears to bend backward corresponds to a human ankle, while the true knee sits higher on the thigh, close to the body. The best-known examples are Agility Robotics' Cassie and Digit. This leg layout concentrates heavy parts like motors near the hip, keeping the shin and foot light, which lowers the leg's swing inertia and helps with fast stepping and energy efficiency. Its downside is that it doesn't match human leg structure, making it harder to map human motion-capture data onto the robot's joints through motion retargeting, and it looks less human — which is why most humanoid robots aiming for whole-body imitation instead use a human-like, forward-bending knee.",
+      "example": "Agility's Cassie biped uses reverse-knee legs, and its light, distal leg design let it complete an outdoor 5-kilometer test run.",
+      "related": ["Bipedal Robot", "Agility Robotics Cassie", "Agility Robotics Digit (incl. Digit 5)", "Point Foot vs. Flat Foot", "Motion Retargeting"]
+    },
+    {
+      "key": "hardware-14#5",
+      "name_en": "RobotEra XHAND1",
+      "aliases": ["XHAND", "XHAND1"],
+      "one_liner": "RobotEra's 12-DOF, fully electric, five-fingered dexterous hand with tactile arrays on the fingertips.",
+      "explanation": "The XHAND1 is a five-fingered dexterous hand released by RobotEra in November 2024, serving as the hand end effector for its STAR1 humanoid robot. It has 12 actuated degrees of freedom (3 each in the thumb and index finger, 2 each in the remaining three fingers, with the index finger also able to move side to side), is fully electrically driven, and gives every degree of freedom its own independent actuator that can be controlled separately. Each finger carries a tactile array sensor with more than 100 sensing points, able to sense 3D force and temperature, and the company states a maximum single-hand grip force of about 80 N. In June 2026, RobotEra released an upgraded version, the XHAND1 PRO, which is fully direct-drive with 21 degrees of freedom and 18 distributed tactile sensors across the hand.",
+      "example": "In an official demo, a single XHAND1 hand lifted a 25 kg dumbbell.",
+      "related": ["Dexterous Hand", "RobotEra", "RobotEra STAR1", "Fully Direct-Drive Dexterous Hand", "Tactile Sensor", "Dexterous Manipulation"]
+    },
+    {
+      "key": "hardware-14#6",
+      "name_en": "Rockchip RK3588",
+      "aliases": ["RK3588", "RK3588S"],
+      "one_liner": "An 8nm, eight-core ARM chip from Rockchip with a 6 TOPS NPU, a common low-cost robot compute platform.",
+      "explanation": "The RK3588 is a flagship SoC (a chip integrating a CPU, GPU, AI accelerator, and more) from Fuzhou-based Rockchip, built on an 8nm process, with a CPU combining 4 Cortex-A76 and 4 Cortex-A55 cores, a Mali-G610 GPU, a built-in 6 TOPS NPU (neural-network accelerator), and support for 8K video encode/decode. It's used in a huge number of dev boards and industrial mainboards, and in robots it commonly serves as a low-cost, low-power onboard compute platform or host computer, running ROS 2, camera processing, and lightweight model inference; a model has to be converted with RKNN-Toolkit before it can run on the NPU. Compared with NVIDIA's Jetson Orin, it's cheaper and more power-efficient, but its AI compute and CUDA ecosystem lag far behind, so it can't handle a large VLA model.",
+      "example": "A YOLO detection model is converted to RKNN format with RKNN-Toolkit and deployed to the NPU on an RK3588 dev board, giving a robot car real-time object recognition.",
+      "related": ["Onboard Compute Platform", "Rockchip RKNN-Toolkit", "Neural Processing Unit (NPU)", "NVIDIA Jetson", "On-Device / Edge Deployment", "TOPS (Tera Operations Per Second)"]
+    },
+    {
+      "key": "hardware-14#7",
+      "name_en": "RS-485",
+      "aliases": ["EIA-485", "TIA-485"],
+      "one_liner": "A differential twisted-pair serial standard, resistant to noise and usable over long cable runs, common for motors and servos.",
+      "explanation": "RS-485 (formally TIA/EIA-485) is a physical-layer standard for serial communication, sending a differential signal (read as the voltage difference between two wires) over a twisted pair; it resists electrical noise well, can run over distances up to a kilometer or more, and lets multiple devices share a single bus, usually in half-duplex mode (only one side can transmit at a time). It only defines the electrical characteristics; common higher-layer protocols riding on top of it include Modbus RTU or a vendor's own proprietary protocol. In robots, many servos, joint motors, electric grippers, and sensors use RS-485. Its weakness is a lower data rate than EtherCAT or CAN FD, and it relies on a master polling each device in turn, which becomes a bottleneck once a robot has many joints running at a high control frequency.",
+      "example": "An electric gripper commonly runs the Modbus RTU protocol over RS-485, with the host computer sending open/close commands through a USB-to-485 adapter.",
+      "related": ["Controller Area Network / CAN with Flexible Data-Rate", "EtherCAT (Ethernet for Control Automation Technology)", "Servo (Smart Serial Bus Servo)", "Servo Drive / Motor Driver", "Unitree GO-M8010-6 Motor"]
+    },
+    {
+      "key": "hardware-14#8",
+      "name_en": "Safe Torque Off (STO)",
+      "aliases": ["STO"],
+      "one_liner": "A driver safety function that cuts power to a motor in hardware, so it stops producing torque.",
+      "explanation": "STO is a drive safety function defined in IEC 61800-5-2: once triggered, the driver uses a hardware circuit to block the switching signals to the inverter, so the motor stops producing torque and coasts to a stop under its own inertia and friction (corresponding to an IEC 60204-1 Category 0 stop). It's typically implemented with a dual-channel hardware input that doesn't depend on software, allowing it to reach a fairly high functional-safety rating (SIL/PL). Importantly, STO is not the same as cutting main power, and it doesn't actively brake or hold up a load against gravity, so vertical joints still need a holding brake alongside it; when the motor needs to decelerate first and then cut torque, the related SS1 function is used instead. A robot's emergency-stop button is typically wired directly to the STO terminals on each driver.",
+      "example": "When an emergency stop is triggered on a collaborative arm, the controller asserts STO on every joint's driver while simultaneously engaging the holding brakes, preventing the arm from dropping under gravity.",
+      "related": ["Emergency Stop", "Functional Safety", "Holding Brake", "Servo Drive / Motor Driver", "Protective Stop"]
+    },
+    {
+      "key": "hardware-14#9",
+      "name_en": "Screw Lead",
+      "aliases": ["Lead (Screw)"],
+      "one_liner": "How far a screw's nut travels along the axis for one full turn of the screw.",
+      "explanation": "Lead is the distance a nut travels along the axis of a screw (a threaded transmission part that converts rotation into linear motion) for one complete turn, equal to the thread pitch multiplied by the number of thread starts. It functions like a “gear ratio” between rotation and linear motion: a smaller lead means the same motor torque produces more force and finer position resolution, but slower linear speed; a larger lead does the opposite. When designing a humanoid's linear actuator, or the micro lead screw driving a dexterous hand, the lead has to be chosen together with motor speed, torque, and the force required. A trapezoidal screw with a small lead can also be self-locking, meaning the load can't push it back once power is cut.",
+      "example": "With a ball screw with a 5 mm lead, at a motor speed of 3,000 rpm, the nut moves at 3,000 ÷ 60 × 5 = 250 mm/s.",
+      "related": ["Ball Screw", "Planetary Roller Screw", "Linear Actuator (Electric Cylinder)", "Micro Lead Screw", "Trapezoidal Lead Screw & Self-Locking", "Gear Ratio"]
+    },
+    {
+      "key": "hardware-14#10",
+      "name_en": "Shape Memory Alloy (SMA)",
+      "aliases": ["Memory Alloy", "Nitinol"],
+      "one_liner": "An alloy that springs back to its original shape when heated, useful as an artificial muscle when powered electrically.",
+      "explanation": "A shape memory alloy is deformed at low temperature and then returns to its original shape once heated above its transformation temperature; the most common example is Nitinol (a nickel-titanium alloy discovered in the early 1960s at the US Naval Ordnance Laboratory). The mechanism is a transition between two crystal structures, martensite and austenite. Made into a thin wire and heated electrically, it contracts by a few percent and produces a pulling force, so it can serve as an actuator or “artificial muscle.” Its advantages are a high force-to-weight ratio, a simple structure, and silent operation; its disadvantages are a small range of motion, slow recovery because it depends on passive cooling, low energy efficiency, and significant hysteresis that makes precise control difficult. It's commonly used in miniature robots, biomimetic fingers, and soft robots.",
+      "example": "A few electrically heated Nitinol wires pulling on tendons can curl a small biomimetic finger; once power is cut, it cools and a spring resets it to its original position.",
+      "related": ["Artificial Muscle", "Actuator", "Soft Robot", "Tendon-Driven Actuation", "Dielectric Elastomer Actuator (DEA)"]
+    },
+    {
+      "key": "hardware-14#11",
+      "name_en": "SharpaWave",
+      "aliases": ["Sharpa Wave", "Sharpa W01", "Sharpa W02"],
+      "one_liner": "Sharpa's human-hand-sized, 22-DOF dexterous hand with high-density vision-based tactile sensing on each fingertip.",
+      "explanation": "SharpaWave is the flagship dexterous hand from Sharpa, a company founded in 2024, headquartered in Singapore with R&D and manufacturing in Shanghai. The hand matches an adult human hand 1:1 in size and has 22 actuated degrees of freedom; each fingertip integrates a miniature camera plus more than 1,000 tactile pixels, which the company calls a “Dynamic Tactile Array” (DTA), with a force resolution of 0.005 N and fingertip output force above 20 N, and joints that are backdrivable (an external force can push them, helping with impact resistance). It's aimed at embodied AI research and whole-robot integration, and ships with a ROS 2 package, a MuJoCo simulation model, and C++/Python interfaces. The company announced mass production on December 16, 2025.",
+      "example": "A researcher can first train a dexterous-manipulation policy in MuJoCo using the official SharpaWave model, then transfer it to the real hand.",
+      "related": ["Dexterous Hand", "Vision-Based Tactile Sensor", "Dexterous Manipulation", "In-Hand Manipulation", "Backdrivability", "GR-Dexter (ByteDance Seed)"]
+    }
+  ]
+}

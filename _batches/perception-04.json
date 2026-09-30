@@ -1,0 +1,430 @@
+{
+ "category": "perception",
+ "batch": 4,
+ "terms": [
+  {
+   "name_zh": "眼在手外",
+   "name_en": "Eye-to-Hand",
+   "abbr": "",
+   "aliases": [
+    "固定相机标定",
+    "眼在手外标定",
+    "Eye-on-Base",
+    "Eye-to-Hand Calibration"
+   ],
+   "tier": 2,
+   "one_liner": "相机固定在机器人外部、不随机械臂运动的安装方式，及对应的手眼标定。",
+   "explanation": "手眼标定的两种配置之一：相机装在三脚架、桌边或支架上，相对机器人底座固定，不跟着机械臂动；另一种是「眼在手上」，相机装在末端随手运动。眼在手外要求的是相机到机器人基坐标系的固定变换（相机外参），有了它，相机里看到的物体位置才能换算成机械臂能执行的坐标。标定时把标定板或 ArUco 码固定在末端，让机械臂摆出多组姿态、相机逐一拍摄，再解 AX=XB 形式的方程，常用 Tsai-Lenz 等算法，MoveIt、easy_handeye 都有现成工具。它的好处是视野稳定、能看全工作台；缺点是容易被手臂挡住，相机一被碰动就得重标。",
+   "example": "桌边三脚架上放一台深度相机俯视工作台，把 ChArUco 标定板夹在机械臂末端，让手臂换十几个姿态各拍一张，解出相机相对基座的位姿；之后相机检测到的杯子坐标就能直接发给机械臂去抓。",
+   "related": [
+    "手眼标定",
+    "眼在手上",
+    "相机外参",
+    "标定板",
+    "第三视角相机",
+    "ArUco码"
+   ],
+   "sources": [
+    {
+     "title": "easy_handeye: eye-in-hand and eye-on-base calibration (GitHub)",
+     "url": "https://github.com/IFL-CAMP/easy_handeye"
+    },
+    {
+     "title": "MoveIt 2 Hand-Eye Calibration Tutorial",
+     "url": "https://moveit.picknik.ai/main/doc/examples/hand_eye_calibration/hand_eye_calibration_tutorial.html"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "FAST-LIO / FAST-LIO2",
+   "name_en": "FAST-LIO2: Fast Direct LiDAR-inertial Odometry",
+   "abbr": "",
+   "aliases": [
+    "FAST-LIO",
+    "FAST-LIO2",
+    "Fast LiDAR-Inertial Odometry"
+   ],
+   "tier": 2,
+   "one_liner": "港大 MARS 实验室开源的激光雷达加 IMU 里程计，快，适配多种雷达。",
+   "explanation": "FAST-LIO 是香港大学 MARS 实验室（张富团队）开源的激光惯性里程计：把激光雷达点云和 IMU（测加速度、角速度的惯性测量单元）融合，实时估计机器人自身位姿，同时建出点云地图。第一代用紧耦合的迭代扩展卡尔曼滤波融合两种传感器。2021 年 7 月公开的 FAST-LIO2 有两处关键改动：不再手工提取边缘、平面特征，而是把原始点直接配准到地图上，所以旋转式（Velodyne、Ouster）和固态（Livox）雷达都能用；用自研的增量 kd 树 ikd-Tree 维护地图，论文报告大场景下可达 100 Hz。它是四足、无人机、人形上做定位建图的常用开源基线，GPL-2.0 许可，能跑在 ARM 板上。",
+   "example": "四足机器人背上装一台 Livox 固态激光雷达，跑 FAST-LIO2 实时输出自身位姿和点云地图，再交给导航模块做路径规划。",
+   "related": [
+    "激光惯性里程计",
+    "激光雷达",
+    "惯性测量单元",
+    "激光SLAM",
+    "LIO-SAM",
+    "固态激光雷达"
+   ],
+   "sources": [
+    {
+     "title": "FAST-LIO2: Fast Direct LiDAR-inertial Odometry (arXiv:2107.06829)",
+     "url": "https://arxiv.org/abs/2107.06829"
+    },
+    {
+     "title": "hku-mars/FAST_LIO (GitHub)",
+     "url": "https://github.com/hku-mars/FAST_LIO"
+    }
+   ],
+   "as_of": "2021-07"
+  },
+  {
+   "name_zh": "视场角",
+   "name_en": "Field of View",
+   "abbr": "FoV",
+   "aliases": [
+    "视野",
+    "FOV",
+    "视角",
+    "Angle of View"
+   ],
+   "tier": 2,
+   "one_liner": "相机或传感器一次能看到的角度范围，常按水平、垂直、对角给出。",
+   "explanation": "视场角是相机或传感器某一时刻能覆盖的角度范围，通常分水平、垂直、对角线三种，单位是度。对普通针孔相机，它由传感器尺寸 s 和焦距 f 决定：FoV = 2·arctan(s/2f)，焦距越短，视场越宽。激光雷达、深度相机的规格书也会分别标水平和垂直视场角。在具身智能里，视场角决定相机能看到多少：腕部相机离物体很近，视场窄了就看不到周围环境，所以 UMI 给腕部 GoPro 加了 155° 鱼眼镜头；反过来，视场越宽，边缘畸变越大，每度分到的像素越少。换相机或镜头会改变图像分布，已训练的视觉策略往往要补数据。",
+   "example": "传感器宽 36 mm、焦距 18 mm 的相机，水平视场角是 2·arctan(36/36) = 90°；焦距换成 36 mm，视场角就缩到约 53°。",
+   "related": [
+    "针孔相机模型",
+    "相机内参",
+    "鱼眼相机",
+    "镜头畸变",
+    "腕部相机",
+    "深度相机"
+   ],
+   "sources": [
+    {
+     "title": "Field of view - Wikipedia",
+     "url": "https://en.wikipedia.org/wiki/Field_of_view"
+    },
+    {
+     "title": "Universal Manipulation Interface (arXiv:2402.10329)",
+     "url": "https://arxiv.org/html/2402.10329"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "鱼眼相机",
+   "name_en": "Fisheye Camera",
+   "abbr": "",
+   "aliases": [
+    "广角相机",
+    "鱼眼镜头",
+    "Fisheye Lens"
+   ],
+   "tier": 2,
+   "one_liner": "装超广角鱼眼镜头的相机，视场常达 180° 左右，画面边缘明显弯曲。",
+   "explanation": "鱼眼相机用超广角镜头，视场角一般在 100°–180°，有的超过 180°。它不像普通镜头那样让直线保持笔直，而是按等距、等立体角等特定映射把大范围景物压进一张图，所以画面呈外凸的桶形畸变；「鱼眼」一词是物理学家 Robert W. Wood 在 1906 年提出的。普通针孔模型描述不了这么大的畸变，标定时要换专门模型，比如 Kalibr 支持的等距（equi）、双球（ds）、全向（omni）模型。机器人里常见两种用法：视觉 SLAM 和全景感知用它扩大视野、减少跟丢；腕部相机用它补足近距离下的环境信息，UMI 论文指出鱼眼能保留中心分辨率，同时把外围信息压缩进画面。",
+   "example": "UMI 手持夹爪在腕部 GoPro 上加装 155° 鱼眼镜头，夹爪贴近物体时，画面里仍能看到足够的周围桌面。",
+   "related": [
+    "视场角",
+    "镜头畸变",
+    "相机标定",
+    "通用操作接口",
+    "腕部相机",
+    "视觉SLAM"
+   ],
+   "sources": [
+    {
+     "title": "Fisheye lens - Wikipedia",
+     "url": "https://en.wikipedia.org/wiki/Fisheye_lens"
+    },
+    {
+     "title": "Kalibr: Supported camera and distortion models",
+     "url": "https://github.com/ethz-asl/kalibr/wiki/supported-models"
+    },
+    {
+     "title": "Universal Manipulation Interface (arXiv:2402.10329)",
+     "url": "https://arxiv.org/html/2402.10329"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "FoundationPose",
+   "name_en": "FoundationPose: Unified 6D Pose Estimation and Tracking of Novel Objects",
+   "abbr": "",
+   "aliases": [
+    "NVIDIA FoundationPose"
+   ],
+   "tier": 2,
+   "one_liner": "英伟达的通用 6D 位姿模型，新物体不用再训练就能估计和跟踪位姿。",
+   "explanation": "FoundationPose 是英伟达 Bowen Wen 等人提出的物体 6D 位姿（三维位置加三维朝向）估计与跟踪模型，发表于 CVPR 2024（Highlight）。它面向训练时没见过的物体，测试时不微调：给一个 CAD 模型，或约 16 张该物体的参考照片，再加上 RGB-D 图像和检测出的物体区域，就能输出位姿。做法是先在物体周围均匀撒大量初始位姿，拿渲染图和实拍图对比逐个修正，再用排序网络挑出最好的；后续帧只做修正，跟踪约 32 Hz。训练数据是借助大语言模型生成的大规模合成数据。截至 2024 年 3 月，它在 BOP 榜单基于模型的新物体位姿估计上排第一，另有 Isaac ROS 版本。",
+   "example": "机械臂要把一个没训练过的工件插进夹具：先扫出工件的 CAD 模型，第一帧用分割模型框出工件，FoundationPose 估出 6D 位姿并持续跟踪，规划器据此算抓取和插入轨迹。",
+   "related": [
+    "6D位姿估计",
+    "位姿跟踪",
+    "BOP 位姿估计基准",
+    "MegaPose",
+    "SAM-6D",
+    "英伟达"
+   ],
+   "sources": [
+    {
+     "title": "FoundationPose (arXiv:2312.08344)",
+     "url": "https://arxiv.org/abs/2312.08344"
+    },
+    {
+     "title": "NVlabs/FoundationPose (GitHub)",
+     "url": "https://github.com/NVlabs/FoundationPose"
+    }
+   ],
+   "as_of": "2024-03"
+  },
+  {
+   "name_zh": "GelSight",
+   "name_en": "GelSight",
+   "abbr": "",
+   "aliases": [
+    "GelSight 视触觉传感器",
+    "GelSight Inc.",
+    "GelSight公司"
+   ],
+   "tier": 2,
+   "one_liner": "用相机拍弹性胶体形变来测触觉的视触觉传感器，也是同名公司。",
+   "explanation": "GelSight 是一类视触觉传感器：一块表面覆有反光膜的弹性胶体，内部用 LED 从不同方向打光，相机从背面拍胶体被压出的形变，再用光度立体（根据不同方向光照下的明暗反推表面朝向）重建接触面的三维形状。它源自 MIT Edward Adelson 组，最早见于 Johnson 与 Adelson 2009 年的 CVPR 论文；后来在胶面上加标记点，通过点的移动测剪切力和滑移。GelSight 也是由此创办的公司 GelSight Inc.（美国马萨诸塞州沃尔瑟姆），产品有面向机器人的 GelSight Mini（支持 ROS/ROS2 和 PyTouch）和工业测量用的 Mobile、Modulus 等。DIGIT、GelSlim、9DTact 等都走同一条「相机看胶体」路线。",
+   "example": "夹爪指尖装上 GelSight Mini 抓起一颗螺丝，触觉图像里能看清螺纹压痕，可据此判断螺丝在手里的朝向，以及它有没有在滑动。",
+   "related": [
+    "视触觉传感器",
+    "GelSight Mini",
+    "DIGIT 视触觉传感器",
+    "光度立体",
+    "标记点跟踪",
+    "触觉图像"
+   ],
+   "sources": [
+    {
+     "title": "Improved GelSight Tactile Sensor for Measuring Geometry and Slip (arXiv:1708.00922)",
+     "url": "https://arxiv.org/abs/1708.00922"
+    },
+    {
+     "title": "GelSight 官网",
+     "url": "https://www.gelsight.com/"
+    },
+    {
+     "title": "GelSight Mini 产品页",
+     "url": "https://www.gelsight.com/gelsightmini/"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "MediaPipe（手部/人体关键点）",
+   "name_en": "Google MediaPipe (Hand Landmarker / Pose Landmarker)",
+   "abbr": "",
+   "aliases": [
+    "MediaPipe Hands",
+    "MediaPipe Pose",
+    "Hand Landmarker",
+    "Pose Landmarker",
+    "BlazePose"
+   ],
+   "tier": 2,
+   "one_liner": "谷歌开源的端侧视觉工具，能从普通摄像头画面实时提取手和人体关键点。",
+   "explanation": "MediaPipe 是谷歌开源（Apache 2.0）的跨平台端侧机器学习框架，其中 MediaPipe Tasks 提供现成的视觉任务。和具身关系最近的有两个：Hand Landmarker 先用手掌检测模型找到手，再在裁出的区域回归 21 个手部关键点，输出图像坐标、以米为单位的世界坐标和左右手判断；Pose Landmarker 基于 BlazePose，输出人体 33 个关键点。它们在手机 CPU 上就能实时运行，支持移动端、Web 和 Python。因为只需一个普通 RGB 摄像头，常用来做低成本手势遥操作、把人手动作重定向到灵巧手，或给人类视频标关键点；对遮挡和复杂手势的三维精度有限，要求高时常换用 HaMeR 等三维手部重建模型。旧版 Solutions 接口已于 2023 年 3 月停止支持。",
+   "example": "dex-retargeting 的示例程序用 MediaPipe 从电脑摄像头实时检测人手关键点，再把它重定向成 Allegro 灵巧手的关节角，让仿真里的机械手跟着人手动。",
+   "related": [
+    "手部姿态估计",
+    "人体姿态估计",
+    "关键点检测",
+    "动作重定向",
+    "HaMeR",
+    "dex-retargeting"
+   ],
+   "sources": [
+    {
+     "title": "MediaPipe Hand Landmarker guide",
+     "url": "https://developers.google.com/edge/mediapipe/solutions/vision/hand_landmarker"
+    },
+    {
+     "title": "MediaPipe Pose Landmarker guide",
+     "url": "https://developers.google.com/edge/mediapipe/solutions/vision/pose_landmarker"
+    },
+    {
+     "title": "google-ai-edge/mediapipe (GitHub)",
+     "url": "https://github.com/google-ai-edge/mediapipe"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "抓取位姿检测",
+   "name_en": "Grasp Pose Detection",
+   "abbr": "",
+   "aliases": [
+    "抓取检测",
+    "抓取位姿估计",
+    "Grasp Detection",
+    "6-DoF Grasp Detection"
+   ],
+   "tier": 2,
+   "one_liner": "从图像或点云直接算出夹爪该放在哪、朝哪个方向去抓的感知任务。",
+   "explanation": "抓取位姿检测是机器人抓取的感知环节：输入 RGB-D 图像或点云，输出一批可行抓取位姿及打分。平面抓取常用带朝向的矩形表示夹爪在图上的位置、角度和张开宽度；6-DoF 抓取则给出夹爪在三维空间的位置、接近方向、旋转和张开宽度，可以从侧面或斜上方抓。和 6D 位姿估计不同，它不需要物体模型，也不必认出物体是什么，适合在杂乱场景里抓没见过的东西。2017 年 ten Pas 等人的 GPD 把它当作类似目标检测的问题：先采样候选抓取，再逐个分类。GraspNet-1Billion 提供了 88 个物体、190 个场景、超过 11 亿个抓取标注的基准，AnyGrasp、Contact-GraspNet、GraspGen 是常用模型，检测结果再交给运动规划执行。",
+   "example": "料箱里堆着各种零件，深度相机拍一帧点云，AnyGrasp 输出几十个带分数的二指夹爪位姿，系统挑出分数最高且不会碰到箱壁的那个，交给运动规划执行。",
+   "related": [
+    "抓取",
+    "6D位姿估计",
+    "AnyGrasp",
+    "Contact-GraspNet",
+    "GraspNet-1Billion 数据集",
+    "无序抓取"
+   ],
+   "sources": [
+    {
+     "title": "Grasp Pose Detection in Point Clouds (arXiv:1706.09911)",
+     "url": "https://arxiv.org/abs/1706.09911"
+    },
+    {
+     "title": "GraspNet-1Billion 官网",
+     "url": "https://graspnet.net/"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "Grounding DINO",
+   "name_en": "Grounding DINO: Marrying DINO with Grounded Pre-Training for Open-Set Object Detection",
+   "abbr": "",
+   "aliases": [
+    "GroundingDINO"
+   ],
+   "tier": 2,
+   "one_liner": "输入图片和一段文字，就能框出文字所指物体的开放词汇目标检测模型。",
+   "explanation": "Grounding DINO 是 IDEA 研究院联合清华等团队 2023 年 3 月发布的开放集目标检测模型，论文后被 ECCV 2024 接收。传统检测器只认训练时固定的那几十类；它把 Transformer 检测器 DINO 和文本编码器结合，在图像和文本特征之间做多层融合，用户输入类别名或一句描述（如「红色杯子」），就输出对应的检测框和匹配的词。论文报告在不用 COCO 训练数据时，COCO 零样本检测达到 52.5 AP。代码以 Apache 2.0 开源，已接入 Hugging Face Transformers。它常和分割模型 SAM 串成 Grounded-SAM：先按文字框出物体，再抠出掩码，是机器人「按指令找东西」的常用前端。后续的 Grounding DINO 1.5/1.6 只通过 API 提供。",
+   "example": "用户说「把香蕉放进碗里」，系统用 Grounding DINO 以「banana. bowl.」为提示框出两个物体，再用 SAM 得到掩码，结合深度图算出抓取点和放置点。",
+   "related": [
+    "开放词汇检测",
+    "Grounded-SAM",
+    "分割一切模型",
+    "OWL-ViT / OWLv2",
+    "YOLO-World",
+    "DINO-X（开放世界检测）"
+   ],
+   "sources": [
+    {
+     "title": "Grounding DINO (arXiv:2303.05499)",
+     "url": "https://arxiv.org/abs/2303.05499"
+    },
+    {
+     "title": "IDEA-Research/GroundingDINO (GitHub)",
+     "url": "https://github.com/IDEA-Research/GroundingDINO"
+    },
+    {
+     "title": "IDEA-Research/Grounding-DINO-1.5-API (GitHub)",
+     "url": "https://github.com/IDEA-Research/Grounding-DINO-1.5-API"
+    }
+   ],
+   "as_of": "2024-07"
+  },
+  {
+   "name_zh": "手部姿态估计",
+   "name_en": "Hand Pose Estimation",
+   "abbr": "",
+   "aliases": [
+    "手势估计",
+    "手部追踪",
+    "Hand Tracking",
+    "手部网格重建",
+    "Hand Mesh Recovery"
+   ],
+   "tier": 2,
+   "one_liner": "从图像或传感器数据估计人手各关节位置和手指弯曲姿态的任务。",
+   "explanation": "手部姿态估计是从图像、深度图或头显传感器数据中估计人手各关节的位置和手指姿态。常见输出有两种：一是 21 个二维或三维关键点（手腕加每根手指 4 个点），MediaPipe 输出的就是这种；二是参数化手部网格，最常用 MANO 模型（2017 年提出，778 个顶点，由姿态和形状参数控制），HaMeR 就用大规模 ViT 从单张图片直接回归 MANO 网格。难点是手指细、自遮挡多，握东西时还被物体挡住。对具身智能，它是把人手动作变成机器人动作的第一步：遥操作时由头显手部追踪提供实时关键点，再经动作重定向驱动灵巧手；从人类视频学操作时，也要先估出手的轨迹作为伪动作标签。",
+   "example": "Open-TeleVision 用 Apple Vision Pro 实时获取操作员的手部关键点，经 dex-retargeting 优化成灵巧手关节角，操作员握拳，Unitree H1 的手也跟着握拳。",
+   "related": [
+    "MANO 手部模型",
+    "HaMeR",
+    "MediaPipe（手部/人体关键点）",
+    "动作重定向",
+    "手物交互",
+    "人体姿态估计"
+   ],
+   "sources": [
+    {
+     "title": "HaMeR: Reconstructing Hands in 3D with Transformers (arXiv:2312.05251)",
+     "url": "https://arxiv.org/abs/2312.05251"
+    },
+    {
+     "title": "MANO 官网",
+     "url": "https://mano.is.tue.mpg.de/"
+    },
+    {
+     "title": "Open-TeleVision (arXiv:2407.01512)",
+     "url": "https://arxiv.org/html/2407.01512"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "手物交互",
+   "name_en": "Hand-Object Interaction",
+   "abbr": "",
+   "aliases": [
+    "手-物交互",
+    "手与物体交互",
+    "HOI（手物交互）"
+   ],
+   "tier": 2,
+   "one_liner": "研究人手怎样接触、抓握和操作物体，包括估计手和物体的三维姿态与接触。",
+   "explanation": "手物交互是视觉和机器人领域专门研究「人手如何接触、抓握和摆弄物体」的方向，比泛指全身的人-物交互更聚焦在手上。典型任务有：同时估计手的姿态（常用 MANO 网格）和物体的 6D 位姿、推断接触区域和抓握类型、识别手在做什么动作，以及生成合理的抓握。代表数据集有 DexYCB（CVPR 2021，标注手抓 YCB 物体时的 MANO 手姿和物体 6D 位姿）、HOI4D（CVPR 2022，240 万帧第一人称 RGB-D 视频，16 类物体共 800 个实例）、ARCTIC、OakInk 等。对机器人来说，人手是现成的灵巧操作示范：从人类视频里提取手和物体的轨迹，可以转成灵巧手动作或抓取目标；DexYCB 还专门面向人把物体递给机器人的交接场景。",
+   "example": "从一段第一人称做饭视频里，用 HaMeR 重建手的三维姿态、用 FoundationPose 跟踪锅铲位姿，得到手握铲柄的位置和翻炒轨迹，再重定向成灵巧手的示范数据。",
+   "related": [
+    "手部姿态估计",
+    "6D位姿估计",
+    "DexYCB 数据集",
+    "HOI4D 数据集",
+    "ARCTIC 数据集",
+    "人类视频数据"
+   ],
+   "sources": [
+    {
+     "title": "HOI4D: A 4D Egocentric Dataset for Category-Level Human-Object Interaction (arXiv:2203.01577)",
+     "url": "https://arxiv.org/abs/2203.01577"
+    },
+    {
+     "title": "DexYCB: A Benchmark for Capturing Hand Grasping of Objects (arXiv:2104.04631)",
+     "url": "https://arxiv.org/abs/2104.04631"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "头部相机",
+   "name_en": "Head Camera",
+   "abbr": "",
+   "aliases": [
+    "头部视角",
+    "Head-mounted Camera",
+    "头戴相机",
+    "顶部相机"
+   ],
+   "tier": 2,
+   "one_liner": "装在机器人头部或机身顶部、提供接近人眼第一人称视角的相机。",
+   "explanation": "头部相机指装在人形机器人头部、或移动操作平台上方的相机，视角接近人从自己眼睛往前看。它通常和腕部相机、第三视角固定相机配合：头部相机看全局场景和双手位置，腕部相机看夹爪附近的细节。例如 Mobile ALOHA 用两个腕部相机加一个朝前的顶部相机；宇树 G1 头部装有深度相机和 3D 激光雷达。头能转动时，相机外参随颈部关节变化，要用运动学实时换算。遥操作里还有「主动头部相机」：Open-TeleVision 把 ZED Mini 双目相机装在两自由度云台上，跟随操作员在 Apple Vision Pro 里的头部转动并回传立体画面。采人类数据时，戴在人头上的相机或眼镜也叫头戴相机，拍的就是第一人称视频。",
+   "example": "训练双臂叠衣服的策略时输入三路图像：头部相机看整件衣服铺开的状态，两个腕部相机看夹爪有没有夹住衣角。",
+   "related": [
+    "腕部相机",
+    "第三视角相机",
+    "第一人称视频",
+    "Open-TeleVision",
+    "多视角",
+    "相机外参"
+   ],
+   "sources": [
+    {
+     "title": "Mobile ALOHA (arXiv:2401.02117)",
+     "url": "https://arxiv.org/html/2401.02117"
+    },
+    {
+     "title": "Open-TeleVision (arXiv:2407.01512)",
+     "url": "https://arxiv.org/html/2407.01512"
+    },
+    {
+     "title": "Unitree G1 产品页",
+     "url": "https://www.unitree.com/g1"
+    }
+   ],
+   "as_of": ""
+  }
+ ]
+}

@@ -1,0 +1,222 @@
+{
+ "batch": "industry-03",
+ "terms": [
+  {
+   "key": "industry-03#0",
+   "name_en": "EDU Edition",
+   "aliases": [
+    "Research & Education Version",
+    "Developer Edition"
+   ],
+   "one_liner": "A maker's version of a robot aimed at universities and developers, with open low-level access and extra sensors.",
+   "explanation": "Chinese robot makers often sell the same robot in several versions, and the one aimed at universities, research institutions, and developers is called the EDU edition. Compared with a consumer or base edition, an EDU edition typically opens up its low-level SDK (software development kit) and joint-level control interfaces, and adds onboard compute, such as an NVIDIA Jetson module, extra sensors, or a dexterous hand, at a noticeably higher price. Research work requires being able to read joint states and send torque or position commands directly to deploy a self-trained policy on real hardware, which is why the real robots used in papers are usually EDU editions. Different makers open up different layers of access, so it's worth checking a maker's spec sheet carefully before buying.",
+   "example": "According to Unitree's website, only the EDU edition of the Go2 comes with foot-mounted force sensors; the base edition of the G1 has 23 joints, while the EDU edition, with a dexterous hand and other add-ons, can have up to 43.",
+   "related": [
+    "Secondary Development (custom development on SDK)",
+    "Software Development Kit",
+    "Research & Education Market",
+    "Unitree Go2",
+    "Unitree G1",
+    "Robot Body Maker (Robot OEM)"
+   ]
+  },
+  {
+   "key": "industry-03#1",
+   "name_en": "Embodied AI Bubble",
+   "aliases": [
+    "Humanoid Robot Bubble"
+   ],
+   "one_liner": "The worry that funding and valuations in embodied AI are running ahead of the technology's actual maturity and commercial payoff.",
+   "explanation": "This is skepticism that the embodied-AI sector, and humanoid robots in particular, has overheated: the number of companies, the amount raised, and valuations have all climbed fast, while scenarios that can work reliably and generate ongoing revenue remain scarce, a good share of announced orders turn out to be framework or letter-of-intent orders, and demo videos often involve teleoperation or editing. People who hold this view worry the sector could follow other overheated technologies into a period of hype followed by a shakeout once the excitement fades, and a large number of companies exiting. The counterargument is that models and hardware are advancing quickly, and heavy early-stage investment is normal for a young industry. Three things are worth checking to judge for yourself: whether demos are fully autonomous, whether orders are genuinely being delivered, and whether a single unit can pay for itself.",
+   "example": "At a press briefing in November 2025, China's National Development and Reform Commission reportedly noted that the country already had more than 150 humanoid-robot companies, and flagged the risk of a crowd of highly similar products and squeezed room for R&D.",
+   "related": [
+    "Gartner Hype Cycle",
+    "Hundred-Robot War (crowded humanoid market)",
+    "Homogenization / Redundant Construction",
+    "Framework Order / Letter-of-Intent Order",
+    "Demo (Demonstration Video)",
+    "Closed Commercial Loop"
+   ]
+  },
+  {
+   "key": "industry-03#2",
+   "name_en": "Embodied AI Data Service Provider",
+   "aliases": [
+    "Data Collection Service Provider"
+   ],
+   "one_liner": "A company whose main business is collecting, labeling, and selling training data for robot companies.",
+   "explanation": "This describes a company whose main business isn't selling robots or models, but supplying training data to embodied-AI companies. Its work includes building data-collection sites, hiring data collectors to gather demonstrations using teleoperation, motion capture, data gloves, or handheld grippers; cleaning the data, breaking it into subtasks, adding language labels, and running quality checks; and delivering by the hour or by the clip, or selling ready-made datasets or collection equipment outright. This role exists because imitation learning needs large volumes of real-robot data, and building an in-house collection team is expensive and slow for a robotics company. It's the robotics-era counterpart to a labeling company like Scale AI in the large-language-model era. When evaluating a provider, the main things to check are its data format, whether its collection hardware matches your own robot, and what share of the data is actually usable.",
+   "example": "A robotics company that wants a clothes-folding skill outsources it to a data provider, which uses a matching robot arm to teleoperate several hundred hours of demonstrations at its collection site, labels the subtasks, and delivers the data in LeRobot format.",
+   "related": [
+    "Data Collector (Teleoperator)",
+    "Embodied AI Training Ground (Robot Data Collection Center)",
+    "Data Annotation",
+    "Data Quality Inspection",
+    "Scale AI",
+    "Valid (Usable) Data"
+   ]
+  },
+  {
+   "key": "industry-03#3",
+   "name_en": "Embodied AI First Named in the Government Work Report",
+   "aliases": [
+    "Embodied AI in the 2025 Government Work Report"
+   ],
+   "one_liner": "China's 2025 annual Government Work Report named embodied AI for the first time as an industry to cultivate.",
+   "explanation": "On March 5, 2025, Premier Qiang Li delivered the Government Work Report at the Third Session of the 14th National People's Congress. In the section on emerging and future industries within the 2025 work plan, it stated: cultivate future industries such as bio-manufacturing, quantum technology, embodied AI, and 6G. This was the first time the term “embodied AI” appeared in a Government Work Report. The report is the State Council's annual policy statement to the National People's Congress, delivered each year at the “Two Sessions”; being named in it signals that embodied AI has been formally designated a national-level industrial priority. Since then, various localities have rolled out dedicated policies, set up industry funds, and built data-collection training grounds, and the industry commonly treats this moment as the point at which embodied AI was formally sanctioned at the national level in China.",
+   "example": "The report's exact wording: “cultivate future industries such as bio-manufacturing, quantum technology, embodied AI, and 6G.”",
+   "related": [
+    "Future Industries",
+    "New Quality Productive Forces",
+    "15th Five-Year Plan (2026–2030)",
+    "AI+ Initiative",
+    "Guiding Opinions on the Innovative Development of Humanoid Robots (MIIT, 2023)",
+    "Embodied AI"
+   ]
+  },
+  {
+   "key": "industry-03#4",
+   "name_en": "Embodied AI Robot Application Technician",
+   "aliases": [
+    "Embodied AI Robot Data Collector",
+    "Embodied AI Robot Trainer"
+   ],
+   "one_liner": "A national occupation category China created in September 2026, covering data collection, model tuning, and field deployment for robots.",
+   "explanation": "On September 9, 2026, China's Ministry of Human Resources and Social Security and other departments published the eighth batch of new occupations, including “Embodied AI Robot Application Technician” (occupation code 4-04-05-16), proposed by the China Institute of Electronics with technical backing from the Beijing Humanoid Robot Innovation Center. The official definition broadly covers people who use teleoperation equipment, spatial digitization tools, and simulation-testing platforms to collect and process multimodal robot interaction data, fine-tune and adapt algorithm models, deploy and debug hardware and software on-site, and monitor and optimize operations. It splits into two job types, embodied AI robot data collector and trainer, listed as this term's aliases. Being added to the national occupation classification means official standards, training programs, and skills assessments can now be built around it, and it gives frontline roles like data collector a formal job title.",
+   "example": "A data collector wearing a VR headset to teleoperate a robot folding clothes at a data-collection facility falls under the “embodied AI robot data collector” job type.",
+   "related": [
+    "Data Collector (Teleoperator)",
+    "Embodied AI Training Ground (Robot Data Collection Center)",
+    "Teleoperation",
+    "Data Collection Standard Operating Procedure",
+    "Embodied AI Data Service Provider",
+    "Beijing Humanoid Robot Innovation Center"
+   ]
+  },
+  {
+   "key": "industry-03#5",
+   "name_en": "Engineering / Productionization",
+   "aliases": [
+    "Productization"
+   ],
+   "one_liner": "Turning a technology that works in the lab into a reliable, mass-producible, maintainable product.",
+   "explanation": "In the industry there's a common saying that a gap called “engineering” sits between a paper and a product. A policy that hits an 80% success rate in a lab demo can get published; getting it into a factory might require 99%-plus reliability, hours of continuous operation without error, working the same way on another unit of the same robot model, and being quickly repairable when something breaks. Productionization is the work that closes that gap: improving reliability and consistency, handling the long tail of edge-case failures, doing inference optimization and on-device deployment so the model runs directly on the robot's own chip, building out calibration, monitoring, remote maintenance, and OTA updates, and controlling cost and yield along the way. This is often where embodied-AI companies actually separate from one another, which is why “engineering capability” shows up so often in funding pitches and job postings.",
+   "example": "A clothes-folding policy only needs to succeed once in a lab demo; putting it into a laundry plant means it has to run 24 hours a day, retry automatically after a failure, and be deployed and updated across dozens of robots at once — all of that counts as productionization.",
+   "related": [
+    "Mass Production",
+    "Yield Rate / Manufacturing Consistency",
+    "Real-world Deployment (Application Scenario)",
+    "Number of Nines (Reliability)",
+    "Mean Time Between Failures",
+    "On-Device / Edge Deployment"
+   ]
+  },
+  {
+   "key": "industry-03#6",
+   "name_en": "Form-Factor Debate",
+   "aliases": [
+    "Humanoid vs. Non-humanoid",
+    "Wheeled vs. Legged"
+   ],
+   "one_liner": "The ongoing debate over what shape a general-purpose robot should take, and whether it should move on wheels or legs.",
+   "explanation": "This is a long-running debate in embodied AI over what a robot's body should look like, made up of two separate arguments. The first is humanoid versus non-humanoid: those in favor of humanoid form argue that human environments, tools, and data — human videos, motion capture — are all built around the human body, so a humanoid shape can reuse them directly; opponents argue that a biped is unstable and expensive, and that an arm plus a mobile base is enough for most tasks. The second is wheeled versus legged: wheels are faster, more energy-efficient, and more stable on flat ground, while legs can climb stairs and cross obstacles. Compromise designs include wheeled humanoid robots, with a wheeled lower body and dual arms up top, and wheel-legged robots. Underneath the debate are trade-offs in cost, reliability, and target use case, with no settled answer yet, and many companies hedge by releasing more than one form factor at once.",
+   "example": "LimX Dynamics' TRON 2 can switch between dual-arm, legged, and wheel-legged configurations, an example of a maker hedging its bets on form factor.",
+   "related": [
+    "Humanoid Robot",
+    "Wheeled Humanoid Robot",
+    "Wheel-legged Robot",
+    "Legged Robot",
+    "Technical Route Debate",
+    "Robot Embodiment"
+   ]
+  },
+  {
+   "key": "industry-03#7",
+   "name_en": "Full-Stack In-House Development",
+   "aliases": [
+    "Vertical Integration"
+   ],
+   "one_liner": "Developing the robot body, its core components, control, and the large model all in-house rather than buying them in.",
+   "explanation": "This means a robotics company handles nearly every major layer itself — mechanical structure, joint modules, dexterous hands, electronics, motion control, perception, and the upper-level large model — rather than buying someone else's robot body or calling on someone else's model. The upside is that hardware and software can be iterated together, problems are easier to trace, data formats stay consistent, and long-term costs are more controllable; the downside is that it takes heavy investment and a long timeline, and the team has to be capable across the board. The contrasting models are a body maker that builds only hardware, a brain company that builds only models, and an approach that buys in core components and integrates them. The phrase “full-stack in-house” gets used loosely in marketing, so it's worth checking whether the key components and models really were built in-house.",
+   "example": "RobotEra's website describes itself as “fully self-developed across hardware and software,” building the humanoid robot L7, the dexterous hand XHAND1, and the end-to-end model ERA-42 all at once.",
+   "related": [
+    "Hardware-Software Integration",
+    "Robot Body Maker (Robot OEM)",
+    "Robot-Brain (Model-only) Company",
+    "Joint Actuator Module",
+    "Hardware-Software Decoupling (Model–Embodiment Decoupling)",
+    "RobotEra"
+   ]
+  },
+  {
+   "key": "industry-03#8",
+   "name_en": "Hardware-Software Integration",
+   "aliases": [],
+   "one_liner": "Hardware and algorithms designed and tuned together by the same party, delivered as one combined solution.",
+   "explanation": "This means a robot's hardware — its body, sensors, and compute platform — and its software — control, perception, and models — are designed, tuned, and delivered together as a single package. It differs from full-stack in-house development in emphasis: full-stack in-house stresses that every layer is built internally, while hardware-software integration stresses that the hardware and software are well matched and work together out of the box for the customer, with some of the hardware possibly bought in from outside. The reasoning is that an embodied model's performance depends heavily on the specific robot body it runs on — where the camera sits, how much delay a joint has, how fast the control loop runs — all of which affect a policy's performance, and building hardware and software separately makes them easy to mismatch. The opposite concept is hardware-software decoupling, where a model tries not to be tied to one specific robot body, so a single brain can adapt to many different robots.",
+   "example": "Reportedly, Xingyuanzhi Robotics doesn't build its own robot body, but it delivers its embodied-brain model together with an on-device compute platform as one package, describing its approach as hardware-software integration with on-device deployment.",
+   "related": [
+    "Full-Stack In-House Development",
+    "Hardware-Software Decoupling (Model–Embodiment Decoupling)",
+    "Robot Body Maker (Robot OEM)",
+    "Robot-Brain (Model-only) Company",
+    "On-Device / Edge Deployment",
+    "One Brain, Multiple Robots"
+   ]
+  },
+  {
+   "key": "industry-03#9",
+   "name_en": "Humanoid Robot Half Marathon (Beijing E-Town)",
+   "aliases": [
+    "Beijing E-Town Half Marathon"
+   ],
+   "one_liner": "A roughly 21-kilometer half marathon for humanoid robots held in Beijing's E-Town district, first run in April 2025.",
+   "explanation": "This is a humanoid robot half marathon held in the Beijing Economic-Technological Development Area (E-Town), where robots and human runners race the same day on separate lanes over about 21 kilometers. The first edition, in April 2025, was billed as the world's first: Tiangong Ultra, from the Beijing Humanoid Robot Innovation Center, won in 2:40:42, with Noetix's N2 second. The second edition, on April 19, 2026, drew more than 100 robots; remote-controlled entries had their times multiplied by 1.2 so they could be ranked together with autonomously navigating ones. HONOR's autonomous “Lightning” won with a net time of 50:26, and HONOR swept the top three; a remote-controlled “Lightning” actually crossed the finish line first, in 48:19 net, but after the 1.2× conversion it no longer ranked first. The winning time beat the human men's half-marathon world record then standing, 57:20, set by Ugandan runner Jacob Kiplimo in Lisbon in March 2026 — a widely cited 56:42 was actually his 2025 Barcelona time, which was never ratified by World Athletics. The race tests stability under sustained exertion, motor thermal management, and battery life, not manipulation skill — worth remembering when reading the results.",
+   "example": "In the 2026 race, the winning autonomous “Lightning” covered the full 21.0975-kilometer course, swapping its battery once, at the 10.6-kilometer mark.",
+   "related": [
+    "World Humanoid Robot Games",
+    "Tiangong",
+    "Honor Lightning Humanoid Robot",
+    "Noetix N2",
+    "Beijing Humanoid Robot Innovation Center",
+    "Battery Endurance / Runtime"
+   ]
+  },
+  {
+   "key": "industry-03#10",
+   "name_en": "IEEE International Conference on Robotics and Automation",
+   "aliases": [
+    "ICRA"
+   ],
+   "one_liner": "The flagship annual robotics conference hosted by the IEEE Robotics and Automation Society.",
+   "explanation": "ICRA is hosted by the IEEE Robotics and Automation Society (RAS) and has run annually since 1984, usually in May or June; it's one of the largest academic robotics conferences, drawing thousands of paper submissions each year. Its coverage spans nearly every area of robotics — motion planning, control, perception, SLAM, manipulation, legged locomotion, and human-robot interaction — and robot-learning and VLA papers have grown quickly in recent years. It's considered, alongside IROS, one of robotics' two major general-purpose conferences, and compared with the more focused CoRL and RSS, it covers more ground at a larger scale. It's also linked with the journal RA-L, whose accepted papers can be presented at ICRA. ICRA 2025 was held in Atlanta, USA.",
+   "example": "Many classic algorithms debuted at ICRA — Kajita and colleagues' 2003 ZMP preview control, for instance, and Mellinger and Kumar's 2011 minimum-snap trajectory generation for quadrotors.",
+   "related": [
+    "IEEE/RSJ International Conference on Intelligent Robots and Systems",
+    "Conference on Robot Learning",
+    "Robotics: Science and Systems",
+    "IEEE Transactions on Robotics / The International Journal of Robotics Research / IEEE Robotics and Automation Letters",
+    "IEEE Robotics and Automation Society",
+    "Top-tier Conferences & Journals (CCF-A Venues)"
+   ]
+  },
+  {
+   "key": "industry-03#11",
+   "name_en": "IEEE/RSJ International Conference on Intelligent Robots and Systems",
+   "aliases": [
+    "IROS"
+   ],
+   "one_liner": "A major annual robotics conference on par with ICRA, held each fall.",
+   "explanation": "IROS, in full the IEEE/RSJ International Conference on Intelligent Robots and Systems, was first held in Tokyo in 1988 and is jointly organized by the IEEE and the Robotics Society of Japan (RSJ), among others; it's usually held in the fall and draws more than 2,000 paper submissions a year. Its research scope overlaps heavily with ICRA's, spanning motion control, perception, SLAM, and robot learning, and the field commonly refers to the two together as robotics' two major conferences. It rotates between Asia, Europe, and the Americas: Abu Dhabi in 2024, Hangzhou in 2025, Pittsburgh, USA, in 2026, and Florence, Italy, set for 2027. For newcomers submitting papers, IROS and ICRA are usually the first choices in robotics.",
+   "example": "LIO-SAM, a widely used method in LiDAR SLAM, was published at IROS 2020.",
+   "related": [
+    "IEEE International Conference on Robotics and Automation",
+    "Conference on Robot Learning",
+    "Robotics: Science and Systems",
+    "IEEE-RAS International Conference on Humanoid Robots",
+    "IEEE Transactions on Robotics / The International Journal of Robotics Research / IEEE Robotics and Automation Letters",
+    "Top-tier Conferences & Journals (CCF-A Venues)"
+   ]
+  }
+ ]
+}

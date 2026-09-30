@@ -1,0 +1,218 @@
+{
+  "batch": "concept-06",
+  "terms": [
+    {
+      "key": "concept-06#0",
+      "name_en": "Human-Robot Interaction",
+      "aliases": [
+        "HRI"
+      ],
+      "one_liner": "The field studying how people and robots communicate, collaborate, and safely share space.",
+      "explanation": "Human-robot interaction (HRI) studies the interaction between people and robots, spanning robotics, AI, natural language processing, design, and psychology. The ACM/IEEE International Conference on Human-Robot Interaction has run since 2006 and is the field's main academic venue. Its concerns include how a robot understands human speech, gestures, and intent; how it communicates its own state and plans back to people; and how it stays safe while sharing close quarters with them. HRI is commonly split by whether physical contact is involved: physical human-robot interaction (pHRI), such as a person steadying a robot arm while moving something together, versus social interaction, such as dialogue, expression, and companionship. Once robots enter homes, malls, and factories, they spend most of their time dealing with ordinary people who know nothing about the technology, so how well HRI is done directly determines whether a robot can actually be put to use. It connects closely to human-robot collaboration, instruction following, teleoperation, and embodied safety.",
+      "example": "A user tells a home robot, “hand me that glass of water,” pointing in its direction; the robot understands and hands the cup over securely — the speech understanding, gesture recognition, and safe handover involved are all HRI research topics.",
+      "related": [
+        "Human-Robot Collaboration",
+        "Physical Human-Robot Interaction",
+        "Human-Robot Object Handover",
+        "Instruction Following",
+        "Embodied Safety",
+        "Teleoperation"
+      ]
+    },
+    {
+      "key": "concept-06#1",
+      "name_en": "Humanoid Robot Intelligence Level Grading",
+      "aliases": [
+        "T/CIE 298-2025",
+        "Four Dimensions, Five Levels"
+      ],
+      "one_liner": "A Chinese industry standard that grades humanoid robot intelligence from L1 to L5 across four dimensions.",
+      "explanation": "“Humanoid Robot Intelligence Level Grading” (T/CIE 298-2025) is an industry standard published in May 2025 by the China Institute of Electronics, led by the Beijing Innovation Center of Humanoid Robotics, with the Shanghai and Zhejiang humanoid robot innovation centers, UBTECH, Unitree Robotics, the China Academy of Information and Communications Technology, and other organizations taking part; it is reportedly the world's first grading standard specifically for humanoid robot intelligence. It uses a “four dimensions, five levels” framework, scoring along perception and cognition (P), decision-making and learning (D), execution performance (E), and collaboration and interaction (C), with intelligence level rising from L1 to L5; the standard includes 22 top-level indicators and more than 100 technical clauses. The approach borrows from autonomous-driving level systems, aiming to give manufacturers, customers, and investors a common yardstick and cut down on companies each marketing “intelligence” by their own separate definitions. Note that this is a different thing from AgiBot's G1–G5 technology roadmap, which is one company's own internal development plan.",
+      "example": "",
+      "related": [
+        "Levels of Autonomy",
+        "AgiBot's G1–G5 Technology Roadmap",
+        "Humanoid Robot",
+        "Beijing Innovation Center of Humanoid Robotics",
+        "Standardization Technical Committee for Humanoid Robots and Embodied AI"
+      ]
+    },
+    {
+      "key": "concept-06#2",
+      "name_en": "In-distribution",
+      "aliases": [
+        "ID"
+      ],
+      "one_liner": "A test-time situation drawn from the same distribution as the training data — something the model has effectively seen before.",
+      "explanation": "Machine learning typically assumes training and test data come from the same probability distribution; a test sample satisfying this is called in-distribution (ID), and one from a different distribution is out-of-distribution (OOD). A 2021 OOD-detection survey by Jingkang Yang and colleagues splits distribution change into two kinds: covariate shift, where the input's appearance changes — different lighting, background, or camera — but the task categories stay the same, and semantic shift, where entirely new categories not seen in training appear. In robotics, “in-distribution” usually means the objects, scene, placement, and instructions at test time all fall within the range covered by the training demonstrations. Many policies have a high success rate in-distribution but drop sharply the moment the tablecloth or the object changes, so papers often report in-distribution and out-of-distribution results separately as a way to measure generalization. This concept connects directly to generalization, out-of-distribution, distribution shift, and the long-tail problem.",
+      "example": "A robot arm is trained with 50 demonstrations to put a red block on a plate; if the test still uses the same table, the same red block, and a position within the training range, that is an in-distribution test — swapping in an unseen green cup would be out-of-distribution.",
+      "related": [
+        "Out-of-Distribution",
+        "Generalization",
+        "Distribution Shift (Covariate Shift)",
+        "Long-tail Problem",
+        "Robustness",
+        "Object Generalization"
+      ]
+    },
+    {
+      "key": "concept-06#3",
+      "name_en": "In-hand Manipulation",
+      "aliases": [
+        "In-hand Reorientation"
+      ],
+      "one_liner": "Using the fingers to adjust an object's orientation or position while still holding it, without setting it down to regrasp.",
+      "explanation": "In-hand manipulation means a robot with a multi-fingered hand rotates, translates, or reorients an object it is holding using coordinated finger motion, without ever releasing it; the typical task is turning an object to a specified orientation, called in-hand reorientation. Spinning a pen, turning a key, and solving a Rubik's cube all rely on this ability in humans. The difficulty is that contact points are numerous and constantly changing — fingers must repeatedly make and break contact with the object, called finger gaiting — and the hand's own body often blocks the view of what it is doing. A landmark example is OpenAI's 2018 “Learning Dexterous In-Hand Manipulation”: a Shadow dexterous hand was trained in simulation with reinforcement learning to reorient a block, while friction coefficients, object appearance, and other physical and visual properties were randomized (domain randomization), then transferred directly to the real hand; behaviors such as finger gaiting, multi-finger coordination, and using gravity emerged naturally during training. It is one of the hardest sub-problems within dexterous manipulation, and often comes up together with tactile sensing and sim-to-real transfer.",
+      "example": "OpenAI's Shadow dexterous hand, using only finger movement, rotates a lettered block resting in its palm until the specified face points up (the Dactyl project).",
+      "related": [
+        "Dexterous Manipulation",
+        "Dexterous Hand",
+        "Finger Gaiting",
+        "Dactyl (OpenAI's Rubik's-cube Hand)",
+        "Domain Randomization",
+        "Tactile Sensor"
+      ]
+    },
+    {
+      "key": "concept-06#4",
+      "name_en": "Instruction Following",
+      "aliases": [],
+      "one_liner": "A robot understanding a natural-language instruction from a person and actually carrying it out in the real world.",
+      "explanation": "In embodied AI, instruction following means a robot carries out the corresponding action or task based on a natural-language instruction, sometimes paired with an image or gesture, rather than only executing a fixed, pre-written program. Early research mostly used short instructions like “push the red block to the left”; the field has since moved toward open-ended instructions — Physical Intelligence's Hi Robot (2025), for example, has to handle a complex request like “make me a vegetarian sandwich,” as well as real-time corrections mid-execution such as “that's not trash.” It uses a hierarchical structure: a high-level vision-language model understands the instruction and any feedback and decides what to do next, while a low-level policy executes the specific actions. Instruction following determines whether an ordinary person can assign a robot a task without writing code, and it is a main dimension for evaluating a VLA (vision-language-action) model's semantic generalization.",
+      "example": "A user says, “throw away the trash on the table, but don't touch that cup.” The robot has to identify which items are trash, avoid the cup, and pick the trash up piece by piece to put it in the bin.",
+      "related": [
+        "Language-conditioned Policy",
+        "Vision-Language-Action Model",
+        "Hi Robot",
+        "Language Grounding",
+        "Semantic Generalization",
+        "Language Correction (Real-time Language Feedback)"
+      ]
+    },
+    {
+      "key": "concept-06#5",
+      "name_en": "Intuitive Physics",
+      "aliases": [
+        "Physical Commonsense"
+      ],
+      "one_liner": "Commonsense prediction of how objects will behave without using formulas — unsupported things fall, hidden things still exist.",
+      "explanation": "Intuitive physics was originally a cognitive-science concept describing the naive understanding humans, including infants, have of the physical world: an object still exists after being hidden from view (object permanence), objects cannot pass through each other, unsupported objects fall, and shapes do not suddenly change. Researchers commonly use the “violation of expectation” paradigm to test this: show a subject a video that breaks a physical law and see whether they show “surprise.” AI researchers test models the same way: a 2025 study from Meta found that V-JEPA, which predicts video in a learned representation space rather than pixel space, shows understanding of several intuitive-physics properties, while pixel-space video prediction models and multimodal large models perform closer to chance; Google DeepMind's Physics-IQ benchmark likewise found that video generation models such as Sora produce visually realistic footage but have limited physical understanding, and that this is unrelated to how visually realistic the video looks. For robots, intuitive physics determines whether they can predict whether nudging a cup will tip it over or whether a stack of objects is stable — a foundational capability that world models and embodied reasoning both need.",
+      "example": "Shown a video of a ball rolling behind a screen and then vanishing on the other side instead of reappearing, a model that has learned object permanence shows a noticeably higher prediction error, its 'surprise,' at that moment.",
+      "related": [
+        "World Model",
+        "Embodied Reasoning",
+        "V-JEPA 2",
+        "Physics-IQ Benchmark",
+        "Joint Embedding Predictive Architecture",
+        "Spatial Reasoning"
+      ]
+    },
+    {
+      "key": "concept-06#6",
+      "name_en": "Language-conditioned Policy",
+      "aliases": [
+        "Language-conditioned Imitation Learning"
+      ],
+      "one_liner": "A robot policy that takes a language instruction as input and produces different actions depending on what it says.",
+      "explanation": "A policy is a mapping from observations to actions; a language-conditioned policy adds a natural-language instruction to that input, so a single network performs different tasks depending on the instruction, instead of training a separate model per task. Corey Lynch and Pierre Sermanet's language-conditioned imitation learning, proposed at Google in 2020 and published at RSS 2021, used one end-to-end network to learn pixel perception, language understanding, and continuous control together, drawing on large amounts of unlabeled “play” data, with less than 1% of it needing any language annotation. CALVIN (2021) is a benchmark built specifically to evaluate this kind of policy, requiring a robot to complete a long-horizon task made of a sequence of language instructions in order. Today's vision-language-action (VLA) models, such as RT-2 and π0, are essentially language-conditioned policies too, just built on a pretrained vision-language model backbone. The counterpart is a goal-conditioned policy, which specifies the task with a goal image instead of language.",
+      "example": "The same robot-arm policy pulls open a drawer when given the instruction “open the drawer,” and presses a button when given “press the green button” (tasks from the CALVIN benchmark).",
+      "related": [
+        "Policy",
+        "Goal-conditioned Policy",
+        "Vision-Language-Action Model",
+        "Instruction Following",
+        "CALVIN",
+        "Play Data"
+      ]
+    },
+    {
+      "key": "concept-06#7",
+      "name_en": "Legged Locomotion",
+      "aliases": [],
+      "one_liner": "The control problem of getting quadruped, biped, and other legged robots to walk, run, jump, and climb slopes stably.",
+      "explanation": "Legged locomotion studies how legged robots — quadrupeds, bipeds, and others — move by alternately placing their feet on the ground. Compared with wheels, legs can cross discontinuous terrain such as steps, loose gravel, and grass, but the robot must continuously manage balance, switching foot-ground contacts, and the risk of falling. Traditional methods relied on dynamics models and model predictive control (MPC), which optimizes a short segment of future action at every step. In the last few years, reinforcement learning has become the mainstream approach: Joonho Lee and colleagues at ETH Zurich (Science Robotics, 2020) trained using only proprioceptive signals such as joint and inertial data in simulation, then transferred zero-shot to a real ANYmal quadruped, which could walk on mud, snow, and gravel; Nikita Rudin and colleagues (2021) ran thousands of simulated robots in parallel on a single GPU, training a flat-terrain policy in under 4 minutes and a rough-terrain policy in about 20. The field breaks down into sub-areas such as bipedal walking, blind locomotion, perceptive locomotion, and parkour, and is the most fundamental capability for both quadruped and humanoid robots.",
+      "example": "An ANYmal quadruped, using only its own joint and IMU signals and no camera, keeps walking through mud, snow, and running water (Lee and colleagues, 2020).",
+      "related": [
+        "Locomotion",
+        "Bipedal Locomotion",
+        "Quadruped Robot",
+        "RL-based Locomotion Control",
+        "Perceptive Locomotion",
+        "Sim-to-Real Transfer"
+      ]
+    },
+    {
+      "key": "concept-06#8",
+      "name_en": "Levels of Autonomy",
+      "aliases": [
+        "Autonomy"
+      ],
+      "one_liner": "A grading of how much a robot can perceive, decide, and act without relying on a person.",
+      "explanation": "Levels of autonomy describe how much a system can handle perception, decision-making, and execution without depending on a human. The best known example is SAE International's J3016 autonomous-driving scale (2014), L0 through L5, with the key boundary between L2 and L3: from L3 up, the system, not the driver, is responsible for monitoring the environment. In robotics, Jenay Beer, Arthur Fisk, and Wendy Rogers proposed a 10-level framework in 2014 running from pure teleoperation to full autonomy, and discussed how the degree of autonomy affects how willingly people accept a robot, their situational awareness, and how they judge its reliability. In embodied AI, the common question “was this demonstration teleoperated or fully autonomous” is really asking about the level of autonomy; China's humanoid robot intelligence grading standard also borrows this leveling approach from autonomous driving. The higher the degree of autonomy, the higher the demands on robustness, failure recovery, and safety.",
+      "example": "Two videos might both show clothes being folded, but one where an operator wears a VR headset and controls the robot in real time sits at the lowest level of autonomy; only a robot that sees, decides, and acts entirely on its own, with no human involved, counts as fully autonomous.",
+      "related": [
+        "Full Autonomy",
+        "Teleoperation",
+        "Humanoid Robot Intelligence Level Grading",
+        "Shared Autonomy",
+        "Human-Robot Interaction",
+        "Autonomous Driving"
+      ]
+    },
+    {
+      "key": "concept-06#9",
+      "name_en": "Loco-manipulation",
+      "aliases": [
+        "Whole-body Loco-manipulation"
+      ],
+      "one_liner": "Coordinating leg movement and arm manipulation together as one problem, so the robot works while it moves.",
+      "explanation": "“Loco-manipulation” combines locomotion and manipulation: it means a legged robot, such as a quadruped with an arm or a humanoid, treats moving and manipulating as a single, unified problem, such as squatting down to pick up a box off the floor, or pushing a cart while walking. This differs from ordinary mobile manipulation: an arm on a wheeled base can move first, stop, and then manipulate, but a legged robot's legs are themselves involved in balance and force generation, so moving the arm shifts the center of mass and the whole body must coordinate. Zipeng Fu, Xuxin Cheng, and Deepak Pathak's Deep Whole-Body Control (CoRL 2022) points out that controlling legs and arms separately requires heavy engineering to coordinate and lets errors propagate between modules, so they instead use a single reinforcement-learning policy to control both the legs and arm of an armed quadruped at once. On the humanoid side, HOMIE (2025) controls walking with foot pedals, the arms with an isomorphic exoskeleton, and the fingers with a data glove, letting a humanoid walk, squat, and manipulate objects all at once. This is a key capability for humanoid robots moving into homes and factories.",
+      "example": "A humanoid robot walks up to a shelf, squats down to pick up a box from the bottom shelf, then stands up and carries the box to a cart while walking.",
+      "related": [
+        "Mobile Manipulation",
+        "Whole-body Control",
+        "Legged Locomotion",
+        "Humanoid Robot",
+        "Legged Mobile Manipulator (Armed Quadruped)",
+        "HOMIE"
+      ]
+    },
+    {
+      "key": "concept-06#10",
+      "name_en": "Long-tail Problem",
+      "aliases": [
+        "Corner Case",
+        "Long-tail Distribution"
+      ],
+      "one_liner": "The mass of individually rare situations that training data barely covers, and where models fail most often.",
+      "explanation": "“Long-tail” comes from the long-tail distribution in statistics: a small number of common situations (the head) account for most of the data, while a huge number of rare situations (the tail) each occur only a little but add up to a large total. Autonomous driving was among the first fields to treat this as a central challenge: driving is normal almost all the time, but occasionally the car meets a corner case — a construction detour, debris on the road, a pedestrian suddenly running out — and these scenarios have little data even though they are often the ones that matter most for safety. Embodied AI faces the same issue: the objects, arrangements, and unexpected situations in a home vary endlessly, and demonstration data is naturally skewed toward a handful of common tasks; the ICRA 2026 paper “Beyond the Majority” finds that general-purpose robot policies generalize noticeably worse on tail tasks with sparse data, and that ordinary resampling methods offer only limited help. Countermeasures include continuously collecting failure data from deployment, called a data flywheel, using simulation and synthetic data to fill in the tail, and improving a model's generalization and failure-recovery ability. The long tail is the main source of the gap between “the demo works” and “the product actually ships.”",
+      "example": "A household robot can reliably clear away common bowls and chopsticks, but a spilled bowl of soup, a fork stuck in a crack in the table, or a pet suddenly jumping onto the table are all long-tail situations.",
+      "related": [
+        "Out-of-Distribution",
+        "Generalization",
+        "Data Flywheel",
+        "Failure Recovery",
+        "Robustness",
+        "Autonomous Driving"
+      ]
+    },
+    {
+      "key": "concept-06#11",
+      "name_en": "Machine Tending",
+      "aliases": [
+        "Loading and Unloading"
+      ],
+      "one_liner": "The factory task of loading a workpiece into a machine and unloading it once processing is done.",
+      "explanation": "Machine tending is one of manufacturing's most common automation scenarios: loading raw stock or parts into equipment such as a CNC machine, injection molding machine, stamping press, or welding fixture, then unloading the finished piece onto a rack or conveyor once processing is complete. Universal Robots describes it as automatically handling material loading and unloading while continuously monitoring the production process, with the benefit that equipment can run continuously with less downtime. The work is repetitive and tedious, often involving noise and metal shavings, and has traditionally been done by industrial robots or collaborative robots fitted with dedicated grippers, requiring reprogramming and new tooling whenever the product changes. Embodied-AI companies treat it as an early real-world deployment scenario for humanoid robots, since it can slot into an existing production line and directly replace a human workstation without redesigning it, though cycle time (time per piece), positioning accuracy, and long-duration reliability remain the main challenges.",
+      "example": "According to Figure, its Figure 02 robots have loaded sheet-metal parts onto welding fixtures at BMW's Spartanburg plant more than 90,000 times, taking part in the production of over 30,000 X3 vehicles.",
+      "related": [
+        "Industrial Robot",
+        "Collaborative Robot",
+        "Pick-and-Place",
+        "Factory Pilot Deployment",
+        "Cycle Time / UPH",
+        "Teach-and-Playback"
+      ]
+    }
+  ]
+}

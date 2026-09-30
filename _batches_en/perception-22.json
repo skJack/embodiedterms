@@ -1,0 +1,113 @@
+{
+  "batch": "perception-22",
+  "terms": [
+    {
+      "key": "perception-22#0",
+      "name_en": "RoboSense AC1",
+      "aliases": ["RoboSense AC1 Active Camera", "Active Camera AC1"],
+      "one_liner": "A robot vision sensor from RoboSense that combines active depth sensing, a color camera, and an IMU in one module.",
+      "explanation": "The AC1 is the first product in lidar maker RoboSense’s “Active Camera” line. It packages a fully solid-state active depth-sensing module (a VCSEL laser emitter paired with an SPAD single-photon detector chip), an RGB color camera, and an IMU (inertial measurement unit) into one unit, with synchronization and fusion done in hardware, so it outputs already-aligned depth, image, and pose data. Per the published specs, it ranges up to 70 meters, has roughly 1 cm depth accuracy within 5 meters, a depth field of view of 120°×60°, and works in bright light up to 100 kLux. It targets two problems: the hassle of calibrating and synchronizing a lidar, a camera, and an IMU bolted together separately, and the fact that ordinary depth cameras fail outdoors in strong sunlight. Its companion “AI-Ready” ecosystem open-sources drivers, calibration tools, SLAM, and perception algorithms; the follow-up AC2 model is aimed at close-range manipulation.",
+      "example": "An AC1 mounted on an outdoor inspection robot runs the official open-source robosense_ac_slam package, using depth, image, and IMU data together for lidar-inertial-visual odometry and mapping.",
+      "related": ["Depth Camera", "Direct Time-of-Flight", "SPAD (Single-Photon Avalanche Diode)", "Inertial Measurement Unit (IMU)", "Multi-Sensor Fusion", "RoboSense"]
+    },
+    {
+      "key": "perception-22#1",
+      "name_en": "RoboSense Airy",
+      "aliases": ["RoboSense Airy Hemispherical LiDAR"],
+      "one_liner": "A hemispherical-field-of-view digital lidar from RoboSense for robots, covering 360°×90° with a single unit.",
+      "explanation": "Airy is a robot-oriented lidar from RoboSense, described by the company as the first “digital hemispherical lidar.” It is roughly the size of a ping-pong ball (60 mm diameter, 63 mm tall) and weighs under 240 grams; it has a 360° horizontal field of view and a 90° vertical field of view, in 192-line and 96-line versions, with a range of 60 meters (about 30 meters against a 10%-reflectivity target) and roughly 1 cm ranging accuracy. Traditional spinning lidars have a narrow vertical field of view, so when mounted on a robot they often can’t see the ground right beneath or beside it, requiring multiple units to be combined; a hemispherical field of view lets a single unit cover both the surroundings and the nearby ground at once. It uses a chip-based transmit/receive design with digital detection, and targets quadruped robots, humanoids, home and garden robots, AMRs (autonomous mobile robots), and autonomous forklifts, for SLAM mapping, obstacle avoidance, and traversability assessment.",
+      "example": "A quadruped robot dog carries one Airy unit on its head, which sees both the obstacles ahead and the steps beneath its feet, cutting down blind spots during obstacle avoidance and mapping.",
+      "related": ["LiDAR", "LiDAR Channel Count", "Field of View", "LiDAR SLAM", "Livox Mid-360", "RoboSense"]
+    },
+    {
+      "key": "perception-22#2",
+      "name_en": "RTAB-Map",
+      "aliases": ["Real-Time Appearance-Based Mapping", "rtabmap", "rtabmap_ros"],
+      "one_liner": "An open-source graph-based SLAM library that supports mapping and localization with RGB-D, stereo, or lidar sensors.",
+      "explanation": "RTAB-Map (Real-Time Appearance-Based Mapping) is an open-source SLAM (Simultaneous Localization and Mapping) library developed by Mathieu Labbé and François Michaud at IntRoLab, Université de Sherbrooke, in Canada. It organizes the places a robot has visited into a pose graph, and uses a bag-of-words model — which quantizes image features into “visual words” for comparison — to perform loop closure detection: recognizing “I’ve been here before” adds a constraint to the graph, which is then cleaned up with graph optimization to remove accumulated error. Its memory-management mechanism keeps only a subset of locations active for real-time detection and optimization, so it stays real-time even in large environments over long runs. It supports RGB-D cameras, stereo cameras, 3D lidar, and 2D lidar, and connects to ROS through rtabmap_ros, making it one of the most commonly used off-the-shelf solutions for mobile robot mapping and navigation.",
+      "example": "In ROS 2, an RGB-D camera runs rtabmap_ros while a robot is pushed around a lab; the result is a 3D point-cloud map and a 2D occupancy grid, handed off to Nav2 for navigation.",
+      "related": ["Simultaneous Localization and Mapping (SLAM)", "Visual SLAM", "Loop Closure Detection", "Occupancy Grid Map", "Common ROS SLAM Packages (GMapping / SLAM Toolbox / RTAB-Map)", "Depth Camera"]
+    },
+    {
+      "key": "perception-22#3",
+      "name_en": "Safety Laser Scanner / Safety Light Curtain",
+      "aliases": ["Safety Laser Scanner", "Safety Light Curtain", "Electro-Sensitive Protective Equipment (ESPE)"],
+      "one_liner": "Certified safety devices that detect a person entering a danger zone and stop the machine before contact.",
+      "explanation": "Both devices fall under electro-sensitive protective equipment (ESPE): industrial safety sensors that make a machine “stop when it sees a person,” certified to standards such as IEC 61496, whose output is a safety-rated stop signal rather than ordinary data meant for an algorithm to interpret. A safety light curtain consists of a pair of emitter and receiver columns; the emitter sends a row of parallel infrared beams to the receiver, and blocking any single beam triggers a stop, commonly installed at the entrance to a machine tool or robot work cell. A safety laser scanner is a certified 2D laser scanning device that can define a “warning zone” and a “protective zone” within its scan plane: entering the warning zone slows the machine or triggers an alarm, and entering the protective zone stops it. Both let robots avoid needing a full physical fence, and are common hardware for AMR collision avoidance and speed-and-separation monitoring in human-robot collaboration.",
+      "example": "A pair of safety light curtains guards the entrance to a robot arm’s loading station; when a worker reaches in to grab material, the beam is blocked and the arm immediately performs a protective stop.",
+      "related": ["Functional Safety", "Speed and Separation Monitoring", "Protective Stop", "2D LiDAR", "Autonomous Mobile Robot (AMR)", "ISO 10218 Industrial Robot Safety Standard (2025 Edition)"]
+    },
+    {
+      "key": "perception-22#4",
+      "name_en": "SAM 3D",
+      "aliases": ["SAM 3D Objects", "SAM 3D Body"],
+      "one_liner": "Meta’s open single-image 3D reconstruction models, released as separate versions for objects and for human bodies.",
+      "explanation": "SAM 3D is a pair of single-image 3D reconstruction models Meta released on November 19, 2025, part of the “Segment Anything” (SAM) family. SAM 3D Objects takes an image and a mask of a target object and outputs that object’s complete 3D shape, texture, and position and orientation in the scene, handling real photos with occlusion and oblique viewing angles. SAM 3D Body estimates 3D human pose and body shape from a single image, outputting a mesh parameterized by Meta’s proposed MHR (Momentum Human Rig) human body model, and can be prompted with 2D keypoints or a mask. Weights, inference code, and evaluation sets have been released under the SAM License. For embodied AI, it lets a photographed object be quickly turned into a simulation asset, and lets human pose be extracted from images and video of people.",
+      "example": "A photo of a cup on a table is first segmented with SAM 3, then handed to SAM 3D Objects to generate a textured 3D mesh, which is imported into a simulator as a grasping-training asset.",
+      "related": ["Segment Anything Model", "SAM 3 (Promptable Concept Segmentation)", "Single-Image-to-3D", "Human Mesh Recovery", "Simulation Asset", "SMPL Human Body Model"]
+    },
+    {
+      "key": "perception-22#5",
+      "name_en": "SAM-6D",
+      "aliases": ["Segment Anything Model Meets Zero-Shot 6D Object Pose Estimation"],
+      "one_liner": "A method that uses SAM’s segmentation to estimate the 6D pose of objects it was never trained on, given only a CAD model.",
+      "explanation": "SAM-6D is a zero-shot 6D object pose estimation method proposed in 2023 by Jiehong Lin, Kui Jia, and colleagues, from institutions including the Chinese University of Hong Kong, Shenzhen, and South China University of Technology, published at CVPR 2024. 6D pose means an object’s 3D position plus its 3D orientation, essential for both grasping and assembly; “zero-shot” means that for a new object never seen during training, the method can estimate its pose given only a CAD model, with no retraining required. The method works in two steps: first, SAM generates all candidate regions, which are scored and filtered by semantics, appearance, and geometry to find the target object; then pose estimation is framed as partial-to-partial point matching between the object’s model point cloud and the observed point cloud, solved in a coarse-to-fine two-stage process. Inputs are an RGB-D image, camera intrinsics, and a CAD model; the paper reports results exceeding prior methods across all 7 core datasets of the BOP benchmark.",
+      "example": "Given a CAD model of a part, SAM-6D locates that part in an RGB-D image of a cluttered parts bin and outputs its 6D pose for a robot arm to grasp.",
+      "related": ["6D Pose Estimation", "Segment Anything Model", "FoundationPose", "MegaPose", "BOP Pose Estimation Benchmark", "Point Cloud Registration"]
+    },
+    {
+      "key": "perception-22#6",
+      "name_en": "Scene Flow",
+      "aliases": ["3D Optical Flow", "3D Flow"],
+      "one_liner": "The 3D motion vector of every point in a scene between two adjacent frames.",
+      "explanation": "Scene flow is the 3D version of optical flow: optical flow describes the 2D displacement of every pixel in an image between two frames, while scene flow describes the 3D displacement of every point in the real world. The concept was introduced by Vedula, Kanade, and colleagues at CMU in 1999, with a journal version published in TPAMI in 2005. Early methods solved for it from multiple viewpoints or stereo images; once depth cameras and lidar became common, networks that learn directly on two point clouds emerged, such as FlowNet3D in 2018. Scene flow tells a system which things are moving, in what direction, and how fast, and is used for motion segmentation and dynamic-object tracking in self-driving cars. In robot manipulation, predicting the future 3D motion trajectory of points on an object — often called 3D flow — is also used as an embodiment-agnostic intermediate representation, for learning a skill from human video and then transferring it to a robot.",
+      "example": "General Flow (2024) trains a model on human RGB-D video to predict the future 3D trajectory of points on an object given a language instruction, then converts that into robot actions for zero-shot skill transfer.",
+      "related": ["Optical Flow", "Tracking Any Point", "Point Cloud", "Intermediate Representation", "RAFT", "4D Reconstruction"]
+    },
+    {
+      "key": "perception-22#7",
+      "name_en": "Semantic Keypoints",
+      "aliases": ["Task Keypoints", "Semantic 3D Keypoints"],
+      "one_liner": "Representing an object with a handful of meaningful points on it — a mug’s handle, a kettle’s spout — to make planning manipulation easier.",
+      "explanation": "Semantic keypoints are a small number of 3D points on an object that carry clear meaning — for example, the center of a mug’s handle, the center of its base, or the heel of a shoe. Unlike 6D pose, this does not require an exact CAD template for every object; objects within the same category whose shapes vary a lot can still have corresponding points found on them, which makes the representation well suited to category-level generalization. kPAM, from Russ Tedrake’s group at MIT in 2019, applied this to robot manipulation: it first detects semantic 3D keypoints, then expresses the task as geometric constraints on those points (such as “hang the mug’s handle on the hook” or “press the mug’s base flat against the table”), and solves an optimization for the arm’s target pose, letting it manipulate new objects it has never seen. Recent work such as ReKep and OmniManip has vision-language models propose keypoints and constraints directly from an image, which is why the term “task keypoints” is also common.",
+      "example": "In kPAM, detecting only a few keypoints — the handle and the base — on mugs of many different, unseen shapes is enough to plan the motion for hanging each one on a mug rack.",
+      "related": ["Keypoint Detection", "ReKep", "OmniManip", "6D Pose Estimation", "Category-Level Pose Estimation", "Affordance"]
+    },
+    {
+      "key": "perception-22#8",
+      "name_en": "Semantic Map",
+      "aliases": ["Open-Vocabulary Semantic Map", "Language Map"],
+      "one_liner": "A map that labels what each place is, on top of its geometry, so it can be queried by object name or natural language.",
+      "explanation": "An ordinary SLAM map only records where obstacles are and where surfaces sit; a semantic map goes further, attaching category labels or features to the points, cells, or objects in the map, so it can answer questions like “where is the refrigerator” or “where is the kitchen.” Early approaches labeled the map using detection or segmentation networks with a fixed set of categories; in recent years, open-vocabulary semantic maps have become popular, storing features from vision-language models such as CLIP or LSeg directly in the map so it can be queried with arbitrary natural language. A representative example is VLMaps (2022, from the University of Freiburg, Google, and others), which extracts pixel-level vision-language features from RGB-D video, back-projects them into 3D using depth, and stores them in a top-down grid map, letting it follow navigation instructions with spatial relationships such as “go between the sofa and the TV.” Semantic maps can also be organized as 3D scene graphs, and are a common intermediate representation for object-goal navigation, vision-and-language navigation, and mobile manipulation.",
+      "example": "VLMaps lets a LoCoBot and a drone share the same language map, navigating from instructions such as “move three meters to the right of the chair.”",
+      "related": ["Semantic SLAM", "VLMaps", "ConceptGraphs", "3D Scene Graph", "Object-Goal Navigation", "Occupancy Grid Map"]
+    },
+    {
+      "key": "perception-22#9",
+      "name_en": "Semantic SLAM",
+      "aliases": ["Metric-Semantic SLAM"],
+      "one_liner": "SLAM that recognizes object categories while localizing and mapping, producing a map with semantic labels attached.",
+      "explanation": "Semantic SLAM is a family of methods that adds semantic information to traditional SLAM (Simultaneous Localization and Mapping): while estimating its own pose and building a geometric map, the system also uses a detection or segmentation network to recognize walls, tables, chairs, and other objects, and writes those categories into the map. Semantics can also help SLAM itself — for instance, by filtering out moving objects such as people and cars to reduce their interference with pose estimation, or by using objects as landmarks for loop closure detection. Representative work includes SLAM++ (2013), which builds maps at the level of individual objects, and Kimera, open-sourced by MIT’s SPARK Lab in 2019, which uses a camera and IMU to generate a semantically labeled 3D mesh in real time on a CPU. Recent work has also explored semantic SLAM based on NeRF and 3D Gaussian Splatting, though the computational cost is still high for embedded platforms. Its output is, in effect, a semantic map.",
+      "example": "Kimera walks a stereo camera and IMU around an indoor space and outputs, in real time, a 3D mesh map labeled with semantics such as “wall,” “floor,” and “chair.”",
+      "related": ["Simultaneous Localization and Mapping (SLAM)", "Semantic Map", "Visual SLAM", "3D Scene Graph", "Gaussian Splatting SLAM", "ConceptGraphs"]
+    },
+    {
+      "key": "perception-22#10",
+      "name_en": "Sensor Drift",
+      "aliases": ["Zero Drift", "Bias Drift", "Thermal Drift", "IMU Drift"],
+      "one_liner": "A sensor’s reading slowly shifting over time or temperature even when the true input hasn’t changed.",
+      "explanation": "An ideal sensor should read zero with no input, but a real sensor always carries some offset, or bias, and that bias itself changes slowly with time, temperature, and each time the sensor is powered on — this is drift, also called zero drift or thermal drift. The most common case in robotics is IMU (inertial measurement unit) drift: orientation, velocity, and position are all obtained by integrating gyroscope and accelerometer readings, so a tiny bias keeps accumulating — a constant gyroscope bias makes velocity error grow with the square of time and position error grow with its cube, so relying on an IMU alone to estimate position quickly diverges. Six-axis force/torque sensors and joint torque sensors also drift, so they typically need to be re-zeroed before use. Countermeasures include calibration, temperature compensation, characterizing noise with Allan variance, and fusing with cameras, lidar, or GPS, with the bias itself estimated online as part of the state in a Kalman filter.",
+      "example": "A humanoid robot standing perfectly still still sees its yaw angle, computed purely by integrating the IMU, slowly drift over time, which needs correcting by fusing in visual-inertial or legged odometry.",
+      "related": ["Inertial Measurement Unit (IMU)", "Kalman Filter", "Allan Variance (IMU Noise Characterization)", "Visual-Inertial Odometry", "Six-Axis Force/Torque Sensor", "State Estimation"]
+    },
+    {
+      "key": "perception-22#11",
+      "name_en": "Sensorless Force Estimation",
+      "aliases": ["Current-Based Force Estimation", "Motor-Current Force Estimation"],
+      "one_liner": "Estimating the external force on a robot from motor current and a dynamics model, without installing a dedicated force sensor.",
+      "explanation": "Sensorless force estimation infers the force a robot experiences during contact with its environment without installing a dedicated six-axis force/torque sensor or joint torque sensor. Instead, it uses motor current — multiplied by the torque constant to approximate the motor’s output torque — together with joint position and velocity and a dynamics model of the robot. The idea is that the model predicts how much torque would be needed with no external force, and the difference between the torque actually measured and that prediction is attributed to the external force. A commonly used tool is the generalized momentum observer, which avoids differentiating acceleration and so is less noisy. The benefit is skipping an expensive, fragile force sensor, letting low-cost arms, quadrupeds, and humanoids do collision detection and rough force control; the difficulty is that gearbox friction, model error, and temperature changes introduce significant error, so precision is generally worse than with a dedicated sensor. Recent work uses learned methods to compensate for the residual torque, such as K-VARK (2025) and a 2026 hybrid estimation method for wheel-legged robots.",
+      "example": "An arm with no force sensor compares its motor current against what the dynamics model predicts; a sudden large mismatch in joint torque is taken to mean it has hit a person, and it stops immediately.",
+      "related": ["Momentum Observer", "Torque Constant (Kt)", "Collision Detection (Intrinsic Safety)", "Friction Compensation", "Proprioceptive Actuator", "Six-Axis Force/Torque Sensor"]
+    }
+  ]
+}

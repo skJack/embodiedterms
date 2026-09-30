@@ -1,0 +1,113 @@
+{
+  "batch": "perception-07",
+  "terms": [
+    {
+      "key": "perception-07#0",
+      "name_en": "Pinhole Camera Model",
+      "aliases": ["Pinhole Model", "Perspective Projection Model"],
+      "one_liner": "A mathematical model treating a camera as an ideal tiny hole, projecting 3D points onto an image plane along straight lines.",
+      "explanation": "The pinhole camera model is computer vision's standard model for how a 3D point becomes a pixel: it assumes every ray of light passes through an ideal tiny hole, the optical center, and a point (X, Y, Z) in the camera's coordinate frame lands at u = fx·X/Z + cx, v = fy·Y/Z + cy. Here fx and fy are the focal lengths in pixels, and (cx, cy) is the principal point — together these four numbers are the camera's intrinsics. Dividing by Z produces perspective — near things look big, far things look small. The model ignores lens distortion and defocus blur, so it's only a first-order approximation; in practice, distortion coefficients are calibrated first to undistort the image, and the pinhole model is applied afterward. Turning a depth map into a point cloud, converting a pixel position into a 3D grasp point, and doing hand-eye calibration are all built on this formula.",
+      "example": "A camera has fx = fy = 600 pixels and principal point (320, 240). A point 1 meter directly ahead and 0.1 meters to the right lands at column 600 × 0.1/1 + 320 = 380; moving that same point to 2 meters away lands it at column 350, closer to the center of the image.",
+      "related": ["Camera Intrinsics", "Camera Extrinsics", "Lens Distortion", "Projection / Back-Projection", "Camera Calibration", "Camera Coordinate Frame"]
+    },
+    {
+      "key": "perception-07#1",
+      "name_en": "Point Cloud Filtering & Voxel Downsampling",
+      "aliases": ["Voxel Downsampling", "Voxel Grid Filter", "Outlier Removal"],
+      "one_liner": "Preprocessing steps that crop irrelevant regions, remove noisy points, and shrink a raw point cloud down to a usable size.",
+      "explanation": "Raw point clouds straight from a depth camera or lidar often have hundreds of thousands of points, mixed with stray outlier points from measurement error, and with irrelevant regions like the tabletop or the floor. Feeding this directly into downstream algorithms is both slow and unstable, so it's preprocessed first. Common steps include: cropping by a bounding box to keep only the work region; voxel downsampling, which divides space into fixed-size small cubes (voxels) and merges the points within each one into a single point (PCL takes the centroid, Open3D also averages color and normal), drastically reducing the point count and making density more uniform; and outlier removal, where a statistical method removes points whose average distance to their k nearest neighbors deviates too far from the global mean, and a radius-based method removes points with too few neighbors within a given radius. Both PCL and Open3D provide ready-made functions for these steps.",
+      "example": "PCL's tutorial downsamples one scan with a 1 cm voxel, reducing the point count from 460,400 to 41,049. 3D Diffusion Policy (DP3) instead first crops out the tabletop and background with a bounding box, then keeps only 512 or 1,024 points via farthest point sampling.",
+      "related": ["Point Cloud", "Voxel", "Farthest Point Sampling (FPS)", "Point Cloud Registration", "Flying Pixels", "3D Diffusion Policy (DP3)"]
+    },
+    {
+      "key": "perception-07#2",
+      "name_en": "Point Cloud Registration",
+      "aliases": ["Point Cloud Alignment", "Scan Matching", "Point Set Registration"],
+      "one_liner": "Finding the rotation and translation that lines up two point clouds within one shared coordinate frame.",
+      "explanation": "Point cloud registration solves for a spatial transform that aligns a source point cloud onto a target one; rigid registration allows only rotation and translation, while non-rigid registration also permits deformation. It's needed whenever a scene is scanned from different viewpoints or times and the results need to be stitched into a full model, when estimating how far a robot has moved in lidar odometry (often called scan matching in that context), or when aligning an object's model onto an observed point cloud to recover its pose. A common pipeline does coarse global registration first, using local features such as FPFH to find correspondences plus RANSAC to reject bad matches, and then fine registration with iterative closest point (ICP), which repeatedly finds the nearest points and solves for the optimal transform — though it depends on a reasonably good initial guess or it gets stuck in a local optimum. Open3D's ICP implementation also reports an overlap ratio (fitness) and inlier RMSE to judge the result's quality.",
+      "example": "A wrist camera photographs the same cup from two angles. FPFH plus RANSAC first coarsely aligns the two point clouds, then ICP refines the alignment to stitch together a more complete shape of the cup.",
+      "related": ["Iterative Closest Point (ICP)", "FPFH Feature", "Random Sample Consensus (RANSAC)", "NDT Registration (Normal Distributions Transform)", "6D Object Pose Estimation", "Simultaneous Localization and Mapping"]
+    },
+    {
+      "key": "perception-07#3",
+      "name_en": "Pointing",
+      "aliases": ["2D Point Prediction", "Point Prediction"],
+      "one_liner": "A vision-language model answering by marking exact pixel coordinates on the image, following a text instruction.",
+      "explanation": "Pointing lets a vision-language model (VLM) answer by literally marking a spot on the image: given an image and an instruction, it outputs one or more 2D pixel coordinates. Ai2's Molmo (2024) specifically collected the PixMo-Points dataset for this and can point at and count objects; RoboPoint (2024) fine-tunes a VLM on automatically synthesized data to predict keypoints for where to grasp or where to place something; Google DeepMind's Gemini Robotics-ER outputs coordinates in [y, x] format, normalized to a 0–1000 range. A point is more fine-grained than a box and more directly usable downstream than plain text: combined with back-projection from a depth map, it gives a 3D target position that can be handed directly to grasping, motion planning, or a VLA model.",
+      "example": "Asking Gemini Robotics-ER to ‘point to all the bananas in the image’ returns a list of entries like point: [376, 508], label: small banana, with each point marking one banana's location.",
+      "related": ["Molmo", "RoboPoint", "Gemini Robotics-ER", "Visual Prompting", "Affordance Detection", "Projection / Back-Projection"]
+    },
+    {
+      "key": "perception-07#4",
+      "name_en": "PointNet / PointNet++",
+      "aliases": ["PointNet++"],
+      "one_liner": "A pioneering network that classifies and segments point clouds directly, with PointNet++ its hierarchical upgrade.",
+      "explanation": "PointNet was proposed by Charles R. Qi, Leonidas Guibas, and colleagues at Stanford, published at CVPR 2017. Before it, point clouds were usually converted to voxels or multi-view images before processing, which lost detail. PointNet instead extracts a feature for each point with a shared multi-layer perceptron (MLP), then aggregates these into a global feature with max pooling; because max pooling is order-independent, shuffling the points doesn't change the result (permutation invariance), and the network can directly perform classification, part segmentation, and scene semantic segmentation. Its shortcoming is that it doesn't model local neighborhoods. PointNet++ (NeurIPS 2017) fixes this: it first picks center points with farthest point sampling, recursively applies PointNet within their neighborhoods, and extracts multi-scale local features layer by layer, while also adapting to uneven point density. Both remain common baselines for point cloud encoders today.",
+      "example": "3D Diffusion Policy (DP3)'s point cloud encoder follows the ‘per-point MLP plus max pooling’ idea, using only three MLP layers; the paper found that more complex encoders like PointNet and PointNet++ actually underperformed this small encoder on its manipulation tasks.",
+      "related": ["Point Cloud", "Point Cloud Encoder", "Farthest Point Sampling (FPS)", "Point Cloud Segmentation", "Point Transformer V3", "3D Diffusion Policy (DP3)"]
+    },
+    {
+      "key": "perception-07#5",
+      "name_en": "Precision / Recall",
+      "aliases": ["F1 Score", "F1"],
+      "one_liner": "Precision measures how many reported results were correct; recall measures how many of the true targets were found.",
+      "explanation": "Precision and recall are a pair of basic metrics for detection, classification, and retrieval tasks. Results are split into true positives (TP, reported and correct), false positives (FP, reported but wrong — a false alarm), and false negatives (FN, should have been reported but wasn't — a miss). Precision is TP/(TP+FP), and recall is TP/(TP+FN). The two usually trade off against each other: lowering the confidence threshold finds more targets but also raises the false-alarm rate. F1 is their harmonic mean, 2PR/(P+R), capturing both in a single number. Object detection first uses IoU to decide whether a predicted box counts as a hit, and then computes these metrics; sweeping the threshold traces out a precision-recall curve, whose area underneath is average precision (AP), which averaged across classes gives mAP. Robots also use these metrics to evaluate grasp detectors, contact detectors, and success detectors.",
+      "example": "A cup detector reports 100 boxes on a test set, 80 of which correctly match real cups, out of 120 actual cups in the set: precision is 80%, recall is about 67%, and F1 is about 0.73.",
+      "related": ["Intersection over Union (IoU)", "Mean Average Precision (mAP)", "Object Detection", "Non-Maximum Suppression (NMS)", "Success Detector"]
+    },
+    {
+      "key": "perception-07#6",
+      "name_en": "Projection / Back-Projection",
+      "aliases": ["Depth-to-Point-Cloud Conversion", "Unprojection", "Deprojection"],
+      "one_liner": "Projection maps a 3D point onto a pixel; back-projection uses a pixel plus its depth to recover the 3D point.",
+      "explanation": "Projection and back-projection are the two directions of the pinhole camera model. Projection: given a 3D point (X, Y, Z) in the camera's coordinate frame and the intrinsics, compute which pixel (u, v) it lands on. Back-projection: a single pixel only defines a ray, so recovering the 3D point also needs that pixel's depth Z: X = (u − cx)·Z/fx, Y = (v − cy)·Z/fy. Doing this for every pixel of a depth map produces a point cloud, and both Open3D and the RealSense SDK provide ready-made functions for it. A few practical points: raw depth values are usually stored as integers (RealSense D400 cameras default to 1 unit = 1 millimeter) and must be converted to meters; color and depth images from different sensors need to be aligned first; and the result must then be multiplied by the camera's extrinsics to land in the robot's base frame.",
+      "example": "A VLM points at a cup's handle at pixel (412, 305) on the color image. Looking up the aligned depth gives 0.52 meters; back-projection with the intrinsics gives the 3D point in the camera frame, and the hand-eye-calibrated extrinsics then convert it into the arm's base frame as the grasp target.",
+      "related": ["Pinhole Camera Model", "Camera Intrinsics", "Depth Map", "Point Cloud", "Depth-Color Alignment", "Camera Extrinsics"]
+    },
+    {
+      "key": "perception-07#7",
+      "name_en": "Reprojection Error",
+      "aliases": ["Re-Projection Error"],
+      "one_liner": "The pixel distance between a 3D point reprojected onto the image and where it was actually observed.",
+      "explanation": "Reprojection error measures how accurate a set of estimated camera parameters, camera pose, and 3D points really are: take an estimated 3D point, reproject it onto the image using the estimated intrinsics and extrinsics, and compare that to the pixel actually observed for the corresponding point — the distance between them, in pixels, is the reprojection error. It's the most common optimization objective and quality indicator in geometric vision: in camera calibration, a smaller average reprojection error on the calibration board's corners is better (a MATLAB documentation example gives 0.19 pixels), and if it's noticeably large, the worst images can be removed and the camera recalibrated; bundle adjustment jointly adjusts all camera poses and 3D points to minimize the total reprojection error; and PnP pose solving, triangulation, and SLAM back-ends are all optimized around it.",
+      "example": "Calibrating a wrist camera with a checkerboard, OpenCV's calibrateCamera returns an overall RMS reprojection error; if a few images show noticeably higher error (usually from misdetected corners), removing them and recalibrating is standard practice.",
+      "related": ["Camera Calibration", "Bundle Adjustment", "PnP (Perspective-n-Point)", "Triangulation", "Pinhole Camera Model", "Hand-Eye Calibration"]
+    },
+    {
+      "key": "perception-07#8",
+      "name_en": "SAM 2",
+      "aliases": ["Segment Anything 2", "SAM 2.1"],
+      "one_liner": "Meta's image-and-video segmentation model: mark a target once and it keeps segmenting and tracking it through the whole video.",
+      "explanation": "SAM 2 is Meta FAIR's second-generation ‘segment anything’ model, released in July 2024, extending SAM from single images to video: given a point, box, or mask specifying a target on one frame, the model continues to output that target's mask on all the frames that follow. Its core is a streaming memory: while processing frame by frame, it stores information about the target from previous frames in a memory bank that the current frame can reference, plus an occlusion head that judges whether the target is currently visible. It was released alongside the SA-V dataset (roughly 51,000 videos and more than 600,000 spatio-temporal masks). The paper reports that video segmentation needs three times fewer user interactions than before, and that image segmentation is more accurate and six times faster than the original SAM. Code and weights are open-sourced under Apache 2.0. Robots often combine it with Grounding DINO: find the object by text first, then track its mask throughout.",
+      "example": "In the Grounded-SAM-2 pipeline, Grounding DINO first detects a box for ‘red cup’ in the first frame, and SAM 2 then tracks the cup's mask throughout the manipulation video, for use in data labeling or feeding a target mask to the policy.",
+      "related": ["Segment Anything Model", "SAM 3 (Promptable Concept Segmentation)", "Video Object Segmentation", "Object Tracking", "Grounded-SAM", "Mask"]
+    },
+    {
+      "key": "perception-07#9",
+      "name_en": "SAM 3",
+      "aliases": ["Promptable Concept Segmentation", "SAM 3.1"],
+      "one_liner": "Meta's third-generation segmentation model that finds every instance matching a short phrase or an example image.",
+      "explanation": "SAM 3 is Meta's third-generation segmentation model, released in November 2025, introducing the task of ‘promptable concept segmentation’: given a short noun phrase (such as ‘yellow school bus’), an example image patch, or both, the model finds every instance of that concept in an image or video, outputs a mask and identity for each one, and tracks them continuously. Before this, SAM and SAM 2 could only segment one user-selected target at a time and didn't accept text prompts. SAM 3 has about 848 million parameters and shares a vision encoder between a DETR-style detector and a memory-based video tracker, with a separate ‘presence head’ added to split judging ‘is it there’ from ‘where is it.’ It was released alongside the SA-Co benchmark, covering roughly 270,000 concepts. SAM 3.1, released in March 2026, sped up multi-object video tracking.",
+      "example": "Given a kitchen video and the text ‘cup,’ SAM 3 segments and continuously tracks every cup in frame, assigning each its own ID. Taking one cup's mask and combining it with the depth map then gives a point cloud for grasp-pose estimation.",
+      "related": ["Segment Anything Model", "SAM 2", "Open-Vocabulary Segmentation", "SAM 3D", "Grounding DINO", "Instance Segmentation"]
+    },
+    {
+      "key": "perception-07#10",
+      "name_en": "Scene Understanding",
+      "aliases": ["3D Scene Understanding"],
+      "one_liner": "Working out what's in an environment, where it is, and how things relate to each other from images, depth, or point clouds.",
+      "explanation": "Scene understanding is a goal rather than a single algorithm: figuring out, from an image, depth, or point cloud, what's in an environment, where it is, and how things relate to each other. That covers geometry (where objects are, how big they are, where's walkable), semantics (what each thing is), and relations (a cup is on the table, a drawer can be pulled open). It's assembled from object detection, semantic and instance segmentation, depth estimation, 3D reconstruction, pose estimation, and affordance detection. Because robots need to navigate and manipulate in 3D space, embodied AI cares especially about 3D scene understanding: ScanNet (2017) provides 1,513 indoor scenes and about 2.5 million semantically annotated RGB-D frames, and ConceptGraphs (2023) fuses results from 2D foundation models across multiple views into open-vocabulary 3D scene graphs that a large language model can use for instruction-based planning.",
+      "example": "Entering a kitchen, a household robot first builds a 3D scene graph: a fridge, a dining table, two bowls on the table, with the bowls sitting on the table. Given the instruction ‘put the bowls in the sink,’ it looks up the bowls' and sink's 3D positions from this graph and plans accordingly.",
+      "related": ["3D Scene Graph", "Semantic Map", "3D Vision", "Semantic Segmentation", "ConceptGraphs", "ScanNet Dataset"]
+    },
+    {
+      "key": "perception-07#11",
+      "name_en": "Segment Anything Model",
+      "aliases": ["SAM", "Segment Anything"],
+      "one_liner": "Meta's 2023 promptable segmentation foundation model: give it a point or box and it returns that object's mask.",
+      "explanation": "The Segment Anything Model (SAM) is an image segmentation foundation model released by Meta AI in April 2023, introducing the task of ‘promptable segmentation’: a user gives a point, a box, or a rough mask as a prompt, and the model outputs a mask for the corresponding object — even for objects it has never seen — and can also automatically segment an entire image on its own. A large ViT image encoder runs once per image, and a lightweight decoder then answers multiple prompts quickly. Its training data, SA-1B, contains 11 million images and more than 1.1 billion masks, and the code and weights are open-sourced under Apache 2.0. The original SAM gives only a mask with no class label, so it's often chained with Grounding DINO into a pipeline called Grounded-SAM for text-based segmentation. It was later followed by the video-focused SAM 2 (2024) and SAM 3 (2025), which supports text-phrase prompts.",
+      "example": "Clicking on a screwdriver in a workbench image, SAM returns its pixel mask; back-projecting the depth pixels inside that mask gives a point cloud containing only the screwdriver, ready for grasp detection.",
+      "related": ["SAM 2", "SAM 3 (Promptable Concept Segmentation)", "Grounded-SAM", "Instance Segmentation", "Mask", "Foundation Model"]
+    }
+  ]
+}

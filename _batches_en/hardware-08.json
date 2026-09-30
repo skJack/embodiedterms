@@ -1,0 +1,113 @@
+{
+  "batch": "hardware-08",
+  "terms": [
+    {
+      "key": "hardware-08#0",
+      "name_en": "Artificial Muscle",
+      "aliases": ["Synthetic Muscle"],
+      "one_liner": "An actuator that contracts and extends like a muscle when triggered by electricity, air pressure, or heat.",
+      "explanation": "Artificial muscle is a general term for actuators (devices that turn energy into motion) that contract, extend, or bend in response to a stimulus such as electricity, air pressure, heat, or a chemical reaction. Common categories include pneumatic artificial muscles (a rubber tube wrapped in a braided mesh that gets shorter and fatter when inflated), shape-memory alloys, dielectric elastomers, HASEL electrohydraulic actuators, and twisted-fiber actuators. Compared with a “motor plus reducer,” artificial muscle is lighter and naturally compliant, making it well suited to soft robots, exoskeletons, and biomimetic hands; its drawbacks are that efficiency, response speed, lifespan, and precise controllability generally lag behind motors, so it remains mostly in research and niche products today.",
+      "example": "Clone Robotics' Protoclone humanoid is reported to use hydraulically driven artificial muscles to move its skeletal structure.",
+      "related": ["Pneumatic Artificial Muscle", "HASEL Electrohydraulic Artificial Muscle", "Shape-Memory Alloy", "Dielectric Elastomer", "Soft Robot", "Clone Protoclone"]
+    },
+    {
+      "key": "hardware-08#1",
+      "name_en": "Axial Flux Motor",
+      "aliases": ["Disc Motor", "Axial Field Motor"],
+      "one_liner": "A flat, disc-shaped motor whose magnetic field crosses the air gap along the shaft's axis.",
+      "explanation": "In an ordinary (radial flux) motor, the magnetic field lines cross the air gap between stator and rotor along the radius, and the rotor is cylindrical; an axial flux motor instead shapes the stator and rotor as facing discs, with the field lines running parallel to the shaft. For the same overall size, this gives a larger effective radius and higher torque density (torque output per unit weight), and the motor itself is very thin along its axis, making it well suited to flat joint modules, hub motors, and electric-vehicle drives. The trade-off is that controlling the air gap and the axial magnetic pull between the discs is harder to manufacture, and cost is higher. Because humanoid robots want joints that are both short and powerful, this is an active area of development for joint motors.",
+      "example": "",
+      "related": ["Brushless DC Motor", "Permanent-Magnet Synchronous Motor", "Torque Density", "Joint Module", "Outrunner Motor", "Hub Motor"]
+    },
+    {
+      "key": "hardware-08#2",
+      "name_en": "Battery Management System (BMS)",
+      "aliases": ["BMS"],
+      "one_liner": "The circuitry and software that monitor and protect a battery pack and estimate its remaining charge.",
+      "explanation": "A battery management system is a set of circuitry and software built into a battery pack that continuously measures each cell's voltage, current, and temperature, uses that to estimate state of charge (SOC) and state of health (SOH), cuts the circuit during overcharge, over-discharge, overcurrent, or overtemperature conditions, and balances charge across cells so they stay even. Mobile robots run on lithium batteries, and the large, sudden current draws from joint motors — plus the current that flows back in during braking — put real stress on the battery, so the BMS determines how accurate the charge reading is, whether the robot suddenly cuts out, and how long the battery lasts. It typically reports charge level and warnings to the onboard compute platform over a bus such as CAN, and both hot-swappable batteries and autonomous battery swapping rely on it to confirm battery state.",
+      "example": "The battery-percentage number shown in a robot's app is the BMS's estimate, reported up over the bus.",
+      "related": ["Battery Life", "Hot-Swappable Battery", "Autonomous Battery Swapping", "Solid-State Battery", "CAN Bus", "Regenerative Braking and Bleeder Resistor (Dump Module)"]
+    },
+    {
+      "key": "hardware-08#3",
+      "name_en": "Black Sesame SesameX",
+      "aliases": ["SesameX", "SesameX Multi-Dimensional Embodied AI Computing Platform"],
+      "one_liner": "An embodied-AI computing platform for robots from automotive-chip maker Black Sesame Technologies.",
+      "explanation": "SesameX is the “multi-dimensional embodied AI computing platform” launched by Black Sesame Technologies, an automotive-chip company, which reuses its automotive-grade compute know-how from self-driving chips for robots — aimed at service, industrial, and humanoid robots. The company describes three self-developed core modules, Kalos, Aura, and Liora, with compute ranging from about 48 TOPS to nearly 600 TOPS (TOPS meaning trillion operations per second), paired with its Huashan A2000 chip family. It's positioned similarly to NVIDIA's Jetson Thor or D-Robotics' RDK S100, serving as the onboard compute platform on a robot's body, running perception and VLA-style models alongside motion control.",
+      "example": "Black Sesame showcased the SesameX platform at the 2026 World Artificial Intelligence Conference, according to the company's own news release.",
+      "related": ["Onboard Compute Platform", "Jetson Thor", "D-Robotics RDK S100", "TOPS (Trillion Operations Per Second)", "Compute-Control Integration", "NVIDIA Jetson"]
+    },
+    {
+      "key": "hardware-08#4",
+      "name_en": "Bowden Cable",
+      "aliases": ["Bowden Sheath"],
+      "one_liner": "A flexible cable with an inner wire in an outer sheath, transmitting pull force along a curved path, like a bike brake line.",
+      "explanation": "A Bowden cable consists of an inner wire (or cord) and an incompressible outer sheath around it; the sheath's two ends are fixed in place, and pulling the inner wire at one end moves the other end — the most familiar example is a bicycle brake cable. In robots, it's used to keep a motor in the torso, a backpack, or near the base of an arm, while sending pull force along a curved path out to a finger, wrist, or exoskeleton joint, keeping the far end lighter and lowering its inertia. Its downside is significant friction between the inner wire and sheath that varies with bend angle, plus hysteresis and elastic stretch, so precise force control needs to compensate for these effects. It's a common way of implementing tendon-driven actuation.",
+      "example": "The soft exoskeleton from Harvard's Wyss Institute keeps its motor at the waist and pulls the ankle joint via a Bowden cable to assist walking.",
+      "related": ["Tendon-Driven Actuation", "Exoskeleton", "Proximal vs. Distal Actuator Placement", "Dexterous Hand", "Friction Compensation", "Tendon Material (UHMWPE Fiber)"]
+    },
+    {
+      "key": "hardware-08#5",
+      "name_en": "BrainCo Revo Hand",
+      "aliases": ["Revo 2", "Revo 2 Dexterous Hand"],
+      "one_liner": "A lightweight bionic dexterous hand from BrainCo; the Revo 2 has 6 motors, 11 degrees of freedom, and weighs about 383 g.",
+      "explanation": "Revo is the robotic dexterous-hand line from BrainCo, a Hangzhou-based brain-computer-interface company, built on its smart-prosthetics technology. According to its official documentation, the Revo 2 uses 6 motors to drive 6 actuated joints, plus passively coupled joints, for 11 degrees of freedom in total: the thumb has actuated flexion/extension and abduction/adduction, each of the other four fingers has one actuated flexion/extension joint, and the remaining joints are mechanically coupled (underactuated). A single hand weighs about 383 g, delivers a full-hand grip force of at least 50 N, and can carry a maximum load of at least 20 kg. It comes in Basic, Pro, and Touch versions, with the Touch version adding a multi-dimensional tactile module; interfaces include RS485 and CAN FD, with the Pro/Touch versions also supporting EtherCAT. It's light and uses common interfaces, and is often mounted on humanoid robots for grasping and teleoperation experiments.",
+      "example": "A Revo 2 version fitted for Unitree humanoid robots is sold through distributor channels.",
+      "related": ["Dexterous Hand", "BrainCo", "Underactuation", "Active DOF / Passive DOF", "Inspire RH56 Dexterous Hand", "Unitree Dex3-1"]
+    },
+    {
+      "key": "hardware-08#6",
+      "name_en": "CANopen / CiA 402 Drive Profile",
+      "aliases": ["CiA 402", "DS402", "CANopen Drive Profile"],
+      "one_liner": "A CAN-based industrial protocol, and the device profile within it that standardizes servo-drive behavior.",
+      "explanation": "CANopen is a higher-layer protocol defined by CiA (the CAN in Automation association), which builds on the CAN bus to define an object dictionary (a numbered table of a device's parameters), two message types (PDO and SDO), and network management. CiA 402 is the “drives and motion control” device profile within it, standardizing a servo drive's state machine (power-on, enabled, fault, and so on), its control word and status word, and its operating modes for position, velocity, torque, and homing, including cyclic synchronous position/velocity/torque (CSP/CSV/CST). A drive that follows the profile can be controlled by the same master-side code as any other compliant drive. EtherCAT reuses this same profile (called CoE), so it shows up in robot joint drives whether they communicate over CAN or EtherCAT.",
+      "example": "Writing control-word values 0x06, 0x07, then 0x0F to a drive in sequence takes it from ready, through power-on, to the “operation enabled” state.",
+      "related": ["CAN Bus", "EtherCAT Bus", "SocketCAN", "Cyclic Synchronous Position / Velocity / Torque Mode (CSP / CSV / CST)", "Servo Enable (Enable / Disable)", "Motor Driver"]
+    },
+    {
+      "key": "hardware-08#7",
+      "name_en": "Circular Spline",
+      "aliases": ["Rigid Spline"],
+      "one_liner": "The rigid, internally toothed outer ring of a harmonic drive, usually the fixed part.",
+      "explanation": "A harmonic drive has three parts: an elliptical wave generator, a thin-walled, flexible flexspline (with external teeth), and a circular spline (with internal teeth). The circular spline is a thick internal-tooth ring, usually with 2 more teeth than the flexspline. As the wave generator rotates, it flexes the flexspline into an ellipse, and the teeth at the two ends of the ellipse's long axis mesh with the circular spline; that meshing point rotates along with the wave generator. For each full turn of the wave generator, the flexspline shifts relative to the circular spline by only as many teeth as the tooth-count difference between them, which is how the mechanism achieves a large reduction ratio. The common configuration fixes the circular spline to the housing and takes output from the flexspline. The circular spline's tooth-form accuracy and stiffness directly affect backlash and transmission accuracy.",
+      "example": "With a 200-tooth flexspline and a 202-tooth circular spline, fixing the circular spline and taking output from the flexspline gives a reduction ratio of 200 ÷ 2 = 100:1.",
+      "related": ["Harmonic Drive", "Flexspline", "Wave Generator", "Gear Ratio", "Backlash", "Green Harmonic Drive (Leaderdrive)"]
+    },
+    {
+      "key": "hardware-08#8",
+      "name_en": "Cogging Torque",
+      "aliases": ["Detent Torque"],
+      "one_liner": "The periodic pulsing torque from a permanent-magnet motor's magnets snapping toward stator teeth, even unpowered.",
+      "explanation": "A permanent-magnet motor's stator core has slots cut into it, and as the rotor's magnets pass the “teeth” and “slots,” the difference in magnetic reluctance pulls the rotor toward the position of least reluctance — so even with no power applied, turning the motor by hand feels like a series of small detents, or notches. This is cogging torque, and it superimposes a periodic ripple on top of the output torque; it's most noticeable at low speed, where it causes vibration and noise and hurts fine force control and the feel of backdriving. Common fixes include skewing the slots or poles, optimizing the slot-to-pole ratio, or switching to a slotless design that eliminates it entirely; control software can also use a lookup table for feedforward compensation. It's a factor worth watching when selecting a joint motor and calibrating force control.",
+      "example": "Slowly turning an unpowered brushless motor by hand and feeling a series of small detents is cogging torque.",
+      "related": ["Slotted vs. Slotless Brushless Motor", "Brushless DC Motor", "Permanent-Magnet Synchronous Motor", "Coreless Motor", "Torque Control", "Backdrivability"]
+    },
+    {
+      "key": "hardware-08#9",
+      "name_en": "Compute-Control Integration",
+      "aliases": ["Integrated Compute-Control", "Combined Brain-Cerebellum Chip"],
+      "one_liner": "Putting AI inference compute and real-time motion control on the same chip or the same board.",
+      "explanation": "Traditional robots often use two separate pieces of hardware: one compute platform runs perception and decision-making models, while a separate MCU (microcontroller) or motion-control board handles millisecond-level joint control, with the two communicating over Ethernet or a bus. Compute-control integration means combining both onto the same SoC (system on chip) or the same main board: a high-performance CPU/NPU handles the “brain's” model inference, while a real-time core on the same chip handles the “cerebellum's” motion control. The benefits are less board-to-board communication latency, less wiring, and lower cost and power draw; the challenge is keeping the control task's real-time performance and functional safety free from interference by the AI workload. Products like D-Robotics' RDK S100 are marketed around this feature.",
+      "example": "D-Robotics' RDK S100 integrates a 6-core Cortex-A78AE CPU, an 80-TOPS BPU, and a 4-core Cortex-R52+ MCU on a single SoC, according to the company's own announcement.",
+      "related": ["Brain-Cerebellum Architecture", "D-Robotics RDK S100", "System on Chip (SoC)", "Microcontroller (MCU)", "Real-Time Control", "Onboard Compute Platform"]
+    },
+    {
+      "key": "hardware-08#10",
+      "name_en": "Crossed Roller Bearing",
+      "aliases": ["Crossed Cylindrical Roller Bearing"],
+      "one_liner": "A thin bearing with rollers crossed at right angles, letting a single unit carry loads from every direction.",
+      "explanation": "A crossed roller bearing places a single row of cylindrical rollers in a V-shaped raceway between its inner and outer rings, with neighboring rollers' axes alternating at right angles to each other; this lets one bearing simultaneously carry radial force, axial force in both directions, and tipping moments, where an ordinary bearing arrangement would typically need a matched pair to do the same job. It has a thin cross-section, high stiffness, and good rotational accuracy, and is commonly used at a robot joint's output and in turntables; many harmonic-drive units even include one as a built-in output bearing that carries external loads directly. The trade-off is that it demands high precision from the mounting surfaces, and it costs more.",
+      "example": "In a collaborative robot-arm joint module, a crossed roller bearing at the harmonic drive's output commonly supports the bending moment transmitted from the end of the arm.",
+      "related": ["Harmonic Drive", "Thin-Section Bearing", "Joint Module", "Stiffness", "Core Components", "Payload"]
+    },
+    {
+      "key": "hardware-08#11",
+      "name_en": "CubeMars AK Series Actuator",
+      "aliases": ["AK80-9", "T-Motor AK Motor", "AK Series Power Module"],
+      "one_liner": "An all-in-one joint module from CubeMars combining a planetary reducer and a driver in one unit.",
+      "explanation": "The AK series is a line of all-in-one joint modules from CubeMars, the robotics-actuator brand of motor maker T-Motor, packing a brushless motor, a planetary reducer, an encoder, and a driver into a single housing — in a model name like AK80-9, the “9” denotes a 9:1 gear ratio. Taking the AK80-9 as an example, it has a rated torque of 9 N·m, a peak torque of 18 N·m (rated at 22 N·m in the V3.0 version), and weighs about 485 g. It supports CAN communication and a “MIT mode” that sends target position, velocity, feedforward torque, and stiffness/damping gains in a single command; its low gear ratio gives it good backdrivability, and it's commonly used in university quadruped robots, exoskeletons, and robot-arm prototypes.",
+      "example": "Sending Kp, Kd, a target position, and a feedforward torque to an AK80-9 simultaneously in MIT mode implements joint impedance control.",
+      "related": ["Quasi-Direct Drive", "MIT Mode", "MIT Cheetah Actuator", "Joint Module", "Damiao DM-J4310 Actuator", "Unitree GO-M8010-6 Actuator"]
+    }
+  ]
+}

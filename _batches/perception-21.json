@@ -1,0 +1,392 @@
+{
+  "category": "perception",
+  "batch": 21,
+  "terms": [
+    {
+      "name_zh": "点云补全 / 形状补全",
+      "name_en": "Point Cloud Completion / Shape Completion",
+      "abbr": "",
+      "aliases": [
+        "点云补全",
+        "形状补全",
+        "3D 形状补全"
+      ],
+      "tier": 3,
+      "one_liner": "输入残缺的点云，推测并补出物体被遮挡或没扫到的部分。",
+      "explanation": "相机或激光雷达只能看到物体朝向自己的一面，得到的点云（一堆带 3D 坐标的点）总是残缺的。点云补全就是输入这种残缺点云、输出完整形状的任务；输出是点云时常叫点云补全，输出网格或体素时也叫形状补全。2018 年卡内基梅隆大学的 PCN 是较早直接在点集上做补全的深度网络，先生成粗糙形状再逐步加密细化。对机器人来说，补全后能估计物体背面的几何，抓取规划更可靠：2016 年 Varley 等人就用 3D 卷积网络补全单视角点云，再据此规划抓取，并在真机上验证。评测常用倒角距离（两组点之间平均最近距离）。",
+      "example": "腕部相机只拍到杯子正面，补全网络推测出杯子背面和杯柄的形状，抓取规划器据此选择夹持位置。",
+      "related": [
+        "点云",
+        "遮挡",
+        "单图生成3D",
+        "倒角距离",
+        "抓取规划",
+        "点云编码器"
+      ],
+      "sources": [
+        {
+          "title": "PCN: Point Completion Network (arXiv 1808.00671)",
+          "url": "https://arxiv.org/abs/1808.00671"
+        },
+        {
+          "title": "Shape Completion Enabled Robotic Grasping (arXiv 1609.08546)",
+          "url": "https://arxiv.org/abs/1609.08546"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "点云分割",
+      "name_en": "Point Cloud Segmentation",
+      "abbr": "",
+      "aliases": [
+        "3D 语义分割",
+        "3D 实例分割",
+        "点云语义分割"
+      ],
+      "tier": 3,
+      "one_liner": "给点云里的每个点打标签，分出它属于哪类物体或哪一个物体。",
+      "explanation": "点云分割是 2D 图像分割在 3D 上的对应：语义分割给每个点一个类别（桌子、杯子、地面），实例分割进一步区分同类的不同个体（杯子 1、杯子 2），部件分割把一个物体拆成把手、盖子等部件。2017 年斯坦福的 PointNet 首次让神经网络直接处理无序点集来做分类和分割，之后出现了 PointNet++、Point Transformer 系列等骨干网络。常用基准有室内的 ScanNet、S3DIS 和室外的 SemanticKITTI。机械臂抓取前通常先把目标物体的点分出来，再做位姿估计或抓取检测；移动机器人则用它分出地面、障碍物和可通行区域。",
+      "example": "在桌面场景的点云中把「杯子」的点单独分出来，只把这部分送入抓取检测网络。",
+      "related": [
+        "点云",
+        "语义分割",
+        "实例分割",
+        "PointNet",
+        "Point Transformer V3",
+        "抓取位姿检测"
+      ],
+      "sources": [
+        {
+          "title": "PointNet: Deep Learning on Point Sets for 3D Classification and Segmentation (arXiv 1612.00593)",
+          "url": "https://arxiv.org/abs/1612.00593"
+        },
+        {
+          "title": "Point Transformer V3: Simpler, Faster, Stronger (arXiv 2312.10035)",
+          "url": "https://arxiv.org/abs/2312.10035"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "Point Transformer V3",
+      "name_en": "Point Transformer V3: Simpler, Faster, Stronger",
+      "abbr": "PTv3",
+      "aliases": [
+        "PTv3"
+      ],
+      "tier": 3,
+      "one_liner": "处理点云的 Transformer 骨干网络，靠「序列化」变得更快、看得更广。",
+      "explanation": "Point Transformer V3（PTv3）由吴小阳（Xiaoyang Wu）、赵恒爽等来自香港大学、上海人工智能实验室等机构的研究者提出，是 CVPR 2024 口头报告论文，代码集成在开源点云框架 Pointcept 中。以往点云 Transformer 要给每个点找近邻、算复杂的相对位置编码，又慢又占显存。PTv3 先用空间填充曲线把无序点排成一维序列（序列化），再在序列分块内做注意力。据论文，它比 PTv2 快约 3 倍、省约 10 倍显存，感受野从 16 个点扩到 1024 个点，在 20 多个室内外任务上取得当时最好结果。它常被用作点云编码器，自监督预训练模型 Sonata 也以它为骨干。",
+      "example": "把 RGB-D 相机得到的室内点云送入 PTv3，输出每个点的语义类别（墙、地面、椅子等）。",
+      "related": [
+        "点云编码器",
+        "点云分割",
+        "PointNet",
+        "Transformer",
+        "骨干网络",
+        "自注意力"
+      ],
+      "sources": [
+        {
+          "title": "Point Transformer V3: Simpler, Faster, Stronger (arXiv 2312.10035)",
+          "url": "https://arxiv.org/abs/2312.10035"
+        },
+        {
+          "title": "Pointcept/PointTransformerV3 (GitHub)",
+          "url": "https://github.com/Pointcept/PointTransformerV3"
+        }
+      ],
+      "as_of": "2024-06"
+    },
+    {
+      "name_zh": "点图",
+      "name_en": "Pointmap",
+      "abbr": "",
+      "aliases": [
+        "Point Map",
+        "逐像素 3D 点图"
+      ],
+      "tier": 3,
+      "one_liner": "和图像同尺寸的数组，每个像素存的是一个 3D 坐标而不是颜色。",
+      "explanation": "点图把图像每个像素对应的 3D 点坐标 (x, y, z) 排成 H×W×3 的数组，像素和 3D 点一一对应。2023 年 Naver Labs Europe 等提出的 DUSt3R 把它作为核心输出：输入两张图，网络直接回归两张点图，并统一表达在第一张图的相机坐标系里，因此不需要事先知道相机内参（焦距等）和相机位姿。和深度图相比，点图同时隐含了深度、相机参数和两图之间的像素对应，可以从中反推出焦距、相对位姿和匹配点。之后的 MASt3R、VGGT、π³ 等前馈式三维重建模型都沿用或兼容这种表示，机器人可以借此从普通 RGB 图像快速得到场景的 3D 结构。",
+      "example": "两张手机拍的桌面照片送入 DUSt3R，得到两张点图，合起来就是桌面场景的稠密点云。",
+      "related": [
+        "前馈式三维重建",
+        "DUSt3R",
+        "VGGT",
+        "深度图",
+        "点云",
+        "相机内参"
+      ],
+      "sources": [
+        {
+          "title": "DUSt3R: Geometric 3D Vision Made Easy (arXiv 2312.14132)",
+          "url": "https://arxiv.org/abs/2312.14132"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "位姿跟踪",
+      "name_en": "Pose Tracking",
+      "abbr": "",
+      "aliases": [
+        "6D 位姿跟踪",
+        "物体位姿跟踪"
+      ],
+      "tier": 3,
+      "one_liner": "在连续视频帧里持续估计物体的 3D 位置和朝向。",
+      "explanation": "位姿指物体的 3D 位置加 3D 朝向，共 6 个自由度，所以也叫 6D 位姿。6D 位姿估计通常对单帧从零算出位姿；位姿跟踪则利用上一帧的结果，在新一帧里只做小幅修正，因此更快、更平滑，适合实时闭环控制。英伟达的 FoundationPose（CVPR 2024 Highlight）把估计和跟踪统一在一个框架里：输入 RGB-D 图像，对没见过的物体只需 CAD 模型或少量参考图，用「渲染-比较」迭代细化位姿。机器人抓取移动物体、手内调整物体、视觉伺服时都依赖它；物体被遮挡或运动过快时容易跟丢，需要重新做全局估计。SLAM 里估计相机自身位姿也叫跟踪，对象不同。",
+      "example": "机器人拧瓶盖时，每帧用 FoundationPose 跟踪瓶子的 6D 位姿，控制器据此调整夹爪位置。",
+      "related": [
+        "6D位姿估计",
+        "FoundationPose",
+        "视觉伺服",
+        "手内操作",
+        "遮挡",
+        "位姿"
+      ],
+      "sources": [
+        {
+          "title": "FoundationPose: Unified 6D Pose Estimation and Tracking of Novel Objects (arXiv 2312.08344)",
+          "url": "https://arxiv.org/abs/2312.08344"
+        },
+        {
+          "title": "FoundationPose 项目主页 (NVIDIA)",
+          "url": "https://nvlabs.github.io/FoundationPose/"
+        }
+      ],
+      "as_of": "2024-06"
+    },
+    {
+      "name_zh": "Prompt Depth Anything",
+      "name_en": "Prompt Depth Anything",
+      "abbr": "",
+      "aliases": [
+        "PromptDA",
+        "Prompting Depth Anything for 4K Resolution Accurate Metric Depth Estimation"
+      ],
+      "tier": 3,
+      "one_liner": "把低成本激光雷达的稀疏深度当「提示」，让深度大模型输出 4K 米制深度。",
+      "explanation": "Prompt Depth Anything 由浙江大学、字节跳动 Seed 等团队提出，发表于 CVPR 2025，代码和模型以 Apache-2.0 协议开源。单目深度模型（如 Depth Anything）边缘细节好，但不知道真实尺度；iPhone 等设备上的低成本激光雷达能给出真实距离，但分辨率极低（论文示例为 24×24）。它把激光雷达深度当作提示，在解码器多个尺度上融合进 Depth Anything，输出最高 4K 分辨率、以米为单位的度量深度。论文在宇树 H1 上做了抓取实验：策略只在漫反射物体上训练，换用它的深度后能抓透明和反光物体，优于只用 RGB 或只用激光雷达。",
+      "example": "用 iPhone 同时录下 RGB 和激光雷达数据，经 Prompt Depth Anything 得到高分辨率深度，再转成点云供抓取策略使用。",
+      "related": [
+        "Depth Anything",
+        "单目深度估计",
+        "度量深度 / 相对深度",
+        "深度补全",
+        "激光雷达",
+        "透明/反光物体感知"
+      ],
+      "sources": [
+        {
+          "title": "Prompt Depth Anything 项目主页",
+          "url": "https://promptda.github.io/"
+        },
+        {
+          "title": "DepthAnything/PromptDA (GitHub)",
+          "url": "https://github.com/DepthAnything/PromptDA"
+        },
+        {
+          "title": "Prompting Depth Anything for 4K Resolution Accurate Metric Depth Estimation (arXiv 2412.14015)",
+          "url": "https://arxiv.org/abs/2412.14015"
+        }
+      ],
+      "as_of": "2025-06"
+    },
+    {
+      "name_zh": "接近觉传感器",
+      "name_en": "Proximity Sensor",
+      "abbr": "",
+      "aliases": [
+        "接近传感器",
+        "近距离感知",
+        "接近觉"
+      ],
+      "tier": 3,
+      "one_liner": "不用接触，就能感知附近有没有物体、离得多近的传感器。",
+      "explanation": "接近觉传感器在不接触的情况下检测附近物体的存在或距离，常见原理有电容式（物体靠近改变电场）、电感式（只对金属敏感）、红外等光学式、飞行时间式（测光的往返时间）和超声波式。手机通话时贴近耳朵自动熄屏，用的就是它。在机器人上，它填补了视觉和触觉之间的空档：相机在近距离常被手臂或物体本身挡住，触觉又必须碰上才有信号。常见用法有两类：一是贴在机械臂外壳上做「感知皮肤」，人靠近时减速或避让，服务人机协作安全；二是装在夹爪指尖，在接触前最后一小段距离里微调手指位置。Navarro 等人 2021 年的综述系统整理了这类系统。",
+      "example": "协作机械臂外壳贴一圈电容式接近觉传感器，工人的手靠近到一定距离时，机械臂自动减速停下。",
+      "related": [
+        "触觉传感器",
+        "电子皮肤",
+        "飞行时间法",
+        "超声波传感器",
+        "人机协作",
+        "速度与分离监控"
+      ],
+      "sources": [
+        {
+          "title": "Proximity sensor - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Proximity_sensor"
+        },
+        {
+          "title": "Proximity Perception in Human-Centered Robotics: A Survey on Sensing Systems and Applications (arXiv 2108.07206)",
+          "url": "https://arxiv.org/abs/2108.07206"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "随机采样一致性",
+      "name_en": "Random Sample Consensus",
+      "abbr": "RANSAC",
+      "aliases": [
+        "RANSAC 算法"
+      ],
+      "tier": 3,
+      "one_liner": "反复随机抽少量数据拟合模型，留下最多数据支持的那个，以剔除异常值。",
+      "explanation": "随机采样一致性（RANSAC）由 SRI 的 Fischler 和 Bolles 于 1981 年提出。真实数据里常混着大量错误点（外点），直接用最小二乘拟合会被带偏。RANSAC 的做法是：随机抽取拟合所需的最少样本（比如拟合平面取 3 个点）算出一个模型；统计有多少数据落在误差阈值内（内点）；重复多次，保留内点最多的模型，最后用全部内点再精修一次。它是计算机视觉的基础工具，常用于特征匹配后估计单应性矩阵和基础矩阵、配合 PnP 求相机位姿、给点云配准做粗对齐。在机器人桌面场景里，常先用它拟合出桌面平面并删掉，剩下的点就是桌上的物体。",
+      "example": "对 RGB-D 点云跑 RANSAC 平面拟合，找出桌面并删除，剩余点再聚类，就得到桌上各个物体。",
+      "related": [
+        "特征匹配",
+        "单应性矩阵",
+        "PnP（透视n点）",
+        "点云配准",
+        "对极几何",
+        "点云分割"
+      ],
+      "sources": [
+        {
+          "title": "Random sample consensus - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Random_sample_consensus"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "RAFT 光流",
+      "name_en": "RAFT: Recurrent All-Pairs Field Transforms for Optical Flow",
+      "abbr": "RAFT",
+      "aliases": [
+        "RAFT"
+      ],
+      "tier": 3,
+      "one_liner": "经典光流网络：算全部像素间的相关性，再用循环单元反复迭代细化光流。",
+      "explanation": "RAFT 由普林斯顿大学的 Zachary Teed 和邓嘉于 2020 年提出，发表于 ECCV 2020（据报道获当届最佳论文奖）。光流指相邻两帧之间每个像素移动了多少。RAFT 先对两帧所有像素两两计算特征相关性，得到 4D 相关体，再用基于 GRU（一种循环神经网络单元）的模块在单一高分辨率上反复迭代修正光流，取代传统的由粗到细金字塔。据论文，它在 KITTI 和 Sintel 上分别把误差降低 16% 和 30%，至今仍是常用基线。同团队的 RAFT-Stereo 和 DROID-SLAM 都沿用了这种迭代更新思路。机器人研究中，光流常用来估计物体运动，或从无动作标签视频里推断运动。",
+      "example": "输入机械臂推方块前后的两帧图像，RAFT 输出每个像素的位移，能看出方块和机械臂各往哪边移动。",
+      "related": [
+        "光流",
+        "场景流",
+        "任意点跟踪",
+        "立体匹配",
+        "DROID-SLAM",
+        "循环神经网络"
+      ],
+      "sources": [
+        {
+          "title": "RAFT: Recurrent All-Pairs Field Transforms for Optical Flow (arXiv 2003.12039)",
+          "url": "https://arxiv.org/abs/2003.12039"
+        },
+        {
+          "title": "princeton-vl/RAFT (GitHub)",
+          "url": "https://github.com/princeton-vl/RAFT"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "指代表达分割",
+      "name_en": "Referring Expression Segmentation",
+      "abbr": "RES",
+      "aliases": [
+        "指代分割",
+        "指代图像分割",
+        "Referring Image Segmentation"
+      ],
+      "tier": 3,
+      "one_liner": "根据一句描述某个物体的话，在图中把那个物体精确抠出来。",
+      "explanation": "指代表达分割的输入是一张图和一句自然语言描述（如「右边长椅上坐着的两个人」），输出描述所指物体的像素级掩码。它比开放词汇分割更细：后者按类别名分出所有同类物体，指代分割则要依据颜色、位置、相互关系等描述挑出特定的那一个。2016 年 Hu 等人提出了较早的端到端方法：用 LSTM 编码句子，与卷积网络的特征图融合后逐像素预测。常用基准有 RefCOCO、RefCOCO+ 和 G-Ref。如今多由多模态大模型或文本定位模型配合 SAM 类分割模型完成。机器人听到「把左边那个红杯子递给我」时，就要先靠它找出目标的像素区域，再结合深度得到 3D 位置去抓。",
+      "example": "指令为「拿桌上最左边的蓝色积木」，模型在腕部相机图像中输出那一块积木的掩码。",
+      "related": [
+        "视觉定位（Grounding）",
+        "开放词汇分割",
+        "实例分割",
+        "掩码",
+        "Grounded-SAM",
+        "语言接地"
+      ],
+      "sources": [
+        {
+          "title": "Segmentation from Natural Language Expressions (arXiv 1603.06180)",
+          "url": "https://arxiv.org/abs/1603.06180"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "重定位",
+      "name_en": "Relocalization",
+      "abbr": "",
+      "aliases": [
+        "重新定位",
+        "相机重定位",
+        "Camera Relocalization"
+      ],
+      "tier": 3,
+      "one_liner": "机器人跟丢或重启后，在已有地图里重新确定自己在哪、朝哪。",
+      "explanation": "重定位是 SLAM（同步定位与建图）和视觉定位中的一个环节：当跟踪因快速运动、遮挡或光照变化而丢失，或者机器人重启、被人搬到别处（所谓「绑架」问题）时，系统只凭当前观测，在已建好的地图里找回自己的位姿。经典做法如 ORB-SLAM：用词袋模型（DBoW2）检索与当前图像最相似的关键帧，做特征匹配，再用 PnP 加 RANSAC 解出相机位姿。学习方法中，2015 年剑桥大学的 PoseNet 首次用卷积网络直接从单张图像回归 6 自由度相机位姿。它与回环检测所用技术相近，区别在于回环检测用来修正累积误差，重定位用来找回丢失的位置。",
+      "example": "扫地机器人被人抱到另一个房间放下后，对比当前画面和已存地图，重新确定位置后继续清扫。",
+      "related": [
+        "同步定位与建图",
+        "回环检测",
+        "视觉位置识别",
+        "PnP（透视n点）",
+        "随机采样一致性",
+        "自适应蒙特卡洛定位"
+      ],
+      "sources": [
+        {
+          "title": "ORB-SLAM: a Versatile and Accurate Monocular SLAM System (arXiv 1502.00956)",
+          "url": "https://arxiv.org/abs/1502.00956"
+        },
+        {
+          "title": "PoseNet: A Convolutional Network for Real-Time 6-DOF Camera Relocalization (arXiv 1505.07427)",
+          "url": "https://arxiv.org/abs/1505.07427"
+        },
+        {
+          "title": "UZ-SLAMLab/ORB_SLAM3 (GitHub)",
+          "url": "https://github.com/UZ-SLAMLab/ORB_SLAM3"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "ReSkin / AnySkin",
+      "name_en": "ReSkin / AnySkin",
+      "abbr": "",
+      "aliases": [
+        "ReSkin",
+        "AnySkin"
+      ],
+      "tier": 3,
+      "one_liner": "磁性触觉皮肤：软皮里掺磁粉，下方磁力计读磁场变化来感知接触。",
+      "explanation": "ReSkin 由卡内基梅隆大学和 Meta AI（FAIR）的 Bhirangi、Hellebrekers、Majidi、Gupta 提出，发表于 CoRL 2021。它在弹性体里混入磁化颗粒，受压变形时磁场改变，由下方的磁力计电路测出，据此估计接触位置和力。软皮易磨损但与电路分离，可直接换新，再用自监督学习适应新皮肤。2024 年纽约大学 Lerrel Pinto 组等推出 AnySkin，简化制作和安装，像套手机壳一样装到夹爪或灵巧手上，并让不同皮肤个体的信号更一致：同一操作策略换皮后性能下降约 13%，ReSkin 约为 43%。AnySkin 开源了设计文件，也有商业渠道可购买。",
+      "example": "在 Franka 夹爪指面装上 AnySkin，用触觉信号学插 USB，换一片新皮肤后策略仍基本可用。",
+      "related": [
+        "触觉传感器",
+        "磁性触觉传感",
+        "电子皮肤",
+        "滑移检测",
+        "触觉表征学习",
+        "视触觉传感器"
+      ],
+      "sources": [
+        {
+          "title": "ReSkin: versatile, replaceable, lasting tactile skins (arXiv 2111.00071)",
+          "url": "https://arxiv.org/abs/2111.00071"
+        },
+        {
+          "title": "ReSkin 项目主页",
+          "url": "https://reskin.dev/"
+        },
+        {
+          "title": "AnySkin: Plug-and-play Skin Sensing for Robotic Touch 项目主页",
+          "url": "https://any-skin.github.io/"
+        }
+      ],
+      "as_of": "2024-09"
+    }
+  ]
+}

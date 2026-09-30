@@ -1,0 +1,121 @@
+{
+  "batch": "named_model-26",
+  "terms": [
+    {
+      "key": "named_model-26#0",
+      "name_en": "UniTracker",
+      "aliases": ["UniTracker: Learning Universal Whole-Body Motion Tracker for Humanoid Robots"],
+      "one_liner": "A three-stage whole-body motion tracking framework that lets a single policy make a humanoid robot track a wide range of human motions.",
+      "explanation": "UniTracker was released in July 2025 by Shanghai Jiao Tong University, the Shanghai Artificial Intelligence Laboratory, and other institutions. Motion tracking means having a robot imitate a reference human motion in real time; the difficulty is that one policy has to cover thousands of different motions, and a real robot cannot access the complete state information available in simulation. UniTracker has three stages: first, a teacher policy is trained in simulation using privileged information (full state information unavailable on the real robot); then it is distilled into a real-robot-ready student policy, which learns a global latent variable for each motion via a conditional variational autoencoder (CVAE) to reduce drift in global quantities like orientation when only partial observations are available; finally, a fast-adaptation module fine-tunes individually or in batches on motions that are hard to track. The training data is 8,179 human motion clips filtered from AMASS, validated both in simulation and on a real Unitree G1.",
+      "example": "Given a dance motion clip taken from AMASS, the same UniTracker policy can make a real Unitree G1 perform it; for a particularly hard motion sequence the robot cannot track directly, the third-stage fast-adaptation module fine-tunes on it individually or in a batch.",
+      "related": ["Motion Tracking", "Conditional Variational Autoencoder", "Teacher-Student Distillation", "Privileged Information", "AMASS (Archive of Motion Capture as Surface Shapes)", "Unitree G1"]
+    },
+    {
+      "key": "named_model-26#1",
+      "name_en": "UniVLA",
+      "aliases": ["UniVLA: Learning to Act Anywhere with Task-centric Latent Actions"],
+      "one_liner": "A framework that trains a cross-embodiment VLA by learning 'task-relevant latent actions' from video.",
+      "explanation": "UniVLA was released by the University of Hong Kong's OpenDriveLab and AgiBot in May 2025, published at RSS 2025. Most VLAs (vision-language-action models) rely on large amounts of action-labeled robot data and are tied to a single robot. UniVLA first trains a latent action model: looking at two consecutive frames in DINOv2 feature space, together with the language instruction, it separates task-relevant changes from irrelevant ones like camera shake, and quantizes the relevant changes into discrete latent action tokens, which lets videos without action labels — including human videos — be used for pretraining too. It then uses Prismatic-7B as the backbone to predict these latent actions, and when deploying to a specific robot, only adds a small decoder head of about 12 million parameters to translate them into real actions. The paper reports that with under 1/20th of OpenVLA's pretraining compute and only 1/10th of its downstream data, it outperforms OpenVLA on benchmarks including LIBERO, CALVIN, and R2R.",
+      "example": "Robot arm data, navigation data, and human manipulation videos are all fed together into UniVLA's latent action model; the same learned latent actions, paired with different small decoder heads, can then drive a robot arm in LIBERO simulation and a navigation agent in R2R.",
+      "related": ["Latent Action Model", "Latent Action", "Vision-Language-Action Model", "OpenVLA", "LAPA", "Cross-Embodiment"]
+    },
+    {
+      "key": "named_model-26#2",
+      "name_en": "V-GPS",
+      "abbr": "V-GPS",
+      "aliases": ["Value-Guided Policy Steering", "Steering Your Generalists: Improving Robotic Foundation Models via Value Guidance"],
+      "one_liner": "A method that re-ranks a generalist policy's candidate actions at deployment time using a value function learned with offline reinforcement learning.",
+      "explanation": "V-GPS was released by Mitsuhiko Nakamoto, Sergey Levine, and colleagues at UC Berkeley and CMU in October 2024, published at CoRL 2024. Generalist robot policies are trained on demonstration data of wildly varying quality, and the larger the dataset, the harder it is to clean up. V-GPS leaves the original policy untouched: it first trains a Q-function (which scores a state-action pair) with offline reinforcement learning (using only existing data, mainly with Cal-QL) on BridgeData V2 and RT-1 data; at deployment, the generalist policy samples K candidate actions at once (the paper tries 10 and 50), and the Q-function picks the highest-scoring one to execute. It requires no fine-tuning and no access to the policy's weights, and the same value function improves five different policies — Octo, RT-1-X, OpenVLA, and others — making it an early example of trading extra inference-time compute for better performance in robotics.",
+      "example": "On a real robot, having Octo pick up sushi and put it in a bowl: Octo first generates several candidate actions at each step, V-GPS's Q-function scores each one, and only the highest-scoring action is executed; the project page reports a clear success-rate increase on this kind of task.",
+      "related": ["Value-Guided Sampling", "Calibrated Q-Learning", "Offline Reinforcement Learning", "Q-Function (Action-Value Function)", "Inference-Time Compute (Test-Time Scaling)", "Octo"]
+    },
+    {
+      "key": "named_model-26#3",
+      "name_en": "VC-1",
+      "abbr": "VC-1",
+      "aliases": ["Visual Cortex 1", "Artificial Visual Cortex"],
+      "one_liner": "Meta's visual encoder for embodied tasks, pretrained with masked autoencoding on more than 4,000 hours of first-person video.",
+      "explanation": "VC-1 is research released by Meta AI (FAIR) in March 2023, and was, at the time, the largest systematic evaluation of pretrained visual representations — off-the-shelf visual encoders meant to serve as a robot's 'eyes.' The authors first built CortexBench, containing 17 tasks spanning locomotion, navigation, dexterous manipulation, and mobile manipulation; they then combined more than 4,000 hours of first-person video from 7 sources with ImageNet and used a masked autoencoder (MAE, which masks out image patches and reconstructs them) to train ViTs of various sizes, the largest being ViT-L, which is VC-1. The conclusion: no single visual representation is best on every task, and scaling up data size and diversity only helps on average; once adapted to a specific task, VC-1 matches or beats the best previously known results across the board. Both the model and code are open-sourced.",
+      "example": "When building a robot-arm imitation-learning project, VC-1 can be used directly as a frozen image encoder, turning camera images into feature vectors on top of which a small policy network is trained.",
+      "related": ["Pre-trained Visual Representation", "Masked Autoencoder", "R3M", "VIP (Value-Implicit Pre-Training)", "Ego4D", "Vision Transformer"]
+    },
+    {
+      "key": "named_model-26#4",
+      "name_en": "Veo World Simulator",
+      "aliases": ["Evaluating Gemini Robotics Policies in a Veo World Simulator"],
+      "one_liner": "A Google DeepMind system that uses the Veo video model to 'imagine' a robot's execution in order to evaluate policies.",
+      "explanation": "The Veo World Simulator is a technical report released by Google DeepMind's Gemini Robotics team in December 2025. Real-robot evaluation is slow, expensive, and hard to extend to new objects or backgrounds not seen before. The team adapted the Veo 2 video generation model into a world simulator: given the current image and a sequence of future robot poses, it generates the resulting frames from all four camera views of an ALOHA 2 bimanual platform, and uses image editing plus multi-view inpainting to alter the real scene with new objects, backgrounds, and distractors. This makes it possible to run policies inside 'generated video,' predict the relative strengths and weaknesses of different policy versions, compare which kinds of generalization are harder, and even conduct red-teaming to surface unsafe behaviors. The authors validated the agreement between these predictions and real-robot results using 8 versions of Gemini Robotics policies, 5 tasks, and more than 1,600 real-robot trials.",
+      "example": "In one red-team test, the simulator generated a scene where the instruction 'quick, grab the red block!' exposed a policy bumping into a nearby hand; in another, a policy closed a laptop before moving a pair of scissors out of the way, risking damage to the screen.",
+      "related": ["World-Model-based Policy Evaluation", "Gemini Robotics", "Video Generation Model", "Interactive World Model", "Sim-to-Real Correlation (Pearson r)", "Mean Maximum Rank Violation"]
+    },
+    {
+      "key": "named_model-26#5",
+      "name_en": "Vidar",
+      "abbr": "Vidar",
+      "aliases": ["Embodied Video Diffusion Model for Generalist Manipulation", "Vidar: VIdeo Diffusion for Action Reasoning"],
+      "one_liner": "A robot manipulation model that first predicts future frames with a video diffusion model, then infers the action from them.",
+      "explanation": "Vidar was released in July 2025 by Jun Zhu's lab (TSAIL) at Tsinghua University; its name stands for VIdeo Diffusion for Action Reasoning. Real-robot experiments are built on Vidu 2.0, the video model from ShengShu Technology, and the paper notes that part of the work was done at ShengShu, with reports describing it as a joint release between ShengShu and Tsinghua. The approach has two steps: a video diffusion model first 'imagines' an upcoming video from the instruction and current image; then a masked inverse dynamics model (MIDM), which infers actions from consecutive frames, translates that video into robot actions, and automatically learns to focus only on action-relevant pixels such as the robot arm, filtering out background clutter. The video model first goes through continued embodied-domain pretraining on 750,000 multi-view trajectories across three robot platforms. On a robot it has never seen, the paper reports that only about 20 minutes of human demonstration is needed to beat baseline methods, and it generalizes to new tasks, backgrounds, and camera layouts.",
+      "example": "A new Aloha bimanual robot is adapted with only about 20 minutes of human demonstration; Vidar then generates a video of the task being completed from a new language instruction, and an inverse dynamics model translates that video segment by segment into joint actions for execution.",
+      "related": ["Video Generation Model", "Inverse Dynamics Model", "Video Prediction Policy", "Cross-Embodiment", "World Action Model", "ShengShu Technology"]
+    },
+    {
+      "key": "named_model-26#6",
+      "name_en": "Video Prediction Policy",
+      "abbr": "VPP",
+      "aliases": ["Video Prediction Policy: A Generalist Robot Policy with Predictive Visual Representations"],
+      "one_liner": "A robot policy that guides action generation using the internal 'prediction of the future' features inside a video diffusion model.",
+      "explanation": "Video Prediction Policy was released in December 2024 by Jianyu Chen's lab at Tsinghua University together with RobotEra, UC Berkeley, the Shanghai Artificial Intelligence Laboratory, and others, selected as an ICML 2025 Spotlight. A typical visual encoder only looks at a single image, or compares two images, and cannot capture 'what's about to happen next.' VPP's hypothesis is that a video diffusion model's internal features, when predicting an upcoming frame, already encode both the current image and a prediction of future dynamics. The approach first fine-tunes a pretrained video model on robot data and internet videos of human manipulation, then takes its intermediate predictive representation as a conditioning signal to train an implicit inverse dynamics model (which infers the action from the 'predicted future') that outputs the action. The paper reports an 18.6% relative improvement over the previous best method on the CALVIN ABC-D generalization benchmark, and a 31.6% success-rate improvement on complex real-robot dexterous-hand manipulation tasks.",
+      "example": "On a Franka arm and an XHand dexterous hand, VPP forms a predictive representation of the next few frames internally from a language instruction and outputs the action from that, without ever having to fully render out the whole future video.",
+      "related": ["Video Prediction Model", "Inverse Dynamics Model", "Diffusion Policy", "CALVIN", "Vidar: VIdeo Diffusion for Action Reasoning (Tsinghua & ShengShu)", "RobotEra"]
+    },
+    {
+      "key": "named_model-26#7",
+      "name_en": "VPT",
+      "abbr": "VPT",
+      "aliases": ["Video PreTraining", "Video PreTraining (VPT): Learning to Act by Watching Unlabeled Online Videos"],
+      "one_liner": "OpenAI's approach of first training an inverse dynamics model to label online video with actions, then learning to play Minecraft by imitation.",
+      "explanation": "VPT was released by OpenAI in June 2022, published at NeurIPS 2022. The difficulty with decision-making tasks is that while there's plenty of video online, none of it comes labeled with 'which key was pressed at each moment.' VPT first pays human contractors to play Minecraft while recording their keyboard and mouse input (about 1,962 hours), and uses this to train an inverse dynamics model (IDM), which infers the action taken between two frames; the IDM is then used to automatically pseudo-label about 70,000 hours of online gameplay video with actions, and behavior cloning trains a base policy on this data, which operates the game directly at 20 Hz through the same keyboard-and-mouse interface a human would use. This base policy already shows some zero-shot ability, and after further imitation learning and reinforcement-learning fine-tuning, it became the first system to synthesize a diamond tool in Minecraft from scratch (a task that takes a skilled human player about 20 minutes and 24,000 actions) — something reinforcement learning starting from nothing could essentially never achieve. The 'train an IDM on a little labeled data, then pseudo-label a lot of video' idea has since been widely borrowed in robotics.",
+      "example": "After reinforcement-learning fine-tuning, the VPT base model can start from an empty inventory in Minecraft and work all the way through gathering materials and crafting tools to finally make a diamond tool, something essentially impossible for reinforcement learning trained from scratch.",
+      "related": ["Inverse Dynamics Model", "Pseudo Action Labels", "Action-free Video", "Behavior Cloning", "Minecraft Environments (MineDojo / MineRL)", "Latent Action Pretraining"]
+    },
+    {
+      "key": "named_model-26#8",
+      "name_en": "VideoMimic",
+      "aliases": ["Visual Imitation Enables Contextual Humanoid Control"],
+      "one_liner": "A humanoid robot method that learns skills like climbing stairs and sitting down in a chair from ordinary phone-shot human videos.",
+      "explanation": "VideoMimic was released by Angjoo Kanazawa, Jitendra Malik, Pieter Abbeel, and colleagues at UC Berkeley in May 2025, winning the CoRL 2025 Best Student Paper Award. Teaching a humanoid robot 'environment-aware' actions, such as climbing stairs or sitting down in a chair, requires knowing both how a human moves and what the surrounding terrain looks like. VideoMimic is a real-to-sim-to-real pipeline: from a monocular video, it simultaneously reconstructs a metrically accurate 4D human trajectory and the scene's geometry; the human motion is retargeted onto the robot, and the scene is converted into a simulator mesh; a policy that tracks these motions is then trained in simulation with reinforcement learning, and distilled into a single policy that relies only on proprioception, a height map of the terrain around the body, and a goal direction. The final policy is deployed on a 23-degree-of-freedom Unitree G1.",
+      "example": "A phone video of a person walking up some steps and then sitting down on a bench is fed through VideoMimic, and the Unitree G1 can then autonomously climb stairs and sit down and stand up in a real environment, with the same policy working for different staircases and chairs.",
+      "related": ["Real-to-Sim-to-Real", "4D Reconstruction (Dynamic Scene Reconstruction)", "Motion Retargeting", "Motion Tracking", "Human Video Data", "Unitree G1"]
+    },
+    {
+      "key": "named_model-26#9",
+      "name_en": "VIMA",
+      "abbr": "VIMA",
+      "aliases": ["VIMA: General Robot Manipulation with Multimodal Prompts"],
+      "one_liner": "A Transformer robot agent that uses interleaved text-and-image 'multimodal prompts' to describe manipulation tasks in one unified format.",
+      "explanation": "VIMA was released in October 2022 by researchers at Stanford, NVIDIA, Caltech, and other institutions (Yunfan Jiang, Linxi Fan, Yuke Zhu, Fei-Fei Li, and others), published at ICML 2023. Robot tasks can be specified in many different ways — showing a demonstration to imitate, describing it in language, or giving a goal image. VIMA unifies all of these into a single 'text interleaved with images' multimodal prompt, such as 'put [image of an object] into [image of a container],' with a Transformer reading the prompt and autoregressively outputting actions. The authors also built the VIMA-Bench simulation benchmark: 17 task templates that can procedurally generate thousands of tabletop tasks, more than 600,000 expert trajectories, and a four-level evaluation of increasingly hard generalization. The paper reports up to 2.9x higher success than other designs in the hardest zero-shot setting.",
+      "example": "A VIMA prompt is a sentence with two small images embedded in it: 'put [image of a red block] onto [image of a green plate]'; VIMA finds the matching objects on a simulated tabletop and completes the pick-and-place, and the same model also handles a prompt that first shows a demonstration image and then says 'do it like this.'",
+      "related": ["VIMA-Bench", "Language-conditioned Policy", "Compositional Generalization", "Tabletop Manipulation", "Imitation Learning", "Transformer"]
+    },
+    {
+      "key": "named_model-26#10",
+      "name_en": "ViNT",
+      "abbr": "ViNT",
+      "aliases": ["Visual Navigation Transformer", "ViNT: A Foundation Model for Visual Navigation"],
+      "one_liner": "A visual navigation foundation model from Berkeley, trained on navigation data from many kinds of robots, that finds a goal from an image.",
+      "explanation": "ViNT was released by Dhruv Shah, Sergey Levine, and colleagues at UC Berkeley in June 2023, an oral-presentation paper at CoRL 2023. Earlier navigation models were mostly trained on data from a single robot in a single kind of environment. ViNT encodes images with EfficientNet followed by a Transformer, taking in the current frame plus several recent past frames along with a goal image, and predicting how far away the goal is and what to do next; its training data comes from multiple robot platforms, totaling hundreds of hours of navigation data. Paired with a diffusion model that generates candidate subgoal images, it can explore unfamiliar environments, and combined with long-range heuristics like GPS it can perform kilometer-scale navigation; it can also be adapted through prompt tuning to take GPS waypoints or turn-by-turn instructions as the goal instead. ViNT builds on the earlier GNM, and was itself followed by NoMaD.",
+      "example": "A robot first drives along a route taking a series of photos; later, given just one of those photos as a goal image, ViNT can navigate back to the spot where that photo was taken in the same environment, and the same model can be deployed on different mobile robots.",
+      "related": ["GNM: A General Navigation Model to Drive Any Robot", "NoMaD", "Image-Goal Navigation", "Navigation", "Foundation Model", "Prompt Tuning / Soft Prompt"]
+    },
+    {
+      "key": "named_model-26#11",
+      "name_en": "VIP",
+      "abbr": "VIP",
+      "aliases": ["Value-Implicit Pre-Training", "VIP: Towards Universal Visual Reward and Representation via Value-Implicit Pre-Training"],
+      "one_liner": "A self-supervised pretraining method on human videos that produces both a visual representation and a dense reward at once.",
+      "explanation": "VIP was released by Jason Ma, Amy Zhang, and colleagues at Meta AI (FAIR) and the University of Pennsylvania in September 2022, published at ICLR 2023 (Spotlight). Robot reinforcement learning is often stuck on two things at once: no good visual features, and no easy-to-write reward function. VIP frames 'learning a representation from human video' as an offline goal-conditioned reinforcement learning problem, and derives a value-function objective that needs no action labels — essentially a form of implicit time-contrastive learning, where frames closer in time to completing the task sit closer to the goal in feature space. After pretraining on Ego4D first-person videos, it is used frozen: the reward is simply the change in feature-space distance between the current frame and a goal image, which supplies a dense reward for a wide range of simulated and real-robot tasks; on real robots, as few as about 20 trajectories are enough for few-shot offline reinforcement learning.",
+      "example": "Given a goal photo showing 'the drawer already closed,' VIP encodes every camera frame and the goal image into features; as the distance shrinks, the robot gets positive reward, learning to push the drawer shut without anyone writing a reward function by hand.",
+      "related": ["R3M", "VC-1", "Pre-trained Visual Representation", "Time-Contrastive Networks", "Goal-Conditioned Reinforcement Learning", "Ego4D"]
+    }
+  ]
+}

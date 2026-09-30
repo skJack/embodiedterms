@@ -1,0 +1,437 @@
+{
+  "category": "control",
+  "batch": 1,
+  "terms": [
+    {
+      "name_zh": "大脑-小脑架构（小脑）",
+      "name_en": "Brain-Cerebellum Architecture (Cerebellum = motion-control layer)",
+      "abbr": "",
+      "aliases": [
+        "小脑",
+        "运动小脑",
+        "大小脑架构",
+        "Robot Cerebellum",
+        "Cerebellum Skill Library"
+      ],
+      "tier": 1,
+      "one_liner": "大小脑架构里的「小脑」：把上层指令变成高频、稳定关节动作的那一层。",
+      "explanation": "「大脑-小脑」是国内具身智能圈对分层系统的通俗叫法，这一条专讲「小脑」。大脑多是多模态大模型，每秒只做几次决策，负责理解指令、拆解任务；小脑接住「往前走半米」「抓起杯子」这类子任务，以每秒几十到几百次的频率输出关节指令，同时保持平衡、应对扰动。它可以是强化学习训练的运控策略、MPC 加全身控制这类传统控制器，也可以是技能库或 VLA 里的快速动作模块。各家对边界说法不一：窄义只指行走、平衡等运动控制，广义把抓取等操作技能也算进去。智源的 RoboOS 就把可插拔的技能库称为「小脑技能库」。",
+      "example": "Figure 的 Helix 虽然不叫「小脑」，结构上与之对应：负责理解场景和语言的 System 2 以 7–9 Hz 运行，负责出动作的 System 1 作为独立实时进程，以 200 Hz 输出 35 个自由度的连续动作。",
+      "related": [
+        "大脑-小脑架构（大小脑）",
+        "快慢双系统",
+        "分层控制",
+        "运动控制",
+        "全身控制",
+        "智源 RoboBrain（具身大脑）"
+      ],
+      "sources": [
+        {
+          "title": "RoboOS: A Hierarchical Embodied Framework for Cross-Embodiment and Multi-Agent Collaboration (arXiv:2505.03673)",
+          "url": "https://arxiv.org/abs/2505.03673"
+        },
+        {
+          "title": "Figure: Helix — A Vision-Language-Action Model for Generalist Humanoid Control",
+          "url": "https://www.figure.ai/news/helix"
+        }
+      ],
+      "as_of": "2025-05"
+    },
+    {
+      "name_zh": "控制频率",
+      "name_en": "Control Frequency",
+      "abbr": "",
+      "aliases": [
+        "控制周期",
+        "控制步长",
+        "控制回路频率",
+        "Control cycle",
+        "Control period",
+        "Control rate"
+      ],
+      "tier": 1,
+      "one_liner": "控制器每秒发出多少次指令，单位 Hz；它的倒数就是控制周期。",
+      "explanation": "控制频率指控制器每秒完成「读传感器、计算、发指令」这一循环的次数，单位赫兹（Hz），倒数是控制周期，比如 1 kHz 对应每 1 毫秒一次。机器人里通常是几层回路嵌套，越靠近电机越快：大模型或 VLA 策略每秒出几次到几十次动作，关节位置或力矩回路要几百到上千赫兹，驱动器里的电流环更快。频率太低，机器人对扰动反应慢，容易抖动甚至摔倒；太高则算力和通信跟不上，指令没按时算完会被控制器拒收或报错。它和「策略推理频率」「控制延迟」相关但不同：前者只看模型多快出结果，后者是从感知到动作生效要多久。仿真训练时的控制频率要和真机一致，否则会加大虚实差距。",
+      "example": "Franka 机械臂的 FCI 接口以 1 kHz 运行：网络往返、用户回调计算和机器人处理三者加起来必须在 1 毫秒内完成，超时的那一拍指令会被丢弃，连续丢 20 拍就报错停机；legged_gym 里的四足策略则是 50 Hz，每 20 毫秒出一次动作。",
+      "related": [
+        "策略推理频率",
+        "控制延迟",
+        "控制降频",
+        "实时控制",
+        "控制带宽",
+        "PD 控制"
+      ],
+      "sources": [
+        {
+          "title": "libfranka robot.h（Since the robot is controlled with a 1 kHz frequency…）",
+          "url": "https://raw.githubusercontent.com/frankaemika/libfranka/master/include/franka/robot.h"
+        },
+        {
+          "title": "Franka FCI Docs: Minimum system and network requirements（RTT + 控制回路 + 机器人处理 < 1 ms；连续丢 20 包即停机）",
+          "url": "https://frankarobotics.github.io/docs/doc/libfranka/docs/system_requirements.html"
+        },
+        {
+          "title": "legged_gym: legged_robot_config.py（sim dt = 0.005, decimation = 4）",
+          "url": "https://github.com/leggedrobotics/legged_gym/blob/master/legged_gym/envs/base/legged_robot_config.py"
+        },
+        {
+          "title": "Figure: Helix（System 1 200 Hz / System 2 7–9 Hz）",
+          "url": "https://www.figure.ai/news/helix"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "急停",
+      "name_en": "Emergency Stop",
+      "abbr": "E-stop",
+      "aliases": [
+        "紧急停止",
+        "急停按钮",
+        "停止类别 0/1/2",
+        "Stop Category 0/1/2",
+        "E-Stop button"
+      ],
+      "tier": 1,
+      "one_liner": "危险时一个动作就让机器停下的安全功能，典型形态是黄底红色蘑菇头按钮。",
+      "explanation": "急停是机器必备的安全功能，国际标准 ISO 13850 要求在场任何人不用多想、一个动作就能让机器停下。典型急停按钮是黄底红色蘑菇头，按下后机械锁住，必须人为复位才能解除，而且复位本身不能让机器自行重启。IEC 60204-1 把停机分三类：0 类立即切断驱动电源；1 类先受控停稳，再断电；2 类受控停下但保持供电。急停只能用 0 类或 1 类。选哪一类要看直接断电会不会更危险：腿足和人形机器人一断电就会当场瘫倒，所以调试时常配安全吊架，急停之外再设阻尼模式等软停止。急停是最后一道防线，不能替代碰撞检测、限速等其他安全措施。",
+      "example": "协作机械臂的示教器上通常自带急停按钮；做 VLA 真机实验时，操作员手边一般再放一个独立急停，策略一出现异常动作就立刻拍下。",
+      "related": [
+        "保护性停止",
+        "功能安全",
+        "安全扭矩关断",
+        "阻尼模式",
+        "看门狗",
+        "碰撞检测（本体安全）"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia (de): Not-Halt（停止类别 0/1/2、ISO 13850、急停按钮形态）",
+          "url": "https://de.wikipedia.org/wiki/Not-Halt"
+        },
+        {
+          "title": "Wikipedia: Kill switch（emergency stop, ISO 13850）",
+          "url": "https://en.wikipedia.org/wiki/Kill_switch"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "力控",
+      "name_en": "Force Control",
+      "abbr": "",
+      "aliases": [
+        "力控制",
+        "力觉控制"
+      ],
+      "tier": 1,
+      "one_liner": "以接触力为控制目标，让机器人按指定的力去推、压、贴合物体。",
+      "explanation": "力控指控制机器人对物体或环境施加多大的力，而不只是让它走到某个位置。纯位置控制遇到偏差会不断加大电流去追目标位置，碰到比预想更高的表面就可能压坏工件；力控则让接触力保持在设定值附近。实现上分两类：直接力控把目标力当作反馈回路的设定值，典型是力位混合控制，按方向划分哪些轴控力、哪些轴控位置；间接力控即阻抗控制和导纳控制，通过设定刚度、阻尼、惯量来决定机器人被推时有多「软」。力控需要知道实际受力，靠末端六维力传感器、关节力矩传感器或电机电流估算。打磨、装配、擦桌子、插插头这类接触丰富的任务都离不开它。",
+      "example": "机械臂擦白板：用位置控制时，高度差几毫米就会擦不到或压得太重；改用力控，把垂直板面方向的压力设成定值，板面不平也能一直贴着擦。",
+      "related": [
+        "阻抗控制",
+        "导纳控制",
+        "力位混合控制",
+        "六维力传感器",
+        "关节力矩传感器",
+        "接触丰富操作"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Force control",
+          "url": "https://en.wikipedia.org/wiki/Force_control"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "步态",
+      "name_en": "Gait",
+      "abbr": "",
+      "aliases": [
+        "步态模式",
+        "Gait pattern",
+        "Locomotion gait"
+      ],
+      "tier": 1,
+      "one_liner": "腿足动物或机器人移动时，各条腿抬起、落地的先后顺序和节奏。",
+      "explanation": "步态指腿足运动中各条腿何时着地、何时抬起的时序模式。描述它常用两个量：占空比，即一条腿在一个步态周期里着地时间的占比，超过 50% 一般算走、低于 50% 算跑；以及各腿之间的相位差。四足常见步态有对角小跑（trot，对角两腿同时着地）、踱步（pace，同侧两腿同步）、跳跃（bound，前两腿、后两腿各自同步）、四腿齐跳（pronk）和疾驰（gallop）；人形机器人主要是双足交替的走和跑。传统控制器通常先规定步态时序，再据此规划落足点和支撑力；强化学习运控可以只给速度指令让步态自然形成，也可以把步频、相位差作为指令输入来指定步态。",
+      "example": "Walk These Ways 用三个脚间相位差来指定四足步态：(0.5, 0, 0) 是对角小跑，(0, 0.5, 0) 是跳跃，(0, 0, 0.5) 是踱步，全为 0 是四腿齐跳；同一个策略改一下输入就能换步态。",
+      "related": [
+        "对角小跑步态",
+        "踱步步态",
+        "跳跃步态",
+        "步态周期与占空比",
+        "步态规划",
+        "腿足运动"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Gait（duty factor, symmetrical/asymmetrical gaits）",
+          "url": "https://en.wikipedia.org/wiki/Gait"
+        },
+        {
+          "title": "Walk These Ways: Tuning Robot Control for Generalization with Multiplicity of Behavior (arXiv:2212.03238)",
+          "url": "https://arxiv.org/html/2212.03238"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "分层控制",
+      "name_en": "Hierarchical Control",
+      "abbr": "",
+      "aliases": [
+        "高层控制器",
+        "低层控制器",
+        "上层控制/底层控制",
+        "High-level controller",
+        "Low-level controller",
+        "分层控制系统"
+      ],
+      "tier": 1,
+      "one_liner": "把控制拆成多层：上层低频定目标，下层高频跟踪目标并直接驱动电机。",
+      "explanation": "分层控制是控制工程里的经典做法：把复杂的控制问题拆成几层，上层看得远、更新慢，下层看得近、跑得快。上层控制器按较长周期输出参考量，比如目标速度、落足点、接触力或关节目标角；下层控制器以高得多的频率跟踪这些参考量，并处理扰动和硬件细节，上层一般不干预下层怎么执行。好处是每层都能用简单的模型、在自己的时间尺度上求解，也方便单独替换和调试。它和「分层架构」「大脑-小脑」一脉相承，后两者多指模型层面任务规划与动作生成的分工，分层控制更强调各级控制回路之间的频率和接口。",
+      "example": "MIT Mini Cheetah 的控制分两层：MPC 用简化模型在较长时间窗内优化足底反作用力，全身冲量控制（WBIC）再把这些力换算成关节指令。强化学习运控也类似：策略以 50 Hz 输出关节目标角，底层 PD 控制器以更高频率把它变成力矩。",
+      "related": [
+        "分层架构",
+        "大脑-小脑架构（小脑）",
+        "模型预测控制",
+        "全身控制",
+        "PD 控制",
+        "串级控制"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Hierarchical control system",
+          "url": "https://en.wikipedia.org/wiki/Hierarchical_control_system"
+        },
+        {
+          "title": "Highly Dynamic Quadruped Locomotion via Whole-Body Impulse Control and Model Predictive Control (arXiv:1909.06586)",
+          "url": "https://arxiv.org/abs/1909.06586"
+        },
+        {
+          "title": "legged_gym: legged_robot.py（_compute_torques，PD 控制）",
+          "url": "https://github.com/leggedrobotics/legged_gym/blob/master/legged_gym/envs/base/legged_robot.py"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "模型预测控制",
+      "name_en": "Model Predictive Control",
+      "abbr": "MPC",
+      "aliases": [
+        "滚动时域控制",
+        "滚动时域优化",
+        "Receding Horizon Control",
+        "Receding horizon optimization"
+      ],
+      "tier": 1,
+      "one_liner": "每步用模型预测未来一小段、解优化选出最优动作，只执行第一步再重算。",
+      "explanation": "模型预测控制起源于 20 世纪 70 年代的炼油、化工等流程工业，80 年代在这些行业普及。每个控制周期它做同一件事：用系统模型 x_{k+1} = f(x_k, u_k)（x 是状态，u 是控制输入）往后预测 N 步，在关节限位、力矩上限等约束下，求出让代价（如跟踪误差加能耗）最小的一串输入；只执行第一个输入，下个周期用新测量重新求解，所以也叫滚动时域控制。和 PID 只对已经出现的误差做反应相比，它能提前考虑未来和约束；和线性二次调节器（LQR）离线一次算好反馈增益相比，它每步在线重新优化，能直接处理约束和非线性模型。代价是要在线解优化，吃算力、依赖模型精度。足式机器人上常用简化模型规划足底力，再交给全身控制执行。",
+      "example": "MIT Mini Cheetah 用 MPC 优化足底反作用力，配合全身冲量控制跑到 3.7 m/s；开源框架 legged_control 用非线性 MPC 控制宇树 A1，作者称在第 11 代 NUC 迷你主机上求解频率接近 200 Hz。",
+      "related": [
+        "凸 MPC",
+        "非线性模型预测控制",
+        "采样式 MPC",
+        "全身控制",
+        "线性二次调节器",
+        "轨迹优化"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Model predictive control（含 MPC vs. LQR）",
+          "url": "https://en.wikipedia.org/wiki/Model_predictive_control"
+        },
+        {
+          "title": "Qin & Badgwell, A survey of industrial model predictive control technology (Control Engineering Practice, 2003)",
+          "url": "https://doi.org/10.1016/S0967-0661(02)00186-7"
+        },
+        {
+          "title": "Highly Dynamic Quadruped Locomotion via Whole-Body Impulse Control and Model Predictive Control (arXiv:1909.06586)",
+          "url": "https://arxiv.org/abs/1909.06586"
+        },
+        {
+          "title": "qiayuanl/legged_control (GitHub)",
+          "url": "https://github.com/qiayuanl/legged_control"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "运动控制",
+      "name_en": "Motion Control / Locomotion Control",
+      "abbr": "",
+      "aliases": [
+        "运控",
+        "运动控制算法",
+        "运控算法"
+      ],
+      "tier": 1,
+      "one_liner": "让机器人按期望稳定地动起来的控制技术，具身圈常特指腿足行走与平衡。",
+      "explanation": "运动控制原是自动化领域的通用概念，指让机器部件按要求运动，控制对象是位置、速度或力，由控制器、驱动器、电机和编码器组成闭环。在具身智能和人形机器人语境里，「运控」多特指腿足机器人的行走、奔跑、平衡、摔倒起身等全身运动能力，是「小脑」的核心。主要有两条路线：基于模型的方法，用简化动力学模型加模型预测控制和全身控制实时求解；基于学习的方法，在 GPU 并行仿真里用强化学习训练策略，再迁移到真机。近年后者在四足和人形上用得越来越多，也常与前者结合。运动控制管「怎么稳稳地动」，运动规划管「走哪条路」，两者分工不同。",
+      "example": "Rudin 等人 2021 年用单块 GPU 上数千个并行仿真机器人训练 ANYmal 四足的行走策略，平地不到 4 分钟、崎岖地形约 20 分钟就能训完，并部署到了真机。",
+      "related": [
+        "强化学习运控",
+        "全身控制",
+        "模型预测控制",
+        "平衡控制",
+        "大脑-小脑架构（小脑）",
+        "运动规划"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Motion control",
+          "url": "https://en.wikipedia.org/wiki/Motion_control"
+        },
+        {
+          "title": "Learning to Walk in Minutes Using Massively Parallel Deep Reinforcement Learning (arXiv:2109.11978)",
+          "url": "https://arxiv.org/abs/2109.11978"
+        },
+        {
+          "title": "qiayuanl/legged_control（NMPC + WBC 足式运控框架）",
+          "url": "https://github.com/qiayuanl/legged_control"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "运动规划",
+      "name_en": "Motion Planning",
+      "abbr": "",
+      "aliases": [
+        "运动规划器",
+        "Motion planner"
+      ],
+      "tier": 1,
+      "one_liner": "在不碰撞、满足约束的前提下，算出机器人从起点到目标的一串姿态或轨迹。",
+      "explanation": "运动规划回答「机器人怎么从当前状态动到目标状态」：在不碰障碍物、不自撞、不超关节限位的前提下，找出一串连续可行的构型，经典表述叫「搬钢琴问题」。规划通常在构型空间里做，即机器人所有关节取值组成的空间，六轴机械臂就是 6 维。常用方法有栅格搜索（如 A*），适合低维；基于采样的规划（如 RRT、PRM），在高维空间随机撒点连成路径，是机械臂的主流；人工势场法；以及把平滑度、耗时当代价的轨迹优化。得到的几何路径再做时间参数化，满足速度、加速度限制，变成轨迹交给运动控制去跟踪。端到端 VLA 直接输出动作，跳过了显式规划，但工业和导航场景里规划器仍是主力。",
+      "example": "用 MoveIt 让机械臂从柜子里取杯子：OMPL 里的采样规划器在关节空间找到一条绕开柜门的无碰撞路径，再按各关节的速度、加速度上限做时间参数化后下发执行。",
+      "related": [
+        "路径规划",
+        "轨迹规划",
+        "构型空间",
+        "快速扩展随机树",
+        "碰撞检查",
+        "MoveIt"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Motion planning",
+          "url": "https://en.wikipedia.org/wiki/Motion_planning"
+        },
+        {
+          "title": "MoveIt Docs: Motion Planning",
+          "url": "https://moveit.picknik.ai/main/doc/concepts/motion_planning.html"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "避障",
+      "name_en": "Obstacle Avoidance",
+      "abbr": "",
+      "aliases": [
+        "碰撞避免",
+        "Collision avoidance",
+        "障碍物规避"
+      ],
+      "tier": 1,
+      "one_liner": "机器人感知到障碍物后提前调整路线或动作，不让自己撞上去。",
+      "explanation": "避障指机器人在运动中发现障碍物并绕开，仍能到达目标。它是一个实时的「感知-决策-执行」过程：激光雷达、深度相机、超声波等传感器发现障碍，规划或控制模块调整路线。做法大致三类：在全局规划阶段就用 A*、RRT 等算法算出无碰撞路线；在局部实时反应，比如移动机器人用代价地图和动态窗口法，机械臂做碰撞检查或加控制障碍函数；以及用强化学习等方法直接从传感器数据学出避让动作。它和「碰撞检测（本体安全）」不同：避障在碰撞发生前绕开，碰撞检测是撞上之后及时发现并停下或退让。走动的人这类动态障碍比静态障碍难得多，还需要预测对方怎么动。",
+      "example": "扫地机器人按规划路线清扫时，遇到新放在地上的拖鞋，局部规划器根据激光雷达数据实时绕行，并把它更新到地图里。",
+      "related": [
+        "运动规划",
+        "碰撞检查",
+        "代价地图",
+        "动态窗口法",
+        "控制障碍函数",
+        "碰撞检测（本体安全）"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Obstacle avoidance",
+          "url": "https://en.wikipedia.org/wiki/Obstacle_avoidance"
+        },
+        {
+          "title": "Wikipedia: Motion planning",
+          "url": "https://en.wikipedia.org/wiki/Motion_planning"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "位置控制",
+      "name_en": "Position Control",
+      "abbr": "",
+      "aliases": [
+        "位控",
+        "位置模式",
+        "关节位置控制",
+        "Position mode"
+      ],
+      "tier": 1,
+      "one_liner": "给电机或关节一个目标角度或位置，由控制器让它到达并保持住。",
+      "explanation": "位置控制是最常见的电机控制模式：上层只给目标位置，比如让关节转到 30 度，驱动器内部的闭环根据编码器读数与目标的偏差算出电流，把关节拉到目标并保持。舵机和工业机械臂大多默认用这种模式，精度高、用起来简单。它的另一面是「硬」：增益高时，关节会用很大的力去追目标，碰到人或意外障碍也不退让，所以需要接触的场景常改用力矩控制、阻抗控制或力控。强化学习运控里，策略输出的通常也是关节目标角，再由 PD 控制器换算成力矩，只是刚度调得较低，给关节留出柔顺性。和它并列的还有速度模式、力矩（电流）模式。",
+      "example": "ROBOTIS 的 Dynamixel XM430 舵机有 6 种工作模式，把 Operating Mode 设为 3 就是位置控制模式，写入目标位置后舵机用内部的位置 PID 转过去并保持住。",
+      "related": [
+        "速度控制",
+        "力矩控制",
+        "PD 控制",
+        "串级控制",
+        "刚度与阻尼增益",
+        "MIT 模式"
+      ],
+      "sources": [
+        {
+          "title": "ROBOTIS e-Manual: XM430-W350（Operating Mode）",
+          "url": "https://emanual.robotis.com/docs/en/dxl/x/xm430-w350/"
+        },
+        {
+          "title": "legged_gym: legged_robot.py（_compute_torques：P / V / T 三种控制类型）",
+          "url": "https://github.com/leggedrobotics/legged_gym/blob/master/legged_gym/envs/base/legged_robot.py"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "PD 控制",
+      "name_en": "Proportional-Derivative Control",
+      "abbr": "PD",
+      "aliases": [
+        "PD控制器",
+        "PD 控制器",
+        "比例-微分控制",
+        "关节 PD 控制"
+      ],
+      "tier": 1,
+      "one_liner": "按「偏差有多大」和「变化有多快」算输出的反馈控制，即去掉积分项的 PID。",
+      "explanation": "PD 控制是 PID 控制去掉积分项后的形式。PID 输出 u = Kp·e + Ki·∫e dt + Kd·de/dt，e 是目标值与实测值之差，Kp、Ki、Kd 是三个增益；PD 只留比例项（偏差越大出力越大）和微分项（按偏差变化快慢出力，抑制超调和振荡）。机器人关节上常写成 τ = Kp(q* − q) − Kd·q̇：τ 是电机力矩，q* 是目标角，q、q̇ 是实测角度和角速度，Kp、Kd 在力学上等效于弹簧刚度和阻尼。缺了积分项会留下稳态误差，比如关节受重力时停在略低于目标处，要靠重力补偿或上层策略抵消；微分项对噪声敏感，速度信号常需滤波。强化学习运控和 VLA 部署时，底层关节控制器最常用的就是它。",
+      "example": "legged_gym 把策略输出乘 0.5 再加默认关节角作为 q*，按 τ = Kp(q* − q) − Kd·q̇ 算力矩；示例配置里 Kp 取 10–15 N·m/rad，Kd 取 1–1.5 N·m·s/rad。",
+      "related": [
+        "PID 控制",
+        "刚度与阻尼增益",
+        "位置控制",
+        "重力补偿",
+        "MIT 模式",
+        "控制降频"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Proportional–integral–derivative controller",
+          "url": "https://en.wikipedia.org/wiki/Proportional%E2%80%93integral%E2%80%93derivative_controller"
+        },
+        {
+          "title": "legged_gym: legged_robot.py（_compute_torques）",
+          "url": "https://github.com/leggedrobotics/legged_gym/blob/master/legged_gym/envs/base/legged_robot.py"
+        },
+        {
+          "title": "legged_gym: legged_robot_config.py（PD Drive parameters）",
+          "url": "https://github.com/leggedrobotics/legged_gym/blob/master/legged_gym/envs/base/legged_robot_config.py"
+        }
+      ],
+      "as_of": ""
+    }
+  ]
+}

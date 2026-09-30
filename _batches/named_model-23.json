@@ -1,0 +1,197 @@
+{"category": "named_model", "batch": 23, "terms": [
+{
+  "name_zh": "RT-H",
+  "name_en": "RT-H: Action Hierarchies Using Language",
+  "abbr": "RT-H",
+  "aliases": ["RT-Hierarchy"],
+  "tier": 3,
+  "one_liner": "谷歌让机器人先说出「手臂前移」这类语言动作、再输出动作的分层 VLA 策略",
+  "explanation": "Google DeepMind 和斯坦福大学 2024 年 3 月发布，作者包括 Suneel Belkhale、Dorsa Sadigh 等。RT-2 这类视觉-语言-动作模型直接从「把可乐罐放进抽屉」这样的任务指令映射到电机动作，不同任务之间共有的动作结构很难被学到。RT-H 在中间插了一层「语言动作」（language motion），即「手臂前移」「合上夹爪」这类细粒度短语：同一个与互联网数据协同训练的视觉语言模型先根据任务和画面预测语言动作，再根据语言动作和画面输出具体动作。这样语义不同的任务可以共享底层动作；人还能在执行中直接用语言纠正它，这些纠正数据又能拿来继续训练。论文报告它在多任务数据上比 RT-2 高约 15%，从语言干预中学习的效果也好于从遥操作干预中学习。",
+  "example": "机器人去开抽屉时手伸偏了，人只要说一句「手臂往左移」，RT-H 就把这句当作新的语言动作接着执行，这段纠正也会被记录下来用于再训练。",
+  "related": ["RT-2", "分层架构", "语言纠正（实时语言反馈）", "人在回路", "中间表示", "视觉-语言-动作模型"],
+  "sources": [
+    {"title": "RT-H: Action Hierarchies Using Language (arXiv 2403.01823)", "url": "https://arxiv.org/abs/2403.01823"},
+    {"title": "RT-H project page", "url": "https://rt-hierarchy.github.io/"}
+  ],
+  "as_of": "2024-06"
+},
+{
+  "name_zh": "RT-Trajectory",
+  "name_en": "RT-Trajectory: Robotic Task Generalization via Hindsight Trajectory Sketches",
+  "abbr": "",
+  "aliases": [],
+  "tier": 3,
+  "one_liner": "用画在图像上的轨迹草图代替语言指令，告诉机器人动作该怎么走的策略",
+  "explanation": "Google DeepMind 联合加州大学圣地亚哥分校、斯坦福和 Intrinsic 于 2023 年 11 月发布，入选 ICLR 2024 Spotlight。语言指令只说「做什么」，对训练中没见过的新任务往往不够具体。RT-Trajectory 改用「轨迹草图」作为条件：把末端执行器要走的路径画成一条曲线叠在相机图像上，用颜色表示时间先后和高度，并标出夹爪开合的位置。训练时不需要人工标注，直接把每条演示里记录的末端位置投影到画面上，事后生成草图（hindsight）。策略骨干沿用 RT-1。测试时草图可以由人手绘、从人类视频中提取，或由大模型生成。在 7 个训练中没见过的任务上，它明显优于语言条件的 RT-1、RT-2 和以目标图像为条件的基线。",
+  "example": "训练数据里多是抓取放置，测试时人在画面上画一条先抓住布的一角、再拉向对侧的曲线，机器人就能照着完成训练里没有的「对折布料」。",
+  "related": ["RT-1", "RT-2", "中间表示", "任务泛化", "事后重标注", "目标条件策略"],
+  "sources": [
+    {"title": "RT-Trajectory: Robotic Task Generalization via Hindsight Trajectory Sketches (arXiv 2311.01977)", "url": "https://arxiv.org/abs/2311.01977"},
+    {"title": "RT-Trajectory project page", "url": "https://rt-trajectory.github.io/"}
+  ],
+  "as_of": "2024-01"
+},
+{
+  "name_zh": "RVT-2",
+  "name_en": "RVT-2: Learning Precise Manipulation from Few Demonstrations (Robotic View Transformer 2)",
+  "abbr": "RVT-2",
+  "aliases": ["Robotic View Transformer 2"],
+  "tier": 3,
+  "one_liner": "英伟达的多视角 3D 操作策略，每个任务约 10 条演示就能学会毫米级插装",
+  "explanation": "英伟达研究团队（Ankit Goyal、Dieter Fox 等）2024 年 6 月发布，发表于 RSS 2024，是 RVT（Robotic View Transformer）的升级版。这类方法先把 RGB-D 相机得到的点云重新渲染成几张虚拟视角图像，由 Transformer 在这些图上预测下一个关键位姿（夹爪该到的位置、朝向和开合），再交给运动规划器去执行。RVT-2 采用由粗到细的多阶段推理：先在整个场景里找到大致区域，再放大该区域做精确预测；同时让旋转预测以位置为条件，并用自研渲染器和更高效的训练实现提速。结果是训练比 RVT 快 6 倍、推理快 2 倍，RLBench 多任务成功率从 65% 提到 82%；真机上只用一台 RGB-D 相机、每个任务约 10 条演示，就能完成插销、插插头这类需要毫米级精度的任务。",
+  "example": "在真实机械臂上为「把销钉插进孔里」录大约 10 次演示，RVT-2 就能学会对准只留很小间隙的孔完成插入。",
+  "related": ["PerAct", "关键帧动作预测", "多视角", "RLBench", "轴孔装配", "少样本"],
+  "sources": [
+    {"title": "RVT-2: Learning Precise Manipulation from Few Demonstrations (arXiv 2406.08545)", "url": "https://arxiv.org/abs/2406.08545"},
+    {"title": "RVT-2 project page", "url": "https://robotic-view-transformer-2.github.io/"}
+  ],
+  "as_of": "2024-06"
+},
+{
+  "name_zh": "达摩院 RynnBrain",
+  "name_en": "RynnBrain: Open Embodied Foundation Models (Alibaba DAMO)",
+  "abbr": "",
+  "aliases": ["RynnBrain 1.0", "RynnBrain 1.1"],
+  "tier": 3,
+  "one_liner": "阿里达摩院开源的具身「大脑」模型，负责看懂第一视角画面、定位物体和做任务规划",
+  "explanation": "阿里巴巴达摩院 2026 年 2 月开源，定位是给机器人当「大脑」的时空基础模型，而不是直接输出电机指令的策略。它把四种能力放进一个模型：第一视角视频理解、在视频里定位物体和可操作部位的时空定位、结合物理常识的推理，以及任务规划。1.0 版有 2B、8B 和 30B-A3B 三种规模（后者是混合专家模型，总参数 30B、每次约激活 3B），并后训练出 RynnBrain-Nav（导航）、-Plan（规划）、-VLA（动作）和面向空间推理的 -CoP 等版本，同时发布评测基准 RynnBrain-Bench。2026 年 7 月的 1.1 版以 Qwen3.5 为底座，规模扩到 2B、9B 和 122B-A10B（最大的是混合专家模型），新增接触点预测，2B 和 9B 版还支持原生 3D 定位；官方称最大模型在 VSI-Bench、MMSI、RefSpatial-Bench 三个空间推理基准上超过所评测的闭源和开源模型。代码和权重以 Apache 2.0 协议开放。",
+  "example": "收到「把桌上的杯子放进水槽」时，RynnBrain 先在第一视角画面里标出杯子和水槽的位置，再拆出「走到桌边、抓起杯子、走到水槽、放下」几步，交给下层动作模型执行。",
+  "related": ["阿里达摩院", "具身大模型", "具身推理模型", "大脑-小脑架构（大小脑）", "达摩院 RynnVLA-002", "混合专家模型"],
+  "sources": [
+    {"title": "alibaba-damo-academy/RynnBrain (GitHub)", "url": "https://github.com/alibaba-damo-academy/RynnBrain"},
+    {"title": "RynnBrain: Open Embodied Foundation Models (arXiv 2602.14979)", "url": "https://arxiv.org/abs/2602.14979"},
+    {"title": "RynnBrain 1.1: Towards More Capable and Generalizable Embodied Foundation Model (arXiv 2607.17977)", "url": "https://arxiv.org/abs/2607.17977"}
+  ],
+  "as_of": "2026-07"
+},
+{
+  "name_zh": "达摩院 RynnVLA-002",
+  "name_en": "RynnVLA-002: A Unified Vision-Language-Action and World Model (Alibaba DAMO)",
+  "abbr": "",
+  "aliases": ["RynnVLA"],
+  "tier": 3,
+  "one_liner": "阿里达摩院把动作模型和世界模型合进同一个自回归网络的开源 VLA",
+  "explanation": "阿里巴巴达摩院 2025 年 11 月发布并开源。前作 RynnVLA-001（2025 年 8 月）是一个 7B 参数的 VLA，先在人类第一视角视频上做视频生成预训练，再把学到的操作技能迁移到机械臂。RynnVLA-002 把两类模型合在一起：VLA 部分根据图像和语言指令输出动作，世界模型部分根据当前画面和动作预测接下来的画面。两者共用一个基于 Chameleon 的自回归主干，把图像、文字和动作都当作 token 处理，另加一个输出连续动作的 Action Transformer，并支持腕部相机和机器人状态输入。作者的观点是：学会预测「动作会让画面怎样变化」能帮模型理解物理规律，反过来提升动作质量。论文报告它在不做预训练的情况下 LIBERO 仿真基准成功率 97.4%，在 LeRobot 真机任务上加入世界模型后成功率提升约 50%。",
+  "example": "同一个模型既能根据「把积木放进盒子」输出下一段机械臂动作，也能根据给定的动作生成执行后腕部相机会看到的画面。",
+  "related": ["世界动作模型", "世界模型", "视觉-语言-动作模型", "WorldVLA", "LIBERO", "达摩院 RynnBrain"],
+  "sources": [
+    {"title": "RynnVLA-002: A Unified Vision-Language-Action and World Model (arXiv 2511.17502)", "url": "https://arxiv.org/abs/2511.17502"},
+    {"title": "alibaba-damo-academy/RynnVLA-002 (GitHub)", "url": "https://github.com/alibaba-damo-academy/RynnVLA-002"},
+    {"title": "alibaba-damo-academy/RynnVLA-001 (GitHub)", "url": "https://github.com/alibaba-damo-academy/RynnVLA-001"}
+  ],
+  "as_of": "2026-05"
+},
+{
+  "name_zh": "SayPlan",
+  "name_en": "SayPlan: Grounding Large Language Models using 3D Scene Graphs for Scalable Robot Task Planning",
+  "abbr": "",
+  "aliases": [],
+  "tier": 3,
+  "one_liner": "借助 3D 场景图，让大语言模型在多楼层大空间里做长程任务规划的方法",
+  "explanation": "澳大利亚昆士兰科技大学机器人中心、阿德莱德大学和 CSIRO Data61 的研究者 2023 年 7 月发布，是 CoRL 2023 口头报告论文。用大语言模型做机器人任务规划时，如果把整栋楼的房间和物体全写进提示词，很快会超出上下文长度。SayPlan 把环境表示成分层的 3D 场景图（楼层、房间、物体及其状态），先只给模型看折叠后的高层结构，让它通过「展开」「收起」节点做语义搜索，只保留和任务相关的子图；具体怎么走交给 Dijkstra 这类经典路径规划算法，模型只管高层步骤；生成的计划先在场景图模拟器里检查，发现「往没打开的柜子里放东西」这类执行不了的步骤就反馈给模型重新修改。实验环境最大有 3 层楼、36 个房间、140 个物体，计划最后在真实移动操作机器人上执行。",
+  "example": "对「我饿了，拿点吃的到我桌上」这样的指令，SayPlan 先在场景图里展开厨房找到冰箱和食物，生成「走到冰箱、打开冰箱、取出苹果、走到办公桌、放下」的计划，并在模拟器里确认每一步都能执行。",
+  "related": ["3D场景图", "大模型任务规划", "SayCan", "长程任务", "重规划", "移动操作"],
+  "sources": [
+    {"title": "SayPlan (arXiv 2307.06135)", "url": "https://arxiv.org/abs/2307.06135"},
+    {"title": "SayPlan project page", "url": "https://sayplan.github.io/"}
+  ],
+  "as_of": "2023-09"
+},
+{
+  "name_zh": "Seer（预测式逆动力学模型）",
+  "name_en": "Seer: Predictive Inverse Dynamics Models are Scalable Learners for Robotic Manipulation",
+  "abbr": "PIDM",
+  "aliases": ["Seer", "预测式逆动力学模型", "Predictive Inverse Dynamics Model"],
+  "tier": 3,
+  "one_liner": "先预测接下来的画面、再用逆动力学推出动作的端到端机器人操作策略",
+  "explanation": "上海人工智能实验室等机构 2024 年 12 月发布，入选 ICLR 2025 口头报告。常见做法要么直接从当前画面模仿动作（行为克隆），要么先用视频模型生成未来画面、再单独推算动作，两步分开训练。Seer 提出「预测式逆动力学模型」（PIDM）：在一个端到端训练的 Transformer 里，先预测机器人接下来会看到的画面，再用逆动力学模型（根据当前状态和目标状态反推该做什么动作）从「现在」和「预测的未来」之间算出动作，视觉预测和动作预测一起优化。它可以先在 DROID 等大规模机器人数据上预训练，再少量微调到下游任务。论文报告相比此前最好的方法，在 LIBERO-LONG 上提升 13%，在 CALVIN ABC-D 上提升 21%，真机任务提升 43%。",
+  "example": "执行「打开抽屉」时，Seer 先预测下一刻夹爪贴近把手的画面，再根据当前画面和这张预测图算出机械臂该怎么移动。",
+  "related": ["逆动力学模型", "视频预测策略", "DROID 数据集", "CALVIN", "LIBERO", "上海人工智能实验室"],
+  "sources": [
+    {"title": "Predictive Inverse Dynamics Models are Scalable Learners for Robotic Manipulation (arXiv 2412.15109)", "url": "https://arxiv.org/abs/2412.15109"},
+    {"title": "OpenRobotLab/Seer (GitHub)", "url": "https://github.com/OpenRobotLab/Seer"}
+  ],
+  "as_of": "2025-01"
+},
+{
+  "name_zh": "SERL",
+  "name_en": "SERL: A Software Suite for Sample-Efficient Robotic Reinforcement Learning",
+  "abbr": "SERL",
+  "aliases": ["Sample-Efficient Robotic Reinforcement Learning"],
+  "tier": 3,
+  "one_liner": "伯克利等开源的真机强化学习工具套件，几十分钟就能在真实机械臂上练出策略",
+  "explanation": "加州大学伯克利分校、斯坦福、华盛顿大学和 Intrinsic 的研究者（Jianlan Luo、Sergey Levine 等）2024 年 1 月发布，发表于 ICRA 2024。强化学习难以在真机上落地，除了算法本身，还卡在奖励怎么给、每回合结束后怎么复位、底层控制器是否安全这些工程问题上。SERL 把这些打包成开源工具：用样本效率高的异策略算法 RLPD，可以同时利用少量人类演示；用图像分类器判断任务是否成功，充当奖励；用「前向、后向」两个策略轮流执行来自动复位，省去人工重置；并为 Franka 机械臂提供阻抗控制器，让接触过程安全柔顺。论文中 PCB 元件插装、线缆布线、物体搬移等任务平均 25 到 50 分钟训练就达到接近 100% 的成功率。后续工作 HIL-SERL 在此基础上加入人类在线纠正。",
+  "example": "做 PCB 元件插装时，先录少量人工演示，再训练一个判断「元件插好没有」的图像分类器当奖励，机械臂自己反复尝试不到一小时就能稳定插好。",
+  "related": ["HIL-SERL", "真机强化学习", "利用先验数据的强化学习", "成功检测器", "阻抗控制", "样本效率"],
+  "sources": [
+    {"title": "SERL: A Software Suite for Sample-Efficient Robotic Reinforcement Learning (arXiv 2401.16013)", "url": "https://arxiv.org/abs/2401.16013"},
+    {"title": "SERL project page", "url": "https://serl-robot.github.io/"}
+  ],
+  "as_of": "2024-05"
+},
+{
+  "name_zh": "SIMA 2",
+  "name_en": "SIMA 2: A Generalist Embodied Agent for Virtual Worlds (Google DeepMind)",
+  "abbr": "SIMA",
+  "aliases": ["Scalable Instructable Multiworld Agent 2"],
+  "tier": 3,
+  "one_liner": "谷歌 DeepMind 基于 Gemini、能在各种 3D 游戏世界里听指令、推理并自学的智能体",
+  "explanation": "Google DeepMind 于 2025 年 11 月以有限研究预览的形式发布，12 月公开技术报告。前作 SIMA（Scalable Instructable Multiworld Agent，2024 年发布）能在多款商业 3D 游戏里执行 600 多项「向左转」「爬梯子」之类的简单技能指令。SIMA 2 以 Gemini 模型为核心，不只照指令执行，还能理解高层目标、和用户对话、说明自己打算怎么做，也能接受图片、草图甚至表情符号形式的指令。它还能自我提升：由 Gemini 给它出任务、打分，智能体用自己玩出来的经验数据训练下一版，不再依赖人类演示。在 Genie 3 实时生成的、从未见过的世界里，它也能辨明方向、按指令行动。DeepMind 把它看作走向通用具身智能体、最终用于真实机器人的一步。",
+  "example": "用户让它「去那栋颜色像熟番茄的房子」，SIMA 2 会先推理出熟番茄是红色，再去找红色的房子。",
+  "related": ["Genie 3", "具身智能体", "自我提升", "Gemini 系列（谷歌多模态大模型）", "谷歌 DeepMind", "指令跟随"],
+  "sources": [
+    {"title": "SIMA 2: An agent that plays, reasons, and learns with you in virtual 3D worlds (Google DeepMind blog)", "url": "https://deepmind.google/blog/sima-2-an-agent-that-plays-reasons-and-learns-with-you-in-virtual-3d-worlds/"},
+    {"title": "SIMA 2: A Generalist Embodied Agent for Virtual Worlds (arXiv 2512.04797)", "url": "https://arxiv.org/abs/2512.04797"}
+  ],
+  "as_of": "2025-12"
+},
+{
+  "name_zh": "SimpleVLA-RL",
+  "name_en": "SimpleVLA-RL: Scaling VLA Training via Reinforcement Learning",
+  "abbr": "",
+  "aliases": [],
+  "tier": 3,
+  "one_liner": "只用「成功/失败」奖励，对 VLA 做大规模在线强化学习的开源框架",
+  "explanation": "清华大学、上海人工智能实验室等机构 2025 年 9 月发布并开源，论文被 ICLR 2026 接收。VLA 通常靠监督微调（SFT）模仿人类演示，但高质量真机演示很贵，模仿出来的策略遇到分布外情况也容易失败。SimpleVLA-RL 借鉴大语言模型用强化学习提升推理能力的做法，在大模型强化学习框架 veRL 上做了面向 VLA 的改造，包括交互式轨迹采样、多环境并行渲染和分布式训练；奖励只看任务最后成没成功（0 或 1），不用人工设计奖励。以 OpenVLA-OFT 为基础模型，它在 LIBERO 上达到当时最好水平，在 RoboTwin 1.0 和 2.0 上超过 π0；每个任务只给 1 条演示做 SFT 时，LIBERO-Long 成功率可从 17.3% 提到 91.7%。作者还观察到「pushcut」现象：RL 训练中策略自己发现了演示里没有的做法，比如把本该抓起的物体直接推到位。",
+  "example": "在 LIBERO 仿真里，先用每个任务 1 条演示把 OpenVLA-OFT 微调到偶尔能成功，再让它在大量并行环境里反复尝试、只按最终成败给奖励，成功率就能大幅上升。",
+  "related": ["强化学习微调", "OpenVLA-OFT", "veRL", "基于可验证奖励的强化学习", "RoboTwin", "LIBERO"],
+  "sources": [
+    {"title": "SimpleVLA-RL: Scaling VLA Training via Reinforcement Learning (arXiv 2509.09674)", "url": "https://arxiv.org/abs/2509.09674"},
+    {"title": "PRIME-RL/SimpleVLA-RL (GitHub)", "url": "https://github.com/PRIME-RL/SimpleVLA-RL"}
+  ],
+  "as_of": "2026-01"
+},
+{
+  "name_zh": "Skild S1",
+  "name_en": "Skild AI S1 (in-context learning robotic foundation model)",
+  "abbr": "S1",
+  "aliases": ["Skild AI S1"],
+  "tier": 3,
+  "one_liner": "Skild AI 的机器人基础模型，看一段示范视频就能直接做没训练过的任务",
+  "explanation": "美国机器人公司 Skild AI 于 2026 年 8 月发布，称其为公司的旗舰机器人基础模型。它的核心是「上下文学习」：部署时给机器人看一段演示视频，模型从中理解示范者的意图、物体之间的对应关系和任务进度，然后在不更新权重的情况下直接执行，即使这个任务在预训练中从没出现过。以往 VLA 遇到新任务一般要重新采集遥操作数据再微调，S1 想省掉这一步。预训练数据混合了机器人遥操作、UMI 手持采集、第一视角人类视频和仿真数据。官方博客给出的数字：在 10 万小时预训练规模下，已见任务成功率 96%，未见任务 66%（用语言指令的基线为 9%）；一段演示的效果约相当于 380 条后训练数据；可完成长达约 10 分钟的长程任务。S1 已在商业客户处使用，对外以早期访问形式提供。",
+  "example": "工作人员先示范一遍给盆栽换盆，把视频给机器人看，S1 就能接着完成这个没训练过的任务；官方称从布置场景到自主执行只用了 11 分钟。",
+  "related": ["上下文学习", "Skild AI", "Skild Brain", "人类视频数据", "通用操作接口", "长程任务"],
+  "sources": [
+    {"title": "Introducing S1: In-Context Learning for Robotics (Skild AI blog)", "url": "https://www.skild.ai/blogs/s1"},
+    {"title": "Skild AI blog index", "url": "https://www.skild.ai/blogs"}
+  ],
+  "as_of": "2026-08"
+},
+{
+  "name_zh": "Skild Brain",
+  "name_en": "Skild Brain (Skild AI omni-bodied robot brain)",
+  "abbr": "",
+  "aliases": ["Omni-bodied Brain"],
+  "tier": 3,
+  "one_liner": "Skild AI 的通用机器人大脑，同一个模型能控制四足、人形、机械臂等不同本体",
+  "explanation": "美国机器人公司 Skild AI 在 2025 年 7 月公开的机器人基础模型；公司由卡内基梅隆大学的 Deepak Pathak 和 Abhinav Gupta 于 2023 年创立。Skild Brain 主打「全本体」（omni-bodied）：同一个模型可以控制四足、人形、桌面机械臂和移动操作机器人，不必为每种机器人单独设计。结构上分两层：低频的高层策略负责操作和导航决策，高频的低层策略把指令转成关节角和电机力矩。训练主要靠大规模仿真和互联网视频，再用针对性的真机数据后训练。官方称在仿真里用约 10 万种不同形态的机器人训练，让它无法只记住某一种身体的解法；演示中机器人断了小腿、膝关节锁死或轮子卡住时，能在几秒内调整步态继续移动。2026 年 1 月 Skild AI 完成 14 亿美元 C 轮融资（软银领投，估值超过 140 亿美元）；3 月宣布与 ABB 机器人、优傲（Universal Robots）合作把 Skild Brain 部署到工业场景，4 月又收购了斑马技术（Zebra Technologies）的机器人业务。",
+  "example": "把一台四足机器人的膝关节锁死、相当于只剩三条腿能用，Skild Brain 在两三秒内就把重心移开，换成新的步态继续走。",
+  "related": ["Skild AI", "跨本体", "本体无关", "Skild S1", "分层架构", "仿真到现实迁移"],
+  "sources": [
+    {"title": "Building the general-purpose robotic brain (Skild AI blog, 2025-07)", "url": "https://www.skild.ai/blogs/building-the-general-purpose-robotic-brain"},
+    {"title": "The case for an omni-bodied robot brain (Skild AI blog)", "url": "https://www.skild.ai/blogs/omni-bodied"},
+    {"title": "Announcing Series C (Skild AI blog, 2026-01)", "url": "https://www.skild.ai/blogs/series-c"}
+  ],
+  "as_of": "2026-04"
+}
+]}

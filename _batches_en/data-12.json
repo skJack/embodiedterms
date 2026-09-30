@@ -1,0 +1,113 @@
+{
+  "batch": "data-12",
+  "terms": [
+    {
+      "key": "data-12#0",
+      "name_en": "Nymeria",
+      "aliases": ["Nymeria Dataset", "NymeriaPlus"],
+      "one_liner": "Meta's large-scale first-person dataset of everyday human motion, recorded with Aria glasses and a motion-capture suit.",
+      "explanation": "Nymeria is a first-person human-motion dataset released by Meta's Project Aria team, published at ECCV 2024. 264 participants performed everyday activities at 50 real-world locations, totaling about 300 hours: Aria smart glasses on the head recorded first-person video, eye gaze, and IMU data; a miniAria wristband was worn on the wrist; an XSens inertial motion-capture suit provided full-body ground-truth motion; observers filmed a third-person view as well, and everything is paired with hierarchical language descriptions. It fills a data gap around reconstructing what a person's entire body is doing from head-worn devices alone, and can be used for full-body pose estimation, motion generation, and action recognition. It's released under CC BY-NC 4.0 (non-commercial); an expanded version, NymeriaPlus, followed later.",
+      "example": "First-person video and IMU signals recorded with Aria glasses are used to train a model to estimate the wearer's full-body pose, with the synchronized XSens motion-capture data serving as ground truth to measure the error.",
+      "related": ["First-Person Video (Egocentric Video)", "Project Aria", "Inertial Motion Capture", "Ego-Exo4D", "Human Video Data", "Motion Capture (MoCap)"]
+    },
+    {
+      "key": "data-12#1",
+      "name_en": "OakInk",
+      "aliases": ["OakInk2", "OakInk Dataset"],
+      "one_liner": "A Shanghai Jiao Tong University hand-object interaction dataset, annotated with object use and two-handed manipulation.",
+      "explanation": "OakInk is a series of hand-object interaction datasets from Cewu Lu's group at Shanghai Jiao Tong University. In the first version (CVPR 2022), the “Oak” part annotates affordances (how an object can be used) for 1,800 everyday objects, while the “Ink” part records real human grasps on 100 of those objects and transfers them to virtual objects, yielding about 50,000 interactions labeled with intended use. The second version, OakInk2 (CVPR 2024), shifts to two-handed completion of complex tasks: 627 sequences and 4.01 million multi-view image frames, annotating the 3D pose of the body, both hands, and the objects, and organizing tasks into three layers — affordance, atomic task, and complex task. It's commonly used for hand pose estimation, grasp generation, and synthesizing two-handed motion.",
+      "example": "One OakInk2 sequence breaks a complex task down into atomic subtasks like picking up, pouring, and setting down; every frame is labeled with the 3D pose of both hands (as MANO parameters) and the object.",
+      "related": ["Hand-Object Interaction", "MANO Hand Model", "Affordance", "Bimanual Manipulation", "DexYCB", "ARCTIC"]
+    },
+    {
+      "key": "data-12#2",
+      "name_en": "Objaverse",
+      "aliases": ["Objaverse 1.0", "Objaverse-XL"],
+      "one_liner": "A massive open library of 3D object models, led by the Allen Institute for AI.",
+      "explanation": "Objaverse is an open 3D object dataset led by the Allen Institute for AI (Ai2). The 2022 version 1.0 contains more than 800,000 models with titles and tags; the 2023 Objaverse-XL, built with several partner institutions, expanded this to over 10 million, sourced from human-made models, photogrammetry, and scans of physical artifacts. 3D data had previously been far smaller in scale than image and text data, which limited 3D vision and generative models. In embodied AI, it's mainly used as a source of simulation assets — for example, Holodeck uses a large language model to plan a room's layout, then retrieves objects from Objaverse to populate the scene. Most models come with only shape and texture, so before they can be used in a simulator, they usually need collision geometry and physical parameters like mass and friction added.",
+      "example": "Given a text description like “a study crammed with books,” Holodeck retrieves models such as bookshelves, a desk, and a lamp from Objaverse and arranges them in an AI2-THOR scene for navigation and manipulation training.",
+      "related": ["Simulation Assets", "Holodeck", "ShapeNet", "Single-Image-to-3D", "PartNet-Mobility", "Procedural Generation"]
+    },
+    {
+      "key": "data-12#3",
+      "name_en": "ObjectFolder",
+      "aliases": ["ObjectFolder 2.0", "ObjectFolder Real", "ObjectFolder Benchmark"],
+      "one_liner": "A multisensory object dataset providing an object's appearance, tapping sound, and tactile readings all together.",
+      "explanation": "ObjectFolder is a series of multisensory object datasets released by Jiajun Wu, Fei-Fei Li, and others at Stanford. Version 1.0 (CoRL 2021) contains 100 virtual objects, using implicit neural representations (a small network that stores one kind of sensory data and outputs it on query) to encode vision, sound, and touch in a unified way; version 2.0 (CVPR 2022) expanded to 1,000 objects and improved rendering speed and quality; ObjectFolder Real, from 2023, captured meshes, video, tapping sounds, and tactile readings for 100 real household objects, along with an evaluation benchmark of 10 tasks. It fills a gap in most object datasets, which lack sound and touch entirely, and can be used for research on cross-sensory retrieval, contact localization, shape reconstruction, and sim-to-real transfer.",
+      "example": "Given a rendered image of a cup, retrieve the sound it makes when tapped, or the tactile image recorded by a vision-based tactile sensor pressing on it — an example of cross-sensory retrieval.",
+      "related": ["Multimodal Perception", "Tactile Data", "Vision-Tactile Fusion", "Tactile Simulation", "YCB Object Set", "Sim-to-Real Transfer"]
+    },
+    {
+      "key": "data-12#4",
+      "name_en": "OmniRetarget",
+      "aliases": ["OmniRetarget: Interaction-Preserving Data Generation for Humanoid Whole-Body Loco-Manipulation and Scene Interaction"],
+      "one_liner": "A data-generation method that retargets a human's interaction with objects and terrain onto a humanoid robot together, not just body pose.",
+      "explanation": "OmniRetarget is a motion-retargeting and data-generation method proposed in 2025 by Amazon FAR (Frontier AI and Robotics), together with MIT, UC Berkeley, Stanford, and CMU. Retargeting converts human motion into robot joint motion; when only body keypoints are aligned, tasks like carrying a box or climbing onto a platform often end up with the hands missing the box or the feet sinking into the floor. OmniRetarget uses an “interaction mesh” to jointly model the spatial and contact relationships among the human, the object, and the terrain, preserving those relationships while respecting the robot's joint limits, and it can also swap in different robots, terrains, or objects for data augmentation. After generating over 8 hours of trajectories from OMOMO, LAFAN1, and its own motion-capture data, only 5 reward terms were needed to train motions like box-carrying and climbing, up to about 30 seconds long, on a Unitree G1. The project page states it received the Best Conference Paper award at ICRA 2026.",
+      "example": "Motion-capture data of a person carrying a box is retargeted onto a Unitree G1 while keeping both hands pressed against the box and both feet planted on the ground; the resulting trajectories are then used to train a reinforcement-learning policy that can carry boxes on the real robot.",
+      "related": ["Motion Retargeting", "GMR (General Motion Retargeting)", "OMOMO", "LAFAN1", "Loco-Manipulation", "Unitree G1"]
+    },
+    {
+      "key": "data-12#5",
+      "name_en": "OMOMO",
+      "aliases": ["OMOMO Dataset", "Object Motion Guided Human Motion Synthesis"],
+      "one_liner": "About 10 hours of optical motion-capture data from Stanford, recording full-body motion while carrying everyday objects.",
+      "explanation": "The OMOMO dataset comes from a SIGGRAPH Asia 2023 paper by Jiaman Li, Jiajun Wu, and C. Karen Liu at Stanford. The authors used a 12-camera Vicon optical motion-capture rig to record 17 subjects carrying and dragging 15 everyday objects (a mop, a floor lamp, a chair, a table, boxes, and more), capturing full-body motion for about 10 hours in total, along with each object's 3D geometry, its own motion, and the human motion in SMPL-X format. The paper's method takes only the object's motion as input, and uses a conditional diffusion model to first predict hand positions, then generate full-body pose. This is one of the few datasets capturing full-body interaction with large objects, and it's now commonly used as reference motion for teaching humanoid robots whole-body manipulation like carrying, pushing, and pulling — OmniRetarget, for example, retargets it onto the Unitree G1.",
+      "example": "Given the motion trajectory of a chair being dragged, the OMOMO method generates a full-body human motion of bending down to grab the chair back and dragging it while walking.",
+      "related": ["Human-Object Interaction", "Optical Motion Capture", "SMPL", "Diffusion Model", "OmniRetarget", "Motion Retargeting"]
+    },
+    {
+      "key": "data-12#6",
+      "name_en": "Open-TeleVision",
+      "aliases": ["TeleVision", "OpenTeleVision", "OpenTV"],
+      "one_liner": "An open-source system for teleoperating a humanoid robot by wearing a VR headset and seeing stereo video from the robot's own viewpoint.",
+      "explanation": "Open-TeleVision is an open-source teleoperation system from Xiaolong Wang's group at UC San Diego and MIT (CoRL 2024). The operator wears an Apple Vision Pro headset (the code also supports Meta Quest 3); when they turn their head, the robot's pan-tilt unit or neck turns to match, and a head-mounted ZED Mini stereo camera streams stereo video back to the headset in real time, so the operator sees a 3D view from the robot's own viewpoint; arm and finger motion is mapped onto the robot through the dex-retargeting library. It targets the limitations of ordinary teleoperation — a fixed camera view, no sense of depth, and difficulty with fine manipulation. The authors collected demonstrations on a Unitree H1 and a Fourier GR-1, training policies with a modified version of ACT to perform tasks like sorting cans and folding clothes, and also demonstrated teleoperation across a distance of about 3,000 miles.",
+      "example": "The operator wears an Apple Vision Pro and turns their head toward the table; the Unitree H1's head unit turns to match. As the operator reaches out to grab something, the robot's dexterous hand sorts cans into different boxes in sync, and the whole process is recorded as imitation-learning demonstration data.",
+      "related": ["VR Teleoperation", "Apple Vision Pro", "dex-retargeting", "ACT (Action Chunking with Transformers)", "Unitree H1", "PH2D (HAT)"]
+    },
+    {
+      "key": "data-12#7",
+      "name_en": "Optical Motion Capture",
+      "aliases": ["Marker-Based Motion Capture", "Optical MoCap"],
+      "one_liner": "Tracking markers on the body with multiple infrared cameras and triangulating them into 3D motion.",
+      "explanation": "Optical motion capture is one of the two main approaches to motion capture: reflective markers (passive) or light-emitting LEDs (active) are attached to a person or object, surrounded by several calibrated infrared cameras; each camera sees the 2D position of the markers, and triangulation across cameras recovers 3D coordinates, which are then fit to a skeleton or body model to reconstruct motion. Leading vendors include Vicon and OptiTrack. It's highly accurate (active systems can reach about 0.1mm) with frame rates commonly above 120 fps, and is often treated as the “gold standard” for human motion data; the downsides are expensive equipment, the need for a dedicated space, and dropped markers when they're occluded. It's complementary to inertial motion capture (IMU-based, immune to occlusion but prone to drift) and markerless motion capture (estimating pose directly from video). Datasets such as AMASS and OMOMO were both captured with optical motion capture.",
+      "example": "The OMOMO dataset used 12 Vicon cameras at 120 frames per second to record subjects carrying objects, with 5 markers attached to each object so both the person's and the object's motion were tracked at once.",
+      "related": ["Motion Capture (MoCap)", "Inertial Motion Capture", "Markerless Motion Capture", "Vicon", "OptiTrack", "AMASS"]
+    },
+    {
+      "key": "data-12#8",
+      "name_en": "OXE Magic Soup",
+      "aliases": ["oxe_magic_soup", "Magic Soup++", "oxe_magic_soup_plus"],
+      "one_liner": "The recipe Octo and OpenVLA used to select and weight subsets of Open X-Embodiment for pretraining.",
+      "explanation": "Magic Soup is the name for a particular robot-data mixing recipe, taken from the Octo codebase's oxe_magic_soup configuration. The individual datasets inside Open X-Embodiment (OXE, a cross-embodiment robot dataset pooled from many institutions) vary hugely in size, quality, robot type, and camera setup, so mixing them together naively doesn't work well. Octo's (2024) training mixture drew on 25 of these datasets, about 800,000 trajectories in total, with weights roughly proportional to sample count, then doubled the weight of datasets with richer scenes and tasks and down-weighted ones with many repetitive clips. OpenVLA reused this same weighting, and its codebase also has an expanded version, Magic Soup++, which adds DROID for about 970,000 demonstrations total. It isn't new data — it's an empirically tuned recipe for which datasets to include and how much weight to give each; even the Octo paper admits it still lacks a systematic analysis of the choice.",
+      "example": "In OpenVLA's training mixture, Fractal (RT-1 data) and Kuka each make up about 12.7%, while UCSD Kitchen is under 0.1%; DROID was included at 10% weight but removed for the final third of training because the model was learning slowly from it.",
+      "related": ["Open X-Embodiment", "Data Mixing Ratio", "Octo", "OpenVLA", "DROID", "RLDS Format"]
+    },
+    {
+      "key": "data-12#9",
+      "name_en": "PartNet-Mobility",
+      "aliases": ["PartNet-Mobility Dataset"],
+      "one_liner": "A library of articulated 3D object models with joint-motion annotations, ready to load directly into a simulator.",
+      "explanation": "PartNet-Mobility is an articulated-object dataset released by Hao Su's group at UC San Diego alongside the SAPIEN simulation environment (CVPR 2020). Articulated objects are things like cabinet doors, drawers, and laptops, made of parts connected by joints that can move relative to each other. The dataset contains 46 categories, 2,346 objects, and 14,068 moveable parts; each joint is annotated with its type (revolute, prismatic, or screw), its range of motion, and its parent-child relationship, and comes with textures and a URDF file that loads directly into a physics simulator. Earlier part datasets were mostly static geometry with no way to actually “pull open a drawer.” It's the most commonly used asset source for research on articulated-object manipulation, and benchmarks like ManiSkill build their door-opening and drawer-opening tasks on top of it.",
+      "example": "Loading a PartNet-Mobility cabinet's URDF file into SAPIEN or ManiSkill, a robot arm is trained to grasp the handle and pull the drawer open to a target distance.",
+      "related": ["SAPIEN", "Articulated Object", "Articulated Object Manipulation", "URDF (Unified Robot Description Format)", "ManiSkill", "Articulation Estimation"]
+    },
+    {
+      "key": "data-12#10",
+      "name_en": "PH2D",
+      "aliases": ["HAT (Human Action Transformer)", "Humanoid Policy ~ Human Policy"],
+      "one_liner": "First-person human manipulation data collected with a VR headset, co-trained with humanoid robot data to train one policy.",
+      "explanation": "PH2D (Physical Human-Humanoid Data) comes from the paper Humanoid Policy ~ Human Policy, led by UC San Diego together with CMU, MIT, Apple, and others, published at CoRL 2025. The authors had people perform manipulation tasks directly while wearing consumer VR headsets like Apple Vision Pro or Meta Quest 3, automatically recording first-person video plus the 3D position of the head, wrists, and fingertips — about 27,000 language-annotated demonstrations in total. The companion model, HAT (Human Action Transformer), places humans and humanoid robots into one shared state-action space, and its output is then retargeted onto the robot's joints. The underlying idea: a person collecting their own data is far faster than teleoperating a robot, and as long as the representation is aligned, this data can be co-trained with a smaller amount of robot data to improve generalization and robustness.",
+      "example": "A person wearing a Vision Pro quickly records a large number of pick-and-place demonstrations, which are combined with a smaller set of Unitree H1 teleoperation data to train HAT; the resulting policy is deployed directly on the H1.",
+      "related": ["First-Person Video (Egocentric Video)", "Human Video Data", "Co-Training", "Embodiment Gap", "Open-TeleVision", "Unitree H1"]
+    },
+    {
+      "key": "data-12#11",
+      "name_en": "PHUMA",
+      "aliases": ["Physically Reliable Humanoid Locomotion Dataset"],
+      "one_liner": "A large-scale humanoid reference-motion dataset, filtered and retargeted under physical constraints.",
+      "explanation": "PHUMA is a humanoid-robot motion dataset released in October 2025 by Jaegul Choo's group at KAIST (the Korea Advanced Institute of Science and Technology). Motion extracted from internet video and then retargeted (such as Humanoid-X) often contains physically impossible artifacts like floating, ground penetration, and foot skating. PHUMA first applies physics-aware filtering, removing clips with excessive jitter, an unstable center of mass, or feet that never touch the ground; it then uses PhySINK (physically constrained inverse-kinematics retargeting) to stay close to the original motion while satisfying joint limits, keeping feet planted on the ground, and preventing the supporting foot from sliding. The data merges motion capture such as AMASS with several video sources, totaling 76,010 clips and about 73 hours, released in versions for both the Unitree G1 and the H1-2. Motion-tracking policies trained on it achieve higher success rates than ones trained on AMASS or Humanoid-X, and transfer zero-shot to a real G1.",
+      "example": "A general-purpose motion-tracking policy trained on PHUMA's G1 version lets a real Unitree G1 reproduce walking, turning, and other motions performed by a person in video.",
+      "related": ["Foot Skating / Floating / Penetration", "Humanoid-X", "AMASS", "Motion Retargeting", "Motion Tracking", "Unitree G1"]
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "batch": "software-09",
+  "terms": [
+    {
+      "key": "software-09#0",
+      "name_en": "Dataflow-Oriented Robotic Architecture (dora)",
+      "aliases": ["dora"],
+      "one_liner": "A Rust-based robotics dataflow middleware positioned as a lower-latency alternative to ROS.",
+      "explanation": "dora-rs is an open-source robotics middleware framework with its core written in Rust. It splits a robot program into a number of nodes and describes who sends data to whom as a dataflow graph; nodes pass data to each other through shared memory and Apache Arrow (a columnar in-memory data format), avoiding copies wherever possible and thereby cutting transmission latency for large data such as camera images and point clouds. Nodes can be written in Python, Rust, or C/C++, which makes it fairly friendly toward Python nodes running AI models. It targets the same class of problems as ROS 2 — inter-process communication and system orchestration — and provides a bridge for interoperating with ROS 2, and is often benchmarked against ROS 2 on latency.",
+      "example": "A YAML file declares a three-stage dataflow — “camera node → VLA inference node → arm control node” — and dora starts each node and passes images and actions between them.",
+      "related": ["ROS 2", "Middleware", "Zero-Copy (Shared-Memory IPC)", "Eclipse iceoryx", "Publish-Subscribe", "Eclipse Zenoh"]
+    },
+    {
+      "key": "software-09#1",
+      "name_en": "DeepSpeed",
+      "aliases": [],
+      "one_liner": "Microsoft's open-source library for accelerating large-model distributed training, best known for its ZeRO memory optimizer.",
+      "explanation": "DeepSpeed is an open-source deep-learning training and inference optimization library from Microsoft, built on top of PyTorch. It's best known for ZeRO (Zero Redundancy Optimizer): instead of every GPU storing a full copy of the optimizer state, gradients, and even the model parameters, ZeRO shards them across multiple GPUs, making it possible to train larger models within limited memory. It also offers mixed precision, gradient accumulation, CPU/NVMe offloading, and pipeline parallelism. When training a VLA or large language model with parameters in the billions, a single GPU often can't hold it all, and DeepSpeed — or PyTorch's own FSDP, which follows a similar idea — is a common solution. Frameworks such as Hugging Face Accelerate can call into it directly.",
+      "example": "When fine-tuning a 7B-parameter VLA, turning on DeepSpeed's ZeRO-2 or ZeRO-3 configuration in the training script lets 8 GPUs split the optimizer state and gradients between them.",
+      "related": ["Fully Sharded Data Parallel (FSDP)", "Distributed Data Parallel (DDP)", "Mixed-Precision Training", "Distributed Training (data parallelism / model parallelism)", "Hugging Face Accelerate", "PyTorch"]
+    },
+    {
+      "key": "software-09#2",
+      "name_en": "Dexbotic (Dexmal VLA toolbox)",
+      "aliases": [],
+      "one_liner": "An open-source VLA training-and-deployment toolbox from Dexmal that brings several mainstream VLA methods into one codebase.",
+      "explanation": "Dexbotic is an open-source, PyTorch-based toolbox for VLA (vision-language-action model) development, released by Dexmal (原力灵机). Different VLA papers each tend to come with their own repository, data format, and training scripts, which makes reproducing and comparing them a lot of work; Dexbotic folds several mainstream VLA methods into a single unified framework, with a common data interface, pretrained weights, and shared training and evaluation pipelines, so researchers can swap models more easily for experiments, or fine-tune on their own robot data and deploy. It sits in the same category as LeRobot, openpi, and starVLA — a “VLA code base” — and exactly which models it supports is best checked against the official repository.",
+      "example": "Convert your own dual-arm data into Dexbotic's data format, fine-tune one of its built-in VLA configurations, then deploy to a real robot using the inference script the repository provides.",
+      "related": ["Dexmal", "Vision-Language-Action Model (VLA)", "LeRobot (Hugging Face)", "openpi (Physical Intelligence)", "starVLA", "Fine-tuning"]
+    },
+    {
+      "key": "software-09#3",
+      "name_en": "Distributed Data Parallel (DDP)",
+      "aliases": ["DistributedDataParallel"],
+      "one_liner": "A multi-GPU training method where each GPU holds a full copy of the model and processes a slice of the data, then syncs gradients.",
+      "explanation": "Distributed data parallel is the most common way to train across multiple GPUs, implemented in PyTorch as torch.nn.parallel.DistributedDataParallel. The approach: every GPU (every process) holds a complete copy of the model; a batch of data is split up and divided among the GPUs, each running its own forward and backward pass, then gradients are synchronized through all-reduce (a form of collective communication where every GPU's gradients are averaged together), after which each GPU updates its parameters, keeping every copy identical. It lets training speed scale close to linearly with the number of GPUs, but requires the full model to fit on a single GPU; when the model is too large for that, a parameter-sharding approach like FSDP or DeepSpeed's ZeRO is needed instead. It's typically launched with torchrun.",
+      "example": "Running torchrun --nproc_per_node=8 train.py trains a diffusion policy across 8 GPUs on one machine, with a per-GPU batch size of 32 and an effective total batch size of 256.",
+      "related": ["Fully Sharded Data Parallel (FSDP)", "DeepSpeed", "Distributed Training (data parallelism / model parallelism)", "Batch Size", "PyTorch", "Gradient Accumulation"]
+    },
+    {
+      "key": "software-09#4",
+      "name_en": "Eclipse Cyclone DDS",
+      "aliases": ["CycloneDDS"],
+      "one_liner": "The Eclipse Foundation's open-source DDS implementation, one of the optional communication middlewares underlying ROS 2.",
+      "explanation": "Cyclone DDS is an open-source DDS (Data Distribution Service — an industrial publish-subscribe communication standard) implementation hosted by the Eclipse Foundation, written in C and focused on being lightweight and low-latency. ROS 2 doesn't send and receive data directly; instead it goes through the RMW (ROS middleware interface) to call into a specific DDS implementation, and Cyclone DDS is one of the officially supported options, corresponding to rmw_cyclonedds_cpp. It can use iceoryx to achieve zero-copy transport over shared memory. Quite a few robot vendors' SDKs are built directly on it — Unitree SDK2's communication layer, for instance, uses Cyclone DDS. Switching to Cyclone DDS is a common troubleshooting step when the default middleware shows slow discovery or dropped packets.",
+      "example": "Setting the environment variable RMW_IMPLEMENTATION=rmw_cyclonedds_cpp switches ROS 2 nodes over to communicating through Cyclone DDS.",
+      "related": ["Data Distribution Service (DDS)", "eProsima Fast DDS", "ROS Middleware Interface (RMW)", "Eclipse iceoryx", "Unitree SDK2", "ROS 2"]
+    },
+    {
+      "key": "software-09#5",
+      "name_en": "Eclipse iceoryx",
+      "aliases": ["iceoryx2"],
+      "one_liner": "A shared-memory, zero-copy inter-process communication library often used by DDS and ROS 2 to move large data.",
+      "explanation": "iceoryx is an open-source inter-process communication (IPC) middleware hosted by the Eclipse Foundation, originally developed by a Bosch team for automotive software. Ordinary communication copies data from the sender to the receiver, and for large messages like images or point clouds that copy alone can take a while; iceoryx instead lets the sender write data straight into shared memory, with the receiver getting only a reference to it — “zero-copy” — so transfer latency is essentially independent of message size. It only handles processes on the same machine; communication across machines still needs a network protocol like DDS. Cyclone DDS can use it as its local shared-memory transport layer. A Rust rewrite, iceoryx2, has since been released as well.",
+      "example": "Configuring Cyclone DDS on a robot's main controller to enable iceoryx shared memory means high-resolution images sent from a camera node to a perception node no longer get copied.",
+      "related": ["Zero-Copy (Shared-Memory IPC)", "Eclipse Cyclone DDS", "Middleware", "ROS 2", "Dataflow-Oriented Robotic Architecture (dora)"]
+    },
+    {
+      "key": "software-09#6",
+      "name_en": "Eclipse Zenoh",
+      "aliases": ["rmw_zenoh"],
+      "one_liner": "An open-source communication protocol unifying publish-subscribe, storage, and query, usable in ROS 2 as a DDS replacement.",
+      "explanation": "Zenoh is an open-source communication protocol and implementation hosted by the Eclipse Foundation, developed mainly by the company ZettaScale, with its core written in Rust. It unifies publish-subscribe, data storage, and querying under one interface, designed to work across everything from microcontrollers to the cloud and to span routers and wide-area networks. DDS often runs into heavy node-discovery traffic and configuration complexity over Wi-Fi, in multi-robot setups, or across network segments; Zenoh eases these problems with a router-based approach (zenohd). ROS 2 officially provides rmw_zenoh, letting Zenoh serve as the underlying middleware in place of DDS, and a zenoh-bridge can also carry existing DDS traffic across.",
+      "example": "Start a Zenoh router in ROS 2, then set RMW_IMPLEMENTATION=rmw_zenoh_cpp so the robot and a remote workstation on a different network segment can exchange topics with each other.",
+      "related": ["ROS 2", "ROS Middleware Interface (RMW)", "Data Distribution Service (DDS)", "Eclipse Cyclone DDS", "Publish-Subscribe", "Dataflow-Oriented Robotic Architecture (dora)"]
+    },
+    {
+      "key": "software-09#7",
+      "name_en": "Eigen (C++ linear algebra library)",
+      "aliases": [],
+      "one_liner": "The most widely used open-source C++ linear-algebra library, behind most matrix, vector, and rotation math in robotics code.",
+      "explanation": "Eigen is an open-source, header-only C++ template library for linear algebra — no separate compilation or linking needed, just include it. It provides matrix and vector operations, matrix decompositions, linear-system solving, and geometry modules for quaternions, rotation matrices, and affine transforms. Robotics C++ code is constantly computing coordinate transforms, Jacobians, and dynamics equations, which has made Eigen a de facto standard: ROS, Pinocchio, MoveIt, and OCS2 all depend on it. It's roughly the C++ world's equivalent of NumPy, though details like memory alignment and quaternion component ordering are common early pitfalls.",
+      "example": "In a controller, represent the end-effector's orientation with Eigen::Quaterniond, and store a Jacobian in an Eigen::MatrixXd, taking its pseudoinverse to compute joint velocities.",
+      "related": ["Pinocchio", "Rotation Matrix", "Quaternion", "Jacobian Matrix", "Python and C++ (common embodied-AI programming languages)"]
+    },
+    {
+      "key": "software-09#8",
+      "name_en": "eProsima Fast DDS",
+      "aliases": ["Fast-RTPS", "Fast RTPS"],
+      "one_liner": "An open-source DDS implementation from the Spanish company eProsima, the default middleware in several ROS 2 releases.",
+      "explanation": "Fast DDS is an open-source DDS (Data Distribution Service) implementation developed by the Spanish company eProsima, written in C++, formerly named Fast RTPS (RTPS being the wire protocol underlying DDS). ROS 2 connects to a specific DDS implementation through its RMW interface, with the package for this one being rmw_fastrtps_cpp; mainstream ROS 2 distributions such as Humble and Jazzy use Fast DDS by default. It supports shared-memory transport and a Discovery Server mode (which cuts down on node-discovery traffic in large networks), among other features. Newcomers who run into topics not being received, or cross-machine communication not working, often end up needing to understand Fast DDS's XML configuration and discovery mechanism.",
+      "example": "With many robots online at once, discovery traffic gets too heavy; switching to Fast DDS's Discovery Server mode puts one server node in charge of node discovery for everyone.",
+      "related": ["Data Distribution Service (DDS)", "Eclipse Cyclone DDS", "ROS Middleware Interface (RMW)", "ROS 2", "Quality of Service (QoS)", "ROS Distribution"]
+    },
+    {
+      "key": "software-09#9",
+      "name_en": "EtherCAT Master (SOEM / IgH)",
+      "aliases": ["SOEM", "IgH EtherCAT Master"],
+      "one_liner": "The end of an EtherCAT bus that issues commands and gathers data, usually running on the main control computer.",
+      "explanation": "EtherCAT is a real-time industrial bus built on Ethernet, with one master and a number of slaves on the network: the slaves are devices such as joint drivers and sensors, and the master sends out a data frame every fixed cycle, reading and writing each slave's data in turn. Commercial masters include Beckhoff's TwinCAT; the two most common open-source options are SOEM (Simple Open EtherCAT Master), a user-space C library that's easy to get started with, and IgH EtherCAT Master (the EtherLab project), which runs as a Linux kernel module and offers better real-time performance. Humanoid and legged robots commonly run IgH or SOEM on Linux patched with PREEMPT_RT, sending commands to each joint at roughly 1 kHz.",
+      "example": "On the main controller, use SOEM to scan 12 joint drivers on the bus, switch them into CSP mode, and send a target position while reading back encoder values every 1 ms.",
+      "related": ["EtherCAT Bus", "PREEMPT_RT Real-Time Linux Patch", "Cyclic Synchronous Position / Velocity / Torque Mode (CSP / CSV / CST)", "Motor Driver", "Hard Real-Time", "CANopen / CiA 402 Drive Profile"]
+    },
+    {
+      "key": "software-09#10",
+      "name_en": "FFmpeg",
+      "aliases": [],
+      "one_liner": "An open-source audio and video processing toolkit, used for transcoding, cutting, frame extraction, and compression.",
+      "explanation": "FFmpeg is a set of open-source audio and video processing tools and libraries, including command-line programs like ffmpeg and ffprobe as well as codec libraries such as libavcodec, and it supports nearly every common audio and video format. In embodied AI, robot datasets need to store huge amounts of camera footage, and storing every frame as a separate image file takes up far too much space, so footage is usually encoded into video files like MP4 and decoded back into frames at training time. The LeRobot dataset format stores each camera's footage as video, with encoding and decoding relying on FFmpeg or libraries built on it. It's also used for extracting frames for annotation, aligning sample rates, and compressing demo videos.",
+      "example": "Running ffmpeg -i episode_0.mp4 -vf fps=10 frames/%05d.png extracts a 30-frames-per-second demonstration video into images at 10 frames per second.",
+      "related": ["LeRobotDataset (LeRobot dataset format)", "Data Cleaning", "Multi-Sensor Time Synchronization (timestamp alignment)", "Demonstration Data"]
+    },
+    {
+      "key": "software-09#11",
+      "name_en": "Firmware",
+      "aliases": [],
+      "one_liner": "The program burned into a hardware chip that directly controls a device's lowest-level behavior.",
+      "explanation": "Firmware is a program stored in a device's non-volatile memory (such as flash), usually running on a microcontroller (MCU), handling the work closest to the hardware. On a robot, joint drivers, dexterous hands, IMUs, cameras, and the battery management system each have their own firmware — a driver's firmware, for instance, implements the current loop, the velocity loop, and over-current and over-temperature protection, while a camera's firmware handles exposure and depth computation. A higher-level ROS node or SDK is really just talking to this firmware over a bus. A firmware version mismatch is a common cause of communication errors or missing functionality, so checking and updating firmware is often the first step when setting up new hardware or debugging a problem; a whole robot can also often be updated remotely via OTA.",
+      "example": "When a RealSense camera's depth output looks wrong, first check its firmware version with the official tool and update to the version the SDK recommends before testing further.",
+      "related": ["Driver (device driver)", "Over-the-Air (OTA) Update", "Microcontroller Unit (MCU)", "Embedded System", "Motor Driver", "Embedded Software Development"]
+    }
+  ]
+}

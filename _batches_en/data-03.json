@@ -1,0 +1,113 @@
+{
+  "batch": "data-03",
+  "terms": [
+    {
+      "key": "data-03#0",
+      "name_en": "Data Collector (Teleoperator)",
+      "aliases": ["Robot Trainer", "AI Trainer"],
+      "one_liner": "A front-line worker who records robot training data through teleoperation or wearable demonstration devices.",
+      "explanation": "Data collector is a front-line job at embodied-AI companies and data-collection bases, producing training data. Workers follow a collection SOP (standard operating procedure): they wear a VR headset and operate a leader arm or exoskeleton to teleoperate a real robot, or wear a mocap suit, a head-mounted camera, and data gloves to perform the demonstration with their own hands directly, while the system logs video, joint angles, force, and other signals in sync. Imitation learning depends on large numbers of human demonstrations, so how consistent and correct a data collector's motions are directly determines whether the data is usable. In September 2026, China's Ministry of Human Resources and Social Security and other agencies announced a new occupation, “Embodied AI Robot Application Technician,” which lists data collector and trainer as sub-roles under it. Reports describe the work as repetitive and tedious, with equipment setup, resetting scenes, and re-recording taking up a large share of the time.",
+      "example": "According to a China Securities Journal report from March 2026, the Beijing Humanoid Robot Innovation Center's data base has more than 120 robots and over 30 scenes — home, retail, production lines — where data collectors do real-robot teleoperation and motion-capture collection, producing about 15,000 hours of data a month.",
+      "related": ["Teleoperation", "Data Collection Standard Operating Procedure", "Embodied AI Training Ground (Robot Data Collection Center)", "Demonstration Data", "Valid (Usable) Data", "Embodied AI Robot Application Technician (National New Occupation)"]
+    },
+    {
+      "key": "data-03#1",
+      "name_en": "Data Curation",
+      "aliases": ["Data Filtering"],
+      "one_liner": "Picking out the subset of a large robot dataset that actually helps training, and discarding the harmful part.",
+      "explanation": "Data curation means selecting and weighting a dataset before training: dropping demonstrations that are error-prone, hesitant, or inconsistent in technique, and keeping the high-quality, broadly covering portion. It differs from data cleaning (fixing formats, removing bad frames) in that it asks which data will actually make the policy better. Robot demonstrations are often collected by many people and vary widely in quality, and imitation learning will copy bad habits right along with good ones, so more data is not automatically better. Notable methods include DemInf, proposed by researchers at Stanford and Google DeepMind in 2025, which scores each demonstration using the mutual information between state and action, and CUPID, from CoRL 2025, which uses influence functions to estimate each demonstration's contribution to policy success rate — the paper reports that using less than 33% of the curated data trained a then-state-of-the-art diffusion policy on the RoboMimic benchmark.",
+      "example": "In the DemInf paper, on real ALOHA and Franka setups, demonstrations collected by multiple people were scored one by one, the lowest-scoring batch was removed, and the policy trained on the remainder outperformed one trained on the full dataset.",
+      "related": ["Data Cleaning", "Data Quality Inspection", "Data Mixture", "Valid (Usable) Data", "Suboptimal / Noisy Demonstrations", "Imitation Learning"]
+    },
+    {
+      "key": "data-03#2",
+      "name_en": "Data Diversity",
+      "aliases": ["Data Coverage"],
+      "one_liner": "How broadly training data varies across scenes, objects, tasks, and viewpoints.",
+      "explanation": "Data diversity describes how much a dataset varies along dimensions such as environment, object, lighting, camera viewpoint, task, operator, and robot embodiment — a different question from “how many demonstrations there are.” A robot policy easily memorizes the specific table and objects it trained on and fails in a new room, so insufficient diversity is one of the main reasons generalization is poor. A 2024 data-scaling-law study by Tsinghua's Yang Gao and colleagues found that a policy's performance in new environments and on new objects scales mainly with the number of distinct environments and objects, and that collecting more demonstrations in the same environment quickly stops helping. Physical Intelligence's π0.5 trained on mobile-manipulation data from roughly 100 real homes and was still able to do tidying-type tasks in homes it had never seen. Deliberately varying the scene, the objects, and the person collecting, during data collection, is what raises diversity.",
+      "example": "The π0.5 paper's experiments show that the more homes the training data came from, the better the policy performed in test homes; training on data from 104 locations came close to matching a control model trained directly on the test home's own data.",
+      "related": ["Generalization", "Scene / Environment Generalization", "Object Generalization", "Data Scaling Laws in Imitation Learning (Robotic Manipulation)", "In-the-wild Data", "Data Mixture"]
+    },
+    {
+      "key": "data-03#3",
+      "name_en": "Data Mixture",
+      "aliases": ["Data Recipe", "Data Mixture Weights"],
+      "one_liner": "The proportion each data source is given when training on a mix of multiple sources at once.",
+      "explanation": "Data mixture refers to how often each source gets sampled when training on a combination of data from different origins — different robots, different tasks, simulation versus real data, web text and images, human video. Source sizes can differ enormously; mixing purely in proportion to raw counts lets big datasets drown out small ones, while poorly tuned weights instead make the model lopsided. Common approaches include hand-tuned weights, such as the recipe Octo and OpenVLA use on Open X-Embodiment (informally called the Magic Soup); π0's rule of weighting each task-robot combination by n^0.43 (n being that combination's sample count), which down-weights combinations with too much data; and Stanford's Re-Mix, which learns weights automatically with distributionally robust optimization, reporting a 38% average improvement over uniform weighting. Mixtures are also commonly changed across training stages, leaning toward diversity during pretraining and toward quality during post-training.",
+      "example": "In π0's pretraining data, 9.1% comes from open datasets such as OXE, Bridge v2, and DROID, with the rest from Physical Intelligence's own collection, and each task-robot combination is then weighted by the n^0.43 rule.",
+      "related": ["OXE Magic Soup (Octo / OpenVLA dataset mixture)", "Co-training", "Heterogeneous Data", "Cross-Embodiment Data", "Data Curation", "Open X-Embodiment"]
+    },
+    {
+      "key": "data-03#4",
+      "name_en": "Data Pyramid",
+      "aliases": ["Robot Data Pyramid"],
+      "one_liner": "A three-tier framework organizing robot training data by volume and how closely it matches a real robot.",
+      "explanation": "The data pyramid is a framework NVIDIA used to organize training data in its March 2025 GR00T N1 paper: the base is web data and human video, by far the largest in volume; the middle tier is data generated by physical simulation or synthesized by neural networks such as video-generation models; and the top tier is data collected on real robots. Moving up the pyramid, data volume shrinks while how closely it matches the specific embodiment (a robot's physical hardware) grows. The base supplies general common sense and behavioral priors, while the top ensures actions can actually be executed on the real robot. It targets the reality that real-robot data is expensive and scarce: build on a large, cheap base and calibrate with a small amount of real-robot data at the top.",
+      "example": "GR00T N1's base tier used human video such as Ego4D and EPIC-KITCHENS; its middle tier had about 827 hours of neural trajectories generated by a video model plus 780,000 DexMimicGen simulated trajectories; its top tier was real-robot data such as Fourier GR-1 teleoperation data, Open X-Embodiment, and AgiBot World.",
+      "related": ["Real-Robot Data", "Simulation Data", "Synthetic Data", "Human Video Data", "Neural Trajectories", "NVIDIA Isaac GR00T N1 / N1.5 / N1.6 / N1.7"]
+    },
+    {
+      "key": "data-03#5",
+      "name_en": "Data Scaling Laws in Imitation Learning (Robotic Manipulation)",
+      "aliases": [],
+      "one_liner": "Research into how, in robot imitation learning, generalization improves as training data grows.",
+      "explanation": "This is a paper from Tsinghua University's Yang Gao group (with partners including the Shanghai Qi Zhi Institute and the Shanghai AI Laboratory), released in October 2024 and selected as an oral presentation at ICLR 2025. Using the handheld capture device UMI (Universal Manipulation Interface), the team collected more than 40,000 demonstrations and ran more than 15,000 real-robot tests to study how a single-task policy's generalization to new environments and new objects scales with data. The finding: generalization follows roughly a power law with the number of distinct training environments and objects; diversity of environments and objects matters far more than simply adding more demonstrations, and returns drop off sharply once a given environment or object has enough demonstrations. Based on this, they recommend an efficient collection strategy: change environments often, pair each environment with a different object, and collect about 50 demonstrations per environment.",
+      "example": "Following this recipe, data collected by 4 people in a single afternoon was enough for policies on two new tasks to reach about a 90% success rate in environments and on objects they had never seen.",
+      "related": ["Scaling Law", "Data Diversity", "Imitation Learning", "Universal Manipulation Interface", "Generalization", "Diffusion Policy: Visuomotor Policy Learning via Action Diffusion"]
+    },
+    {
+      "key": "data-03#6",
+      "name_en": "Data Scarcity",
+      "aliases": ["Data Bottleneck", "Data Gap"],
+      "one_liner": "The core bottleneck in embodied AI: usable real robot-interaction data falls far short of what's needed.",
+      "explanation": "Data scarcity refers to embodied AI's lack of enough high-quality training data. Large language models can draw on the entire text internet, but what a robot needs is data about “how to actually move” — joint angles, force, touch — which is almost nowhere on the internet and can only be gathered one demonstration at a time through teleoperation or wearable devices, which is expensive, slow, and doesn't transfer easily between different robots. UC Berkeley professor Ken Goldberg wrote in Science Robotics in August 2025 that the text used to train large models is equivalent to what a person would need 100,000 years to read, and argued that robotics correspondingly faces a “100,000-year data gap.” Responses include collecting more real-robot data, generating data with simulation and generative models, learning from human video, sharing data across robot embodiments, and letting robots accumulate data during deployment.",
+      "example": "According to a July 2026 report from tech outlet TMTPost, the CEO of Mifeng Technology estimated embodied AI would need about 100 million hours of training data to reach GPT-3.5-level capability, while as of early 2026 the world's available high-quality real physical-interaction data totaled only a few hundred thousand hours.",
+      "related": ["Data Pyramid", "Simulation Data", "Synthetic Data", "Human Video Data", "Data Flywheel", "Teleoperation"]
+    },
+    {
+      "key": "data-03#7",
+      "name_en": "DROID (Distributed Robot Interaction Dataset)",
+      "aliases": ["DROID"],
+      "one_liner": "A real-robot manipulation dataset collected by 50 people across 564 scenes on three continents using Franka arms.",
+      "explanation": "DROID was collected jointly by 13 institutions including Stanford and UC Berkeley, and released in March 2024. Every site used identical hardware: a 7-DoF Franka Panda arm mounted on a height-adjustable mobile cart, with two third-person ZED 2 stereo cameras and a wrist-mounted ZED Mini, with collectors using a Quest 2 VR controller for teleoperation. Over 12 months, 50 collectors across labs, offices, and homes in North America, Asia, and Europe gathered 76,000 successful trajectories totaling about 350 hours, spanning 564 scenes, 86 task categories, and 1,417 camera viewpoints, along with roughly 16,000 trajectories labeled as failures. It emphasizes “in-the-wild” scene diversity, and models such as π0 include DROID in their pretraining data.",
+      "example": "For training a policy, one can download the full RLDS-format DROID directly (about 1.7 TB); when high-resolution stereo footage or depth data is needed, use the raw-data release instead (about 8.7 TB).",
+      "related": ["Open X-Embodiment", "Real-Robot Data", "VR Teleoperation", "Data Diversity", "RLDS (Reinforcement Learning Datasets)", "Franka Emika Panda / Franka Research 3"]
+    },
+    {
+      "key": "data-03#8",
+      "name_en": "Ego4D",
+      "aliases": [],
+      "one_liner": "A roughly 3,670-hour egocentric daily-video dataset collected by Meta with 13 universities.",
+      "explanation": "Ego4D was collected by Facebook AI (now Meta) together with a consortium of 13 universities; the paper was posted in October 2021 and published at CVPR 2022. More than 900 participants across 9 countries and 74 locations wore head-mounted cameras to record daily activities such as cooking, repairs, shopping, and socializing, totaling 3,670 hours, with some sequences also including audio, eye tracking, 3D scene meshes, and synchronized multi-camera video, plus benchmark tasks for episodic memory, hand-object interaction, social behavior, and future prediction. For robotics, it is one of the largest sources of human egocentric video and is commonly used to pretrain visual representations; but it has no native 3D hand-pose annotation and no robot actions, so it cannot be used for imitation directly. A license agreement is required before use.",
+      "example": "R3M pretrains on Ego4D video using time-contrastive learning and video-language alignment; once frozen, it serves as a visual module for a Franka arm, which learned several manipulation tasks from just 20 demonstrations.",
+      "related": ["Egocentric Video", "Human Video Data", "Ego-Exo4D", "R3M: A Universal Visual Representation for Robot Manipulation", "EgoDex", "Pre-trained Visual Representation"]
+    },
+    {
+      "key": "data-03#9",
+      "name_en": "EgoDex",
+      "aliases": [],
+      "one_liner": "An Apple dataset of egocentric manipulation video captured with Vision Pro, annotated with precise 3D hand joints.",
+      "explanation": "EgoDex was released by Apple's research team in May 2025, and the paper was accepted at ICLR 2026. Collectors wore an Apple Vision Pro to perform everyday tabletop manipulation; the headset's multiple calibrated cameras and on-device SLAM (simultaneous localization and mapping) computed the 3D position and orientation of the head, upper body, and 25 joints per hand, in sync, while recording. The dataset totals 829 hours, about 90 million frames, and 338,000 demonstrations, covering 194 kinds of tabletop tasks, with language descriptions generated by GPT-4. It fills a gap left by video datasets like Ego4D, which lack precise hand pose, and can be used to train hand-trajectory prediction models that then transfer to dexterous-hand robots. The data is released under a CC BY-NC-ND license, for non-commercial use only.",
+      "example": "The paper trains an imitation-learning policy on EgoDex that takes an egocentric frame as input and predicts the 3D motion trajectory of both hands over the following span of time, and uses this to build a hand-trajectory-prediction benchmark.",
+      "related": ["Egocentric Video", "Human Video Data", "Apple Vision Pro", "Hand Pose Estimation", "Ego4D", "Dexterous Manipulation"]
+    },
+    {
+      "key": "data-03#10",
+      "name_en": "Exoskeleton Teleoperation",
+      "aliases": ["Exoskeleton Collection"],
+      "one_liner": "The operator wears an exoskeleton matching the robot's joints, controlling it directly with their own arm motion.",
+      "explanation": "Exoskeleton teleoperation is a form of teleoperation: the operator wears an exoskeleton whose joints each carry an encoder (a sensor that measures rotation angle), built with the same structure as the robot's arm, or a proportionally matched one. However the person's arm moves, the readings map straight onto the robot's joint angles, with no need to first solve inverse kinematics (working backward from end-effector pose to joint angles) the way a VR controller requires. The benefits are that the whole arm's pose is controllable, latency is low, it feels intuitive, and it can also be used disconnected from any robot to collect data “in the wild”; the drawbacks are that the structure has to be adapted to each robot, and wearing it for a long time is tiring. Notable examples include Shanghai Jiao Tong University's Cewu Lu group's AirExo family of bimanual exoskeletons, and HOMIE, a 2025 exoskeleton cockpit for humanoid robots.",
+      "example": "In the AirExo paper, a policy trained on just 3 minutes of teleoperation data plus a large amount of in-the-wild exoskeleton demonstrations matched or exceeded the performance of a policy trained on more than 20 minutes of teleoperation data alone; the full HOMIE cockpit costs about $500.",
+      "related": ["Teleoperation", "Leader-Follower Teleoperation", "Whole-Body Teleoperation", "AirExo", "HOMIE: Humanoid Loco-Manipulation with Isomorphic Exoskeleton Cockpit", "Exoskeleton"]
+    },
+    {
+      "key": "data-03#11",
+      "name_en": "Failure Data",
+      "aliases": ["Failed Trajectories", "Failed Demonstrations"],
+      "one_liner": "Trajectories that didn't complete the task, useful for learning to recover from mistakes and for training reward models.",
+      "explanation": "Failure data refers to trajectories that failed to complete the task, coming from teleoperation mistakes, a policy's own autonomous failures, or segments recorded before a human stepped in to correct things. Pure imitation learning usually throws these away, since copying them would teach the policy to fail the same way, but they record exactly what conditions lead to errors, which has real uses: training success detectors, reward models, and value functions, serving as negative feedback in reinforcement learning, and, paired with correction data, teaching a model to recover from mistakes. The π0 paper points out that a model trained only on high-quality data never learns to recover, because this kind of data rarely contains mistakes at all. Physical Intelligence's RECAP method trains π*0.6 on a mix of failure trajectories, autonomous-run data, and human corrections, reporting more than double the throughput and roughly half the failure rate on harder tasks.",
+      "example": "Besides its 76,000 successful trajectories, the DROID dataset also separately releases about 16,000 trajectories the collectors labeled “unsuccessful,” usable for training a success detector or for offline reinforcement learning.",
+      "related": ["Recovery and Correction Data", "Human Intervention Data", "Success Detector", "Reward Model", "RL with Experience and Corrections via Advantage-conditioned Policies", "Offline Reinforcement Learning"]
+    }
+  ]
+}

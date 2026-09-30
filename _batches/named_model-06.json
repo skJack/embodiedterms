@@ -1,0 +1,423 @@
+{
+  "category": "named_model",
+  "batch": 6,
+  "terms": [
+    {
+      "name_zh": "Sunday ACT-1",
+      "name_en": "ACT-1: A Robot Foundation Model Trained on Zero Robot Data (Sunday Robotics)",
+      "abbr": "ACT-1",
+      "aliases": [
+        "ACT-1（act one）",
+        "Sunday Robotics ACT-1"
+      ],
+      "tier": 3,
+      "one_liner": "Sunday Robotics 2025 年的家务机器人模型，训练不用一条遥操作数据。",
+      "explanation": "ACT-1 是美国家用机器人公司 Sunday Robotics 2025 年 11 月公布的首个基础模型，公司由 ALOHA 作者 Tony Zhao 和扩散策略作者 Cheng Chi 创办。它的训练数据里没有遥操作轨迹：人戴上与机器人手形状、传感器布局一致的「技能采集手套」在家做家务，再用 Skill Transform 抹掉画面和动作里属于人的部分，转成机器人数据（官方称转换成功率约 90%），以此绕开遥操作慢、贵、难扩规模的瓶颈。ACT-1 驱动家务机器人 Memo，用一个端到端模型同时做长程操作和按 3D 地图导航，演示过收桌装洗碗机、叠袜子、做咖啡，也能在没去过的 Airbnb 房子里收拾餐桌。2026 年 7 月公司预告了 ACT-2。",
+      "example": "「餐桌到洗碗机」任务：ACT-1 控制 Memo 把酒杯、陶瓷盘和金属餐具从餐桌收走，倒掉残渣，装进洗碗机并启动；全程完成 33 种、共 68 次灵巧交互，涉及 21 种物体，移动距离超过 130 英尺（约 40 米）。",
+      "related": [
+        "技能采集手套",
+        "Sunday Memo",
+        "Sunday Robotics",
+        "无本体采集",
+        "移动操作",
+        "长程任务"
+      ],
+      "sources": [
+        {
+          "title": "ACT-1: A Robot Foundation Model Trained on Zero Robot Data (Sunday blog, 2025-11-19)",
+          "url": "https://www.sunday.ai/blog/no-robot-data"
+        },
+        {
+          "title": "Sunday Robotics 公司页（创始人介绍）",
+          "url": "https://www.sunday.ai/company"
+        },
+        {
+          "title": "ACT-2 Preview: Generalizing Reliability (Sunday blog, 2026-07-17)",
+          "url": "https://www.sunday.ai/blog/act-2-preview"
+        }
+      ],
+      "as_of": "2026-07"
+    },
+    {
+      "name_zh": "ABS（敏捷且安全的足式运动）",
+      "name_en": "Agile But Safe: Learning Collision-Free High-Speed Legged Locomotion",
+      "abbr": "ABS",
+      "aliases": [
+        "Agile But Safe"
+      ],
+      "tier": 3,
+      "one_liner": "CMU 2024 年的四足框架：高速奔跑，靠学到的安全值随时切到避撞策略。",
+      "explanation": "ABS 由卡内基梅隆大学 Guanya Shi、Changliu Liu 团队与苏黎世联邦理工合作，发表于 RSS 2024。以往四足避障控制器为求安全，速度多在 1 m/s 以下；只求敏捷的又不管会不会撞。ABS 用两套策略：敏捷策略负责在障碍间高速奔跑，恢复策略负责紧急避险；一个学出来的到达-规避（reach-avoid）价值网络实时估计当前是否安全，决定何时切换，并为恢复策略提供优化目标。障碍信息压缩成 11 条射线的距离，由网络从深度图预测。各模块在 Isaac Gym 训练后部署到宇树 Go1，全靠机载感知和计算，峰值速度 3.1 m/s。它是把控制理论的安全约束与强化学习运控结合的代表工作。",
+      "example": "宇树 Go1 在昏暗走廊里以平均 1.5 m/s、峰值 2.5 m/s 奔跑，迎面有人走来或有人突然抬腿挡路时，安全值一降低就切换到恢复策略躲开，安全后再切回敏捷策略继续跑。",
+      "related": [
+        "腿足运动",
+        "强化学习运控",
+        "避障",
+        "安全强化学习",
+        "HJ 可达性分析",
+        "宇树 Go1"
+      ],
+      "sources": [
+        {
+          "title": "Agile But Safe: Learning Collision-Free High-Speed Legged Locomotion (arXiv 2401.17583)",
+          "url": "https://arxiv.org/abs/2401.17583"
+        },
+        {
+          "title": "ABS 项目页",
+          "url": "https://agile-but-safe.github.io/"
+        },
+        {
+          "title": "Robotics: Science and Systems XX (RSS 2024) 论文集",
+          "url": "https://www.roboticsproceedings.org/rss20/index.html"
+        }
+      ],
+      "as_of": "2024-05"
+    },
+    {
+      "name_zh": "ALOHA Unleashed",
+      "name_en": "ALOHA Unleashed: A Simple Recipe for Robot Dexterity",
+      "abbr": "",
+      "aliases": [
+        "ALOHA Unleashed 配方"
+      ],
+      "tier": 3,
+      "one_liner": "DeepMind 2024 年的工作：大量遥操作数据加扩散策略，让双臂学会系鞋带。",
+      "explanation": "ALOHA Unleashed 是 Google DeepMind 的 Tony Zhao、Ayzaan Wahid、Chelsea Finn 等人的工作，发表于 CoRL 2024，想回答只靠模仿学习能把双臂灵巧操作推到多难。做法很朴素，所以叫「配方」：在低成本双臂平台 ALOHA 2 上，35 名操作员按统一规程遥操作，为 5 个真实任务采了 2.6 万多条演示；策略是 Transformer 编码器-解码器加扩散损失（即扩散策略），一次预测未来 50 步动作，约 2.17 亿参数。机器人由此能自主系鞋带、把衬衫挂上衣架、给另一台机器人换手指。论文还发现，同等规模的模型改用 ACT 式 L1 回归，衬衫任务成功率从 70% 降到 25%。",
+      "example": "系鞋带任务：机器人先把鞋摆到桌子中央、理直鞋带，再打出一个蝴蝶结。鞋放正、鞋带摊开时成功率 70%；鞋可偏转 ±45°、鞋带未整理时成功率 40%。",
+      "related": [
+        "ALOHA 2",
+        "扩散策略",
+        "ACT",
+        "双臂操作",
+        "模仿学习",
+        "Mobile ALOHA"
+      ],
+      "sources": [
+        {
+          "title": "ALOHA Unleashed: A Simple Recipe for Robot Dexterity (arXiv 2410.13126)",
+          "url": "https://arxiv.org/abs/2410.13126"
+        },
+        {
+          "title": "ALOHA Unleashed 项目页",
+          "url": "https://aloha-unleashed.github.io/"
+        },
+        {
+          "title": "Proceedings of The 8th Conference on Robot Learning, PMLR 270",
+          "url": "https://proceedings.mlr.press/v270/zhao25b.html"
+        }
+      ],
+      "as_of": "2024-10"
+    },
+    {
+      "name_zh": "ALVINN",
+      "name_en": "ALVINN: An Autonomous Land Vehicle in a Neural Network",
+      "abbr": "ALVINN",
+      "aliases": [
+        "Autonomous Land Vehicle In a Neural Network",
+        "神经网络自主陆地车辆"
+      ],
+      "tier": 3,
+      "one_liner": "1988 年卡内基梅隆的驾驶神经网络，看路面图像直接输出转向。",
+      "explanation": "ALVINN 是卡内基梅隆大学 Dean Pomerleau 的工作，论文发表于 NIPS 1988。当时的自动驾驶靠手工设计的图像处理规则，光照、路况一变就容易失效。ALVINN 改用一个只有一层 29 个隐藏单元的反向传播网络：输入 30×32 的摄像头图像和 8×32 的激光测距图，输出 45 个单元表示该走的转弯曲率，中间没有手写的道路检测规则。网络先在 1200 张程序生成的模拟道路图上训练，再装到 CMU 的 NAVLAB 试验车上，以 0.5 m/s 沿校园林间 400 米的路自主行驶。它常被看作行为克隆和端到端驾驶最早的实例之一，英伟达 2016 年的端到端驾驶系统 DAVE-2 在论文中称受它启发。",
+      "example": "每读入一帧路面图像，网络 45 个转向输出单元中激活最强的位置决定方向：正中间的单元表示直行，越往两侧的单元表示向左或向右转得越急。",
+      "related": [
+        "端到端",
+        "行为克隆",
+        "自动驾驶",
+        "模仿学习",
+        "多层感知机",
+        "特斯拉 FSD V12（端到端自动驾驶）"
+      ],
+      "sources": [
+        {
+          "title": "ALVINN: An Autonomous Land Vehicle in a Neural Network (NIPS 1988 proceedings)",
+          "url": "https://proceedings.neurips.cc/paper/1988/hash/812b4ba287f5ee0bc9d43bbf5bbe87fb-Abstract.html"
+        },
+        {
+          "title": "End to End Learning for Self-Driving Cars (NVIDIA, arXiv 1604.07316)",
+          "url": "https://arxiv.org/abs/1604.07316"
+        }
+      ],
+      "as_of": "2016-04"
+    },
+    {
+      "name_zh": "AMO",
+      "name_en": "AMO: Adaptive Motion Optimization for Hyper-Dexterous Humanoid Whole-Body Control",
+      "abbr": "AMO",
+      "aliases": [
+        "Adaptive Motion Optimization",
+        "自适应运动优化"
+      ],
+      "tier": 3,
+      "one_liner": "UCSD 2025 年的人形全身控制方法，用轨迹优化帮 RL 策略做大幅弯腰够物。",
+      "explanation": "AMO 由加州大学圣地亚哥分校王小龙团队提出，发表于 RSS 2025。人形机器人要从地上捡东西、够高处货架，得协调弯腰、扭躯干和屈伸腿；但拿人体动捕数据做模仿的强化学习策略很少见过这类极端躯干姿态，遇到分布外指令容易失稳。AMO 先用轨迹优化（在动力学约束下求解关节轨迹）批量生成「给定躯干朝向和高度时下肢怎么摆」的数据，训练一个小 MLP 模块，实时为下肢策略提供参考姿态；下肢策略在 Isaac Gym 中用教师-学生蒸馏训练。系统部署在 29 自由度的宇树 G1 上，可用 VR 遥操作，也能用遥操作数据训练 Transformer 策略自主干活。",
+      "example": "论文演示中，G1 在不同高度的台面之间搬放罐子，从左侧高层货架取瓶子放到右侧矮桌上，还能伸直双腿把瓶子放上高处货架；遥操作时，VR 设备给出的 3 个位姿被转换成控制指令。",
+      "related": [
+        "全身控制",
+        "学习型全身控制",
+        "轨迹优化",
+        "教师-学生蒸馏",
+        "宇树 G1",
+        "全身遥操作"
+      ],
+      "sources": [
+        {
+          "title": "AMO: Adaptive Motion Optimization for Hyper-Dexterous Humanoid Whole-Body Control (arXiv 2505.03738)",
+          "url": "https://arxiv.org/abs/2505.03738"
+        },
+        {
+          "title": "AMO 项目页（RSS 2025）",
+          "url": "https://amo-humanoid.github.io/"
+        }
+      ],
+      "as_of": "2025-05"
+    },
+    {
+      "name_zh": "ATM（任意点轨迹建模）",
+      "name_en": "Any-point Trajectory Modeling for Policy Learning",
+      "abbr": "ATM",
+      "aliases": [
+        "Any-point Trajectory Model",
+        "任意点轨迹模型"
+      ],
+      "tier": 3,
+      "one_liner": "先从视频学「画面里任意点接下来怎么动」，再用预测的轨迹引导机器人策略。",
+      "explanation": "ATM 由加州大学伯克利分校、清华大学交叉信息研究院等合作提出（作者含高阳、Pieter Abbeel），发表于 RSS 2024。带动作标注的机器人数据贵，无动作标签的视频多；以往视频预训练多靠逐像素预测未来画面，计算重、细节冗余。ATM 改为预测点的运动：先用点跟踪器 CoTracker 给视频里的点标出 2D 轨迹，训练一个 Transformer，根据当前画面、语言指令和一组点的位置预测它们未来的轨迹；再训练策略，以预测轨迹为子目标输出动作，只需少量带动作的演示。在 LIBERO 等 130 多个任务上，它比视频预训练基线平均高约 80%，还能从人类视频迁移技能。",
+      "example": "指令为「打开柜子中间的抽屉」时，模型先在当前画面上画出抽屉把手等位置的点接下来会怎样被拉出，策略再参照这些预测轨迹输出机械臂动作。",
+      "related": [
+        "任意点跟踪",
+        "CoTracker",
+        "无动作标签视频",
+        "人类视频预训练",
+        "LIBERO",
+        "中间表示"
+      ],
+      "sources": [
+        {
+          "title": "Any-point Trajectory Modeling for Policy Learning (arXiv 2401.00025)",
+          "url": "https://arxiv.org/abs/2401.00025"
+        },
+        {
+          "title": "ATM 项目页",
+          "url": "https://xingyu-lin.github.io/atm/"
+        },
+        {
+          "title": "Robotics: Science and Systems XX (RSS 2024) 论文集",
+          "url": "https://www.roboticsproceedings.org/rss20/index.html"
+        }
+      ],
+      "as_of": "2024-07"
+    },
+    {
+      "name_zh": "Any2Track",
+      "name_en": "Any2Track: Track Any Motions under Any Disturbances",
+      "abbr": "",
+      "aliases": [
+        "Track Any Motions under Any Disturbances",
+        "AnyTracker",
+        "AnyAdapter"
+      ],
+      "tier": 3,
+      "one_liner": "清华、北大与银河通用的人形动作跟踪器，被推拉、负重也能跟住动作。",
+      "explanation": "Any2Track 由清华大学、北京大学、银河通用和上海期智研究院合作提出（通讯作者弋力），2025 年 9 月发布。动作跟踪指让人形机器人实时复现一段参考动作，是全身控制和遥操作的底层能力；已有跟踪器多在平地、无外力条件下验证。Any2Track 分两阶段强化学习：先在 LAFAN1 和 AMASS 动捕数据上训练通用跟踪器 AnyTracker，用一个策略学会高动态、多接触的各类动作；再冻结它，加上适配模块 AnyAdapter，从最近的状态-动作历史中提取动力学特征（以预测未来状态的世界模型为辅助任务训练），在线补偿地形、外力和负重变化，又不破坏原有跟踪能力。策略在仿真训练后零样本部署到宇树 G1。",
+      "example": "真机实验中，G1 背着负重、在起伏地面上跟随参考动作，同时有人用绳子拉它、用脚推它，机器人仍能稳住并继续完成动作。",
+      "related": [
+        "运动跟踪",
+        "快速运动适应",
+        "仿真到现实迁移",
+        "宇树 G1",
+        "AMASS 人体动捕数据集",
+        "GMT"
+      ],
+      "sources": [
+        {
+          "title": "Track Any Motions under Any Disturbances (arXiv 2509.13833)",
+          "url": "https://arxiv.org/abs/2509.13833"
+        },
+        {
+          "title": "Any2Track 项目页",
+          "url": "https://zzk273.github.io/Any2Track/"
+        }
+      ],
+      "as_of": "2025-09"
+    },
+    {
+      "name_zh": "ANYmal 强化学习运控系列（执行器网络 / 教师-学生盲走 / 感知行走）",
+      "name_en": "ANYmal RL Locomotion Series (Hwangbo 2019; Lee 2020; Miki 2022, Science Robotics)",
+      "abbr": "",
+      "aliases": [
+        "Learning agile and dynamic motor skills for legged robots",
+        "Learning quadrupedal locomotion over challenging terrain",
+        "Learning robust perceptive locomotion for quadrupedal robots in the wild"
+      ],
+      "tier": 3,
+      "one_liner": "ETH 用 ANYmal 四足在 2019–2022 年发的三篇论文，把仿真 RL 运控带进野外。",
+      "explanation": "指苏黎世联邦理工机器人系统实验室（Marco Hutter 组）以四足机器人 ANYmal 为平台、发表在 Science Robotics 上的三篇论文。2019 年 Hwangbo 等提出执行器网络：用真机数据训练神经网络模拟电机响应，接入仿真缩小虚实差距，仿真训练的策略直接上真机，跑得比原纪录快 25%，还会摔倒后翻身。2020 年 Lee 等用教师-学生蒸馏：先训练能看到地形真值等特权信息的教师，再让只用本体感知的学生模仿，配合地形课程，机器人不看地形也能走泥地、雪地和碎石（盲走），该控制器被用于 DARPA 地下挑战赛。2022 年 Miki 等用带注意力的循环编码器融合高度图与本体感知，视觉不可靠时自动更多依赖本体感知。",
+      "example": "2022 年的感知行走控制器让 ANYmal 在瑞士 Etzel 山走完一条 2.2 公里、爬升 120 米、评级为「困难」的徒步路线，用时 78 分钟，与徒步规划工具给人的建议时间（76 分钟）几乎相同，途中只停下来修了一次脱落的脚套、换了电池。",
+      "related": [
+        "强化学习运控",
+        "执行器建模",
+        "教师-学生蒸馏",
+        "特权信息",
+        "地形课程",
+        "ANYmal 四足"
+      ],
+      "sources": [
+        {
+          "title": "Learning agile and dynamic motor skills for legged robots (Hwangbo et al., Science Robotics 2019, arXiv 1901.08652)",
+          "url": "https://arxiv.org/abs/1901.08652"
+        },
+        {
+          "title": "Learning Quadrupedal Locomotion over Challenging Terrain (Lee et al., Science Robotics 2020, arXiv 2010.11251)",
+          "url": "https://arxiv.org/abs/2010.11251"
+        },
+        {
+          "title": "Learning robust perceptive locomotion for quadrupedal robots in the wild (Miki et al., Science Robotics 2022, arXiv 2201.08117)",
+          "url": "https://arxiv.org/abs/2201.08117"
+        }
+      ],
+      "as_of": "2022-01"
+    },
+    {
+      "name_zh": "ASE（对抗技能嵌入）",
+      "name_en": "ASE: Large-Scale Reusable Adversarial Skill Embeddings for Physically Simulated Characters",
+      "abbr": "ASE",
+      "aliases": [
+        "Adversarial Skill Embeddings",
+        "对抗技能嵌入"
+      ],
+      "tier": 3,
+      "one_liner": "伯克利与 NVIDIA 2022 年的方法：从动捕片段学可复用的技能隐空间。",
+      "explanation": "ASE 由加州大学伯克利分校和 NVIDIA 的彭学斌（Xue Bin Peng）、Sergey Levine、Sanja Fidler 等提出，发表于 SIGGRAPH 2022。仿真角色动画里，每个新任务常要从零训练策略，走、跑这些基本动作一遍遍重学。ASE 分两层：预训练时，在一批未标注、未切分的动作片段上训练以隐变量 z 为条件的低层策略，用对抗模仿学习（判别器判断动作像不像数据里的人）保证动作自然，再用无监督技能发现让不同的 z 对应不同技能；做下游任务时冻结低层策略，只训练输出 z 的高层策略，配简单奖励即可。借助 Isaac Gym 并行仿真，低层策略用了超过 100 亿个样本。它是 AMP（对抗运动先验）的后续工作。",
+      "example": "一个持剑盾的仿真人形角色，先在约 30 分钟、187 段动作片段上预训练技能隐空间；之后只给「跑到目标处把它击倒」的奖励，高层策略就能组合出跑动、挥剑、击中的连贯动作。",
+      "related": [
+        "对抗运动先验",
+        "生成对抗模仿学习",
+        "无监督技能发现",
+        "潜在空间",
+        "行为基础模型",
+        "Isaac Gym"
+      ],
+      "sources": [
+        {
+          "title": "ASE: Large-Scale Reusable Adversarial Skill Embeddings for Physically Simulated Characters (arXiv 2205.01906)",
+          "url": "https://arxiv.org/abs/2205.01906"
+        },
+        {
+          "title": "ASE 项目页（Xue Bin Peng）",
+          "url": "https://xbpeng.github.io/projects/ASE/index.html"
+        }
+      ],
+      "as_of": "2022-07"
+    },
+    {
+      "name_zh": "银河星脑 AstraBrain",
+      "name_en": "AstraBrain (Galbot embodied model family)",
+      "abbr": "",
+      "aliases": [
+        "银河星脑",
+        "AstraBrain-WBC",
+        "AstraBrain-WAM",
+        "AstraBrain-Dex"
+      ],
+      "tier": 3,
+      "one_liner": "银河通用的具身大模型体系，把「大脑」规划、「小脑」全身控制连成一套。",
+      "explanation": "银河星脑是北京人形机器人公司银河通用（Galbot）对自家具身大模型的统称，官方称采用「大脑—小脑—神经控制」端到端架构。AstraBrain-WAM 是「大脑」，属于世界动作模型（同时预测未来画面和生成动作），官网标注 30 亿至 130 亿参数、以 5–10Hz 输出高层指令，负责理解任务和长程规划，官方称可统一利用仿真与真机、人与机器人、有无动作标签的数据；AstraBrain-WBC 是「小脑」，8000 万至 3 亿参数的 Transformer，以 100–250Hz 做全身和手部实时控制，用大规模人类动作数据训练；AstraBrain-Dex 是面向灵巧手的世界模型。2026 年公开的 WAM 0.5、WBC 0.5 和测试时训练框架 WAM-TTT 都属于这一体系。以上多为厂商口径。",
+      "example": "2026 年银河通用演示人形机器人自主打网球：看见来球、预测轨迹、跑位击球并保持平衡，官方称这是大脑与小脑模型协同完成的全身控制。",
+      "related": [
+        "大脑-小脑架构（大小脑）",
+        "世界动作模型",
+        "学习型全身控制",
+        "缩放定律",
+        "银河通用 GraspVLA",
+        "银河通用 TrackVLA"
+      ],
+      "sources": [
+        {
+          "title": "银河通用官网（银河星脑 AstraBrain 架构介绍）",
+          "url": "https://www.galbot.com/"
+        },
+        {
+          "title": "中国唯一具身智能大模型重点实验室，银河通用牵头获批！（银河通用公众号，2026-08-10）",
+          "url": "https://mp.weixin.qq.com/s/6IdDqb0yxYQU7eQKAsolDw"
+        },
+        {
+          "title": "颠覆后训练范式！无需人类动作标签，银河通用WAM-TTT让机器人换厨房不丢手艺（腾讯科技，2026-07-16）",
+          "url": "https://mp.weixin.qq.com/s/LMtt3FGB6zyB7Boex4S6kg"
+        }
+      ],
+      "as_of": "2026-08"
+    },
+    {
+      "name_zh": "AutoRT",
+      "name_en": "AutoRT: Embodied Foundation Models for Large Scale Orchestration of Robotic Agents",
+      "abbr": "",
+      "aliases": [
+        "Auto RT"
+      ],
+      "tier": 3,
+      "one_liner": "DeepMind 2024 年的系统：用大模型给一群机器人自动出任务、采真机数据。",
+      "explanation": "AutoRT 是 Google DeepMind 2024 年 1 月公布的系统，作者包括 Karol Hausman、Fei Xia、Chelsea Finn、Sergey Levine 等。训练具身基础模型缺真实数据，而一人盯一台机器人采数据难以扩大规模。AutoRT 让现成大模型当调度员：机器人在办公楼里自主探索，视觉语言模型描述场景和物体，大语言模型据此提出任务；任务先经「机器人宪法」筛选（受阿西莫夫三定律启发的基本规则，加上安全规则和本体能力规则），再按人力情况分给遥操作、脚本抓取策略或 RT-2 执行。7 个月里它在 4 栋楼调度机器人（同时最多 20 多台），采集了 7.7 万条真机回合、6650 多条不同指令，一人可同时看管 3–5 台。",
+      "example": "若 LLM 提出「打开冰箱拿出饮料」，会因为机器人只有一条手臂、而这件事需要两只手，被宪法中的本体规则过滤；涉及人或动物、尖锐易碎物品、电器的任务则会被安全规则拦下。",
+      "related": [
+        "自主数据采集",
+        "机器人三定律 / 机器人宪法",
+        "RT-2",
+        "RT-1",
+        "SayCan",
+        "大模型任务规划"
+      ],
+      "sources": [
+        {
+          "title": "AutoRT: Embodied Foundation Models for Large Scale Orchestration of Robotic Agents (arXiv 2401.12963)",
+          "url": "https://arxiv.org/abs/2401.12963"
+        },
+        {
+          "title": "Shaping the future of advanced robotics (Google DeepMind blog, 2024-01-04)",
+          "url": "https://deepmind.google/discover/blog/shaping-the-future-of-advanced-robotics/"
+        },
+        {
+          "title": "AutoRT 项目页",
+          "url": "https://auto-rt.github.io/"
+        }
+      ],
+      "as_of": "2024-01"
+    },
+    {
+      "name_zh": "AVDC（从无动作视频学动作）",
+      "name_en": "AVDC: Learning to Act from Actionless Videos through Dense Correspondences",
+      "abbr": "AVDC",
+      "aliases": [
+        "Actionless Video through Dense Correspondences",
+        "Learning to Act from Actionless Videos"
+      ],
+      "tier": 3,
+      "one_liner": "先生成「机器人做任务」的视频，再用光流反推该执行的动作，全程不需要动作标签。",
+      "explanation": "AVDC 由台湾大学与 MIT 合作提出（作者含 Yilun Du、Joshua Tenenbaum），发表于 ICLR 2024（Spotlight）。机器人数据贵在动作标签，只有画面的视频却很多。AVDC 给定当前画面和文字指令，先用文本条件的扩散视频生成模型「想象」出完成任务的视频；再估计相邻帧的光流（每个像素往哪动），当作稠密对应关系，结合第一帧深度算出物体的刚体位姿变化，最后换算成机械臂的抓取和移动动作。策略只用 RGB 视频训练，在 Meta-World 操作、iTHOR 导航和真实 Franka 机械臂上验证，还开源了 4 张 GPU 一天即可训练的视频模型框架。它与 UniPi 同属「用视频生成当策略」的路线。",
+      "example": "只用 198 段人手推物体的视频（不含任何机器人动作）训练视频模型，不做微调直接控制仿真机械臂完成推物任务，40 次试验成功率 90%，这就是从人到机器人的跨本体迁移。",
+      "related": [
+        "无动作标签视频",
+        "UniPi",
+        "视频生成模型",
+        "光流",
+        "从观测中模仿学习",
+        "人类视频数据"
+      ],
+      "sources": [
+        {
+          "title": "Learning to Act from Actionless Videos through Dense Correspondences (arXiv 2310.08576)",
+          "url": "https://arxiv.org/abs/2310.08576"
+        },
+        {
+          "title": "OpenReview: ICLR 2024 spotlight",
+          "url": "https://openreview.net/forum?id=Mhb5fpA1T0"
+        },
+        {
+          "title": "AVDC 项目页",
+          "url": "https://flow-diffusion.github.io/"
+        }
+      ],
+      "as_of": "2024-01"
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "batch": "software-16",
+  "terms": [
+    {
+      "key": "software-16#0",
+      "name_en": "RTDE",
+      "aliases": ["Real-Time Data Exchange", "ur_rtde"],
+      "one_liner": "Universal Robots' real-time interface that lets external programs read arm state and send commands.",
+      "explanation": "RTDE is a communication interface built into Universal Robots (UR) controllers. An external computer connects over TCP/IP and can synchronously read state — joint angles, end-effector pose, torques — at a fixed rate, and also write to input registers; e-Series controllers support up to 500 Hz. It solves the problem of a host computer needing to exchange data with the arm at high, stable rates, and is more structured than the older ports 30001–30003. The most widely used community tool is ur_rtde, an open-source C++/Python library from the University of Southern Denmark, which wraps commands like moveL and servoJ directly; many real-robot VLA deployments use it to control UR arms.",
+      "example": "Use ur_rtde's RTDEReceiveInterface to read a UR5e's current joint angles at 500 Hz, then use RTDEControlInterface's servoJ to stream a policy's target joint angles to the arm.",
+      "related": ["UR5e collaborative arm", "Universal Robots", "Streaming control (pass-through control)", "Software Development Kit (SDK)", "libfranka", "Host computer (upper computer)"]
+    },
+    {
+      "key": "software-16#1",
+      "name_en": "REP 105",
+      "aliases": ["REP 105: Coordinate Frames for Mobile Platforms", "map–odom–base_link"],
+      "one_liner": "The ROS convention defining the map, odom, and base_link coordinate frames for mobile robots.",
+      "explanation": "REP 105 is a ROS Enhancement Proposal — a community specification — that fixes the names and meanings of the coordinate frames commonly used by mobile robots. base_link is fixed to the robot's own body; odom is the odometry frame, in which the robot's pose is continuous and smooth but slowly drifts over time; map is the global map frame, where the pose doesn't drift but can jump when corrected by localization. The three are chained into a TF tree as map → odom → base_link: the localization module is responsible only for publishing map → odom, while odometry publishes odom → base_link. This shared convention is what lets independently written navigation, SLAM, and localization packages plug together — Nav2 and others all follow it.",
+      "example": "A robot publishes odom → base_link from wheel odometry, while an AMCL localization node publishes map → odom based on laser-scan matching; combined, the two give the robot's position on the map.",
+      "related": ["TF transform tree", "Coordinate frame", "Nav2", "Wheel odometry", "Adaptive Monte Carlo Localization (AMCL)", "Right-hand coordinate convention and axis order"]
+    },
+    {
+      "key": "software-16#2",
+      "name_en": "RBDL",
+      "aliases": ["Rigid Body Dynamics Library"],
+      "one_liner": "Open-source C++ library that efficiently computes a robot's forward and inverse dynamics.",
+      "explanation": "RBDL is an open-source C++ library developed by Martin Felis while at Heidelberg University in Germany. It implements the classic rigid-body dynamics algorithms from Featherstone's textbook, including the Recursive Newton-Euler Algorithm (computes inverse dynamics — torques from motion), the Articulated Body Algorithm (computes forward dynamics — accelerations from torques), and the Composite Rigid Body Algorithm (computes the mass matrix). It can also load a model from a URDF or Lua file, and provides Python bindings. Deriving the dynamics equations for a multi-joint robot by hand is tedious, and libraries like this turn it into a few lines of function calls; RBDL is commonly used in legged-robot control and motion-optimization research, and its role overlaps closely with Pinocchio.",
+      "example": "Given a humanoid's URDF plus its current joint angles, velocities, and target accelerations, calling RBDL's InverseDynamics function computes the torque required at each joint.",
+      "related": ["Rigid-body dynamics", "Recursive Newton-Euler Algorithm", "Articulated Body Algorithm", "Pinocchio", "KDL", "Unified Robot Description Format (URDF)"]
+    },
+    {
+      "key": "software-16#3",
+      "name_en": "rl_games",
+      "aliases": [],
+      "one_liner": "A reinforcement learning training library optimized for massively parallel GPU simulation, common in the Isaac stack.",
+      "explanation": "rl_games is an open-source reinforcement learning library by Denys Makoviichuk and collaborators, implementing mainly PPO (Proximal Policy Optimization) and SAC. Its defining feature is that training data can stay entirely on the GPU throughout, which suits simulators like Isaac Gym that run thousands of parallel environments at once. NVIDIA's IsaacGymEnvs uses it as the default training backend, and Isaac Lab lists it as one of its supported training libraries; the open-source code behind many dexterous-hand and legged-locomotion papers is built on it. Compared with rsl_rl, it has more features but more configuration surface, and hyperparameters are usually written in YAML files.",
+      "example": "Run rl_games' training script inside Isaac Lab with a task name specified, and it will train a robot hand to reorient a cube with PPO across thousands of parallel environments.",
+      "related": ["Proximal Policy Optimization", "Large-scale parallel reinforcement learning", "Isaac Lab", "Isaac Gym", "rsl_rl", "skrl"]
+    },
+    {
+      "key": "software-16#4",
+      "name_en": "RLinf",
+      "aliases": [],
+      "one_liner": "Open-source, large-scale reinforcement learning training framework for embodied and agentic foundation models.",
+      "explanation": "RLinf is a reinforcement learning infrastructure open-sourced in 2025, jointly developed by institutions including Tsinghua University, aimed at making large-model RL training both fast and flexible. It schedules simulation, inference (rollout generation), and training onto the same pool of GPUs, switching between them or running them in a pipeline as needed to keep GPU utilization high. On the embodied side, it supports online reinforcement-learning fine-tuning of vision-language-action models such as OpenVLA, OpenVLA-OFT, and π0 inside simulators like ManiSkill and LIBERO; it can also be used for reasoning-oriented RL on large language models. It suits researchers who want to apply RL post-training to a VLA without building their own distributed system from scratch.",
+      "example": "Use RLinf's provided configuration to fine-tune OpenVLA-OFT with PPO or GRPO reinforcement learning inside the ManiSkill simulator, improving pick-and-place success rate.",
+      "related": ["Reinforcement learning fine-tuning", "Vision-language-action model", "veRL", "SimpleVLA-RL", "ManiSkill", "LIBERO"]
+    },
+    {
+      "key": "software-16#5",
+      "name_en": "RoboOS",
+      "aliases": ["BAAI RoboOS"],
+      "one_liner": "BAAI's open-source cross-embodiment, multi-robot coordination framework built on a cloud brain, local cerebellum design.",
+      "explanation": "RoboOS is an embodied-AI system framework open-sourced in 2025 by the Beijing Academy of Artificial Intelligence (BAAI). Despite the name “OS,” it isn't a low-level operating system like Linux — it's a coordination layer that runs on top of robots. It uses a brain–cerebellum split: a cloud-based “brain,” built on the embodied foundation model RoboBrain, understands instructions, breaks tasks into steps, and assigns them to different robots; each robot's local “cerebellum” calls skills such as grasping or navigation to execute its part; a shared memory in between keeps scene and state information synchronized across robots. The goal is to let robots of different form factors connect to the same brain and cooperate on a task. RoboOS 2.0 reportedly followed later the same year, adding a skill marketplace and support for the MCP protocol.",
+      "example": "A user says “hand me the water on the table”: RoboOS's brain splits the task into navigation and grasping, and assigns the two steps to a wheeled base and a dual-arm robot respectively.",
+      "related": ["BAAI RoboBrain (embodied brain model)", "Beijing Academy of Artificial Intelligence (BAAI)", "Brain–cerebellum architecture", "One brain, many robots", "Multi-robot collaboration", "MCP / ROS-MCP-Server"]
+    },
+    {
+      "key": "software-16#6",
+      "name_en": "robot_state_publisher",
+      "aliases": ["joint_state_publisher"],
+      "one_liner": "ROS package that reads a URDF and joint angles, then publishes each link's coordinate transform.",
+      "explanation": "robot_state_publisher is a fundamental package in both ROS and ROS 2. It reads a robot's URDF model (via the robot_description parameter), subscribes to joint angles on the /joint_states topic, runs forward kinematics, and publishes the pose of each link relative to its parent onto the TF transform tree. With it in place, RViz can draw the robot's current pose, and other nodes can query things like “where is the gripper relative to the base.” Its usual companion, joint_state_publisher, is responsible for publishing the joint angles themselves: without a real robot connected, its GUI version lets you drag sliders to set joint angles by hand, which is convenient for checking a model.",
+      "example": "After writing a robot arm's URDF, launch robot_state_publisher, joint_state_publisher_gui, and RViz together, and dragging the sliders will visibly move each joint of the model.",
+      "related": ["TF transform tree", "Unified Robot Description Format (URDF)", "RViz", "Forward kinematics", "ROS 2", "Topic"]
+    },
+    {
+      "key": "software-16#7",
+      "name_en": "Robotics Toolbox for Python",
+      "aliases": ["roboticstoolbox-python", "RTB"],
+      "one_liner": "Peter Corke's Python robotics toolbox, a popular way to learn kinematics and dynamics hands-on.",
+      "explanation": "Robotics Toolbox for Python is an open-source Python library from Professor Peter Corke's group at Queensland University of Technology in Australia. It's the successor to the MATLAB Robotics Toolbox he maintained for many years, and is also the companion code for his textbook Robotics, Vision and Control. It includes built-in models for common arms such as the Panda and UR5, lets users build models from DH parameters or a URDF, and provides functions for forward and inverse kinematics, the Jacobian matrix, dynamics, and trajectory generation, plus a built-in visualizer that can animate an arm's motion. For a beginner, using it to work through a textbook's formulas is much faster than writing the code from scratch.",
+      "example": "Load a Franka model with rtb.models.Panda(), call fkine to compute the end-effector pose, then use ikine_LM to solve for the joint angles at a target pose.",
+      "related": ["Forward kinematics", "Inverse kinematics", "DH parameters", "Jacobian matrix", "Pinocchio", "Franka arm (Panda / FR3)"]
+    },
+    {
+      "key": "software-16#8",
+      "name_en": "Rockchip RKNN-Toolkit",
+      "aliases": ["RKNN", "RKNN-Toolkit2", "RKNN-Toolkit-Lite2"],
+      "one_liner": "Rockchip's model-conversion toolchain that turns neural networks into a format its NPUs can run.",
+      "explanation": "RKNN-Toolkit is the development toolchain Rockchip provides for the NPU (neural processing unit) built into its own chips. It converts models trained in frameworks such as PyTorch, ONNX, or TensorFlow into the RKNN format, optionally applying INT8 quantization along the way, so they can then run on the NPU of chips such as the RK3588. The current generation of chips uses RKNN-Toolkit2; on-device Python inference uses RKNN-Toolkit-Lite2; a C interface is provided by the RKNPU runtime. Many low-cost robots and development boards use the RK3588 as their main computer, and running detection, segmentation, or small policy networks on it generally goes through this toolchain.",
+      "example": "Export a trained YOLO model to ONNX, quantize and convert it to a .rknn file with RKNN-Toolkit2, then deploy it on an RK3588 development board for real-time object detection.",
+      "related": ["Rockchip RK3588", "On-device deployment", "Post-training quantization", "ONNX", "Neural processing unit (NPU / BPU)", "Inference deployment"]
+    },
+    {
+      "key": "software-16#9",
+      "name_en": "ROS 2 Domain ID",
+      "aliases": ["ROS_DOMAIN_ID"],
+      "one_liner": "A ROS 2 environment variable that decides which nodes can discover and talk to each other.",
+      "explanation": "ROS 2 communicates over DDS middleware under the hood, and nodes on the same local network discover each other automatically. ROS_DOMAIN_ID is an environment variable used to group nodes: only nodes with the same domain ID can see one another, and the default value is 0. It comes from DDS's own concept of a “domain,” and different domain IDs map to different network ports. The official documentation recommends staying within the 0–101 range to avoid clashing with system ports. In a lab where multiple people and multiple robots share one network, forgetting to set separate domain IDs means everyone ends up receiving each other's topic data and interfering with one another — a common beginner pitfall.",
+      "example": "Two students each controlling a robot on the same Wi-Fi run export ROS_DOMAIN_ID=11 and export ROS_DOMAIN_ID=12 respectively in their terminals, so their topics no longer cross over.",
+      "related": ["ROS 2", "Data Distribution Service (DDS)", "Middleware", "Node", "Topic", "ROS 2 Quality of Service (QoS)"]
+    },
+    {
+      "key": "software-16#10",
+      "name_en": "ROS 2 Executor & Callback Groups",
+      "aliases": ["Executor", "Callback Group", "MultiThreadedExecutor"],
+      "one_liner": "The ROS 2 machinery that decides which threads run callbacks, and whether they can run concurrently.",
+      "explanation": "In a ROS 2 node, events from subscriptions, timers, and services all trigger callback functions, and the Executor is responsible for scheduling them: a single-threaded executor runs only one at a time, while a multi-threaded executor can run several in parallel. Callback groups further control which callbacks are allowed to run concurrently: callbacks in a mutually exclusive group never run at the same time, while those in a reentrant group can. This addresses real-time and deadlock concerns — for example, if a callback synchronously calls a service and waits for the result, and the service's response callback is blocked behind it on the same thread, the node can deadlock. Putting them in different callback groups and running a multi-threaded executor avoids this.",
+      "example": "Put a control node's 100 Hz timer callback and its slower camera-image-processing callback in different callback groups and run them with a MultiThreadedExecutor, so the control loop isn't dragged down by image processing.",
+      "related": ["ROS 2", "Node", "ROS client library", "Composable nodes / intra-process communication", "Real-time control", "Service"]
+    },
+    {
+      "key": "software-16#11",
+      "name_en": "ROS Client Library (rclcpp / rclpy)",
+      "aliases": ["rcl", "rclcpp", "rclpy", "rospy", "roscpp"],
+      "one_liner": "The programming API used to write ROS nodes — rclcpp for C++, rclpy for Python.",
+      "explanation": "A client library is the API developers call directly when writing ROS programs — creating nodes, publishing and subscribing to topics, calling services, reading parameters, and so on. In the ROS 1 era, the main client libraries were roscpp (C++) and rospy (Python). ROS 2 switched to a layered design: at the bottom is rcl, a general-purpose library written in C, on top of which each language gets its own wrapper — the official ones are rclcpp for C++ and rclpy for Python, with community-maintained versions for Rust, Java, and others. This means the communication logic only has to be written once, and behavior stays consistent across languages. In general, control nodes with strict real-time requirements tend to use rclcpp, while rapid prototyping and hooking up deep learning models tend to use rclpy.",
+      "example": "In Python, import rclpy, subclass rclpy.node.Node to write a node, subscribe to a camera topic, and feed the images into a VLA model for inference.",
+      "related": ["ROS 2", "Robot operating system", "Node", "ROS middleware interface (RMW)", "ROS 2 Executor & Callback Groups", "Python and C++ (common embodied-AI languages)"]
+    }
+  ]
+}

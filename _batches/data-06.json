@@ -1,0 +1,410 @@
+{
+ "category": "data",
+ "batch": 6,
+ "terms": [
+  {
+   "name_zh": "YCB 物体集",
+   "name_en": "YCB Object and Model Set",
+   "abbr": "YCB",
+   "aliases": [
+    "YCB 物体",
+    "YCB 物体与模型集",
+    "Yale-CMU-Berkeley 物体集"
+   ],
+   "tier": 2,
+   "one_liner": "一套能买到实物的标准日常物品加 3D 扫描模型，供抓取和操作研究统一对比。",
+   "explanation": "YCB 是耶鲁（Yale）、卡内基梅隆（CMU）和伯克利（Berkeley）的研究者 2015 年提出的物体集，名字取自三校首字母，论文发表于 IEEE Robotics & Automation Magazine。它收录编号 1–73 的日常物品，分食品、厨房用品、工具、形状物体、任务物体五类，比如罐头、马克杯、电钻、积木、绳子。每个物体用多相机转台扫描，提供 600 张 RGB-D 图、600 张高清彩图、分割掩码和带纹理的 3D 网格模型。以前各实验室自选物体，结果没法横向比；YCB 让大家能拿到同一套实物、在仿真里用同一套模型，还附了操作基准协议模板。如今它常被导入仿真器当抓取对象，也是多个位姿估计数据集的物体来源。",
+   "example": "PoseCNN（2017）构建的 YCB-Video 位姿估计数据集，就是在杂乱桌面上拍摄 YCB 物体，共 133,827 帧。",
+   "related": [
+    "抓取",
+    "仿真资产",
+    "6D位姿估计",
+    "基准测试",
+    "Google Scanned Objects（GSO）",
+    "BOP 位姿估计基准"
+   ],
+   "sources": [
+    {
+     "title": "Benchmarking in Manipulation Research: The YCB Object and Model Set and Benchmarking Protocols (arXiv 1502.03143)",
+     "url": "https://arxiv.org/abs/1502.03143"
+    },
+    {
+     "title": "PoseCNN: A Convolutional Neural Network for 6D Object Pose Estimation in Cluttered Scenes (arXiv 1711.00199)",
+     "url": "https://arxiv.org/abs/1711.00199"
+    }
+   ],
+   "as_of": "2015-02"
+  },
+  {
+   "name_zh": "ACRONYM 抓取数据集",
+   "name_en": "ACRONYM: A Large-Scale Grasp Dataset Based on Simulation",
+   "abbr": "",
+   "aliases": [
+    "ACRONYM"
+   ],
+   "tier": 3,
+   "one_liner": "英伟达用物理仿真批量标注的平行夹爪抓取数据集，约 1774 万个抓取。",
+   "explanation": "ACRONYM 是英伟达的 Clemens Eppner、Arsalan Mousavian 和 Dieter Fox 于 2020 年 11 月发布的抓取数据集。它从 ShapeNetSem 3D 模型库选出 262 个类别的 8872 个物体，每个物体用对跖采样（在表面找两个相对的接触点）生成 2000 个候选抓取，再放进英伟达 FleX 物理引擎，模拟 Franka Panda 夹爪闭合后摇晃，看物体是否还夹在手里，共得到约 1774 万个带成功/失败标签的抓取，其中约 59% 成功。真机逐个试抓成本太高，这种仿真批量标注给学习型抓取网络提供了足够的训练数据。它还附带在桌面等支撑面上随机摆放多个物体的杂乱场景生成工具，可渲染深度图和点云。",
+   "example": "英伟达的 Contact-GraspNet 用约 1700 万个这类仿真抓取训练，在真实杂乱场景里抓取没见过的物体，成功率超过 90%。",
+   "related": [
+    "抓取",
+    "Contact-GraspNet",
+    "仿真数据",
+    "对跖抓取",
+    "抓取位姿检测",
+    "ShapeNet 3D 模型库"
+   ],
+   "sources": [
+    {
+     "title": "ACRONYM: A Large-Scale Grasp Dataset Based on Simulation (arXiv 2011.09584)",
+     "url": "https://arxiv.org/abs/2011.09584"
+    },
+    {
+     "title": "NVlabs/acronym (GitHub)",
+     "url": "https://github.com/NVlabs/acronym"
+    },
+    {
+     "title": "Contact-GraspNet (arXiv 2103.14127)",
+     "url": "https://arxiv.org/abs/2103.14127"
+    }
+   ],
+   "as_of": "2020-11"
+  },
+  {
+   "name_zh": "松灵 Pika 采集套件",
+   "name_en": "AgileX Pika",
+   "abbr": "",
+   "aliases": [
+    "Pika Sense",
+    "Pika 手持采集器",
+    "Pika Gripper",
+    "Pika Pro"
+   ],
+   "tier": 3,
+   "one_liner": "松灵机器人的手持式具身数据采集套件，人拿着它干活就能录下操作数据。",
+   "explanation": "Pika 是松灵机器人（AgileX Robotics）推出的具身智能空间数据采集产品，思路与 UMI 相近：不用真机器人，人手持带夹爪的采集器做任务，同时录下画面和动作。官方开源仓库介绍，它由采集设备 Pika Sense、执行模型推理的夹爪 Pika Gripper、定位基站和数据背包组成，可记录 6 自由度位姿、深度、超广角 RGB 图像和夹爪开合状态；SDK 文档显示 Sense 上装有鱼眼相机、RealSense 深度相机和用于定位的 Vive Tracker。采集端与执行端的夹爪相机布置一致，录下的数据训练出策略后，可以把 Pika Gripper 装到机械臂末端直接执行。较新的 Pika Pro 套装还加了第一人称头戴采集设备 Pika EGO。",
+   "example": "典型流程：采集员手持 Pika Sense 在真实厨房重复做「把杯子放进水槽」，用录下的腕部画面和夹爪位姿训练扩散策略，再把 Pika Gripper 装到机械臂上执行。",
+   "related": [
+    "手持夹爪采集",
+    "通用操作接口",
+    "无本体采集",
+    "采执同构",
+    "松灵机器人",
+    "FastUMI"
+   ],
+   "sources": [
+    {
+     "title": "agilexrobotics/pika_ros (GitHub)",
+     "url": "https://github.com/agilexrobotics/pika_ros"
+    },
+    {
+     "title": "agilexrobotics/pika_sdk (GitHub)",
+     "url": "https://github.com/agilexrobotics/pika_sdk"
+    },
+    {
+     "title": "AgileX Pika 产品页",
+     "url": "https://global.agilex.ai/products/pika"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "AirExo 外骨骼",
+   "name_en": "AirExo",
+   "abbr": "",
+   "aliases": [
+    "AirExo-2",
+    "AirExo 双臂外骨骼"
+   ],
+   "tier": 3,
+   "one_liner": "上海交大卢策吾团队的低成本双臂外骨骼，可遥操作机器人，也能脱离机器人采数据。",
+   "explanation": "AirExo 是上海交通大学卢策吾团队 2023 年 9 月提出的开源双臂外骨骼，发表于 ICRA 2024。人把它穿在手臂上，外骨骼关节与机器人关节一一对应，既能做关节级遥操作，也能不连机器人、在真实环境里直接录「野外」演示。结构件可全部 3D 打印，每条臂约 300 美元，最初为 Flexiv Rizon 双臂设计，也可改装适配 UR5、Franka 等。2025 年的 AirExo-2（CoRL 2025）加入视觉适配器，把人穿外骨骼操作的画面转成「伪机器人演示」，配合融合 3D 点云与 2D 语义特征的 RISE-2 策略，不用任何真机数据，效果就接近用遥操作数据训练的策略；官方给出的成本约 600 美元一套，对比约 6 万美元的遥操作平台。",
+   "example": "AirExo 论文实验中，只用 3 分钟遥操作演示、再加大量穿外骨骼录的野外演示训练出的策略，效果达到甚至超过了用 20 多分钟遥操作数据训练的策略。",
+   "related": [
+    "外骨骼遥操作",
+    "无本体采集",
+    "主从臂遥操作",
+    "野外数据",
+    "上海交通大学 MVIG 实验室（卢策吾组）",
+    "非夕 拂晓 Rizon"
+   ],
+   "sources": [
+    {
+     "title": "AirExo: Low-Cost Exoskeletons for Learning Whole-Arm Manipulation in the Wild (arXiv 2309.14975)",
+     "url": "https://arxiv.org/abs/2309.14975"
+    },
+    {
+     "title": "AirExo 项目主页",
+     "url": "https://airexo.github.io/"
+    },
+    {
+     "title": "AirExo-2 项目主页",
+     "url": "https://airexo.tech/airexo2/"
+    }
+   ],
+   "as_of": "2025-09"
+  },
+  {
+   "name_zh": "ARIO 数据集",
+   "name_en": "All Robots In One",
+   "abbr": "ARIO",
+   "aliases": [
+    "ARIO 数据标准",
+    "All Robots In One 数据集"
+   ],
+   "tier": 3,
+   "one_liner": "鹏城实验室等提出的统一具身数据格式标准，及按此标准汇集的约 300 万条数据。",
+   "explanation": "ARIO 是鹏城实验室多智能体与具身智能研究所联合南方科技大学、中山大学等于 2024 年 8 月发布的工作，既是一套数据格式标准，也是按该标准整理出的大数据集。作者认为 Open X-Embodiment 等汇总数据集格式不统一、模态不全，于是规定：不同形态机器人的控制数据用统一格式记录，用时间戳对齐频率各异的传感器，按「系列-任务-回合」三级组织，支持图像、3D、声音、文本、触觉五种模态。数据集约 300 万个回合、258 个系列、32 万多个任务，来源有三：自建真机平台采集 3662 条，Habitat、MuJoCo 等仿真生成约 70 万条，其余约 233 万条由现有开源数据集转换而来。",
+   "example": "ARIO 的真机部分用松灵 Cobot Magic 双臂平台，在真实家居场景里采集了 30 多种操作任务。",
+   "related": [
+    "跨本体数据",
+    "Open X-Embodiment 数据集",
+    "多模态数据",
+    "异构数据",
+    "松灵 Cobot Magic",
+    "RLDS 格式"
+   ],
+   "sources": [
+    {
+     "title": "All Robots in One: A New Standard and Unified Dataset for Versatile, General-Purpose Embodied Agents (arXiv 2408.10899)",
+     "url": "https://arxiv.org/abs/2408.10899"
+    },
+    {
+     "title": "ARIO 项目主页",
+     "url": "https://imaei.github.io/project_pages/ario/"
+    }
+   ],
+   "as_of": "2024-08"
+  },
+  {
+   "name_zh": "AnyTeleop",
+   "name_en": "AnyTeleop: A General Vision-Based Dexterous Robot Arm-Hand Teleoperation System",
+   "abbr": "",
+   "aliases": [
+    "AnyTeleop 遥操作系统"
+   ],
+   "tier": 3,
+   "one_liner": "用普通相机捕捉人手动作，就能遥操作多种机械臂和灵巧手的通用视觉遥操作系统。",
+   "explanation": "AnyTeleop 是加州大学圣地亚哥分校（UCSD）与英伟达的 Yuzhe Qin 等人 2023 年 7 月提出的遥操作框架，发表于 RSS 2023。操作者不用戴手套或外骨骼，只要对着相机做动作：系统从图像估计人手和手腕姿态，再经动作重定向（把人手关节映射到结构不同的机器人手上）转成灵巧手和机械臂的指令，并做碰撞规避。以往视觉遥操作系统往往绑定某一款硬件，AnyTeleop 用同一套系统支持多种机械臂、灵巧手和相机配置，既能接真机，也能接 SAPIEN、Isaac Gym 等仿真器，还支持浏览器远程查看和多机器人协作。论文报告，在相同硬件上它比专为该硬件设计的旧系统表现更好。重定向模块已开源为 dex-retargeting 库。",
+   "example": "在仿真器里，操作者对着相机做抓握动作，AnyTeleop 实时驱动虚拟的机械臂加灵巧手去抓物体，录下的轨迹可直接用来训练模仿学习策略。",
+   "related": [
+    "遥操作",
+    "动作重定向",
+    "dex-retargeting",
+    "灵巧操作",
+    "Open-TeleVision",
+    "Bunny-VisionPro"
+   ],
+   "sources": [
+    {
+     "title": "AnyTeleop (arXiv 2307.04577)",
+     "url": "https://arxiv.org/abs/2307.04577"
+    },
+    {
+     "title": "AnyTeleop 项目主页",
+     "url": "https://yzqin.github.io/anyteleop/"
+    }
+   ],
+   "as_of": "2023-07"
+  },
+  {
+   "name_zh": "Parquet 格式",
+   "name_en": "Apache Parquet",
+   "abbr": "",
+   "aliases": [
+    "Parquet"
+   ],
+   "tier": 3,
+   "one_liner": "按列存储的开源数据文件格式，LeRobot 数据集用它存状态、动作等数值数据。",
+   "explanation": "Apache Parquet 是一种开源的列式数据文件格式，2013 年由 Twitter 和 Cloudera 联合推出，2015 年成为 Apache 顶级项目。「列式」指同一列的数据连续存放，而不是一行一行存；同类数据放在一起压缩率高，读取时也能只取需要的列。Spark、pandas、DuckDB 等工具都能直接读写。在具身智能里，Hugging Face 的 LeRobot 数据集格式用 Parquet 存关节状态、动作、时间戳这类低维高频数据，相机画面则单独编码成 MP4 视频，再用 JSON/Parquet 元数据记录每个回合在文件里的起止位置。v3 版把多个回合拼进同一批 Parquet 文件，并支持直接从 Hub 流式读取。",
+   "example": "用 pandas.read_parquet 打开 LeRobot 数据集 data/ 目录下的文件，就能看到每一帧的 observation.state、action、timestamp 等列。",
+   "related": [
+    "LeRobot 数据集格式",
+    "HDF5 格式",
+    "RLDS 格式",
+    "Zarr 格式",
+    "LeRobot",
+    "MCAP 格式"
+   ],
+   "sources": [
+    {
+     "title": "Apache Parquet 官方文档 Overview",
+     "url": "https://parquet.apache.org/docs/overview/"
+    },
+    {
+     "title": "LeRobotDataset v3.0 文档（Hugging Face）",
+     "url": "https://huggingface.co/docs/lerobot/lerobot-dataset-v3"
+    },
+    {
+     "title": "Apache Parquet - Wikipedia",
+     "url": "https://en.wikipedia.org/wiki/Apache_Parquet"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "ARCTIC 数据集",
+   "name_en": "ARCTIC: A Dataset for Dexterous Bimanual Hand-Object Manipulation",
+   "abbr": "",
+   "aliases": [
+    "ARCTIC"
+   ],
+   "tier": 3,
+   "one_liner": "人类双手灵巧操作铰接物体的动捕数据集，每帧带精确的手和物体 3D 网格。",
+   "explanation": "ARCTIC 是苏黎世联邦理工（ETH Zürich）、马普所智能系统研究所和阿姆斯特丹大学 2022 年发布的数据集，发表于 CVPR 2023。10 名受试者用双手操作 11 个铰接物体（带活动部件的物体，如剪刀、笔记本电脑），共 339 段序列、210 万帧图像，由 8 个固定视角和 1 个第一人称视角同步拍摄。团队用 54 台红外相机的 Vicon 光学动捕系统追踪贴在手和物体上的小标记点，解算出每帧的 MANO 手部网格、SMPL-X 人体网格、物体位姿和开合角度，以及手与物体的接触信息。此前的手物交互数据多是单手、刚体、慢动作，ARCTIC 补上了双手快速操作活动物体的精确 3D 真值，也可作为从人类数据学习灵巧操作的参考。",
+   "example": "ARCTIC 里有双手打开笔记本电脑、开合剪刀的序列，每帧都给出两只手的 3D 网格和物体活动部件的转角。",
+   "related": [
+    "手物交互",
+    "MANO 手部模型",
+    "SMPL 人体模型",
+    "光学动捕",
+    "铰接物体",
+    "HOI4D 数据集"
+   ],
+   "sources": [
+    {
+     "title": "ARCTIC: A Dataset for Dexterous Bimanual Hand-Object Manipulation (arXiv 2204.13662)",
+     "url": "https://arxiv.org/abs/2204.13662"
+    },
+    {
+     "title": "ARCTIC 项目主页",
+     "url": "https://arctic.is.tue.mpg.de/"
+    }
+   ],
+   "as_of": "2023-06"
+  },
+  {
+   "name_zh": "机械臂农场",
+   "name_en": "Arm Farm (Google large-scale grasping data collection)",
+   "abbr": "",
+   "aliases": [
+    "Google 机械臂农场",
+    "arm farm"
+   ],
+   "tier": 3,
+   "one_liner": "谷歌 2016 年让十几台机械臂并排自主试抓、大规模收集抓取数据的做法。",
+   "explanation": "机械臂农场是对谷歌研究团队 2016 年一项工作的俗称：Sergey Levine 等人让 6 到 14 台机械臂并排工作，对着料箱里的杂物反复自主尝试抓取，两个月累计超过 80 万次，约合 3000 个机器人小时。每次抓完由系统自动判断是否抓起，结果直接当标签，不需要人工标注，属于自监督数据采集。团队用这些数据训练卷积神经网络，只看单目相机图像就预测某个夹爪运动能否抓成功，再据此做实时闭环伺服，而且不需要相机标定。据谷歌博客，加入连续视觉反馈后首轮抓取失败率从 34% 降到 18%。它是最早用「多机器人 + 大数据」做端到端机器人学习的代表，2018 年的 QT-Opt 沿用这种方式，用多台机械臂自主采集了 58 万多次真实抓取。",
+   "example": "机械臂在料箱里反复试抓后，自己学会先把挤在一起的物体拨开再抓，这个行为没有人显式编程。",
+   "related": [
+    "自主数据采集",
+    "QT-Opt",
+    "自监督学习",
+    "抓取",
+    "无序抓取",
+    "谷歌 DeepMind"
+   ],
+   "sources": [
+    {
+     "title": "Deep Learning for Robots: Learning from Large-Scale Interaction (Google Research Blog)",
+     "url": "https://research.google/blog/deep-learning-for-robots-learning-from-large-scale-interaction/"
+    },
+    {
+     "title": "Learning Hand-Eye Coordination for Robotic Grasping with Deep Learning and Large-Scale Data Collection (arXiv 1603.02199)",
+     "url": "https://arxiv.org/abs/1603.02199"
+    },
+    {
+     "title": "QT-Opt (arXiv 1806.10293)",
+     "url": "https://arxiv.org/abs/1806.10293"
+    }
+   ],
+   "as_of": "2016-03"
+  },
+  {
+   "name_zh": "自动标注",
+   "name_en": "Auto-labeling",
+   "abbr": "",
+   "aliases": [
+    "自动打标",
+    "自动化标注"
+   ],
+   "tier": 3,
+   "one_liner": "用预训练模型或程序代替人工，自动给机器人数据补上语言指令、检测框等标签。",
+   "explanation": "自动标注指用程序或预训练模型（如视觉语言模型、目标检测器、大语言模型）代替人工，给采集到的数据自动补标签。机器人数据常缺几类信息：这段轨迹在做什么（语言指令）、子任务从哪切分、画面里物体在哪（检测框、掩码）。人工逐条标注又贵又慢，数据一多就跟不上。典型做法有两种：一是用 CLIP 这类图文模型给没有文字描述的演示匹配指令，谷歌的 DIAL 就是这样做的；二是像伯克利的 ECoT 那样，用 Grounding DINO 框出物体、让大模型写出任务分解和推理步骤，作为训练带推理能力 VLA 的额外监督。自动标注的质量不如人工稳定，通常要抽检或用规则过滤错误标签，常与数据质检、事后重标注、指令增强配合使用。",
+   "example": "谷歌 2022 年的 DIAL 用 CLIP 给约 8 万条演示自动补语言标签（其中 96.5% 原本没有众包标注），训练出的策略能执行 60 条原数据里没有的新指令。",
+   "related": [
+    "数据标注",
+    "语言标注",
+    "事后重标注",
+    "指令增强",
+    "子任务切分",
+    "数据质检"
+   ],
+   "sources": [
+    {
+     "title": "Robotic Skill Acquisition via Instruction Augmentation with Vision-Language Models (DIAL, arXiv 2211.11736)",
+     "url": "https://arxiv.org/abs/2211.11736"
+    },
+    {
+     "title": "Robotic Control via Embodied Chain-of-Thought Reasoning (ECoT, arXiv 2407.08693)",
+     "url": "https://arxiv.org/abs/2407.08693"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "自主数据采集",
+   "name_en": "Autonomous Data Collection",
+   "abbr": "",
+   "aliases": [
+    "机器人自主采集",
+    "自主采集"
+   ],
+   "tier": 3,
+   "one_liner": "让机器人自己提出任务、动手尝试并记录结果，少用或不用人工遥操作来积累数据。",
+   "explanation": "自主数据采集指机器人在没有人逐步操控的情况下，自己决定做什么、自己执行并记录数据，人只负责偶尔干预和安全监督。遥操作采数据要一人盯一台，成本随数据量线性增长；让机器人自己采，机器越多数据越多。难点有三：要能提出有意义且多样的任务；要能自动判断成功还是失败；自主数据成功率低、质量参差，需要能从不完美数据中学习的方法。早期例子是谷歌 2016 年的机械臂农场，靠自动判定的抓取结果当标签；谷歌 DeepMind 的 AutoRT 用视觉语言模型理解场景、用大语言模型提议任务，调度 20 多台机器人采集；伯克利的 SOAR 用 VLM 提议和评判任务，在 5 个桌面环境里自主收集了 3 万多条轨迹来改进策略。",
+   "example": "AutoRT 让 20 多台机器人在多栋楼里运行，由大语言模型提出任务，通过遥操作和自主策略共采集约 7.7 万条真机轨迹。",
+   "related": [
+    "机械臂农场",
+    "AutoRT",
+    "数据飞轮",
+    "自我提升",
+    "真机强化学习",
+    "成功检测器"
+   ],
+   "sources": [
+    {
+     "title": "AutoRT: Embodied Foundation Models for Large Scale Orchestration of Robotic Agents (arXiv 2401.12963)",
+     "url": "https://arxiv.org/abs/2401.12963"
+    },
+    {
+     "title": "Autonomous Improvement of Instruction Following Skills via Foundation Models (SOAR, arXiv 2407.20635)",
+     "url": "https://arxiv.org/abs/2407.20635"
+    },
+    {
+     "title": "Deep Learning for Robots: Learning from Large-Scale Interaction (Google Research Blog)",
+     "url": "https://research.google/blog/deep-learning-for-robots-learning-from-large-scale-interaction/"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "白虎-VTouch 视触觉数据集",
+   "name_en": "Baihu-VTouch Visuo-Tactile Dataset",
+   "abbr": "",
+   "aliases": [
+    "白虎-VTouch",
+    "VTouch 视触觉数据集",
+    "VTouch"
+   ],
+   "tier": 3,
+   "one_liner": "国地共建人形机器人创新中心与纬钛科技 2026 年发布的跨本体视触觉数据集。",
+   "explanation": "白虎-VTouch 是国家地方共建人形机器人创新中心（上海）联合视触觉传感器公司上海纬钛科技，于 2026 年 1 月 26 日发布的数据集。视触觉传感器用内置摄像头拍摄软胶表面被压出的形变，从而感知接触的形状和力度。据发布方介绍，数据集总时长超过 6 万分钟，含约 9072 万对真实物体接触样本，同步记录视触觉图像、RGB-D 画面和关节位姿；采集本体包括轮臂机器人、双足人形机器人「青龙」和手持智能终端。任务覆盖家居家政、工业制造、餐饮服务、特种作业 4 类场景，共 380 多种任务、100 多种原子技能、500 多种真实物品。现有大规模机器人数据大多只有视觉和动作，它补的是接触这一维信息。首批 6000 分钟已在 OpenLoong 开源社区上线。",
+   "example": "数据集中有 260 多种接触密集型任务，训练需要「手感」的操作策略时，可把这些视触觉图像和视觉、位姿一起作为输入。",
+   "related": [
+    "视触觉传感器",
+    "触觉数据",
+    "跨本体数据",
+    "纬钛科技",
+    "青龙",
+    "国家地方共建人形机器人创新中心（上海人形机器人创新中心）"
+   ],
+   "sources": [
+    {
+     "title": "国地中心发布全球首个跨本体视触觉多模态数据集「白虎-VTouch」（腾讯新闻）",
+     "url": "https://news.qq.com/rain/a/20260126A04W2D00"
+    }
+   ],
+   "as_of": "2026-01"
+  }
+ ]
+}

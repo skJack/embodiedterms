@@ -1,0 +1,113 @@
+{
+  "batch": "training-06",
+  "terms": [
+    {
+      "key": "training-06#0",
+      "name_en": "Model-Based Reinforcement Learning",
+      "aliases": ["MBRL", "Model-Based RL"],
+      "one_liner": "Learning a model that predicts how the environment will respond, then using it to plan or “imagine” training data for a policy.",
+      "explanation": "This is a major branch of reinforcement learning. Beyond learning a policy, the agent also learns a dedicated environment model (also called a dynamics model or world model): given the current state and action, it predicts the next state and reward. With a model in hand, an agent can plan by rolling the model forward before acting (as in model predictive control), or generate large numbers of “imagined” trajectories from the model to train a policy — Sutton's Dyna architecture is an early example of the latter. The benefit is saving real interaction and improving sample efficiency, which matters a lot when trial and error on a real robot is costly; the risk is that once the model is inaccurate, the policy learns to exploit the model's blind spots, called model bias. The Dreamer series and TD-MPC2 both belong to this family, and it's also where world-model research and robot reinforcement learning meet.",
+      "example": "DayDreamer (2022) ran the Dreamer algorithm directly on real hardware: a quadruped robot learned to roll over, stand up, and walk from scratch in just 1 hour, with no simulator involved.",
+      "related": ["Model-Free Reinforcement Learning", "World Model", "Learning in Imagination", "Sample Efficiency", "DreamerV3", "Model Predictive Control"]
+    },
+    {
+      "key": "training-06#1",
+      "name_en": "Model-Free Reinforcement Learning",
+      "aliases": ["Model-Free RL"],
+      "one_liner": "Reinforcement learning that skips building an environment model and learns a policy or value function directly from trial-and-error data.",
+      "explanation": "The counterpart to model-based reinforcement learning: the algorithm never tries to estimate the environment's state-transition or reward dynamics, and learns a policy or value function directly from (state, action, reward) samples gathered through interaction — essentially pure trial-and-error learning. It splits into two main families: methods that directly optimize the policy, such as policy gradient and PPO; and methods that learn a Q-function (estimating how much return ultimately follows from taking a given action in a given state), such as Q-learning and DQN, with DDPG and SAC sitting somewhere between the two. The advantage is simplicity and immunity to model error; the disadvantage is needing a huge amount of interaction, since sample efficiency is low. Robotics commonly compensates for this with GPU-parallel simulation: running thousands of environments at once in Isaac Gym or Isaac Lab to collect data, then transferring the trained policy to a real robot.",
+      "example": "The mainstream approach to legged-robot locomotion control: train a walking policy with PPO from the rsl_rl library inside Isaac Lab, never building an environment model at all, then deploy the trained policy to the real robot.",
+      "related": ["Model-Based Reinforcement Learning", "Policy Gradient", "Proximal Policy Optimization", "Deep Q-Network", "Sample Efficiency", "Massively Parallel Reinforcement Learning"]
+    },
+    {
+      "key": "training-06#2",
+      "name_en": "Multi-Task Learning",
+      "aliases": ["MTL", "Multitask Learning"],
+      "one_liner": "Training one model on several related tasks at once, so it shares knowledge and each task helps the others.",
+      "explanation": "Rich Caruana's 1997 paper “Multitask Learning” laid out this idea systematically: train several related tasks in parallel sharing one representation, so what one task learns helps the others learn better, with each task's training signal acting as an extra inductive bias (a model's built-in leaning toward what kind of solution is reasonable) for the rest. The most common deep-learning implementation is hard parameter sharing: several tasks share one backbone network, each with its own output head. In robotics, a multi-task policy is told what to do right now via a language instruction or a goal image, and one network covers many skills — opening a drawer, grasping, placing — and essentially every VLA today is a multi-task model. The difficulty is that tasks can interfere with each other (negative transfer), which requires tuning the data mix and network architecture.",
+      "example": "Google's RT-1 used 13 robots over 17 months to collect more than 130,000 demonstrations spanning over 700 language instructions, with one Transformer policy learning all of them and reaching 97% success on instructions it had seen before.",
+      "related": ["Positive / Negative Transfer", "Transfer Learning", "Language-Conditioned Policy", "Generalist Policy", "Data Mixing Ratio", "RT-1"]
+    },
+    {
+      "key": "training-06#3",
+      "name_en": "Next-Token Prediction",
+      "aliases": ["NTP", "Autoregressive Pretraining", "Causal Language Modeling"],
+      "one_liner": "The training objective of predicting the next token in a sequence given everything that came before it.",
+      "explanation": "This is the core training objective behind the GPT family of large language models. Text is cut into tokens; the model reads all the preceding tokens and outputs a probability distribution over the next one, and cross-entropy loss pushes up the probability assigned to the actual next token. It needs only raw text, no human labeling, so it scales to enormous pretraining datasets — OpenAI's GPT-1 (2018) already used it for generative pretraining. At inference time, the model generates tokens one after another, called autoregressive decoding. In embodied AI, RT-2 and OpenVLA discretize continuous actions into tokens and place them in the same sequence as text, reusing this same objective to train a VLA; a UC Berkeley team in 2024 even modeled humanoid-robot walking as next-token prediction. The cost is that discretization loses precision and generating tokens one at a time is slow, which is why some models switch to diffusion or flow-matching action heads instead.",
+      "example": "OpenVLA divides each action dimension into 256 bins based on the training-data distribution, represents them using the 256 least-used tokens in the Llama vocabulary, and trains with the standard next-token-prediction objective, computing cross-entropy only on the action tokens.",
+      "related": ["Autoregressive Decoding", "Action Tokenizer", "Binning/Discretization", "Teacher Forcing", "Cross-Entropy", "Vision-Language-Action Model"]
+    },
+    {
+      "key": "training-06#4",
+      "name_en": "Off-Policy",
+      "aliases": ["Off-Policy Learning"],
+      "one_liner": "Reinforcement learning that can use data collected by a different policy, not only data the current policy gathered itself.",
+      "explanation": "Reinforcement learning distinguishes two roles: the behavior policy, which interacts with the environment and produces data, and the target policy, the one actually being learned and improved. When these can differ, it's called off-policy learning. This means experience from older versions of the policy, human demonstrations, or data from other algorithms can all be stored in an experience-replay buffer and reused repeatedly, giving good sample efficiency; Q-learning, DQN, DDPG, TD3, and SAC all belong to this family. The cost is that the data distribution doesn't match the current policy, which makes training more prone to instability. Because real-robot interaction is expensive, real-robot reinforcement learning often chooses off-policy algorithms. Note that although this idea is sometimes loosely referred to with the same Chinese phrase as “offline,” off-policy is not the same thing as offline reinforcement learning — an off-policy algorithm is usually still collecting new data while it trains.",
+      "example": "SERL uses RLPD, an off-policy algorithm built on SAC, with each training batch drawn half from human demonstrations and half from replay data the robot collects online, training policies for tasks like PCB insertion and cable routing in 25 to 50 minutes on average.",
+      "related": ["On-Policy", "Experience Replay", "Soft Actor-Critic", "Q-Learning", "Offline Reinforcement Learning", "SERL"]
+    },
+    {
+      "key": "training-06#5",
+      "name_en": "Offline Reinforcement Learning",
+      "aliases": ["Offline RL", "Batch Reinforcement Learning", "Batch RL"],
+      "one_liner": "Training a policy using only a fixed, previously collected dataset, with no further interaction with the environment during training.",
+      "explanation": "Earlier also called batch reinforcement learning. A 2020 survey by Sergey Levine and colleagues defines it as reinforcement learning that uses only pre-collected data, with no additional online data collection at all. The data can come from human teleoperation, an older policy, or deployment logs, and training never touches the real environment, which suits robotics, healthcare, and other settings where trial and error is expensive or dangerous. Unlike imitation learning, it makes use of the reward signal, so it has a chance of learning a policy better than the data itself from a mix of good and mediocre demonstrations. Its central difficulty is distribution shift: once the policy picks an action that never appears in the dataset, the Q-function's estimate for it tends to be inflated (extrapolation error), and these errors can compound. Conservative Q-learning (CQL), implicit Q-learning (IQL), and various policy-constraint methods were all designed to address this.",
+      "example": "Conservative Q-learning (CQL) adds a regularization term to ordinary Q-learning that deliberately pushes down the Q-values of actions not seen in the dataset, so the learned value becomes a lower bound on the true value and the policy isn't misled by inflated estimates.",
+      "related": ["Online Reinforcement Learning", "Off-Policy", "Conservative Q-Learning", "Implicit Q-Learning", "Offline-to-Online Reinforcement Learning", "D4RL"]
+    },
+    {
+      "key": "training-06#6",
+      "name_en": "On-Policy",
+      "aliases": ["On-Policy Learning"],
+      "one_liner": "Updating only with data the current policy just collected itself, and discarding old data once it's used.",
+      "explanation": "The counterpart to off-policy: the behavior policy producing the data and the target policy being optimized are the same one. Once the parameters are updated, data collected by the old policy no longer matches the current policy's distribution, so it must be discarded and fresh data collected. SARSA, REINFORCE, A2C/A3C, TRPO, and PPO are all on-policy algorithms; PPO does run several mini-batch updates on the same batch of data, but it's still considered on-policy. The advantage is stable, simple training; the disadvantage is low data efficiency, requiring huge amounts of interaction. Once GPU-based massively parallel simulation made sampling cheap, PPO became the mainstream algorithm for training legged and humanoid locomotion control.",
+      "example": "Rudin and colleagues (2021) ran thousands of ANYmal quadrupeds in parallel simulation on a single GPU, training a flat-ground walking policy in under 4 minutes and a rough-terrain policy in about 20, then transferred it to the real robot; their open-source legged_gym pairs with rsl_rl, a PPO implementation.",
+      "related": ["Off-Policy", "Proximal Policy Optimization", "Policy Gradient", "Massively Parallel Reinforcement Learning", "Sample Efficiency", "rsl_rl"]
+    },
+    {
+      "key": "training-06#7",
+      "name_en": "Online Reinforcement Learning",
+      "aliases": ["Online RL"],
+      "one_liner": "Learning while interacting with the environment, continuously collecting new data with the latest policy during training.",
+      "explanation": "This is reinforcement learning's most classic setup: the agent interacts with the environment using its current policy, updates the policy once new data comes in, then keeps collecting with the updated policy, repeating the cycle. It covers both on-policy methods that use only the freshest data, like PPO, and off-policy methods that store history in a replay buffer, like SAC; what defines it is that training keeps getting new data throughout, which is exactly the line separating it from offline reinforcement learning. Online learning can explore actively and improve on its own mistakes, but it demands a lot of interaction: simulation speeds this up through parallelism, while real robots are limited by safety, time, and how often a scene can be reset. A common recipe now is to start from demonstrations or offline data and then fine-tune with online reinforcement learning — for example, using RL to further improve a VLA.",
+      "example": "HIL-SERL runs online reinforcement learning on a real robot with a human correcting it as needed, bringing an arm to near-perfect success on tasks like precision assembly and bimanual coordination within 1 to 2.5 hours.",
+      "related": ["Offline Reinforcement Learning", "Offline-to-Online Reinforcement Learning", "Real-Robot Reinforcement Learning", "RL Fine-tuning", "On-Policy", "Off-Policy"]
+    },
+    {
+      "key": "training-06#8",
+      "name_en": "Optimizer",
+      "aliases": ["Optimization Algorithm"],
+      "one_liner": "The algorithm that turns gradients into parameter updates during training, such as SGD, Adam, or AdamW.",
+      "explanation": "When training a neural network, backpropagation computes the loss's gradient with respect to every parameter, and the optimizer decides how to turn that gradient into an actual update: which direction to move, and how big a step to take. The most basic is stochastic gradient descent (SGD), smoother once momentum is added; Adam (Kingma and Ba, 2014) tracks both the mean and the squared mean of the gradient, giving each parameter its own adaptive step size, and needs little tuning while converging fast; AdamW (Loshchilov and Hutter, ICLR 2019) pulls weight decay out of the gradient update, generalizing better, and is common when training Transformers, diffusion policies, and similar models. Optimizers are usually configured together with a learning rate schedule (warmup, cosine decay) and gradient clipping. Note that PNDbotics' robot named “Adam” is an unrelated humanoid robot product, not the Adam optimizer.",
+      "example": "Diffusion Policy's official training config uses torch.optim.AdamW with a learning rate of 1e-4, weight decay of 1e-6, and 500 warmup steps followed by cosine decay; in PyTorch, each training step calls zero_grad(), loss.backward(), and optimizer.step() in turn.",
+      "related": ["Gradient Descent", "Backpropagation", "Learning Rate", "AdamW", "Learning Rate Schedule (Warmup and Cosine Decay)", "Gradient Clipping"]
+    },
+    {
+      "key": "training-06#9",
+      "name_en": "Policy Gradient",
+      "aliases": ["PG", "Policy Gradient Methods"],
+      "one_liner": "Computing the gradient of expected return with respect to the policy's parameters directly, and improving the policy along that gradient.",
+      "explanation": "This is a major family of reinforcement-learning methods that optimize the policy directly. The policy is represented by a parameterized network, and the goal is to maximize expected return; the policy gradient gives the gradient of that objective with respect to the parameters, by multiplying the gradient of the log-probability of each action taken by the return that followed it — so actions that led to high return get their probability raised, and actions that led to low return get it lowered — and this can be estimated from sampled trajectories. Williams's 1992 REINFORCE is an early example, and Sutton and colleagues gave the policy gradient theorem for use with function approximation in 1999. In practice, a baseline is usually subtracted, using the advantage function (how much better this action is than average) in place of the raw return to reduce variance, which led to actor-critic methods, TRPO, and PPO. It handles continuous actions naturally, suiting robot control, but is typically on-policy and not very sample-efficient.",
+      "example": "Training a robot arm to push a box: sample a batch of trajectories with the current policy, raise the probability of actions taken in trajectories that pushed the box to the goal, lower it for actions in failed trajectories, and repeat — the policy gradually improves.",
+      "related": ["REINFORCE", "Advantage Function", "Proximal Policy Optimization", "Trust Region Policy Optimization", "On-Policy", "Generalized Advantage Estimation"]
+    },
+    {
+      "key": "training-06#10",
+      "name_en": "Positive / Negative Transfer",
+      "aliases": ["Positive Transfer", "Negative Transfer"],
+      "one_liner": "When adding other tasks or data makes the target task better, that's positive transfer; when it makes it worse, that's negative transfer.",
+      "explanation": "This is a pair of concepts from transfer learning and multi-task learning: applying knowledge learned on a source task or source data to a target task, where the target task's performance improving is positive transfer, and it getting worse is negative transfer. Wang and colleagues gave a formal definition of negative transfer in a CVPR 2019 paper, noting it tends to happen when the source data is too weakly related to the target task. In embodied AI, whenever data from multiple robots, multiple tasks, or internet image-text sources is trained together, the question of whether the added data helps or hurts always comes up. Common causes of negative transfer include unrelated tasks, mismatched action spaces or coordinate frames across different robot embodiments, a poorly balanced data mix, and insufficient model capacity. Responses include tuning the data mixing ratio, giving each embodiment its own output head, and freezing or isolating parts of the model.",
+      "example": "In the Open X-Embodiment experiments, RT-1-X, trained on data from 22 robot types, beat single-robot training by 50% on average on robots with little of their own data — positive transfer. But on robots with plenty of data, RT-1-X underfit and did worse than RT-1 trained only on that robot's own data; only the much larger RT-2-X regained the advantage.",
+      "related": ["Transfer Learning", "Multi-Task Learning", "Cross-Embodiment", "Co-training", "Data Mixing Ratio", "RT-X"]
+    },
+    {
+      "key": "training-06#11",
+      "name_en": "Pretraining on Human Videos",
+      "aliases": ["Human Video Pretraining", "Learning from Human Videos"],
+      "one_liner": "Pretraining a robot model on large amounts of video of humans doing things, then fine-tuning it with a small amount of robot data.",
+      "explanation": "Real-robot data is expensive to collect and stays small in scale, while video of humans going about everyday tasks — first-person datasets like Ego4D, or general internet video — is abundant and covers far more scenes, so a common approach is pretraining on human video first and fine-tuning with a small amount of robot data. Two difficulties stand out: videos have no robot action labels, and human hands and robot grippers have different structures (an embodiment gap). There are three main approaches. One learns only a visual representation, as R3M (CoRL 2022) does, training a visual encoder on Ego4D with time-contrastive learning and video-language alignment. A second extracts a latent action as a pseudo-label from the change between consecutive frames, as LAPA does, using a VQ-VAE to get discrete latent actions for pretraining a VLA. A third estimates the human hand's 3D motion directly as the action, as Being-H0 does, treating the human hand as a general-purpose manipulator to pretrain a VLA.",
+      "example": "R3M pretrains a visual representation on human Ego4D videos, freezes it, and attaches a small policy network; with the representation frozen, a Franka arm learns a variety of manipulation tasks in a real, cluttered apartment from just 20 demonstrations.",
+      "related": ["Human Video Data", "Egocentric Video", "Latent Action Pretraining", "Embodiment Gap", "R3M", "LAPA"]
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "batch": "data-10",
+  "terms": [
+    {
+      "key": "data-10#0",
+      "name_en": "Google Scanned Objects",
+      "aliases": ["GSO", "Scanned Objects by Google Research"],
+      "one_liner": "Google's open-source library of high-precision 3D scans of 1,030 real household objects.",
+      "explanation": "Google Scanned Objects (GSO) is a library of 3D object assets that Google Research released in 2022, containing 1,030 real household items — shoes, toys, tableware, packaging boxes, and more. Google built a dedicated scanning rig that uses structured light (projecting a pattern onto the object and inferring its shape from camera images) combined with DSLR photography for high-dynamic-range color, producing mesh models with realistic texture. The models are pre-processed into formats that load directly into Gazebo and PyBullet, hosted on Gazebo Fuel, and released under the CC-BY 4.0 license. It solves the problem of simulators having too few objects, and objects that look too fake: grasping, placement, and synthetic perception data all need large numbers of objects that resemble real things in both shape and appearance, and GSO is one of the commonly used ready-made sources for this, often combined with asset libraries like YCB and Objaverse.",
+      "example": "Shoe and toy models from GSO are downloaded from Gazebo Fuel and scattered randomly across a PyBullet tabletop scene to generate grasping training data in bulk.",
+      "related": ["Simulation Assets", "YCB Object Set", "Objaverse", "ShapeNet", "Synthetic Data", "Gazebo"]
+    },
+    {
+      "key": "data-10#1",
+      "name_en": "GraspNet-1Billion",
+      "aliases": ["GraspNet", "GraspNet-1B"],
+      "one_liner": "A Shanghai Jiao Tong University dataset of real cluttered-scene grasping data, with over 1.1 billion annotated grasp poses.",
+      "explanation": "GraspNet-1Billion is a general object-grasping benchmark from the MVIG lab at Shanghai Jiao Tong University (Cewu Lu's group), published at CVPR 2020, with an extended version published in the robotics journal IJRR in 2023. It contains 190 real cluttered scenes with 88 object types, captured using two RGB-D cameras, a RealSense D435 and an Azure Kinect, for a total of 97,280 images. Every image is annotated with each object's 6D pose (3D position plus 3D orientation), instance masks, and dense 6-DoF grasp poses, totaling more than 1.1 billion grasps. Earlier grasping datasets were mostly single-object or synthetically generated in simulation; this dataset provides large-scale annotation on real, cluttered tabletops, and ships with an open-source evaluation API and baseline network so different grasp-detection algorithms can be compared under the same standard. The same group's later work, AnyGrasp, builds on this line of research.",
+      "example": "To train a grasp-detection network: feed in one frame of depth point cloud, output several gripper poses with scores, then compute average precision on test scenes using the graspnetAPI.",
+      "related": ["Grasp Pose Detection", "AnyGrasp", "Antipodal Grasp", "6D Pose Estimation", "Bin Picking (Unstructured Grasping)", "SJTU MVIG Lab (Cewu Lu's Group)"]
+    },
+    {
+      "key": "data-10#2",
+      "name_en": "Habitat-Matterport 3D Dataset",
+      "aliases": ["HM3D", "HM3D-Semantics (HM3DSem)"],
+      "one_liner": "A dataset of 1,000 real buildings, 3D-reconstructed by Meta and Matterport, used to train navigation agents.",
+      "explanation": "HM3D is an indoor scene dataset released jointly in 2021 by Meta AI (FAIR) and the property-scanning company Matterport. It contains 1,000 building-scale, textured 3D meshes covering homes, stores, and public buildings, with 112,500 square meters of navigable area combined — 1.4 to 3.7 times more than earlier datasets like Matterport3D and Gibson — and with fewer reconstruction defects. It's mainly used together with the Habitat simulator: an agent practices tasks like point-goal navigation and object-goal navigation inside digital copies of these real buildings. The paper shows that a point-goal navigation agent trained on HM3D also performs best when tested on other datasets. A later release, HM3D-Semantics v0.2, added 142,646 object-instance annotations across 216 of the spaces; v0.1 was the basis for the Habitat 2022 Object-Goal Navigation Challenge. The data is licensed for academic, non-commercial use only.",
+      "example": "Loading one HM3D house into Habitat, a robot agent starts at the front door and must find the location of the “sofa” using only its camera feed.",
+      "related": ["Habitat", "Matterport3D", "Object-Goal Navigation", "Point-Goal Navigation", "Navigation", "ScanNet"]
+    },
+    {
+      "key": "data-10#3",
+      "name_en": "Haptic Glove",
+      "aliases": ["Force-Feedback Glove", "Haptic Feedback Glove"],
+      "one_liner": "A teleoperation glove that both records hand motion and pushes force back against the operator's fingers.",
+      "explanation": "An ordinary data glove only records: it measures finger bend and hand position. A haptic (force-feedback) glove adds a return channel that sends the force a virtual object or a remote robot hand experiences back to the operator's own hand. The usual approach mounts an exoskeleton-like mechanism on the back of the hand and fingers, using motors, brakes, or pneumatic/hydraulic actuators to resist further bending of the fingers, so the wearer feels an object's size and stiffness; some designs add vibration or microfluidic contact points to simulate the feel of contact — HaptX gloves, for instance, press against the skin using hundreds of actuators embedded in a microfluidic fabric. An early commercial product was the CyberGrasp from Immersion Corporation. In embodied AI, this is mainly used for dexterous-hand teleoperation: without force feedback, the operator can't tell how hard they're gripping, and objects easily get crushed or dropped; with feedback, the resulting demonstration data is more natural. The tradeoffs are cost, weight, and the hassle of fitting and calibration.",
+      "example": "SenseGlove has released an exoskeleton glove for humanoid robots called the R1, which the company's website says includes active force feedback and vibration feedback, used for dexterous-hand teleoperation and imitation-learning data collection.",
+      "related": ["Data Glove", "Tactile Glove", "Teleoperation", "Bilateral Teleoperation", "Exoskeleton Teleoperation", "Dexterous Hand"]
+    },
+    {
+      "key": "data-10#4",
+      "name_en": "Heterogeneous Data",
+      "aliases": ["Multi-Source Heterogeneous Data"],
+      "one_liner": "Robot data from different robots, sensors, and collection methods, with mismatched formats and meanings.",
+      "explanation": "“Heterogeneity” in robot data shows up on several levels at once: different embodiments (single-arm, bimanual, humanoid, each with its own joint count and action space); different sensors (number and placement of cameras, presence or absence of depth or touch); different control schemes (joint angles versus end-effector pose, different control frequencies); and different sources (real-robot teleoperation, simulation, human video). Any single lab's own data is too small on its own to train a general-purpose policy, so labs need to mix this kind of data together — but simply concatenating it confuses a model about what the same number means on different robots. A common fix gives each embodiment its own input encoder and output head, while sharing one large backbone in the middle — for instance, Kaiming He's group used this structure in HPT to pool 52 datasets together. Other approaches unify actions into one shared space, or adjust the data mixing ratio by source. Open X-Embodiment, which pools data from 22 kinds of robots, is a textbook example of a heterogeneous dataset.",
+      "example": "HPT combines 52 datasets — real robots, multiple simulators, and human video — into one pretraining run; each embodiment has its own “stem” that compresses vision and proprioception into a small number of tokens, which are then fed into a shared Transformer backbone.",
+      "related": ["Cross-Embodiment Data", "Cross-Embodiment", "Heterogeneous Pretrained Transformer (HPT)", "Unified Action Space", "Embodiment-Specific Head", "Data Mixing Ratio"]
+    },
+    {
+      "key": "data-10#5",
+      "name_en": "Hindsight Relabeling",
+      "aliases": ["Hindsight Goal Relabeling"],
+      "one_liner": "After data is collected, relabeling a trajectory's goal or instruction to match whatever it actually achieved.",
+      "explanation": "The idea behind hindsight relabeling is: a trajectory that failed to reach its original goal still ended up somewhere, so that actual outcome can be relabeled as the goal after the fact — turning a failed sample into a success at “achieving a different goal.” The technique became popular through OpenAI's 2017 Hindsight Experience Replay (HER), which addresses how little a policy can learn under sparse rewards (a reward given only on success), and was validated on robot-arm tasks like pushing, sliding, and pick-and-place. It was later extended to imitation learning and language-conditioned policies: a large amount of manipulation data is collected with no task label at all, and afterward it's labeled with an image goal or a language instruction based on what the footage shows. Google's DIAL, for instance, uses a vision-language model like CLIP to automatically add language instructions to 80,000 demonstrations, 96.5% of which had no human annotation to begin with. The precondition for this technique is that the policy is conditioned on a goal or instruction — otherwise there's nothing to relabel.",
+      "example": "A robot arm meant to push a block to point A instead pushes it to point B; after relabeling, this trajectory is stored as a successful demonstration with “goal = point B,” and used to train a goal-conditioned policy.",
+      "related": ["Hindsight Experience Replay (HER)", "Goal-Conditioned Reinforcement Learning", "Sparse Reward", "Language Annotation", "Automatic Annotation", "Instruction Augmentation"]
+    },
+    {
+      "key": "data-10#6",
+      "name_en": "HOI4D",
+      "aliases": ["HOI4D: A 4D Egocentric Dataset for Category-Level Human-Object Interaction"],
+      "one_liner": "A first-person 4D hand-object interaction dataset with 2.4 million RGB-D frames, from Tsinghua and collaborators.",
+      "explanation": "HOI4D was released jointly by Tsinghua University, Peking University, and the Shanghai Qi Zhi Institute, published at CVPR 2022. Collectors wore a helmet fitted with two RGB-D cameras, a Kinect v2 and a RealSense D455, recording themselves manipulating objects from a first-person viewpoint — 4,000 sequences and 2.4 million frames in total, covering 16 categories and 800 object instances (7 rigid-body categories and 9 categories of articulated objects with moving parts, such as laptops, cabinets, and scissors), across 610 indoor rooms. Frame-by-frame annotations include panoptic segmentation, motion segmentation, 3D hand pose, category-level object pose (estimating pose when only the object's category, not the specific instance, has been seen before), and action labels, along with object meshes and scene point clouds. Its purpose is to let a model learn “how a hand interacts with a category of object” from a human viewpoint, useful for hand-object interaction understanding and pose tracking, and it also serves as material for robots learning manipulation from human data.",
+      "example": "Using the “open a laptop” sequences in HOI4D to train category-level pose tracking lets a model keep estimating the pose of a laptop it has never seen before, even while the hand partly blocks it from view.",
+      "related": ["Hand-Object Interaction", "First-Person Video (Egocentric Video)", "Category-Level Pose Estimation", "Hand Pose Estimation", "Articulated Object", "HOT3D"]
+    },
+    {
+      "key": "data-10#7",
+      "name_en": "HOT3D",
+      "aliases": ["HOT3D: Hand and Object Tracking in 3D from Egocentric Multi-View Videos"],
+      "one_liner": "Meta's first-person hand-object interaction dataset, recorded with Aria glasses and Quest 3, with motion-capture ground truth.",
+      "explanation": "HOT3D is a first-person hand-object interaction dataset released by Meta, with the paper appearing at CVPR 2025. 19 participants manipulated 33 rigid objects in staged kitchen, office, and living-room settings, recorded with two kinds of device, Project Aria research glasses and a Quest 3 headset, for a total of over 833 minutes and 3.7 million images. The data includes multi-view RGB and monochrome images, eye gaze, scene point clouds, and 3D poses for the cameras, both hands, and the objects; the pose ground truth comes from a motion-capture system using optical markers, which is more accurate than pose estimated algorithmically. Hand annotations are provided in both UmeTrack and MANO format (a commonly used parametric hand model), and objects come with 3D meshes carrying PBR (physically based rendering) materials. It's mainly used for research on 3D hand and object tracking and pose estimation, and also serves as a data source for learning dexterous manipulation from first-person human video. Using it requires agreeing to the HOT3D license.",
+      "example": "",
+      "related": ["Hand-Object Interaction", "First-Person Video (Egocentric Video)", "Project Aria", "MANO Hand Model", "Optical Motion Capture", "Hand Pose Estimation"]
+    },
+    {
+      "key": "data-10#8",
+      "name_en": "HumanML3D",
+      "aliases": ["Text-Annotated 3D Human Motion Dataset"],
+      "one_liner": "A text-to-motion dataset pairing 14,000 clips of 3D human motion with 45,000 natural-language descriptions.",
+      "explanation": "HumanML3D comes from Guo et al.'s CVPR 2022 paper, Generating Diverse and Natural 3D Human Motions From Text. The authors drew 14,616 motion clips from two human motion-capture datasets, AMASS and HumanAct12, and had people write 3–4 English sentences describing each one, yielding 44,970 sentences totaling about 28.59 hours of motion, ranging from everyday actions to sports and dancing. Motion is standardized to a 22-joint skeleton at 20 frames per second, and the dataset is doubled in size through left-right mirroring. It's the most commonly used training and evaluation benchmark for text-to-motion generation (input a sentence, output a 3D motion clip); motion-diffusion models such as MDM all report results on it. For humanoid robots, one path to making a robot perform actions on command is to first generate human motion from text, then retarget that motion onto the robot.",
+      "example": "Given the input “a person walks forward and then sits down,” a model trained on HumanML3D generates a 3D skeletal motion of walking followed by sitting, which is then retargeted for a humanoid robot to track and execute.",
+      "related": ["Text-to-Motion Generation", "AMASS", "MDM (Motion Diffusion Model)", "Motion Retargeting", "SMPL", "Motion Tracking"]
+    },
+    {
+      "key": "data-10#9",
+      "name_en": "Humanoid Everyday",
+      "aliases": ["Humanoid Everyday: A Comprehensive Robotic Dataset for Open-World Humanoid Manipulation"],
+      "one_liner": "A real-robot humanoid manipulation dataset from USC and the Toyota Research Institute, covering 260 tasks.",
+      "explanation": "Humanoid Everyday was released by the University of Southern California and the Toyota Research Institute in October 2025. Most existing robot datasets come from fixed robot arms, and humanoid-specific data has been scarce and narrow in task coverage; this dataset was built to fill that gap. The data was collected using a Unitree G1 (29 degrees of freedom, fitted with a Dex3-1 three-fingered dexterous hand) and a Unitree H1 (27 degrees of freedom, fitted with an Inspire dexterous hand), with operators teleoperating via Apple Vision Pro headsets. It totals 10,300 trajectories, over 3 million frames, and 260 tasks, organized into 7 categories: basic manipulation, deformable objects, articulated objects, tool use, high-precision manipulation, human-robot interaction, and mobile manipulation. Each trajectory synchronously records RGB, depth, LiDAR, tactile, IMU, and language description data at 30Hz. The authors also built a cloud evaluation platform where researchers can submit a policy and have it tested in their controlled real-robot setup. The data is released under the CC BY 4.0 license.",
+      "example": "",
+      "related": ["Humanoid Robot", "Unitree G1", "Unitree H1", "VR Teleoperation", "Apple Vision Pro", "Real-Robot Evaluation"]
+    },
+    {
+      "key": "data-10#10",
+      "name_en": "Humanoid-X",
+      "aliases": ["UH-1 Dataset", "Learning from Massive Human Videos for Universal Humanoid Pose Control"],
+      "one_liner": "A humanoid-motion dataset built by extracting and captioning motion from massive amounts of internet human videos.",
+      "explanation": "Humanoid-X is a dataset built by the University of Southern California, UC Berkeley, and the Toyota Research Institute, described in the paper Learning from Massive Human Videos for Universal Humanoid Pose Control, made public in December 2024, with the paper as an oral presentation at Humanoids 2025. The pipeline: mine human-motion videos from the internet, automatically generate text descriptions, estimate the 3D pose of the person in each video, retarget that motion into joint targets for a humanoid robot, and train a control policy to turn those targets into motion the robot can actually execute. The final dataset has 163,800 samples and over 20 million humanoid robot poses, each entry carrying the source video, text, human pose, robot keypoints, and the resulting action. The UH-1 model trained on it takes a text instruction as input and outputs humanoid robot motion. Its significance is bypassing expensive teleoperation and motion capture altogether, expanding humanoid motion data directly from human video already available online.",
+      "example": "Given the instruction “wave hello” as input, UH-1 outputs a sequence of humanoid robot joint motions that execute a wave, in simulation or on a real robot.",
+      "related": ["Human Video Data", "Internet Video Data", "Motion Retargeting", "Text-to-Motion Generation", "Humanoid Robot", "UH-1 / Humanoid-X"]
+    },
+    {
+      "key": "data-10#11",
+      "name_en": "Inertial Motion Capture",
+      "aliases": ["IMU-Based Motion Capture", "MoCap Suit"],
+      "one_liner": "A motion-capture method that straps a set of IMUs to the body to measure each segment's rotation and reconstruct full-body pose.",
+      "explanation": "Inertial motion capture attaches more than a dozen inertial measurement units (IMUs, each containing a gyroscope, accelerometer, and magnetometer) to different segments of the body, measures each segment's orientation and acceleration, and then uses software to assemble these readings onto a human skeleton to reconstruct full-body pose. Xsens's system uses 17 wireless sensors; the Chinese company Noitom (诺亦腾) makes similar products. Compared with optical motion capture, which relies on multiple cameras tracking reflective markers, inertial motion capture needs no camera setup, isn't disrupted by occlusion, and can be used outdoors, in factories, or in any other setting; it's also cheaper. The tradeoff is that it can only directly compute relative pose — global position drifts over time — so it's less accurate than optical motion capture. In embodied AI, it's commonly used for whole-body teleoperation of humanoid robots and for collecting human-motion data: captured human motion goes through motion retargeting (converting human joint angles into robot joint angles) before either driving a robot to follow in real time or being used to train a policy.",
+      "example": "An operator wears an Xsens motion-capture suit; their full-body motion streams in real time into ROS or MuJoCo, and after retargeting it drives a humanoid robot to perform the same motion synchronously.",
+      "related": ["Motion Capture (MoCap)", "Optical Motion Capture", "Inertial Measurement Unit (IMU)", "Motion Retargeting", "Whole-Body Teleoperation", "Xsens"]
+    }
+  ]
+}

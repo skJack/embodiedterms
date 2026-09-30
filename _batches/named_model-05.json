@@ -1,0 +1,406 @@
+{
+  "category": "named_model",
+  "batch": 5,
+  "terms": [
+    {
+      "name_zh": "特斯拉 FSD V12（端到端自动驾驶）",
+      "name_en": "Tesla FSD v12 (End-to-End Neural Network Driving)",
+      "abbr": "FSD",
+      "aliases": [
+        "FSD V12",
+        "FSD Beta v12",
+        "Full Self-Driving (Supervised) v12",
+        "特斯拉端到端智驾"
+      ],
+      "tier": 2,
+      "one_liner": "特斯拉 2024 年推送的智驾版本，城市道路改由一个端到端神经网络来开。",
+      "explanation": "FSD（Full Self-Driving）是特斯拉的驾驶辅助软件，正式名带「Supervised」，仍需司机监督。V12 改的是架构：马斯克 2023 年 8 月直播试驾，2024 年初推送给用户，3 月 v12.3 扩大推送并给美国车主一个月免费试用。按特斯拉的说法，城市道路驾驶栈换成一个用数百万段视频训练的端到端神经网络，替掉 30 多万行手写 C++ 规则代码：摄像头画面进、驾驶控制出，中间不再有人工设计的规则。2024 年 11 月 v12.5.6.3 把高速也换成端到端，但只给 HW4 硬件的车。V12 让「端到端」成了行业热词，智驾和具身智能圈常拿它说明数据驱动路线可行；特斯拉没公开模型细节。",
+      "example": "2023 年 8 月马斯克直播试驾 V12 约 45 分钟，只接管了一次：车在繁忙路口误判信号灯、准备闯红灯。他称系统里没有专门写红绿灯处理的代码，这类行为是从车队视频里学出来的。",
+      "related": [
+        "端到端",
+        "自动驾驶",
+        "模仿学习",
+        "特斯拉",
+        "数据飞轮",
+        "UniAD（规划导向的端到端自动驾驶）"
+      ],
+      "sources": [
+        {
+          "title": "Tesla Software Release 2024.3 release notes (FSD Supervised v12)",
+          "url": "https://tesla-info.com/release/2024.3"
+        },
+        {
+          "title": "Tesla pushes end-to-end neural networks for highway driving, but only for newer vehicles (Electrek, 2024-11)",
+          "url": "https://electrek.co/2024/11/14/tesla-pushes-end-to-end-neural-networks-for-highway-driving-but-only-for-newer-vehicles/"
+        },
+        {
+          "title": "Elon Musk demonstrates Tesla FSD 12 in a live stream (Tesla Oracle, 2023-08)",
+          "url": "https://www.teslaoracle.com/2023/08/27/elon-musk-demonstrates-tesla-fsd-12-no-code-autopilot-ai"
+        }
+      ],
+      "as_of": "2024-11"
+    },
+    {
+      "name_zh": "TWIST",
+      "name_en": "TWIST: Teleoperated Whole-Body Imitation System",
+      "abbr": "TWIST",
+      "aliases": [
+        "遥操作全身模仿系统"
+      ],
+      "tier": 2,
+      "one_liner": "斯坦福 2025 年做的人形机器人全身遥操作系统，人怎么动机器人就怎么动。",
+      "explanation": "TWIST 由斯坦福大学吴佳俊、C. Karen Liu 等团队与西蒙弗雷泽大学彭学斌合作，2025 年 5 月发布，发表于 CoRL 2025，一作 Yanjie Ze。以往人形遥操作多是上下半身分开控制，做不了「蹲下抱箱子」「用脚踢球」这类全身协调动作。TWIST 用 OptiTrack 光学动捕采集人的全身动作，实时重定向（把人的动作换算成机器人关节角）到 29 自由度的宇树 G1 上，再交给一个统一的神经网络控制器跟踪。控制器在 Isaac Gym 仿真中用约 42 小时人体动捕数据训练：先训练能看到未来 2 秒参考动作的教师策略，再用强化学习加行为克隆蒸馏成只看当前帧的学生策略，降低延迟。后续的 TWIST2 改用 PICO VR 头显、不再需要动捕，更便于大量采集数据。",
+      "example": "操作员在动捕场地里弯腰把地上的箱子抱起，G1 同步做出同样的全身动作；操作员抬脚踢球，或跳一段华尔兹，机器人也实时跟着做。",
+      "related": [
+        "全身遥操作",
+        "动作重定向",
+        "运动跟踪",
+        "教师-学生蒸馏",
+        "TWIST2",
+        "宇树 G1"
+      ],
+      "sources": [
+        {
+          "title": "TWIST: Teleoperated Whole-Body Imitation System (arXiv 2505.02833)",
+          "url": "https://arxiv.org/abs/2505.02833"
+        },
+        {
+          "title": "TWIST 项目页",
+          "url": "https://yanjieze.com/projects/TWIST/"
+        },
+        {
+          "title": "TWIST2: Scalable, Portable, and Holistic Humanoid Data Collection System (arXiv 2511.02832)",
+          "url": "https://arxiv.org/abs/2511.02832"
+        }
+      ],
+      "as_of": "2025-11"
+    },
+    {
+      "name_zh": "V-JEPA 2",
+      "name_en": "V-JEPA 2: Self-Supervised Video Models Enable Understanding, Prediction and Planning",
+      "abbr": "V-JEPA 2",
+      "aliases": [
+        "V-JEPA 2-AC",
+        "V-JEPA",
+        "V-JEPA 2.1"
+      ],
+      "tier": 2,
+      "one_liner": "Meta 的自监督视频模型，在特征空间里预测视频，可当世界模型规划机器人动作。",
+      "explanation": "V-JEPA 2 是 Meta FAIR（Yann LeCun 团队）2025 年 6 月发布的开源视频模型，约 12 亿参数。它沿用 JEPA（联合嵌入预测架构）思路：不生成像素，而是遮住视频的一部分，让模型在抽象特征空间里预测被遮住的内容，以此学到运动和物理规律。第一阶段用 100 多万小时网络视频和 100 万张图片自监督预训练；第二阶段冻结编码器，用 DROID 数据集中不到 62 小时的无标注机器人视频训练一个输入动作的预测器，叫 V-JEPA 2-AC。使用时给一张目标图，模型在特征空间里搜索能让预测结果最接近目标的动作（模型预测控制）。在两个实验室的 Franka 机械臂上零样本抓取放置新物体，成功率 65%–80%。2026 年 Meta 又发布了改进稠密特征的 V-JEPA 2.1。",
+      "example": "在一个没采过任何数据的新实验室，给 Franka 机械臂一张「物体已放到目标位置」的照片。V-JEPA 2-AC 每一步都在特征空间里想象多组候选动作的结果，选最接近目标图的那组执行，一步步把物体挪过去。",
+      "related": [
+        "联合嵌入预测架构",
+        "世界模型",
+        "隐空间世界模型",
+        "自监督学习",
+        "模型预测控制",
+        "DROID 数据集"
+      ],
+      "sources": [
+        {
+          "title": "V-JEPA 2: Self-Supervised Video Models Enable Understanding, Prediction and Planning (arXiv 2506.09985)",
+          "url": "https://arxiv.org/abs/2506.09985"
+        },
+        {
+          "title": "Introducing V-JEPA 2 (Meta AI blog)",
+          "url": "https://ai.meta.com/blog/v-jepa-2-world-model-benchmarks/"
+        },
+        {
+          "title": "V-JEPA 2.1: Unlocking Dense Features in Video Self-Supervised Learning (arXiv 2603.14482)",
+          "url": "https://arxiv.org/abs/2603.14482"
+        }
+      ],
+      "as_of": "2026-06"
+    },
+    {
+      "name_zh": "VoxPoser",
+      "name_en": "VoxPoser: Composable 3D Value Maps for Robotic Manipulation with Language Models",
+      "abbr": "",
+      "aliases": [],
+      "tier": 2,
+      "one_liner": "让大模型写代码生成 3D 价值地图，再交给规划器算出机械臂轨迹的零样本方法。",
+      "explanation": "VoxPoser 由斯坦福大学李飞飞、吴佳俊团队与 UIUC 李云竺合作，2023 年 7 月发布，获 CoRL 2023 口头报告，一作黄文龙。大语言模型懂常识，但不知道动作该落在三维空间的哪里。VoxPoser 让大语言模型根据指令写代码，代码调用视觉语言模型找到相关物体，在体素网格（把空间切成小立方体）上拼出「可供性地图」（该去哪里）和「约束地图」（该避开哪里），再把它们作为代价函数交给运动规划器，算出末端执行器轨迹。整个过程不需要为任务训练策略，属于零样本；执行时闭环重规划，物体被挪动也能应对。它是「大模型+中间表示+传统规划」路线的代表作，后续的 ReKep 等沿着这个方向继续做。",
+      "example": "指令「打开最上面的抽屉，小心旁边的花瓶」：大模型写的代码先定位顶层抽屉把手，在周围标高价值；再定位花瓶，把附近区域标成高代价；规划器据此算出一条绕开花瓶去拉把手的轨迹。",
+      "related": [
+        "大模型任务规划",
+        "代码即策略",
+        "可供性",
+        "中间表示",
+        "ReKep",
+        "运动规划"
+      ],
+      "sources": [
+        {
+          "title": "VoxPoser: Composable 3D Value Maps for Robotic Manipulation with Language Models (arXiv 2307.05973)",
+          "url": "https://arxiv.org/abs/2307.05973"
+        },
+        {
+          "title": "VoxPoser 项目页",
+          "url": "https://voxposer.github.io/"
+        }
+      ],
+      "as_of": "2023-11"
+    },
+    {
+      "name_zh": "π*0.6",
+      "name_en": "π*0.6: a VLA That Learns From Experience (π0.6 trained with RECAP)",
+      "abbr": "π*0.6",
+      "aliases": [
+        "π0.6",
+        "pi0.6",
+        "pi*0.6",
+        "pi-star-0.6"
+      ],
+      "tier": 2,
+      "one_liner": "π0.6 经 RECAP 强化学习训练后的版本，能从示教、纠正和自身经验中变强。",
+      "explanation": "π*0.6 是 Physical Intelligence 2025 年 11 月发布的视觉-语言-动作模型。底座 π0.6 在 π0.5 基础上换用 Gemma 3 4B 视觉语言骨干，动作专家增至 8.6 亿参数；星号表示又用 RECAP 方法做了强化学习。只模仿人类示教的模型犯一个小错就会越偏越远（复合误差），很难稳定成功。RECAP 同时用三类数据：人类示教、专家遥控接管时的纠正、机器人自己跑出的成功和失败。它先训练一个价值函数，估计「离完成还差多少步」，据此判断每段动作让局面变好还是变坏（优势），再把「Advantage: positive / negative」作为文字条件和数据一起训练模型，部署时只让它做「好」的动作。最难的任务上吞吐量提升一倍以上，失败率约减半。",
+      "example": "经过 RECAP 训练后，π*0.6 连续 13 小时做意式咖啡，在一户新家庭里不间断地叠没见过的衣物两个多小时，还在工厂里组装真实用于包装的纸盒。",
+      "related": [
+        "RECAP",
+        "视觉-语言-动作模型",
+        "强化学习微调",
+        "优势条件化",
+        "价值函数",
+        "Physical Intelligence"
+      ],
+      "sources": [
+        {
+          "title": "π*0.6: a VLA That Learns From Experience (arXiv 2511.14759)",
+          "url": "https://arxiv.org/abs/2511.14759"
+        },
+        {
+          "title": "π*0.6: a VLA that Learns from Experience (Physical Intelligence blog)",
+          "url": "https://www.pi.website/blog/pistar06"
+        }
+      ],
+      "as_of": "2025-11"
+    },
+    {
+      "name_zh": "π0-FAST",
+      "name_en": "π0-FAST (π0 with FAST frequency-space action tokenization)",
+      "abbr": "",
+      "aliases": [
+        "pi0-FAST",
+        "pi0_fast",
+        "π0 + FAST"
+      ],
+      "tier": 2,
+      "one_liner": "把 π0 的动作用 FAST 分词器变成离散 token、逐个生成的自回归 VLA。",
+      "explanation": "π0-FAST 是 Physical Intelligence 2025 年 1 月随 FAST 动作分词器一起发布的模型，骨干网络和训练数据与 π0 相同，区别在动作怎么输出：π0 用流匹配生成连续动作，π0-FAST 把动作变成离散 token，像语言模型一样逐个预测。以往按每个维度、每个时间步分箱的离散化，在高频灵巧任务上几乎学不会。FAST 先对一段动作做离散余弦变换（DCT，JPEG 压缩也用它），量化后再用字节对编码（BPE）压缩，一段动作通常只需 30–60 个 token。这样训练最多快 5 倍、效果与流匹配版相当，还首次在 DROID 数据集上训出能在新环境零样本听指令干活的通用策略。代价是自回归解码明显比流匹配慢。权重在 openpi 开源。",
+      "example": "双臂机器人 50 Hz 控制、每步 14 维，1 秒动作就是 700 个数。按旧方法逐维分箱要 700 个 token；FAST 压缩后只剩几十个，模型用下一个 token 预测学会叠衣服，推理时再把 token 反变换回连续动作。",
+      "related": [
+        "π0",
+        "动作分词器",
+        "离散余弦变换",
+        "字节对编码",
+        "分箱离散化",
+        "自回归解码"
+      ],
+      "sources": [
+        {
+          "title": "FAST: Efficient Action Tokenization for Vision-Language-Action Models (arXiv 2501.09747)",
+          "url": "https://arxiv.org/abs/2501.09747"
+        },
+        {
+          "title": "FAST: Efficient Robot Action Tokenization (Physical Intelligence)",
+          "url": "https://www.pi.website/research/fast"
+        },
+        {
+          "title": "openpi (GitHub, Physical Intelligence)",
+          "url": "https://github.com/Physical-Intelligence/openpi"
+        }
+      ],
+      "as_of": "2025-01"
+    },
+    {
+      "name_zh": "π0.7",
+      "name_en": "π0.7: a Steerable Generalist Robotic Foundation Model with Emergent Capabilities",
+      "abbr": "",
+      "aliases": [
+        "pi0.7",
+        "pi07"
+      ],
+      "tier": 2,
+      "one_liner": "π 公司 2026 年的通用机器人模型，能用多种提示引导做法，初现组合泛化。",
+      "explanation": "π0.7 是 Physical Intelligence 2026 年 4 月发布的机器人基础模型。把不同机器人、人类视频、自主运行（含失败）的数据直接混在一起训练，效果并不好。π0.7 的做法是给每段数据配上更丰富的提示：描述任务和子步骤的语言、速度与质量等元数据、用关节控制还是末端控制的标签，以及展示子步骤完成后样子的子目标图像（推理时可由轻量世界模型生成）。这样同一任务的不同做法、不同水平的数据都能用上，推理时再用提示指定「怎么做」，即可引导性。官方报告它不微调就能在叠衣、做咖啡、折纸盒上达到 π*0.6 专用模型的水平，并首次出现组合泛化迹象：靠逐步语言指导学会用没见过的空气炸锅，在没有叠衣数据的双臂 UR5e 上也能叠衣服。",
+      "example": "让机器人把红薯放进空气炸锅：只给一句指令时，它试了几次只完成一部分；人用语言一步步指导后能做完；再用这些指导数据微调高层策略，它就能自己生成子任务、全自动完成。",
+      "related": [
+        "可引导性",
+        "π*0.6",
+        "π0.5",
+        "组合泛化",
+        "跨本体",
+        "Hi Robot"
+      ],
+      "sources": [
+        {
+          "title": "π0.7: a Steerable Generalist Robotic Foundation Model with Emergent Capabilities (arXiv 2604.15483)",
+          "url": "https://arxiv.org/abs/2604.15483"
+        },
+        {
+          "title": "π0.7: a Steerable Model with Emergent Capabilities (Physical Intelligence blog)",
+          "url": "https://www.pi.website/blog/pi07"
+        }
+      ],
+      "as_of": "2026-04"
+    },
+    {
+      "name_zh": "1X 世界模型",
+      "name_en": "1X World Model",
+      "abbr": "1XWM",
+      "aliases": [
+        "1X World Model Challenge"
+      ],
+      "tier": 3,
+      "one_liner": "人形机器人公司 1X 的视频世界模型，先用来评测策略，后来直接当策略控制 NEO。",
+      "explanation": "1X 世界模型是人形机器人公司 1X 开发的视频生成式世界模型。2024 年 9 月首次公布：用 EVE 机器人在家庭和办公室采集的数千小时视频和动作数据训练，输入当前画面和一串动作，预测之后的视频，能模拟物体掉落、布料、门和抽屉；同时开放 100 多小时数据，发起 1X 世界模型挑战赛。2025 年 6 月起它被用来评测 NEO 的 Redwood 策略：在模型里推演，比较不同策略和检查点，少做真机测试。2026 年 1 月 1X 把它直接接入 NEO 当策略：140 亿参数的文本条件视频扩散模型先生成完成任务的视频，再由逆动力学模型从画面反推动作；训练用了网络视频、900 小时第一人称人类视频和 70 小时 NEO 数据。目前生成 5 秒视频约需 11 秒，倒水等灵巧任务仍难。",
+      "example": "给 1XWM 一句「抽出一张纸巾」和当前画面，它生成 NEO 完成动作的视频，逆动力学模型据此算出动作让 NEO 执行；并行生成多段视频、挑最好的一段执行，这个任务的成功率从 30% 提到 45%。",
+      "related": [
+        "世界模型",
+        "世界模型评测",
+        "逆动力学模型",
+        "视频生成模型",
+        "1X NEO",
+        "1X Redwood"
+      ],
+      "sources": [
+        {
+          "title": "1X World Model (1X, 2024-09)",
+          "url": "https://www.1x.tech/discover/1x-world-model"
+        },
+        {
+          "title": "1X World Model: evaluating Redwood AI (1X, 2025-06)",
+          "url": "https://www.1x.tech/discover/redwood-ai-world-model"
+        },
+        {
+          "title": "1X World Model | From Video to Action: A New Way Robots Learn (1X, 2026-01)",
+          "url": "https://www.1x.tech/discover/world-model-self-learning"
+        }
+      ],
+      "as_of": "2026-01"
+    },
+    {
+      "name_zh": "3D Diffuser Actor",
+      "name_en": "3D Diffuser Actor: Policy Diffusion with 3D Scene Representations",
+      "abbr": "",
+      "aliases": [
+        "3D扩散执行器"
+      ],
+      "tier": 3,
+      "one_liner": "把扩散策略和 3D 场景表征结合、生成机械臂末端轨迹的模仿学习策略。",
+      "explanation": "3D Diffuser Actor 由卡内基梅隆大学 Katerina Fragkiadaki 组（柯宗纬、Nikolaos Gkanatsios）2024 年 2 月提出，发表于 CoRL 2024。此前两条路线各有长处：扩散策略能表达多种可行做法（动作多峰性）；3D 策略用深度把多视角图像融成 3D 特征，换相机视角时更稳。它把两者合一：把图像特征按深度抬升成 3D 点，用带 3D 相对位置注意力的去噪 Transformer，结合语言指令和本体状态，逐步给加了噪声的末端位姿轨迹去噪。发布时在 RLBench 多视角设定上比此前最好方法的成功率绝对提高 18.1 个百分点，单视角提高 13.1 个百分点，在 CALVIN 上相对提升 9%；真机上用 Franka 机械臂、每个任务十几条示教学会 12 个任务。",
+      "example": "在 RLBench 的「打开抽屉」任务里，它从多个 RGB-D 相机建出场景的 3D 特征点，从随机噪声出发反复去噪，得到机械臂下一个关键位姿（把手前方的位置和夹爪朝向）。",
+      "related": [
+        "扩散策略",
+        "3D 扩散策略",
+        "PerAct",
+        "RLBench",
+        "CALVIN",
+        "关键帧动作预测"
+      ],
+      "sources": [
+        {
+          "title": "3D Diffuser Actor: Policy Diffusion with 3D Scene Representations (arXiv 2402.10885)",
+          "url": "https://arxiv.org/abs/2402.10885"
+        },
+        {
+          "title": "3D Diffuser Actor 项目页",
+          "url": "https://3d-diffuser-actor.github.io/"
+        }
+      ],
+      "as_of": "2024-07"
+    },
+    {
+      "name_zh": "3D-LLM",
+      "name_en": "3D-LLM: Injecting the 3D World into Large Language Models",
+      "abbr": "",
+      "aliases": [
+        "3D 大语言模型"
+      ],
+      "tier": 3,
+      "one_liner": "能直接输入 3D 场景特征、回答空间问题和做任务分解的大语言模型。",
+      "explanation": "3D-LLM 由洪一宁、淦创（Chuang Gan）等来自 UCLA、UMass Amherst、MIT 等机构的研究者在 2023 年 7 月提出，NeurIPS 2023 spotlight。大语言模型和视觉语言模型只处理文字或 2D 图片，对空间关系、布局这类三维概念把握不好。3D-LLM 把 3D 场景从多个视角渲染成图片，用 2D 特征提取器取特征再映射回 3D 点，得到带语义的 3D 特征，然后接到 BLIP-2 等现成视觉语言模型上训练；另加 3D 定位机制帮模型理解位置。作者设计三类提示方法，收集了 30 多万条 3D-语言数据，覆盖场景描述、3D 问答、任务分解、定位和导航。在 ScanQA 上 BLEU-1 比当时最好方法高 9%。它是较早把 3D 场景接入大模型的工作，后来的 3D VLA、LEO 等延续了这一方向。",
+      "example": "给 3D-LLM 一个房间的 3D 扫描，问「冰箱在沙发的哪一侧」，或让它把「做早餐」分解成走到厨房、打开冰箱、拿出鸡蛋等步骤。",
+      "related": [
+        "3D VLA",
+        "多模态大语言模型",
+        "空间推理",
+        "3D视觉定位",
+        "LEO（3D 具身通才智能体）",
+        "ScanNet 数据集"
+      ],
+      "sources": [
+        {
+          "title": "3D-LLM: Injecting the 3D World into Large Language Models (arXiv 2307.12981)",
+          "url": "https://arxiv.org/abs/2307.12981"
+        },
+        {
+          "title": "3D-LLM 代码仓库 (GitHub)",
+          "url": "https://github.com/UMass-Foundation-Model/3D-LLM"
+        }
+      ],
+      "as_of": "2023-12"
+    },
+    {
+      "name_zh": "3D-ViTac",
+      "name_en": "3D-ViTac: Learning Fine-Grained Manipulation with Visuo-Tactile Sensing",
+      "abbr": "",
+      "aliases": [],
+      "tier": 3,
+      "one_liner": "把低成本触觉传感器读数和视觉点云放进同一 3D 空间来学精细操作的系统。",
+      "explanation": "3D-ViTac 由哥伦比亚大学、UIUC 和华盛顿大学的研究者（一作黄炳豪，导师李云竺）2024 年 10 月提出，发表于 CoRL 2024。只靠相机时，夹爪挡住物体或需要判断捏多紧，视觉信息就不够。它在软夹爪指面贴上柔性压阻式触觉垫：每块 16×16 共 256 个感应单元，每个约 3 平方毫米，厚度不到 1 毫米，成本约 20 美元，双臂四指共 1024 个单元。关键做法是用机器人运动学算出每个触觉单元的 3D 位置，把读数变成「触觉点」，和相机点云合成一个点云，再用扩散策略做模仿学习。在蒸鸡蛋、备葡萄、收集内六角扳手、递三明治四个长程任务上，整体成功率 80%–90%，纯视觉版本只有 45%–60%。",
+      "example": "夹鸡蛋时，相机看不出用了多大力，触觉点直接显示接触位置和压力，策略据此轻轻夹住而不捏碎；在手里调整内六角扳手朝向时，触觉点告诉策略扳手现在是什么姿态。",
+      "related": [
+        "视触觉融合",
+        "触觉传感器",
+        "扩散策略",
+        "点云",
+        "3D 扩散策略",
+        "双臂操作"
+      ],
+      "sources": [
+        {
+          "title": "3D-ViTac: Learning Fine-Grained Manipulation with Visuo-Tactile Sensing (arXiv 2410.24091)",
+          "url": "https://arxiv.org/abs/2410.24091"
+        },
+        {
+          "title": "3D-ViTac 项目页",
+          "url": "https://binghao-huang.github.io/3D-ViTac/"
+        }
+      ],
+      "as_of": "2024-10"
+    },
+    {
+      "name_zh": "DeepMind 乒乓球机器人",
+      "name_en": "Achieving Human Level Competitive Robot Table Tennis (Google DeepMind)",
+      "abbr": "",
+      "aliases": [
+        "谷歌乒乓球机器人",
+        "Robot Table Tennis"
+      ],
+      "tier": 3,
+      "one_liner": "DeepMind 2024 年的乒乓球机器人，首个在比赛中打到业余人类水平的学习型机器人。",
+      "explanation": "这项工作由谷歌 DeepMind 在 2024 年 8 月发布，论文称它是第一个在竞技乒乓球中达到业余人类水平的学习型机器人。硬件是一台 6 自由度 ABB IRB 1100 机械臂，装在两条直线导轨上可前后左右移动，两台 125 Hz 相机追踪球。控制分两层：底层是一组专门技能（如正手、反手），每个技能附带「技能描述」，记录它擅长和不擅长什么；高层控制器根据来球和对手统计选择技能，并在比赛中实时适应对手。技能在 MuJoCo 仿真里用强化学习训练，零样本部署到真机，再把真实对打的来球分布加回仿真，迭代形成训练课程。它与 29 位此前没交过手的人类选手比赛，胜 45%：对初学者全胜，对中级选手胜 55%，对高级选手全负。",
+      "example": "面对一位从没交过手的对手，高层控制器在比赛中持续统计每个底层技能的回球成功率，越来越多地选用对这个对手有效的技能。",
+      "related": [
+        "仿真到现实迁移",
+        "分层架构",
+        "强化学习",
+        "动态操作",
+        "MuJoCo",
+        "谷歌 DeepMind"
+      ],
+      "sources": [
+        {
+          "title": "Achieving Human Level Competitive Robot Table Tennis (arXiv 2408.03906)",
+          "url": "https://arxiv.org/abs/2408.03906"
+        },
+        {
+          "title": "Competitive Robot Table Tennis 项目页",
+          "url": "https://sites.google.com/view/competitive-robot-table-tennis/home"
+        }
+      ],
+      "as_of": "2024-08"
+    }
+  ]
+}

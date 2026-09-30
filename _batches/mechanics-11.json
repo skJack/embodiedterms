@@ -1,0 +1,423 @@
+{
+ "category": "mechanics",
+ "batch": 11,
+ "terms": [
+  {
+   "name_zh": "四连杆机构",
+   "name_en": "Four-Bar Linkage",
+   "abbr": "",
+   "aliases": [
+    "四杆机构",
+    "铰链四杆机构",
+    "平面四连杆"
+   ],
+   "tier": 3,
+   "one_liner": "四根杆用四个转动关节首尾连成闭环、只有 1 个自由度的机构。",
+   "explanation": "四连杆机构由四根杆（其中一根固定，叫机架）用四个转动关节首尾相连成一个闭环，是最简单的可动闭链机构，平面情况下只有 1 个自由度：转动其中一根杆，其余杆的位置就全部确定。和机架相连、能转整圈的杆叫曲柄，只能来回摆的叫摇杆，中间浮动的那根叫连杆。能否整圈转由 Grashof 条件判断：最短杆与最长杆长度之和不大于另外两杆之和时，最短杆能相对相邻杆整圈转动，据此可分出曲柄摇杆、双曲柄、双摇杆等类型。它的作用是把一个电机的简单转动变成想要的输出轨迹或角度关系，雨刮器、汽车悬架都用它；机器人里常借它把电机放在靠近躯干的位置、再经连杆去驱动膝或踝，平行四边形四连杆还能让夹爪指面始终保持平行。",
+   "example": "汽车雨刮器：电机带着曲柄连续转圈，通过连杆带动摇杆来回摆动，刮片就在挡风玻璃上左右扫。",
+   "related": [
+    "Grübler 公式",
+    "连杆传动",
+    "并联机构",
+    "并联踝关节",
+    "自由度",
+    "连杆"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Four-bar linkage",
+     "url": "https://en.wikipedia.org/wiki/Four-bar_linkage"
+    },
+    {
+     "title": "Wikipedia: Grashof condition",
+     "url": "https://en.wikipedia.org/wiki/Grashof_condition"
+    },
+    {
+     "title": "Lynch & Park, Modern Robotics（预印本 PDF，第 2 章 Example 2.3）",
+     "url": "https://hades.mech.northwestern.edu/images/7/7f/MR.pdf"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "摩擦金字塔",
+   "name_en": "Friction Pyramid",
+   "abbr": "",
+   "aliases": [
+    "线性化摩擦锥",
+    "多面体摩擦锥",
+    "棱锥摩擦锥",
+    "Pyramidal Friction Cone"
+   ],
+   "tier": 3,
+   "one_liner": "用多棱锥近似圆形摩擦锥，把摩擦约束变成线性不等式。",
+   "explanation": "按库仑摩擦，接触点的切向力不能超过摩擦系数 μ 乘以法向力，所有允许的接触力在三维里构成一个圆锥，即摩擦锥。圆锥约束是非线性的，于是常用多棱锥代替它，这就是摩擦金字塔：最简单的四棱锥由 (μ,0,1)、(−μ,0,1)、(0,μ,1)、(0,−μ,1) 四条棱张成，棱越多越贴近圆锥。内接棱锥会低估可用摩擦，外接会高估，抓取分析里一般取保守的内接。好处是摩擦约束全变成线性不等式，接触问题可以用线性规划、二次规划或线性互补问题来解。四足机器人凸 MPC 里常见的 |fx| ≤ μfz、|fy| ≤ μfz 就是外接四棱锥；MuJoCo 也提供 pyramidal（棱锥）和 elliptic（椭圆锥）两种全局设置，前者让求解器面对的对偶问题变成带盒约束的凸二次规划。",
+   "example": "μ=0.5、法向力 fz=100 N 时，真实摩擦锥允许任意方向最多 50 N 的切向力；用 |fx|≤50、|fy|≤50 的外接四棱锥时，fx=fy=50 N 也被允许，合力约 70.7 N，超出真实上限，所以想保守时常把 μ 换成 μ/√2。",
+   "related": [
+    "摩擦锥",
+    "库仑摩擦",
+    "摩擦系数",
+    "凸 MPC",
+    "线性互补问题",
+    "MuJoCo"
+   ],
+   "sources": [
+    {
+     "title": "Lynch & Park, Modern Robotics（预印本 PDF，12.2.1 节 Figure 12.18）",
+     "url": "https://hades.mech.northwestern.edu/images/7/7f/MR.pdf"
+    },
+    {
+     "title": "MuJoCo Documentation: Computation（Friction cones）",
+     "url": "https://mujoco.readthedocs.io/en/stable/computation/index.html"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "步态周期与占空比",
+   "name_en": "Gait Cycle and Duty Factor",
+   "abbr": "",
+   "aliases": [
+    "步态周期",
+    "步幅周期",
+    "占空比",
+    "负荷因子",
+    "Stride",
+    "Duty factor"
+   ],
+   "tier": 3,
+   "one_liner": "步态周期是腿从着地到下次着地的一整轮，占空比是其中着地时间的占比。",
+   "explanation": "步态周期（stride）指同一只脚从一次着地到下一次着地的完整循环，分为支撑相（脚踩地、承重推进）和摆动相（脚抬起向前迈）。占空比（duty factor）β = 支撑时间 ÷ 周期时间。生物力学里常以 0.5 为界：占空比大于 50% 算「走」，任何时刻至少有一只脚着地；小于 50% 算「跑」，会出现腾空。对四足和人形机器人，一个周期性步态可以用三组量描述：周期、每条腿的占空比、各腿之间的相位差，比如对角小跑是两组对角腿相差半个周期。基于模型的控制器用这些量排出每条腿何时着地（步态调度），强化学习运控也常把相位时钟放进观测或奖励里，引导策略踩出想要的节奏。",
+   "example": "一条腿每个周期 0.5 s，其中着地 0.3 s，占空比 0.6，大于 0.5，属于走；若着地只有 0.2 s，占空比 0.4，就是跑，会出现腾空。",
+   "related": [
+    "步态",
+    "支撑相 / 摆动相",
+    "对角小跑步态",
+    "接触时序（步态调度器）",
+    "步态相位（相位时钟）",
+    "腾空相"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Gait",
+     "url": "https://en.wikipedia.org/wiki/Gait"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "疾驰步态",
+   "name_en": "Gallop Gait",
+   "abbr": "",
+   "aliases": [
+    "奔跑步态",
+    "袭步",
+    "Gallop",
+    "旋转疾驰",
+    "Rotary Gallop"
+   ],
+   "tier": 3,
+   "one_liner": "四足最快的步态：四只脚依次错开落地，并带有全身腾空的阶段。",
+   "explanation": "疾驰（gallop，马术里也叫袭步）是四足动物的高速非对称步态：同一对前腿或后腿不同时落地，而是稍微错开，形成四拍落地节奏，每个周期还有四脚同时离地的腾空期。它是马最快的步态，平均约 40–48 km/h，速度越快腾空期越长；灵缇犬的「双腾空旋转疾驰」在一个周期里有收缩和伸展两次腾空，靠脊柱大幅弯曲加长步幅。它和跳跃步态（bound，两前腿一起、两后腿一起）的区别就在左右腿是否错开。对机器人来说，疾驰腾空时间长、每条腿着地时间短，躯干质心在腾空期无法直接控制，难度高于对角小跑。MIT 的 Mini Cheetah 用 MPC 加全身冲量控制，实测了包括疾驰在内的六种步态。",
+   "example": "马以右前腿领先疾驰时，落地顺序为左后→右后→左前→右前，接着四脚同时腾空，再进入下一个周期。",
+   "related": [
+    "步态",
+    "跳跃步态",
+    "对角小跑步态",
+    "腾空相",
+    "四足机器人",
+    "MIT Mini Cheetah"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Horse gait（Gallop）",
+     "url": "https://en.wikipedia.org/wiki/Horse_gait"
+    },
+    {
+     "title": "Wikipedia: Greyhound（double suspension rotary gallop）",
+     "url": "https://en.wikipedia.org/wiki/Greyhound"
+    },
+    {
+     "title": "Kim et al. 2019, Highly Dynamic Quadruped Locomotion via Whole-Body Impulse Control and Model Predictive Control",
+     "url": "https://arxiv.org/abs/1909.06586"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "旋转测地距离",
+   "name_en": "Geodesic Distance on SO(3)",
+   "abbr": "",
+   "aliases": [
+    "测地误差",
+    "旋转角度误差",
+    "角距离",
+    "Angular Distance",
+    "Geodesic Error"
+   ],
+   "tier": 3,
+   "one_liner": "两个姿态之间最少还要转多少度，是衡量旋转误差的标准度量。",
+   "explanation": "旋转测地距离指在旋转群 SO(3)（所有三维旋转构成的集合）上两个旋转之间的最短「路程」，数值上就是把一个姿态转到另一个姿态所需的最小旋转角，范围 0 到 π（180°）。对旋转矩阵 R₁、R₂，先算相对旋转 R₁ᵀR₂，再取 θ = arccos((tr(R₁ᵀR₂) − 1)/2)，tr 是矩阵对角线元素之和；用单位四元数 q₁、q₂ 时可写成 θ = 2·arccos(|q₁·q₂|)，取绝对值是因为 q 和 −q 表示同一个旋转。直接比较欧拉角或四元数分量的差会被表示方式误导，测地距离只看实际差了多少角度。6D 物体位姿估计、旋转表示研究（如 Zhou 等人提出 6D 旋转表示的论文）都用它报告「测地误差」，也可以直接当作训练损失。",
+   "example": "R₁ 为单位阵、R₂ 绕 z 轴转 90°：tr(R₂) = 0+0+1 = 1，θ = arccos(0) = 90°。又如偏航角 179° 和 −179°，数值差 358°，测地距离只有 2°。",
+   "related": [
+    "特殊正交群 SO(3)",
+    "旋转矩阵",
+    "四元数双倍覆盖",
+    "6D 旋转表示",
+    "6D位姿估计",
+    "欧拉角"
+   ],
+   "sources": [
+    {
+     "title": "Zhou et al., On the Continuity of Rotation Representations in Neural Networks（geodesic error 定义）",
+     "url": "https://arxiv.org/abs/1812.07035"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "几何雅可比与解析雅可比",
+   "name_en": "Geometric vs. Analytical Jacobian",
+   "abbr": "",
+   "aliases": [
+    "几何雅可比",
+    "解析雅可比",
+    "Geometric Jacobian",
+    "Analytic Jacobian"
+   ],
+   "tier": 3,
+   "one_liner": "都把关节速度映射到末端速度，区别是姿态部分用角速度还是姿态坐标的导数。",
+   "explanation": "雅可比矩阵描述关节速度 q̇ 与末端速度的线性关系，按末端速度怎么表示分两种。几何雅可比输出末端线速度和角速度 ω（《Modern Robotics》里对应空间 / 本体雅可比；Siciliano 等教材的定义略有不同，叫法不完全统一）。解析雅可比先用一组最少坐标描述末端位姿，如位置加欧拉角，再对这组坐标求导，得到 ẋ = J_a q̇。角速度并不等于欧拉角的导数，两者差一个取决于姿态表示的变换矩阵；它在某些姿态下不可逆（如万向节死锁），此时解析雅可比失效，哪怕机械臂并不在奇异位形。速度控制和静力学（τ = JᵀF）一般用几何雅可比，在欧拉角等坐标上做误差反馈或轨迹优化时用解析雅可比。",
+   "example": "用 ZYX 欧拉角描述末端姿态时，俯仰角到 ±90° 会出现万向节死锁，某些方向的角速度无法用有限的欧拉角导数表示，解析雅可比不可逆；几何雅可比在同一姿态下仍然正常。",
+   "related": [
+    "雅可比矩阵",
+    "微分运动学",
+    "欧拉角",
+    "万向节死锁",
+    "运动旋量（速度旋量）",
+    "奇异位形"
+   ],
+   "sources": [
+    {
+     "title": "Lynch & Park, Modern Robotics（预印本 PDF，5.1.5 节 Alternative Notions of the Jacobian）",
+     "url": "https://hades.mech.northwestern.edu/images/7/7f/MR.pdf"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "抓取矩阵",
+   "name_en": "Grasp Matrix",
+   "abbr": "G",
+   "aliases": [
+    "抓取映射",
+    "Grasp Map"
+   ],
+   "tier": 3,
+   "one_liner": "把各接触点的接触力汇总成物体所受合力与合力矩的线性映射。",
+   "explanation": "抓取矩阵 G（Murray、Li、Sastry 的教材里叫 grasp map）描述多指抓取时手指在接触点施加的力，和物体受到的合力旋量之间的关系：F_o = G·f_c。其中 f_c 是所有接触力拼成的长向量，F_o 是物体受到的 6 维力旋量（3 维力加 3 维力矩）。每个接触点在 G 里占一块，由接触点位置、接触法向和接触类型（无摩擦点接触、有摩擦点接触、软指接触）决定。反过来，Gᵀ 把物体的速度映射成各接触点的速度。G 的零空间就是内力：几根手指互相挤压、但物体合力为零的那部分力，手指靠它捏紧物体而不推动物体。力封闭可以表述为：在摩擦锥约束下 G 能生成任意方向的力旋量；再结合手部雅可比 J_h（τ = J_hᵀ f_c），就能从物体需要的力反推各关节力矩。",
+   "example": "两指从左右两侧各用 10 N 水平夹住一个盒子：两个接触力经 G 相加后合力为零，这组力落在 G 的零空间里，是纯内力；要托住盒子不掉，还得在摩擦锥范围内加上向上的摩擦力分量，让 G·f_c 抵消重力。",
+   "related": [
+    "力封闭",
+    "形封闭",
+    "力旋量",
+    "摩擦锥",
+    "接触雅可比",
+    "抓取质量指标"
+   ],
+   "sources": [
+    {
+     "title": "Murray, Li & Sastry, A Mathematical Introduction to Robotic Manipulation（第 5 章 The grasp map）",
+     "url": "https://www.cds.caltech.edu/~murray/books/MLS/pdf/mls94-complete.pdf"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "抓取质量指标",
+   "name_en": "Grasp Quality Metric",
+   "abbr": "",
+   "aliases": [
+    "抓取质量",
+    "抓取质量度量",
+    "ε 指标",
+    "Epsilon Quality",
+    "Ferrari-Canny 指标"
+   ],
+   "tier": 3,
+   "one_liner": "给一个抓取打分的数值，衡量它能多好地抵抗外来扰动。",
+   "explanation": "抓取质量指标把一组接触点（或一个手部姿态）映射成一个数，数越大抓得越好，用来给大量候选抓取排序。最常用的是 Ferrari 与 Canny 1992 年提出的 ε 指标：在接触力受限、且位于摩擦锥内的条件下，收集各接触点能施加的力旋量（力加力矩）求凸包，ε 是以原点为中心、能放进凸包的最大球半径，即任意方向都能抵抗的最小扰动大小；不满足力封闭时指标为零或负。力和力矩单位不同，通常用物体特征长度把力矩换算成力。Roa 与 Suárez 的综述把指标分为看接触点位置和看手部构型两类。Dex-Net 2.0 在位姿和摩擦不确定下算鲁棒 ε 指标，给约 670 万个合成样本打标签，训练抓取质量网络 GQ-CNN。",
+   "example": "同样用三根手指抓一个圆盘，三指均匀分布在圆周上时，力旋量凸包大致对称，内切球大，ε 高；三指挤在一侧时，凸包偏向一边，某个方向的推力几乎无法抵抗，ε 很小。",
+   "related": [
+    "力封闭",
+    "力旋量",
+    "抓取矩阵",
+    "抓取规划",
+    "Dex-Net",
+    "摩擦锥"
+   ],
+   "sources": [
+    {
+     "title": "Lynch & Park, Modern Robotics（预印本 PDF，12.1.7.3 节 Measuring the Quality of a Form-Closure Grasp）",
+     "url": "https://hades.mech.northwestern.edu/images/7/7f/MR.pdf"
+    },
+    {
+     "title": "Ferrari & Canny, Planning optimal grasps（ICRA 1992）",
+     "url": "https://doi.org/10.1109/ROBOT.1992.219918"
+    },
+    {
+     "title": "Mahler et al., Dex-Net 2.0（arXiv 1703.09312）",
+     "url": "https://arxiv.org/abs/1703.09312"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "Grübler 公式",
+   "name_en": "Grübler's Formula (Chebychev–Grübler–Kutzbach Criterion)",
+   "abbr": "",
+   "aliases": [
+    "Kutzbach-Grübler 公式",
+    "Kutzbach 准则",
+    "机构自由度计算公式",
+    "活动度公式",
+    "Mobility Formula"
+   ],
+   "tier": 3,
+   "one_liner": "用连杆数、关节数和各关节自由度，算出一个机构有几个自由度的公式。",
+   "explanation": "Grübler 公式也叫 Chebychev–Grübler–Kutzbach 准则，以三位提出者命名，用来数一个由连杆和关节组成的机构有几个自由度：dof = m(N − 1 − J) + Σfᵢ。其中 m 是单个刚体的自由度（平面机构取 3，空间机构取 6），N 是连杆数（地面也算一根），J 是关节数，fᵢ 是第 i 个关节提供的自由度（转动关节、移动关节为 1，球关节为 3）。思路是：每根活动杆本来有 m 个自由度，每个关节扣掉 m − fᵢ 个约束。它适合快速判断并联机构、闭链腿部或手指机构需要几个电机。局限是公式默认各约束相互独立；若几何尺寸特殊（平行、等长等），约束会冗余，实际自由度可能比算出来的多，这类机构叫过约束机构，此时公式只给出下界。",
+   "example": "平面四连杆：m=3，N=4（含地面），J=4 个转动关节各 1 个自由度，dof = 3×(4−1−4) + 4 = 1，转动一根曲柄整个机构就确定了。",
+   "related": [
+    "自由度",
+    "四连杆机构",
+    "并联机构",
+    "运动副（转动副 / 移动副 / 低副 / 高副）",
+    "构型空间",
+    "欠驱动"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Chebychev–Grübler–Kutzbach criterion",
+     "url": "https://en.wikipedia.org/wiki/Chebychev%E2%80%93Gr%C3%BCbler%E2%80%93Kutzbach_criterion"
+    },
+    {
+     "title": "Lynch & Park, Modern Robotics（预印本 PDF，2.2.2 节 Grübler's Formula）",
+     "url": "https://hades.mech.northwestern.edu/images/7/7f/MR.pdf"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "手部协同",
+   "name_en": "Hand Synergies",
+   "abbr": "",
+   "aliases": [
+    "姿态协同",
+    "Postural Synergies",
+    "Eigengrasps",
+    "本征抓取",
+    "手部协同效应"
+   ],
+   "tier": 3,
+   "one_liner": "人手众多关节常按少数固定组合一起动，可用几个协同参数描述手型。",
+   "explanation": "手部协同的说法来自神经科学：Santello、Flanders 和 Soechting 1998 年让受试者想象抓握 57 种常见物体，测量手指和拇指的 15 个关节角，做主成分分析（PCA）后发现前两个主成分就解释了超过 80% 的方差。也就是说，人手自由度虽多，抓握姿态大多落在一个低维子空间里，高阶成分只负责细调。机器人借用了这个思路：GraspIt! 仿真器的 eigengrasp（本征抓取）用几个协同幅值代替全部关节角来搜索抓取；硬件上有按「自适应协同」设计的 Pisa/IIT SoftHand（Catalano 等，2014），同类产品 qb SoftHand Research 只用一个电机驱动 19 个仿人自由度。学灵巧操作时，协同也可用来压缩动作空间。",
+   "example": "qb SoftHand 只有一个电机，控制量只有「握紧多少」这一个数，五指按腱绳设计好的比例一起合拢，就能抓起不同形状的物体。",
+   "related": [
+    "灵巧手",
+    "欠驱动",
+    "腱绳驱动",
+    "动作重定向",
+    "抓握分类（强力抓握 / 精细捏取）",
+    "数据手套"
+   ],
+   "sources": [
+    {
+     "title": "Santello, Flanders & Soechting 1998, Postural Hand Synergies for Tool Use（J Neurosci，PMC 全文）",
+     "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6793309/"
+    },
+    {
+     "title": "GraspIt! Documentation: Eigengrasps",
+     "url": "https://graspit-simulator.github.io/build/html/eigengrasps.html"
+    },
+    {
+     "title": "qbrobotics: qb SoftHand Research",
+     "url": "https://qbrobotics.com/product/qb-softhand-research/"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "碰撞冲击",
+   "name_en": "Impact",
+   "abbr": "",
+   "aliases": [
+    "冲击",
+    "撞击",
+    "碰撞",
+    "Collision Impact"
+   ],
+   "tier": 3,
+   "one_liner": "两个物体相撞时，极短时间内出现很大接触力、使速度突变的过程。",
+   "explanation": "冲击指两个物体碰撞时，力在极短时间里升到很大，速度随之几乎瞬间改变。刚体仿真和控制里常把它当作瞬时事件：冲量（力对时间的积分）等于动量变化，再用恢复系数 e 决定反弹多少，e=0 完全不弹，e=1 没有能量损失。机器人里冲击很常见：足式机器人每步落地、跳跃着陆、机械臂撞到人或桌面。峰值冲击力可能损坏减速器和传感器，也会让脚打滑、控制失稳。硬件上靠降低折算到输出端的电机惯量、提高反驱性来缓冲；Wensing 等人 2017 年为 MIT Cheetah 提出冲击缓解因子（IMF）量化这种能力，该机器人跳跃步态奔跑时接触时间短至 85 ms、峰值力超过 450 N。",
+   "example": "1 kg 的球以 2 m/s 竖直落地，恢复系数 0.5，就以 1 m/s 反弹；动量从 −2 变为 +1 kg·m/s，冲量 3 N·s，若接触只持续 10 ms，平均接触力约 300 N，约为球重的 30 倍。",
+   "related": [
+    "恢复系数",
+    "反驱性",
+    "反射惯量",
+    "准直驱",
+    "接触模型",
+    "地面反作用力"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Impact (mechanics)",
+     "url": "https://en.wikipedia.org/wiki/Impact_(mechanics)"
+    },
+    {
+     "title": "Wikipedia: Coefficient of restitution",
+     "url": "https://en.wikipedia.org/wiki/Coefficient_of_restitution"
+    },
+    {
+     "title": "Wensing et al. 2017, Proprioceptive Actuator Design in the MIT Cheetah: Impact Mitigation and High-Bandwidth Physical Interaction（IEEE T-RO）",
+     "url": "https://doi.org/10.1109/TRO.2016.2640183"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "惯性张量",
+   "name_en": "Inertia Tensor",
+   "abbr": "",
+   "aliases": [
+    "惯量张量",
+    "惯量矩阵",
+    "转动惯量矩阵",
+    "3×3 惯量矩阵",
+    "Rotational Inertia Matrix"
+   ],
+   "tier": 3,
+   "one_liner": "一个 3×3 对称矩阵，描述刚体绕任意方向转动时有多难转。",
+   "explanation": "惯性张量（也叫惯量矩阵）是刚体转动惯性的完整描述，为 3×3 对称正定矩阵。对角元 Ixx、Iyy、Izz 是绕 x、y、z 轴的转动惯量，如 Ixx = Σm(y² + z²)；非对角元叫惯性积，如 Ixy = −Σm·x·y（符号约定因书而异），反映绕一个轴转时会不会牵动另一个轴。它联系角速度 ω 和角动量：L = Iω，转动动能 K = ½ωᵀIω。换坐标朝向时 I' = RᵀIR，换参考点用平行轴定理；特征分解得到主轴，主轴坐标下惯性积全为零。URDF 的 inertial 标签要为每根连杆填质量、质心位置和惯性张量的六个独立元素，填错会让动力学仿真和力矩控制都出问题。",
+   "example": "一个 2 kg 的质点位于 (0.1, 0, 0) m：Ixx = 0，Iyy = Izz = 2×0.1² = 0.02 kg·m²，惯性积全为 0，说明绕穿过质点的 x 轴转不费力，绕 y、z 轴转则要克服 0.02 kg·m² 的惯量。",
+   "related": [
+    "转动惯量",
+    "惯性参数",
+    "平行轴定理",
+    "质心",
+    "统一机器人描述格式",
+    "动力学参数辨识"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Moment of inertia（Inertia tensor）",
+     "url": "https://en.wikipedia.org/wiki/Moment_of_inertia"
+    },
+    {
+     "title": "Lynch & Park, Modern Robotics（预印本 PDF，8.2 节 Dynamics of a Single Rigid Body；4.2 节 URDF）",
+     "url": "https://hades.mech.northwestern.edu/images/7/7f/MR.pdf"
+    }
+   ],
+   "as_of": ""
+  }
+ ]
+}

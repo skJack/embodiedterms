@@ -1,0 +1,223 @@
+{
+ "batch": "sim-01",
+ "terms": [
+  {
+   "key": "sim-01#0",
+   "name_en": "Baseline",
+   "aliases": [],
+   "one_liner": "An existing or simple method used as a point of comparison to show how much a new method improves.",
+   "explanation": "A baseline is the reference point used when evaluating a new method. Google's machine learning glossary defines it as a reference model used to compare against a (usually more complex) model. A baseline can be something simple, like plain behavior cloning or a random policy, or it can be a strong, widely recognized method, like OpenVLA. Reporting “80% success rate” on its own says little; the improvement only means something once it's measured against a baseline under the same benchmark and evaluation protocol. When reading a paper, check whether the baseline is strong enough and whether it was reproduced faithfully to the original authors' settings — a weak baseline makes an improvement look bigger than it is. An ablation study can also be seen as comparing a method against a version of itself with one component removed, which then serves as the baseline.",
+   "example": "The OpenVLA-OFT paper uses the original OpenVLA as its baseline, raising average success rate on the four LIBERO task suites from 76.5% to 97.1%.",
+   "related": [
+    "Ablation study",
+    "Benchmark",
+    "State of the art",
+    "Success rate",
+    "Evaluation protocol"
+   ]
+  },
+  {
+   "key": "sim-01#1",
+   "name_en": "Benchmark",
+   "aliases": [
+    "leaderboard"
+   ],
+   "one_liner": "A fixed set of tasks, data, and scoring rules that let different methods be compared under the same conditions.",
+   "explanation": "The term “benchmark” originates in computing, referring to a standardized set of tests used to measure the relative performance of something. In embodied AI, a benchmark typically bundles a fixed set of tasks, a simulator or real-world setup, demonstration data (if any), an evaluation protocol, and a metric — usually success rate. Common simulated benchmarks include LIBERO, CALVIN, SimplerEnv, and RoboTwin, alongside real-robot evaluation networks such as RoboArena. Its value is reproducibility and the ability to compare methods head to head; the risk is that methods can be tuned specifically to score well on the leaderboard (“benchmark hacking”) without that reflecting real-world usefulness, and once leading methods get close to a perfect score, the benchmark stops being able to distinguish between them — what's called benchmark saturation.",
+   "example": "VLA papers commonly report average success rate across LIBERO's four task suites, placing their numbers in the same table as baselines such as OpenVLA for comparison.",
+   "related": [
+    "Baseline",
+    "Evaluation protocol",
+    "Success rate",
+    "LIBERO",
+    "Benchmark saturation",
+    "Benchmark hacking (leaderboard chasing)"
+   ]
+  },
+  {
+   "key": "sim-01#2",
+   "name_en": "Digital Twin",
+   "aliases": [],
+   "one_liner": "A virtual copy of a real object, robot, or factory that's kept in sync using real data.",
+   "explanation": "A digital twin is a computer model that corresponds one-to-one to a physical product, system, or process. What sets it apart from an ordinary simulation is that it continuously receives data from the real object to keep its own state synchronized, and in the strict sense it can also feed back and influence the real system. NASA used ground-based simulators paired with the actual spacecraft for troubleshooting as far back as the Apollo era, and formally defined the concept in 2010; NVIDIA positions it as a flagship use case for Omniverse, applied to factory planning and robot testing. In embodied AI, the term is often used more loosely, to mean a simulated environment that faithfully reproduces a real scene, used to train and evaluate a policy in simulation before it ever touches a real robot. The closer the replica, the smaller the sim-to-real gap, but the higher the modeling cost; an approach that only aims for similarity rather than an exact match is called a “digital cousin.”",
+   "example": "According to NVIDIA, Foxconn used a digital twin to optimize a production line's layout and equipment placement in a virtual factory before rolling the changes out to the physical one.",
+   "related": [
+    "Real-to-sim",
+    "Digital cousin",
+    "Sim-to-real gap",
+    "Isaac Sim",
+    "Omniverse",
+    "Simulation fidelity"
+   ]
+  },
+  {
+   "key": "sim-01#3",
+   "name_en": "Domain Randomization",
+   "aliases": [
+    "DR"
+   ],
+   "one_liner": "Randomizing appearance and physics in simulation during training so the real world looks like just another variation.",
+   "explanation": "Domain randomization was proposed by Josh Tobin and colleagues at OpenAI in 2017 (IROS 2017). Instead of trying to make simulation look exactly like reality, it heavily randomizes rendering parameters — textures, lighting, camera settings — and dynamics parameters such as mass, friction, and damping (the latter often called dynamics randomization) during training, so the model sees enough variation that the real world just looks like one more instance of it. The original paper trained an object-localization network purely on randomized simulated RGB images, and after transferring to a real robot, achieved about 1.5 cm of localization accuracy. It's one of the most common techniques for sim-to-real transfer, and frameworks such as Isaac Lab include it out of the box. The difficulty is that the randomization range is usually tuned by hand — too wide, and the policy becomes overly conservative; automatic domain randomization lets the range expand on its own as training progresses.",
+   "example": "When training a quadruped locomotion policy, randomize ground friction, body mass, and motor delay independently for every parallel environment, so the resulting policy is less likely to fall over on a real robot.",
+   "related": [
+    "Sim-to-real gap",
+    "Sim-to-real transfer",
+    "Dynamics randomization",
+    "Visual randomization",
+    "Automatic domain randomization",
+    "System identification"
+   ]
+  },
+  {
+   "key": "sim-01#4",
+   "name_en": "Environment (Env; reset/step interface)",
+   "aliases": [
+    "Gym interface",
+    "Gymnasium API",
+    "Env"
+   ],
+   "one_liner": "The standard reinforcement-learning interface: reset starts an episode, step executes one action.",
+   "explanation": "In reinforcement learning, the environment is the world an agent interacts with. Originating with OpenAI Gym and now maintained by the Farama Foundation as Gymnasium, it's standardized into a programming interface: reset() starts a new episode and returns the initial observation plus an info dictionary; step(action) executes one action and returns the new observation, the reward, terminated (the episode ended in a meaningful sense, such as success or falling over), truncated (the episode was cut off externally, such as by a timeout), and info. The environment also declares its action_space and observation_space, fixing the format of actions and observations. Frameworks such as Isaac Lab follow a similar convention, which is what lets the same training algorithm be pointed at different environments. The older Gym API had a single done flag; it was split into two because, on a timeout truncation, the value estimate still needs to bootstrap from the next state, and conflating the two cases leads to incorrect updates.",
+   "example": "A typical loop: obs, info = env.reset(), then repeatedly obs, reward, terminated, truncated, info = env.step(policy(obs)), resetting whenever either termination flag comes back true.",
+   "related": [
+    "Agent and environment",
+    "Episode",
+    "Observation",
+    "Action space",
+    "Termination and truncation",
+    "Gymnasium"
+   ]
+  },
+  {
+   "key": "sim-01#5",
+   "name_en": "LIBERO Benchmark",
+   "aliases": [
+    "Benchmarking Knowledge Transfer for Lifelong Robot Learning",
+    "LIBERO-Spatial",
+    "LIBERO-Object",
+    "LIBERO-Goal",
+    "LIBERO-Long (LIBERO-10)",
+    "LIBERO-90",
+    "LIBERO-100"
+   ],
+   "one_liner": "A simulated benchmark of 130 tabletop manipulation tasks, one of the most commonly reported in VLA papers.",
+   "explanation": "LIBERO was proposed by Bo Liu, Yuke Zhu, Peter Stone, and colleagues, published at the NeurIPS 2023 Datasets and Benchmarks track, and originally designed to study knowledge transfer in lifelong learning. It's built on robosuite (which runs on MuJoCo underneath), and procedurally generates 130 tasks with language instructions, split into four suites: Spatial (varying object placement), Object (varying which object), and Goal (varying the goal), each with 10 tasks; LIBERO-100 splits further into LIBERO-90, used for pretraining, and 10 long-horizon tasks called LIBERO-Long (also known as LIBERO-10). Each task comes with 50 human-teleoperated demonstrations. It later became the most commonly used leaderboard for VLA fine-tuning, and leading methods now exceed 97% average success rate, which has led to harder variants with added perturbations, LIBERO-Plus and LIBERO-PRO.",
+   "example": "OpenVLA-OFT reaches 97.1% average success rate across LIBERO's four suites, compared with 76.5% for the original OpenVLA.",
+   "related": [
+    "Benchmark",
+    "Benchmark saturation",
+    "LIBERO-Plus",
+    "LIBERO-PRO",
+    "robosuite",
+    "OpenVLA-OFT"
+   ]
+  },
+  {
+   "key": "sim-01#6",
+   "name_en": "MuJoCo (Multi-Joint dynamics with Contact)",
+   "aliases": [
+    "Mujoco"
+   ],
+   "one_liner": "An open-source physics engine known for accurate contact simulation, maintained by Google DeepMind.",
+   "explanation": "MuJoCo stands for Multi-Joint dynamics with Contact. It was published by Todorov and colleagues at IROS in 2012, and originally required a paid license. DeepMind acquired it in October 2021 and made it free, then open-sourced it under Apache 2.0 starting in 2022; it's now maintained by Google DeepMind. It solves for contact forces using convex optimization, giving a unique solution and cleanly defined inverse dynamics, which suits it well to control and reinforcement learning research. Robot models are described in MJCF, an XML format. Around it has grown an ecosystem including MJX, a JAX version that runs in parallel on GPU/TPU, and the MuJoCo Menagerie model library; robosuite, LIBERO, and the DeepMind Control Suite are all built on top of it.",
+   "example": "The LIBERO benchmark is built on robosuite, with the robot arm's and objects' physics computed by MuJoCo underneath.",
+   "related": [
+    "Physics engine",
+    "MJX",
+    "MJCF",
+    "MuJoCo Menagerie",
+    "robosuite",
+    "DeepMind Control Suite"
+   ]
+  },
+  {
+   "key": "sim-01#7",
+   "name_en": "NVIDIA Isaac Lab",
+   "aliases": [
+    "Orbit",
+    "IsaacLab"
+   ],
+   "one_liner": "NVIDIA's open-source, GPU-parallel robot learning framework for training policies at scale in simulation.",
+   "explanation": "Isaac Lab is an open-source robot learning framework (BSD-3 licensed) led by NVIDIA, evolved from the Orbit framework published in 2023, and NVIDIA's officially recommended replacement for Isaac Gym, which is no longer supported. It's built on top of Isaac Sim, using PhysX for physics and RTX for rendering, and can run large numbers of parallel environments simultaneously on the GPU; it comes with actuator models, a variety of sensors, domain randomization, and data-collection tools, and supports reinforcement learning, imitation learning, and motion planning. Many humanoid and quadruped reinforcement-learning locomotion policies are trained here. As of September 2026, version 3.0 is in early access and has moved to a multi-physics-backend architecture that can plug in the Newton physics engine, with some workflows no longer requiring Isaac Sim to be installed at all.",
+   "example": "To train a walking policy for the Unitree G1, open a few thousand parallel environments in Isaac Lab with domain randomization applied, then deploy the trained policy to the real robot.",
+   "related": [
+    "Isaac Sim",
+    "Isaac Gym",
+    "Orbit / IsaacGymEnvs (Isaac Lab's predecessors)",
+    "GPU-parallel simulation",
+    "Newton physics engine",
+    "RL-based locomotion control"
+   ]
+  },
+  {
+   "key": "sim-01#8",
+   "name_en": "NVIDIA Isaac Sim",
+   "aliases": [],
+   "one_liner": "NVIDIA's Omniverse-based, open-source robot simulator built for high physical and visual fidelity.",
+   "explanation": "Isaac Sim is NVIDIA's reference robot simulation application, built on the Omniverse platform: scenes are described in OpenUSD, physics runs on PhysX, and rendering runs on RTX. It can import robots and scenes from CAD, URDF, or MJCF, simulate sensors such as cameras and lidar, batch-generate synthetic data by randomizing lighting, color, and position, and supports software-in-the-loop/hardware-in-the-loop testing along with a ROS 2 bridge. It's been open source on GitHub under Apache 2.0 since 2025. Its role is to be the high-fidelity simulator, while large-scale policy training is usually handed off to Isaac Lab, which is built on top of it. As of September 2026, the latest stable release is 6.1, with 7.0 available as an alpha preview.",
+   "example": "Build a warehouse scene in Isaac Sim, randomize the crate textures and lighting, and batch-render labeled images to train a detection model.",
+   "related": [
+    "Isaac Lab",
+    "Omniverse",
+    "PhysX",
+    "Universal Scene Description (OpenUSD)",
+    "Synthetic data",
+    "Digital twin"
+   ]
+  },
+  {
+   "key": "sim-01#9",
+   "name_en": "Physics Engine",
+   "aliases": [],
+   "one_liner": "The software core that computes forces, collisions, and motion step by step according to physical laws.",
+   "explanation": "A physics engine is software that approximately simulates a physical system, first used heavily in games and film. On every simulation step, it first runs collision detection to find which objects are touching, then a constraint solver computes contact forces, friction, and joint forces, and finally an integrator updates positions and velocities. Engines can be grouped by their goal into real-time engines, which favor speed, and high-accuracy engines, which favor precision. Common ones in robotics include MuJoCo, PhysX, Bullet (PyBullet), ODE, and the newer Newton. It's worth distinguishing from a simulator: a physics engine only handles how things move, while a simulator such as Isaac Sim or Gazebo wraps it with rendering, sensors, scene editing, and a programming interface. The contact model and step size it uses directly determine how accurate and stable the simulation is, and are one of the main sources of the sim-to-real gap.",
+   "example": "The same robot-arm grasping task, run in MuJoCo versus PhysX, can produce different contact forces and success rates — which is why papers usually state which engine they used.",
+   "related": [
+    "Simulator",
+    "MuJoCo",
+    "PhysX",
+    "Contact model",
+    "Constraint solver",
+    "Simulation timestep"
+   ]
+  },
+  {
+   "key": "sim-01#10",
+   "name_en": "Real-World Evaluation",
+   "aliases": [
+    "real-robot evaluation",
+    "real-robot testing"
+   ],
+   "one_liner": "Running a policy on an actual robot repeatedly and recording success rate and other outcomes.",
+   "explanation": "Real-world evaluation means running a policy on an actual robot in an actual scene, recording whether each attempt succeeded, how far it got, and whether a human had to step in. No matter how good a simulation is, a sim-to-real gap remains, so this is the ultimate test of an embodied model. The difficulty is cost and reproducibility: a person has to place objects and reset the scene every time, and results are judged by hand; a slight difference in lighting, placement, or the robot's own state can shift the score, making it hard to compare numbers across different labs. For this reason, papers need to spell out their evaluation protocol clearly — the tasks, number of trials, initial conditions, and success criteria. To make results more trustworthy and more scalable, approaches such as RoboArena's distributed, double-blind pairwise comparisons have emerged, alongside using simulated evaluation (like SimplerEnv) or a world model to predict real-robot performance instead.",
+   "example": "RoboArena ran more than 600 double-blind, pairwise real-robot comparisons of 7 general-purpose policies across DROID robot setups at 7 universities, then aggregated the results into a ranking.",
+   "related": [
+    "Simulation-based evaluation",
+    "Evaluation protocol",
+    "Success rate",
+    "Double-blind pairwise comparison",
+    "RoboArena",
+    "Sim-to-real gap"
+   ]
+  },
+  {
+   "key": "sim-01#11",
+   "name_en": "Sim-to-Real Gap (Reality Gap)",
+   "aliases": [
+    "Reality Gap",
+    "Sim2Real Gap"
+   ],
+   "one_liner": "The mismatch between simulation and reality that makes a policy trained in sim perform worse on a real robot.",
+   "explanation": "The sim-to-real gap refers to the mismatch between a simulated environment and the real world, which causes a policy trained in simulation to perform worse, or fail outright, once it's transferred to a real robot. The gap has several sources: inaccurate physical parameters (friction, mass, damping, motor characteristics), simplifications in the physics modeling itself (such as soft contact or flexible objects), visual differences (rendered lighting and textures don't match a real camera), and factors that simulation doesn't model at all, such as sensor noise and control latency. Because simulated training is cheap, safe, and can run at massive parallel scale, closing this gap is the central problem in sim-to-real transfer. Common countermeasures include system identification (calibrating simulation parameters to match reality), domain randomization (training the policy to handle a wide range of parameters), domain adaptation (shifting simulated data's distribution to look more like real data), and fine-tuning with a small amount of real-robot data.",
+   "example": "A quadruped locomotion policy trained in simulation shakes in place or even falls over on the real robot because the real motors respond more slowly than the simulated ones did — a textbook case of the sim-to-real gap.",
+   "related": [
+    "Sim-to-real transfer",
+    "Domain randomization",
+    "System identification",
+    "Domain adaptation",
+    "Actuator modeling",
+    "Real-to-sim"
+   ]
+  }
+ ]
+}

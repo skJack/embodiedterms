@@ -1,0 +1,211 @@
+{
+  "batch": "concept-10",
+  "terms": [
+    {
+      "key": "concept-10#0",
+      "name_en": "Blind Locomotion",
+      "aliases": [
+        "Proprioceptive Locomotion"
+      ],
+      "one_liner": "A locomotion approach that uses no camera or lidar, relying only on joint and IMU signals to walk.",
+      "explanation": "Blind locomotion means a legged robot walks without using external sensing such as a camera or lidar, relying only on proprioceptive signals such as joint encoders and the IMU (inertial measurement unit), inferring the terrain from foot-contact feedback alone. A landmark example is the ANYmal quadruped controller from Marco Hutter's group at ETH Zurich, published in Science Robotics in 2020: the neural network reads only a sequence of proprioceptive signals, trained with teacher-student distillation in simulation and then transferred zero-shot to real-world terrain such as mud, snow, gravel, dense vegetation, and flowing water. In 2021, Jonah Siekmann and colleagues (RSS) used a similar approach to get the biped robot Cassie to climb a real staircase using only proprioception. The advantage of blind locomotion is that it is unaffected by vision failing, in darkness, smoke, or tall grass, and it avoids the latency and error that come with mapping; the drawback is that it can only react after a foot has already landed, making it hard to plan ahead for a high step or a gap. Because of this, it is often combined with perceptive locomotion, serving as a fallback when vision is unreliable.",
+      "example": "An ANYmal quadruped, without looking at the ground at all and relying only on its leg joint and IMU signals, walks through mud, snow, and swift-flowing water.",
+      "related": [
+        "Perceptive Locomotion",
+        "Proprioception",
+        "Legged Locomotion",
+        "Rough-terrain Locomotion",
+        "Teacher-Student Distillation",
+        "Sim-to-Real Transfer"
+      ]
+    },
+    {
+      "key": "concept-10#1",
+      "name_en": "Compositional Generalization",
+      "aliases": [
+        "Systematic Generalization"
+      ],
+      "one_liner": "Recombining separately learned elements to handle a combination that was never seen together during training.",
+      "explanation": "Compositional generalization means a model, after seeing individual elements — words, objects, skills, environmental factors — separately during training, can still handle them correctly when they are combined in a new way. This problem was first discussed in linguistics and cognitive science: after learning the new verb “dax,” a person can immediately understand “dax twice” and “sing and dax”; Brenden Lake and Marco Baroni's 2018 SCAN benchmark (ICML) showed that recurrent neural networks fail badly on tests that require genuine composition. Applied to robotics, the elements can be object categories, placements, tabletop textures, and camera viewpoints, or atomic skills such as “grasp” and “put into.” It matters because the number of possible combinations grows multiplicatively with the number of elements, making it impossible to collect data for every one. Zhou Gao and colleagues (RSS 2024) found that robot policies genuinely can compose certain environmental factors, and used this to design a data-collection scheme that needs far less data. Whether a VLA can carry out “put an unseen object into an unseen container” is also commonly tested as compositional generalization.",
+      "example": "The training data includes 'put the red cup in the bowl' and 'put the blue plate in the basket'; at test time the robot is asked to 'put the red cup in the basket.'",
+      "related": [
+        "Generalization",
+        "Task Generalization",
+        "Semantic Generalization",
+        "Zero-shot",
+        "Out-of-Distribution",
+        "Skill Primitive"
+      ]
+    },
+    {
+      "key": "concept-10#2",
+      "name_en": "Dynamic Manipulation",
+      "aliases": [],
+      "one_liner": "Manipulation that deliberately exploits velocity, inertia, and gravity, such as throwing, flinging, catching, or tossing.",
+      "explanation": "Dynamic manipulation means a robot deliberately exploits an object's velocity, inertia, gravity, centrifugal force, or other dynamic effects to complete a task, such as throwing, flinging, catching, or slapping. The counterpart is quasi-static manipulation, where motion is slow enough that inertia can be ignored and the system is approximately in static equilibrium at every moment — most pick-and-place falls into this category. One of the earliest systematic studies in robotics came from Kevin Lynch and Matthew Mason (IJRR 1999), who showed that even a simple arm with only one or two joints could control an object's state using rolling, sliding, and throwing. Dynamic manipulation is faster and can move objects beyond the arm's reach, but once an object leaves the hand it cannot be corrected, so accurate dynamics prediction is essential, and perception and control latency matter much more at high speed. Recent work has combined it with data-driven learning, such as TossingBot learning to throw objects into a bin, FlingBot learning to fling cloth open, and IRP learning to whip a rope to hit a target.",
+      "example": "FlingBot grips two corners of a piece of cloth with both arms and flings it forward to spread out a tangled bundle — much faster than smoothing it out bit by bit, and able to unfold cloth larger than the arms' own reach.",
+      "related": [
+        "Non-prehensile Manipulation",
+        "Deformable Object Manipulation",
+        "Garment Manipulation",
+        "Extrinsic Dexterity",
+        "Quasi-static Assumption",
+        "Manipulation"
+      ]
+    },
+    {
+      "key": "concept-10#3",
+      "name_en": "Embodied Cognition",
+      "aliases": [
+        "Embodiment (Cognitive Science)"
+      ],
+      "one_liner": "The view in cognitive science that thought is inseparable from the body and its interaction with the environment.",
+      "explanation": "Embodied cognition is a family of theories in cognitive science and philosophy of mind holding that thought is not just symbol manipulation happening in the brain, but is shaped jointly by the body's form, its sensorimotor abilities, and the body's interaction with the environment. The idea traces back to the phenomenology of Maurice Merleau-Ponty and others; Francisco Varela, Evan Thompson, and Eleanor Rosch's 1991 book The Embodied Mind systematized it, while George Lakoff and Mark Johnson argued from a linguistic angle that abstract concepts derive from bodily experience. Its influence on robotics has been direct: Rodney Brooks abandoned the approach of building a complete world model before planning, letting sensors drive behavior directly and arguing that the world itself is the best model; Rolf Pfeifer and others likewise argued that genuine intelligence requires a body with sensorimotor capabilities. Today's term “embodied AI” descends from this line of thinking, and it provides the theoretical basis for the claim that intelligence must form through interaction with the physical world.",
+      "example": "English uses “grasp” to mean “understand”; Lakoff and Johnson treat expressions like this as evidence that abstract concepts borrow from bodily experience.",
+      "related": [
+        "Embodied AI",
+        "Disembodied AI",
+        "Subsumption Architecture (Behavior-based Robotics)",
+        "Morphological Computation",
+        "Symbol Grounding Problem",
+        "Moravec's Paradox"
+      ]
+    },
+    {
+      "key": "concept-10#4",
+      "name_en": "Embodied Interaction",
+      "aliases": [],
+      "one_liner": "The interaction an agent has with people, objects, and its surroundings in a physical or simulated space.",
+      "explanation": "In embodied AI, embodied interaction refers to an agent, a real robot or a virtual body in simulation, interacting with people and the environment in a physical or simulated space: this includes actions that change the environment, such as moving, grasping, pushing, and pulling, as well as acting on spoken instructions and answering questions. The 2024 embodied-AI survey from Sun Yat-sen University and others lists it as one of four research directions, alongside embodied perception, embodied agents, and sim-to-real, using embodied question answering and language-guided grasping as typical tasks. It differs from pure perception in that interaction changes the environment, so the agent must decide both what to do and when it has gathered enough information. The term has a separate meaning in human-computer interaction (HCI): Paul Dourish's 2001 book Where the Action Is uses it to describe how people interact with computing systems through their bodies, physical objects, and social context, which belongs to interface-design theory — a distinction worth keeping in mind when reading the literature.",
+      "example": "A user says, “I'm thirsty, get me something to drink.” The robot has to infer the intent, find a drink, and hand it over securely, not just recognize that there is a cup somewhere in the image.",
+      "related": [
+        "Embodied Perception",
+        "Embodied Question Answering",
+        "Human-Robot Interaction",
+        "Physical Human-Robot Interaction",
+        "Interactive Perception",
+        "Language Grounding"
+      ]
+    },
+    {
+      "key": "concept-10#5",
+      "name_en": "Embodied Memory",
+      "aliases": [],
+      "one_liner": "A robot storing what it has seen and done so it can use that later for decisions and answering questions.",
+      "explanation": "Embodied memory refers to the mechanisms an embodied agent uses, over long periods of operation, to store and recall past experience: where it has been, where things are kept, how far a task has progressed, where it failed last time. This is necessary because a robot only ever sees part of the world at once, since it is partially observable, and many tasks run anywhere from minutes to days, so a policy that only looks at the current frame will forget sub-tasks it already finished, or keep searching for the same object over and over. There are roughly three common approaches. One keeps historical features inside the model itself — MemoryVLA (2025), for example, draws on human working memory and episodic memory to add a memory bank to a VLA model. Another maintains an external structured memory, such as a 3D scene graph or semantic map — KARMA uses a long-term scene graph plus short-term state records to support household task planning. The third is retrieval augmentation, as in ReMEmbR, which stores long-horizon navigation footage in a database indexed by time and location, used to answer questions about where and when something happened.",
+      "example": "A patrol robot asked, “where did you last see a red cart,” has to retrieve the time and location from hours of historical footage before it can answer.",
+      "related": [
+        "Memory-augmented VLA",
+        "MemoryVLA",
+        "Long-horizon Task",
+        "Partially Observable Markov Decision Process",
+        "3D Scene Graph",
+        "Embodied Question Answering"
+      ]
+    },
+    {
+      "key": "concept-10#6",
+      "name_en": "Embodied Perception",
+      "aliases": [],
+      "one_liner": "Perception in service of action: observing while moving, understanding 3D space, and supporting decisions.",
+      "explanation": "Embodied perception refers to the perception an agent situated in an environment carries out in order to act. Unlike traditional computer vision, which takes a single image and outputs a label, its input is a first-person observation that keeps changing as the body moves, and it has to answer questions like “where am I, what is the 3D structure around me, where should I look next, and how should I move.” The 2024 embodied-AI survey from Sun Yat-sen University and others lists it as one of four research directions, covering tasks such as visual SLAM (simultaneous localization and mapping), 3D scene understanding, active exploration, and vision-and-language navigation. Its key feature is that it is active: the agent can turn its head, move closer, or shift an occluding object out of the way to gather more information, rather than passively receiving data. A robot's depth cameras, lidar, and tactile sensors, along with representations such as point clouds and semantic maps, all serve embodied perception.",
+      "example": "When a robot cannot find a remote control on a table, it changes its viewing angle or moves aside a magazine blocking its view, instead of only running detection on the current single frame.",
+      "related": [
+        "Active Perception",
+        "Interactive Perception",
+        "Simultaneous Localization and Mapping",
+        "Scene Understanding",
+        "Embodied Interaction",
+        "Multimodal Perception"
+      ]
+    },
+    {
+      "key": "concept-10#7",
+      "name_en": "Embodied Question Answering",
+      "aliases": [
+        "EQA",
+        "Embodied QA"
+      ],
+      "one_liner": "A task where an agent moves through a 3D environment on its own to gather information, then answers a question.",
+      "explanation": "Embodied question answering was proposed by Abhishek Das, Dhruv Batra, and colleagues in late 2017 (an oral presentation at CVPR 2018): an agent is placed at a random position in a 3D house environment and given a question, such as “what color is the car,” and it must navigate on its own from a first-person view, find the relevant object, and then answer. The first dataset, EQA v1, was built on the House3D simulator, with questions covering location, color, room color, and prepositional relations. This task combines active perception, language understanding, object-goal navigation, commonsense reasoning, and language grounding all at once, which is why it is often used as a comprehensive benchmark for embodied AI. Later variants added multiple targets and real scanned environments; Meta FAIR's OpenEQA, released at CVPR 2024, extended it to an open vocabulary and split it into two settings, answering from memory and answering after active exploration. In the large-model era, it is commonly tackled with a vision-language model combined with frontier exploration.",
+      "example": "Asked “how many chairs are in the kitchen,” the agent needs to start from the living room, find the kitchen, count the chairs, and then give the answer.",
+      "related": [
+        "Embodied Interaction",
+        "Visual Question Answering",
+        "OpenEQA Benchmark",
+        "Active Exploration",
+        "Vision-and-Language Navigation",
+        "Embodied Memory"
+      ]
+    },
+    {
+      "key": "concept-10#8",
+      "name_en": "Embodied Visual Tracking",
+      "aliases": [
+        "EVT",
+        "Active Object Tracking"
+      ],
+      "one_liner": "A robot using its own camera to keep following a specified target, keeping it in view continuously as it moves.",
+      "explanation": "Embodied visual tracking means an agent, using only first-person vision, continuously follows a specified target, usually a pedestrian or another robot, in a dynamic environment, controlling its own motion so the target stays in view at an appropriate distance. It differs from traditional visual tracking in that traditional methods only draw a box around a target within pre-recorded video, whereas here the tracker must output its own motion commands, and what it sees next depends on how it chooses to move. Wenhan Luo and colleagues' 2018 active object tracking (ICML) used reinforcement learning to map images directly to actions such as moving forward and turning, an early landmark. The difficulty lies in occlusion, distractors that look similar to the target, sudden turns by the target, and having to do target recognition and path planning at the same time. TrackVLA (CoRL 2025), from teams at Peking University, Galbot, and others, uses a single vision-language-action model to handle both recognition and trajectory planning at once, and built the EVT-Bench benchmark, collecting about 1.7 million samples. Applications include companion following, camera-operator following, and logistics vehicles following a lead vehicle.",
+      "example": "A robot dog told to “follow the person in red” locks onto that person in a crowd; when they turn into a hallway and are briefly blocked from view, the robot still finds them again and keeps following.",
+      "related": [
+        "Object Tracking",
+        "Galbot's TrackVLA",
+        "Vision-and-Language Navigation",
+        "Active Perception",
+        "Social Navigation",
+        "Vision-Language-Action Model"
+      ]
+    },
+    {
+      "key": "concept-10#9",
+      "name_en": "Embodiment-agnostic",
+      "aliases": [],
+      "one_liner": "A method or representation not tied to one particular robot's structure, usable across different robots.",
+      "explanation": "“Embodiment-agnostic” describes a model, representation, or data format that is not tied to a specific robot embodiment, which can differ in number of joints, gripper type, camera placement, and control frequency. In robot learning, every robot's action space is different, so training directly on a mix of them is difficult; researchers therefore often describe “what to do” in an embodiment-agnostic form — how an object should move, as an object trajectory or scene flow, the trajectory of a hand or end effector, or a latent action — and then convert this into joint commands for a specific robot. Work by Tang and colleagues (2024) first generates a 3D scene flow for object parts, then solves for the corresponding action trajectories on different robots, and can even learn from human videos this way. Another approach has a single network directly ingest data from many embodiments at once, as CrossFormer does, controlling single arms, dual arms, wheeled vehicles, quadrotors, and quadrupeds all with one set of weights. This concept relates to cross-embodiment, unified action spaces, and embodiment-specific heads, all aimed at letting data and models be reused across different robots.",
+      "example": "The same object-motion trajectory, 'move the cup to the left of the plate,' can be converted separately into gripper actions for a robot arm and hand actions for a humanoid.",
+      "related": [
+        "Cross-Embodiment",
+        "Embodiment Gap",
+        "Unified Action Space",
+        "Embodiment-specific Head",
+        "Latent Action",
+        "Intermediate Representation"
+      ]
+    },
+    {
+      "key": "concept-10#10",
+      "name_en": "Era of Experience",
+      "aliases": [
+        "Welcome to the Era of Experience"
+      ],
+      "one_liner": "Silver and Sutton's view that AI's next stage will learn mainly from its own experience of interacting with the world.",
+      "explanation": "“Era of Experience” comes from a short paper published by David Silver and Richard Sutton in April 2025, “Welcome to the Era of Experience,” a preprint of one chapter from the MIT Press book Designing an Intelligence; Silver was one of the lead figures behind the AlphaGo line of work, and Sutton is one of the founders of reinforcement learning. The paper argues that the “era of human data,” training on massive amounts of human-generated data and then fine-tuning on human preferences, is nearing its ceiling in areas such as mathematics, coding, and science, and that the next stage of agents should learn mainly from experience generated by their own interaction with the environment. It lists four defining features: living in a long stream of experience rather than short conversations; actions and observations grounded in the environment; rewards coming from real signals in the environment rather than being judged by people in advance; and planning and reasoning also grounded in experience. For embodied AI, this view supports the idea of robots continuously trying, failing, and improving themselves through real-world deployment.",
+      "example": "The paper cites AlphaProof as an example: it first studies roughly 100,000 human-written formal proofs, then generates about 100 million more on its own by interacting with a proof-checking system, eventually reaching medal-level performance at the International Mathematical Olympiad.",
+      "related": [
+        "Reinforcement Learning",
+        "The Bitter Lesson",
+        "Real-robot Reinforcement Learning",
+        "Self-improvement",
+        "Data Flywheel",
+        "Continual Learning"
+      ]
+    },
+    {
+      "key": "concept-10#11",
+      "name_en": "Extrinsic Dexterity",
+      "aliases": [],
+      "one_liner": "Using gravity, a tabletop, a wall, or arm swinging to let a simple gripper carry out complex manipulation.",
+      "explanation": "Extrinsic dexterity was proposed by Nikhil Chavan-Dafle, Alberto Rodriguez, Matthew Mason, and colleagues in an ICRA 2014 paper: instead of relying on the fingers' own dexterous motion, a robot uses resources external to the hand — gravity, contact with a tabletop or wall, or dynamic arm motion — to adjust an object's position in the hand or complete a manipulation. Traditional dexterous manipulation mainly relies on coordinated finger movement in a multi-fingered hand. The original paper designed 12 regrasping motions for a simple gripper and ran over 1,200 trials across 3 objects, showing that even a simple gripper can accomplish a good deal of in-hand manipulation this way. The significance is that high-degree-of-freedom dexterous hands are expensive and hard to control, while making good use of the environment can greatly extend what a simple gripper can do. Later work has used learning methods to automatically discover tricks like this — for example, Wenxuan Zhou and David Held (CoRL 2022) used reinforcement learning to let a gripper learn to push a flat object with no graspable edge against a wall, tip it upright, and then grasp it, reaching a 78% success rate when transferred from simulation to a real robot.",
+      "example": "A book lying flat on a table gives the gripper nothing to grab; the robot first pushes it against a wall to tip it upright, then grips it from the side.",
+      "related": [
+        "Non-prehensile Manipulation",
+        "In-hand Manipulation",
+        "Contact-rich Manipulation",
+        "Dexterous Manipulation",
+        "Dynamic Manipulation",
+        "Gripper"
+      ]
+    }
+  ]
+}

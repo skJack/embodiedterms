@@ -1,0 +1,113 @@
+{
+  "batch": "named_model-06",
+  "terms": [
+    {
+      "key": "named_model-06#0",
+      "name_en": "Sunday Robotics ACT-1",
+      "aliases": ["ACT-1: A Robot Foundation Model Trained on Zero Robot Data", "ACT-1 (act one)"],
+      "one_liner": "Sunday Robotics' 2025 household robot model, trained with not a single teleoperated robot demonstration in its data.",
+      "explanation": "ACT-1 is the first foundation model announced in November 2025 by Sunday Robotics, a US home-robotics startup founded by ALOHA co-creator Tony Zhao and Diffusion Policy co-creator Cheng Chi. Its training data contains no teleoperated trajectories at all: a person wears a “skill-capture glove” matching the robot hand's shape and sensor layout, does household chores while wearing it, and Skill Transform then strips out the human-specific parts of the footage and motion, converting it into robot data (the company reports roughly a 90% conversion success rate) — sidestepping the fact that teleoperation is slow, expensive, and hard to scale. ACT-1 drives the household robot Memo, using a single end-to-end model for both long-horizon manipulation and navigation via a 3D map; demos include clearing a table into a dishwasher, folding socks, and making coffee, plus tidying a table in an Airbnb it had never visited. In July 2026 the company previewed ACT-2.",
+      "example": "In the “table to dishwasher” task, ACT-1 has Memo clear wine glasses, ceramic plates, and metal utensils from a table, scrape off leftovers, load the dishwasher, and start it — 33 kinds of dexterous interactions, 68 in total, across 21 different objects, over more than 130 feet (about 40 meters) of travel.",
+      "related": ["Skill-Capture Glove", "Sunday Memo", "Sunday Robotics", "Embodiment-Free Data Collection", "Mobile Manipulation", "Long-Horizon Task"]
+    },
+    {
+      "key": "named_model-06#1",
+      "name_en": "ABS",
+      "aliases": ["Agile But Safe", "Agile But Safe: Learning Collision-Free High-Speed Legged Locomotion"],
+      "one_liner": "CMU's 2024 quadruped framework: sprint at high speed, switching to a learned collision-avoidance policy whenever a learned safety value says to.",
+      "explanation": "ABS was developed by Guanya Shi and Changliu Liu's groups at Carnegie Mellon University with ETH Zurich, published at RSS 2024. Earlier quadruped obstacle-avoidance controllers, in the name of safety, usually stayed under 1 m/s; controllers built purely for agility didn't worry about collisions at all. ABS uses two policies: an agile policy for high-speed running between obstacles, and a recovery policy for emergency avoidance; a learned reach-avoid value network estimates in real time whether the current state is safe, decides when to switch between the two, and supplies the optimization target for the recovery policy. Obstacle information is compressed into distances along 11 rays, predicted by a network from a depth image. Each module is trained in Isaac Gym and deployed to a real Unitree Go1, running entirely on onboard sensing and compute, reaching a peak speed of 3.1 m/s. It's a representative example of combining control-theoretic safety guarantees with reinforcement-learning-based locomotion.",
+      "example": "A Unitree Go1 sprints down a dim hallway at an average of 1.5 m/s and a peak of 2.5 m/s; when someone walks toward it or suddenly sticks out a leg to block it, a drop in the safety value triggers a switch to the recovery policy to dodge, then switches back to the agile policy to keep running once it's safe again.",
+      "related": ["Legged Locomotion", "Reinforcement-Learning-Based Locomotion Control", "Obstacle Avoidance", "Safe Reinforcement Learning", "Hamilton-Jacobi Reachability Analysis", "Unitree Go1"]
+    },
+    {
+      "key": "named_model-06#2",
+      "name_en": "ALOHA Unleashed",
+      "aliases": ["ALOHA Unleashed: A Simple Recipe for Robot Dexterity"],
+      "one_liner": "DeepMind's 2024 work: massive teleoperated data plus a diffusion policy teach a bimanual robot to tie shoelaces.",
+      "explanation": "ALOHA Unleashed is work by Tony Zhao, Ayzaan Wahid, Chelsea Finn, and colleagues at Google DeepMind, published at CoRL 2024, asking how far pure imitation learning alone can push bimanual dexterity. The recipe is deliberately simple — hence the name. On the low-cost bimanual platform ALOHA 2, 35 operators teleoperated under a standardized protocol to collect more than 26,000 demonstrations across 5 real tasks; the policy is a Transformer encoder-decoder with a diffusion loss (that is, a diffusion policy), about 217 million parameters, predicting the next 50 steps of action in one shot. This let the robot autonomously tie shoelaces, hang a shirt on a hanger, and swap a fingertip on another robot. The paper also found that swapping in ACT-style L1 regression, at the same model size, dropped the shirt task's success rate from 70% to 25%.",
+      "example": "In the shoelace-tying task, the robot first centers the shoe on the table and straightens the laces, then ties a bow. With the shoe centered and the laces already laid flat, success was 70%; with the shoe rotated up to ±45° and the laces unstraightened, success dropped to 40%.",
+      "related": ["ALOHA 2", "Diffusion Policy", "ACT", "Bimanual Manipulation", "Imitation Learning", "Mobile ALOHA"]
+    },
+    {
+      "key": "named_model-06#3",
+      "name_en": "ALVINN",
+      "aliases": ["Autonomous Land Vehicle In a Neural Network"],
+      "one_liner": "Carnegie Mellon's 1988 driving neural network, which maps camera images of the road directly to a steering command.",
+      "explanation": "ALVINN is work by Dean Pomerleau at Carnegie Mellon University, published at NIPS 1988. Self-driving at the time relied on hand-designed image-processing rules that broke easily when lighting or road conditions changed. ALVINN used a backpropagation network with just one hidden layer of 29 units instead: it took in a 30×32 camera image and an 8×32 laser range-finder image, and produced 45 output units representing the steering curvature to follow, with no hand-written road-detection rules in between. The network was first trained on 1,200 synthetically generated road images, then installed on CMU's NAVLAB test vehicle, which it drove autonomously at 0.5 m/s along a 400-meter wooded path on campus. It's often regarded as one of the earliest examples of behavior cloning and end-to-end driving, and NVIDIA's 2016 end-to-end driving system, DAVE-2, cites it as an inspiration in its paper.",
+      "example": "For each frame of road image it reads in, the network's 45 steering output units light up most strongly at the position that determines direction: the center unit means drive straight, and units further toward either side mean turn more sharply left or right.",
+      "related": ["End-to-End", "Behavior Cloning", "Autonomous Driving", "Imitation Learning", "Multilayer Perceptron", "Tesla FSD v12 (End-to-End Neural Network Driving)"]
+    },
+    {
+      "key": "named_model-06#4",
+      "name_en": "AMO",
+      "aliases": ["Adaptive Motion Optimization", "AMO: Adaptive Motion Optimization for Hyper-Dexterous Humanoid Whole-Body Control"],
+      "one_liner": "UCSD's 2025 humanoid whole-body control method, using trajectory optimization to help an RL policy bend and reach far.",
+      "explanation": "AMO was proposed by Xiaolong Wang's group at UC San Diego, published at RSS 2025. Picking something off the floor or reaching a high shelf requires a humanoid to coordinate bending at the waist, twisting the torso, and flexing the legs — but reinforcement-learning policies trained by imitating human motion-capture data rarely see this kind of extreme torso posture, and become unstable on out-of-distribution commands. AMO first uses trajectory optimization (solving for joint trajectories under dynamics constraints) to batch-generate data on “how the legs should move for a given torso orientation and height,” training a small MLP module that supplies a reference pose to the lower-body policy in real time; that lower-body policy is trained in Isaac Gym with teacher-student distillation. The system is deployed on a 29-degree-of-freedom Unitree G1, can be teleoperated with VR, and teleoperated data can also train a Transformer policy to act autonomously.",
+      "example": "In the paper's demos, a G1 moves cans between surfaces at different heights, taking a bottle from a tall shelf on the left and setting it on a low table on the right, and can also straighten both legs to place a bottle on a high shelf; during teleoperation, 3 poses from the VR device are converted into control commands.",
+      "related": ["Whole-Body Control", "Learned Whole-Body Control", "Trajectory Optimization", "Teacher-Student Distillation", "Unitree G1", "Whole-Body Teleoperation"]
+    },
+    {
+      "key": "named_model-06#5",
+      "name_en": "ATM",
+      "aliases": ["Any-point Trajectory Modeling", "Any-point Trajectory Modeling for Policy Learning"],
+      "one_liner": "Learns how any point in a scene will move from video, then uses that predicted motion to guide a robot policy.",
+      "explanation": "ATM was proposed by researchers at UC Berkeley, Tsinghua's Institute for Interdisciplinary Information Sciences, and collaborators (including Yang Gao and Pieter Abbeel), published at RSS 2024. Action-labeled robot data is expensive; action-free video is abundant. Earlier video pretraining mostly predicted future frames pixel by pixel, which is computationally heavy and full of irrelevant detail. ATM instead predicts point motion: it first uses the point tracker CoTracker to label 2D trajectories for points in a video, then trains a Transformer to predict, from the current image, a language instruction, and a set of point positions, where those points will go in the future; a policy is then trained to output actions using the predicted trajectories as a subgoal, needing only a small number of action-labeled demonstrations. Across more than 130 tasks including LIBERO, it beat video-pretraining baselines by about 80% on average, and can also transfer skills from human videos.",
+      "example": "Given the instruction “open the middle drawer of the cabinet,” the model first draws, on the current image, how points such as the drawer handle will move as it's pulled open, and the policy then outputs arm actions guided by these predicted trajectories.",
+      "related": ["Any-Point Tracking", "CoTracker", "Action-Label-Free Video", "Human Video Pretraining", "LIBERO", "Intermediate Representation"]
+    },
+    {
+      "key": "named_model-06#6",
+      "name_en": "Any2Track",
+      "aliases": ["Track Any Motions under Any Disturbances", "AnyTracker", "AnyAdapter"],
+      "one_liner": "A humanoid motion tracker from Tsinghua, Peking University, and Galbot that keeps tracking a motion even when pushed, pulled, or loaded down.",
+      "explanation": "Any2Track was proposed jointly by Tsinghua University, Peking University, Galbot, and the Shanghai Qi Zhi Institute (corresponding author Li Yi), released in September 2025. Motion tracking means having a humanoid reproduce a reference motion in real time, a core capability underlying whole-body control and teleoperation; most existing trackers had only been validated on flat ground with no external forces. Any2Track uses two-stage reinforcement learning. First, a general tracker called AnyTracker is trained on LAFAN1 and AMASS motion-capture data, learning highly dynamic, multi-contact motions of many kinds with a single policy. It's then frozen, and an adaptation module called AnyAdapter is added, extracting dynamics features from a recent window of state-action history (trained with an auxiliary task of predicting future states, like a world model) to compensate online for changes in terrain, external force, and load — without degrading the original tracking ability. The policy is trained in simulation and deployed zero-shot to a real Unitree G1.",
+      "example": "In real-robot tests, a loaded-down G1 tracks a reference motion over uneven ground while someone pulls it with a rope and pushes it with a foot, and the robot stays stable and keeps completing the motion.",
+      "related": ["Motion Tracking", "Rapid Motor Adaptation", "Sim-to-Real Transfer", "Unitree G1", "AMASS Motion Capture Dataset", "GMT"]
+    },
+    {
+      "key": "named_model-06#7",
+      "name_en": "ANYmal RL Locomotion Series",
+      "aliases": ["Learning Agile and Dynamic Motor Skills for Legged Robots", "Learning Quadrupedal Locomotion over Challenging Terrain", "Learning Robust Perceptive Locomotion for Quadrupedal Robots in the Wild"],
+      "one_liner": "Three Science Robotics papers (2019, 2020, 2022) from ETH Zurich that took simulation-trained RL locomotion out into the real wild on the ANYmal quadruped.",
+      "explanation": "This refers to three papers published in Science Robotics by ETH Zurich's Robotic Systems Lab (Marco Hutter's group), all using the ANYmal quadruped as their platform. In 2019, Hwangbo and colleagues introduced actuator networks: a neural network trained on real-robot data to simulate motor response, plugged into the simulator to shrink the sim-to-real gap, letting a policy trained purely in simulation run directly on the real robot — 25% faster than the previous record, and able to get back up after falling. In 2020, Lee and colleagues used teacher-student distillation: a teacher is trained with access to privileged information such as ground-truth terrain, and a student that uses only proprioception learns to imitate it, combined with a terrain curriculum, so the robot can walk over mud, snow, and rubble without seeing the terrain at all (blind locomotion); this controller was used in the DARPA Subterranean Challenge. In 2022, Miki and colleagues used an attention-based recurrent encoder to fuse a height map with proprioception, automatically leaning more on proprioception whenever vision becomes unreliable.",
+      "example": "The 2022 perceptive-locomotion controller let an ANYmal complete a 2.2-kilometer hiking route rated “difficult,” with 120 meters of elevation gain, on Switzerland's Mount Etzel in 78 minutes — almost exactly the 76 minutes a hiking-planning tool would recommend for a person — stopping only once to repair a dislodged foot cover and swap batteries.",
+      "related": ["Reinforcement-Learning-Based Locomotion Control", "Actuator Modeling", "Teacher-Student Distillation", "Privileged Information", "Terrain Curriculum", "ANYmal Quadruped"]
+    },
+    {
+      "key": "named_model-06#8",
+      "name_en": "ASE",
+      "aliases": ["Adversarial Skill Embeddings", "ASE: Large-Scale Reusable Adversarial Skill Embeddings for Physically Simulated Characters"],
+      "one_liner": "Berkeley and NVIDIA's 2022 method for learning a reusable latent space of skills from motion-capture clips.",
+      "explanation": "ASE was proposed by Xue Bin Peng, Sergey Levine, Sanja Fidler, and colleagues at UC Berkeley and NVIDIA, published at SIGGRAPH 2022. In simulated character animation, every new task usually means training a policy from scratch, relearning basic motions like walking and running again and again. ASE works in two layers. During pretraining, on a large batch of unlabeled, unsegmented motion clips, it trains a low-level policy conditioned on a latent variable z, using adversarial imitation learning (a discriminator judges whether a motion looks human, as in the data) to keep motions natural, and unsupervised skill discovery so that different values of z correspond to different skills. For a downstream task, the low-level policy is frozen and only a high-level policy that outputs z is trained, which needs only a simple reward. Using parallel simulation in Isaac Gym, the low-level policy was trained on more than 10 billion samples. It's a follow-up to AMP (Adversarial Motion Priors).",
+      "example": "A simulated humanoid character carrying a sword and shield first pretrains its skill latent space on about 30 minutes of motion data across 187 clips; afterward, given only a reward for “run to the target and knock it down,” the high-level policy can compose running, sword swings, and a strike into a coherent sequence.",
+      "related": ["Adversarial Motion Priors", "Generative Adversarial Imitation Learning", "Unsupervised Skill Discovery", "Latent Space", "Behavior Foundation Model", "Isaac Gym"]
+    },
+    {
+      "key": "named_model-06#9",
+      "name_en": "AstraBrain",
+      "aliases": ["Galbot AstraBrain", "AstraBrain-WBC", "AstraBrain-WAM", "AstraBrain-Dex"],
+      "one_liner": "Galbot's embodied model family, connecting a “brain” that plans with a “cerebellum” that handles real-time whole-body control.",
+      "explanation": "AstraBrain is Galbot's umbrella name for its embodied model family; the Beijing-based humanoid company describes it as an end-to-end “brain–cerebellum–neural control” architecture. AstraBrain-WAM is the “brain,” a world-action model (predicting future images and generating actions at the same time); Galbot's website lists it at 3 to 13 billion parameters, outputting high-level commands at 5–10Hz and handling task understanding and long-horizon planning, and the company says it can draw on simulated and real-robot data, and human and robot data, with or without action labels, all in one framework. AstraBrain-WBC is the “cerebellum,” an 80-million-to-300-million-parameter Transformer that does real-time whole-body and hand control at 100–250Hz, trained on large-scale human motion data. AstraBrain-Dex is a world model aimed at dexterous hands. WAM 0.5, WBC 0.5, and a test-time training framework called WAM-TTT, all disclosed in 2026, belong to this same family. Most of these figures and claims come from the company itself.",
+      "example": "In a 2026 demo, Galbot showed a humanoid robot autonomously playing tennis — seeing the incoming ball, predicting its trajectory, moving into position to hit it, and keeping its balance — which the company describes as whole-body control achieved jointly by the brain and cerebellum models.",
+      "related": ["Brain-Cerebellum Architecture", "World-Action Model", "Learned Whole-Body Control", "Scaling Law", "Galbot GraspVLA", "Galbot TrackVLA"]
+    },
+    {
+      "key": "named_model-06#10",
+      "name_en": "AutoRT",
+      "aliases": ["AutoRT: Embodied Foundation Models for Large Scale Orchestration of Robotic Agents"],
+      "one_liner": "DeepMind's 2024 system that uses a large model to automatically assign tasks to a fleet of robots and collect real data.",
+      "explanation": "AutoRT is a system Google DeepMind announced in January 2024, with authors including Karol Hausman, Fei Xia, Chelsea Finn, and Sergey Levine. Training embodied foundation models needs real data, but having one person watch one robot to collect it doesn't scale. AutoRT has an off-the-shelf large model act as dispatcher: robots explore autonomously in an office building, a vision-language model describes the scene and objects, and a large language model proposes tasks based on that. Each task is first filtered by a “robot constitution” (basic rules inspired by Asimov's Three Laws, plus safety rules and embodiment-capability rules), then assigned — depending on available staffing — to teleoperation, a scripted grasping policy, or RT-2 to execute. Over 7 months it orchestrated robots (up to more than 20 at once) across 4 buildings, collecting 77,000 real-robot episodes covering more than 6,650 distinct instructions, with one person able to supervise 3 to 5 robots at once.",
+      "example": "If the LLM proposes “open the fridge and get a drink,” the constitution's embodiment rule would filter it out for a single-arm robot, since the task needs two hands; tasks involving people or animals, sharp or fragile objects, or electrical appliances get blocked by the safety rules.",
+      "related": ["Autonomous Data Collection", "Three Laws of Robotics / Robot Constitution", "RT-2", "RT-1", "SayCan", "LLM Task Planning"]
+    },
+    {
+      "key": "named_model-06#11",
+      "name_en": "AVDC",
+      "aliases": ["Actionless Video through Dense Correspondences", "Learning to Act from Actionless Videos through Dense Correspondences"],
+      "one_liner": "First generates a video of a robot doing the task, then uses optical flow to derive the actions — no action labels needed.",
+      "explanation": "AVDC was proposed by researchers at National Taiwan University working with MIT (including Yilun Du and Joshua Tenenbaum), published at ICLR 2024 (Spotlight). What makes robot data expensive is the action labels; video with no action labels at all is far more plentiful. Given a current image and a text instruction, AVDC first uses a text-conditioned diffusion video-generation model to “imagine” a video of the task being completed; it then estimates optical flow between adjacent frames (which way each pixel moves), treats this as a dense correspondence, combines it with the first frame's depth to compute the rigid-body pose change of the object, and finally converts that into the arm's grasping and moving actions. The policy is trained using only RGB video, and was validated on Meta-World manipulation, iTHOR navigation, and a real Franka arm; the authors also open-sourced a video-model framework that trains in a day on 4 GPUs. It belongs to the same “use video generation as the policy” line of work as UniPi.",
+      "example": "Training a video model on just 198 videos of a human hand pushing objects — with no robot actions of any kind — and then using it, with no fine-tuning, to control a simulated robot arm on a pushing task reached 90% success over 40 trials, an example of transfer from human video to a robot with a different embodiment.",
+      "related": ["Action-Label-Free Video", "UniPi", "Video Generation Model", "Optical Flow", "Imitation Learning from Observation", "Human Video Data"]
+    }
+  ]
+}

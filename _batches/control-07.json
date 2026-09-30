@@ -1,0 +1,205 @@
+{
+  "category": "control",
+  "batch": 7,
+  "terms": [
+    {
+      "name_zh": "任务空间控制",
+      "name_en": "Task-Space Control",
+      "abbr": "",
+      "aliases": ["笛卡尔空间控制", "末端控制", "Cartesian-space control", "Cartesian control"],
+      "tier": 2,
+      "one_liner": "以末端执行器的位置和姿态为目标来算误差、下指令的控制方式。",
+      "explanation": "任务空间控制把目标写在末端执行器（夹爪、工具）的位姿上，而不是每个关节的角度上：给定期望末端轨迹，算出实际末端与它的偏差，再换算成关节指令。换算常见两条路。速度层面用雅可比矩阵 J（关节速度到末端速度的映射）的伪逆：θ̇ = J⁺(θ)·V，θ̇ 是关节速度，V 是期望末端速度。力矩层面用 τ = Jᵀ(θ)·F，把末端要施加的力 F 换成关节力矩 τ；Khatib 1987 年提出的操作空间控制属于这一类，还计入了末端的等效惯量。它比关节空间控制更贴合「把杯子移到这里」这类任务描述；代价是要处理奇异位形（某些方向突然动不了）和冗余自由度。",
+      "example": "Diffusion Policy 的 Franka 实验台：策略以 10 Hz 输出期望末端位姿，中层控制器约 1 kHz 运行，每步解一个二次规划，求出能让末端跟上目标速度的关节速度，积分成关节位置后交给机械臂自带的关节控制器；避碰和关节限位写成约束，多出来的自由度放在零空间里调节。",
+      "related": ["任务空间", "关节空间控制", "操作空间控制", "雅可比伪逆", "逆运动学", "笛卡尔阻抗控制"],
+      "sources": [
+        {"title": "Lynch & Park, Modern Robotics (2017 preprint), 11.3.3 / 11.4.3 Task-Space Motion Control", "url": "https://hades.mech.northwestern.edu/images/7/7f/MR.pdf"},
+        {"title": "Khatib, A unified approach for motion and force control of robot manipulators: The operational space formulation (IEEE J. Robotics & Automation, 1987)", "url": "https://doi.org/10.1109/JRA.1987.1087068"},
+        {"title": "Diffusion Policy: Visuomotor Policy Learning via Action Diffusion（附录 Franka Robot Station）", "url": "https://arxiv.org/abs/2303.04137"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "力矩控制",
+      "name_en": "Torque Control",
+      "abbr": "",
+      "aliases": ["扭矩控制", "力矩模式", "电流控制（电机层）", "Effort control", "Torque mode"],
+      "tier": 2,
+      "one_liner": "直接给关节下达「出多大力矩」的指令，而不是「转到哪个角度」。",
+      "explanation": "力矩控制指控制器的输出就是关节力矩 τ（单位 N·m），由驱动器负责让电机真的产生这个力矩。电机力矩和绕组电流近似成正比，所以电机层常靠电流闭环实现，这也是它又叫电流控制的原因；减速比大的关节齿轮摩擦大，只控电流不准，就要在输出端装关节力矩传感器再闭环。和位置控制（驱动器内部硬把角度拉到目标）相比，力矩控制把「多硬、多软」交给上层算法决定，是阻抗控制、全身控制、操作空间控制的基础，接触或被撞时更柔顺；代价是上层要自己补偿重力、摩擦，模型不准就会下垂或漂移。legged_gym 等仿真框架也把它列为与位置、速度并列的动作类型。",
+      "example": "Franka 机械臂的 libfranka 提供 1 kHz 的关节力矩接口：用户回调里算出 7 个关节力矩，文档注明发送的是「不含重力和摩擦」的力矩，重力与摩擦补偿由机器人自己叠加。",
+      "related": ["位置控制", "速度控制", "阻抗控制", "重力补偿", "关节力矩传感器", "串级控制"],
+      "sources": [
+        {"title": "Lynch & Park, Modern Robotics (2017 preprint), Fig. 11.1 与 11.5 Force Control", "url": "https://hades.mech.northwestern.edu/images/7/7f/MR.pdf"},
+        {"title": "libfranka robot.h（torque control / 1 kHz / without gravity and friction）", "url": "https://raw.githubusercontent.com/frankaemika/libfranka/master/include/franka/robot.h"},
+        {"title": "legged_gym: legged_robot.py（control_type P / V / T）", "url": "https://github.com/leggedrobotics/legged_gym/blob/master/legged_gym/envs/base/legged_robot.py"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "力矩限幅",
+      "name_en": "Torque Limiting (Saturation)",
+      "abbr": "",
+      "aliases": ["力矩饱和", "输出限幅", "扭矩限幅", "Torque clipping", "Actuator saturation"],
+      "tier": 2,
+      "one_liner": "把控制器算出的力矩截断在电机允许的范围内，超出部分不执行。",
+      "explanation": "力矩限幅是控制链路最后一道裁剪：不管上层算出多大力矩，送给电机前都截到 [−τmax, τmax] 之间。τmax 由电机峰值扭矩、驱动器电流上限和减速器强度决定，实际上还会随转速升高而下降。它防止烧电机、打坏齿轮，也让仿真里的机器人不能「无限用力」。副作用是，一旦饱和，控制器以为发出去的和实际执行的不一致：PID 的积分项会越攒越大（积分饱和），脱离饱和后产生大超调，需要做抗饱和处理；仿真训练用的限幅值也应与真机一致，否则策略学到的动作上机会走样。除了幅值，有的系统还会限制力矩的变化率。",
+      "example": "legged_gym 的 _compute_torques 函数：策略输出关节目标角，经 PD 公式算出力矩后，最后一行用 torch.clip 截到 ±torque_limits 再交给仿真器；libfranka 则额外限制力矩变化率，每个关节约 1000 N·m/s。",
+      "related": ["峰值扭矩", "额定扭矩", "扭矩-转速曲线（T-N 曲线）", "积分饱和与抗饱和", "软限位", "力矩控制"],
+      "sources": [
+        {"title": "legged_gym: legged_robot.py（_compute_torques 中的 torch.clip）", "url": "https://github.com/leggedrobotics/legged_gym/blob/master/legged_gym/envs/base/legged_robot.py"},
+        {"title": "Isaac Lab Docs: Actuators（ideal PD actuator clipping）", "url": "https://isaac-sim.github.io/IsaacLab/main/source/overview/core-concepts/actuators.html"},
+        {"title": "libfranka rate_limiting.h（kMaxTorqueRate）", "url": "https://raw.githubusercontent.com/frankaemika/libfranka/master/include/franka/rate_limiting.h"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "轨迹插值",
+      "name_en": "Trajectory Interpolation",
+      "abbr": "",
+      "aliases": ["插补", "轨迹插补", "Motion interpolation"],
+      "tier": 2,
+      "one_liner": "已知几个关键点，按时间把它们之间的位置补全成连续轨迹。",
+      "explanation": "轨迹插值是在给定的若干点（起点、终点、路点）之间，按时间算出每个控制周期该到的位置，必要时还给出速度和加速度。最简单的是线性插值，速度会在路点处突变；三次多项式能让速度连续，但加速度仍可能跳变；五次多项式再保证加速度连续，运动更平顺。B 样条不一定精确经过每个点，但轨迹保证落在这些点围成的凸包里，便于守住关节限位。姿态不能直接对欧拉角线性插值，常用四元数的球面线性插值。它的另一个用途是「升频」：模型或遥操作出点慢，底层控制器要求指令快，中间靠插值补齐。",
+      "example": "Diffusion Policy 在 UR5 上做推 T 任务时，策略每秒给出 10 个末端位置指令，控制器把它们线性插值到机器人要求的 125 Hz，同时把末端速度限制在 0.43 m/s 以下、位置限制在桌面以上 1 cm 的区域内。",
+      "related": ["路点", "三次样条插值", "五次多项式插值", "球面线性插值", "时间参数化", "动作分块"],
+      "sources": [
+        {"title": "Lynch & Park, Modern Robotics (2017 preprint), 9.3 Polynomial Via Point Trajectories", "url": "https://hades.mech.northwestern.edu/images/7/7f/MR.pdf"},
+        {"title": "Diffusion Policy: Visuomotor Policy Learning via Action Diffusion（附录 UR5 robot station）", "url": "https://arxiv.org/abs/2303.04137"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "轨迹优化",
+      "name_en": "Trajectory Optimization",
+      "abbr": "TO",
+      "aliases": ["轨迹最优化", "Trajectory optimisation"],
+      "tier": 2,
+      "one_liner": "把找轨迹写成优化问题：满足动力学和约束，同时让代价最小。",
+      "explanation": "轨迹优化把「怎么动」写成数学优化问题：决策变量是一段时间内的状态和控制输入，目标是最小化代价（耗能、用时、偏离目标等），约束包括动力学方程、力矩和关节限位、避障、起终点条件。它本质上是求开环最优控制，只针对一个初始状态求解，比求整个状态空间的反馈律省事得多。数值上多用直接法：直接打靶只优化控制量，状态靠仿真推出；直接配点把状态和控制都当变量，只在配点处强制满足动力学；多重打靶介于两者之间。梯度类方法通常只找到局部最优，初值很关键。每个控制周期重解一次、只执行第一步，就是模型预测控制（MPC）。",
+      "example": "Srinivasan 与 Ruina 2006 年发表在 Nature 的研究，用轨迹优化求一个简化双足模型最省能的移动方式，结果低速时「走」更省能、高速时「跑」更省能。",
+      "related": ["最优控制", "直接配点法", "多重打靶法", "模型预测控制", "迭代线性二次调节器", "接触隐式轨迹优化"],
+      "sources": [
+        {"title": "Wikipedia: Trajectory optimization", "url": "https://en.wikipedia.org/wiki/Trajectory_optimization"},
+        {"title": "Russ Tedrake, Underactuated Robotics: Trajectory Optimization", "url": "https://underactuated.mit.edu/trajopt.html"},
+        {"title": "Lynch & Park, Modern Robotics (2017 preprint), 10.7 Nonlinear Optimization", "url": "https://hades.mech.northwestern.edu/images/7/7f/MR.pdf"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "轨迹规划",
+      "name_en": "Trajectory Planning",
+      "abbr": "",
+      "aliases": ["轨迹生成", "Trajectory generation"],
+      "tier": 2,
+      "one_liner": "决定机器人每个时刻该在哪、多快：路径再加上时间安排。",
+      "explanation": "轨迹规划回答「什么时刻到哪里、速度多大」。《Modern Robotics》把轨迹拆成两部分：路径是纯几何的一串构型，只管经过哪些位置；时间缩放 s(t) 规定每个时刻走到路径的哪一处。二者合起来就是轨迹 θ(t)，它要足够平滑，并满足关节速度、加速度和力矩上限。它与路径规划、运动规划相关但不同：路径规划重在绕开障碍找到可行路线，不管时间；轨迹规划在路线上加入时间和动力学约束。常用做法有多项式时间缩放、梯形或 S 型速度曲线、经过路点的样条，以及考虑执行器上限的时间最优参数化。",
+      "example": "MoveIt 的流程：规划器先给出一串不带时间信息的无碰撞关节路点，再由时间参数化（主要用 TOTG 算法，可再用 Ruckig 限制加加速度）按关节速度、加速度上限补上时间，得到可执行的轨迹。",
+      "related": ["路径规划", "运动规划", "时间参数化", "时间最优路径参数化", "梯形速度曲线", "轨迹跟踪"],
+      "sources": [
+        {"title": "Lynch & Park, Modern Robotics (2017 preprint), Ch.9 Trajectory Generation", "url": "https://hades.mech.northwestern.edu/images/7/7f/MR.pdf"},
+        {"title": "MoveIt Docs: Time Parameterization", "url": "https://moveit.picknik.ai/main/doc/examples/time_parameterization/time_parameterization_tutorial.html"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "轨迹跟踪",
+      "name_en": "Trajectory Tracking",
+      "abbr": "",
+      "aliases": ["轨迹跟随", "Trajectory following"],
+      "tier": 2,
+      "one_liner": "让机器人的实际运动紧跟一条随时间变化的参考轨迹，误差趋于零。",
+      "explanation": "轨迹跟踪是一个控制问题：给定参考轨迹 qd(t)，让实际状态 q(t) 与它的误差 qd(t) − q(t) 随时间趋于零。典型做法是「前馈 + 反馈」：前馈按模型预先算出沿轨迹所需的速度或力矩，反馈（如 PD）根据当前误差修正，计算力矩控制就是两者结合。效果看稳态误差、超调和调节时间。它与路径跟踪不同：路径跟踪只要求沿几何曲线走，快慢可以自己调；轨迹跟踪对每个时刻的位置都有要求。参考轨迹最好别让执行器用到极限，要给纠偏留余量。人形机器人模仿人类动作的「运动跟踪」也是同一思路。",
+      "example": "《Modern Robotics》第 11 章对同一条关节轨迹做仿真对比：只用前馈或只用 PID 反馈都有明显偏差，计算力矩控制（前馈加反馈）跟得最好。",
+      "related": ["轨迹规划", "PD 控制", "前馈控制", "计算力矩控制", "运动跟踪", "线性二次调节器"],
+      "sources": [
+        {"title": "Lynch & Park, Modern Robotics (2017 preprint), Ch.11 Robot Control 与 13.3 Trajectory tracking", "url": "https://hades.mech.northwestern.edu/images/7/7f/MR.pdf"},
+        {"title": "Russ Tedrake, Underactuated Robotics: Trajectory Optimization（沿轨迹的 LQR 稳定）", "url": "https://underactuated.mit.edu/trajopt.html"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "对角小跑步态",
+      "name_en": "Trot Gait",
+      "abbr": "",
+      "aliases": ["小跑步态", "对角步态", "Trot", "Trotting"],
+      "tier": 2,
+      "one_liner": "四足动物或机器人对角两条腿成对同时落地、两组交替迈步的步态。",
+      "explanation": "对角小跑（trot）原指马的步态：左前腿与右后腿为一组，右前腿与左后腿为另一组，两组交替落地，是两拍节奏；马小跑时两拍之间还有四蹄离地的腾空瞬间。它也是四足机器人上常见的基础步态。和其他两拍步态相比：踱步（pace）是同侧两腿一起动，跳跃（bound）是前两腿、后两腿各为一组，四腿同时起落则叫 pronk。小跑时多数时刻只有两只脚着地，支撑多边形退化成一条对角线，停在原地站不稳，要靠持续迈步维持动态平衡；好处是前后、左右都对称，适用的速度范围宽。",
+      "example": "MIT 的 Walk These Ways（2022）在宇树 Go1 上用一个策略切换多种步态：用三个相位偏移描述各腿落地时刻，(0.5, 0, 0) 对应小跑，(0, 0, 0) 是四腿同步的 pronk，(0, 0.5, 0) 是跳跃，(0, 0, 0.5) 是踱步；另有步频参数，3 Hz 表示每只脚每秒着地 3 次。",
+      "related": ["步态", "踱步步态", "跳跃步态", "疾驰步态", "步态周期与占空比", "支撑多边形"],
+      "sources": [
+        {"title": "Wikipedia: Trot", "url": "https://en.wikipedia.org/wiki/Trot"},
+        {"title": "Walk These Ways: Tuning Robot Control for Generalization with Multiplicity of Behavior (arXiv:2212.03238)", "url": "https://arxiv.org/abs/2212.03238"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "速度指令跟踪",
+      "name_en": "Velocity Command Tracking",
+      "abbr": "",
+      "aliases": ["速度跟踪", "指令跟踪", "Velocity tracking", "Command tracking"],
+      "tier": 2,
+      "one_liner": "足式机器人按给定的前进、横移和转向速度走路的标准训练任务。",
+      "explanation": "速度指令跟踪是足式机器人强化学习运控里最基本的任务设定：每隔一段时间随机给机器人一个目标速度，通常是机身前进速度 vx、横移速度 vy 和绕竖直轴的转向角速度 ωz，策略输出关节动作，让机身实际速度尽量贴近指令。奖励常写成 exp(−‖v指令 − v实际‖²/σ)，误差越小越接近 1，σ 控制容忍度。训练好的策略部署时接手柄或上层导航模块发来的速度指令，上层只管「往哪走、多快」，步态和平衡交给策略。它和电机层的「速度控制」不是一回事：后者控制的是单个关节的转速。",
+      "example": "legged_gym 的默认配置：指令共 4 维（vx、vy、ωz 和朝向），每 10 秒重新采样一次，线速度范围 ±1 m/s；线速度跟踪奖励权重 1.0、角速度 0.5，σ = 0.25；平移指令幅值不超过 0.2 m/s 时直接置零。",
+      "related": ["强化学习运控", "奖励函数", "cmd_vel 速度指令话题（Twist 消息）", "legged_gym", "Walk These Ways", "地形课程"],
+      "sources": [
+        {"title": "legged_gym: legged_robot.py（_reward_tracking_lin_vel / _resample_commands）", "url": "https://github.com/leggedrobotics/legged_gym/blob/master/legged_gym/envs/base/legged_robot.py"},
+        {"title": "legged_gym: legged_robot_config.py（commands / rewards）", "url": "https://github.com/leggedrobotics/legged_gym/blob/master/legged_gym/envs/base/legged_robot_config.py"},
+        {"title": "Walk These Ways (arXiv:2212.03238)", "url": "https://arxiv.org/abs/2212.03238"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "速度控制",
+      "name_en": "Velocity Control",
+      "abbr": "",
+      "aliases": ["速度模式", "Velocity mode", "Speed control"],
+      "tier": 2,
+      "one_liner": "上层给出期望速度，由驱动器让电机或机器人按这个速度运动。",
+      "explanation": "速度控制指上层给出期望速度，底层负责跟上，分两个层面。关节层面，伺服驱动器的速度模式（如 CiA 402 协议里的 CSV 模式）接收目标转速，在内部闭速度环；步进电机的转速则直接由脉冲频率决定。任务层面，可给末端一个期望速度，用雅可比伪逆换成各关节速度；移动底盘接收线速度和角速度，再按轮距、轮半径换成左右轮转速。和位置控制比，它不直接管最终停在哪，位置偏差要靠上层闭环纠正，因而对延迟更敏感，Diffusion Policy 的消融实验也观察到这一点；和力矩控制比，它不直接管出力大小，接触时不够柔顺。",
+      "example": "ROS 2 的 diff_drive_controller：订阅 cmd_vel 速度指令，取线速度的 x 分量和角速度的 z 分量，按轮距和轮半径换算后，写入左右轮关节的速度命令接口。",
+      "related": ["位置控制", "力矩控制", "串级控制", "周期同步位置 / 速度 / 力矩模式（CSP / CSV / CST）", "差速驱动运动学", "速度指令跟踪"],
+      "sources": [
+        {"title": "Lynch & Park, Modern Robotics (2017 preprint), 11.3 Motion Control with Velocity Inputs", "url": "https://hades.mech.northwestern.edu/images/7/7f/MR.pdf"},
+        {"title": "ros2_controllers: diff_drive_controller", "url": "https://control.ros.org/master/doc/ros2_controllers/diff_drive_controller/doc/userdoc.html"},
+        {"title": "Diffusion Policy（velocity control is more affected by latency than position control）", "url": "https://arxiv.org/abs/2303.04137"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "视觉伺服",
+      "name_en": "Visual Servoing",
+      "abbr": "",
+      "aliases": ["视觉伺服控制", "基于视觉的机器人控制", "Visual servo control", "Vision-based robot control"],
+      "tier": 2,
+      "one_liner": "把相机看到的图像误差直接放进控制回路，边看边调整机器人运动。",
+      "explanation": "视觉伺服是用视觉信息做反馈、实时驱动机器人运动的控制方法，相关研究可追溯到 1979 年前后，「visual servo」这个词 1987 年才出现。核心是让误差 e = s − s* 趋于零：s 是当前从图像提取的特征（如几个角点的像素坐标），s* 是期望特征。经典控制律 v = −λL⁺e，v 是相机速度，λ 是增益，L 是交互矩阵（描述特征随相机运动如何变化），L⁺ 是它的伪逆。按特征分两类：基于图像的（IBVS）直接用像素特征，不必估计三维位姿；基于位置的（PBVS）先估计目标三维位姿再控制。相机可以装在手上（眼在手上），也可以固定在外面（眼在手外）。",
+      "example": "Chaumette 与 Hutchinson 2006 年教程中的典型例子：手上相机对着排成正方形的 4 个点，以它们当前与期望的像素坐标之差为误差，按 v = −λL⁺e 算相机速度，直到 4 个点在图像中落到期望位置，相机也就到了目标位姿。",
+      "related": ["基于图像的视觉伺服", "基于位置的视觉伺服", "眼在手上", "眼在手外", "视觉运动策略", "闭环"],
+      "sources": [
+        {"title": "Chaumette & Hutchinson, Visual Servo Control Part I: Basic Approaches (IEEE RAM, 2006)", "url": "https://www.irisa.fr/lagadic/pdf/2006_ieee_ram_chaumette.pdf"},
+        {"title": "Wikipedia: Visual servoing", "url": "https://en.wikipedia.org/wiki/Visual_servoing"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "路点",
+      "name_en": "Waypoint",
+      "abbr": "",
+      "aliases": ["航点", "途经点", "Via-point", "Via point"],
+      "tier": 2,
+      "one_liner": "运动过程中指定要经过的中间点，用来约束机器人走哪条路。",
+      "explanation": "路点是运动过程中指定要经过或到达的中间位置，可以是一组关节角，也可以是末端或机体的位姿，有时还附带期望到达时刻和速度。这个词来自航海、航空和 GPS 导航里的「途经点」。在机器人里，用户或规划器先给出一串路点，再由轨迹插值和时间参数化把它们连成平滑、可执行的轨迹；路点之间走成什么形状取决于插值方式，比如三次多项式只保证速度连续，B 样条则不一定精确过点。移动机器人导航和无人机任务也常用路点序列描述路线，工业机械臂示教时记录的一个个示教点本质上也是路点。",
+      "example": "MoveIt 规划笛卡尔路径：把几个末端位姿放进 waypoints 列表，调用 computeCartesianPath 并设 eef_step = 0.01，即每 1 cm 插一个点；返回的 fraction 表示有多大比例的路径规划成功，速度则要另外做时间参数化。",
+      "related": ["轨迹插值", "轨迹规划", "关节运动与直线运动（MoveJ / MoveL）", "MoveIt", "三次样条插值", "导航"],
+      "sources": [
+        {"title": "Lynch & Park, Modern Robotics (2017 preprint), 9.3 Polynomial Via Point Trajectories", "url": "https://hades.mech.northwestern.edu/images/7/7f/MR.pdf"},
+        {"title": "MoveIt Docs: Move Group C++ Interface（Cartesian Paths）", "url": "https://moveit.picknik.ai/main/doc/examples/move_group_interface/move_group_interface_tutorial.html"},
+        {"title": "Wikipedia: Waypoint", "url": "https://en.wikipedia.org/wiki/Waypoint"}
+      ],
+      "as_of": ""
+    }
+  ]
+}

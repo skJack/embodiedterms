@@ -1,0 +1,238 @@
+{
+ "batch": "named_model-25",
+ "terms": [
+  {
+   "key": "named_model-25#0",
+   "name_en": "TrackVLA",
+   "aliases": [
+    "Galbot TrackVLA",
+    "TrackVLA: Embodied Visual Tracking in the Wild"
+   ],
+   "one_liner": "A Galbot VLA for embodied visual tracking that simultaneously recognizes and plans a path to follow a target, using only its own first-person camera.",
+   "explanation": "TrackVLA was released in May 2025 by Peking University's EPIC Lab (He Wang's group) together with Galbot and other institutions, published at CoRL 2025, a vision-language-action (VLA) model. The task is embodied visual tracking: using only its own first-person camera, the robot must recognize a specified target in a dynamic environment and keep following it. Earlier approaches split 'recognizing the target' and 'planning where to go' into two separate modules, which lets errors compound; TrackVLA instead has both share a single large-language-model backbone (Vicuna-7B), with a language head handling recognition and an anchor-based diffusion model outputting the movement trajectory. Training uses about 1.7 million samples, half of them tracking examples from the team's own EVT-Bench simulation benchmark and half video question-answering recognition samples. It has been deployed on a real Unitree Go2 quadruped, with the model running on a remote RTX 4090 server at roughly 10 frames per second, and it is reasonably robust to occlusion and fast target movement.",
+   "example": "Told to 'follow the person in the blue shirt,' a Unitree Go2 running only a single head-mounted RGB camera recognizes the target in a crowd and keeps following it, and can pick the target back up after it is briefly blocked from view.",
+   "related": [
+    "Embodied Visual Tracking",
+    "Vision-Language-Action Model",
+    "Galbot NavFoM",
+    "Navigation",
+    "Diffusion Model",
+    "Unitree Go2"
+   ]
+  },
+  {
+   "key": "named_model-25#1",
+   "name_en": "Transporter Networks",
+   "aliases": [
+    "Transporter",
+    "Transporter Networks: Rearranging the Visual World for Robotic Manipulation"
+   ],
+   "one_liner": "A highly sample-efficient manipulation network that treats pick-and-place as 'moving one region of the image to another location.'",
+   "explanation": "Transporter Networks was released by Robotics at Google (Andy Zeng, Pete Florence, and others) in October 2020, published at CoRL 2020 and a finalist for the best paper award. It treats tabletop pick-and-place tasks as a sequence of 'spatial displacements': it first predicts where to grasp from a top-down image, then crops the depth features around that grasp point and cross-correlates them against the features of the whole scene (comparing them at every location) to find the best placement position and rotation angle. This design needs no object detection step and naturally exploits translation and rotation symmetry, making it very data-efficient — a small number of demonstrations are enough to learn tasks like stacking blocks, kit assembly, rope manipulation, and pushing objects, and it extends to 6-DoF pick-and-place as well. The paper also open-sourced Ravens, a PyBullet-based simulation task suite. The later CLIPort added CLIP-based language understanding on top of it, becoming a common baseline for language-conditioned manipulation.",
+   "example": "For a kit-assembly task, the model looks at a top-down image to find where to grasp each part, which slot in the mold to place it in, and how much to rotate it — learning this from just a handful of demonstrations.",
+   "related": [
+    "CLIPort",
+    "Pick-and-Place",
+    "Rearrangement",
+    "Tabletop Manipulation",
+    "Imitation Learning",
+    "Equivariant Policy / Equivariant Neural Network"
+   ]
+  },
+  {
+   "key": "named_model-25#2",
+   "name_en": "TWIST2",
+   "aliases": [
+    "TWIST 2",
+    "TWIST2: Scalable, Portable, and Holistic Humanoid Data Collection System"
+   ],
+   "one_liner": "A portable teleoperation system that collects whole-body humanoid data with a VR headset, with no motion-capture studio needed.",
+   "explanation": "TWIST2 was released in November 2025 by a joint team from Stanford, Amazon FAR, USC, UC Berkeley, and CMU (authors including Yanjie Ze, Pieter Abbeel, Guanya Shi, Jiajun Wu, and C. Karen Liu), an upgrade to the earlier full-body teleoperation system TWIST. Whole-body humanoid data is hard to collect, and its predecessor relied on optical motion capture tied to a fixed studio. TWIST2 instead captures the operator's full-body motion with a PICO 4 Ultra headset plus two PICO body trackers, and adds a roughly $250, 2-degree-of-freedom active neck to the Unitree G1 so the robot has its own first-person view; the whole setup can be carried into any environment. The paper reports that 15 minutes of use can collect about 100 demonstrations at close to 100% success. On top of this, a hierarchical policy is trained: a low-level whole-body motion tracker learned through simulated reinforcement learning, and a high-level visuomotor policy trained with imitation learning on the collected data. The system, hardware design, and dataset are all open-sourced.",
+   "example": "An operator wears the PICO headset and straps on the trackers to perform pick-and-place motions, and the Unitree G1 reproduces the whole-body motion in real time, recording over a hundred bimanual pick-and-place demonstrations in just 15 minutes.",
+   "related": [
+    "TWIST",
+    "Whole-Body Teleoperation",
+    "VR Teleoperation",
+    "Unitree G1",
+    "Hierarchical Architecture",
+    "Motion Tracking"
+   ]
+  },
+  {
+   "key": "named_model-25#3",
+   "name_en": "UBTech Thinker",
+   "aliases": [
+    "Thinker-4B",
+    "Thinker-WM",
+    "Thinker-VLA"
+   ],
+   "one_liner": "UBTech's in-house embodied model stack, made up of a foundation model, a world model, and an action model.",
+   "explanation": "Thinker is the in-house embodied model system UBTech has built for its humanoid robots, reportedly organized into three layers: a foundation model called Thinker, a world model called Thinker-WM, and an action model called Thinker-VLA. Thinker itself is a vision-language model for embodied intelligence; UBTech open-sourced Thinker-4B (based on the Qwen3-VL architecture, 4B parameters, non-commercial license) along with a paper in January 2026. It targets problems that arise when a general vision-language model is applied to robots, such as viewpoint confusion and weak temporal understanding, and is trained on first-person video, visual grounding, spatial understanding, and chain-of-thought data, focused on task planning, visual grounding, and spatial understanding; the company states it leads on 7 embodied benchmarks. According to reports, Thinker-WM ranks first on the LIBERO benchmark, and Thinker-VLA raises inference efficiency by 176% in industrial settings. This model stack powers UBTech's industrial humanoid robots, including the Walker S series.",
+   "example": "Given a first-person image from a robot and the instruction 'put the part in the bin,' Thinker-4B can output a step-by-step task plan and also draw a box around the target part's location in the image.",
+   "related": [
+    "UBTech Robotics",
+    "UBTech Walker S2",
+    "Vision-Language Model",
+    "World Model",
+    "Vision-Language-Action Model",
+    "Qwen-VL series (Qwen-VL / Qwen2-VL / Qwen2.5-VL / Qwen3-VL)"
+   ]
+  },
+  {
+   "key": "named_model-25#4",
+   "name_en": "UH-1",
+   "abbr": "UH-1",
+   "aliases": [
+    "Universal Humanoid Pose Control"
+   ],
+   "one_liner": "A large model that learns from massive internet human videos and generates humanoid robot motion from text instructions.",
+   "explanation": "UH-1 was released in December 2024 by the University of Southern California (Yue Wang's group), UC Berkeley, and Toyota Research Institute, later given an oral presentation at Humanoids 2025. Humanoid robot data mostly comes from reinforcement learning and teleoperation, which is hard to scale up; this work instead learns from internet human videos. The team first built the Humanoid-X dataset: 3D human poses are extracted from videos and automatically captioned, then retargeted into humanoid keypoints and actions, yielding about 164,000 motion clips and more than 20 million robot poses. UH-1 is then trained on this: humanoid motions are first discretized into tokens, and a Transformer autoregressively generates motion tokens conditioned on a text instruction. The output can either be keypoints, which are handed to a goal-conditioned policy for tracking, or robot actions directly, executed open-loop. UH-1 demonstrates a route for scaling up humanoid data by turning human video plus text into humanoid motion.",
+   "example": "Given the text 'wave hello,' UH-1 generates a corresponding sequence of humanoid motion, which is handed to a lower-level controller to drive the humanoid robot's wave.",
+   "related": [
+    "Humanoid-X (Learning from Massive Human Videos for Universal Humanoid Pose Control, UH-1)",
+    "Human Video Data",
+    "Motion Retargeting",
+    "Text-to-Motion (Text-Driven Humanoid Motion Generation)",
+    "Action Tokenizer",
+    "Humanoid Robot"
+   ]
+  },
+  {
+   "key": "named_model-25#5",
+   "name_en": "UniAct",
+   "abbr": "UniAct",
+   "aliases": [
+    "Universal Actions",
+    "UniAct: Universal Actions for Enhanced Embodied Foundation Models"
+   ],
+   "one_liner": "A method for training an embodied foundation model on a shared, discrete set of 'universal actions' common across different robots.",
+   "explanation": "UniAct was released in January 2025 by Tsinghua University's Institute for AI Industry Research (AIR, Xianyuan Zhan's group) together with SenseTime, Peking University, BUPT, and the Shanghai Artificial Intelligence Laboratory, published at CVPR 2025. Different robots have very different action spaces — different numbers of joints, control schemes, and coordinate frames — so training directly on mixed cross-embodiment data causes interference. UniAct instead learns a 'universal action space': a vision-language model maps observations and instructions to a discrete universal action drawn from a vector-quantized codebook, where each code represents an atomic behavior shared across robots; a lightweight, robot-specific decoder head then translates the universal action into that robot's actual control commands. The 0.5B-parameter UniAct matches or beats the 7B OpenVLA across several real-robot and simulation evaluations; adapting to a new robot mainly just requires training a new lightweight decoder head.",
+   "example": "After pretraining together on data from several robot arms such as WidowX and Franka, adapting to a new arm only requires training a small decoder head, which then translates the universal actions into that arm's control commands.",
+   "related": [
+    "Unified Action Space",
+    "Cross-Embodiment",
+    "Vector Quantization",
+    "Embodiment-specific Head",
+    "OpenVLA",
+    "Latent Action"
+   ]
+  },
+  {
+   "key": "named_model-25#6",
+   "name_en": "UniAD",
+   "abbr": "UniAD",
+   "aliases": [
+    "Unified Autonomous Driving",
+    "Planning-oriented Autonomous Driving"
+   ],
+   "one_liner": "An end-to-end autonomous-driving framework that chains perception, prediction, and planning into one network, with everything serving the final plan.",
+   "explanation": "UniAD was released by the Shanghai Artificial Intelligence Laboratory's OpenDriveLab (Hongyang Li's group) and other institutions in December 2022, winning the CVPR 2023 Best Paper Award. Traditional autonomous driving splits perception, prediction, and planning into separate modules or parallel multi-task heads optimized independently, which loses information and compounds errors between modules. UniAD's principle is 'planning-oriented': a single network sequentially performs object tracking, online mapping, motion prediction, occupancy prediction, and trajectory planning, with information passed between modules through shared query vectors, and the whole system optimized toward the final planning outcome. It outperformed prior methods across every metric on the nuScenes dataset, becoming a landmark for end-to-end autonomous driving that is also frequently cited when discussing end-to-end design in embodied AI more broadly. The team released a UniAD 2.0 code version in October 2025.",
+   "example": "UniAD takes in images from multiple surround-view cameras on a car, tracks nearby vehicles, draws lane lines, and predicts their movement over the next few seconds, all within the same network, and directly outputs the ego vehicle's upcoming driving trajectory.",
+   "related": [
+    "Autonomous Driving",
+    "End-to-End",
+    "Tesla FSD v12 (End-to-End Neural Network Driving)",
+    "DriveVLM: The Convergence of Autonomous Driving and Large Vision-Language Models",
+    "Bird's-Eye View",
+    "Occupancy Network"
+   ]
+  },
+  {
+   "key": "named_model-25#7",
+   "name_en": "UVA",
+   "abbr": "UVA",
+   "aliases": [
+    "Unified Video Action Model"
+   ],
+   "one_liner": "A robot model in which video and action share one latent representation, letting inference skip video generation for speed.",
+   "explanation": "UVA was released by Shuang Li, Yihuai Gao, Dorsa Sadigh, and Shuran Song at Stanford University in February 2025, published at RSS 2025. Using video generation to build a robot policy lets the model learn how the environment changes, but action precision and inference speed have typically lagged behind policies that output actions directly. UVA has video and action share one joint latent representation, learned together during training but decoded separately: two lightweight diffusion heads decode the future frame and the action independently, and at inference time video generation can simply be skipped and only the action decoded, which keeps it fast. Combined with masked training, the same model can then serve as a policy, a forward dynamics model, an inverse dynamics model, or a video prediction model. Across real-robot multi-task experiments like folding a towel and arranging cups, it beats a diffusion-policy baseline trained on UMI data when facing unseen environments and objects.",
+   "example": "While a robot folds a towel, UVA decodes only the next action and skips frame generation to stay real-time; offline, that same model can also predict the resulting image given a specified action.",
+   "related": [
+    "Video Prediction Policy",
+    "World Action Model",
+    "Forward Dynamics Model",
+    "Inverse Dynamics Model",
+    "Diffusion Policy",
+    "Universal Manipulation Interface"
+   ]
+  },
+  {
+   "key": "named_model-25#8",
+   "name_en": "UWM",
+   "abbr": "UWM",
+   "aliases": [
+    "Unified World Models",
+    "Unified World Models: Coupling Video and Action Diffusion for Pretraining on Large Robotic Datasets"
+   ],
+   "one_liner": "A robot framework that merges action diffusion and video diffusion into one model and can pretrain on action-free video.",
+   "explanation": "UWM was released in April 2025 by the University of Washington (Abhishek Gupta's group) and Toyota Research Institute, published at RSS 2025. Imitation learning needs robot data labeled with actions, while the huge amount of video without action labels is hard to use directly. UWM runs action diffusion and video diffusion inside one Transformer at the same time, giving each modality its own independent denoising timestep: setting a modality's timestep to pure noise is equivalent to not looking at it at all. This lets the same model act as a policy, a forward dynamics model, an inverse dynamics model, or a video predictor, just by combining timesteps differently; for action-free video, the missing action is simply treated as fully noised during training. Pretrained on the large-scale DROID dataset and then fine-tuned, it generalizes better than pretraining with plain behavior cloning, and adding action-free video on top improves results further.",
+   "example": "Robot trajectories from DROID are pretrained together with a batch of manipulation videos that have no action labels to train UWM, which is then fine-tuned into a task-specific policy using a small number of demonstrations.",
+   "related": [
+    "World Model",
+    "Diffusion Model",
+    "Action-free Video",
+    "Inverse Dynamics Model",
+    "DROID (Distributed Robot Interaction Dataset)",
+    "UVA"
+   ]
+  },
+  {
+   "key": "named_model-25#9",
+   "name_en": "UnifoLM",
+   "aliases": [
+    "UnifoLM-WMA-0",
+    "UnifoLM-VLA-0",
+    "UnifoLM-WLA-1.0"
+   ],
+   "one_liner": "Unitree's open-source series of robot foundation models, spanning a world model, a VLA, and a general-purpose humanoid model.",
+   "explanation": "UnifoLM is a series of open-source robot foundation models from Unitree Robotics, with three main releases so far. UnifoLM-WMA-0 (September 2025) uses a world-model-plus-action-head architecture: the world model predicts the future images that result from the robot interacting with the environment, which can either assist an action head with decision-making or serve as an interactive simulator to generate training data; it supports the Z1 arm and the G1 humanoid. UnifoLM-VLA-0 (January 2026) is based on Qwen2.5-VL, continues pretraining on manipulation data, and uses a single policy to perform 12 categories of manipulation tasks on the G1. UnifoLM-WLA-1.0 (September 2026) is a 6-billion-parameter general-purpose humanoid foundation model that the company says was trained on about 2,500 hours of real-robot data, covering 64 tasks across tabletop and whole-body manipulation, supporting both two-finger grippers and several five-fingered dexterous hands, open-sourced under Apache 2.0. This series reflects Unitree's expansion from selling hardware into open-source models as well.",
+   "example": "UnifoLM-WMA-0's world model can predict the upcoming images as a Unitree Z1 arm stacks boxes, which can both help choose the next action and generate synthetic training data.",
+   "related": [
+    "Unitree Robotics",
+    "Unitree G1",
+    "World Action Model",
+    "Vision-Language-Action Model",
+    "Unitree Z1 Robotic Arm",
+    "Open-weight Model"
+   ]
+  },
+  {
+   "key": "named_model-25#10",
+   "name_en": "UniPi",
+   "aliases": [
+    "Universal Policies via Text-Guided Video Generation",
+    "UniPi: Learning Universal Policies via Text-Guided Video Generation"
+   ],
+   "one_liner": "A method that first generates a video of a task being completed from text, then infers the robot's actions from that video.",
+   "explanation": "UniPi was released by MIT, Google Brain, UC Berkeley, and the University of Alberta (Yilun Du, Pieter Abbeel, and others) in January 2023, published at NeurIPS 2023. It reframes decision-making as 'text-conditioned video generation': given a text goal and the current image, a video diffusion model generates a future video of the task being completed, which serves as the plan, and an inverse dynamics model (which computes the action between two adjacent frames) then derives the robot action the robot should take from each pair of consecutive frames. Because different robots and environments are all unified into images, the model can share knowledge across tasks; text goals can be freely combined for compositional generalization; and pretraining on internet image-text-video data also improves generalization to new instructions. UniPi is an early representative of the 'video generation model as policy' approach, and later work such as UniSim and Video Prediction Policy follows a similar idea.",
+   "example": "Given 'put the red block in the blue bowl,' UniPi first generates a short video of a robot completing this task, then an inverse dynamics model derives the actions frame by frame from that video for execution.",
+   "related": [
+    "UniSim",
+    "Video Generation Model",
+    "Inverse Dynamics Model",
+    "Video Prediction Policy",
+    "SuSIE",
+    "World Model"
+   ]
+  },
+  {
+   "key": "named_model-25#11",
+   "name_en": "UniSim",
+   "aliases": [
+    "Universal Simulator",
+    "Learning Interactive Real-World Simulators"
+   ],
+   "one_liner": "A learned 'real-world simulator,' built from a video generation model, that responds to actions.",
+   "explanation": "UniSim was released by UC Berkeley, Google DeepMind, and MIT (Sherry Yang, Yilun Du, Pieter Abbeel, and others) in October 2023, winning the ICLR 2024 Outstanding Paper Award. It uses a video generation model to learn a real-world simulator: given the current image and an action, it generates the resulting image. The action can either be a high-level language instruction like 'open the drawer' or a low-level control command like 'move to a given coordinate.' No single dataset covers all of this information, so the authors combined image data (rich in object variety), robot data (rich in actions), and navigation data (rich in movement), among others, for training. Once trained, vision-language policies and reinforcement learning policies can be trained inside UniSim and then transferred zero-shot to real robots; the data it generates can also help train other models, such as video captioning. UniSim is an early landmark for interactive world models and neural simulators.",
+   "example": "Given a kitchen image and the instruction 'open the drawer,' UniSim generates the subsequent video of the drawer being pulled open; a reinforcement learning policy can then practice through trial and error inside these generated images.",
+   "related": [
+    "UniPi",
+    "Interactive World Model",
+    "Neural Simulator (Learned Simulator)",
+    "World Model",
+    "Genie: Generative Interactive Environments",
+    "Video Generation Model"
+   ]
+  }
+ ]
+}

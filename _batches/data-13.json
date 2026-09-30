@@ -1,0 +1,191 @@
+{"category": "data", "batch": 13, "terms": [
+{
+  "name_zh": "玩耍数据",
+  "name_en": "Play Data",
+  "abbr": "",
+  "aliases": ["自由玩耍数据", "play 数据", "遥操作玩耍数据"],
+  "tier": 3,
+  "one_liner": "操作员不按具体任务、随意摆弄场景时录下的机器人数据。",
+  "explanation": "玩耍数据是 Corey Lynch 等人在 2019 年论文《Learning Latent Plans from Play》（CoRL 2019）里提出的采集方式：操作员遥操作机器人，在摆满物体的场景里凭好奇心随意开抽屉、推滑块、抓积木，事先不规定任务。它的好处是便宜：不用按任务切分、不用打标签，也不用每次把场景复位；论文统计，同样的采集时间下，它覆盖的交互范围约为按任务演示的 4 倍。代价是没有任务标签，所以常配合「事后重标注」（把一段轨迹的终点当作目标）训练目标条件策略，或事后再补语言描述。CALVIN 基准和 MimicPlay 都沿用了这个思路。",
+  "example": "在 Play-LMP 论文里，操作员用 VR 遥操作仿真机器人，在带抽屉、滑门和积木的桌面场景中随意摆弄，录下不分段、不标任务的连续数据，再训练出能按目标图像完成多种任务的策略。",
+  "related": ["目标条件策略", "事后重标注", "遥操作", "演示数据", "CALVIN", "MimicPlay"],
+  "sources": [
+    {"title": "Learning Latent Plans from Play (arXiv:1903.01973)", "url": "https://arxiv.org/abs/1903.01973"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "Project Aria 眼镜",
+  "name_en": "Project Aria Glasses",
+  "abbr": "",
+  "aliases": ["Aria 眼镜", "Project Aria", "Aria Gen 2"],
+  "tier": 3,
+  "one_liner": "Meta 做的科研用第一人称数据采集眼镜，只采集、不显示。",
+  "explanation": "Project Aria 是 Meta Reality Labs 的科研项目，核心是一副外形接近普通眼镜的传感器眼镜，用来采集第一视角多模态数据。第一代带 1 个 RGB 相机、2 个 SLAM（定位建图用）相机、2 个眼动相机，以及 IMU、麦克风等；第二代把 SLAM 相机增至 4 个，加了心率（PPG）传感器和接触式麦克风，续航 6–8 小时，并能在设备上直接做定位、手部和眼动追踪。Meta 以申请制提供给学术和企业伙伴，官网称已有 200 多家。具身智能里它主要用来低成本采集人类第一视角操作视频和手部轨迹，供机器人学习；Nymeria、HOT3D 等数据集都用它采集。",
+  "example": "佐治亚理工的 EgoMimic 让人戴着 Aria 眼镜做桌面操作，把录下的第一视角视频和手部轨迹与少量机器人数据一起训练策略。",
+  "related": ["第一人称视频", "人类视频数据", "EgoMimic", "Nymeria 数据集", "HOT3D 数据集", "可穿戴采集"],
+  "sources": [
+    {"title": "Project Aria Glasses（官网规格页）", "url": "https://www.projectaria.com/glasses/"},
+    {"title": "Project Aria: A New Tool for Egocentric Multi-Modal AI Research (arXiv:2308.13561)", "url": "https://arxiv.org/abs/2308.13561"},
+    {"title": "EgoMimic: Scaling Imitation Learning via Egocentric Video (arXiv:2410.24221)", "url": "https://arxiv.org/abs/2410.24221"}
+  ],
+  "as_of": "2026-09"
+},
+{
+  "name_zh": "Figure Project Go-Big",
+  "name_en": "Project Go-Big",
+  "abbr": "",
+  "aliases": ["Go-Big", "Project Go-Big"],
+  "tier": 3,
+  "one_liner": "Figure 用大规模人类第一视角视频给人形机器人做预训练的数据计划。",
+  "explanation": "Project Go-Big 是美国人形机器人公司 Figure AI 在 2025 年 9 月 18 日公布的数据计划，目标是为自家 VLA 模型 Helix 建立「互联网规模」的人形预训练数据。Figure 与资产管理公司 Brookfield 合作，后者提供超过 10 万套住宅以及大量办公、物流空间，用来采集人在真实家庭里做事的第一视角视频。Figure 称，Helix 只用人类视频就学会了按语言指令在杂乱的家里导航（从图像和语言直接输出底盘速度指令），并称这是人形机器人第一次只靠人类视频端到端学到这种能力；导航和操作也合进了同一个 Helix 网络。它代表了「用人类视频替代部分遥操作数据」的路线。",
+  "example": "用户说「走到厨房餐桌那边」，Helix 直接从相机画面输出行走速度指令，这项能力的训练数据全部来自人类第一视角视频，没有用机器人演示。",
+  "related": ["Helix", "Figure AI", "人类视频数据", "第一人称视频", "零样本", "视觉-语言-动作模型"],
+  "sources": [
+    {"title": "Project Go-Big: Internet-Scale Humanoid Pretraining（Figure 官方）", "url": "https://www.figure.ai/news/project-go-big"}
+  ],
+  "as_of": "2025-09"
+},
+{
+  "name_zh": "伪动作标签",
+  "name_en": "Pseudo Action Labels",
+  "abbr": "",
+  "aliases": ["伪动作标注", "Pseudo-Action Labeling", "伪动作", "Pseudo-actions"],
+  "tier": 3,
+  "one_liner": "用模型从视频里反推出来、代替真实记录的动作标签。",
+  "explanation": "视频本身没有记录人或机器人的动作时，可以用一个模型根据前后画面「猜」出每一步的动作，把猜出来的动作当标签训练策略，这就是伪动作标签。常见做法有两种：一是先用少量带动作的数据训练逆动力学模型（由相邻两帧推出中间动作），再用它批量标注海量视频，OpenAI 的 VPT 就这样给大量 Minecraft 网络视频标上了键鼠操作；二是用潜在动作模型从视频里学出抽象的动作编码。英伟达 DreamGen 也用这两种办法给世界模型生成的视频补上伪动作，得到可训练的「神经轨迹」。它让无动作标签的视频也能用于训练，但标签有误差，通常还要用真实数据微调。",
+  "example": "VPT 先请人玩 Minecraft 并记录键鼠操作，训练出逆动力学模型，再用它给大量网络视频标注伪动作，最后用这些数据做行为克隆。",
+  "related": ["逆动力学模型", "潜在动作模型", "无动作标签视频", "神经轨迹", "DreamGen（GR00T Dreams）", "VPT（视频预训练）"],
+  "sources": [
+    {"title": "Video PreTraining (VPT): Learning to Act by Watching Unlabeled Online Videos (arXiv:2206.11795)", "url": "https://arxiv.org/abs/2206.11795"},
+    {"title": "DreamGen: Unlocking Generalization in Robot Learning through Video World Models (arXiv:2505.12705)", "url": "https://arxiv.org/abs/2505.12705"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "Real2Render2Real（R2R2R）",
+  "name_en": "Real2Render2Real: Scaling Robot Data Without Dynamics Simulation or Robot Hardware",
+  "abbr": "R2R2R",
+  "aliases": ["R2R2R", "Real2Render2Real"],
+  "tier": 3,
+  "one_liner": "用手机扫描加一段人手演示视频，渲染出大量机器人训练数据的方法。",
+  "explanation": "Real2Render2Real 是 UC 伯克利（Ken Goldberg 团队）与丰田研究院 2025 年 5 月发布的数据生成方法。输入只要两样：用手机对物体做 3D 扫描，再录一段人手操作的视频。系统用 3D 高斯泼溅重建物体外形，跟踪物体在视频里的 6 自由度运动，再把物体转成网格，配上机器人模型，重新渲染出成千上万条位置、视角各不相同的演示。它只渲染画面、不做动力学仿真（关闭碰撞），所以不用调物理参数，也不用真机。论文称，用 1 次人手演示生成的数据训练出的模型，能达到 150 次遥操作演示的效果，生成耗时约为遥操作的 1/27。",
+  "example": "用手机扫一只杯子，再录一段人把杯子放进盘子的视频，R2R2R 就能渲染出几千条机械臂完成同一动作的图像-动作数据，用来训练 π0-FAST 或扩散策略。",
+  "related": ["合成数据", "3D高斯泼溅", "真-仿-真闭环", "人类视频数据", "遥操作", "扩散策略"],
+  "sources": [
+    {"title": "Real2Render2Real (arXiv:2505.09601)", "url": "https://arxiv.org/abs/2505.09601"},
+    {"title": "Real2Render2Real 项目主页", "url": "https://real2render2real.com/"}
+  ],
+  "as_of": "2025-05"
+},
+{
+  "name_zh": "RH20T 数据集",
+  "name_en": "RH20T",
+  "abbr": "",
+  "aliases": ["RH20T", "RH20T: A Comprehensive Robotic Dataset for Learning Diverse Skills in One-Shot"],
+  "tier": 3,
+  "one_liner": "上海交大发布的多模态真机操作数据集，含力觉、音频和人类示范视频。",
+  "explanation": "RH20T 是上海交通大学卢策吾团队（MVIG 实验室）2023 年发布的真实机器人操作数据集。它包含超过 11 万条接触丰富的操作序列，覆盖 147 个任务（48 个取自 RLBench、29 个取自 Meta-World，另有 70 个自拟任务），在 7 种机器人配置上采集。每条数据除了多视角 RGB 和深度图像，还有六维力/力矩、音频和动作记录，个别配置带指尖触觉；每条机器人序列还配一段人类完成同一任务的视频和语言描述，目标是支持「看人做一次就学会」的单样本模仿学习。完整数据约 40TB。",
+  "example": "一条 RH20T 序列同时提供多个相机的 RGB-D 画面、100Hz 的力/力矩读数、双麦克风音频，以及一段人类完成同一任务的示范视频。",
+  "related": ["上海交通大学 MVIG 实验室（卢策吾组）", "多模态数据", "接触丰富操作", "六维力传感器", "真机数据", "单样本模仿学习"],
+  "sources": [
+    {"title": "RH20T: A Comprehensive Robotic Dataset for Learning Diverse Skills in One-Shot (arXiv:2307.00595)", "url": "https://arxiv.org/abs/2307.00595"},
+    {"title": "RH20T 项目主页", "url": "https://rh20t.github.io/"}
+  ],
+  "as_of": "2023-09"
+},
+{
+  "name_zh": "RoboCOIN 数据集",
+  "name_en": "RoboCOIN: An Open-Sourced Bimanual Robotic Data Collection for Integrated Manipulation",
+  "abbr": "",
+  "aliases": ["RoboCOIN", "RoboCoin"],
+  "tier": 3,
+  "one_liner": "智源牵头开源的多本体双臂操作数据集，覆盖 15 种机器人。",
+  "explanation": "RoboCOIN 是北京智源人工智能研究院牵头、联合二十多家高校和机器人公司于 2025 年 11 月开源的双臂操作数据集。它有超过 18 万条演示，来自 15 种机器人平台，包括双臂机器人、半身人形和全身人形（如松灵、星海图、智元、银河通用、乐聚、宇树等厂商的机型），覆盖 16 种环境、421 个双臂任务和 432 种物体，任务按 39 类双臂协作动作归类。标注分三层：整条轨迹的任务概念、分段的子任务、逐帧的运动学信息。配套的 CoRobot 处理流程基于 LeRobot，用于数据质检、自动标注和多本体数据统一管理。",
+  "example": "同一条双臂演示带三层标注：整条轨迹说明做的是什么任务，分段标出每个子任务的起止，逐帧给出运动学数据；数据可用 LeRobot 生态的工具直接加载训练。",
+  "related": ["北京智源人工智能研究院", "双臂操作", "跨本体数据", "LeRobot 数据集格式", "子任务切分", "AgiBot World 数据集"],
+  "sources": [
+    {"title": "RoboCOIN (arXiv:2511.17441)", "url": "https://arxiv.org/abs/2511.17441"},
+    {"title": "RoboCOIN 项目主页", "url": "https://flagopen.github.io/RoboCOIN/"}
+  ],
+  "as_of": "2026-04"
+},
+{
+  "name_zh": "RoboGen",
+  "name_en": "RoboGen: Towards Unleashing Infinite Data for Automated Robot Learning via Generative Simulation",
+  "abbr": "",
+  "aliases": ["RoboGen"],
+  "tier": 3,
+  "one_liner": "让大模型自动出题、搭仿真场景并学会技能的生成式仿真框架。",
+  "explanation": "RoboGen 是 CMU、MIT、清华叉院、UMass Amherst 等机构 2023 年 11 月提出的机器人学习框架，发表于 ICML 2024。它不让大模型直接输出动作，而是走一个「提出—生成—学习」循环：先由大模型提出一个要学的技能，再自动搭好对应的仿真场景和物体、分解子任务、写出奖励函数等监督信号，最后按任务类型挑选强化学习、运动规划或轨迹优化去学会它。这样几乎不需要人工设计任务，就能持续产出各种技能的演示数据，涵盖铰接物体、柔性物体操作和腿足运动。项目主页称其用 Genesis 仿真引擎做模拟和渲染。它是「生成式仿真」的代表工作。",
+  "example": "大模型提出「把行李箱拉杆拉出来」这个任务，RoboGen 自动放入行李箱模型、设置初始状态、生成奖励函数，再用强化学习训练出这个技能。",
+  "related": ["生成式仿真", "Genesis", "程序化生成", "大模型任务规划", "奖励函数", "仿真数据"],
+  "sources": [
+    {"title": "RoboGen (arXiv:2311.01455)", "url": "https://arxiv.org/abs/2311.01455"},
+    {"title": "RoboGen 项目主页", "url": "https://robogen-ai.github.io/"}
+  ],
+  "as_of": "2024-06"
+},
+{
+  "name_zh": "RoboNet 数据集",
+  "name_en": "RoboNet: Large-Scale Multi-Robot Learning",
+  "abbr": "",
+  "aliases": ["RoboNet"],
+  "tier": 3,
+  "one_liner": "2019 年发布的多机器人交互视频数据集，7 种机器人约 1500 万帧。",
+  "explanation": "RoboNet 是伯克利、斯坦福、宾大、CMU 的研究者（包括 Sergey Levine、Chelsea Finn）2019 年发布的早期大规模多机器人数据集。它汇集了 7 种机器人平台（从 Kuka 工业臂到低成本的 WidowX，以及 Sawyer、Franka、Baxter、Fetch、谷歌 R3）约 1500 万帧视频和对应动作。数据由机器人执行随机动作自主采集，几乎不需要人工演示，也没有任务标签，主要用来训练动作条件的视频预测模型，再做视觉预见式规划。论文发现，先在 RoboNet 上预训练、再迁移到新机器人，效果好于用 4–20 倍数据单独训练。它是跨本体数据集的早期尝试。",
+  "example": "研究者在一台新机械臂上只采 300–400 条随机轨迹，微调在 RoboNet 上预训练好的视频预测模型，再用它规划推物体的动作。",
+  "related": ["跨本体数据", "视觉预见 / 基于学习模型的规划", "视频预测模型", "自主数据采集", "Open X-Embodiment 数据集", "预训练"],
+  "sources": [
+    {"title": "RoboNet: Large-Scale Multi-Robot Learning (arXiv:1910.11215)", "url": "https://arxiv.org/abs/1910.11215"},
+    {"title": "RoboNet 项目主页", "url": "https://www.robonet.wiki/"}
+  ],
+  "as_of": "2020-01"
+},
+{
+  "name_zh": "RoboSet 数据集",
+  "name_en": "RoboSet",
+  "abbr": "",
+  "aliases": ["RoboSet"],
+  "tier": 3,
+  "one_liner": "CMU 与 Meta 发布的厨房场景真机多任务数据集，每帧 4 个视角。",
+  "explanation": "RoboSet 是卡内基梅隆大学与 Meta AI 在 RoboAgent 项目（2023 年）中公开的真实机器人数据集，场景以家庭厨房活动为主。数据集页面给出的规模是 2.85 万条轨迹，其中 9500 条由操作员用 Oculus Quest 2 手柄遥操作采集，1.9 万条通过动觉示教回放（在重新摆放的场景里重放已有轨迹）得到。每帧有 4 个相机视角，任务按「活动」组织，每个活动含 4–6 个带语言指令的子任务。RoboAgent 用其中约 7500 条轨迹训练 MT-ACT 策略，学会了 12 种操作技能。数据以 HDF5 格式发布，采用 MIT 许可。",
+  "example": "用 h5py 打开一条 RoboSet 轨迹，可以读到 4 个视角的图像、机械臂状态、对应动作和这段任务的语言指令。",
+  "related": ["RoboAgent（MT-ACT）", "动作分块", "遥操作", "拖动示教", "多视角", "HDF5 格式"],
+  "sources": [
+    {"title": "RoboSet 数据集页面", "url": "https://robopen.github.io/roboset/"},
+    {"title": "RoboAgent 项目主页", "url": "https://robopen.github.io/"}
+  ],
+  "as_of": "2023-09"
+},
+{
+  "name_zh": "RoboTurk",
+  "name_en": "RoboTurk: A Crowdsourcing Platform for Robotic Skill Learning through Imitation",
+  "abbr": "",
+  "aliases": ["RoboTurk 众包平台"],
+  "tier": 3,
+  "one_liner": "斯坦福 2018 年推出的平台，用手机远程遥操作、众包采集机器人演示。",
+  "explanation": "RoboTurk 是斯坦福大学李飞飞、Silvio Savarese 团队 2018 年发表于 CoRL 的众包数据采集平台，名字取自众包平台 Amazon Mechanical Turk。它让普通人用 iPhone 等智能手机做 6 自由度遥操作：在空中移动手机，远端机器人的末端就跟着动，不需要 VR 或专用设备，因此可以把采集任务分发给各地的远程工作者。首批试验在 22 小时的系统使用时间里收集了 137.5 小时操作数据、超过 2200 条成功演示；论文还发现网络带宽低、延迟高时，远程用户仍能顺利完成演示。它是众包采集的代表工作，robomimic 基准中的多人演示数据也是用它采集的。",
+  "example": "一名远程工作者在家打开手机，一边看网页上传回的实时画面，一边移动手机，控制机械臂完成抓取放置任务，数据自动上传用于模仿学习。",
+  "related": ["众包采集", "遥操作", "演示数据", "RoboMimic", "模仿学习", "斯坦福人工智能实验室"],
+  "sources": [
+    {"title": "RoboTurk: A Crowdsourcing Platform for Robotic Skill Learning through Imitation (arXiv:1811.02790)", "url": "https://arxiv.org/abs/1811.02790"}
+  ],
+  "as_of": "2018-11"
+},
+{
+  "name_zh": "RoboVQA 数据集",
+  "name_en": "RoboVQA: Multimodal Long-Horizon Reasoning for Robotics",
+  "abbr": "",
+  "aliases": ["RoboVQA"],
+  "tier": 3,
+  "one_liner": "谷歌 DeepMind 发布的面向机器人长程任务的视频问答数据集。",
+  "explanation": "RoboVQA 是 Google DeepMind（Pierre Sermanet 等）2023 年 11 月发布的数据集和模型工作。数据集含约 83 万组「视频—文本」对、2.95 万条不同指令，问题围绕长程任务展开：下一步该做什么、这一步完成了没有、某个动作现在能不能做等。采集采用「自下而上」的众包方式：先收集开放式的长程任务，再由机器人、人或手持抓取工具的人去执行并标注，论文称吞吐量是传统逐步采集的 2.2 倍。作者用它训练了视频视觉语言模型 RoboVQA-VideoCoCa，以人工干预率作统一指标；结果显示视频输入的模型比单图模型平均错误率低 19%。",
+  "example": "给模型看一段机器人在厨房里的视频并问「任务完成了吗？」或「下一步应该做什么？」，模型用文字作答，例如「把海绵放进水槽」。",
+  "related": ["视觉问答", "具身推理", "长程任务", "视觉语言模型", "谷歌 DeepMind", "语言标注"],
+  "sources": [
+    {"title": "RoboVQA: Multimodal Long-Horizon Reasoning for Robotics (arXiv:2311.00899)", "url": "https://arxiv.org/abs/2311.00899"}
+  ],
+  "as_of": "2023-11"
+}
+]}

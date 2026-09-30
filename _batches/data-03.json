@@ -1,0 +1,202 @@
+{
+  "category": "data",
+  "batch": 3,
+  "terms": [
+    {
+      "name_zh": "数采员",
+      "name_en": "Data Collector (Teleoperator)",
+      "abbr": "",
+      "aliases": ["遥操员", "机器人训练师", "数据采集员", "具身智能机器人数据采集员", "AI 训练师"],
+      "tier": 2,
+      "one_liner": "专门给机器人录训练数据的人，靠遥操作或穿戴设备示范动作。",
+      "explanation": "数采员是具身智能公司和数据采集基地里生产训练数据的一线岗位。他们按采集 SOP（标准作业流程）干活：戴 VR 头显、操纵主从臂或外骨骼遥操作真机，或者穿动捕服、戴头戴相机和数据手套，直接用自己的手做示范，系统同步记录画面、关节角、力等信号。模仿学习要靠大量人类演示，数采员的动作是否规范、一致，直接决定数据能不能用。2026 年 9 月人社部等发布的新职业「具身智能机器人应用技术员」，把数据采集员和训练师列为其下工种。据报道，这份工作重复枯燥，设备调试、场景复位和重采会占去不少时间。",
+      "example": "据中证网 2026 年 3 月报道，北京人形机器人创新中心的数据基地有 120 多台机器人、30 多个场景（家居、商超、产线等），数据采集员在里面做真机遥操作和动捕采集，基地月产数据约 1.5 万小时。",
+      "related": ["遥操作", "采集 SOP", "具身智能训练场", "演示数据", "有效数据", "具身智能机器人应用技术员（新职业）"],
+      "sources": [
+        {"title": "北京人形：具身智能机器人应用技术员进入国家新职业序列", "url": "https://www.x-humanoid.com/news-view-330.html"},
+        {"title": "钛媒体：机器人还没学会做家务，卖数据的已经先赚到了钱", "url": "https://www.tmtpost.com/8062934.html"},
+        {"title": "中证网：实探北京人形机器人数据基地，月产数据1.5万小时", "url": "https://jnzstatic.cs.com.cn/zzb/htmlInfo/117207.html"}
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "数据筛选",
+      "name_en": "Data Curation",
+      "abbr": "",
+      "aliases": ["数据策展", "数据精选", "数据过滤", "Data Filtering"],
+      "tier": 2,
+      "one_liner": "从大量机器人数据里挑出真正对训练有益的部分，剔除有害样本。",
+      "explanation": "数据筛选指训练前对数据集做挑选和加权：去掉失误多、动作犹豫、手法前后不一致的演示，留下质量高、覆盖面广的部分。它和数据清洗（修格式、删坏帧）不同，关心的是「哪条数据会让策略变好」。机器人演示常由多人采集、质量参差，模仿学习会把坏习惯一起学走，所以数据堆得越多不一定越好。代表方法有：斯坦福与谷歌 DeepMind 研究者 2025 年提出的 DemInf，用状态和动作之间的互信息给每条演示打分；CoRL 2025 的 CUPID 用影响函数估计每条演示对策略成功率的贡献，论文报告只用不到 33% 的筛选后数据，就能在 RoboMimic 基准上训出当时最好的扩散策略。",
+      "example": "DemInf 论文在真机 ALOHA 和 Franka 上，先给多人采集的演示逐条打分、去掉低分的一批再训练，得到的策略比直接用全部数据训练的表现更好。",
+      "related": ["数据清洗", "数据质检", "数据配比", "有效数据", "次优演示", "模仿学习"],
+      "sources": [
+        {"title": "Robot Data Curation with Mutual Information Estimators (arXiv 2502.08623)", "url": "https://arxiv.org/abs/2502.08623"},
+        {"title": "CUPID: Curating Data your Robot Loves with Influence Functions (arXiv 2506.19121)", "url": "https://arxiv.org/abs/2506.19121"}
+      ],
+      "as_of": "2025-09"
+    },
+    {
+      "name_zh": "数据多样性",
+      "name_en": "Data Diversity",
+      "abbr": "",
+      "aliases": ["数据覆盖面"],
+      "tier": 2,
+      "one_liner": "训练数据在场景、物体、任务、视角等维度上变化有多广。",
+      "explanation": "数据多样性描述数据集在环境、物体、光照、相机视角、任务、操作者、机器人本体等维度上的变化幅度，和「数据有多少条」是两回事。机器人策略容易记住训练时的那张桌子和那几个物体，换个房间就失灵，多样性不足是泛化差的主要原因之一。清华高阳团队 2024 年的数据缩放律研究发现，策略在新环境、新物体上的表现主要随环境数和物体数增长，在同一环境里多采演示很快就没有收益。Physical Intelligence 的 π0.5 用约 100 个真实家庭的移动操作数据训练，在从未见过的家里也能做收拾类任务。采集时主动换场景、换物体、换人，就是在提高多样性。",
+      "example": "π0.5 论文的实验显示，训练用的家庭数越多，策略在测试家庭里表现越好；用 104 个地点的数据训练后，效果接近直接用测试家庭数据训练的对照模型。",
+      "related": ["泛化", "场景泛化", "物体泛化", "数据缩放律（模仿学习）", "野外数据", "数据配比"],
+      "sources": [
+        {"title": "Data Scaling Laws in Imitation Learning for Robotic Manipulation (arXiv 2410.18647)", "url": "https://arxiv.org/abs/2410.18647"},
+        {"title": "π0.5: a Vision-Language-Action Model with Open-World Generalization (arXiv 2504.16054)", "url": "https://arxiv.org/html/2504.16054"}
+      ],
+      "as_of": "2025-04"
+    },
+    {
+      "name_zh": "数据配比",
+      "name_en": "Data Mixture",
+      "abbr": "",
+      "aliases": ["数据配方", "数据混合比例", "Data Recipe", "数据混合权重", "Data Mixture Weights"],
+      "tier": 2,
+      "one_liner": "多来源数据混合训练时，每个来源各占多大比重。",
+      "explanation": "数据配比指把不同来源的数据（不同机器人、不同任务、仿真与真机、网页图文、人类视频）混在一起训练时，决定每一类被抽到的频率。各来源条数相差很大，直接按条数混，大数据集会压过小数据集；权重调得不好，模型又会偏科。常见做法：人工定权重，如 Octo、OpenVLA 在 Open X-Embodiment 上手调的配方（俗称 Magic Soup）；π0 按 n^0.43 给每个「任务-机器人」组合加权（n 是该组合的样本数），压低数据过多的组合；斯坦福的 Re-Mix 用分布鲁棒优化自动学权重，论文报告比均匀权重平均提升 38%。配比还常随训练阶段变化，预训练偏多样，后训练偏高质量。",
+      "example": "π0 的预训练数据中 9.1% 来自 OXE、Bridge v2、DROID 等开源数据集，其余来自自家采集，再按 n^0.43 规则给每个任务-机器人组合加权。",
+      "related": ["Magic Soup（OXE 数据配方）", "协同训练", "异构数据", "跨本体数据", "数据筛选", "Open X-Embodiment 数据集"],
+      "sources": [
+        {"title": "Re-Mix: Optimizing Data Mixtures for Large Scale Imitation Learning (arXiv 2408.14037)", "url": "https://arxiv.org/abs/2408.14037"},
+        {"title": "π0: A Vision-Language-Action Flow Model for General Robot Control (arXiv 2410.24164)", "url": "https://arxiv.org/html/2410.24164"}
+      ],
+      "as_of": "2024-10"
+    },
+    {
+      "name_zh": "数据金字塔",
+      "name_en": "Data Pyramid",
+      "abbr": "",
+      "aliases": ["机器人数据金字塔"],
+      "tier": 2,
+      "one_liner": "按数量多少和贴近真机程度，把机器人训练数据分成三层的框架。",
+      "explanation": "数据金字塔是英伟达在 2025 年 3 月 GR00T N1 论文里用来组织训练数据的框架：底层是量最大的网页数据和人类视频；中层是物理仿真生成、或用神经网络（如视频生成模型）合成的数据；顶层是在真实机器人上采集的数据。从下往上，数据量越来越少，和具体本体（机器人硬件）的贴合度越来越高。底层提供通用常识和行为先验，顶层保证动作能在真机上执行。它针对的是真机数据又贵又少的现实：用便宜的大规模数据打底，用少量真机数据校准。",
+      "example": "GR00T N1 的底层用了 Ego4D、EPIC-KITCHENS 等人类视频；中层有约 827 小时视频模型生成的神经轨迹和 78 万条 DexMimicGen 仿真轨迹；顶层是傅利叶 GR-1 遥操作数据、Open X-Embodiment 和 AgiBot World 等真机数据。",
+      "related": ["真机数据", "仿真数据", "合成数据", "人类视频数据", "神经轨迹", "GR00T N1 系列"],
+      "sources": [
+        {"title": "GR00T N1: An Open Foundation Model for Generalist Humanoid Robots (arXiv 2503.14734)", "url": "https://arxiv.org/html/2503.14734"}
+      ],
+      "as_of": "2025-03"
+    },
+    {
+      "name_zh": "数据缩放律（模仿学习）",
+      "name_en": "Data Scaling Laws in Imitation Learning (Robotic Manipulation)",
+      "abbr": "",
+      "aliases": ["模仿学习数据缩放律", "Data Scaling Laws in Imitation Learning for Robotic Manipulation"],
+      "tier": 2,
+      "one_liner": "研究机器人模仿学习里数据怎么增加、泛化能力就怎么提升的规律。",
+      "explanation": "这是清华大学高阳团队（合作单位含上海期智研究院、上海人工智能实验室）2024 年 10 月发布的论文，入选 ICLR 2025 口头报告。团队用手持采集设备 UMI（通用操作接口）采了 4 万多条演示，做了 1.5 万多次真机测试，研究单任务策略在新环境、新物体上的泛化能力如何随数据增长。结论：泛化表现与训练环境数、物体数大致呈幂律关系；环境和物体的多样性比单纯增加演示条数重要得多，每个环境或物体的演示超过一定数量后收益很小。据此他们给出高效采集方案：多换环境，每个环境配一个不同物体、采约 50 条演示。",
+      "example": "按这一方案，4 名采集员用一个下午采的数据，就让两个新任务的策略在没见过的环境和物体上达到约 90% 成功率。",
+      "related": ["缩放定律", "数据多样性", "模仿学习", "通用操作接口", "泛化", "扩散策略"],
+      "sources": [
+        {"title": "Data Scaling Laws in Imitation Learning for Robotic Manipulation (arXiv 2410.18647)", "url": "https://arxiv.org/abs/2410.18647"},
+        {"title": "Data Scaling Laws in Imitation Learning 项目主页", "url": "https://data-scaling-laws.github.io/"}
+      ],
+      "as_of": "2025-01"
+    },
+    {
+      "name_zh": "数据荒",
+      "name_en": "Data Scarcity",
+      "abbr": "",
+      "aliases": ["数据稀缺", "数据瓶颈", "数据鸿沟", "Data Gap"],
+      "tier": 2,
+      "one_liner": "机器人能用的真实交互数据远少于所需，是具身智能的核心瓶颈。",
+      "explanation": "数据荒指具身智能缺少足够的高质量训练数据。大语言模型能用整个互联网的文本，机器人需要的却是动作、关节角、力和触觉这类「怎么动手」的数据，网上几乎没有，只能靠遥操作、穿戴设备一条条采，成本高、速度慢，不同机器人之间的数据还不容易通用。伯克利教授 Ken Goldberg 2025 年 8 月在 Science Robotics 撰文指出，大模型训练所用文本相当于一个人读 10 万年，机器人与之相比存在「10 万年数据鸿沟」。应对思路包括：扩大真机采集、用仿真和生成模型造数据、从人类视频中学习、跨本体共享数据，以及让机器人在部署中边干边积累数据。",
+      "example": "据钛媒体 2026 年 7 月报道，觅蜂科技 CEO 估算具身智能要达到 GPT-3.5 级别需约一亿小时训练数据，而截至 2026 年初，全球可用的高质量真实物理交互数据只有几十万小时。",
+      "related": ["数据金字塔", "仿真数据", "合成数据", "人类视频数据", "数据飞轮", "遥操作"],
+      "sources": [
+        {"title": "UC Berkeley CDSS: Humanoid robots face challenges in gaining real-world skills", "url": "https://cdss.berkeley.edu/news/humanoid-robots-face-challenges-gaining-real-world-skills-says-berkeley-expert"},
+        {"title": "Rockingrobots: Humanoid robots are advancing but face a massive data gap", "url": "https://www.rockingrobots.com/humanoid-robots-are-advancing-but-face-a-massive-data-gap"},
+        {"title": "钛媒体：机器人还没学会做家务，卖数据的已经先赚到了钱", "url": "https://www.tmtpost.com/8062934.html"}
+      ],
+      "as_of": "2026-07"
+    },
+    {
+      "name_zh": "DROID 数据集",
+      "name_en": "DROID (Distributed Robot Interaction Dataset)",
+      "abbr": "DROID",
+      "aliases": ["DROID"],
+      "tier": 2,
+      "one_liner": "50 名采集员在三大洲 564 个场景用 Franka 机械臂采集的真机操作数据集。",
+      "explanation": "DROID 由斯坦福、伯克利等 13 家机构联合采集，2024 年 3 月发布。各家用同一套硬件：Franka Panda 七自由度机械臂装在可调高度的移动桌上，配两台第三视角 ZED 2 双目相机和一台腕部 ZED Mini，采集员用 Quest 2 VR 手柄遥操作。历时 12 个月，50 名采集员在北美、亚洲、欧洲的实验室、办公室和家庭里采到 7.6 万条成功轨迹、约 350 小时，覆盖 564 个场景、86 类任务、1417 个相机视角，另附约 1.6 万条标为失败的轨迹。它主打「野外」场景多样性，π0 等模型的预训练数据里就有 DROID。",
+      "example": "训练策略时可直接下载 RLDS 格式的完整 DROID（约 1.7 TB）；需要高清双目画面或深度信息时，改用原始数据版本（约 8.7 TB）。",
+      "related": ["Open X-Embodiment 数据集", "真机数据", "VR 遥操作", "数据多样性", "RLDS 格式", "Franka 机械臂（Panda / FR3）"],
+      "sources": [
+        {"title": "DROID 项目主页", "url": "https://droid-dataset.github.io/"},
+        {"title": "DROID: A Large-Scale In-The-Wild Robot Manipulation Dataset (arXiv 2403.12945)", "url": "https://arxiv.org/html/2403.12945v2"},
+        {"title": "The DROID Dataset (DROID Docs)", "url": "https://droid-dataset.github.io/droid/the-droid-dataset"}
+      ],
+      "as_of": "2025-04"
+    },
+    {
+      "name_zh": "Ego4D 数据集",
+      "name_en": "Ego4D",
+      "abbr": "",
+      "aliases": ["Ego4D"],
+      "tier": 2,
+      "one_liner": "Meta 与 13 所高校合作采集、约 3670 小时的第一人称日常视频数据集。",
+      "explanation": "Ego4D 由 Facebook AI（现 Meta）和 13 所大学组成的联盟采集，2021 年 10 月发布论文、2022 年发表于 CVPR。900 多名参与者在 9 个国家、74 个地点戴头戴相机记录做饭、修理、购物、社交等日常活动，共 3670 小时，部分还附带音频、眼动、3D 场景网格和多机位同步视频，并配有情景记忆、手-物交互、社交、未来预测等基准任务。对机器人来说，它是规模最大的人类第一视角视频来源之一，常用来预训练视觉表征；但它没有原生的手部 3D 姿态标注，也没有机器人动作，不能直接拿来模仿。使用前需签署许可协议。",
+      "example": "R3M 在 Ego4D 视频上用时间对比学习和视频-语言对齐做预训练，冻结后给 Franka 机械臂当视觉模块，只用 20 条演示就学会了多个操作任务。",
+      "related": ["第一人称视频", "人类视频数据", "Ego-Exo4D 数据集", "R3M", "EgoDex 数据集", "预训练视觉表征"],
+      "sources": [
+        {"title": "Ego4D: Around the World in 3,000 Hours of Egocentric Video (arXiv 2110.07058)", "url": "https://arxiv.org/abs/2110.07058"},
+        {"title": "Ego4D 官网", "url": "https://ego4d-data.org/"},
+        {"title": "R3M: A Universal Visual Representation for Robot Manipulation (arXiv 2203.12601)", "url": "https://arxiv.org/abs/2203.12601"}
+      ],
+      "as_of": "2022-02"
+    },
+    {
+      "name_zh": "EgoDex 数据集",
+      "name_en": "EgoDex",
+      "abbr": "",
+      "aliases": ["EgoDex"],
+      "tier": 2,
+      "one_liner": "苹果用 Vision Pro 采集、带双手 3D 关节标注的第一人称操作视频数据集。",
+      "explanation": "EgoDex 由苹果研究团队 2025 年 5 月发布，论文被 ICLR 2026 接收。采集者戴 Apple Vision Pro 完成桌面日常操作，头显的多路标定相机和设备端 SLAM（同时定位与建图）在录制时就同步算出头部、上半身以及每只手 25 个关节的 3D 位置和朝向。数据共 829 小时、约 9000 万帧、33.8 万条演示，覆盖 194 种桌面任务，并用 GPT-4 生成语言描述。它补上了 Ego4D 等视频数据缺少精确手部姿态的短板，可用来训练手部轨迹预测模型，再迁移到灵巧手机器人。数据以 CC BY-NC-ND 许可发布，仅限非商用。",
+      "example": "论文用 EgoDex 训练模仿学习策略，输入第一人称画面，预测接下来一段时间双手的 3D 运动轨迹，并据此建立手部轨迹预测的评测基准。",
+      "related": ["第一人称视频", "人类视频数据", "Apple Vision Pro", "手部姿态估计", "Ego4D 数据集", "灵巧操作"],
+      "sources": [
+        {"title": "EgoDex: Learning Dexterous Manipulation from Large-Scale Egocentric Video (arXiv 2505.11709)", "url": "https://arxiv.org/abs/2505.11709"},
+        {"title": "apple/ml-egodex (GitHub)", "url": "https://github.com/apple/ml-egodex"}
+      ],
+      "as_of": "2026-03"
+    },
+    {
+      "name_zh": "外骨骼遥操作",
+      "name_en": "Exoskeleton Teleoperation",
+      "abbr": "",
+      "aliases": ["外骨骼采集", "外骨骼示教"],
+      "tier": 2,
+      "one_liner": "人穿戴与机器人关节对应的外骨骼，用自己手臂的动作直接控制机器人。",
+      "explanation": "外骨骼遥操作是遥操作的一种：操作者穿戴一套外骨骼，外骨骼各关节装有编码器（测转角的传感器），结构与机器人手臂同构或按比例对应。人的手臂怎么动，读数就直接映射成机器人的关节角，不必像 VR 手柄那样先做逆运动学（由末端位姿反推关节角）。好处是整条手臂的姿态都可控、延迟低、上手直观，也可以不接机器人、单独在野外采数据；缺点是要按每种机器人适配结构，长时间穿戴也累。代表工作有上海交通大学卢策吾团队的 AirExo 系列双臂外骨骼，以及 2025 年面向人形机器人的外骨骼驾舱 HOMIE。",
+      "example": "AirExo 论文中，只用 3 分钟遥操作数据加上大量用外骨骼在野外采集的演示，训练出的策略就达到甚至超过只用 20 多分钟遥操作数据的效果；HOMIE 整套驾舱成本约 500 美元。",
+      "related": ["遥操作", "主从臂遥操作", "全身遥操作", "AirExo 外骨骼", "HOMIE", "外骨骼"],
+      "sources": [
+        {"title": "AirExo: Low-Cost Exoskeletons for Learning Whole-Arm Manipulation in the Wild (arXiv 2309.14975)", "url": "https://arxiv.org/abs/2309.14975"},
+        {"title": "HOMIE: Humanoid Loco-Manipulation with Isomorphic Exoskeleton Cockpit (arXiv 2502.13013)", "url": "https://arxiv.org/abs/2502.13013"}
+      ],
+      "as_of": "2025-04"
+    },
+    {
+      "name_zh": "失败数据",
+      "name_en": "Failure Data",
+      "abbr": "",
+      "aliases": ["失败轨迹", "失败演示", "Failed Trajectories"],
+      "tier": 2,
+      "one_liner": "没完成任务的轨迹，可用来学纠错、训练奖励模型和价值函数。",
+      "explanation": "失败数据指没能完成任务的轨迹，来源包括遥操作时的失手、策略自主执行时的失败，以及人工介入前出错的片段。纯模仿学习通常把它们丢掉，照着学会学坏；但它们记录了「什么情况下会出错」，用处不少：训练成功检测器、奖励模型和价值函数，在强化学习里充当负反馈，配合纠偏数据教模型从错误中恢复。π0 论文就指出，只用高质量数据训练学不会纠错，因为这类数据里很少出现失误。Physical Intelligence 的 RECAP 方法把失败轨迹、自主运行数据和人工纠正一起用来训练 π*0.6，论文报告在较难任务上吞吐量翻倍以上、失败率约减半。",
+      "example": "DROID 数据集除 7.6 万条成功轨迹外，还一并发布了约 1.6 万条被采集员标为「不成功」的轨迹，可用于训练成功检测器或做离线强化学习。",
+      "related": ["纠偏数据", "干预数据", "成功检测器", "奖励模型", "RECAP", "离线强化学习"],
+      "sources": [
+        {"title": "π*0.6: a VLA That Learns From Experience (arXiv 2511.14759)", "url": "https://arxiv.org/abs/2511.14759"},
+        {"title": "DROID: A Large-Scale In-The-Wild Robot Manipulation Dataset (arXiv 2403.12945)", "url": "https://arxiv.org/html/2403.12945v2"},
+        {"title": "π0: A Vision-Language-Action Flow Model for General Robot Control (arXiv 2410.24164)", "url": "https://arxiv.org/html/2410.24164"}
+      ],
+      "as_of": "2025-11"
+    }
+  ]
+}

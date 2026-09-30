@@ -1,0 +1,113 @@
+{
+  "batch": "named_model-04",
+  "terms": [
+    {
+      "key": "named_model-04#0",
+      "name_en": "OpenVLA-OFT",
+      "aliases": ["OFT", "OpenVLA-OFT+", "Optimized Fine-Tuning (VLA recipe)"],
+      "one_liner": "Stanford's fine-tuning recipe for VLAs that makes OpenVLA generate actions 26 times faster, with a higher success rate.",
+      "explanation": "OpenVLA-OFT is a VLA fine-tuning recipe proposed by Moo Jin Kim, Chelsea Finn, and Percy Liang at Stanford in February 2025. The original OpenVLA discretizes actions into tokens and outputs them one at a time, autoregressively, which is slow and hard to use for high-frequency control. OFT changes four things during fine-tuning: parallel decoding (computing all actions in a single forward pass), action chunking (predicting multiple steps at once), a continuous action representation, and an L1 regression loss; OFT+ additionally adds FiLM feature modulation to strengthen how well the model follows language instructions. The result: average success rate on LIBERO rose from 76.5% to 97.1%, action-generation throughput increased 26x, and on a real ALOHA bimanual robot it beat other fine-tuned VLAs, including π0 and RDT-1B. It's now commonly used as a strong baseline for VLA fine-tuning.",
+      "example": "When fine-tuning OpenVLA on LIBERO, switching the output from discrete action tokens emitted one at a time to an entire continuous action chunk regressed in a single forward pass sharply raises inference throughput and also improves success rate.",
+      "related": ["OpenVLA", "Vision-Language-Action Model", "Action Chunking", "Parallel Decoding", "FiLM Feature Modulation", "LIBERO"]
+    },
+    {
+      "key": "named_model-04#1",
+      "name_en": "PaLM-E",
+      "aliases": ["PaLM-E-562B", "PaLM-E: An Embodied Multimodal Language Model"],
+      "one_liner": "Google's 2023 embodied multimodal large language model, which feeds images and robot-state estimates directly into PaLM.",
+      "explanation": "PaLM-E is the embodied multimodal language model Google and TU Berlin released in March 2023; its largest version, PaLM-E-562B, has 562 billion parameters and combines the PaLM language model with a ViT vision encoder. It encodes continuous inputs like images and estimated robot state into vectors, interleaves them with text tokens into a single “multimodal sentence,” and feeds that into the language model. Its output is a mid-level plan in the form of text, which is then handed off to low-level skill policies to execute — the model itself doesn't output motor commands directly. The paper found positive transfer from training on web image-text data together with robot data, and the 562B version also achieved state-of-the-art results on OK-VQA visual question answering at the time. It's a landmark example of using a large model for robot task planning, and a predecessor of VLAs like RT-2.",
+      "example": "Given a kitchen photo and the instruction “bring me the chips from the drawer,” PaLM-E generates a sequence of substeps — go to the drawer, open the drawer, take out the chips — which a low-level policy then executes one by one.",
+      "related": ["SayCan", "RT-2", "Multimodal Large Language Model", "LLM Task Planning", "Vision Transformer", "Language Grounding"]
+    },
+    {
+      "key": "named_model-04#2",
+      "name_en": "Qwen-Robot Series",
+      "aliases": ["Qwen-RobotManip", "Qwen-RobotNav", "Qwen-RobotWorld"],
+      "one_liner": "Alibaba's Qwen team released this trio of 2026 embodied models, one each for manipulation, navigation, and world modeling.",
+      "explanation": "Qwen-Robot is a group of embodied models Alibaba's Qwen team released together in June 2026, all built on the Qwen vision-language model, with each of the three members handling a different job. Qwen-RobotManip is a manipulation VLA: a Qwen-VL backbone followed by a flow-matching DiT action head, trained only on open-source robot data plus robot trajectories synthesized from human-hand videos, totaling about 38,100 hours of pretraining data, with an emphasis on aligning data across different robot embodiments before scaling up. Qwen-RobotNav uses a unified waypoint-prediction interface to handle vision-language navigation, object search, target tracking, and autonomous driving all at once. Qwen-RobotWorld is a language-conditioned video world model used to synthesize training data and evaluate policies. The official repository states there is currently no plan to release weights for Manip or Nav.",
+      "example": "Qwen-RobotNav was deployed zero-shot on a Unitree Go2 quadruped, running inference on a Jetson Thor at about 5Hz to navigate unfamiliar environments by language instruction.",
+      "related": ["Qwen-VL", "Vision-Language-Action Model", "World Model", "Vision-and-Language Navigation", "Flow Matching", "Cross-Embodiment"]
+    },
+    {
+      "key": "named_model-04#3",
+      "name_en": "Rapid Motor Adaptation",
+      "aliases": ["RMA"],
+      "one_liner": "A method that lets quadruped robots sense terrain or load changes and adjust gait within a fraction of a second.",
+      "explanation": "RMA was proposed by Ashish Kumar, Zipeng Fu, Deepak Pathak, and Jitendra Malik at UC Berkeley and Carnegie Mellon University, published at RSS 2021. Real ground varies in softness, friction, load, and motor wear, and a policy trained only in simulation often falls on the real robot. RMA has two parts. A base policy, trained in simulation, has access to these environment parameters (privileged information) and compresses them into a low-dimensional “extrinsics” vector that modulates its actions. An adaptation module sees only a recent window of joint state and action history, and learns to infer that same vector. Deployed on a Unitree A1 with no real-robot fine-tuning, it adapts within a fraction of a second to sand, foam mats, stairs, and slippery ground. This approach — using privileged information during training and estimating it from history at deployment — later became a standard recipe for sim-to-real transfer in legged robots.",
+      "example": "A sudden load is added to a Unitree A1's back; the adaptation module estimates the new extrinsics vector from the recent change in joint states, and the policy immediately adjusts its gait and keeps walking, with no retraining needed.",
+      "related": ["Sim-to-Real Transfer", "Privileged Information", "Teacher-Student Distillation", "Reinforcement-Learning-Based Locomotion Control", "Domain Randomization", "HORA (In-Hand Rotation + RMA)"]
+    },
+    {
+      "key": "named_model-04#4",
+      "name_en": "RDT-1B",
+      "aliases": ["RDT", "Robotics Diffusion Transformer"],
+      "one_liner": "Tsinghua's 2024 diffusion foundation model for bimanual manipulation, with about 1.2 billion parameters and a unified action space.",
+      "explanation": "RDT-1B (Robotics Diffusion Transformer) is a robot diffusion foundation model, about 1.2 billion parameters, released by a Tsinghua University team in October 2024. In bimanual manipulation the same situation often has several equally valid ways to act (action multimodality), and direct regression tends to average them into a wrong action; RDT instead uses a diffusion Transformer that denoises step by step to generate an action sequence, which can represent this kind of distribution. To make use of data from many different robots, it designs a “physically interpretable unified action space” that places physical quantities like joint angles and end-effector pose from different robots into fixed positions in one shared vector. The model is first pretrained on more than 1 million trajectories across 46 datasets, then fine-tuned on more than 6,000 ALOHA bimanual demonstrations, after which it can learn a new skill from just 1 to 5 demonstrations. Its successor is RDT2.",
+      "example": "Given only 1 to 5 demonstrations, RDT-1B can learn a new bimanual manipulation skill on an ALOHA robot, and it can even execute zero-shot on objects and scenes it has never seen.",
+      "related": ["Diffusion Policy", "Diffusion Transformer", "Bimanual Manipulation", "Unified Action Space", "Action Multimodality", "RDT2"]
+    },
+    {
+      "key": "named_model-04#5",
+      "name_en": "ReKep",
+      "aliases": ["Relational Keypoint Constraints", "ReKep: Spatio-Temporal Reasoning of Relational Keypoint Constraints for Robotic Manipulation"],
+      "one_liner": "Has a large model write task constraints between keypoints as code, then solves for robot motion with optimization.",
+      "explanation": "ReKep (Relational Keypoint Constraints) is a training-free manipulation method proposed in September 2024 by Fei-Fei Li's group at Stanford together with Columbia University. It first uses DINOv2 visual features to find candidate 3D keypoints in an RGB-D image, then gives the numbered, annotated image and a language instruction to GPT-4o, which writes several Python functions: each takes keypoint coordinates as input and outputs a cost, expressing a relation like “the spout must line up with the cup's opening,” with a task optionally broken into multiple stages. A hierarchical optimizer then solves in real time for a sequence of end-effector poses, and replans in closed loop as it tracks the keypoints. This means no task-specific training data is needed to pour tea, fold clothes, or put on shoes with both arms, on either single-arm or bimanual robots — a representative example of the “large model writes constraints, optimizer produces motion” approach.",
+      "example": "Given the instruction “pour tea into the cup,” the constraints GPT-4o writes include: during the grasp stage, the gripper must be near a keypoint on the pot's handle; during the pour stage, the spout keypoint must sit directly above the cup's opening keypoint with the pot tilted. The optimizer computes the full motion from these.",
+      "related": ["VoxPoser", "OmniManip", "Affordance", "Semantic Keypoint", "DINOv2", "LLM Task Planning"]
+    },
+    {
+      "key": "named_model-04#6",
+      "name_en": "RECAP",
+      "aliases": ["RL with Experience and Corrections via Advantage-conditioned Policies"],
+      "one_liner": "Physical Intelligence's method for letting a VLA keep improving from its own experience plus human corrections.",
+      "explanation": "RECAP is a training method Physical Intelligence released alongside π*0.6 in November 2025. Pure imitation learning can only ever match the level of its demonstrations, while a deployed robot generates a large stream of successes, failures, and human takeovers. RECAP combines all three kinds of data — offline demonstrations, trajectories from the robot's own autonomous runs, and corrections from an expert who teleoperates in to intervene during a run. It first trains a value function that predicts how many steps remain until task completion, uses that to judge whether each action was better or worse than average (its advantage), then trains the policy together with an “Advantage: positive / negative” text token as input. At inference, conditioning on “positive” pushes the model to output better actions. Deployment, retraining the value function, and fine-tuning the policy can be repeated in a loop. On tasks like folding laundry, assembling boxes, and making coffee, this more than doubled throughput and roughly halved the failure rate.",
+      "example": "After training with RECAP, PI reports that π*0.6 can make espresso drinks continuously for 13 hours, and fold unfamiliar laundry in unfamiliar homes for more than two hours at a stretch.",
+      "related": ["π*0.6", "Advantage Conditioning", "Value Function", "Offline Reinforcement Learning", "Human-in-the-Loop", "Classifier-Free Guidance"]
+    },
+    {
+      "key": "named_model-04#7",
+      "name_en": "RT-X",
+      "aliases": ["RT-1-X", "RT-2-X"],
+      "one_liner": "RT-1 and RT-2 retrained on Open X-Embodiment, a large dataset pooling robot data across 22 different robot embodiments.",
+      "explanation": "RT-X is a set of models released in October 2023, led by Google DeepMind in collaboration with 21 institutions and 34 labs, alongside the Open X-Embodiment dataset. That dataset pools 60 existing robot datasets, 22 different robot embodiments, and more than 1 million real-robot trajectories. RT-1-X and RT-2-X keep the architectures of RT-1 (a dedicated robot Transformer) and RT-2 (a VLA fine-tuned from a vision-language model) unchanged, simply swapping in this combined dataset for training. The results show positive transfer from cross-embodiment training: RT-1-X beat the original methods used by individual labs by about 50% on average in low-data settings, and RT-2-X scored roughly 3x higher than RT-2 on emergent-skill evaluations. It drove wider cross-embodiment data sharing, and later models such as Octo and OpenVLA are all trained on this same dataset.",
+      "example": "RT-2-X picked up spatial concepts that were only present in other labs' data, learning to tell apart instructions that differ by a single preposition, such as “put the apple on the cloth” versus “put the apple next to the cloth.”",
+      "related": ["Open X-Embodiment Dataset", "RT-1", "RT-2", "Cross-Embodiment", "Octo", "OpenVLA"]
+    },
+    {
+      "key": "named_model-04#8",
+      "name_en": "SayCan",
+      "aliases": ["Do As I Can, Not As I Say: Grounding Language in Robotic Affordances", "PaLM-SayCan"],
+      "one_liner": "Combines what a language model says is useful with what a value function says is achievable to pick each action.",
+      "explanation": "SayCan is work released by the Google Robotics team and Everyday Robots in April 2022. Large language models have broad commonsense knowledge, but don't know what the robot in front of them can actually do in its current situation; letting an LLM write a plan directly often produces steps that aren't achievable. SayCan instead equips the robot with a set of pretrained skills (such as “pick up the sponge” or “go to the table”); at each step, the language model scores how useful each skill would be toward completing the instruction, and a value function learned through reinforcement learning scores how likely each skill is to succeed from the current state (its affordance); the two scores are multiplied together, and the highest-scoring skill is executed, repeating until the task ends. Using PaLM in place of the original language model, PaLM-SayCan reached an 84% planning success rate and a 74% execution success rate across 101 instructions in a real kitchen. It's one of the founding works on using large models for high-level robot task planning.",
+      "example": "When a user says “I spilled my Coke, can you help me get something to clean it up,” SayCan selects, in sequence: find a sponge, pick up the sponge, bring it to you, done.",
+      "related": ["Affordance", "Language Grounding", "LLM Task Planning", "Inner Monologue", "PaLM-E", "Value Function"]
+    },
+    {
+      "key": "named_model-04#9",
+      "name_en": "Seed GR-3",
+      "aliases": ["ByteDance Seed GR-3", "Generalist Robot Model 3"],
+      "one_liner": "ByteDance Seed's 2025 general-purpose robot VLA, about 4 billion parameters, controlling its own ByteMini bimanual robot.",
+      "explanation": "GR-3 is a vision-language-action model the ByteDance Seed team released in July 2025, following GR-1 and GR-2. It has about 4 billion parameters, using Qwen2.5-VL-3B as its vision-language backbone, followed by a diffusion Transformer action head trained with flow matching that generates one action chunk at a time. Training draws on three kinds of data: robot trajectories for imitation learning; web image-text data co-trained in to preserve understanding of new objects and abstract instructions; and human trajectories captured with a VR device for few-shot adaptation — the paper reports that adding just 10 demonstrations per unseen object raised pick-and-place success from 57.8% to 86.7%. Its companion robot, ByteMini, is a 22-degree-of-freedom bimanual mobile platform, and GR-3 outperforms π0 on long-horizon tasks such as clearing a table and hanging up clothes.",
+      "example": "In the clothes-hanging task, GR-3 coordinates ByteMini's two arms to thread a hanger into a garment and then hang it on a rack — an example of bimanual deformable-object manipulation.",
+      "related": ["ByteDance Seed GR-2", "ByteDance Seed GR-1", "ByteDance Seed", "Vision-Language-Action Model", "Flow Matching", "Co-training"]
+    },
+    {
+      "key": "named_model-04#10",
+      "name_en": "SmolVLA",
+      "aliases": ["SmolVLA: A Vision-Language-Action Model for Affordable and Efficient Robotics"],
+      "one_liner": "Hugging Face's open-source, roughly 450-million-parameter small VLA that trains and runs on ordinary consumer hardware, even a laptop.",
+      "explanation": "SmolVLA is an open-source vision-language-action model, about 450 million parameters, released in June 2025 by Hugging Face's LeRobot team. It's built on the small vision-language model SmolVLM2, followed by an action expert of about 100 million parameters trained with flow matching; to save compute, it keeps only 64 visual tokens per frame and skips some network layers. Pretraining uses only 487 community-uploaded LeRobot datasets, about 10 million frames — an order of magnitude less data than typical VLAs. It also supports asynchronous inference: the robot starts computing the next action chunk while still executing the current one, which the team says speeds up task completion by about 30%. On LIBERO, Meta-World, and real SO-100/SO-101 robots, it performs close to or better than larger models, and it can run on consumer GPUs or even a MacBook.",
+      "example": "Collect a batch of demonstrations with LeRobot of an SO-101 arm picking up blocks, fine-tune SmolVLA on a single consumer GPU, then deploy it back onto the same arm.",
+      "related": ["LeRobot", "Vision-Language-Action Model", "Action Expert", "Flow Matching", "Asynchronous Inference", "SO-100 / SO-101 Arm"]
+    },
+    {
+      "key": "named_model-04#11",
+      "name_en": "Sora",
+      "aliases": ["Sora 2", "Video Generation Models as World Simulators"],
+      "one_liner": "OpenAI's text-to-video model, introduced with a technical report arguing that video generation models can double as world simulators.",
+      "explanation": "Sora is OpenAI's video generation model, first shown in February 2024 and opened to paying users that December, alongside a technical report titled “Video generation models as world simulators.” It's a diffusion Transformer: video is compressed into a latent space, cut into spacetime patches used as tokens, and then generated by progressive denoising. The report argues that scaling up video generation models naturally produces abilities like 3D consistency and object permanence, and may be a path toward a simulator of the physical world. This connected the video-generation and world-model lines of research, and also sparked debate over whether it truly understands physics — the report itself acknowledges that interactions like glass shattering aren't simulated accurately. Sora 2, with a companion social app, launched on September 30, 2025; OpenAI announced it was discontinuing Sora in March 2026, the app was taken down on April 26, and the API was shut off on September 24.",
+      "example": "In the technical report, Sora generated Minecraft footage while simultaneously controlling the player character and rendering the surrounding world — cited as an example of it “simulating a digital world.”",
+      "related": ["Video Generation Model", "World Model", "Diffusion Transformer", "Spacetime Patch", "World Foundation Model", "Intuitive Physics"]
+    }
+  ]
+}

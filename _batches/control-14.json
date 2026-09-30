@@ -1,0 +1,203 @@
+{
+  "category": "control",
+  "batch": 14,
+  "terms": [
+    {
+      "name_zh": "蒙特卡洛树搜索",
+      "name_en": "Monte Carlo Tree Search",
+      "abbr": "MCTS",
+      "aliases": ["蒙特卡罗树搜索"],
+      "tier": 3,
+      "one_liner": "靠大量随机模拟估计每个选择的好坏、边搜边长出搜索树的决策算法。",
+      "explanation": "蒙特卡洛树搜索用来在「一步步做选择」的问题里找好决策。2006 年 Rémi Coulom 起了这个名字，同年 Kocsis 和 Szepesvári 提出了最常用的 UCT 版本。每轮迭代四步：选择（从根节点往下挑当前最值得试的分支）、扩展（加一个新节点）、模拟（从新节点随机或按策略推演到结束，得到一个结果）、回传（把结果沿路径更新到各节点的统计）。选择时常用 UCB 公式 w/n + c·√(ln N / n)：w/n 是该分支的平均得分，n 是它被试过的次数，N 是父节点的访问次数，c 调节偏向探索新分支还是利用已知好分支。它不需要人工写局面评估函数，搜到一半也能给出当前最好的答案。2016 年击败李世石的 AlphaGo 把它和神经网络结合；机器人里用于任务规划、部分可观测下的决策和接触序列规划。",
+      "example": "足式机器人跨越踏脚石：Dhédin 等人 2025 年的工作用 MCTS 在离散层面搜索「哪条腿、按什么顺序、踩哪块落脚区」，每个候选序列交给全身轨迹优化检验能否做到，再用结果更新搜索树。",
+      "related": ["任务规划", "探索与利用", "部分可观测马尔可夫决策过程", "MuZero", "多接触规划", "价值函数"],
+      "sources": [
+        {"title": "Wikipedia: Monte Carlo tree search", "url": "https://en.wikipedia.org/wiki/Monte_Carlo_tree_search"},
+        {"title": "Simultaneous Contact Sequence and Patch Planning for Dynamic Locomotion (arXiv 2508.12928)", "url": "https://arxiv.org/abs/2508.12928"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "运动基元",
+      "name_en": "Motion Primitives",
+      "abbr": "",
+      "aliases": ["运动原语", "动作基元", "Movement Primitives"],
+      "tier": 3,
+      "one_liner": "把复杂动作拆成可复用、可调参数的一小段标准动作，用时再组合拼接。",
+      "explanation": "运动基元指一小段可以反复调用的基础动作，比如「伸手到某处」「抓起」「前进一段再左转」。这个想法受生物学启发：人和动物的连续动作可以看成若干基本片段的串联。机器人里主要有两类用法。一类在操作和模仿学习里，用带参数的模型表示一段轨迹，从演示中学出来，执行时只改目标点、时长等参数就能迁移到新情况，代表是动态运动基元（DMP，用弹簧-阻尼系统加一个可学习的驱动项生成轨迹）和概率运动基元（ProMP，从多条演示学出轨迹的分布）。另一类在移动机器人和自动驾驶的规划里：预先算好一组满足车辆动力学的短轨迹，在线用 A* 等图搜索把它们首尾拼接，这叫状态格（lattice）规划。和原子技能相比，运动基元偏轨迹层，原子技能多指语义层面的完整子任务。",
+      "example": "自动泊车：规划器预先存好一组车辆一定走得出来的短轨迹，比如「直行一小段」「方向盘打满倒车转 90°」，在线用 A* 搜索把它们串成一条从当前位置到车位的路线。",
+      "related": ["动态运动基元", "概率运动基元", "原子技能", "模仿学习", "动力学约束规划", "A* 算法"],
+      "sources": [
+        {"title": "Movement Primitives in Robotics: A Comprehensive Survey (arXiv 2601.02379)", "url": "https://arxiv.org/abs/2601.02379"},
+        {"title": "Spatio-Temporal Lattice Planning Using Optimal Motion Primitives (arXiv 2107.11467)", "url": "https://arxiv.org/abs/2107.11467"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "多智能体路径规划",
+      "name_en": "Multi-Agent Path Finding",
+      "abbr": "MAPF",
+      "aliases": ["多智能体寻路", "多机器人路径规划", "Multi-Agent Pathfinding"],
+      "tier": 3,
+      "one_liner": "给一群机器人同时规划各自到目标的路线，并保证彼此不相撞。",
+      "explanation": "多智能体路径规划研究的是：地图上有多个智能体（机器人、AGV 等），各有起点和终点，要一起算出互不碰撞的路径。经典设定把地图离散成栅格或图、时间离散成步，每步每个智能体可以移到相邻格或原地等待。冲突主要有两种：同一时刻占同一格（顶点冲突），或相邻两个互换位置（交换冲突）。优化目标常用所有智能体到达时间之和，或最后一个到达的时间（makespan）。求最优解是 NP 难问题，常见算法有冲突搜索 CBS（先各自规划，发现冲突再加约束重规划）和优先级规划（按顺序规划，后规划的避让先规划的）。2019 年 Stern 等人的综述统一了各种变体的定义并给出栅格基准。它是仓储机器人集群调度的核心问题，和单机路径规划、局部避障（如 ORCA）互补。",
+      "example": "电商仓库里大量搬运机器人把货架送到拣货台（亚马逊的 Kiva 系统是典型场景），调度系统每接到新任务都要给这些机器人重新分配互不冲突的路径。",
+      "related": ["路径规划", "多机器人协作", "A* 算法", "多机调度系统", "速度障碍法 / ORCA", "自主移动机器人"],
+      "sources": [
+        {"title": "Wikipedia: Multi-agent pathfinding", "url": "https://en.wikipedia.org/wiki/Multi-agent_pathfinding"},
+        {"title": "Multi-Agent Pathfinding: Definitions, Variants, and Benchmarks (arXiv 1906.08291)", "url": "https://arxiv.org/abs/1906.08291"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "多接触规划",
+      "name_en": "Multi-contact Planning",
+      "abbr": "",
+      "aliases": ["多接触运动规划", "接触规划", "Contact Planning"],
+      "tier": 3,
+      "one_liner": "规划机器人用脚、手、膝等部位按什么顺序、在哪里接触环境来借力。",
+      "explanation": "多接触规划指为腿足或人形机器人决定「身体哪个部位、什么时候、接触环境的哪个位置」，并让整段动作在力学上做得到。普通双足行走只用两只脚交替着地；爬陡坡、钻狭窄空间、翻越障碍或摔倒保护时，机器人还要用手扶墙、膝盖着地等，接触点的数量和顺序都不固定。难点在于它同时含离散决策（用哪条肢体、什么顺序、落在哪块表面）和连续决策（身体轨迹、接触力要落在摩擦锥内等约束），是混合离散-连续优化问题。传统做法分层：先规划接触序列和位置，再用质心动力学或全身轨迹优化生成动作；近年的工作用蒙特卡洛树搜索、学到的价值函数把两层联合起来，并做成滚动时域在线重规划。它和落足点规划同类，但不限定周期性步态。",
+      "example": "人形机器人 Talos 在陡到无法保持静态平衡的斜坡上行走：Wang 等人 2023 年的方法用学到的价值函数近似远期影响，在线滚动地规划下一步接触和身体运动。",
+      "related": ["落足点规划", "步态规划", "质心动力学", "摩擦锥", "接触隐式轨迹优化", "蒙特卡洛树搜索"],
+      "sources": [
+        {"title": "Simultaneous Contact Sequence and Patch Planning for Dynamic Locomotion (arXiv 2508.12928)", "url": "https://arxiv.org/abs/2508.12928"},
+        {"title": "Online Multi-Contact Receding Horizon Planning via Value Function Approximation (arXiv 2306.04732)", "url": "https://arxiv.org/abs/2306.04732"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "多重打靶法",
+      "name_en": "Multiple Shooting",
+      "abbr": "",
+      "aliases": ["多重打靶", "直接多重打靶法", "Direct Multiple Shooting"],
+      "tier": 3,
+      "one_liner": "把长轨迹切成多段分别积分、再用衔接约束拼接起来的最优控制求解方法。",
+      "explanation": "多重打靶法是求解轨迹优化和最优控制问题的一种转录方法，即把连续时间问题变成有限个变量的非线性规划。先看单重打靶：只把控制量当优化变量，从初始状态一口气积分到终点，看是否「打中」目标再调整控制；轨迹一长或系统不稳定，初值的小变化会被放大，很难收敛。多重打靶把时间切成若干段，每段起点的状态也作为优化变量，各段分别积分，再加衔接条件：上一段积分到末尾的状态必须等于下一段的起始状态。这样非线性被分散到短段里，数值上稳定得多，各段还能并行计算。1984 年 Bock 和 Plitt 把它用于最优控制。它和直接配点法是两种主流转录方式，形成的问题常用序列二次规划（SQP）求解，OCS2、acados 等 NMPC 工具都支持。",
+      "example": "ANYmal 四足的感知式 NMPC（Grandia 等人，2022）用多重打靶离散未来一段时间的运动，再用 SQP 以 100 Hz 求解，实时生成跨沟壑、踩踏脚石的动作。",
+      "related": ["直接配点法", "轨迹优化", "序列二次规划", "非线性模型预测控制", "最优控制", "acados"],
+      "sources": [
+        {"title": "Wikipedia: Direct multiple shooting method", "url": "https://en.wikipedia.org/wiki/Direct_multiple_shooting_method"},
+        {"title": "Perceptive Locomotion through Nonlinear Model Predictive Control (arXiv 2208.08373)", "url": "https://arxiv.org/abs/2208.08373"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "神经运动规划",
+      "name_en": "Neural Motion Planning",
+      "abbr": "",
+      "aliases": ["学习型运动规划", "神经运动规划器", "Learning-based Motion Planning"],
+      "tier": 3,
+      "one_liner": "用神经网络从海量规划样例中学会直接生成无碰撞运动的方法。",
+      "explanation": "神经运动规划指用神经网络完成或辅助运动规划：输入场景观测（常为点云）、当前和目标构型，输出无碰撞的路径或下一步动作。传统采样式规划器（如 RRT）和轨迹优化每遇到新问题都从零计算，杂乱场景有时要算几分钟，还依赖精确的场景几何模型。神经方法先用传统规划器在仿真里大量生成专家解，再用模仿学习蒸馏进网络，推理时前向计算即可出动作。代表工作有 2018 年的 MPNet（编码障碍物点云、逐步预测下一构型，可与 RRT* 结合保证成功）、2022 年英伟达与华盛顿大学的 MπNets（在 50 万个以上环境、300 万个以上规划问题上训练，直接从深度相机点云出动作），以及 2024 年 CMU 的 Neural MP（程序化生成大量场景训练通用策略，部署时再加轻量优化保证安全）。难点是网络输出本身没有无碰撞保证，通常要配碰撞检查或回退机制。",
+      "example": "Neural MP 在真实世界 4 类环境、64 个任务上测试，从场景点云直接生成机械臂运动，成功率比采样式、优化式、学习式基线分别提升 23%、17%、79%。",
+      "related": ["运动规划", "运动策略网络", "快速扩展随机树", "模仿学习", "碰撞检查", "cuRobo"],
+      "sources": [
+        {"title": "Neural MP: A Generalist Neural Motion Planner (arXiv 2409.05864)", "url": "https://arxiv.org/abs/2409.05864"},
+        {"title": "Motion Policy Networks (arXiv 2210.12209)", "url": "https://arxiv.org/abs/2210.12209"},
+        {"title": "Motion Planning Networks (arXiv 1806.05767)", "url": "https://arxiv.org/abs/1806.05767"}
+      ],
+      "as_of": "2024-09"
+    },
+    {
+      "name_zh": "非线性模型预测控制",
+      "name_en": "Nonlinear Model Predictive Control",
+      "abbr": "NMPC",
+      "aliases": ["非线性MPC", "Nonlinear MPC"],
+      "tier": 3,
+      "one_liner": "用非线性动力学模型预测未来、每个周期在线求解优化问题的 MPC。",
+      "explanation": "模型预测控制（MPC）的做法是：每个控制周期用系统模型预测未来一段时间的状态，求解一个优化问题，得到让代价最小且满足约束的一串控制量，只执行第一个，下个周期用新的测量值重算，称为滚动时域。NMPC 是模型或约束为非线性的 MPC，例如直接用机器人的全身刚体动力学或质心动力学，而不先做线性化。好处是在大幅度、快速运动中预测更准，能直接处理摩擦锥、落足区域、避障等非线性约束；代价是优化问题非凸，计算量大，也不保证找到全局最优。实际中常用多重打靶或直接配点离散问题，用序列二次规划（SQP）求解，并采用「实时迭代」：每个周期只迭代一两步、不追求完全收敛，以赶上控制频率。常用工具有 acados、OCS2、CasADi。凸 MPC 则把模型简化成线性、问题是凸的，更快但适用范围窄。",
+      "example": "legged_control 开源框架在宇树 A1 四足上用 NMPC（基于 OCS2，多重打靶 + SQP 求解）把期望的躯干速度转成未来的状态轨迹，再交给全身控制器算关节力矩。",
+      "related": ["模型预测控制", "凸 MPC", "多重打靶法", "序列二次规划", "全身控制", "legged_control"],
+      "sources": [
+        {"title": "Wikipedia: Model predictive control", "url": "https://en.wikipedia.org/wiki/Model_predictive_control"},
+        {"title": "GitHub: qiayuanl/legged_control", "url": "https://github.com/qiayuanl/legged_control"},
+        {"title": "Perceptive Locomotion through Nonlinear Model Predictive Control (arXiv 2208.08373)", "url": "https://arxiv.org/abs/2208.08373"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "零空间控制",
+      "name_en": "Null-Space Control",
+      "abbr": "",
+      "aliases": ["零空间投影", "冗余度控制", "Null-Space Projection"],
+      "tier": 3,
+      "one_liner": "利用冗余自由度，在不干扰主任务的前提下完成次要目标的控制方法。",
+      "explanation": "当机器人关节数多于任务需要的维度时（比如 7 自由度机械臂只要求末端 6 维位姿），同一个末端位姿对应无数种关节构型，这叫运动学冗余。雅可比矩阵 J 把关节速度 q̇ 映射成末端速度，满足 J·q̇ = 0 的关节运动构成 J 的零空间：关节在动，末端却不动，比如手不动而肘部画圈。零空间控制把次要任务的指令先乘投影矩阵 N = I − J⁺J（J⁺ 为 J 的伪逆）过滤，再叠加到主任务上，保证次要任务不干扰主任务。常见次要任务有远离关节限位、避开奇异位形、肘部避障、保持舒适姿态。在力矩层面，Khatib 1987 年提出的操作空间控制使用考虑质量矩阵的「动力学一致」伪逆，否则次要力矩仍会引起末端加速度。多个任务逐层投影，就得到任务优先级和分层二次规划。",
+      "example": "Franka 机械臂的笛卡尔阻抗控制示例：主任务让末端跟随目标位姿，另外把一个「拉回启动时关节姿态」的弹簧-阻尼力矩乘上 (I − Jᵀ(Jᵀ)⁺) 再叠加，肘部被推开会自己回来，末端跟踪不受影响。",
+      "related": ["运动学冗余", "零空间", "雅可比伪逆", "操作空间控制", "任务优先级", "分层二次规划"],
+      "sources": [
+        {"title": "franka_ros cartesian_impedance_example_controller.cpp（零空间力矩实现）", "url": "https://raw.githubusercontent.com/frankaemika/franka_ros/develop/franka_example_controllers/src/cartesian_impedance_example_controller.cpp"},
+        {"title": "StudyWolf: Robot control part 5 - Controlling in the null space", "url": "https://studywolf.wordpress.com/2013/09/17/robot-control-5-controlling-in-the-null-space/"},
+        {"title": "Implicit Null-space Manifold Generation for Redundant Robotic Systems (arXiv 2605.25770)", "url": "https://arxiv.org/abs/2605.25770"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "离线编程",
+      "name_en": "Offline Programming",
+      "abbr": "OLP",
+      "aliases": ["Off-line Programming", "机器人离线编程"],
+      "tier": 3,
+      "one_liner": "在电脑三维仿真里写好并验证机器人程序，再下载到真机执行。",
+      "explanation": "离线编程是工业机器人的一种编程方式：在电脑上建立工作站的三维模型（机器人、工装、工件的 CAD），在仿真软件里生成和调整运动轨迹，检查可达性、碰撞和节拍（做完一个工件的时间），确认后由「后处理器」把轨迹翻译成对应品牌控制器的机器人语言（如 ABB 的 RAPID），再下载到真机。与之相对的是在线编程：工程师在现场拿示教器一个点一个点地教，期间产线要停。离线编程不占用生产时间，适合轨迹复杂或经常换型的任务，据维基百科，新程序的导入时间可从几周缩短到一天。难点是仿真模型和现场存在误差，通常要对机器人和工件做标定来修正。常见软件有 RoboDK、ABB RobotStudio 等，RoboDK 称支持 80 多个品牌、1400 多款机器人。",
+      "example": "产线换新工件前，工程师在 RoboDK 里导入工件 CAD，生成焊枪或打磨头沿工件边缘的路径，仿真检查碰撞和节拍，后处理成 ABB RAPID 程序下载到机器人，现场只需少量点位修正。",
+      "related": ["示教再现", "示教器", "工业机器人", "数字孪生", "仿真器", "运动学标定"],
+      "sources": [
+        {"title": "Wikipedia: Off-line programming (robotics)", "url": "https://en.wikipedia.org/wiki/Off-line_programming_(robotics)"},
+        {"title": "RoboDK: Offline Programming", "url": "https://robodk.com/offline-programming"}
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "无源性控制",
+      "name_en": "Passivity-Based Control",
+      "abbr": "PBC",
+      "aliases": ["基于无源性的控制", "无源控制"],
+      "tier": 3,
+      "one_liner": "从能量角度设计控制器，让闭环系统只耗能、不凭空产生能量，从而稳定。",
+      "explanation": "无源性控制是一类从能量出发设计非线性控制器的方法，这个名称由 Ortega 和 Spong 在 1989 年关于刚性机械臂自适应控制的综述中提出。系统「无源」指它储存能量的增加不超过外界输入的能量：存在储能函数 H ≥ 0，使 dH/dt ≤ uᵀy，其中 u 是输入、y 是对应的输出（如力和速度），uᵀy 就是输入功率。两个无源系统按功率守恒方式连接后仍然无源，因此机器人与人、与未知环境接触时更容易保证稳定。设计通常分两步：能量整形，把闭环储能函数改造成在目标状态处取最小值；阻尼注入，加入耗能项让能量持续下降并停在目标处。它不靠把非线性全部抵消（计算力矩控制的做法），往往对模型误差更稳健。遥操作、阻抗控制、人机协作里常用「能量罐」记账，防止通信延迟或变刚度破坏无源性。",
+      "example": "ETH 的 Risiglione 等人（2021）给带机械臂的四足做力反馈遥操作：主从两端各设一个虚拟能量罐记录交换的能量，从端全身控制器把「罐内能量保持为正」作为约束，网络有延迟时整个回路仍保持无源、不致失稳。",
+      "related": ["阻抗控制", "李雅普诺夫稳定性", "双边遥操作", "计算力矩控制", "重力补偿", "物理人机交互"],
+      "sources": [
+        {"title": "Borja & Ortega, Introduction to Passivity-Based Control (arXiv 2608.15222)", "url": "https://arxiv.org/abs/2608.15222"},
+        {"title": "Passivity-based control for haptic teleoperation of a legged manipulator in presence of time-delays (arXiv 2108.07658)", "url": "https://arxiv.org/abs/2108.07658"},
+        {"title": "Wikipedia: Passivity (engineering)", "url": "https://en.wikipedia.org/wiki/Passivity_(engineering)"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "路径平滑",
+      "name_en": "Path Smoothing (Shortcutting)",
+      "abbr": "",
+      "aliases": ["捷径化", "路径捷径", "路径简化", "Shortcutting", "Path Simplification"],
+      "tier": 3,
+      "one_liner": "对规划出的曲折路径做后处理，删掉绕路、磨平拐角，让机器人走得更短更顺。",
+      "explanation": "路径平滑是运动规划的后处理步骤。RRT、PRM 这类采样式规划器给出的是很多路点连成的折线，常绕远路、来回抖动，照着执行既慢又不自然。最常用的是随机捷径化：反复在路径上随机挑两个点，试着用一段更短的直线（或满足速度、加速度上限的平滑曲线）直接相连，若这段不碰撞，就替换掉两点之间的原路径；重复多次，路径越来越短。其他做法还有删除多余路点、B 样条拟合等，开源规划库 OMPL 的 PathSimplifier 就提供了捷径、删点、B 样条平滑等函数。平滑之后通常还要做时间参数化，给路径分配速度和时间，才成为可执行的轨迹。它和轨迹优化的区别是：只在已有可行解上做局部改进，计算便宜，但不保证最优。",
+      "example": "Hauser 与 Ng-Thow-Hing（2010）让机械臂伸到桌下抓杯子，对采样规划器给出的折线路径随机尝试 100 次满足速度、加速度上限的平滑捷径，执行时间从 9.4 秒降到 4.0 秒。",
+      "related": ["快速扩展随机树", "概率路线图", "碰撞检查", "时间参数化", "轨迹优化", "OMPL"],
+      "sources": [
+        {"title": "OMPL: ompl::geometric::PathSimplifier Class Reference", "url": "https://ompl.kavrakilab.org/classompl_1_1geometric_1_1PathSimplifier.html"},
+        {"title": "Hauser & Ng-Thow-Hing, Fast Smoothing of Manipulator Trajectories using Optimal Bounded-Acceleration Shortcuts (ICRA 2010)", "url": "https://motion.cs.illinois.edu/papers/icra10-smoothing.pdf"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "规划领域定义语言",
+      "name_en": "Planning Domain Definition Language",
+      "abbr": "PDDL",
+      "aliases": [],
+      "tier": 3,
+      "one_liner": "用统一格式写下动作的前提、效果和任务目标，交给通用规划器求解的语言。",
+      "explanation": "PDDL 是经典 AI 规划的标准描述语言，1998 年由 Drew McDermott 等人为国际规划竞赛（IPC）制定，借鉴了 STRIPS 和 ADL 等早期规划形式。它把规划问题拆成两部分：领域文件定义谓词（描述世界状态的真假命题，如「积木 A 在 B 上」）和动作（每个动作的前提条件与执行后的效果）；问题文件给出具体物体、初始状态和目标。写好后交给通用规划器自动搜索出动作序列。后续版本加入了数值与持续时间动作（PDDL2.1）、连续过程与事件（PDDL+）、偏好与轨迹约束（PDDL3.0）等。机器人里它常作任务规划层的符号接口：任务与运动规划框架 PDDLStream 把抓取位姿、放置位置等连续参数的采样器接进 PDDL；LLM+P 让大语言模型把自然语言指令翻成 PDDL，再用经典规划器求出正确计划，弥补大模型直接做长程规划容易出错的问题。",
+      "example": "「把桌上的杯子放进柜子」可写成 PDDL：动作 pick(?obj) 的前提是「手空」且「物体可达」，效果是「手里拿着物体」；再定义 open(?door)、place(?obj ?loc)，给出初始状态和目标「杯子在柜子里」，规划器就输出「开柜门 → 抓杯子 → 放进柜子」。",
+      "related": ["任务规划", "符号规划", "任务与运动规划", "PDDLStream", "大模型任务规划", "分层任务网络"],
+      "sources": [
+        {"title": "Wikipedia: Planning Domain Definition Language", "url": "https://en.wikipedia.org/wiki/Planning_Domain_Definition_Language"},
+        {"title": "LLM+P: Empowering Large Language Models with Optimal Planning Proficiency (arXiv 2304.11477)", "url": "https://arxiv.org/abs/2304.11477"},
+        {"title": "PDDLStream: Integrating Symbolic Planners and Blackbox Samplers (arXiv 1802.08705)", "url": "https://arxiv.org/abs/1802.08705"}
+      ],
+      "as_of": ""
+    }
+  ]
+}

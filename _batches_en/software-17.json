@@ -1,0 +1,113 @@
+{
+  "batch": "software-17",
+  "terms": [
+    {
+      "key": "software-17#0",
+      "name_en": "ROS Master (roscore)",
+      "aliases": ["roscore", "rosmaster"],
+      "one_liner": "The central process in ROS 1 that registers nodes and helps them find each other.",
+      "explanation": "The ROS Master is the central coordinating process in ROS 1 (the first generation of the Robot Operating System), typically started with the roscore command, which also brings up the Parameter Server and the logging node rosout alongside it. When a node — a process that does one job — starts up, it registers with the Master which topics (data channels) it publishes or subscribes to, and which services it offers. The Master's only job is to tell publishers and subscribers each other's addresses; after that, data flows directly between nodes, peer to peer, without passing through the Master. Its weakness is being a single point of failure: if the Master dies, no new node can join, and communicating across machines requires setting ROS_MASTER_URI on each one. ROS 2 removed the Master entirely, letting the underlying DDS layer discover nodes automatically instead.",
+      "example": "To run a robot in ROS 1: open one terminal and run roscore, then use rosrun to start the camera driver and mapping node; a second computer must point ROS_MASTER_URI at this machine to see its topics.",
+      "related": ["Robot operating system", "Node", "Topic", "ROS Parameter Server", "ROS 2", "Data Distribution Service (DDS)"]
+    },
+    {
+      "key": "software-17#1",
+      "name_en": "ROS Middleware Interface (RMW)",
+      "aliases": ["rmw", "RMW implementation"],
+      "one_liner": "The ROS 2 abstraction layer that separates the upper-level API from the actual communication backend.",
+      "explanation": "RMW is a C interface layer in ROS 2, sitting between the client libraries (rclcpp, rclpy, via rcl) and the actual communication middleware. ROS 2 communicates over DDS (Data Distribution Service, a publish/subscribe communication standard) by default, and since several vendors implement DDS, RMW lets each one plug in as a swappable backend — for example rmw_fastrtps_cpp (Fast DDS) or rmw_cyclonedds_cpp (Cyclone DDS); newer distributions have also added rmw_zenoh_cpp, based on Zenoh. User code doesn't need to change at all — switching backends is just a matter of setting the RMW_IMPLEMENTATION environment variable. When multi-machine discovery fails or large data transfers stutter, trying a different RMW implementation is a common troubleshooting step; nodes within the same system should generally all use the same one.",
+      "example": "Run export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp before ros2 run, and the node switches to sending and receiving messages over Cyclone DDS.",
+      "related": ["ROS 2", "Middleware", "Data Distribution Service (DDS)", "Fast DDS", "Cyclone DDS", "Zenoh"]
+    },
+    {
+      "key": "software-17#2",
+      "name_en": "ROS Workspace",
+      "aliases": ["catkin_ws", "ros2_ws", "colcon workspace"],
+      "one_liner": "A directory convention for holding, building, and installing your own ROS packages.",
+      "explanation": "A workspace is ROS's directory convention for organizing code: a top-level src folder holds the source of packages (a package being ROS's smallest unit of code), and building it produces build (intermediate files), install or devel (the built output), and log directories. ROS 1 builds with catkin, and the workspace is conventionally named catkin_ws; ROS 2 builds with colcon, and it's usually called ros2_ws. After building, you have to source the corresponding setup script before the terminal can find the packages inside. Workspaces can be overlaid: you source the system-installed ROS (the underlay) first, then your own workspace on top, and if a package exists in both, the top one wins. The single most common beginner mistake is forgetting to source, or sourcing things in the wrong order.",
+      "example": "mkdir -p ~/ros2_ws/src, clone your code into src, run colcon build from ros2_ws, then source install/setup.bash — after that, ros2 run can find your own node.",
+      "related": ["Package", "colcon", "catkin", "ament", "rosdep", "ROS 2"]
+    },
+    {
+      "key": "software-17#3",
+      "name_en": "ROS-Industrial",
+      "aliases": ["ROS-I"],
+      "one_liner": "An open-source project and consortium that brings ROS to industrial robots and manufacturing.",
+      "explanation": "ROS-Industrial is an open-source project that extends ROS into industrial automation. It was launched around 2012, led by the Southwest Research Institute (SwRI) in the US, and is now maintained by three regional consortia covering North America, Europe, and the Asia-Pacific, with members including equipment vendors, manufacturers, and research institutions. It provides ROS drivers and description packages for industrial arms from various brands, integration with MoveIt (the ROS motion-planning framework), and tooling for “scan–plan–execute” applications such as sanding and spray painting. Its significance is letting perception and planning algorithms already developed in academia connect to factory-floor hardware, cutting down the work of writing a separate integration for every controller brand.",
+      "example": "Use an ABB or FANUC driver package provided by ROS-Industrial to send a trajectory planned by MoveIt to a real industrial robot arm for execution.",
+      "related": ["Robot operating system", "ROS 2", "MoveIt", "Industrial robot", "Unified Robot Description Format (URDF)", "Systems integrator"]
+    },
+    {
+      "key": "software-17#4",
+      "name_en": "ros1_bridge",
+      "aliases": ["dynamic_bridge"],
+      "one_liner": "A bridge program that lets ROS 1 and ROS 2 nodes exchange topics and services with each other.",
+      "explanation": "ros1_bridge is an officially maintained ROS 2 package that, when running, connects to both a ROS 1 Master and the ROS 2 network at once, converting message types between the two and forwarding them, covering both topics and services. It's mainly used during migration: an old driver still lives in ROS 1 while new algorithms are already written in ROS 2. Because it has to generate conversion code for every message type, it usually needs to be built from source in an environment with both generations of ROS installed, and any custom messages have to be built for both sides. ROS 1's final release, Noetic, reached end of life in May 2025, so the bridge is increasingly treated as a stopgap rather than a long-term solution.",
+      "example": "After running ros2 run ros1_bridge dynamic_bridge, the /scan topic published by a ROS 1 lidar driver becomes visible to Nav2 running on ROS 2.",
+      "related": ["Robot operating system", "ROS 2", "ROS Master (roscore)", "Topic", "Service", "Message"]
+    },
+    {
+      "key": "software-17#5",
+      "name_en": "rosbridge",
+      "aliases": ["rosbridge_suite", "rosbridge_server"],
+      "one_liner": "A WebSocket-and-JSON bridge that exposes ROS to web pages and other non-ROS programs.",
+      "explanation": "rosbridge (the package set is called rosbridge_suite) defines a JSON-based protocol and provides a WebSocket server, rosbridge_server. Non-ROS programs — a browser page, Unity, a phone app — can subscribe to and publish topics, call services, and read or write parameters simply by opening a WebSocket connection and exchanging JSON, without needing ROS installed locally at all. Web front-ends usually pair it with the roslibjs library. It works with both ROS 1 and ROS 2. The tradeoff is that JSON serialization is relatively heavy, making it a poor fit for high-rate point clouds or images; it's better suited to lightweight use cases like monitoring dashboards or remote teleoperation.",
+      "example": "Launch the rosbridge_websocket launch file on the robot, and a web page using roslibjs can connect to ws://<robot-IP>:9090 to display a battery-level topic and publish cmd_vel to drive the base.",
+      "related": ["Robot operating system", "ROS 2", "WebSocket", "Topic", "Foxglove", "cmd_vel velocity command topic"]
+    },
+    {
+      "key": "software-17#6",
+      "name_en": "rosdep",
+      "aliases": ["rosdepc"],
+      "one_liner": "A ROS command-line tool that installs a package's system dependencies automatically from its declarations.",
+      "explanation": "rosdep reads the dependencies declared in each package's package.xml across a workspace, looks them up against the mapping rules in the rosdistro repository to translate an abstract dependency name into the actual package name on the current system — say, a specific apt development library or a pip package — and then calls the matching package manager to install it. The first time it's used, you have to run sudo rosdep init and rosdep update, both of which need to reach rule files hosted on GitHub; since that often fails from mainland China's network, the Yuxiang ROS (鱼香ROS) community built rosdepc, a drop-in replacement that goes through a domestic mirror instead. Running rosdep before building is the standard first step after cloning someone else's ROS repository.",
+      "example": "After cloning someone else's ROS 2 repository into src, run rosdep install --from-paths src --ignore-src -r -y to pull in all dependencies, then colcon build.",
+      "related": ["ROS Workspace", "Package", "colcon", "Yuxiang ROS one-click installer", "Domestic mirror (Tsinghua TUNA / Alibaba Cloud, etc.)", "Ubuntu"]
+    },
+    {
+      "key": "software-17#7",
+      "name_en": "rqt",
+      "aliases": ["rqt_graph", "rqt_plot", "rqt_console", "rqt_image_view"],
+      "one_liner": "ROS's built-in, plugin-based set of graphical debugging tools.",
+      "explanation": "rqt is a Qt-based GUI framework for ROS that packages various debugging widgets as plugins, which can be docked together into one window or launched individually. Common plugins include: rqt_graph, which draws the connections between nodes and topics; rqt_plot, which plots numeric values live; rqt_console, for viewing logs; rqt_image_view, for viewing camera feeds; rqt_reconfigure, for changing parameters on the fly; and rqt_topic, for inspecting topic content and rate. Both ROS 1 and ROS 2 have it. It's well suited to quickly checking whether data is actually being published and who is connected to whom; for 3D visualization, people use RViz instead, and for detailed curve analysis, they often switch to PlotJuggler or Foxglove.",
+      "example": "When a node isn't receiving data, running rqt_graph reveals that the subscriber's topic name has an extra namespace prefix, so it was never actually connected to the publisher.",
+      "related": ["RViz", "PlotJuggler", "Foxglove", "Node", "Topic", "Qt"]
+    },
+    {
+      "key": "software-17#8",
+      "name_en": "rsl_rl",
+      "aliases": ["rsl-rl", "RSL RL"],
+      "one_liner": "ETH Zurich's open-source reinforcement learning library built for GPU-parallel simulation.",
+      "explanation": "rsl_rl is a lightweight, open-source PyTorch reinforcement learning library from the Robotic Systems Lab (RSL) at ETH Zurich, originally built to train quadruped locomotion in Isaac Gym alongside legged_gym. At its core is a PPO (Proximal Policy Optimization) implementation optimized for thousands of parallel environments, with all sampling and update data kept on the GPU to avoid costly CPU round-trips. It's now one of the RL libraries Isaac Lab officially supports out of the box, and it's also used by legged- and humanoid-locomotion projects such as unitree_rl_gym; later versions have added recurrent-network policies, symmetry augmentation, and teacher-student distillation. Reproducing a legged-locomotion paper today can hardly avoid it.",
+      "example": "Use rsl_rl's training script in Isaac Lab to train a velocity-tracking policy for the Unitree Go2, sampling thousands of environments in parallel on the GPU before updating with PPO.",
+      "related": ["legged_gym", "Isaac Lab", "Proximal Policy Optimization", "Large-scale parallel reinforcement learning", "ETH Zurich Robotic Systems Lab", "rl_games"]
+    },
+    {
+      "key": "software-17#9",
+      "name_en": "RT-Thread",
+      "aliases": ["RT-Thread Nano", "RT-Thread Smart"],
+      "one_liner": "An open-source embedded real-time operating system developed by a team in China.",
+      "explanation": "RT-Thread is an open-source embedded real-time operating system (RTOS — a system that guarantees a task gets a response within a set time) led and maintained by the Shanghai company RT-Thread (Ruixinde Electronics). The project started in 2006 and is now licensed under Apache 2.0. It comes in a standard edition with a driver framework, file system, network stack, and package ecosystem; a Nano edition for microcontrollers with very limited resources; and a Smart edition for processors with a memory management unit, supporting architectures including ARM Cortex-M and RISC-V. In robotics, it commonly runs on microcontrollers such as joint drive boards, sensor boards, and chassis controllers, handling hard-real-time jobs like motor control and bus communication, working alongside a host computer running Linux and ROS; its niche is similar to FreeRTOS's.",
+      "example": "Use an STM32 as a wheeled base's control board: run threads on RT-Thread for 1 kHz motor control and CAN communication, then send odometry over a serial link to a host computer running ROS 2.",
+      "related": ["Real-time operating system", "FreeRTOS", "Microcontroller", "STM32", "Embedded system", "Lower-level controller"]
+    },
+    {
+      "key": "software-17#10",
+      "name_en": "Ruckig",
+      "aliases": ["Ruckig Pro"],
+      "one_liner": "Open-source library that generates jerk-limited, time-optimal trajectories in real time, every control cycle.",
+      "explanation": "Ruckig is an open-source C++ library (with a Python interface) by Lars Berscheid, with its paper published at RSS 2021. Given the current state (position, velocity, acceleration), a target state, and each joint's limits on velocity, acceleration, and jerk (the rate of change of acceleration), it computes a time-optimal trajectory in microseconds — fast enough to re-plan on every single control cycle. That means when the target suddenly changes, the robot can smoothly transition from whatever motion state it's currently in, which is the “online” part of its name. MoveIt 2 uses it for trajectory smoothing and limiting in real-time servoing. The core is open source, with a commercial Ruckig Pro edition adding features such as intermediate waypoints.",
+      "example": "During visual servoing, the target position changes every frame; the controller calls Ruckig every 1 ms to re-plan from the current velocity and acceleration to the new target, so the joints don't jerk when the target jumps.",
+      "related": ["Jerk", "S-curve velocity profile", "Time parameterization", "Time-optimal path parameterization", "TOPP-RA", "MoveIt"]
+    },
+    {
+      "key": "software-17#11",
+      "name_en": "Semantic Robot Description Format (SRDF)",
+      "aliases": ["SRDF", ".srdf file"],
+      "one_liner": "An XML file that adds planning groups and collision exceptions on top of a URDF.",
+      "explanation": "SRDF is an XML format used by MoveIt (ROS's motion-planning framework) alongside URDF (the Unified Robot Description Format, which describes links, joints, and geometry). URDF only describes what the robot looks like; SRDF adds the semantic information motion planning needs: planning groups (for example, which joints make up the “arm” group versus the “gripper” group), end effectors, named poses (such as home or ready), virtual joints (which fix the robot to the world frame, or to a mobile base), passive joints, and pairs of links for which collision checking should be disabled. Links that are adjacent or can never physically touch don't need self-collision checks, which noticeably speeds up planning. It's usually generated automatically with the MoveIt Setup Assistant and then fine-tuned by hand.",
+      "example": "When generating a MoveIt configuration for a Franka arm, the SRDF defines a panda_arm group containing its 7 joints and a named pose called ready, and lists the adjacent links panda_link1 and panda_link2 as exempt from collision checking.",
+      "related": ["Unified Robot Description Format (URDF)", "MoveIt", "Xacro", "Self-collision checking", "Motion planning", "MJCF"]
+    }
+  ]
+}

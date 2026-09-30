@@ -1,0 +1,233 @@
+{
+ "batch": "control-01",
+ "terms": [
+  {
+   "key": "control-01#0",
+   "name_en": "Robot Cerebellum",
+   "aliases": [
+    "Cerebellum",
+    "Motion Cerebellum",
+    "Cerebellum Skill Library"
+   ],
+   "one_liner": "The cerebellum in the brain-cerebellum split: the layer that turns high-level commands into fast, stable joint motions.",
+   "explanation": "Brain-cerebellum is an informal way China's embodied-AI industry describes a two-layer system, and this entry covers the cerebellum half. The brain is usually a multimodal large model that makes only a few decisions per second, responsible for understanding instructions and breaking down tasks; the cerebellum takes a sub-task like 'walk forward half a meter' or 'pick up the cup' and outputs joint commands tens to hundreds of times per second, while also holding balance and rejecting disturbances. It can be a reinforcement-learning-trained locomotion policy, a traditional controller such as MPC plus whole-body control, or a fast action module inside a skill library or a VLA. Companies define the boundary differently: narrowly, it covers only motion control like walking and balance; broadly, it also includes manipulation skills like grasping. BAAI's RoboOS calls its pluggable skill library the 'cerebellum skill library.'",
+   "example": "Figure's Helix isn't labeled a 'cerebellum,' but it maps onto the same structure: System 2, which understands the scene and language, runs at 7–9 Hz, while System 1, which produces actions, runs as a separate real-time process outputting continuous commands for 35 degrees of freedom at 200 Hz.",
+   "related": [
+    "Brain-Cerebellum Architecture (Overall)",
+    "Fast-Slow Dual System",
+    "Hierarchical Control",
+    "Motion Control",
+    "Whole-Body Control",
+    "BAAI RoboBrain (Embodied Brain)"
+   ]
+  },
+  {
+   "key": "control-01#1",
+   "name_en": "Control Frequency",
+   "aliases": [
+    "Control Rate",
+    "Control Period",
+    "Control Cycle"
+   ],
+   "one_liner": "How many times per second a controller sends out commands, in Hz; its reciprocal is the control period.",
+   "explanation": "Control frequency is how many times per second a controller completes the loop of reading sensors, computing, and sending a command, measured in hertz (Hz); its reciprocal is the control period — 1 kHz, for instance, means once every 1 millisecond. Robots typically nest several such loops, running faster the closer they are to the motor: a large model or VLA policy might output actions a few to a few dozen times per second, joint position or torque loops run at hundreds to a few thousand hertz, and the current loop inside a motor driver runs faster still. Too low a frequency makes the robot slow to react to disturbances, risking shaking or falling; too high a frequency can outrun the available compute or communication bandwidth, so commands that aren't computed in time get rejected or throw an error. It's related to but distinct from “policy inference frequency” and “control latency”: the former measures only how fast the model produces a result, while the latter measures the full time from sensing to the action actually taking effect. The control frequency used in simulation training has to match the real robot, or the sim-to-real gap widens.",
+   "example": "Franka's arm runs its FCI interface at 1 kHz: the network round trip, the user's callback computation, and the robot's own processing must together finish within 1 millisecond, or that tick's command gets dropped — and 20 dropped ticks in a row trigger an error stop. A quadruped policy in legged_gym, by contrast, runs at 50 Hz, producing a new action every 20 milliseconds.",
+   "related": [
+    "Policy Inference Frequency",
+    "Control Latency",
+    "Control Downsampling",
+    "Real-Time Control",
+    "Control Bandwidth",
+    "PD Control"
+   ]
+  },
+  {
+   "key": "control-01#2",
+   "name_en": "Emergency Stop",
+   "aliases": [
+    "E-Stop",
+    "Stop Category 0/1/2"
+   ],
+   "one_liner": "A safety function that stops a machine with a single action in an emergency — typically a red mushroom button on yellow.",
+   "explanation": "An emergency stop is a mandatory safety feature on any machine; the international standard ISO 13850 requires that anyone present be able to stop the machine with a single action, without having to think about it. The typical E-stop button is a red mushroom-shaped head on a yellow background; pressing it mechanically latches in place, and someone has to manually reset it before the machine can restart. IEC 60204-1 classifies stopping into three categories: category 0 cuts power to the drives immediately; category 1 brings the machine to a controlled stop first, then cuts power; category 2 brings it to a controlled stop while keeping power on. Only categories 0 or 1 are allowed for an emergency stop. Which one to use depends on whether cutting power immediately would actually be more dangerous: legged and humanoid robots collapse the instant power is cut, so they're often tested on a safety harness, and beyond the E-stop, a softer stop such as a damping mode is also provided. An E-stop is the last line of defense — it can't substitute for other safety measures like collision detection or speed limiting.",
+   "example": "A collaborative arm's teach pendant usually has a built-in E-stop button; during real-robot VLA experiments, the operator typically also keeps a separate, standalone E-stop within reach, ready to hit it the moment the policy does something abnormal.",
+   "related": [
+    "Protective Stop",
+    "Functional Safety",
+    "Safe Torque Off",
+    "Damping Mode",
+    "Watchdog",
+    "Collision Detection (Robot Safety)"
+   ]
+  },
+  {
+   "key": "control-01#3",
+   "name_en": "Force Control",
+   "aliases": [
+    "Force-Based Control"
+   ],
+   "one_liner": "Controlling how much force a robot applies to an object, rather than just where it moves.",
+   "explanation": "Force control means controlling how much force a robot applies to an object or its environment, rather than simply driving it to a target position. Pure position control responds to any deviation by pushing harder and harder to reach the commanded position, so if it meets a surface higher than expected it can crush the workpiece; force control instead keeps the contact force near a set value. There are two implementation approaches. Direct force control makes the target force itself the feedback setpoint, typically hybrid force/position control, which splits the directions so some axes control force and others control position. Indirect force control means impedance control and admittance control, which set a stiffness, damping, and inertia to decide how soft the robot feels when pushed. Force control requires knowing the actual force applied, usually from a wrist-mounted six-axis force-torque sensor, joint torque sensors, or motor current estimates. Contact-rich tasks — sanding, assembly, wiping a table, plugging in a cable — all depend on it.",
+   "example": "A robot arm wiping a whiteboard: under pure position control, a height difference of just a few millimeters would make it either miss the board or press too hard; switching to force control and setting a fixed pressure in the direction perpendicular to the board lets it keep contact and wipe evenly even where the surface isn't perfectly flat.",
+   "related": [
+    "Impedance Control",
+    "Admittance Control",
+    "Hybrid Force/Position Control",
+    "Six-Axis Force-Torque Sensor",
+    "Joint Torque Sensor",
+    "Contact-Rich Manipulation"
+   ]
+  },
+  {
+   "key": "control-01#4",
+   "name_en": "Gait",
+   "aliases": [
+    "Gait Pattern",
+    "Locomotion Gait"
+   ],
+   "one_liner": "The sequence and rhythm in which a legged animal or robot's legs lift and touch down while moving.",
+   "explanation": "Gait refers to the timing pattern of when each leg touches down and lifts off during legged locomotion. It's commonly described with two quantities: duty factor, the fraction of a gait cycle a leg spends on the ground (above 50% is generally considered walking, below 50% running), and the phase offsets between legs. Common quadruped gaits include the trot (diagonal leg pairs together), the pace (same-side leg pairs together), the bound (front pair and rear pair each together), the pronk (all four legs together), and the gallop; humanoid robots mainly alternate between two-legged walking and running gaits. Traditional controllers usually fix the gait timing first and then plan footholds and support forces around it; reinforcement-learning locomotion controllers can let a gait emerge naturally from just a velocity command, or take gait frequency and inter-leg phase offsets as explicit command inputs to specify which gait to use.",
+   "example": "Walk These Ways specifies a quadruped's gait using three inter-leg phase offsets: (0.5, 0, 0) is trotting, (0, 0.5, 0) is bounding, (0, 0, 0.5) is pacing, and all zeros is pronking — the same policy can switch gaits just by changing this input.",
+   "related": [
+    "Diagonal Trot Gait",
+    "Pace Gait",
+    "Bound Gait",
+    "Gait Cycle and Duty Factor",
+    "Gait Planning",
+    "Legged Locomotion"
+   ]
+  },
+  {
+   "key": "control-01#5",
+   "name_en": "Hierarchical Control",
+   "aliases": [
+    "High-Level Controller",
+    "Low-Level Controller",
+    "Hierarchical Control System"
+   ],
+   "one_liner": "Splits control into layers: a slow, high-level layer sets goals, and a fast, low-level layer tracks them and drives the motors.",
+   "explanation": "Hierarchical control is a classic approach in control engineering: break a complex control problem into several layers, where the upper layers see farther ahead and update more slowly, and the lower layers see closer and run faster. A higher-level controller outputs reference quantities on a longer cycle — a target velocity, footholds, contact forces, or target joint angles — and a lower-level controller tracks these references at a much higher frequency, handling disturbances and hardware details, generally without the upper layer intervening in how it's executed. The benefit is that each layer can use a simple model and solve its own problem on its own timescale, and layers can be swapped out or debugged independently. It's closely related to 'hierarchical architecture' and 'brain-cerebellum,' which more often describe how task planning and action generation are divided at the model level, while hierarchical control emphasizes the frequencies and interfaces between control loops at each level.",
+   "example": "MIT's Mini Cheetah splits control into two layers: an MPC optimizes foot contact forces over a longer time window using a simplified model, and whole-body impulse control (WBIC) converts those forces into joint commands. Reinforcement-learning locomotion works similarly: a policy outputs target joint angles at 50 Hz, and a lower-level PD controller converts them into torques at a much higher frequency.",
+   "related": [
+    "Hierarchical Architecture",
+    "Robot Cerebellum",
+    "Model Predictive Control",
+    "Whole-Body Control",
+    "PD Control",
+    "Cascade Control (Position / Velocity / Current Loops)"
+   ]
+  },
+  {
+   "key": "control-01#6",
+   "name_en": "Model Predictive Control",
+   "aliases": [
+    "MPC",
+    "Receding Horizon Control"
+   ],
+   "one_liner": "Uses a model to predict the near future at every step, optimizes an action sequence, executes only the first step, and repeats.",
+   "explanation": "Model predictive control originated in the 1970s in process industries such as oil refining and chemicals, and became widespread in those industries during the 1980s. Each control cycle it does the same thing: using a system model x_{k+1} = f(x_k, u_k) (x is the state, u is the control input) to predict N steps ahead, it solves for the sequence of inputs that minimizes some cost (such as tracking error plus energy use) subject to constraints like joint limits and torque caps — then executes only the first input, and re-solves from scratch next cycle using the newest measurement, which is why it's also called receding horizon control. Compared with PID, which only reacts to an error that has already appeared, it can plan ahead for the future and for constraints; compared with a linear quadratic regulator (LQR), which solves for a fixed feedback gain once offline, it re-optimizes online at every step, so it can directly handle constraints and nonlinear models. The cost is that it must solve an optimization online, which demands compute and depends on model accuracy. In legged robots it's commonly used with a simplified model to plan foot forces, which are then handed off to whole-body control to execute.",
+   "example": "MIT's Mini Cheetah uses MPC to optimize foot-contact forces, combined with whole-body impulse control, to run at up to 3.7 m/s; the open-source framework legged_control runs nonlinear MPC on Unitree's A1, with the authors reporting a solve rate near 200 Hz on an 11th-generation Intel NUC mini PC.",
+   "related": [
+    "Convex MPC",
+    "Nonlinear Model Predictive Control",
+    "Sampling-Based MPC",
+    "Whole-Body Control",
+    "Linear Quadratic Regulator",
+    "Trajectory Optimization"
+   ]
+  },
+  {
+   "key": "control-01#7",
+   "name_en": "Locomotion Control",
+   "aliases": [
+    "Motion Control",
+    "Locomotion Policy"
+   ],
+   "one_liner": "The control technology that keeps a robot moving stably as intended; in embodied AI it usually means legged walking and balance.",
+   "explanation": "Motion control is originally a general term in automation, meaning making a machine's parts move as required, with position, velocity, or force as the controlled quantity, implemented as a closed loop of controller, driver, motor, and encoder. In the context of embodied AI and humanoid robots, 'locomotion control' (a shortened term often just called 'motion control' in Chinese) more specifically refers to a legged robot's ability to walk, run, balance, and get up after a fall — the core capability of the 'cerebellum.' There are two main approaches. Model-based methods use a simplified dynamics model together with model predictive control and whole-body control, solved in real time. Learning-based methods train a policy with reinforcement learning inside massively parallel GPU simulation, then transfer it to the real robot. In recent years the learning-based approach has become increasingly common for both quadrupeds and humanoids, and is often combined with the model-based one. Locomotion control handles 'how to move stably'; motion planning handles 'which path to take' — the two divide the work differently.",
+   "example": "Rudin and colleagues trained an ANYmal quadruped's walking policy in 2021 using thousands of parallel simulated robots on a single GPU, finishing training on flat ground in under 4 minutes and on rough terrain in about 20 minutes, and then deployed it to the real robot.",
+   "related": [
+    "Reinforcement-Learning Locomotion",
+    "Whole-Body Control",
+    "Model Predictive Control",
+    "Balance Control",
+    "Robot Cerebellum",
+    "Motion Planning"
+   ]
+  },
+  {
+   "key": "control-01#8",
+   "name_en": "Motion Planning",
+   "aliases": [
+    "Motion Planner"
+   ],
+   "one_liner": "Computing a sequence of poses or a trajectory from start to goal that avoids collisions and satisfies constraints.",
+   "explanation": "Motion planning answers the question of how a robot moves from its current state to a goal state: finding a continuous, feasible sequence of configurations that avoids obstacles, avoids self-collision, and stays within joint limits — the classic formulation of this is the 'piano mover's problem.' Planning is usually done in configuration space, the space of every possible combination of the robot's joint values; a six-axis arm's configuration space is 6-dimensional. Common methods include grid search (such as A*), suited to low dimensions; sampling-based planning (such as RRT or PRM), which scatters random points in high-dimensional space and connects them into a path, the mainstream approach for robot arms; artificial potential fields; and trajectory optimization, which treats smoothness and time as costs to minimize. The resulting geometric path is then time-parameterized to respect velocity and acceleration limits, turning it into a trajectory that motion control tracks. End-to-end VLA models output actions directly, skipping explicit planning, but planners remain the workhorse in industrial and navigation settings.",
+   "example": "Using MoveIt to have a robot arm retrieve a cup from a cabinet: a sampling-based planner in OMPL finds a collision-free path in joint space around the cabinet door, which is then time-parameterized according to each joint's velocity and acceleration limits before being sent for execution.",
+   "related": [
+    "Path Planning",
+    "Trajectory Planning",
+    "Configuration Space",
+    "Rapidly-exploring Random Tree (RRT)",
+    "Collision Checking",
+    "MoveIt"
+   ]
+  },
+  {
+   "key": "control-01#9",
+   "name_en": "Obstacle Avoidance",
+   "aliases": [
+    "Collision Avoidance"
+   ],
+   "one_liner": "A robot senses an obstacle and adjusts its path or motion ahead of time so it doesn't run into it.",
+   "explanation": "Obstacle avoidance means a robot detects an obstacle while moving and steers around it while still reaching its goal. It's a real-time sense-decide-act process: sensors such as lidar, depth cameras, or ultrasonics detect the obstacle, and a planning or control module adjusts the path. Approaches fall into roughly three categories: computing a collision-free route up front during global planning, using algorithms like A* or RRT; reacting locally in real time, such as a mobile robot's costmap plus dynamic window approach, or a robot arm's collision checking or control barrier functions; and learning avoidance behavior directly from sensor data with methods like reinforcement learning. It's different from 'collision detection (robot safety)': obstacle avoidance steers around a collision before it happens, while collision detection notices a collision after it has already occurred and stops or backs away. Moving obstacles, such as walking people, are much harder to handle than static ones, since the robot also has to predict how they'll move.",
+   "example": "A vacuuming robot follows its planned cleaning route and encounters a slipper freshly dropped on the floor; the local planner steers around it in real time based on the lidar data and updates the obstacle into its map.",
+   "related": [
+    "Motion Planning",
+    "Collision Checking",
+    "Costmap",
+    "Dynamic Window Approach",
+    "Control Barrier Function",
+    "Collision Detection (Robot Safety)"
+   ]
+  },
+  {
+   "key": "control-01#10",
+   "name_en": "Position Control",
+   "aliases": [
+    "Position Mode",
+    "Joint Position Control"
+   ],
+   "one_liner": "Give a motor or joint a target angle or position, and the controller drives it there and holds it.",
+   "explanation": "Position control is the most common motor control mode: the upper level only supplies a target position — say, turn the joint to 30 degrees — and the driver's internal closed loop computes current from the gap between the encoder reading and the target, pulling the joint to that target and holding it there. Most servos and industrial robot arms default to this mode, since it's accurate and simple to use. Its downside is that it's 'stiff': at high gain, the joint pushes hard to reach its target regardless of whether it meets a person or an unexpected obstacle, without yielding — so tasks that require contact often switch to torque control, impedance control, or force control instead. In reinforcement-learning locomotion, the policy typically also outputs target joint angles, which a PD controller converts into torque, just with lower stiffness gains to leave the joints some compliance. Alongside position mode, the other common options are velocity mode and torque (current) mode.",
+   "example": "ROBOTIS's Dynamixel XM430 servo has 6 operating modes; setting Operating Mode to 3 selects position control mode, and once a target position is written, the servo's internal position PID drives it there and holds it.",
+   "related": [
+    "Velocity Control",
+    "Torque Control",
+    "PD Control",
+    "Cascade Control (Position / Velocity / Current Loops)",
+    "Stiffness and Damping Gains",
+    "MIT Mode"
+   ]
+  },
+  {
+   "key": "control-01#11",
+   "name_en": "Proportional-Derivative Control",
+   "aliases": [
+    "PD Control",
+    "PD Controller"
+   ],
+   "one_liner": "Feedback control based on how large an error is and how fast it's changing — PID with the integral term dropped.",
+   "explanation": "PD control is PID control with the integral term removed. PID's output is u = Kp·e + Ki·∫e + Kd·de/dt, where e is the difference between the target and the measured value, and Kp, Ki, Kd are three gains; PD keeps only the proportional term (output grows with the error) and the derivative term (output responds to how fast the error is changing, which damps overshoot and oscillation). On a robot joint it's commonly written τ = Kp(q* − q) − Kd·q̇: τ is motor torque, q* is the target angle, q and q̇ are the measured angle and angular velocity, and Kp, Kd mechanically behave like a spring stiffness and a damping coefficient. Dropping the integral term leaves a steady-state error — a joint under gravity, for instance, settles slightly short of its target — which has to be offset with gravity compensation or by the higher-level policy; the derivative term is also sensitive to noise, so the velocity signal often needs filtering. It's the most common low-level joint controller used when deploying reinforcement-learning locomotion policies and VLA models.",
+   "example": "legged_gym multiplies the policy's output by 0.5 and adds it to the default joint angles to get q*, then computes torque as τ = Kp(q* − q) − Kd·q̇; example configs use Kp around 10–15 N·m/rad and Kd around 1–1.5 N·m·s/rad.",
+   "related": [
+    "PID Control",
+    "Stiffness and Damping Gains",
+    "Position Control",
+    "Gravity Compensation",
+    "MIT Mode",
+    "Control Downsampling"
+   ]
+  }
+ ]
+}

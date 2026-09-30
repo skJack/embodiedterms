@@ -1,0 +1,400 @@
+{
+  "category": "perception",
+  "batch": 12,
+  "terms": [
+    {
+      "name_zh": "接触估计",
+      "name_en": "Contact Estimation (Touchdown Detection)",
+      "abbr": "",
+      "aliases": [
+        "触地检测",
+        "足端接触估计",
+        "Foot Contact Estimation"
+      ],
+      "tier": 3,
+      "one_liner": "判断足式机器人每只脚此刻是踩在地上，还是悬在空中。",
+      "explanation": "接触估计是足式机器人状态估计中的一个子问题：每个控制周期判断各条腿是否触地，常输出一个接触概率。做法大致有几类：读足底力传感器并设阈值；用关节力矩和动力学模型反推地面反作用力；结合步态相位、足端高度做概率融合；或像 Lin 等人（CoRL 2021）那样，用神经网络从关节编码器、IMU（惯性测量单元）等本体感知数据学出触地事件，不需要额外的接触传感器。下游模块都依赖这个判断：腿式里程计假设触地的脚不动，以此反推机身速度，判错就会漂移；控制器也要据此切换支撑相和摆动相。",
+      "example": "四足机器人在碎石上小跑时，如果把一只正在打滑的脚判成「稳定触地」，基于不变扩展卡尔曼滤波的腿式里程计就会把打滑误当成机身移动，位置估计随之漂走。",
+      "related": [
+        "腿式里程计",
+        "不变扩展卡尔曼滤波",
+        "状态估计",
+        "足底力传感器",
+        "学习型状态估计器",
+        "支撑相 / 摆动相"
+      ],
+      "sources": [
+        {
+          "title": "Legged Robot State Estimation using Invariant Kalman Filtering and Learned Contact Events (arXiv 2106.15713, CoRL 2021)",
+          "url": "https://arxiv.org/abs/2106.15713"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "接触式麦克风（音频触觉）",
+      "name_en": "Contact Microphone (Audio as Tactile Signal)",
+      "abbr": "",
+      "aliases": [
+        "接触麦克风",
+        "压电接触式麦克风",
+        "Piezo Contact Microphone"
+      ],
+      "tier": 3,
+      "one_liner": "贴在夹爪或物体上拾取接触振动的麦克风，被当作廉价的触觉传感器。",
+      "explanation": "接触式麦克风不收空气中的声音，而是贴在固体表面拾取振动，常见的是压电式。机器人领域把它当作便宜、耐用的触觉替代品：刮擦、碰撞、摩擦、摇晃时的高频振动，能反映接触是否发生、表面是什么材质、容器里有没有东西，这些往往是摄像头看不到的。Hearing Touch（ICRA 2024）用接触式麦克风充当触觉，并借助大规模音视频预训练得到的表征提升操作策略；ManiWAV（CoRL 2024）在 UMI 手持夹爪的一根手指里埋入压电接触式麦克风，让采集的人类演示同时带画面和声音。局限是交互本身不出声时它帮不上忙。",
+      "example": "ManiWAV 的倒骰子任务里，机器人先摇一摇杯子，靠接触式麦克风听有没有骰子撞击的振动，判断杯子是否已经倒空。",
+      "related": [
+        "触觉传感器",
+        "多模态感知",
+        "通用操作接口",
+        "接触丰富操作",
+        "视触觉融合",
+        "麦克风阵列"
+      ],
+      "sources": [
+        {
+          "title": "Hearing Touch: Audio-Visual Pretraining for Contact-Rich Manipulation (arXiv 2405.08576)",
+          "url": "https://arxiv.org/abs/2405.08576"
+        },
+        {
+          "title": "ManiWAV: Learning Robot Manipulation from In-the-Wild Audio-Visual Data (arXiv 2406.19464)",
+          "url": "https://arxiv.org/abs/2406.19464"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "Contact-GraspNet",
+      "name_en": "Contact-GraspNet: Efficient 6-DoF Grasp Generation in Cluttered Scenes",
+      "abbr": "",
+      "aliases": [
+        "Contact GraspNet"
+      ],
+      "tier": 3,
+      "one_liner": "英伟达的抓取网络，从深度点云直接生成杂乱场景中的 6 自由度抓取。",
+      "explanation": "Contact-GraspNet 由 NVIDIA 的 Sundermeyer、Mousavian、Triebel 和 Fox 提出，发表于 ICRA 2021。它面向二指平行夹爪：输入深度图加相机内参（或直接输入点云），可选物体分割掩码，端到端输出一批带置信度的 6 自由度抓取位姿。关键设计是把观测到的每个 3D 点都当作可能的指尖接触点，于是只需再预测夹爪的三维朝向和张开宽度共 4 个自由度，学习难度大为降低。模型不区分物体类别，在 1700 万个仿真抓取上训练（抓取标注来自 ACRONYM 数据集）；论文报告在真机杂乱场景中抓取未见过物体，成功率超过 90%。它常作为抓取模块接在分割或开放词汇检测之后。",
+      "example": "桌上堆着杯子、盒子和玩具，先用分割模型抠出目标杯子，把深度图和杯子的掩码一起送进 Contact-GraspNet，从落在杯子上的候选里取置信度最高的抓取，交给运动规划执行。",
+      "related": [
+        "抓取位姿检测",
+        "AnyGrasp",
+        "ACRONYM 抓取数据集",
+        "GraspNet-1Billion 数据集",
+        "点云",
+        "二指夹爪"
+      ],
+      "sources": [
+        {
+          "title": "Contact-GraspNet: Efficient 6-DoF Grasp Generation in Cluttered Scenes (arXiv 2103.14127)",
+          "url": "https://arxiv.org/abs/2103.14127"
+        },
+        {
+          "title": "NVlabs/contact_graspnet (GitHub)",
+          "url": "https://github.com/NVlabs/contact_graspnet"
+        }
+      ],
+      "as_of": "2021-03"
+    },
+    {
+      "name_zh": "CoTracker",
+      "name_en": "CoTracker: It is Better to Track Together",
+      "abbr": "",
+      "aliases": [
+        "CoTracker3",
+        "CoTracker2"
+      ],
+      "tier": 3,
+      "one_liner": "Meta 开源的视频点跟踪模型，能联合跟踪大量像素点，包括被遮挡的点。",
+      "explanation": "CoTracker 由 Meta AI 与牛津大学 VGG 组的 Karaev 等人提出，2023 年 7 月上 arXiv，发表于 ECCV 2024。它属于任意点跟踪：给定视频里任意像素，输出它在后续每一帧的位置和是否可见。以往方法大多逐点独立跟踪，CoTracker 用 Transformer 把大量点放在一起联合跟踪，利用点与点之间的相关性，对遮挡和移出画面的点更稳，并按短时间窗口滑动处理，可以在线运行。2024 年 10 月的 CoTracker3 简化了结构，改用已有模型给无标注真实视频生成伪标签来训练，所用训练数据比此前方法少约 1000 倍。机器人学习里常用它给演示视频自动标注点轨迹。",
+      "example": "ATM（任意点轨迹建模）用 CoTracker 在演示视频上生成点轨迹，作为真值训练一个轨迹预测模型，再让预测出的未来轨迹去指导机器人策略。",
+      "related": [
+        "任意点跟踪",
+        "TAPIR",
+        "光流",
+        "ATM（任意点轨迹建模）",
+        "3D 点跟踪",
+        "遮挡"
+      ],
+      "sources": [
+        {
+          "title": "CoTracker: It is Better to Track Together (arXiv 2307.07635)",
+          "url": "https://arxiv.org/abs/2307.07635"
+        },
+        {
+          "title": "CoTracker3: Simpler and Better Point Tracking by Pseudo-Labelling Real Videos (arXiv 2410.11831)",
+          "url": "https://arxiv.org/abs/2410.11831"
+        },
+        {
+          "title": "facebookresearch/co-tracker (GitHub)",
+          "url": "https://github.com/facebookresearch/co-tracker"
+        }
+      ],
+      "as_of": "2025-01"
+    },
+    {
+      "name_zh": "维间耦合",
+      "name_en": "Crosstalk (Inter-axis Coupling) of Multi-axis Force Sensors",
+      "abbr": "",
+      "aliases": [
+        "串扰",
+        "交叉耦合",
+        "维间干扰",
+        "Cross-axis Coupling"
+      ],
+      "tier": 3,
+      "one_liner": "多维力传感器只受一个方向的力，其他方向的读数也跟着变的现象。",
+      "explanation": "维间耦合是评价多维力传感器（如六维力传感器）的一项指标：只沿一个轴加载，比如单纯竖直下压，本应为零的其他通道（Fx、Fy 和各向力矩）也出现读数。原因是传感器内部的应变片会同时感受多个方向的载荷，再加上弹性体加工和贴片的误差。厂家通常通过标定求出一个解耦矩阵，把各路原始信号换算成三个力和三个力矩；标定后剩下的串扰一般用占满量程的百分比（%FS）表示，测试时分别做单轴加载和多轴同时加载。它直接影响力控精度：在装配、打磨这类任务里，耦合误差会让机器人以为受到了并不存在的侧向力，做出错误的柔顺动作。",
+      "example": "六维力传感器只受竖直向下 100 N 的力，Fx 通道却读出 1 N；如果 Fx 的量程是 100 N，这一项维间耦合就是 1%FS。",
+      "related": [
+        "六维力传感器",
+        "应变片",
+        "力旋量",
+        "传感器漂移（零漂）",
+        "力控",
+        "关节力矩传感器"
+      ],
+      "sources": [
+        {
+          "title": "A Novel 6-axis Force/Torque Sensor Using Inductance Sensors (arXiv 2505.09069)",
+          "url": "https://arxiv.org/abs/2505.09069"
+        },
+        {
+          "title": "ATI Industrial Automation: Six-Axis F/T Transducer Installation and Operation Manual",
+          "url": "https://www.ati-ia.com/app_content/documents/9620-05-transducer%20section.pdf"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "CUT3R",
+      "name_en": "CUT3R: Continuous 3D Perception Model with Persistent State",
+      "abbr": "",
+      "aliases": [
+        "Continuous Updating Transformer for 3D Reconstruction"
+      ],
+      "tier": 3,
+      "one_liner": "带持续记忆状态的 3D 重建模型，逐帧读图、在线更新整个场景。",
+      "explanation": "CUT3R 全称 Continuous Updating Transformer for 3D Reconstruction，由 UC Berkeley 和 Google DeepMind 的研究者提出，是 CVPR 2025 口头报告论文。它沿用 DUSt3R 一类「直接从图像回归点图」（每个像素对应一个 3D 点）的思路，但多了一个持续更新的状态：每进来一张图，模型先用它更新状态，再输出这张图在统一坐标系下、带真实尺度的点图，重建随输入增多逐步完善，不需要针对每段视频做优化。它既能处理视频流，也能处理无序照片，支持有运动物体的动态场景，还能在没拍到的虚拟视角上推测看不见的区域。",
+      "example": "把机器人头部相机拍的视频逐帧喂给 CUT3R，每来一帧就得到一张对齐到同一坐标系的点图，累积起来就是一份不断变完整的房间点云。",
+      "related": [
+        "DUSt3R",
+        "点图",
+        "前馈式三维重建",
+        "4D重建",
+        "VGGT",
+        "MASt3R-SLAM"
+      ],
+      "sources": [
+        {
+          "title": "Continuous 3D Perception Model with Persistent State (arXiv 2501.12387)",
+          "url": "https://arxiv.org/abs/2501.12387"
+        },
+        {
+          "title": "CUT3R project page",
+          "url": "https://cut3r.github.io/"
+        }
+      ],
+      "as_of": "2025-06"
+    },
+    {
+      "name_zh": "戴盟 DM-Tac 视触觉传感器",
+      "name_en": "Daimon DM-Tac Visuotactile Sensor",
+      "abbr": "",
+      "aliases": [
+        "戴盟视触觉传感器",
+        "DM-Tac W2",
+        "DM-Tac X",
+        "DM-Tac F"
+      ],
+      "tier": 3,
+      "one_liner": "戴盟机器人的视触觉传感器系列，靠内置相机拍接触面形变来感知力。",
+      "explanation": "DM-Tac 是深圳戴盟机器人的视触觉传感器产品线，公司孵化于香港科技大学，2023 年正式运营。视触觉传感器在弹性接触面后放一个小相机，通过拍摄接触面的形变推算接触形状和受力。据官网（2026 年）信息，系列包括通用款 DM-Tac W2（分 W2L、W2M 两种尺寸）、28° 尖头的锋刃款 DM-Tac X、装在灵巧手指尖的 DM-Tac F（覆盖指腹、指侧和指尖），以及集成传感器的二指夹爪 DM-Tac G。W2 和 X 的感知分辨率为 384×288（约 11 万个有效感知点）、采样频率 120Hz，官方称可输出接触形貌、三维形变场、三维分布力和六维集中力。戴盟也用这些传感器采集含触觉的机器人数据集。",
+      "example": "把两只 DM-Tac W2 装在二指夹爪两侧去夹鸡蛋，传感器实时给出接触面的形变和分布力，控制器据此调节夹持力，避免捏碎或滑落。",
+      "related": [
+        "视触觉传感器",
+        "戴盟机器人",
+        "戴盟 Daimon-Infinity 数据集",
+        "GelSight",
+        "视觉-触觉-语言-动作模型",
+        "触觉数据"
+      ],
+      "sources": [
+        {
+          "title": "戴盟机器人：DM-Tac W2 通用视触觉传感器",
+          "url": "https://www.dmrobot.com/devices/dm-tac-w2.html"
+        },
+        {
+          "title": "戴盟机器人：DM-Tac F 指尖视触觉传感器",
+          "url": "https://www.dmrobot.com/devices/dm-tac-f.html"
+        },
+        {
+          "title": "戴盟机器人：关于我们",
+          "url": "https://www.dmrobot.com/about.html"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "稠密对应",
+      "name_en": "Dense Correspondence (Semantic Correspondence)",
+      "abbr": "",
+      "aliases": [
+        "稠密匹配",
+        "语义对应",
+        "Dense Matching"
+      ],
+      "tier": 3,
+      "one_liner": "为一张图里的每个像素，找到它在另一张图里对应的位置。",
+      "explanation": "稠密对应指在两张图像之间为每个像素（或绝大多数像素）找到匹配点，区别于只匹配少量特征点的稀疏匹配。它分两类：几何对应找同一个物理点在不同视角或时刻的位置，相邻帧的光流就是一种；语义对应找不同物体上意义相同的部位，比如两只外形不同的杯子的杯柄。近年常直接用预训练视觉模型的特征做最近邻匹配，例如 DINO 系列特征，或 NeurIPS 2023 的 DIFT 从扩散模型里提取的特征，不需要专门训练。在机器人里，它可以把演示中的抓取点、关键点迁移到新物体上；MIT 2018 年的 Dense Object Nets 就用自监督学到的稠密描述子，实现同类物体之间的抓取迁移。",
+      "example": "演示时人抓的是一只红杯子的杯柄；换成一只没见过的蓝色马克杯后，用 DINOv2 特征做语义对应，找到蓝杯子上对应的杯柄像素，再结合深度得到抓取位置。",
+      "related": [
+        "特征匹配",
+        "语义关键点",
+        "光流",
+        "DINOv2",
+        "关键点检测",
+        "神经描述子场"
+      ],
+      "sources": [
+        {
+          "title": "Dense Object Nets: Learning Dense Visual Object Descriptors By and For Robotic Manipulation (arXiv 1806.08756)",
+          "url": "https://arxiv.org/abs/1806.08756"
+        },
+        {
+          "title": "Emergent Correspondence from Image Diffusion (DIFT, arXiv 2306.03881)",
+          "url": "https://arxiv.org/abs/2306.03881"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "Depth Anything 3",
+      "name_en": "Depth Anything 3: Recovering the Visual Space from Any Views",
+      "abbr": "DA3",
+      "aliases": [
+        "DA3"
+      ],
+      "tier": 3,
+      "one_liner": "字节 Seed 的几何模型，从任意张图恢复深度和相机位姿，位姿可给可不给。",
+      "explanation": "Depth Anything 3 由字节跳动 Seed 团队于 2025 年 11 月发布，是 Depth Anything 系列第三代。前两代只做单张图的深度估计，DA3 扩展到任意数量的输入图像，相机位姿已知或未知都行，输出空间上一致的深度和相机参数，并可进一步得到点云或 3D 高斯。设计上很简洁：骨干就是一个普通 Transformer（原版 DINO 编码器），训练目标统一成「深度 + 光线」预测。论文在自建的视觉几何基准上报告，相机位姿精度平均比此前最好的 VGGT 高 44.3%，几何精度高 25.1%。模型从 Small（0.08B）到 Giant（1.15B）有多个尺寸，另有度量深度和单目专用版本。",
+      "example": "手机绕着桌子拍 5 张照片、不提供任何相机参数，DA3 一次前向就给出每张图的深度和相机位姿，融合成一份桌面点云。",
+      "related": [
+        "Depth Anything",
+        "VGGT",
+        "前馈式三维重建",
+        "单目深度估计",
+        "3D高斯泼溅",
+        "DINOv2"
+      ],
+      "sources": [
+        {
+          "title": "Depth Anything 3: Recovering the Visual Space from Any Views (arXiv 2511.10647)",
+          "url": "https://arxiv.org/abs/2511.10647"
+        },
+        {
+          "title": "ByteDance-Seed/Depth-Anything-3 (GitHub)",
+          "url": "https://github.com/ByteDance-Seed/Depth-Anything-3"
+        }
+      ],
+      "as_of": "2025-12"
+    },
+    {
+      "name_zh": "深度补全",
+      "name_en": "Depth Completion",
+      "abbr": "",
+      "aliases": [
+        "深度修复",
+        "深度图补全",
+        "Depth Inpainting"
+      ],
+      "tier": 3,
+      "one_liner": "把深度图里缺失或稀疏的像素补齐，得到完整、稠密的深度。",
+      "explanation": "深度补全指给定一张不完整的深度图（有空洞，或像激光雷达那样只有稀疏点），通常再配上对应的彩色图，预测出每个像素都有值的稠密深度。机器人常用的 RGB-D 深度相机碰到透明、反光、过亮或太远的表面时经常测不出深度，而抓取、避障又依赖完整几何，所以补全是常见的预处理。最简单的做法是用邻近像素插值填洞；Zhang 与 Funkhouser 在 CVPR 2018 提出先用彩色图预测表面法向和遮挡边界，再与原始深度联合求解出完整深度；ClearGrasp（2019）专门补全透明物体的深度来支持抓取。近年也有用单目深度基础模型结合稀疏深度来做补全的方法。",
+      "example": "夹爪要抓桌上的玻璃杯，但深度相机在杯子区域几乎全是无效值；先用 ClearGrasp 这类方法补出杯子表面的深度，再交给抓取检测网络。",
+      "related": [
+        "深度空洞",
+        "深度相机",
+        "透明/反光物体感知",
+        "单目深度估计",
+        "Prompt Depth Anything",
+        "蚂蚁灵波 LingBot-Depth"
+      ],
+      "sources": [
+        {
+          "title": "Deep Depth Completion of a Single RGB-D Image (arXiv 1803.09326, CVPR 2018)",
+          "url": "https://arxiv.org/abs/1803.09326"
+        },
+        {
+          "title": "ClearGrasp: 3D Shape Estimation of Transparent Objects for Manipulation (arXiv 1910.02550)",
+          "url": "https://arxiv.org/abs/1910.02550"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "深度空洞",
+      "name_en": "Depth Holes (Missing Depth)",
+      "abbr": "",
+      "aliases": [
+        "深度缺失",
+        "无效深度",
+        "深度图空洞",
+        "Invalid Depth Pixels"
+      ],
+      "tier": 3,
+      "one_liner": "深度相机测不出距离的像素，在深度图上通常记为 0。",
+      "explanation": "深度空洞指深度图里没有有效测量值的像素，RealSense 等相机把它们记为 0，显示成黑色斑块。以双目类深度相机为例，RealSense 官方白皮书列出的成因有：遮挡（左右相机看不到同一处）、表面缺乏纹理、重复图案造成多重匹配、曝光过度或不足、物体比最小工作距离还近；透明、镜面反光和很远的表面也常测不出。空洞会直接影响下游：点云缺块让抓取检测和避障误判；把 0 当成真实距离送进网络，会被理解成物体贴着相机。常见应对有后处理滤波（按邻近像素填洞、用前几帧的值补）、学习型深度补全，或在训练时把缺失区域掩掉。",
+      "example": "用双目深度相机拍桌上的不锈钢勺子和玻璃杯，勺子高光处和杯身区域在深度图上往往是一片 0，转成点云后这两件物体几乎缺失。",
+      "related": [
+        "深度补全",
+        "深度相机",
+        "主动双目",
+        "飞点",
+        "遮挡",
+        "透明/反光物体感知"
+      ],
+      "sources": [
+        {
+          "title": "RealSense: Depth Post-Processing for Intel RealSense Depth Camera D400 Series",
+          "url": "https://dev.realsenseai.com/docs/depth-post-processing-for-intel-realsense-depth-camera-d400-series/"
+        },
+        {
+          "title": "librealsense: Post-processing filters",
+          "url": "https://github.com/realsenseai/librealsense/blob/master/doc/post-processing-filters.md"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "Depth Pro",
+      "name_en": "Depth Pro: Sharp Monocular Metric Depth in Less Than a Second (Apple)",
+      "abbr": "",
+      "aliases": [
+        "Apple Depth Pro"
+      ],
+      "tier": 3,
+      "one_liner": "苹果开源的单目度量深度模型，一张图输出以米为单位的清晰深度图。",
+      "explanation": "Depth Pro 由苹果的 Bochkovskii、Koltun 等人提出，2024 年 10 月公开论文、代码和权重，发表于 ICLR 2025。它做零样本单目度量深度估计：只给一张图，不需要相机内参等元数据，就输出以米为单位的绝对深度，同时估计相机焦距。主打边缘锐利、细节丰富，论文称在普通 GPU 上 0.3 秒生成一张 225 万像素的深度图。技术上用了高效的多尺度视觉 Transformer 做稠密预测，训练混合真实与合成数据，并提出了专门衡量深度边界准确度的指标。相对深度只知道谁远谁近，度量深度带真实尺度，才能直接反投影成点云给机器人用。",
+      "example": "给一张网上下载、没有拍摄参数的厨房照片，Depth Pro 输出每个像素离相机多少米以及估计的焦距，按针孔相机模型就能还原出有真实尺度的点云。",
+      "related": [
+        "单目深度估计",
+        "度量深度 / 相对深度",
+        "Depth Anything",
+        "Metric3D",
+        "MoGe",
+        "相机内参"
+      ],
+      "sources": [
+        {
+          "title": "Depth Pro: Sharp Monocular Metric Depth in Less Than a Second (arXiv 2410.02073)",
+          "url": "https://arxiv.org/abs/2410.02073"
+        },
+        {
+          "title": "apple/ml-depth-pro (GitHub)",
+          "url": "https://github.com/apple/ml-depth-pro"
+        }
+      ],
+      "as_of": "2025-04"
+    }
+  ]
+}

@@ -1,0 +1,215 @@
+{
+ "batch": "concept-02",
+ "terms": [
+  {
+   "key": "concept-02#0",
+   "name_en": "Grasping",
+   "aliases": [
+    "Robotic Grasping"
+   ],
+   "one_liner": "A robot picking up an object securely with a gripper, suction cup, or dexterous hand.",
+   "explanation": "Grasping is a robot using an end effector — a gripper, a suction cup, or a dexterous hand — to hold an object securely and lift it. The core question is where and how to grasp: an algorithm computes a grasp pose (the gripper's position and orientation) from a camera image or point cloud, and a motion planner then moves the hand there. Early methods relied on geometric and mechanical analysis, for instance checking force closure — whether the fingers' contact forces can resist external force and torque from any direction. A 2013 survey by Jeannette Bohg and colleagues organized data-driven approaches into three categories, based on whether the object was known, similar to a known object, or entirely unknown. Today the common approach is a deep network that predicts grasp poses directly from a point cloud, or a VLA model that outputs grasping actions end to end. Grasping is the first step in many manipulation tasks, from pick-and-place to mobile manipulation.",
+   "example": "A depth camera photographs a cluttered table; a network proposes dozens of candidate gripper poses over the point cloud and scores them, and the robot picks up the mug using the highest-scoring one.",
+   "related": [
+    "Pick-and-Place",
+    "Grasp Pose Detection",
+    "Force Closure",
+    "Gripper",
+    "Dexterous Hand",
+    "Bin Picking"
+   ]
+  },
+  {
+   "key": "concept-02#1",
+   "name_en": "Inference",
+   "aliases": [],
+   "one_liner": "Running a trained model forward on new input to produce an output, without updating its parameters.",
+   "explanation": "Inference means using an already-trained model: feed in new data, run one forward pass to get an output, without computing gradients or updating parameters — the counterpart to “training.” In Chinese, 推理 covers both “inference” and “reasoning” (a model thinking step by step), so papers need to be read in context to tell which one is meant. For robots, inference speed determines whether control can keep up: the π0 paper reports that processing three camera views and generating one action chunk takes about 73 milliseconds on a single RTX 4090. If inference is too slow, the robot stalls between action segments, which is why techniques such as action chunking, asynchronous inference, quantization, and TensorRT acceleration exist. Inference can run on the robot itself, or on a remote server with results sent back over the network, which adds network latency to the total.",
+   "example": "When π0 controls a robot at 50 Hz, it runs inference once every 0.5 seconds to produce one action chunk, then executes all 25 steps of that chunk before running inference again for the next one.",
+   "related": [
+    "Reasoning",
+    "Inference Latency",
+    "Action Chunking",
+    "Asynchronous Inference",
+    "Inference Deployment",
+    "Post-training Quantization"
+   ]
+  },
+  {
+   "key": "concept-02#2",
+   "name_en": "Locomotion",
+   "aliases": [],
+   "one_liner": "A robot's ability to move itself from place to place, using legs, wheels, or other means.",
+   "explanation": "Locomotion broadly covers the ways a robot moves itself: rolling on wheels, walking on legs, jumping, flying. Together with manipulation, which changes the state of external objects, it forms one of the two main branches of robot capability. In embodied AI, the term usually means legged locomotion in quadruped, biped, and humanoid robots: coordinating a dozen or more joints, keeping balance, and handling terrain like stairs and loose gravel. Traditional methods relied on dynamics models and model predictive control; the dominant recent approach trains a policy with reinforcement learning inside a GPU-parallel simulator, then transfers it to the real robot. A 2021 project from ETH Zurich and NVIDIA simulated thousands of ANYmal quadrupeds at once on a single GPU, training a flat-ground walking policy in under four minutes and a rough-terrain policy in about 20 minutes. In Chinese, 运动 also commonly corresponds to “motion” in general; “locomotion” specifically means moving the body itself.",
+   "example": "Using legged_gym inside Isaac Gym to simulate 4,096 ANYmal quadrupeds at once, training for about 20 minutes on terrain like stairs, slopes, and obstacles produces a policy that deploys straight to the real robot — able to climb stairs and cross obstacles.",
+   "related": [
+    "Legged Locomotion",
+    "Bipedal Walking",
+    "RL-based Locomotion Control",
+    "Sim-to-Real Transfer",
+    "Loco-manipulation",
+    "Manipulation"
+   ]
+  },
+  {
+   "key": "concept-02#3",
+   "name_en": "Long-horizon Task",
+   "aliases": [
+    "Multi-stage Task"
+   ],
+   "one_liner": "A task that requires completing many sub-steps in sequence, over a long stretch of time, to reach the goal.",
+   "explanation": "A long-horizon task requires executing many steps in a row across multiple sub-goals — “clear the table,” for instance, means clearing the plates, dumping the scraps, and loading the sink, in order. There are three main difficulties. First, errors accumulate: a small deviation early on pushes the later state further and further from the training data. Second, the success signal often only appears at the very end, making it hard to tell which intermediate step went wrong. Third, the agent must remember what it has already done and decide what to do next. The CALVIN benchmark (2021) chains 34 sub-tasks into sequences of five instructions each for evaluation; its imitation-learning baseline, trained and tested in the same environment, succeeded on one task in a row about 49% of the time but on all five in a row only 0.08% of the time. Common countermeasures include hierarchical architectures, where a high-level large model breaks down the task while a low-level policy executes atomic skills, along with memory modules and failure recovery.",
+   "example": "Clearing a table: put the plates and cups in a bin, throw napkins in the trash, then wipe the surface, in order — if any one step fails, the whole task counts as unfinished.",
+   "related": [
+    "Atomic Skill",
+    "Hierarchical Architecture",
+    "Compounding Error",
+    "Failure Recovery",
+    "Embodied Memory",
+    "CALVIN"
+   ]
+  },
+  {
+   "key": "concept-02#4",
+   "name_en": "Mobile Manipulation",
+   "aliases": [],
+   "one_liner": "Mounting a robot arm on a mobile base so it can move and work at once, combining navigation and manipulation.",
+   "explanation": "Mobile manipulation means an arm mounted on a mobile base — wheeled or legged — that moves while carrying out manipulation tasks; robots built this way are called mobile manipulators, or composite robots in Chinese industry usage. A fixed arm can only work within its own reach, but adding a base lets it operate across a whole room, a warehouse, or even multiple floors. The cost is more degrees of freedom and a less structured environment: the system has to decide where the base goes and how the arm moves at the same time, and handle how base localization error affects grasping precision. Stanford's Mobile ALOHA (2024) collected data through low-cost, whole-body teleoperation and, with just 20 to 50 demonstrations per task, learned to fry shrimp and plate it, open a two-door cabinet to put away a pot, and call and enter an elevator on its own. The researchers also found that co-training with static bimanual data could raise success rates by up to 90%. It's a core capability for household and warehouse robots.",
+   "example": "Mobile ALOHA stands at the stove, pours in oil, and adds the shrimp; one arm tilts the pan while the other flips the shrimp with a spatula, then the base turns around and tips the shrimp into a bowl on the table behind it.",
+   "related": [
+    "Mobile Manipulator",
+    "Navigation",
+    "Manipulation",
+    "Loco-manipulation",
+    "Mobile ALOHA",
+    "Mobile Base"
+   ]
+  },
+  {
+   "key": "concept-02#5",
+   "name_en": "Moravec's Paradox",
+   "aliases": [],
+   "one_liner": "For machines, high-level reasoning is easy; the perception and movement humans take for granted turn out to be the hard part.",
+   "explanation": "In his 1988 book Mind Children, roboticist Hans Moravec observed that it's comparatively easy to get a computer up to adult level on an intelligence test or at checkers, but hard, or even impossible, to give it the perception and mobility of a one-year-old child. Rodney Brooks, Marvin Minsky, and others voiced similar views in the 1980s; Steven Pinker later summed it up as “the hard problems are easy, and the easy problems are hard.” The usual explanation: perception and motor skills were refined over a vast span of evolution, so they feel effortless to us and we underrate how hard they really are, while abstract reasoning emerged only recently in evolutionary terms — the human brain isn't especially well-suited to it, which is why it feels hard to us, even though it isn't actually that hard for a computer. This paradox is often used to explain why large models can write code and solve math problems while robots still can't fold laundry as fast or as reliably as a person, and it's one reason embodied AI is seen as AI's next major hurdle.",
+   "example": "A large language model can already solve competition-level math problems, but folding laundry or tying a shoelace — things a small child can do — a robot still does far slower and far less reliably than a person.",
+   "related": [
+    "Embodied AI",
+    "Sensorimotor Skills",
+    "Embodied Cognition",
+    "The Bitter Lesson",
+    "Physical Turing Test"
+   ]
+  },
+  {
+   "key": "concept-02#6",
+   "name_en": "Navigation",
+   "aliases": [
+    "Embodied Navigation",
+    "Visual Navigation"
+   ],
+   "one_liner": "A robot deciding, from its own sensor readings, how to move itself to a target location or object.",
+   "explanation": "Navigation means an agent deciding where to go and how to get there, then moving itself to the target. Traditional robot navigation combines mapping and localization (SLAM), path planning, and obstacle-avoidance control. In embodied AI, navigation puts more weight on doing this in environments the robot has never seen, relying only on sensors such as a first-person camera. A 2018 consensus report from Peter Anderson and a dozen other researchers grouped navigation goals into three types: point goals (reach given coordinates), object goals (find an instance of a category, such as a refrigerator), and area goals (reach a type of region, such as a kitchen); it also proposed the SPL metric, which credits both success and how directly the path got there. The goal can also be specified another way — in natural language, as in vision-language navigation (VLN), or with a picture, as in image-goal navigation. Combining navigation with manipulation gives mobile manipulation.",
+   "example": "A robot given the goal “find the refrigerator” walks through an apartment it has never visited, looking as it goes, and counts as successful once it stops within a distance threshold of the fridge — the report suggests twice the robot's body width.",
+   "related": [
+    "Vision-Language Navigation",
+    "Object-Goal Navigation",
+    "Point-Goal Navigation",
+    "Success weighted by Path Length (SPL)",
+    "Simultaneous Localization and Mapping",
+    "Mobile Manipulation"
+   ]
+  },
+  {
+   "key": "concept-02#7",
+   "name_en": "Observation",
+   "aliases": [
+    "Observation Space"
+   ],
+   "one_liner": "The information an agent receives from the environment at each moment, the input a policy uses to decide.",
+   "explanation": "An observation is the input an agent receives from the environment at each step. In reinforcement learning's observation–action–reward loop, the environment returns a new observation both on reset and after every action; the observation space defines the format and range of these inputs — in Gymnasium, for example, CartPole's observation is just a few numbers: cart position, velocity, pole angle, and so on. A real robot's observation typically includes several camera images, depth or point-cloud data, proprioceptive information such as joint angles and gripper opening, and a language instruction. Observation is not the same as state: state is the environment's complete description, while an observation often only reveals part of it, with occlusion or noise — this situation is modeled as a Partially Observable Markov Decision Process (POMDP). Many policies take in the last several frames of observation; Diffusion Policy calls this window the observation horizon.",
+   "example": "A VLA policy's observation at each step: one RGB image each from a head camera and a wrist camera, seven joint angles, gripper opening, plus the instruction “put the cup on the plate.”",
+   "related": [
+    "State Space",
+    "Action Space",
+    "Proprioception",
+    "Partially Observable Markov Decision Process",
+    "Policy",
+    "Observation-Action Pair"
+   ]
+  },
+  {
+   "key": "concept-02#8",
+   "name_en": "Open-loop Control",
+   "aliases": [
+    "Open-loop Execution"
+   ],
+   "one_liner": "Executing a pre-computed sequence of actions straight through, without checking feedback along the way.",
+   "explanation": "Open-loop is originally a control-theory term: the control action doesn't depend on the system's output, and results are never checked during execution — a clothes dryer that just runs for a fixed time is one example. Closed-loop, by contrast, keeps measuring the result and correcting for it. In robot learning, “open-loop” usually means not reading any new observation for the duration of an action segment. Take action chunking: a model predicts several future steps of action at once, and the π0 paper states explicitly that the whole chunk runs open-loop — on a 50 Hz robot, it runs inference once every 0.5 seconds and doesn't look at new images for the 25 steps in between. Open-loop execution gives smooth, coherent motion and needs fewer inference calls, but reacts slowly to sudden changes — if an object gets bumped, the robot has to wait for the next inference call to correct course. Common compromises are executing only part of the predicted chunk before replanning, as in Diffusion Policy's receding-horizon approach, or using real-time chunking to compute the next segment while the current one is still playing out.",
+   "example": "Open-loop playback: a robot arm follows a pre-recorded trajectory to grab a cup, and still closes its gripper even if someone has moved the cup a few centimeters away; a closed-loop policy would adjust its hand position based on the new image.",
+   "related": [
+    "Closed-loop",
+    "Action Chunking",
+    "Action Horizon",
+    "Real-time Chunking",
+    "Temporal Ensembling",
+    "Open-loop Evaluation"
+   ]
+  },
+  {
+   "key": "concept-02#9",
+   "name_en": "Out-of-Distribution",
+   "aliases": [
+    "OOD",
+    "OOD Generalization",
+    "Out-of-Distribution Generalization"
+   ],
+   "one_liner": "Test-time data that comes from a different distribution than the training data, such as new objects or scenes.",
+   "explanation": "Machine learning typically assumes training and test data come from the same distribution (the i.i.d. assumption). Out-of-distribution (OOD) describes test inputs that fall outside the training distribution — unseen objects, lighting, tablecloths, camera angles, or ways of phrasing an instruction; inputs that do fall within the training distribution are called in-distribution (ID). Model performance usually drops noticeably on OOD inputs, and the study of keeping models useful anyway is called OOD generalization; a 2021 survey by Peng Cui's group at Tsinghua University gives a systematic overview. Robots run into this especially often: the real world varies endlessly while demonstration data only covers a limited set of scenarios, and once execution drifts even slightly off course, later observations drift away from the training data too, a problem called distribution shift. When papers evaluate “generalization,” they are usually measuring success rate under deliberately constructed out-of-distribution conditions.",
+   "example": "A policy trained only with a red cup on a white table is tested with a wood-grain table and a blue bowl instead — that is an out-of-distribution test.",
+   "related": [
+    "In-Distribution",
+    "Generalization",
+    "Distribution Shift (Covariate Shift)",
+    "Long-tail Problem",
+    "Robustness",
+    "Zero-shot"
+   ]
+  },
+  {
+   "key": "concept-02#10",
+   "name_en": "Physical AI",
+   "aliases": [
+    "Generative Physical AI"
+   ],
+   "one_liner": "AI that can perceive, understand, and act in the physical world — robots and self-driving cars are examples.",
+   "explanation": "Physical AI is a term heavily promoted by NVIDIA, officially defined as systems that can perceive, understand, and reason within the physical world, then execute or coordinate complex actions. It covers robots, self-driving cars, and “smart spaces” that use fixed cameras to optimize factories and warehouses. The problems it addresses largely overlap with what academics usually call “embodied AI,” but its scope is wider — it even counts bodiless “smart spaces” that rely only on fixed cameras, with no robot body at all. NVIDIA lays out a three-step development pipeline: train models in a data center; simulate and generate synthetic data on the Omniverse simulation platform and with the Cosmos world foundation model; then deploy to edge computing platforms such as Jetson and DRIVE. When Cosmos was announced at CES in January 2025, Jensen Huang said “the ChatGPT moment for robotics is coming.”",
+   "example": "A self-driving car processing sensor data in real time to decide steering and braking, and an autonomous mobile robot in a warehouse dodging obstacles while moving goods, both count as what NVIDIA calls physical AI.",
+   "related": [
+    "Embodied AI",
+    "World Foundation Model",
+    "Cosmos",
+    "NVIDIA's Three Computers",
+    "Sim-to-Real Transfer",
+    "ChatGPT Moment"
+   ]
+  },
+  {
+   "key": "concept-02#11",
+   "name_en": "Pick-and-Place",
+   "aliases": [
+    "Pick and Place"
+   ],
+   "one_liner": "Picking an object up from one place, moving it, and setting it down at a target location — a basic manipulation task.",
+   "explanation": "Pick-and-place is the most basic and most common manipulation task: grasp the target object, then move it to a target location and set it down. In industry it has long been used for sorting, loading and unloading, and palletizing, usually through fixed programs combined with visual localization. In robot learning, it is a standard test task in VLA and imitation-learning papers, with instructions typically of the form “put A into/onto B.” It looks simple, but it actually chains together several steps — recognizing the target, choosing a grasp point, planning a collision-free trajectory, and determining the placement pose — and it is often used as an atomic skill inside longer-horizon tasks. Google's Transporter Networks (2020) modeled pick-and-place as a spatial displacement, “pick from here, move to there,” and learned tasks such as stacking blocks and assembling kits, with sample efficiency several orders of magnitude better than the comparison methods of the time.",
+   "example": "Given the instruction “put the red block in the bowl,” the robot first grips the block, moves it above the bowl, then releases the gripper.",
+   "related": [
+    "Grasping",
+    "Object Rearrangement",
+    "Atomic Skill",
+    "Sorting",
+    "Palletizing / Depalletizing",
+    "Transporter Networks"
+   ]
+  }
+ ]
+}

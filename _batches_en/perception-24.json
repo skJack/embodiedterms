@@ -1,0 +1,113 @@
+{
+  "batch": "perception-24",
+  "terms": [
+    {
+      "key": "perception-24#0",
+      "name_en": "Structure from Motion",
+      "aliases": ["SfM"],
+      "one_liner": "Computing both camera poses and a scene’s 3D points at once from a set of photos taken from different angles.",
+      "explanation": "Structure from motion is a classic 3D reconstruction method: given photos of the same scene taken from multiple viewpoints (which can be in any order), it outputs the camera pose (position and orientation) for every photo along with a sparse 3D point cloud. The standard pipeline first extracts feature points and matches them across images, uses epipolar geometry to reject bad matches, then adds images one at a time while triangulating 3D points, and finally runs bundle adjustment — jointly fine-tuning all poses and 3D points to minimize reprojection error — as a global refinement. It differs from SLAM in that it usually runs offline and doesn’t require the images to be in chronological order. The open-source tool COLMAP is the most commonly used implementation; the first step in building a NeRF, a 3D Gaussian Splat, or bringing a real scene into simulation (real-to-sim) is often to compute camera poses with SfM. Recently, feed-forward models such as DUSt3R and VGGT have tried to output both pose and geometry directly, in one shot.",
+      "example": "Fifty phone photos taken while circling a mug on a table are fed into COLMAP, producing each photo’s camera pose and a sparse point cloud of the mug, which is then used to train a 3D Gaussian Splat.",
+      "related": ["Bundle Adjustment", "Feature Matching", "Triangulation", "COLMAP", "Multi-View Stereo", "Feed-Forward 3D Reconstruction"]
+    },
+    {
+      "key": "perception-24#1",
+      "name_en": "SuperPoint / SuperGlue / LightGlue",
+      "aliases": ["Learned Feature Matching"],
+      "one_liner": "A line of neural-network models for detecting and matching feature points across images, replacing hand-crafted methods like SIFT.",
+      "explanation": "This is a lineage of learned feature-matching techniques. SuperPoint, proposed by Magic Leap in 2018, uses a single network to jointly output keypoint locations and descriptors (vectors describing what the area around each point looks like) in an image, replacing hand-designed features such as SIFT and ORB. SuperGlue (2020) uses a graph neural network with attention to match keypoints between two images, and can also tell which points have no correspondence in the other image. LightGlue (2023, ETH Zurich) is an improved version of SuperGlue that the paper describes as using less memory and compute, being more accurate, easier to train, and able to adaptively stop inference early depending on how hard the match is. These models are commonly plugged into the front end of SfM, visual SLAM, and relocalization pipelines, to keep finding reliable correspondences even under large changes in lighting or viewpoint.",
+      "example": "Swapping the default SIFT for SuperPoint keypoints and LightGlue matching inside an hloc or COLMAP pipeline finds more correct matches between photos taken in daylight and at night.",
+      "related": ["Feature Point", "Feature Matching", "Structure from Motion", "Visual SLAM", "Relocalization", "Random Sample Consensus (RANSAC)"]
+    },
+    {
+      "key": "perception-24#2",
+      "name_en": "Surface Normal Estimation",
+      "aliases": ["Point Cloud Normal Estimation", "Normal Estimation"],
+      "one_liner": "Computing which way each point on an object’s surface faces — the vector perpendicular to the surface there.",
+      "explanation": "A surface normal is the unit vector perpendicular to an object’s surface at a given point, indicating which way that patch of surface faces. A point cloud is just a set of coordinates with no built-in notion of a “surface,” so normals have to be estimated: the most common approach takes each point’s k nearest neighbors and runs principal component analysis (PCA), where the direction of least variance is taken as the normal; because this leaves the front-versus-back direction ambiguous, normals are then reoriented consistently to face the camera or point outward. Neural networks that predict a normal for every pixel directly from a single RGB image also exist. Normals are used heavily in robotics: suction grasping needs the cup to sit flush and perpendicular to the surface, two-finger grasps often approach along the normal direction, and point-to-plane ICP registration, FPFH point cloud features, and Poisson surface reconstruction all depend on them. Normals visibly jitter when the point cloud is noisy or the neighborhood size is poorly chosen.",
+      "example": "Calling estimate_normals on a point cloud in Open3D, then orient_normals_towards_camera_location to make them consistent, gives an approach direction for every candidate suction-grasp point.",
+      "related": ["Point Cloud", "Point Cloud Registration", "FPFH Point Cloud Feature", "Grasp Pose Detection", "Vacuum Suction Cup", "Point Cloud Library (PCL)"]
+    },
+    {
+      "key": "perception-24#3",
+      "name_en": "Tactile Array",
+      "aliases": ["Tactile Array Sensor", "Array-Type Tactile Sensor"],
+      "one_liner": "Many small tactile sensing elements arranged in a grid, measuring the pressure distribution across a contact surface.",
+      "explanation": "A tactile array is a sensor made of many tactile elements (taxels, each of which measures pressure at one point) arranged in rows and columns on a flexible circuit or skin. A single force sensor can only tell you the total force applied, whereas an array gives the distribution of pressure across the contact surface: where contact is happening, how large the contact area is, its shape, and where the center of force is. Common sensing principles are piezoresistive, capacitive, piezoelectric, and magnetic, typically read out by scanning row by row and column by column. Tactile arrays are commonly mounted on dexterous-hand fingertips, finger pads, and palms, or built into large-area electronic skin. Design involves trading off element density (spatial resolution), sampling rate, the number of wires, and durability. Compared with a vision-based tactile sensor that watches a gel deform through a camera, an array is thinner and easier to fit onto a curved surface, but usually has lower resolution.",
+      "example": "A 4×4 capacitive tactile array is attached to each dexterous-hand fingertip; while grasping an egg, it shows exactly which elements the pressure concentrates on, revealing whether the egg is about to slip.",
+      "related": ["Taxel", "Tactile Image", "Tactile Sensor", "Electronic Skin", "Piezoresistive Tactile Sensing", "Capacitive Tactile Sensing"]
+    },
+    {
+      "key": "perception-24#4",
+      "name_en": "Tactile Image",
+      "aliases": ["Pressure Distribution Map"],
+      "one_liner": "Arranging tactile sensor readings into a 2D image, so ordinary vision models can process them directly.",
+      "explanation": "A tactile image organizes a tactile signal into 2D image form. It comes from two sources: a tactile array, where each element’s reading becomes one pixel, giving a low-resolution pressure-distribution map; or a vision-based tactile sensor such as GelSight or DIGIT, whose internal camera directly photographs the soft gel deforming under pressure, which is already a color image that clearly shows the texture and shape of whatever it touched. The benefit of framing it as an image is that off-the-shelf vision models — convolutional networks, ViTs — can be applied directly, and it can be fed into a policy alongside camera images for combined vision-touch fusion. A sequence of tactile images sampled over time can also capture how a contact evolves, useful for detecting slip or estimating shear force.",
+      "example": "Pressing a GelSight onto a coin produces a tactile image that clearly shows the coin’s embossed relief, from which photometric stereo recovers the local 3D shape.",
+      "related": ["Tactile Array", "Vision-Based Tactile Sensor", "GelSight", "Vision-Touch Fusion", "Tactile Representation Learning", "Photometric Stereo"]
+    },
+    {
+      "key": "perception-24#5",
+      "name_en": "TacTip",
+      "aliases": ["Biomimetic Optical Tactile Fingertip", "TacTip Family"],
+      "one_liner": "A biomimetic optical tactile fingertip from the Bristol Robotics Laboratory that uses a camera to watch internal marker pins move.",
+      "explanation": "TacTip is a family of optical tactile sensors developed at the Bristol Robotics Laboratory in the UK, with the earliest version published around 2009. It mimics the dermal papillae structure beneath human fingertip skin: the outside is a soft, hemispherical skin, the inside is lined with rows of small pins tipped with white markers, the space between is filled with transparent gel, and a camera sits inside. When the finger touches an object, the skin deforms and moves the pins with it; the camera tracks the displacement of these markers, from which contact location, shape, edges, and shear direction can be inferred. Most of its parts can be 3D printed, keeping cost low, and it has since spawned a “TacTip family” of different sizes and shapes that can be mounted on robotic fingers or grippers. Unlike GelSight, which photographs surface texture under lighting, TacTip follows a marker-tracking approach.",
+      "example": "A TacTip mounted on the end of a robot arm is slid along an object’s contour; the displacement of its marker pins reveals the direction of the edge, letting it trace out the object’s outline.",
+      "related": ["Vision-Based Tactile Sensor", "Marker Tracking", "GelSight", "Tactile Sensor", "Slip Detection", "Tactile Image"]
+    },
+    {
+      "key": "perception-24#6",
+      "name_en": "TAPIR",
+      "aliases": ["Tracking Any Point with per-frame Initialization and temporal Refinement", "TAPNet"],
+      "one_liner": "A DeepMind point-tracking model that first finds a rough match per frame, then refines the trajectory over time.",
+      "explanation": "TAPIR is a point-tracking model proposed in 2023 (ICCV 2023) by Google DeepMind and Oxford’s VGG group, for the “Tracking Any Point” (TAP) task: given any point on any frame of a video, output that point’s position in every other frame, and whether it is occluded. The method has two stages: a matching stage that independently finds, on every frame, the candidate location most similar to the query point, used as an initialization; and a refinement stage that uses local correlation to repeatedly update the whole trajectory and the query feature over time. The paper reports a clear improvement over prior methods on the TAP-Vid benchmark. TAPNet is the earlier baseline the same team introduced in the TAP-Vid paper, and its code repository still carries the name “tapnet.” In robotics, TAPIR has been used to track keypoints on objects or on a gripper — for instance, DeepMind’s RoboTAP uses point trajectories for few-shot imitation.",
+      "example": "Clicking on one corner of a towel in a video of a robot arm folding it, TAPIR outputs that corner’s pixel coordinates in every later frame, picking it back up even after the gripper briefly hides it.",
+      "related": ["Tracking Any Point", "CoTracker", "Optical Flow", "ATM (Any-Point Trajectory Modeling)", "Keypoint Detection", "Occlusion"]
+    },
+    {
+      "key": "perception-24#7",
+      "name_en": "Taxel",
+      "aliases": ["Tactile Pixel", "Tactile Element"],
+      "one_liner": "The smallest individual sensing element in a tactile array — the tactile equivalent of an image pixel.",
+      "explanation": "“Taxel” is a blend of “tactile” and “pixel,” referring to the smallest individually readable sensing element in a tactile array. Just as an image is made of pixels, a tactile array is made of many taxels, each measuring the pressure over the small patch of surface it covers (some also measure force along three directions). The number and spacing of taxels sets the tactile spatial resolution: closer spacing resolves finer shapes and edges, but more taxels also means more wiring, more readout circuitry, and more data. A tactile sensor is often described by how many taxels it has and how many millimeters apart they are, as a measure of its fineness. Vision-based tactile sensors have no discrete taxels, and are usually described instead by camera pixel count or the number of tracked markers.",
+      "example": "A 16×16 fingertip tactile array has 256 taxels, each outputting one pressure value, which together form a 16×16 tactile image.",
+      "related": ["Tactile Array", "Tactile Image", "Tactile Sensor", "Electronic Skin", "Piezoresistive Tactile Sensing", "uSkin"]
+    },
+    {
+      "key": "perception-24#8",
+      "name_en": "Thermal Camera",
+      "aliases": ["Infrared Camera", "Thermal Imager", "Long-Wave Infrared Camera"],
+      "one_liner": "A camera that captures infrared heat radiation instead of visible light, revealing an object’s temperature distribution.",
+      "explanation": "A thermal camera captures the infrared radiation objects emit themselves (long-wave infrared, for most consumer and industrial models), converting temperature differences into an image; uncooled models commonly use a microbolometer as the sensor. Because it doesn’t depend on ambient light, it can form an image in total darkness, smoke, or partial fog, and it is very sensitive to warm-blooded people and animals. In robotics it is commonly used for inspection (finding overheating electrical equipment or pipe leaks), search and rescue, and detecting people for security, and some research fuses it with RGB and depth cameras to improve perception at night. A few caveats: ordinary glass is opaque to long-wave infrared, so a thermal camera can’t see through a window; its resolution is usually lower than an RGB camera’s; and the temperature it reads is affected by the object’s emissivity.",
+      "example": "A substation inspection robot scans a switchgear cabinet with a thermal camera and finds one connector running noticeably hotter than its surroundings, automatically flagging a possible loose connection.",
+      "related": ["Inspection Robot", "RGB Camera", "Multi-Sensor Fusion", "Exteroception", "Special-Purpose Robot"]
+    },
+    {
+      "key": "perception-24#9",
+      "name_en": "Tightly-Coupled vs. Loosely-Coupled Fusion",
+      "aliases": ["Tightly-Coupled Fusion", "Loosely-Coupled Fusion"],
+      "one_liner": "Two architectures for multi-sensor fusion: combining raw measurements together, versus computing each sensor’s own result and merging afterward.",
+      "explanation": "This distinction comes up constantly in multi-sensor fusion (such as camera+IMU or lidar+IMU). In loosely-coupled fusion, each sensor first computes its own result independently — for example, visual odometry computes a pose on its own, which is then weighted and merged with the pose from integrating the IMU inside a filter; this is simple to implement and its modules are swappable, but if one sensor fails on its own (say, tracking is lost from too little texture), its bad result feeds straight into the fusion. Tightly-coupled fusion instead puts raw measurements — such as the reprojection error of image feature points and IMU pre-integration terms — directly into one shared state estimator for joint optimization or filtering; this uses the information more fully and is usually more accurate and robust, at the cost of a more complex implementation and heavier computation. Systems such as VINS-Mono, OKVIS, FAST-LIO2, and LIO-SAM are all tightly-coupled designs.",
+      "example": "A drone flying past a blank white wall has almost no visual features: a loosely-coupled system’s visual pose estimate can go badly wrong, while a tightly-coupled system can still maintain a good estimate using the few available feature points plus the IMU constraint.",
+      "related": ["Multi-Sensor Fusion", "Visual-Inertial Odometry", "LiDAR-Inertial Odometry", "IMU Pre-Integration", "VINS-Mono / VINS-Fusion", "Extended Kalman Filter"]
+    },
+    {
+      "key": "perception-24#10",
+      "name_en": "Topological Map",
+      "aliases": ["Topological Graph"],
+      "one_liner": "A map made of place nodes and connecting edges, recording only what leads where, not exact coordinates.",
+      "explanation": "A topological map represents an environment as a graph: nodes are representative places (a particular room, an intersection, or a keyframe image), and edges mean that two places can be reached directly from each other. Unlike a metric map such as an occupancy grid, it does not require an exact metric coordinate for every location, so it takes far less storage, can scale to very large environments, and is closer to how a person describes a route (“go out the door, turn left down the hallway, then into the kitchen”). During navigation, an algorithm such as A* first searches the graph for a sequence of nodes, and a local controller or policy then moves between adjacent nodes. Recent learned navigation systems make heavy use of this idea: ViNT and NoMaD use images as nodes for long-range navigation, while Mobility VLA builds a topological map from a video of a person walking around giving a tour, then uses a vision-language model to interpret an instruction and find the target node.",
+      "example": "A robot is first walked around an office building while recording video, saving one image as a node every few seconds; later, told “go to the printer,” it finds the matching node in the graph and plans a path of nodes to reach it.",
+      "related": ["Navigation", "Occupancy Grid Map", "Semantic Map", "A* Algorithm", "ViNT", "Mobility VLA"]
+    },
+    {
+      "key": "perception-24#11",
+      "name_en": "Tracking Any Point",
+      "aliases": ["TAP", "Point Tracking", "Long-Term Point Tracking"],
+      "one_liner": "Given any point in a video, outputting its position in every later frame, and whether it becomes occluded.",
+      "explanation": "Tracking Any Point (TAP) is a vision task formally introduced by Google DeepMind in 2022 alongside the TAP-Vid benchmark: a user marks an arbitrary point on some frame of a video — on an object’s surface, on a piece of cloth, or in the background — and the model must output that point’s pixel position in every other frame, and whether it is occluded. It differs from optical flow, which only computes motion between two adjacent frames and drifts when accumulated over a long sequence, and can’t handle a point disappearing behind an occluder and reappearing; it differs from object tracking in that it tracks a point rather than a whole object’s bounding box. Representative models include TAPIR and CoTracker. In robotics, point trajectories serve as an embodiment-agnostic intermediate representation: the motion of points on an object can be extracted from human video and used to guide policy learning (as in ATM) or to drive visual servoing.",
+      "example": "Clicking a few points on a cup’s handle in a video of a person pouring water, and tracking their trajectories over time, gives a policy-learning target for “how the cup should move.”",
+      "related": ["TAPIR", "CoTracker", "Optical Flow", "Scene Flow", "ATM (Any-Point Trajectory Modeling)", "3D Point Tracking"]
+    }
+  ]
+}

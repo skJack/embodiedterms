@@ -1,0 +1,17 @@
+{"category": "training", "batch": 18, "terms": [
+{"name_zh": "VLM 作奖励模型",
+ "name_en": "VLM-as-Reward (Vision-Language Models as Reward Models)",
+ "abbr": "",
+ "aliases": ["VLM 奖励", "视觉语言模型奖励", "VLM 奖励模型", "VLM-RM"],
+ "tier": 3,
+ "one_liner": "让视觉语言模型看画面、对照任务描述，给机器人的表现打奖励分",
+ "explanation": "把视觉语言模型（VLM，能同时看图和读文字的大模型）当作强化学习的奖励模型：输入任务描述和机器人拍到的画面，由它判断做得好不好。代表工作有 2023 年的 VLM-RM（用 CLIP 算画面与文字的相似度当奖励）、RoboCLIP（比对智能体视频与示范视频），和 ICML 2024 的 RL-VLM-F（让 VLM 对两张图给偏好，再学出奖励函数）。它针对奖励难手写的问题：叠衣服这类任务很难用公式定义「做成了」。局限是 VLM 空间推理弱、打分有噪声，策略可能钻漏洞（奖励黑客）。常用于强化学习微调、成功检测和数据筛选。",
+ "example": "VLM-RM 只给一句描述目标姿态的英文提示，用 CLIP 计算仿真渲染画面与提示的相似度作为奖励，就在 MuJoCo 里教会人形模型跪下、劈叉和盘腿莲花坐，没有手写任何奖励函数；论文还发现 VLM 越大，当奖励模型越好用。",
+ "related": ["奖励模型", "视觉语言模型", "CLIP", "成功检测器", "进度奖励模型", "GVL（生成式价值学习）"],
+ "sources": [
+  {"title": "Vision-Language Models are Zero-Shot Reward Models for Reinforcement Learning (ICLR 2024)", "url": "https://arxiv.org/abs/2310.12921"},
+  {"title": "RoboCLIP: One Demonstration is Enough to Learn Robot Policies", "url": "https://arxiv.org/abs/2310.07899"},
+  {"title": "RL-VLM-F: Reinforcement Learning from Vision Language Foundation Model Feedback (ICML 2024)", "url": "https://arxiv.org/abs/2402.03681"}
+ ],
+ "as_of": "2024-07"}
+]}

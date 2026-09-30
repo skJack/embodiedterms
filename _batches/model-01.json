@@ -1,0 +1,435 @@
+{
+  "category": "model",
+  "batch": 1,
+  "terms": [
+    {
+      "name_zh": "动作分块",
+      "name_en": "Action Chunking",
+      "abbr": "",
+      "aliases": [
+        "动作块",
+        "action chunk",
+        "chunk",
+        "动作序列预测"
+      ],
+      "tier": 1,
+      "one_liner": "策略一次预测接下来一小段连续动作，而不是每一步只输出一个动作。",
+      "explanation": "动作分块指策略每次推理输出未来 k 步的动作序列（一个「块」），执行完一部分或全部后再重新观测、再预测。这个叫法由 Tony Zhao、Chelsea Finn 等人 2023 年的 ACT 论文带进机器人学习，借自神经科学里「把一串动作打包成一个单元来执行」的概念：ACT 以 50Hz 控制双臂，每次预测未来 100 步的关节目标。它解决两个问题：一是让决策次数缩短为原来的 1/k，减轻行为克隆中小误差逐步累积的复合误差；二是更容易学到人类演示里的停顿这类单步策略难以建模的时序习惯。现在扩散策略、π0（一次 50 步）、GR00T N1（一次 16 步）等主流模型都输出动作块，块与块之间常用时序集成或实时动作分块来衔接，避免动作突变。",
+      "example": "ACT 在低成本双臂平台 ALOHA 上做了 6 个精细任务，每个任务只用 10–20 分钟（约 50 条）演示：打开半透明调料杯盖成功率 84%，把电池装进遥控器 96%，最难的穿魔术贴扎带只有 20%。它每次输出未来 100 步（50Hz 下约 2 秒）的关节目标。",
+      "related": [
+        "动作视界",
+        "时序集成",
+        "实时动作分块",
+        "复合误差",
+        "ACT",
+        "扩散策略"
+      ],
+      "sources": [
+        {
+          "title": "Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware (ACT, arXiv 2304.13705)",
+          "url": "https://arxiv.org/abs/2304.13705"
+        },
+        {
+          "title": "π0: A Vision-Language-Action Flow Model for General Robot Control (arXiv 2410.24164)",
+          "url": "https://arxiv.org/abs/2410.24164"
+        },
+        {
+          "title": "GR00T N1: An Open Foundation Model for Generalist Humanoid Robots (arXiv 2503.14734)",
+          "url": "https://arxiv.org/abs/2503.14734"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "动作专家",
+      "name_en": "Action Expert",
+      "abbr": "",
+      "aliases": [
+        "动作专家模块"
+      ],
+      "tier": 1,
+      "one_liner": "VLA 里专门负责生成连续动作的一组独立参数，与看图读指令的主干分工。",
+      "explanation": "动作专家这个说法因 Physical Intelligence 2024 年的 π0 流行开来。π0 以约 30 亿参数的 PaliGemma 视觉语言模型为主干，另加一组约 3 亿参数、从零初始化的 Transformer 权重，专门处理机器人状态和动作 token，这组权重就叫动作专家。两部分在同一套注意力层里交换信息，但各用各的权重，类似只有两个专家的混合专家；信息单向流动：动作 token 能看到图文 token，反过来不行，以免主干偏离原来的预训练。动作专家用流匹配生成连续的动作块；论文发现，给状态和动作 token 单独配一组权重，比和主干共用权重效果更好。π0.5、SmolVLA 等沿用了这个名字，GR00T N1 的动作模块也是同类设计。",
+      "example": "π0 推理时，PaliGemma 主干先编码相机图像和语言指令，动作专家再用 10 步流匹配积分输出 50 步长的连续动作块，控制频率最高可达 50Hz。",
+      "related": [
+        "视觉-语言-动作模型",
+        "动作头",
+        "流匹配",
+        "混合专家模型",
+        "π0",
+        "骨干网络"
+      ],
+      "sources": [
+        {
+          "title": "π0: A Vision-Language-Action Flow Model for General Robot Control (arXiv 2410.24164)",
+          "url": "https://arxiv.org/abs/2410.24164"
+        },
+        {
+          "title": "π0 论文 HTML 全文（动作专家参数量与结构）",
+          "url": "https://arxiv.org/html/2410.24164"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "动作头",
+      "name_en": "Action Head",
+      "abbr": "",
+      "aliases": [
+        "动作解码器",
+        "Action Decoder",
+        "策略头",
+        "Policy Head"
+      ],
+      "tier": 1,
+      "one_liner": "接在骨干网络后面，把提取出的特征转换成具体机器人动作的输出模块。",
+      "explanation": "动作头沿用了视觉领域「骨干 + 头」的分法：骨干网络从图像、语言、本体状态中提取特征，头把特征变成任务需要的输出，在机器人策略里就是关节角、末端位姿、夹爪开合等动作。常见的动作头有三类：直接回归连续值的 MLP 头（用均方误差训练，遇到多种合理做法时容易取平均）；把动作离散成 token 再分类的头；以及扩散头或流匹配头，能表达多峰的动作分布。Octo 在 Transformer 输出上接一个轻量的扩散动作头，微调到新机器人时可以换一个新动作头来适配新的动作空间；GR00T N1 用扩散 Transformer 作为动作模块。",
+      "example": "Octo 预训练时用扩散动作头预测未来一段动作；迁移到一台动作维度不同的新机械臂时，保留 Transformer 主体的预训练权重、换上一个匹配新动作空间的新动作头，再用约 100 条演示把整个模型一起微调。",
+      "related": [
+        "骨干网络",
+        "扩散动作头",
+        "动作专家",
+        "连续动作回归",
+        "Octo",
+        "动作多峰性"
+      ],
+      "sources": [
+        {
+          "title": "Octo: An Open-Source Generalist Robot Policy (arXiv 2405.12213)",
+          "url": "https://arxiv.org/abs/2405.12213"
+        },
+        {
+          "title": "GR00T N1: An Open Foundation Model for Generalist Humanoid Robots (arXiv 2503.14734)",
+          "url": "https://arxiv.org/abs/2503.14734"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "注意力机制",
+      "name_en": "Attention Mechanism",
+      "abbr": "",
+      "aliases": [
+        "注意力",
+        "Attention"
+      ],
+      "tier": 1,
+      "one_liner": "让模型按相关程度给输入的各部分分配权重，再加权汇总信息的计算方法。",
+      "explanation": "深度学习里的注意力机制一般追溯到 Bahdanau、Cho 和 Bengio 2014 年的神经机器翻译论文：翻译每个词时，模型自动去原句里找最相关的词，而不是把整句压成一个固定长度的向量。现在常用的做法是每个位置生成查询（Q）、键（K）、值（V）三个向量，用 Q 与各个 K 的相似度经 softmax 归一化成权重，再对 V 加权求和。2017 年 Vaswani 等人提出的 Transformer 完全用注意力取代循环和卷积，便于并行训练，此后成为大语言模型和 VLA 的基础结构。在具身模型里，自注意力让图像块、文字和动作 token 相互交换信息，交叉注意力常用来让动作模块读取视觉语言特征。",
+      "example": "给机器人指令「把红杯子放进水槽」时，模型处理「红杯子」这几个文字 token，注意力权重会集中到画面中红杯子所在的图像块上，把语言和画面对应起来。",
+      "related": [
+        "Transformer",
+        "自注意力",
+        "交叉注意力",
+        "因果注意力",
+        "注意力掩码",
+        "KV 缓存"
+      ],
+      "sources": [
+        {
+          "title": "Neural Machine Translation by Jointly Learning to Align and Translate (arXiv 1409.0473)",
+          "url": "https://arxiv.org/abs/1409.0473"
+        },
+        {
+          "title": "Attention Is All You Need (arXiv 1706.03762)",
+          "url": "https://arxiv.org/abs/1706.03762"
+        },
+        {
+          "title": "Attention (machine learning) - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Attention_(machine_learning)"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "自回归解码",
+      "name_en": "Autoregressive Decoding",
+      "abbr": "AR",
+      "aliases": [
+        "自回归",
+        "自回归模型",
+        "Autoregressive Model",
+        "逐 token 生成"
+      ],
+      "tier": 1,
+      "one_liner": "一个接一个地生成输出，每一步都以前面已生成的内容为条件。",
+      "explanation": "自回归解码是 GPT 等大语言模型生成文字的方式：每次只预测下一个 token，接到输入末尾再预测下一个，直到结束。用到机器人上，要先把连续动作离散成 token。Google DeepMind 2023 年的 RT-2 把动作写成一串数字 token，让视觉语言模型像输出文字一样输出；OpenVLA 把每个动作维度分成 256 个区间，占用 Llama 词表里最少用的 256 个 token。好处是直接复用语言模型的结构和训练方法；缺点是要一个个生成，速度慢，OpenVLA 在一张 RTX 4090 上约 6Hz。所以后来有了 FAST 等压缩动作的分词器、并行解码，以及改用扩散或流匹配生成动作的方案。",
+      "example": "RT-2 的一个动作输出就是一串 token，形如「1 128 91 241 5 101 127 217」，依次对应是否结束任务、末端位移和旋转、夹爪开合等维度的离散值，再换算回连续数值发给机器人。",
+      "related": [
+        "下一个 token 预测",
+        "动作分词器",
+        "分箱离散化",
+        "并行解码",
+        "RT-2",
+        "OpenVLA"
+      ],
+      "sources": [
+        {
+          "title": "RT-2: Vision-Language-Action Models Transfer Web Knowledge to Robotic Control（项目页）",
+          "url": "https://robotics-transformer2.github.io/"
+        },
+        {
+          "title": "OpenVLA: An Open-Source Vision-Language-Action Model (arXiv 2406.09246)",
+          "url": "https://arxiv.org/abs/2406.09246"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "骨干网络",
+      "name_en": "Backbone Network",
+      "abbr": "",
+      "aliases": [
+        "主干网络",
+        "Backbone",
+        "主干"
+      ],
+      "tier": 1,
+      "one_liner": "模型中负责从原始输入提取通用特征的主体网络，后面再接各种任务头。",
+      "explanation": "骨干网络原是计算机视觉里的说法，例如 2017 年的 Mask R-CNN 论文就把网络分成两部分：对整张图提取特征的卷积骨干（如 ResNet-50），和做分类、边框回归、掩码预测的网络头。骨干通常先在大规模数据上预训练，再被不同任务复用，换一个更强的骨干往往整体提升效果。到了具身模型，骨干多是预训练好的视觉语言模型：OpenVLA 用 Llama 2 加 DINOv2、SigLIP 视觉编码器，π0 用 PaliGemma，GR00T N1 用英伟达 Eagle-2。骨干提供语义知识，动作头或动作专家把特征变成动作；微调时是否冻结骨干，是常见的设计取舍。",
+      "example": "GR00T N1 的 22 亿参数里有 13.4 亿属于 Eagle-2 视觉语言骨干；它取骨干第 12 层而不是最后一层的特征交给动作模块，论文称这样推理更快，策略成功率也更高。",
+      "related": [
+        "视觉编码器",
+        "视觉语言模型",
+        "动作头",
+        "冻结骨干网络",
+        "预训练",
+        "残差网络"
+      ],
+      "sources": [
+        {
+          "title": "Mask R-CNN (arXiv 1703.06870)",
+          "url": "https://arxiv.org/abs/1703.06870"
+        },
+        {
+          "title": "GR00T N1: An Open Foundation Model for Generalist Humanoid Robots (arXiv 2503.14734)",
+          "url": "https://arxiv.org/abs/2503.14734"
+        },
+        {
+          "title": "OpenVLA: An Open-Source Vision-Language-Action Model (arXiv 2406.09246)",
+          "url": "https://arxiv.org/abs/2406.09246"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "扩散模型",
+      "name_en": "Diffusion Model",
+      "abbr": "",
+      "aliases": [
+        "扩散",
+        "Diffusion",
+        "去噪扩散模型"
+      ],
+      "tier": 1,
+      "one_liner": "先学会一步步去掉噪声，再从纯噪声出发逐步生成数据的生成模型。",
+      "explanation": "扩散模型包含两个过程：前向过程不断往真实数据里加高斯噪声，直到变成纯噪声；反向过程训练神经网络预测并去掉每一步的噪声。生成时从随机噪声出发反复去噪，得到新样本。这一思路 2015 年由 Sohl-Dickstein 等人提出，2020 年 Ho 等人的 DDPM 让它真正好用，之后成为 Stable Diffusion 等图像、视频生成模型的主流方法。机器人领域用它生成动作：2023 年的扩散策略以当前观测为条件，把一段未来动作去噪生成出来，能表达同一场景下几种都合理的做法（动作多峰性），这是回归一个平均值做不到的。代价是要多步去噪，推理偏慢。",
+      "example": "扩散策略（Chi 等，2023）在 4 个基准的 12 个操作任务上，平均成功率比此前方法高 46.9%；在推 T 形块任务中，面对从左绕和从右绕两种都合理的推法，它能学会这两种模式，而不是取平均。",
+      "related": [
+        "扩散策略",
+        "去噪扩散概率模型",
+        "流匹配",
+        "动作多峰性",
+        "去噪步数",
+        "生成模型"
+      ],
+      "sources": [
+        {
+          "title": "Denoising Diffusion Probabilistic Models (arXiv 2006.11239)",
+          "url": "https://arxiv.org/abs/2006.11239"
+        },
+        {
+          "title": "Diffusion Policy: Visuomotor Policy Learning via Action Diffusion (arXiv 2303.04137)",
+          "url": "https://arxiv.org/abs/2303.04137"
+        },
+        {
+          "title": "Diffusion model - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Diffusion_model"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "快慢双系统",
+      "name_en": "Dual-System Architecture (System 1 / System 2)",
+      "abbr": "",
+      "aliases": [
+        "双系统架构",
+        "快慢系统",
+        "快系统",
+        "慢系统",
+        "系统1 / 系统2",
+        "S1 / S2",
+        "三系统架构（System 0/1/2）"
+      ],
+      "tier": 1,
+      "one_liner": "慢而会思考的大模型负责理解和规划，快而轻的小模型负责实时动作控制。",
+      "explanation": "快慢双系统借用心理学家卡尼曼《思考，快与慢》的说法：System 2 慢速、深思熟虑，System 1 快速、凭直觉反应。放到机器人上，System 2 通常是十几亿到几十亿参数的视觉语言模型，每秒运行几次到十几次，负责看画面、理解指令，输出语义目标或隐向量；System 1 是小得多的策略网络，以上百赫兹输出关节动作。这样既用上大模型的常识，又满足实时控制的延迟要求。代表作是 Figure 的 Helix（2025 年 2 月）和英伟达 GR00T N1（2025 年 3 月）。Figure 2026 年 1 月的 Helix 02 又加了 1kHz 的 System 0 负责平衡和接触，成为三系统架构。",
+      "example": "Figure Helix 的 S2 是 70 亿参数的开源 VLM，运行在 7–9Hz；S1 是 8000 万参数的 Transformer，以 200Hz 控制包括手腕、手指、躯干和头部在内的 35 个自由度。GR00T N1 的视觉语言部分在 L40 GPU 上跑 10Hz，动作部分输出 120Hz 的动作。",
+      "related": [
+        "具身推理模型",
+        "分层架构",
+        "视觉-语言-动作模型",
+        "Helix",
+        "GR00T N1 系列",
+        "System 0（三层系统架构）"
+      ],
+      "sources": [
+        {
+          "title": "Helix: A Vision-Language-Action Model for Generalist Humanoid Control (Figure)",
+          "url": "https://www.figure.ai/news/helix"
+        },
+        {
+          "title": "Helix 02 (Figure)",
+          "url": "https://www.figure.ai/news/helix-02"
+        },
+        {
+          "title": "GR00T N1: An Open Foundation Model for Generalist Humanoid Robots (arXiv 2503.14734)",
+          "url": "https://arxiv.org/abs/2503.14734"
+        }
+      ],
+      "as_of": "2026-01"
+    },
+    {
+      "name_zh": "具身大模型",
+      "name_en": "Embodied Foundation Model",
+      "abbr": "",
+      "aliases": [
+        "机器人基础模型",
+        "具身基础模型",
+        "机器人大模型",
+        "Robot Foundation Model",
+        "RFM"
+      ],
+      "tier": 1,
+      "one_liner": "在大量跨机器人、跨任务数据上预训练，能适配多种机器人和任务的大模型。",
+      "explanation": "具身大模型是基础模型概念在机器人上的延伸。基础模型指在大规模、多样数据上预训练、能适配许多下游任务的模型，比如 GPT。具身大模型同样先在跨机器人、跨任务的数据上预训练，再用少量数据后训练到具体任务或具体本体，而不是每个任务从零训一个专用策略。这个词没有统一的边界：狭义多指直接输出动作的通用策略，如 π0、GR00T N1、Gemini Robotics 等 VLA；广义上也包括负责理解和规划的具身推理模型，以及用来生成数据、评估策略的世界模型。Firoozi 等人 2023 年的综述认为，这类模型面临的主要障碍是机器人数据稀缺、缺少安全保证和实时性要求。",
+      "example": "π0 用超过 1 万小时的机器人数据预训练，其中自采数据覆盖 7 种机器人构型、68 个任务；之后再用精选数据后训练，完成叠衣服、组装纸箱等长流程任务。",
+      "related": [
+        "基础模型",
+        "视觉-语言-动作模型",
+        "通用策略",
+        "具身推理模型",
+        "世界模型",
+        "预训练"
+      ],
+      "sources": [
+        {
+          "title": "Foundation Models in Robotics: Applications, Challenges, and the Future (arXiv 2312.07843)",
+          "url": "https://arxiv.org/abs/2312.07843"
+        },
+        {
+          "title": "π0: A Vision-Language-Action Flow Model for General Robot Control (arXiv 2410.24164)",
+          "url": "https://arxiv.org/abs/2410.24164"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "具身推理模型",
+      "name_en": "Embodied Reasoning Model",
+      "abbr": "ER",
+      "aliases": [
+        "具身大脑模型",
+        "具身大脑",
+        "ER 模型",
+        "Embodied Brain Model",
+        "大脑"
+      ],
+      "tier": 1,
+      "one_liner": "专门做物理世界理解和任务规划的多模态大模型，常被称为机器人的「大脑」。",
+      "explanation": "具身推理模型是强化了空间理解和任务规划的多模态大模型，一般不直接输出关节动作，而是回答「东西在哪、从哪抓、先做哪步、做完没有」，输出指点坐标、轨迹或分步计划，交给执行层完成。代表是 Google DeepMind 2025 年 3 月推出的 Gemini Robotics-ER（ER 即 Embodied Reasoning），官网目前列出的最新版是 ER 2；国内有智源研究院的 RoboBrain 系列。国内常把这种分工叫「大小脑架构」：大脑是负责理解和规划的推理模型，小脑是负责运动控制和技能执行的底层模块。与快慢双系统相比，大脑、小脑更常是分开训练、通过接口相连的独立模型。",
+      "example": "在 Gemini Robotics 1.5 的组合中，ER 1.5 充当「大脑」：它可以调用 Google 搜索查当地的垃圾分类规定、拆出分步计划，再把每一步的自然语言指令交给 VLA 模型 Gemini Robotics 1.5 去执行抓放动作。",
+      "related": [
+        "具身推理",
+        "快慢双系统",
+        "分层架构",
+        "Gemini Robotics-ER",
+        "智源 RoboBrain（具身大脑）",
+        "视觉-语言-动作模型"
+      ],
+      "sources": [
+        {
+          "title": "Gemini Robotics 1.5 brings AI agents into the physical world (Google DeepMind)",
+          "url": "https://deepmind.google/discover/blog/gemini-robotics-15-brings-ai-agents-into-the-physical-world/"
+        },
+        {
+          "title": "Gemini Robotics 模型页 (Google DeepMind)",
+          "url": "https://deepmind.google/models/gemini-robotics/"
+        },
+        {
+          "title": "RoboOS: A Hierarchical Embodied Framework for Cross-Embodiment and Multi-Agent Collaboration (arXiv 2505.03673)",
+          "url": "https://arxiv.org/abs/2505.03673"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "端到端",
+      "name_en": "End-to-End",
+      "abbr": "E2E",
+      "aliases": [
+        "端到端模型",
+        "End-to-End Model",
+        "端到端学习",
+        "End-to-End Learning"
+      ],
+      "tier": 1,
+      "one_liner": "用一个模型从原始传感器输入直接输出控制指令，中间不拆成人工设计的模块。",
+      "explanation": "传统机器人系统是模块化流水线：感知模块识别物体和位姿，规划模块算路径，控制模块跟踪轨迹，各模块单独设计、单独调参，彼此通过人定义的接口（如物体坐标）传递信息。端到端则把整条链路交给一个神经网络，从相机图像、本体状态等原始输入直接输出关节位置或力矩指令，用同一个目标整体训练。机器人领域的代表性早期工作是 Levine、Finn 等人的深度视觉运动策略（2015 年预印本、2016 年发表），用约 9.2 万参数的卷积网络把图像直接映射成电机力矩。好处是少了人工设计，误差不会在模块间层层传递，性能能随数据增长；代价是需要大量数据，出了错难以定位原因。如今的 VLA 大多被称为端到端模型。",
+      "example": "Levine 等人让 PR2 机器人的策略网络直接读取原始相机图像（外加关节角等机器人自身状态）、输出各关节电机力矩，学会了拧瓶盖、把衣架挂到衣杆上等任务，测试时没有单独的物体检测或位姿估计模块。",
+      "related": [
+        "视觉运动策略",
+        "视觉-语言-动作模型",
+        "分层架构",
+        "感知-规划-行动范式",
+        "模仿学习",
+        "端到端视觉运动策略（引导策略搜索）"
+      ],
+      "sources": [
+        {
+          "title": "End-to-End Training of Deep Visuomotor Policies (arXiv 1504.00702)",
+          "url": "https://arxiv.org/abs/1504.00702"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "流匹配",
+      "name_en": "Flow Matching",
+      "abbr": "FM",
+      "aliases": [
+        "条件流匹配",
+        "Conditional Flow Matching",
+        "CFM"
+      ],
+      "tier": 1,
+      "one_liner": "学习一个把噪声平滑搬运成真实数据的速度场，再沿它积分生成样本的方法。",
+      "explanation": "流匹配由 Meta 的 Lipman 等人在 2022 年提出（发表于 ICLR 2023），用来训练「连续归一化流」这类把噪声连续变形成数据的生成模型。做法是：在噪声样本和真实样本之间人为规定一条路径（最常用直线插值），训练网络预测路径上每一点的速度（速度场），损失就是预测速度与目标速度的均方误差，训练时不需要模拟整条轨迹。生成时从噪声出发，沿网络给出的速度做数值积分，机器人动作生成里一般几步到十步就够（π0 用 10 步，GR00T N1 用 4 步）。它和扩散模型同属「从噪声逐步变成数据」一类，扩散可看作它的一种特定路径；直线路径往往训练更快、采样所需步数更少，与同期的整流流思路相近。机器人领域 π0 用它在动作专家里生成动作块，GR00T N1 等也采用了它。",
+      "example": "π0 推理时从高斯噪声出发，做 10 步积分（每步 0.1）把噪声变成 50 步长的动作块；训练时的损失就是网络预测的速度场与目标速度之差的平方。",
+      "related": [
+        "扩散模型",
+        "速度场",
+        "整流流",
+        "流匹配损失",
+        "π0",
+        "动作专家"
+      ],
+      "sources": [
+        {
+          "title": "Flow Matching for Generative Modeling (arXiv 2210.02747)",
+          "url": "https://arxiv.org/abs/2210.02747"
+        },
+        {
+          "title": "π0: A Vision-Language-Action Flow Model for General Robot Control (arXiv 2410.24164)",
+          "url": "https://arxiv.org/abs/2410.24164"
+        },
+        {
+          "title": "GR00T N1: An Open Foundation Model for Generalist Humanoid Robots (arXiv 2503.14734)",
+          "url": "https://arxiv.org/abs/2503.14734"
+        }
+      ],
+      "as_of": ""
+    }
+  ]
+}

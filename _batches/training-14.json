@@ -1,0 +1,419 @@
+{
+ "category": "training",
+ "batch": 14,
+ "terms": [
+  {
+   "name_zh": "元学习",
+   "name_en": "Meta-Learning",
+   "abbr": "",
+   "aliases": [
+    "学会学习",
+    "Learning to Learn"
+   ],
+   "tier": 3,
+   "one_liner": "让模型在大量任务上练出「快速学会新任务」的能力，而不只学会某一个任务。",
+   "explanation": "元学习又叫「学会学习」：训练时不盯着单个任务，而是让模型在许多相关的小任务上反复经历「看少量样本、适应、检验」，学到的是能迅速适应新任务的初始化、更新规则或记忆方式。常见路线分三类：基于度量（如原型网络）、基于模型（用外部记忆或快速权重）、基于优化。最有名的是 Finn、Abbeel、Levine 2017 年提出的 MAML，它直接训练一组初始参数，使模型在新任务上只用几步梯度下降、少量数据就能表现好。机器人数据昂贵，元学习曾是少样本学技能的主要思路，单样本模仿学习、元强化学习都建立在它之上；也有研究把大模型的上下文学习看作隐式元学习。",
+   "example": "Finn 等人 2017 年用 MAML 做「元模仿学习」：机器人先在许多任务的演示上元训练，测试时只看新任务的一段视觉演示，就能端到端学会这个任务。",
+   "related": [
+    "少样本",
+    "单样本模仿学习",
+    "元强化学习",
+    "上下文学习",
+    "迁移学习",
+    "多任务学习"
+   ],
+   "sources": [
+    {
+     "title": "Finn et al. 2017: Model-Agnostic Meta-Learning for Fast Adaptation of Deep Networks (MAML)",
+     "url": "https://arxiv.org/abs/1703.03400"
+    },
+    {
+     "title": "Lilian Weng: Meta-Learning: Learning to Learn Fast (2018)",
+     "url": "https://lilianweng.github.io/posts/2018-11-30-meta-learning/"
+    },
+    {
+     "title": "Finn et al. 2017: One-Shot Visual Imitation Learning via Meta-Learning",
+     "url": "https://arxiv.org/abs/1709.04905"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "中训练",
+   "name_en": "Mid-training",
+   "abbr": "",
+   "aliases": [
+    "中期训练",
+    "中间训练阶段"
+   ],
+   "tier": 3,
+   "one_liner": "夹在预训练和后训练之间的一轮训练，用更有针对性的数据补特定能力。",
+   "explanation": "中训练先在大语言模型里流行：大规模预训练之后、指令微调和强化学习之前，再用质量更高或更贴近目标能力的数据（数学、代码、长文本等）继续训练一段，常配合学习率退火和上下文扩展，目标是补强特定能力又不丢通用基础，2025 年已有专门综述梳理这一阶段。具身领域借用了这个词：现成的视觉语言模型没见过机器人数据，直接微调成 VLA 效果受限，于是在两者之间先用具身相关数据（空间推理、机器人轨迹、与机器人对齐的人类动作等）过渡一轮。Ai2 的 MolmoAct 发布了专门用于中训练的机器人数据集，原力灵机 DM0 也采用预训练、中训练、后训练三段式流程。",
+   "example": "EgoScale 先用两万多小时带动作标注的第一人称人类视频预训练 VLA，再用少量人类与机器人动作对齐的数据做一轮轻量中训练，之后只需极少机器人监督就能适配新的灵巧操作任务。",
+   "related": [
+    "预训练",
+    "后训练",
+    "监督微调",
+    "视觉-语言-动作模型",
+    "数据配比",
+    "MolmoAct"
+   ],
+   "sources": [
+    {
+     "title": "Mid-Training of Large Language Models: A Survey (arXiv 2510.06826)",
+     "url": "https://arxiv.org/abs/2510.06826"
+    },
+    {
+     "title": "MolmoAct: Action Reasoning Models that can Reason in Space (arXiv 2508.07917)",
+     "url": "https://arxiv.org/abs/2508.07917"
+    },
+    {
+     "title": "EgoScale: Scaling Dexterous Manipulation with Diverse Egocentric Human Data (arXiv 2602.16710)",
+     "url": "https://arxiv.org/abs/2602.16710"
+    }
+   ],
+   "as_of": "2026-02"
+  },
+  {
+   "name_zh": "混合精度训练",
+   "name_en": "Mixed-Precision Training",
+   "abbr": "",
+   "aliases": [
+    "bf16 训练",
+    "半精度训练",
+    "自动混合精度（AMP）"
+   ],
+   "tier": 3,
+   "one_liner": "大部分计算用 16 位浮点数、关键部分保留 32 位，省显存又提速的训练方式。",
+   "explanation": "深度学习默认用 32 位浮点数（FP32）存参数、做计算。混合精度训练把矩阵乘、卷积这类运算换成 16 位格式（FP16 或 BF16），而归约、归一化等对数值范围敏感的运算以及参数主副本仍保留 FP32。2017 年 NVIDIA 与百度的研究者系统提出这套做法，并用「损失缩放」防止 FP16 下很小的梯度下溢成零，显存占用接近减半；GPU 的张量核心对 16 位运算吞吐更高，训练也更快。BF16 的数值范围与 FP32 相同，通常不需要损失缩放，如今训练大模型和 VLA 多用 BF16。PyTorch 的 autocast 能自动完成大部分精度切换。",
+   "example": "openpi 用 JAX 训练 π0 系列模型时默认采用混合精度：权重和梯度保存为 FP32，大部分激活和计算用 BF16；需要全 FP32 训练时把配置里的 dtype 改成 float32 即可。",
+   "related": [
+    "数值精度格式（FP32 / BF16 / FP16 / FP8 / INT8）",
+    "GPU 显存",
+    "分布式训练（数据并行 / 模型并行）",
+    "梯度检查点（激活重计算）",
+    "量化感知训练",
+    "openpi"
+   ],
+   "sources": [
+    {
+     "title": "Micikevicius et al. 2017: Mixed Precision Training",
+     "url": "https://arxiv.org/abs/1710.03740"
+    },
+    {
+     "title": "NVIDIA Docs: Train With Mixed Precision",
+     "url": "https://docs.nvidia.com/deeplearning/performance/mixed-precision-training/index.html"
+    },
+    {
+     "title": "GitHub: Physical-Intelligence/openpi (Precision Settings)",
+     "url": "https://github.com/Physical-Intelligence/openpi"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "模型合并",
+   "name_en": "Model Merging (Weight Interpolation)",
+   "abbr": "",
+   "aliases": [
+    "权重插值",
+    "权重平均",
+    "模型汤（Model Soups）",
+    "任务算术（Task Arithmetic）"
+   ],
+   "tier": 3,
+   "one_liner": "不再训练，直接把几个同源模型的参数按比例加权，合成一个新模型。",
+   "explanation": "模型合并是把结构相同、通常从同一个预训练模型微调出来的多个模型在参数层面直接组合，不需额外训练，推理成本也不增加。最简单的是线性插值：新参数 =（1−α）× 预训练参数 + α × 微调参数。代表工作有插值零样本模型与微调模型以保鲁棒性的 WiSE-FT、平均多组超参数微调结果的 Model Soups，以及把「微调后减预训练」的参数差当任务向量加减的任务算术。具身领域用它缓解微调造成的灾难性遗忘：Levine 团队 2025 年的 RETAIN 把微调后的 π0-FAST-DROID 与原模型插值，新技能和原有泛化能力兼得。但也有研究发现，把在不同任务上各自微调的 VLA 直接合并，成功率可能接近零。",
+   "example": "RETAIN 用几十条演示把 π0-FAST-DROID 微调到「用板擦擦白板」任务，再与原模型按 α 在 0.25–0.75 之间插值；合并后的模型在新物体、新视角等分布外变体上明显好于只做微调的版本。",
+   "related": [
+    "灾难性遗忘",
+    "微调",
+    "持续学习",
+    "低秩适配",
+    "指数移动平均",
+    "检查点"
+   ],
+   "sources": [
+    {
+     "title": "Yadav et al. 2025: Robust Finetuning of Vision-Language-Action Robot Policies via Parameter Merging (RETAIN)",
+     "url": "https://arxiv.org/abs/2512.08333"
+    },
+    {
+     "title": "Wortsman et al. 2022: Model soups",
+     "url": "https://arxiv.org/abs/2203.05482"
+    },
+    {
+     "title": "Ilharco et al. 2022: Editing Models with Task Arithmetic",
+     "url": "https://arxiv.org/abs/2212.04089"
+    }
+   ],
+   "as_of": "2025-12"
+  },
+  {
+   "name_zh": "蒙特卡洛方法（蒙特卡洛回报）",
+   "name_en": "Monte Carlo Methods (Monte Carlo Return)",
+   "abbr": "MC",
+   "aliases": [
+    "MC 方法",
+    "蒙特卡洛回报",
+    "MC Return"
+   ],
+   "tier": 3,
+   "one_liner": "靠大量随机采样求平均来估算；在强化学习里指用整局实际回报来估价值。",
+   "explanation": "蒙特卡洛方法泛指用随机采样加统计平均来近似计算的一大类方法。在强化学习里它特指：让智能体完整跑完一个回合，把从某一步起实际拿到的（折扣）奖励加起来，得到「蒙特卡洛回报」，再对多个回合取平均来估计状态或动作的价值。它不依赖对后续状态价值的估计（不做自举），因此没有自举带来的偏差，但回合越长方差越大，而且必须等回合结束才能更新，只适用于有终点的任务。与之相对的是每一步都能更新的时序差分学习，TD(λ) 可以在两者之间连续调节。蒙特卡洛树搜索也借用了随机模拟的思路。",
+   "example": "π*0.6 的 RECAP 训练价值函数时直接用蒙特卡洛回报：每走一步奖励 −1，成功结束得 0，失败另扣一大笔，于是价值大致等于「离完成还差多少步」的负数。",
+   "related": [
+    "回报",
+    "时序差分学习",
+    "价值函数",
+    "折扣因子",
+    "蒙特卡洛树搜索",
+    "RECAP"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Reinforcement learning (Monte Carlo methods)",
+     "url": "https://en.wikipedia.org/wiki/Reinforcement_learning"
+    },
+    {
+     "title": "Physical Intelligence 2025: π*0.6: a VLA That Learns From Experience (RECAP)",
+     "url": "https://arxiv.org/abs/2511.14759"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "多智能体强化学习",
+   "name_en": "Multi-Agent Reinforcement Learning",
+   "abbr": "MARL",
+   "aliases": [
+    "多智能体 RL"
+   ],
+   "tier": 3,
+   "one_liner": "多个智能体在同一环境里同时学习，彼此合作或竞争的强化学习。",
+   "explanation": "多智能体强化学习研究多个会学习的决策者共享一个环境的情形，按奖励关系分为完全合作（共享同一奖励）、完全竞争（零和博弈，如下棋）和混合型（如自动驾驶车辆各自赶路又都要避免相撞）。与单智能体相比，最大难点是非平稳性：其他智能体也在不断改变策略，对每个智能体来说环境一直在变，单智能体算法的收敛保证随之失效；此外还有信用分配和部分可观测等问题。常用思路是「集中训练、分散执行」，训练时让评论家看到全局信息，执行时各自只看局部观测，如 2017 年的 MADDPG 和 2021 年的 MAPPO。多机器人协作、机器人足球和对抗式自博弈训练都会用到它。",
+   "example": "MAPPO 让每个作战单位各由一个基于 PPO 的智能体控制，在星际争霸多智能体挑战（SMAC）、谷歌足球等基准上取得了与异策略方法相当甚至更好的成绩。",
+   "related": [
+    "强化学习",
+    "多机器人协作",
+    "自博弈",
+    "群体智能",
+    "部分可观测马尔可夫决策过程",
+    "近端策略优化"
+   ],
+   "sources": [
+    {
+     "title": "Albrecht, Christianos, Schäfer: Multi-Agent Reinforcement Learning: Foundations and Modern Approaches (MIT Press, 2024)",
+     "url": "https://www.marl-book.com/"
+    },
+    {
+     "title": "Wikipedia: Multi-agent reinforcement learning",
+     "url": "https://en.wikipedia.org/wiki/Multi-agent_reinforcement_learning"
+    },
+    {
+     "title": "Yu et al. 2021: The Surprising Effectiveness of PPO in Cooperative Multi-Agent Games (MAPPO)",
+     "url": "https://arxiv.org/abs/2103.01955"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "噪声空间策略引导",
+   "name_en": "Noise-Space Policy Steering",
+   "abbr": "",
+   "aliases": [
+    "扩散噪声空间强化学习",
+    "潜在噪声空间 RL",
+    "扩散引导（Diffusion Steering）"
+   ],
+   "tier": 3,
+   "one_liner": "不改扩散策略的权重，只用强化学习挑选它的输入噪声，从而改变输出动作。",
+   "explanation": "扩散策略和流匹配策略生成动作时，先采一个随机噪声，再逐步去噪变成动作；同一个模型换一个输入噪声，就会给出不同的动作。噪声空间策略引导把这个噪声当作可控的「动作」：冻结原策略，另训一个小的强化学习策略，根据当前观测输出该用哪个噪声，让原策略产出更好的动作。代表方法是 UC Berkeley 等团队 2025 年提出的 DSRL。它只需黑盒调用原策略，不必对多步去噪过程反向传播，也不改大模型权重，因此样本效率高，适合在真机上在线改进，可用于 π0 这类通用 VLA 的现场适配。相应地，改进幅度受原策略能生成的动作范围所限。",
+   "example": "DSRL 引导在 DROID 数据上训练的公开 π0 检查点，让 Franka 机械臂打开烤面包机，约 80 个在线回合后成功率从 5/20 提升到 18/20。",
+   "related": [
+    "DSRL",
+    "扩散策略",
+    "流匹配",
+    "强化学习微调",
+    "残差强化学习",
+    "π0"
+   ],
+   "sources": [
+    {
+     "title": "Wagenmaker et al. 2025: Steering Your Diffusion Policy with Latent Space Reinforcement Learning (DSRL)",
+     "url": "https://arxiv.org/abs/2506.15799"
+    }
+   ],
+   "as_of": "2025-06"
+  },
+  {
+   "name_zh": "离线到在线强化学习",
+   "name_en": "Offline-to-Online Reinforcement Learning",
+   "abbr": "O2O RL",
+   "aliases": [
+    "离线-在线强化学习",
+    "Offline-to-Online Fine-tuning"
+   ],
+   "tier": 3,
+   "one_liner": "先用现成数据做离线强化学习打底，再让机器人上线交互继续提升。",
+   "explanation": "离线到在线强化学习分两步：先用已有数据（人类演示、历史日志、旧策略的轨迹）做离线强化学习，得到一个不必从零探索的初始策略和价值函数；再让智能体与真实环境交互收集新数据，在线微调。好处是省掉大量危险又昂贵的随机探索，这对真机尤其重要。难点在两段的衔接：离线阶段为防止高估而刻意保守，价值尺度往往不准，切到在线后性能常先掉一截。代表方法有 AWAC（2020）、校准 Q 学习 Cal-QL（2023），以及把离线数据直接混进在线回放池、从头训练的 RLPD（2023）。SERL、HIL-SERL 等真机强化学习系统和 π*0.6 的 RECAP 都沿用了这一思路。",
+   "example": "SERL 以 RLPD 为核心算法，先放入 20 条用 SpaceMouse 遥操作采集的演示，再在真机上在线训练，平均 25–50 分钟就学会 PCB 板装配、线缆布线等任务。",
+   "related": [
+    "离线强化学习",
+    "在线强化学习",
+    "利用先验数据的强化学习",
+    "校准 Q 学习",
+    "真机强化学习",
+    "SERL"
+   ],
+   "sources": [
+    {
+     "title": "Nakamoto et al. 2023: Cal-QL: Calibrated Offline RL Pre-Training for Efficient Online Fine-Tuning",
+     "url": "https://arxiv.org/abs/2303.05479"
+    },
+    {
+     "title": "Ball et al. 2023: Efficient Online Reinforcement Learning with Offline Data (RLPD)",
+     "url": "https://arxiv.org/abs/2302.02948"
+    },
+    {
+     "title": "Luo et al. 2024: SERL: A Software Suite for Sample-Efficient Robotic Reinforcement Learning",
+     "url": "https://arxiv.org/abs/2401.16013"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "在线策略蒸馏",
+   "name_en": "On-Policy Distillation",
+   "abbr": "OPD",
+   "aliases": [
+    "同策略蒸馏",
+    "广义知识蒸馏（GKD）"
+   ],
+   "tier": 3,
+   "one_liner": "学生模型自己生成轨迹，老师在这些轨迹的每一步上打分纠正的蒸馏方法。",
+   "explanation": "普通知识蒸馏让学生模仿老师事先生成好的数据，可学生部署时会走到老师数据里没有的状态，错误逐步累积，这和行为克隆的复合误差是同一个问题。在线策略蒸馏改为让学生自己采样生成，再由老师在学生实际走到的每一步（每个 token 或每个动作）上给出目标分布，常用反向 KL 散度衡量差距，思路与 DAgger 一脉相承。Google DeepMind 的 Agarwal 等人 2023 年以 GKD 系统提出这一做法；Thinking Machines 2025 年 10 月的博客让它在大模型后训练中广为人知，它的反馈比强化学习的稀疏奖励稠密得多。2026 年的 VLA-OPD 把它用到 VLA 后训练，用专家老师的逐步监督替代稀疏的环境奖励。",
+   "example": "据 Thinking Machines 博客引用的 Qwen3 技术报告，在线策略蒸馏在 AIME'24 上拿到 74.4 分、约用 1800 GPU 时；直接做强化学习只有 67.6 分，却用了约 17920 GPU 时。",
+   "related": [
+    "知识蒸馏",
+    "策略蒸馏",
+    "DAgger（数据集聚合）",
+    "教师-学生蒸馏",
+    "强化学习微调",
+    "VLA-OPD"
+   ],
+   "sources": [
+    {
+     "title": "Thinking Machines Lab (Kevin Lu), 2025-10-27: On-Policy Distillation",
+     "url": "https://thinkingmachines.ai/blog/on-policy-distillation/"
+    },
+    {
+     "title": "Agarwal et al. 2023: On-Policy Distillation of Language Models: Learning from Self-Generated Mistakes (GKD)",
+     "url": "https://arxiv.org/abs/2306.13649"
+    },
+    {
+     "title": "VLA-OPD: Bridging Offline SFT and Online RL for VLA Models via On-Policy Distillation (arXiv 2603.26666)",
+     "url": "https://arxiv.org/abs/2603.26666"
+    }
+   ],
+   "as_of": "2026-03"
+  },
+  {
+   "name_zh": "单样本模仿学习",
+   "name_en": "One-shot Imitation Learning",
+   "abbr": "",
+   "aliases": [
+    "一次演示模仿学习",
+    "One-shot Imitation"
+   ],
+   "tier": 3,
+   "one_liner": "只给机器人看一次新任务的演示，它就能在新情况下照着完成。",
+   "explanation": "单样本模仿学习要求机器人面对新任务时，只凭一条演示（一段遥操作轨迹或一段视频），就能在物体摆放、初始状态都不同的新局面里完成同样的任务。做法不是拿这一条数据从头训练，而是先在大量任务上训练一个「以演示为条件」的策略：输入演示和当前观测，输出动作。OpenAI 的 Duan 等人 2017 年在积木堆叠任务上提出并命名了这一设定；同年 Finn 等人用 MAML 做元模仿学习，把它扩展到原始图像输入并在真机上验证。后续工作尝试直接用人类视频当演示，这还要跨越人与机器人的本体差异。它本质上是元学习在模仿学习上的应用，与大模型的上下文学习思路相近。",
+   "example": "Duan 等人的实验里，每个任务是把桌上的积木按某种方式堆叠（如全部叠成一座塔，或两两叠成若干座）；测试时给出一种新堆法的一条演示，网络要在积木初始位置不同的新局面中照样堆出来。",
+   "related": [
+    "元学习",
+    "模仿学习",
+    "少样本",
+    "上下文学习",
+    "演示数据",
+    "OKAMI"
+   ],
+   "sources": [
+    {
+     "title": "Duan et al. 2017: One-Shot Imitation Learning",
+     "url": "https://arxiv.org/abs/1703.07326"
+    },
+    {
+     "title": "Finn et al. 2017: One-Shot Visual Imitation Learning via Meta-Learning",
+     "url": "https://arxiv.org/abs/1709.04905"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "骨化（模型骨化）",
+   "name_en": "Ossification",
+   "abbr": "",
+   "aliases": [
+    "模型骨化",
+    "权重僵化"
+   ],
+   "tier": 3,
+   "one_liner": "模型权重像「僵住」一样，继续喂数据也吸收不了新信息的现象。",
+   "explanation": "「骨化」一词出自 OpenAI 的 Hernandez、Kaplan 等人 2021 年的论文 Scaling Laws for Transfer：他们发现在微调数据很多时，先做过预训练的小模型反而追不上从零训练的同尺寸模型，好像预训练把权重「骨化」了，成了难以摆脱的坏初始化。具身领域因 Generalist AI 2025 年 11 月发布的 GEN-0 开始用这个词：在大规模真机数据上预训练时，10 亿参数的模型难以吸收复杂多样的感知-运动数据，权重随时间变得学不进新信息，而 60 亿、70 亿参数的模型持续变好；官方称这是首次在机器人领域观察到模型骨化，此前语言模型里只在千万参数级的小模型上见过。它提醒人们：数据规模上来后，模型容量也要跟上。",
+   "example": "GEN-0 的对比实验里，10 亿参数模型面对海量多样的感知-运动数据出现类似骨化的停滞，60 亿和 70 亿参数模型则随预训练数据增加继续提升。",
+   "related": [
+    "缩放定律",
+    "GEN-0",
+    "参数量",
+    "预训练",
+    "迁移学习",
+    "灾难性遗忘"
+   ],
+   "sources": [
+    {
+     "title": "Generalist AI 2025-11-04: GEN-0: Embodied Foundation Models That Scale with Physical Interaction",
+     "url": "https://generalistai.com/blog/gen-0"
+    },
+    {
+     "title": "Hernandez et al. 2021: Scaling Laws for Transfer",
+     "url": "https://arxiv.org/abs/2102.01293"
+    }
+   ],
+   "as_of": "2025-11"
+  },
+  {
+   "name_zh": "Q 值高估",
+   "name_en": "Overestimation Bias",
+   "abbr": "",
+   "aliases": [
+    "过估计偏差",
+    "Q 值过估计",
+    "最大化偏差（Maximization Bias）"
+   ],
+   "tier": 3,
+   "one_liner": "Q 学习取最大值时把估计噪声一起放大，导致动作价值被系统性高估。",
+   "explanation": "Q 学习的更新目标里有一步：取下一状态所有动作 Q 值中的最大值。Q 值本身是带噪声的估计，对一组有误差的数取最大，结果在期望上会偏高；这个偏差又通过自举一轮轮往回传，让智能体偏爱被高估的动作，策略变差。Thrun 和 Schwartz 1993 年就指出了这一问题。van Hasselt 提出 Double Q-learning，用一组估计选动作、另一组估计评价值，2015 年又与 DeepMind 同事把它做成 Double DQN，证实原版 DQN 在一些 Atari 游戏上高估明显。连续控制中的 TD3 取两个评论家网络的较小值来压制高估，SAC 也沿用这一做法。离线强化学习里，对数据中没出现过的动作的高估更严重，保守 Q 学习等方法专门处理这一点。",
+   "example": "TD3 同时训练两个评论家网络，计算目标值时取两者中较小的那个（裁剪双 Q 学习），宁可略微低估也不高估，从而让训练更稳定。",
+   "related": [
+    "Q 学习",
+    "深度 Q 网络",
+    "双延迟深度确定性策略梯度",
+    "目标网络",
+    "外推误差",
+    "保守 Q 学习"
+   ],
+   "sources": [
+    {
+     "title": "van Hasselt, Guez, Silver 2015: Deep Reinforcement Learning with Double Q-learning",
+     "url": "https://arxiv.org/abs/1509.06461"
+    },
+    {
+     "title": "Fujimoto et al. 2018: Addressing Function Approximation Error in Actor-Critic Methods (TD3)",
+     "url": "https://arxiv.org/abs/1802.09477"
+    }
+   ],
+   "as_of": ""
+  }
+ ]
+}

@@ -1,0 +1,407 @@
+{
+  "category": "sim",
+  "batch": 11,
+  "terms": [
+    {
+      "name_zh": "EWMBench 具身世界模型评测",
+      "name_en": "EWMBench: Evaluating Scene, Motion, and Semantic Quality in Embodied World Models",
+      "abbr": "",
+      "aliases": [
+        "EWMBench",
+        "具身世界模型基准"
+      ],
+      "tier": 3,
+      "one_liner": "智元等提出的基准，专门评测机器人操作视频生成模型生成得对不对。",
+      "explanation": "EWMBench 是智元机器人联合上海交大、港中文 MMLab、哈工大在 2025 年 5 月发布的评测基准，评测对象是具身世界模型，即给定初始画面和任务指令、生成机器人操作视频的模型。作者认为 FVD（弗雷歇视频距离）、VBench 这类指标主要看画面质量，看不出机械臂动作是否合理，于是从三个维度打分：场景一致性（用在具身数据上微调过的 DINOv2 比较帧间特征）、运动正确性（末端轨迹与真值的豪斯多夫距离、归一化动态时间规整，以及速度和加速度分布）、语义对齐（用多模态大模型给生成视频写描述、查逻辑错误，再与真值对比）。测试数据取自 AgiBot World 的 10 个任务，数据集和评测代码已在 GitHub 开源。",
+      "example": "论文用它比较了 OpenSora 2.0、LTX、COSMOS-7B、Kling-1.6、海螺、EnerVerse 等 7 个模型，结论是现有视频生成模型用在具身任务上仍有明显短板。",
+      "related": [
+        "世界模型",
+        "视频生成模型",
+        "弗雷歇视频距离",
+        "VBench 视频生成评测基准",
+        "WorldArena 具身世界模型基准",
+        "AgiBot World 数据集"
+      ],
+      "sources": [
+        {
+          "title": "EWMBench: Evaluating Scene, Motion, and Semantic Quality in Embodied World Models (arXiv 2505.09694)",
+          "url": "https://arxiv.org/abs/2505.09694"
+        }
+      ],
+      "as_of": "2025-05"
+    },
+    {
+      "name_zh": "Factory / IndustReal 接触丰富装配仿真",
+      "name_en": "Factory: Fast Contact for Robotic Assembly / IndustReal: Transferring Contact-Rich Assembly Tasks from Simulation to Reality",
+      "abbr": "",
+      "aliases": [
+        "Factory",
+        "IndustReal",
+        "IndustRealKit",
+        "IndustRealLib"
+      ],
+      "tier": 3,
+      "one_liner": "英伟达的装配仿真与迁移方案：先把拧螺母这类接触仿真做快，再把策略搬到真机。",
+      "explanation": "Factory 是英伟达在 RSS 2022 发表的接触丰富仿真方法和学习工具：用有符号距离场（SDF，记录每个点离物体表面多远）做碰撞检测，配合接触点精简和高斯-赛德尔求解器，在单张 GPU 上实时仿真 1000 组螺母拧螺栓，并提供 60 个零件模型、3 个装配环境和 7 种控制器，集成在 PhysX 和 Isaac Gym 中。IndustReal（RSS 2023）在此基础上用强化学习训练插销、齿轮装配策略，提出 SDF 奖励、采样式课程、策略级动作积分器等方法，真机 600 次试验成功率 83%–99%，并开源了可 3D 打印的零件套件和部署代码。两者说明高精度装配也能走「仿真训练、迁移真机」的路线。",
+      "example": "Isaac Lab 里的 Isaac-Factory-PegInsert-Direct-v0（插销入孔）、GearMesh（齿轮啮合）、NutThread（拧螺母）三个环境就来自 Factory，可直接用 PPO 训练。",
+      "related": [
+        "接触丰富操作",
+        "轴孔装配",
+        "仿真到现实迁移",
+        "Isaac Lab",
+        "PhysX",
+        "符号距离场"
+      ],
+      "sources": [
+        {
+          "title": "Factory: Fast Contact for Robotic Assembly (arXiv 2205.03532)",
+          "url": "https://arxiv.org/abs/2205.03532"
+        },
+        {
+          "title": "IndustReal: Transferring Contact-Rich Assembly Tasks from Simulation to Reality (arXiv 2305.17110)",
+          "url": "https://arxiv.org/abs/2305.17110"
+        },
+        {
+          "title": "Isaac Lab Available Environments",
+          "url": "https://isaac-sim.github.io/IsaacLab/main/source/overview/environments.html"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "有限元法",
+      "name_en": "Finite Element Method",
+      "abbr": "FEM",
+      "aliases": [
+        "有限元分析",
+        "FEA",
+        "Finite Element Analysis"
+      ],
+      "tier": 3,
+      "one_liner": "把物体切成许多小单元分别近似求解、再拼成整体的数值计算方法。",
+      "explanation": "有限元法是求解偏微分方程的通用数值方法：把连续的物体或区域划分成大量简单的小块（单元，常见三角形、四面体），在每个单元上用简单函数近似，再组装成整体方程求解。它起源于上世纪 40–50 年代的结构力学研究，Courant 等人奠定了基础，之后成为结构强度、传热、流体、电磁等工程分析的标准工具。在具身智能里，FEM 主要用于软体仿真：刚体仿真把物体当成不会变形的整体，而抓海绵、捏软包装、设计软体夹爪时，需要算出物体怎么变形、内部受力多大，就要靠 FEM。代价是计算量大，网格越细越准也越慢，需要在精度和速度之间取舍。",
+      "example": "PhysX 5（Isaac Sim 的物理底层）的软体仿真用 FEM 加两套四面体网格：一套较粗的网格负责算变形，一套贴合表面的网格负责碰撞，且只支持 GPU 运行；Genesis 也内置了 FEM 求解器。",
+      "related": [
+        "软体仿真",
+        "物质点法",
+        "基于位置的动力学",
+        "柔性物体操作",
+        "物理引擎",
+        "Genesis"
+      ],
+      "sources": [
+        {
+          "title": "Finite element method - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Finite_element_method"
+        },
+        {
+          "title": "PhysX 5 Documentation: Soft Bodies",
+          "url": "https://nvidia-omniverse.github.io/PhysX/physx/5.4.1/docs/SoftBodies.html"
+        },
+        {
+          "title": "Genesis Documentation: What is Genesis",
+          "url": "https://genesis-world.readthedocs.io/en/latest/user_guide/overview/what_is_genesis.html"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "流体仿真",
+      "name_en": "Fluid Simulation",
+      "abbr": "",
+      "aliases": [
+        "流体模拟",
+        "液体仿真"
+      ],
+      "tier": 3,
+      "one_liner": "用数值方法在计算机里模拟水、烟等流体怎么流动、怎么受力。",
+      "explanation": "流体仿真指用计算机近似求解描述流体运动的方程（通常是纳维-斯托克斯方程），算出液体、气体的速度和压力随时间怎么变。追求科学精度的一支叫计算流体力学（CFD），用于飞机、管道等工程设计；图形学和机器人仿真更看重速度和看起来合理。常见做法分三类：网格法（欧拉法，在固定格子上记录流速）、粒子法（拉格朗日法，如光滑粒子流体动力学 SPH，把流体看成一大群粒子），以及两者结合的 FLIP、物质点法等。具身智能里，倒水、端汤、清理洒出的液体等任务都需要它；由于粒子数量多、还要和机械臂、容器耦合，计算量远大于刚体仿真，往往要在精度和速度之间取舍。",
+      "example": "SoftGym 基准中的 PourWater（把水全部倒进目标杯子）和 TransportWater（端着一杯水移到目标位置且不洒）任务；Genesis 用 SPH 求解器模拟液体。",
+      "related": [
+        "光滑粒子流体动力学",
+        "物质点法",
+        "基于位置的动力学",
+        "软体仿真",
+        "SoftGym",
+        "Genesis"
+      ],
+      "sources": [
+        {
+          "title": "Fluid animation - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Fluid_simulation"
+        },
+        {
+          "title": "SoftGym project page",
+          "url": "https://sites.google.com/view/softgym"
+        },
+        {
+          "title": "Genesis Documentation: What is Genesis",
+          "url": "https://genesis-world.readthedocs.io/en/latest/user_guide/overview/what_is_genesis.html"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "Franka Kitchen",
+      "name_en": "Franka Kitchen",
+      "abbr": "",
+      "aliases": [
+        "FrankaKitchen",
+        "D4RL Kitchen",
+        "厨房环境"
+      ],
+      "tier": 3,
+      "one_liner": "MuJoCo 厨房场景，Franka 机械臂按顺序完成开微波炉、挪水壶等子任务。",
+      "explanation": "Franka Kitchen 来自 2019 年 CoRL 论文 Relay Policy Learning（Gupta、Levine、Hausman 等），用 MuJoCo 搭了一个厨房，放一台 9 自由度（7 个臂关节加 2 个手指）的 Franka 机械臂，可操作的物体有微波炉门、水壶、灯开关、滑动柜门、合页柜门和炉灶旋钮。一个回合要完成若干指定子任务，每完成一个得 1 分，属于稀疏奖励的长程多任务场景。它后来被收入 D4RL 离线强化学习基准，提供 complete、partial、mixed 三种演示数据，现由 Farama 基金会的 Gymnasium-Robotics 维护，常用于测试离线强化学习、模仿学习和分层策略能否把多个技能串起来。",
+      "example": "D4RL 的 kitchen-complete 数据里，每条演示都按顺序完成开微波炉、挪水壶、按灯开关、推开滑动柜门 4 个子任务；mixed 数据则从不完整按顺序做完这 4 个，考验算法能否拼接片段。",
+      "related": [
+        "D4RL",
+        "MuJoCo",
+        "长程任务",
+        "离线强化学习",
+        "稀疏奖励",
+        "Franka 机械臂（Panda / FR3）"
+      ],
+      "sources": [
+        {
+          "title": "Franka Kitchen - Gymnasium-Robotics Documentation",
+          "url": "https://robotics.farama.org/envs/franka_kitchen/franka_kitchen/"
+        },
+        {
+          "title": "Relay Policy Learning (arXiv 1910.11956)",
+          "url": "https://arxiv.org/abs/1910.11956"
+        },
+        {
+          "title": "Minari: D4RL Kitchen datasets",
+          "url": "https://minari.farama.org/datasets/D4RL/kitchen/"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "弗雷歇视频距离",
+      "name_en": "Fréchet Video Distance",
+      "abbr": "FVD",
+      "aliases": [
+        "Frechet Video Distance"
+      ],
+      "tier": 3,
+      "one_liner": "衡量一批生成视频与真实视频整体有多像的指标，数值越低越好。",
+      "explanation": "FVD 由约翰·开普勒大学、IDSIA 和谷歌大脑的研究者在 2018 年底提出，是图像指标 FID（弗雷歇初始距离）的视频版。做法是把真实视频和生成视频都送进在 Kinetics 动作识别数据集上预训练的 I3D 网络（一种 3D 卷积网络，能同时捕捉画面和时间变化）提取特征，各自拟合成多元高斯分布，再计算两个分布之间的弗雷歇距离。数值越低，说明生成视频在画质和时间连贯性上越接近真实视频；作者的人工评测显示它与人的主观判断相关性较好。它是视频生成和世界模型论文最常用的指标之一，但比较的是整体分布，不检查单条视频里物理是否合理、机器人动作是否正确，因此具身场景常配合 EWMBench 等专门基准使用。",
+      "example": "评测一个机器人视频世界模型时，把一批真实操作视频和模型从相同初始帧生成的视频分别过 I3D 提特征，算出的 FVD 越小，说明生成视频整体越像真的。",
+      "related": [
+        "弗雷歇初始距离",
+        "视频生成模型",
+        "世界模型",
+        "EWMBench 具身世界模型评测",
+        "VBench 视频生成评测基准",
+        "PSNR / SSIM / LPIPS 图像相似度指标"
+      ],
+      "sources": [
+        {
+          "title": "Towards Accurate Generative Models of Video: A New Metric & Challenges (arXiv 1812.01717)",
+          "url": "https://arxiv.org/abs/1812.01717"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "FurnitureBench",
+      "name_en": "FurnitureBench: Reproducible Real-World Benchmark for Long-Horizon Complex Manipulation",
+      "abbr": "",
+      "aliases": [
+        "FurnitureSim",
+        "家具组装基准"
+      ],
+      "tier": 3,
+      "one_liner": "KAIST 等提出的可复现真机家具组装基准，考长程、精细的机器人操作。",
+      "explanation": "FurnitureBench 由韩国 KAIST 的 CLVR 实验室和 UC 伯克利在 RSS 2023 发表，是一个可复现的真实世界家具组装基准。它使用 Franka Panda 机械臂和 Intel RealSense 相机，任务是组装 8 种家具：台灯、方桌、书桌、抽屉、柜子、圆桌、凳子和椅子，需要抓取、插入、拧紧等多步配合，属于长程、接触丰富的操作。为了让不同实验室搭出一致的环境，零件用 3D 打印、硬件选常见商品，并附搭建说明；作者还提供约 219.6 小时、5100 条遥操作演示，以及基于 Isaac Gym 和 Factory 的仿真版 FurnitureSim。对离线强化学习和模仿学习算法的评测显示，这类任务还有很大提升空间。",
+      "example": "把一条桌腿拧进桌面需要旋转约 540°，受手腕转角限制，机器人至少要做 5 次「转 90° 再松手重抓」的动作，这正是该基准难的地方之一。",
+      "related": [
+        "装配",
+        "长程任务",
+        "模仿学习",
+        "离线强化学习",
+        "Factory / IndustReal 接触丰富装配仿真",
+        "Isaac Gym"
+      ],
+      "sources": [
+        {
+          "title": "FurnitureBench project page",
+          "url": "https://clvrai.github.io/furniture-bench/"
+        },
+        {
+          "title": "FurnitureBench (arXiv 2305.12821)",
+          "url": "https://arxiv.org/abs/2305.12821"
+        }
+      ],
+      "as_of": "2023-07"
+    },
+    {
+      "name_zh": "游戏引擎",
+      "name_en": "Game Engine",
+      "abbr": "",
+      "aliases": [
+        "Unity",
+        "Unreal Engine",
+        "虚幻引擎"
+      ],
+      "tier": 3,
+      "one_liner": "开发电子游戏的软件框架，集渲染、物理、动画于一体，也常被拿来做仿真。",
+      "explanation": "游戏引擎是为开发电子游戏打造的软件框架，通常包含 3D 渲染、物理引擎、动画、音频、脚本和场景管理等模块，代表产品有 Unity 和 Unreal Engine（虚幻引擎），开源的有 Godot。由于它们在消费级显卡上就能实时渲染逼真画面、编辑场景方便，也被用于建筑可视化、训练模拟和科研。具身智能里不少仿真平台直接建在游戏引擎上，好处是画面真实、资产和工具丰富；短板是游戏物理追求看起来合理，而不是精确，常用笛卡尔坐标加数值约束来连关节，结构复杂时关节约束可能被破坏。所以精细操作和运动控制研究更常用 MuJoCo、Isaac Sim 这类面向机器人的仿真器。",
+      "example": "自动驾驶仿真器 CARLA 基于虚幻引擎（0.10.0 版起升级到 UE 5.5），家居具身环境 AI2-THOR 基于 Unity。",
+      "related": [
+        "仿真器",
+        "物理引擎",
+        "渲染",
+        "照片级真实感渲染",
+        "CARLA",
+        "AI2-THOR"
+      ],
+      "sources": [
+        {
+          "title": "Game engine - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Game_engine"
+        },
+        {
+          "title": "CARLA Simulator",
+          "url": "https://carla.org/"
+        },
+        {
+          "title": "AI2-THOR",
+          "url": "https://ai2thor.allenai.org/"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "GemBench",
+      "name_en": "GemBench",
+      "abbr": "",
+      "aliases": [
+        "GEMBench"
+      ],
+      "tier": 3,
+      "one_liner": "基于 RLBench 的仿真基准，分四级测语言操作策略对新任务的泛化能力。",
+      "explanation": "GemBench 由法国 Inria 和巴黎高师的 Ricardo Garcia、Shizhe Chen、Cordelia Schmid 提出，收录于 ICRA 2025。它建在 RLBench 仿真上，定义了按、抓、推、拧、关、开、放置/堆叠 7 种动作原语，用 16 个任务（31 个变体）训练，在 44 个任务（92 个变体）上测试，泛化难度分四级：新摆放位置、新刚体物体、新铰接物体、新长程任务。同一论文还提出 3D-LOTUS（基于点云的语言条件策略）和 3D-LOTUS++（再接入大语言模型做任务规划、视觉语言模型做物体定位）。结果显示纯模仿学习策略在熟悉任务上接近满分，遇到没学过的任务组合就明显下降。",
+      "example": "第 1 级（只换摆放位置）3D-LOTUS 成功率 94.3%，而第 4 级要把学过的动作组合成新的长程任务，它只有 0.3%，加入大模型规划的 3D-LOTUS++ 为 17.4%。",
+      "related": [
+        "RLBench",
+        "泛化",
+        "组合泛化",
+        "长程任务",
+        "语言条件策略",
+        "基准测试"
+      ],
+      "sources": [
+        {
+          "title": "Towards Generalizable Vision-Language Robotic Manipulation: A Benchmark and LLM-guided 3D Policy (arXiv 2410.01345)",
+          "url": "https://arxiv.org/abs/2410.01345"
+        },
+        {
+          "title": "GemBench project page",
+          "url": "https://www.di.ens.fr/willow/research/gembench/"
+        }
+      ],
+      "as_of": "2025-05"
+    },
+    {
+      "name_zh": "关节坐标仿真 vs 笛卡尔坐标仿真（约化坐标 / 最大坐标）",
+      "name_en": "Generalized (Reduced) Coordinates vs. Cartesian (Maximal) Coordinates Simulation",
+      "abbr": "",
+      "aliases": [
+        "广义坐标仿真",
+        "约化坐标",
+        "最大坐标",
+        "Reduced-coordinate Articulation",
+        "Maximal Coordinates"
+      ],
+      "tier": 3,
+      "one_liner": "物理引擎描述多连杆机器人的两种方式：按关节角算，还是各刚体单独算再加约束。",
+      "explanation": "仿真一台由多个连杆和关节组成的机器人，有两种建模思路。关节坐标（又叫广义坐标、约化坐标）只用各关节的角度或位移描述状态，关节约束天然成立、不会被拉开，变量数等于自由度数，适合机械臂和足式机器人；MuJoCo 和 PhysX 的 articulation 都属于这类，代价是算法更复杂，通常要求连杆结构是树状，闭环要额外加约束。笛卡尔坐标（又叫最大坐标）让每个刚体都有完整的 6 个自由度，再用约束把它们连起来，实现简单，游戏物理引擎常这么做，但约束靠数值求解，结构复杂或连杆质量相差悬殊时关节可能漂移、抖动。选仿真器、排查仿真不稳定时需要知道这一区别。",
+      "example": "PhysX 里同一条机械臂既能用刚体加关节约束搭（最大坐标），也能用 articulation 搭（约化坐标）；官方文档说明后者关节误差按设计为零、能承受更大的连杆质量比，因此推荐用于机器人。",
+      "related": [
+        "广义坐标",
+        "关节体仿真",
+        "多体动力学",
+        "约束求解器",
+        "MuJoCo",
+        "PhysX"
+      ],
+      "sources": [
+        {
+          "title": "MuJoCo Documentation: Overview",
+          "url": "https://mujoco.readthedocs.io/en/stable/overview.html"
+        },
+        {
+          "title": "PhysX 5 Documentation: Articulations",
+          "url": "https://nvidia-omniverse.github.io/PhysX/physx/5.4.1/docs/Articulations.html"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "GenManip",
+      "name_en": "GenManip: LLM-driven Simulation for Generalizable Instruction-Following Manipulation",
+      "abbr": "",
+      "aliases": [
+        "GenManip-Bench",
+        "GenManip Suite"
+      ],
+      "tier": 3,
+      "one_liner": "上海 AI 实验室基于 Isaac Sim、用大模型自动造任务的操作仿真评测平台。",
+      "explanation": "GenManip 由上海人工智能实验室牵头，联合浙大、西安交大、南大等提出，发表于 CVPR 2025，是建在 NVIDIA Isaac Sim 上的桌面操作仿真平台，关注策略能否听懂多样的语言指令。它用大语言模型生成面向任务的场景图（描述场景里有哪些物体、目标关系是什么），配合 1 万个带标注的 3D 物体资产，自动合成大量多样的任务和演示数据；评测部分 GenManip-Bench 含 200 个人工精修场景，考察空间关系、外观理解、常识推理和长程任务四类泛化。论文比较了两条路线：用基础模型做感知和规划的模块化系统，以及用行为克隆训练的端到端策略，发现前者零样本泛化更好，后者随数据量增加而提升。代码已在 GitHub 开源。",
+      "example": "在 GenManip-Bench 上，表现最好的模块化系统 CoPa（配 GPT-4.5）整体成功率为 23.0%；到了长程任务，参评模型平均只有 9.07%。",
+      "related": [
+        "Isaac Sim",
+        "指令跟随",
+        "生成式仿真",
+        "合成数据",
+        "CoPa",
+        "上海人工智能实验室"
+      ],
+      "sources": [
+        {
+          "title": "GenManip: LLM-driven Simulation for Generalizable Instruction-Following Manipulation (arXiv 2506.10966)",
+          "url": "https://arxiv.org/abs/2506.10966"
+        },
+        {
+          "title": "GenManip Suite project page",
+          "url": "https://genmanip.com/"
+        }
+      ],
+      "as_of": "2025-06"
+    },
+    {
+      "name_zh": "GS-Playground",
+      "name_en": "GS-Playground: A High-Throughput Photorealistic Simulator for Vision-Informed Robot Learning",
+      "abbr": "",
+      "aliases": [
+        "GS Playground"
+      ],
+      "tier": 3,
+      "one_liner": "清华等推出的高吞吐仿真器，用批量 3D 高斯泼溅快速渲染真实感画面。",
+      "explanation": "GS-Playground 由清华大学牵头、联合 Motphys、原力灵机等十余家单位提出，论文 2026 年 4 月发布，项目页显示已被 RSS 2026 接收，代码在 GitHub 开源。它针对视觉机器人学习的矛盾：传统仿真器画面不真实，照片级渲染又太慢，难以大规模跑视觉强化学习。做法是把自研并行物理引擎 MotrixSim（兼容 MJCF 格式）和批量 3D 高斯泼溅（用大量彩色椭球表示场景、渲染很快）结合，在 2048 个并行环境、640×480 分辨率下总渲染速度约每秒 1 万帧，并能从单张 RGB 照片自动生成可仿真的数字孪生。论文在四足和人形行走、视觉导航、机械臂抓取上验证，并部署到宇树 Go2、G1 等真机。",
+      "example": "项目页称，从一张 RGB 照片生成可直接放进仿真的场景资产不到 5 分钟，人形机器人物理仿真速度是 MuJoCo 的 32 倍。",
+      "related": [
+        "高斯泼溅仿真",
+        "3D高斯泼溅",
+        "现实到仿真",
+        "数字孪生",
+        "批量渲染",
+        "DISCOVERSE"
+      ],
+      "sources": [
+        {
+          "title": "GS-Playground (arXiv 2604.25459)",
+          "url": "https://arxiv.org/abs/2604.25459"
+        },
+        {
+          "title": "GS-Playground project page",
+          "url": "https://gsplayground.github.io"
+        }
+      ],
+      "as_of": "2026-09"
+    }
+  ]
+}

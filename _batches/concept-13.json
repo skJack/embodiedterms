@@ -1,0 +1,235 @@
+{
+  "category": "concept",
+  "batch": 13,
+  "terms": [
+    {
+      "name_zh": "符号落地问题",
+      "name_en": "Symbol Grounding Problem",
+      "abbr": "",
+      "aliases": [
+        "符号接地问题"
+      ],
+      "tier": 3,
+      "one_liner": "机器里的符号怎样对应到真实世界的事物，从而真正有意义。",
+      "explanation": "认知科学家 Stevan Harnad 1990 年在 Physica D 上提出的问题：一个只按规则摆弄符号的系统，它的符号怎样获得自身的意义，而不是全靠人来解释？他举的例子是只拿一本中文-中文词典学中文，每个词都用别的词解释，查来查去也落不到实物上。Harnad 的方案是让最基础的符号扎根在感知上：先有对外界的感官表征，再学出区分类别的特征，符号是这些类别的名字，复杂概念由它们组合而成。具身智能常把它当作「为什么需要身体」的理论依据之一，讨论语言接地（把词和视觉、动作对应起来）时也常引用它。",
+      "example": "给机器人下指令「把红色的杯子拿过来」：大语言模型能解析这句话，但只有把「红色的杯子」对应到相机画面里的某个物体、把「拿」对应到一串抓取动作，这句话对机器人才算落了地。",
+      "related": [
+        "语言接地",
+        "具身认知",
+        "离身智能",
+        "人工智能三大学派（符号主义 / 连接主义 / 行为主义）",
+        "SayCan"
+      ],
+      "sources": [
+        {
+          "title": "The Symbol Grounding Problem (Harnad, Physica D 1990)",
+          "url": "https://arxiv.org/abs/cs/9906002"
+        },
+        {
+          "title": "Symbol grounding problem - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Symbol_grounding_problem"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "任务导向抓取（功能性抓取）",
+      "name_en": "Task-Oriented Grasping",
+      "abbr": "TOG",
+      "aliases": [
+        "功能性抓取",
+        "面向任务的抓取",
+        "Functional Grasping"
+      ],
+      "tier": 3,
+      "one_liner": "按接下来要做的事选抓法：同一物体用途不同，抓的位置和姿态也不同。",
+      "explanation": "普通抓取只关心「抓稳」，任务导向抓取还要求抓法适合后续任务：用锤子钉钉子要握锤柄，把剪刀递给别人则应捏住刀刃一侧、把手柄留给对方。它要把物体部件、可供性（物体哪个部位能拿来干什么）和任务语义联系起来，是连接「抓起来」和「用起来」的一环。2020 年卡内基梅隆大学等团队在 CoRL 发表 TaskGrasp 数据集（191 个物体、56 种任务、约 25 万个抓取），用知识图谱编码物体与任务的关系来泛化到新物体和新任务；2023 年的 GraspGPT 等工作开始借大语言模型的常识处理没见过的物体-任务组合。",
+      "example": "同一把刀：机器人自己切菜时握刀柄；递给人时捏住刀背一侧，把刀柄朝向对方。",
+      "related": [
+        "抓取",
+        "可供性",
+        "可供性检测",
+        "抓取位姿检测",
+        "工具使用",
+        "人机物体交接"
+      ],
+      "sources": [
+        {
+          "title": "Same Object, Different Grasps: Data and Semantic Knowledge for Task-Oriented Grasping (Murali et al., CoRL 2020)",
+          "url": "https://arxiv.org/abs/2011.06431"
+        },
+        {
+          "title": "GraspGPT: Leveraging Semantic Knowledge from a Large Language Model for Task-Oriented Grasping",
+          "url": "https://arxiv.org/abs/2307.13204"
+        }
+      ],
+      "as_of": "2023-07"
+    },
+    {
+      "name_zh": "文本驱动动作生成",
+      "name_en": "Text-to-Motion (Text-Driven Humanoid Motion Generation)",
+      "abbr": "",
+      "aliases": [
+        "文本生成动作",
+        "Text-to-Motion",
+        "语言驱动人形动作生成"
+      ],
+      "tier": 3,
+      "one_liner": "输入一句文字描述，输出一段对应的人体或人形机器人全身动作。",
+      "explanation": "起源于图形学和视觉领域的人体动作生成：输入「一个人向前走几步再挥手」这样的文字，模型输出一段三维人体姿态序列，代表数据集是 HumanML3D（CVPR 2022，14,616 段动作、44,970 条文本描述），代表模型有基于扩散模型的 MDM（2022）。搬到人形机器人上，生成的人体动作不一定符合机器人的关节结构和物理约束，通常要先做动作重定向（把人的动作映射到机器人骨架），再交给强化学习训练的运动跟踪或全身控制策略执行。2024 年 12 月的 UH-1 从约 240 小时视频整理出 Humanoid-X 数据集，训练模型从文字生成人形动作，并在宇树 H1-2 上做了真机验证。",
+      "example": "UH-1 论文中，给宇树 H1-2 输入「拳击」「鼓掌」「弹吉他」等 12 条语言指令，模型生成对应的全身动作，论文报告真机成功率接近 100%。",
+      "related": [
+        "MDM（人体动作扩散模型）",
+        "HumanML3D 数据集",
+        "UH-1 / Humanoid-X",
+        "动作重定向",
+        "运动跟踪",
+        "全身控制"
+      ],
+      "sources": [
+        {
+          "title": "Generating Diverse and Natural 3D Human Motions from Texts (HumanML3D, CVPR 2022)",
+          "url": "https://ericguo5513.github.io/text-to-motion/"
+        },
+        {
+          "title": "Human Motion Diffusion Model (MDM)",
+          "url": "https://arxiv.org/abs/2209.14916"
+        },
+        {
+          "title": "Learning from Massive Human Videos for Universal Humanoid Pose Control (UH-1)",
+          "url": "https://arxiv.org/abs/2412.14172"
+        }
+      ],
+      "as_of": "2024-12"
+    },
+    {
+      "name_zh": "咖啡测试",
+      "name_en": "The Coffee Test (Wozniak)",
+      "abbr": "",
+      "aliases": [
+        "沃兹尼亚克咖啡测试",
+        "Wozniak Coffee Test"
+      ],
+      "tier": 3,
+      "one_liner": "让机器走进一户陌生人家，自己找齐东西把咖啡煮出来。",
+      "explanation": "苹果联合创始人史蒂夫·沃兹尼亚克（Steve Wozniak）提出的一种通用人工智能测试：机器要走进一户普通美国家庭，自己弄明白怎么煮咖啡——找到咖啡机、找到咖啡、加水、找到杯子、按对按钮完成冲泡。和只考对话的图灵测试不同，它要求在没见过的真实环境里完成感知、搜索、常识推理和操作，因此常被用来说明「会聊天」不等于「会干活」。据维基百科整理，2024 年 1 月 Figure 01 人形机器人演示了自主操作 Keurig 胶囊咖啡机，2025 年爱丁堡大学的 ELLMER 框架据报道让机械臂按语音指令在厨房做咖啡；但这些都不是在随机挑选的陌生家庭里完成的，离测试原本的要求还有距离。",
+      "example": "大模型能列出煮咖啡的每一步，但要通过咖啡测试，机器人得在一间从没去过的厨房里自己翻柜子找咖啡粉，并认出这台咖啡机该按哪个按钮。",
+      "related": [
+        "物理图灵测试",
+        "具身通用智能",
+        "家务任务",
+        "开放世界",
+        "长程任务",
+        "莫拉维克悖论"
+      ],
+      "sources": [
+        {
+          "title": "Artificial general intelligence - Wikipedia（Tests for human-level AGI 一节）",
+          "url": "https://en.wikipedia.org/wiki/Artificial_general_intelligence"
+        }
+      ],
+      "as_of": "2025"
+    },
+    {
+      "name_zh": "人工智能三大学派（符号主义 / 连接主义 / 行为主义）",
+      "name_en": "Three Schools of AI: Symbolism, Connectionism, Behaviorism (Actionism)",
+      "abbr": "",
+      "aliases": [
+        "AI 三大流派",
+        "符号主义",
+        "连接主义（联结主义）",
+        "行为主义（控制论学派）"
+      ],
+      "tier": 3,
+      "one_liner": "中文教材对 AI 路线的经典划分：靠逻辑符号、靠神经网络、靠与环境交互。",
+      "explanation": "中文人工智能教材里常见的一种划分，按「智能从哪来」把研究路线分成三派。符号主义（又称逻辑主义）认为智能是对符号做逻辑推理，代表是 Newell 和 Simon 1950 年代的逻辑理论家程序和后来的专家系统；连接主义（又称仿生学派）认为智能来自大量简单神经元的连接和学习，今天的深度学习、大模型都属于这一派；行为主义（又称控制论学派）认为智能体现在感知-动作闭环里，不必先建完整的世界模型，代表是 Rodney Brooks 1980 年代在 MIT 用包容架构做的机器人。具身智能思想上最接近行为主义，方法上大量用连接主义的神经网络，三派在今天是融合的。",
+      "example": "让机器人「把苹果放进碗里」：符号主义会手写规则「若看到苹果且手空，则去抓」；连接主义用大量演示训练神经网络，直接从图像输出动作；行为主义则搭一组「看到-伸手-调整」的反应回路，让行为在与环境的交互中成形。今天的 VLA 模型主要走连接主义路线。",
+      "related": [
+        "包容架构（行为式机器人）",
+        "符号落地问题",
+        "具身认知",
+        "感知-行动闭环",
+        "神经网络",
+        "莫拉维克悖论"
+      ],
+      "sources": [
+        {
+          "title": "Symbolic artificial intelligence - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Symbolic_artificial_intelligence"
+        },
+        {
+          "title": "联结主义 - 维基百科",
+          "url": "https://zh.wikipedia.org/wiki/联结主义"
+        },
+        {
+          "title": "Behavior-based robotics - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Behavior-based_robotics"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "共融机器人",
+      "name_en": "Tri-Co Robot (Coexisting-Cooperative-Cognitive Robot)",
+      "abbr": "Tri-Co",
+      "aliases": [
+        "Tri-Co Robot"
+      ],
+      "tier": 3,
+      "one_liner": "能与人、环境和其他机器人安全共存、协作，并理解彼此意图的机器人。",
+      "explanation": "国家自然科学基金委提出的机器人研究方向，Tri-Co 取自共存（Coexisting）、协作（Cooperative）、认知（Cognitive）。据丁汉等人 2017 年在 National Science Review 发表的介绍，基金委当年启动了为期 8 年的共融机器人重大研究计划。「共存」指机器人以本质安全的方式进入人的生活和工作空间，「协作」指通过交流互动与人或其他机器人配合，「认知」指能感知并预测环境和他人的行为与意图。研究主题包括刚-柔-软混合结构、多模态感知与基于生物信号的人机交互、多机器人群体智能，应用面向灵巧制造、康复辅助、巡检救援等。它关注的问题与今天的人机协作、具身智能大量重叠。",
+      "example": "康复助力设备要读懂穿戴者的肌电等生物信号、顺着人的发力方向给助力，同时保证不伤人，正好对应「共存、协作、认知」三方面要求。",
+      "related": [
+        "人机协作",
+        "协作机器人",
+        "人机交互",
+        "物理人机交互",
+        "群体智能",
+        "多机器人协作"
+      ],
+      "sources": [
+        {
+          "title": "Tri-Co Robot: a Chinese robotic research initiative for enhanced robot interaction capabilities (Ding et al., National Science Review)",
+          "url": "https://academic.oup.com/nsr/article/5/6/799/4588213"
+        }
+      ],
+      "as_of": "2017-12"
+    },
+    {
+      "name_zh": "视觉泛化",
+      "name_en": "Visual Generalization",
+      "abbr": "",
+      "aliases": [
+        "视觉鲁棒性",
+        "外观泛化"
+      ],
+      "tier": 3,
+      "one_liner": "画面外观变了（背景、光照、颜色、干扰物、相机角度），策略照样能完成任务。",
+      "explanation": "泛化的一个子类，指机器人策略在训练没见过的视觉条件下仍能完成同样的任务：换了背景和桌布、光照变化、物体换了颜色或纹理、画面里多出干扰物、相机位置挪动等。任务和动作没变，变的只是「看到的样子」，所以常和语义泛化（新物体、新指令）、位置泛化分开评测，OpenVLA 的真机评测就单列了这一项。模仿学习策略直接从像素学动作，容易把背景、光照这些无关细节也记进去。2023 年 Xie、Finn 等人逐个拆解这些因素，发现新背景最容易适应、新相机位置最难。常见应对办法有域随机化、数据增强、用预训练视觉编码器，以及在更多样的场景里采数据。",
+      "example": "OpenVLA 真机评测里的「把茄子放进锅里」：用一只手工纸糊、外观与 BridgeData V2 训练数据中不同的锅，考查策略还能不能认出锅并完成任务。",
+      "related": [
+        "泛化",
+        "语义泛化",
+        "位置泛化（空间泛化）",
+        "干扰物",
+        "域随机化",
+        "数据增强"
+      ],
+      "sources": [
+        {
+          "title": "Decomposing the Generalization Gap in Imitation Learning for Visual Robotic Manipulation (Xie et al., 2023)",
+          "url": "https://arxiv.org/abs/2307.03659"
+        },
+        {
+          "title": "OpenVLA: An Open-Source Vision-Language-Action Model",
+          "url": "https://arxiv.org/abs/2406.09246"
+        },
+        {
+          "title": "What Can RL Bring to VLA Generalization? An Empirical Study",
+          "url": "https://arxiv.org/abs/2505.19789"
+        }
+      ],
+      "as_of": "2025-05"
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "batch": "perception-25",
+  "terms": [
+    {
+      "key": "perception-25#0",
+      "name_en": "Transparent & Reflective Object Perception",
+      "aliases": ["Transparent Object Depth Estimation", "Highly Reflective Object Perception", "Transparent Object Perception"],
+      "one_liner": "Getting a robot to correctly see glass, metal, and other objects that ordinary depth cameras get wrong.",
+      "explanation": "This refers to detecting, segmenting, and estimating the 3D shape of objects such as glass, clear plastic, and mirror-like metal. Common depth cameras measure range using reflected infrared light, but that light passes straight through transparent objects or bounces away off a mirror-like surface, so the resulting depth map ends up with holes (pixels with no reading) or, worse, reports the distance to whatever is behind the object, causing a robot that grasps based on that depth to miss entirely. A typical approach uses a neural network to predict a mask of the transparent region, surface normals, and occlusion boundaries from the color image, and then performs depth completion (filling in the missing depth); ClearGrasp, from Sajjan, Andy Zeng, Shuran Song, and colleagues in 2019, is representative work in this area. Glasses and bottles are everywhere in household, lab, and retail settings, so this is a problem any real grasping system has to confront.",
+      "example": "ClearGrasp estimates surface normals, a mask, and occlusion boundaries for a transparent object from a single RGB-D image, corrects the depth, and hands it to a grasping algorithm, improving a robot arm’s success rate at grasping transparent objects.",
+      "related": ["Depth Completion", "Depth Hole", "Depth Camera", "Surface Normal Estimation", "Grasp Pose Detection", "Active Stereo"]
+    },
+    {
+      "key": "perception-25#1",
+      "name_en": "Traversability Estimation",
+      "aliases": ["Traversable-Area Analysis", "Terrain Traversability"],
+      "one_liner": "Judging which parts of the terrain ahead can be crossed, which can’t, and how costly each path would be.",
+      "explanation": "This is a question wheeled and legged mobile robots must answer before navigating: can each patch of ground ahead be crossed safely, and how difficult would it be? Traditional methods compute slope, roughness, and step height from an elevation map (a 2D map recording the ground height at every grid cell); this purely geometric approach mistakes tall grass or branches for obstacles, which is why later work added semantic information (grass, mud, water) and self-supervised methods that learn from the robot’s own walking experience. The result is usually output as a traversability map or costmap, handed to a path planner to choose a route. Wild Visual Navigation, from ETH Zurich and Oxford in 2023, let the quadruped ANYmal learn to tell walkable vegetation apart from real obstacles after less than 5 minutes of on-site training.",
+      "example": "Using Wild Visual Navigation, the ANYmal quadruped, after being briefly led by a person, can push through tall grass and go around tree trunks on its own, completing a 1.4 km trail navigation.",
+      "related": ["Elevation Map", "Costmap", "Perceptive Locomotion", "Rough-Terrain Locomotion", "Navigation", "Semantic Segmentation"]
+    },
+    {
+      "key": "perception-25#2",
+      "name_en": "Triangulation",
+      "aliases": [],
+      "one_liner": "Recovering a point’s 3D coordinates from two cameras’ known positions and where that point lands in each image.",
+      "explanation": "Triangulation is a basic geometric operation in computer vision: a 3D point projects to one pixel in each of two or more images, and given each camera’s projection matrix (determined by its intrinsics and extrinsics), a ray is drawn from each camera’s optical center through the corresponding image point; the intersection of these rays is the point’s 3D location. In practice, lens distortion and feature-localization error mean the rays usually don’t intersect exactly, so the best estimate is instead found with the midpoint method, a linear solve (DLT), or by minimizing reprojection error — the gap between the observed point and the 3D point projected back into the image. Stereo depth sensing, structure from motion (SfM), and visual SLAM mapping all rely on triangulation to turn 2D matched points into 3D points.",
+      "example": "A stereo camera matches the same corner of a cup’s rim in its left and right images; given both lenses’ intrinsics and relative pose, triangulation computes how far that corner is from the camera.",
+      "related": ["Epipolar Geometry", "Camera Intrinsics", "Camera Extrinsics", "Stereo Camera", "Structure from Motion", "Reprojection Error"]
+    },
+    {
+      "key": "perception-25#3",
+      "name_en": "Truncated Signed Distance Function",
+      "aliases": ["TSDF", "TSDF Fusion", "Truncated Signed Distance Field"],
+      "one_liner": "Storing the signed distance to the nearest surface in a voxel grid, used to fuse multiple depth frames into a 3D model.",
+      "explanation": "TSDF is a 3D scene representation: space is divided into small cubes (voxels), and each voxel stores its distance to the nearest object surface — positive in front of the surface, negative behind it — with values far from the surface truncated to a fixed limit, keeping only information near the surface itself. Curless and Levoy proposed fusing multiple depth maps with this kind of volumetric method in 1996, and KinectFusion made it real-time on a GPU in 2011. As each new depth frame arrives, its observations are weighted and averaged into the voxel grid according to the camera pose, and noise gets smoothed out as more frames accumulate; finally, the Marching Cubes algorithm extracts the zero-distance surface as a triangle mesh. TSDF is widely used for robot mapping, obstacle avoidance, and grasping, with implementations in Open3D and NVIDIA’s nvblox.",
+      "example": "A handheld RGB-D camera is swept around a table; Open3D fuses each frame’s depth into a TSDF volume according to its pose, and finally exports a mesh model of the whole tabletop and the objects on it.",
+      "related": ["Signed Distance Field", "Voxel", "Mesh (Triangle Mesh)", "Euclidean Signed Distance Field (ESDF)", "nvblox", "Depth Map"]
+    },
+    {
+      "key": "perception-25#4",
+      "name_en": "Ultra-Wideband Positioning",
+      "aliases": ["UWB", "UWB Ranging"],
+      "one_liner": "Using extremely short radio pulses to measure signal flight time, for centimeter-level indoor ranging and positioning.",
+      "explanation": "Ultra-wideband (UWB) is a low-power radio technology that occupies a very wide frequency band, defined by the US FCC as a bandwidth exceeding 500 MHz or 20% of the center frequency, whichever is smaller. Its pulses are extremely narrow, which allows precise measurement of signal flight time and makes it well suited to ranging: common approaches are two-way ranging (TWR) or time difference of arrival (TDoA), where a tagged device measures its distance to several fixed anchors, and geometry is used to solve for its coordinates, reaching centimeter-level accuracy, though this degrades with occlusion and multipath reflection. GPS doesn’t work indoors, so UWB is commonly used for warehouse robot localization, follow-me robots, and relative localization between multiple robots; phones from the iPhone 11 onward, and Apple’s AirTag, also have UWB built in.",
+      "example": "UWB anchors are mounted in the four corners of a warehouse, and a transport robot carries a UWB tag; it measures its distance to each anchor in real time, solves for its position in the warehouse, and fuses that with wheel odometry.",
+      "related": ["Multi-Sensor Fusion", "State Estimation", "Wheel Odometry", "GNSS / RTK Positioning", "Autonomous Mobile Robot (AMR)", "Kalman Filter"]
+    },
+    {
+      "key": "perception-25#5",
+      "name_en": "Ultrasonic Sensor",
+      "aliases": ["USS", "Ultrasonic Ranging Sensor"],
+      "one_liner": "A cheap, short-range sensor that measures distance by emitting ultrasound and listening for its echo.",
+      "explanation": "An ultrasonic sensor emits a pulse of sound above 20 kHz (inaudible to humans) and measures how long the echo takes to return; the speed of sound times half that time gives the obstacle’s distance. It’s cheap, and because it doesn’t depend on light, an object’s color and reflectivity don’t affect the measurement, so it can catch obstacles like glass doors that cameras and lidar often miss — which is why it’s common in car parking sensors and short-range obstacle avoidance on mobile robots. Its drawbacks are a wide beam that can’t resolve fine directional detail, and a range usually limited to a few meters; sound-absorbing materials or steeply angled surfaces produce a weak echo that can go undetected. In cars this is often called an “ultrasonic radar”; Tesla reportedly removed it from some models starting in 2022, switching to a camera-only approach instead.",
+      "example": "While backing up, an ultrasonic sensor on the bumper detects an obstacle getting closer behind the car; the warning beep goes from intermittent to rapid, and finally to a continuous tone.",
+      "related": ["Camera-Only / Vision-Only Approach", "Proximity Sensor", "Time-of-Flight", "Obstacle Avoidance", "Millimeter-Wave Radar", "Transparent & Reflective Object Perception"]
+    },
+    {
+      "key": "perception-25#6",
+      "name_en": "Unitree 4D LiDAR L1 / L2",
+      "aliases": ["Unitree L1", "Unitree L2"],
+      "one_liner": "Unitree’s own low-cost, hemispherical-field-of-view lidar, where every point carries a 3D coordinate plus a grayscale value.",
+      "explanation": "This is a small lidar (a sensor that measures range with a laser and scans out a 3D point cloud of its surroundings) developed in-house by Unitree Robotics. “4D” refers to each point carrying a 3D position plus one extra dimension of grayscale (reflected intensity). Per the published specs: the L1 has a 360°×90° field of view, outputs about 21,600 points per second, and starts at US$249; the L2 has a 360°×96° field of view, outputs 64,000 points per second, ranges to 30 m (at 90% reflectivity), has a close-range blind zone of only 0.05 m, weighs 230 g, and costs $419. Both have a built-in IMU and use a non-repetitive scan pattern. The price is far below traditional lidar; Unitree’s Go2 quadruped is listed as shipping with the L2, and Unitree also provides an open-source mapping pipeline based on Point-LIO, with the sensor commonly used for SLAM and obstacle avoidance.",
+      "example": "On a Unitree Go2, the head-mounted L2’s point cloud plus its built-in IMU are run through Point-LIO to build a 3D indoor map while walking, used for navigation and obstacle avoidance.",
+      "related": ["LiDAR", "Livox Mid-360", "Unitree Go2", "LiDAR-Inertial Odometry", "Unitree Robotics", "Inertial Measurement Unit (IMU)"]
+    },
+    {
+      "key": "perception-25#7",
+      "name_en": "Unscented Kalman Filter",
+      "aliases": ["UKF", "Sigma-Point Kalman Filter"],
+      "one_liner": "A Kalman filter for nonlinear systems that propagates a small set of sample points instead of taking derivatives.",
+      "explanation": "The Unscented Kalman Filter is one nonlinear variant of the Kalman filter, proposed by Julier and Uhlmann in the mid-to-late 1990s. The Extended Kalman Filter (EKF) handles nonlinearity by linearizing around the current estimate using a Jacobian matrix, which introduces large errors when the nonlinearity is strong and requires deriving that Jacobian by hand. The UKF takes a different approach: it picks a small, deterministic set of sample points (sigma points) based on the current mean and covariance, passes each one directly through the true motion or observation model, and recomputes the mean and covariance from the transformed points — a step called the unscented transform. It needs no Jacobian, and is usually more accurate than the EKF under strong nonlinearity, at the cost of more computation. In robotics it is used to fuse IMU, wheel speed, and GPS for state estimation; ROS’s robot_localization package provides both EKF and UKF nodes.",
+      "example": "Using robot_localization’s ukf_localization_node to fuse wheel odometry with IMU data gives a mobile base a smooth, continuous pose estimate.",
+      "related": ["Kalman Filter", "Extended Kalman Filter", "Particle Filter", "State Estimation", "Multi-Sensor Fusion", "Error-State Kalman Filter"]
+    },
+    {
+      "key": "perception-25#8",
+      "name_en": "uSkin",
+      "aliases": ["XELA uSkin"],
+      "one_liner": "A magnetic tactile skin from XELA Robotics where every sensing point measures both pressure and shear force at once.",
+      "explanation": "uSkin is a tactile sensor product line from XELA Robotics of Japan; XELA was spun out of Waseda University in 2018 and is headquartered in Tokyo. uSkin uses magnetic tactile sensing: when its soft outer layer deforms under force, the magnetic field inside it changes, and a magnetic sensor reads out that change in flux, with each taxel (sensing element) reporting both normal pressure and tangential shear force. It comes in versions that attach to a gripper, a dexterous hand, or any arbitrary surface, and in research it is commonly mounted on the fingertips, knuckles, and palm of an Allegro Hand for slip detection and contact-force estimation. Magnetic signals are hard to interpret and troublesome to calibrate, which is why Sparsh-skin, from Akash Sharma and colleagues in 2025, uses self-supervised learning to train a general-purpose representation for this kind of magnetic hand-skin sensor.",
+      "example": "With uSkin attached to the fingertips of an Allegro Hand, a sudden change in shear force while grasping a cup signals that the object is about to slip, and the hand immediately grips harder.",
+      "related": ["Tactile Sensor", "Magnetic Tactile Sensing", "Electronic Skin", "Allegro Hand", "Slip Detection", "XELA Robotics"]
+    },
+    {
+      "key": "perception-25#9",
+      "name_en": "Vertical-Cavity Surface-Emitting Laser",
+      "aliases": ["VCSEL", "Surface-Emitting Laser"],
+      "one_liner": "A semiconductor laser that emits light perpendicular to the chip surface, a common light source in depth cameras and lidar.",
+      "explanation": "The VCSEL is a type of semiconductor laser, proposed in 1977 by Kenichi Iga at the Tokyo Institute of Technology. An ordinary edge-emitting laser emits light from the side of a cleaved chip; a VCSEL instead sandwiches a light-emitting layer between two distributed Bragg reflector mirrors, top and bottom, so light exits perpendicular to the chip surface. This means it can be tested across a whole wafer before dicing, tens of thousands can be produced from one wafer at once, and it’s easy to arrange into a 2D array — giving low cost and good consistency. In embodied-AI-relevant hardware, VCSELs are the core of many active infrared light sources: the structured-light dot projector behind iPhone Face ID, time-of-flight (ToF) depth cameras, and lidar in phones and cars all commonly use VCSELs as their light source.",
+      "example": "Inside a structured-light depth camera, a VCSEL array projects thousands of infrared dots onto an object, and the camera computes depth at each point from how far its dot has shifted.",
+      "related": ["Structured Light", "Speckle Structured Light", "Time-of-Flight", "LiDAR", "Single-Photon Avalanche Diode (SPAD)", "Depth Camera"]
+    },
+    {
+      "key": "perception-25#10",
+      "name_en": "Video Object Segmentation",
+      "aliases": ["VOS"],
+      "one_liner": "Continuously cutting out a pixel mask for a specified object in every frame of a video.",
+      "explanation": "Given a video, video object segmentation (VOS) outputs a pixel-level mask of the target object (marking which pixels belong to it) in every frame, and keeps recognizing it as the same object even as it moves, deforms, or is occluded. It’s grouped by how much guidance is given: semi-supervised VOS is given the target’s mask on the first frame and propagates it forward; unsupervised VOS is given no hint and must find the main object automatically; interactive VOS lets a user click partway through to correct the mask. DAVIS is a classic benchmark. In 2024, Meta’s SAM 2 unified image and video segmentation using a transformer with memory, letting a single click keep tracking an object through an entire video. In robotics, VOS is commonly used to keep a mask on a manipulation target, to automatically label data, or to give a policy an object-centric input.",
+      "example": "Clicking once on a cup on the table in the first frame, SAM 2 outputs a mask for the cup in every frame of the whole grasping sequence, keeping track of it even when the gripper partially covers it.",
+      "related": ["Instance Segmentation", "Object Tracking", "SAM 2 (Segment Anything in Video)", "Segment Anything Model", "Mask", "Automatic Annotation"]
+    },
+    {
+      "key": "perception-25#11",
+      "name_en": "VINS-Fusion",
+      "aliases": [],
+      "one_liner": "An open-source visual-inertial localization framework from HKUST, supporting a monocular or stereo camera plus an IMU.",
+      "explanation": "VINS-Fusion is a multi-sensor state estimation system open-sourced in 2019 by Shaojie Shen’s team (the Aerial Robotics Group) at the Hong Kong University of Science and Technology, with Tong Qin as a lead author; it extends VINS-Mono. It writes both camera and IMU (inertial measurement unit, which measures acceleration and angular velocity) observations as constraints inside one optimization problem, solving jointly for the robot’s pose at every timestep; it supports three configurations — monocular+IMU, stereo+IMU, and stereo-only — and includes online calibration of the camera-IMU extrinsics and time offset, visual loop closure detection, and a global module that can fuse in GPS. At release, it was the top-ranked open-source stereo algorithm on the KITTI odometry leaderboard (January 2019), and is licensed under GPLv3. Drones, quadrupeds, and mobile robots commonly use it as a localization baseline.",
+      "example": "A drone carrying a stereo camera and an IMU runs VINS-Fusion to output its pose in real time, letting it know where it has flown even indoors with no GPS.",
+      "related": ["Visual-Inertial Odometry", "VINS-Mono / VINS-Fusion", "Visual SLAM", "Inertial Measurement Unit (IMU)", "Loop Closure Detection", "Camera-IMU Extrinsic Calibration"]
+    }
+  ]
+}

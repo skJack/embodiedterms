@@ -1,0 +1,77 @@
+{
+  "batch": "sim-18",
+  "terms": [
+    {
+      "key": "sim-18#0",
+      "name_en": "VirtualHome: Simulating Household Activities via Programs",
+      "aliases": ["VirtualHome"],
+      "one_liner": "A Unity-based simulation platform where virtual humans perform household chores driven by step-by-step 'programs.'",
+      "explanation": "VirtualHome is a household-activity simulation platform proposed by MIT and the University of Toronto at CVPR 2018, built on the Unity3D game engine and controlled through a Python API. It writes chores like “making breakfast” or “watching TV” as “programs” — sequences of atomic actions such as walking to something, picking it up, opening it, and switching it on or off — which a virtual human then executes step by step inside a simulated apartment, rendering an annotated video as it goes. It is concerned with high-level task planning rather than simulating a robot arm's contact mechanics, so it is often used to test how well large language models decompose tasks. The current version, 2.3, supports procedural scene generation, and it has also spun off a human-robot collaboration benchmark called Watch-And-Help.",
+      "example": "For instance, “watch TV” can be written as the program “walk to the living room → pick up the remote → turn on the TV → sit on the sofa”; the virtual human executes it step by step, and the platform outputs the corresponding video and annotations.",
+      "related": ["Household Tasks", "LLM-based Task Planning", "Long-horizon Task", "AI2-THOR", "ALFRED (Action Learning From Realistic Environments and Directives)", "Simulator"]
+    },
+    {
+      "key": "sim-18#1",
+      "name_en": "Visual Matching (SimplerEnv)",
+      "aliases": ["VM", "SimplerEnv Visual Matching", "SIMPLER Visual Matching"],
+      "one_liner": "A SimplerEnv evaluation setup that makes the simulated image look as close as possible to real-robot camera footage.",
+      "explanation": "Visual Matching is one of two evaluation setups from SimplerEnv (SIMPLER, released in May 2024 by UC San Diego, Stanford, Berkeley, and Google DeepMind), used to evaluate in simulation manipulation policies that were trained on real-robot data. Such policies often fail as soon as they enter simulation, simply because the images look different. Visual Matching uses “green-screening” to composite the simulated objects and robot arm onto a real background photo, then projects real textures onto the simulated models and adjusts the arm's color to match real footage, bringing the image closer to what a real robot camera sees. The other setup, Variant Aggregation, instead generates multiple variants by changing background, lighting, and distractors and averages across them. Both are checked against real-robot results using the Pearson correlation coefficient and Mean Maximum Rank Violation (MMRV).",
+      "example": "VLA papers evaluating on SimplerEnv's Google-robot tasks — picking up a Coke can, moving near an object, opening and closing a drawer — typically report success rate in two separate columns, “Visual Matching” and “Variant Aggregation.”",
+      "related": ["SimplerEnv (SIMPLER: Simulated Manipulation Policy Evaluation for Real Robot Setups)", "Variant Aggregation (SimplerEnv)", "Sim-to-Real Correlation (Pearson r)", "Mean Maximum Rank Violation", "Sim-to-Real Gap (Reality Gap)", "Real-to-Sim"]
+    },
+    {
+      "key": "sim-18#2",
+      "name_en": "VLA-Arena: An Open-Source Framework for Benchmarking Vision-Language-Action Models",
+      "aliases": ["VLA-Arena Benchmark"],
+      "one_liner": "Peking University's open-source VLA evaluation framework, grading capability boundaries across task, language, and vision axes.",
+      "explanation": "VLA-Arena is an open-source VLA (vision-language-action model) evaluation framework released by Peking University's PKU-Alignment team, posted to arXiv in December 2025 and later accepted at ICML 2026, with simulation built on LIBERO and robosuite. It breaks difficulty into three independent axes: task structure, language instructions, and visual observations. There are 11 task suites totaling 170 tasks, split into four categories — safety, distractors, extrapolation, and long-horizon — with each suite graded L0–L2, where fine-tuning is only allowed on L0; language (W0–W4) and vision (V0–V4) perturbations can then be layered onto any task. Using this setup, the authors find that current VLAs tend to memorize their training tasks, understand vision only shallowly, and often disregard safety constraints.",
+      "example": "The paper found that a model ranking near the top on L0 could be overtaken by other models once moved to L1 or L2; the authors treat this kind of rank reversal as evidence that the three difficulty levels each carry independent information.",
+      "related": ["Vision-Language-Action Model", "LIBERO Benchmark (Benchmarking Knowledge Transfer for Lifelong Robot Learning)", "robosuite", "Generalization / Robustness Evaluation (Perturbation Test)", "Embodied Safety", "Benchmark"]
+    },
+    {
+      "key": "sim-18#3",
+      "name_en": "VLABench: A Large-Scale Benchmark for Language-Conditioned Robotics Manipulation with Long-Horizon Reasoning Tasks",
+      "aliases": [],
+      "one_liner": "A Fudan University language-conditioned manipulation benchmark focused on common sense, implicit intent, and long-horizon multi-step reasoning.",
+      "explanation": "VLABench is an open-source benchmark released by Fudan University's OpenMOSS team in December 2024 and accepted by ICCV in 2025, evaluating the ability to manipulate a robot arm from natural-language instructions. Built on MuJoCo and dm_control, it uses a 7-DoF Franka arm by default, across 100 task categories (60 atomic, 40 compositional) with more than 2,000 object assets. Compared with earlier benchmarks whose instructions are mostly fixed templates, its tasks require common sense and world knowledge, instructions carry implicit intent, and long-horizon tasks require multi-step reasoning; both VLA policies and VLM-driven workflows can be evaluated on it. The project also provides automatically generated training data and six evaluation tracks.",
+      "example": "Its instructions don't always state directly what to pick up — they carry implicit intent, so the model first has to infer the target object before acting; the paper's results show that even the strongest pretrained VLAs and VLM-based pipelines at the time struggled with these tasks.",
+      "related": ["Vision-Language-Action Model", "Instruction Following", "Long-horizon Task", "LIBERO Benchmark (Benchmarking Knowledge Transfer for Lifelong Robot Learning)", "MuJoCo (Multi-Joint dynamics with Contact)", "Benchmark"]
+    },
+    {
+      "key": "sim-18#4",
+      "name_en": "Webots",
+      "aliases": [],
+      "one_liner": "An open-source desktop robot simulator maintained by Switzerland's Cyberbotics, beginner-friendly and popular for teaching.",
+      "explanation": "Webots is a cross-platform, open-source desktop robot simulation program that originated in 1996 at EPFL (the Swiss Federal Institute of Technology in Lausanne), has been maintained since 1998 by its spin-off company Cyberbotics, and became open source (Apache 2.0 license) in December 2018. It ships with a graphical interface, a physics engine adapted from ODE, and a large library of ready-made robot and sensor models; controllers can be written in C/C++, Java, Python, or MATLAB, and it can also connect to ROS / ROS 2. Compared with simulators like Isaac Lab and MuJoCo, which are built for massively parallel reinforcement learning, Webots leans toward single-machine, interactive simulation, and is more commonly seen in teaching, competitions, and validating mobile-robot algorithms. As of September 2026, the latest stable release is R2025a, from February 2025.",
+      "example": "The official first tutorial: place a two-wheeled e-puck robot in a walled arena and write a short controller program to make it move — it can typically be finished in about 30 minutes.",
+      "related": ["Simulator", "Physics Engine", "Gazebo", "CoppeliaSim", "Robot Operating System", "Robot Operating System 2"]
+    },
+    {
+      "key": "sim-18#5",
+      "name_en": "WorldArena: A Unified Benchmark for Evaluating Perception and Functional Utility of Embodied World Models",
+      "aliases": ["WorldArena", "WorldArena 2.0"],
+      "one_liner": "A Tsinghua-led embodied world-model benchmark scoring both how good the generated video looks and how useful it actually is.",
+      "explanation": "WorldArena is an embodied world-model evaluation benchmark led by Tsinghua University with several other institutions, released in February 2026. An embodied world model predicts future frames given the current frame plus an action or instruction. The authors argue existing evaluations only ask whether a video looks good, not whether it actually helps decision-making, so they score along three axes: video quality (6 sub-dimensions and 16 metrics in total), embodied-task utility (testing the world model as a data engine, a policy evaluator, and an action planner), and human evaluation, combined into an overall EWMScore. After evaluating 14 models on RoboTwin 2.0 dual-arm tasks, the authors found that good-looking video does not imply strong task performance. A 2.0 version from May 2026 added visuotactile input and real-robot platforms.",
+      "example": "The first version evaluated general video models such as Wan 2.2 and Veo 3.1, alongside embodied world models such as Cosmos-Predict 2.5, Genie Envisioner, and Ctrl-World, with a public leaderboard at world-arena.ai.",
+      "related": ["World Model", "World-Model-based Policy Evaluation", "EWMBench: Evaluating Scene, Motion, and Semantic Quality in Embodied World Models", "RoboTwin (RoboTwin 2.0)", "Ctrl-World: A Controllable Generative World Model for Robot Manipulation", "WorldScore: A Unified Evaluation Benchmark for World Generation"]
+    },
+    {
+      "key": "sim-18#6",
+      "name_en": "WorldEval: World Model as Real-World Robot Policies Evaluator",
+      "aliases": ["dWorldEval"],
+      "one_liner": "Using a video world model instead of a real robot to run rollouts and score and rank robot policies.",
+      "explanation": "WorldEval is a robot-policy evaluation method proposed in May 2025 by researchers at Midea Group and East China Normal University, which substitutes a world model for the real robot during evaluation. Testing policies one by one on real hardware is slow and hard to reproduce. WorldEval instead runs a policy in closed loop inside a world model: the policy looks at generated frames and outputs actions, and the world model generates the next stretch of video based on those actions. To make the video strictly follow the actions, the authors propose Policy2Vec, which conditions a video-generation model on latent actions so the frames it generates track the actions given. Experiments show its rankings correlate strongly with real-robot results, and it can also distinguish between checkpoints of the same policy and flag dangerous actions. A May 2026 follow-up, dWorldEval, switched to a discrete diffusion world model and added a “progress token” that automatically judges whether a task is complete.",
+      "example": "Before deploying to a real robot, run several candidate policies — or several checkpoints of the same policy — through WorldEval to rank them first, and only take the top-ranked ones to real-robot validation.",
+      "related": ["World-Model-based Policy Evaluation", "World Model", "Video Generation Model", "Latent Action", "Sim-to-Real Correlation (Pearson r)", "Ctrl-World: A Controllable Generative World Model for Robot Manipulation"]
+    },
+    {
+      "key": "sim-18#7",
+      "name_en": "WorldScore: A Unified Evaluation Benchmark for World Generation",
+      "aliases": ["WorldScore"],
+      "one_liner": "Stanford's unified world-generation benchmark that lets 3D and 4D scene-generation models and video models be compared on the same scale.",
+      "explanation": "WorldScore is a world-generation evaluation benchmark released in April 2025 by Fei-Fei Li and Jiajun Wu's group at Stanford, included in ICCV 2025. World generation means producing, from an image or text, a scene that can be explored along a camera path; up to that point, 3D scene generation, 4D scene generation, and video generation models were each evaluated separately, with no way to compare across them directly. WorldScore unifies the task into a chain of “generate the next scene” steps, with each step's layout specified by a camera trajectory, over a dataset of 3,000 examples. Metrics fall into three groups: controllability (camera, object, and content alignment), quality (3D consistency, photometric and style consistency, subjective quality), and dynamics (motion accuracy, magnitude, and smoothness), combined into two overall scores, WorldScore-Static and WorldScore-Dynamic.",
+      "example": "The paper used the same set of examples to evaluate 19 open- and closed-source models across four categories — 3D scene generation, 4D scene generation, image-to-video, and text-to-video — and maintains a public leaderboard.",
+      "related": ["World Model", "Video Generation Model", "4D World Model", "Marble (World Labs 3D world generation model)", "WorldArena: A Unified Benchmark for Evaluating Perception and Functional Utility of Embodied World Models", "VBench: Comprehensive Benchmark Suite for Video Generative Models"]
+    }
+  ]
+}

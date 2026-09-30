@@ -1,0 +1,200 @@
+{"category": "model", "batch": 2, "terms": [
+{
+"name_zh": "基础模型",
+"name_en": "Foundation Model",
+"abbr": "",
+"aliases": ["基座模型", "基模", "预训练大模型", "基座大模型"],
+"tier": 1,
+"one_liner": "在海量数据上预训练、之后能适配到许多下游任务的大模型。",
+"explanation": "「基础模型」一词由斯坦福大学一百多位研究者在 2021 年的长篇综述中提出，指在大规模、多样的数据上训练（多用自监督学习，即不靠人工标注、从数据本身构造训练目标），之后能通过微调或提示适配到大量下游任务的模型，文中举的例子是 BERT、GPT-3、DALL-E。它改变了「一个任务训一个模型」的做法：先花大算力训一个通用底座，各任务在上面少量调整即可；代价是底座的缺陷会被所有下游模型继承。具身智能里，VLA 模型通常以视觉语言模型为底座，而用大量机器人数据预训练、可适配多种机器人和任务的模型，常被称为机器人基础模型或具身大模型。",
+"example": "π0 以谷歌开源的视觉语言模型 PaliGemma（30 亿参数）为底座，加上 3 亿参数的动作专家，用机器人数据训练成一个可以再针对具体任务微调的机器人基础模型。",
+"related": ["大语言模型", "视觉语言模型", "具身大模型", "预训练", "微调", "视觉-语言-动作模型"],
+"sources": [
+{"title": "On the Opportunities and Risks of Foundation Models (Bommasani et al., arXiv:2108.07258)", "url": "https://arxiv.org/abs/2108.07258"},
+{"title": "π0: A Vision-Language-Action Flow Model for General Robot Control (arXiv:2410.24164)", "url": "https://arxiv.org/html/2410.24164"}
+],
+"as_of": "2024-10"
+},
+{
+"name_zh": "通用策略",
+"name_en": "Generalist Robot Policy",
+"abbr": "",
+"aliases": ["通才策略", "通用机器人策略", "Generalist Policy"],
+"tier": 1,
+"one_liner": "一个模型就能在多种任务、场景乃至多种机器人上输出动作的策略。",
+"explanation": "策略（Policy）指根据当前观测决定下一步动作的函数，在机器人学习里通常是一个神经网络。传统做法是每个任务、每台机器人单独训练一个专用策略，换个物体或场景往往要重新采数据重训。通用策略反过来：用多种机器人、多种任务的大规模数据训练一个大模型，让它能按语言指令完成许多任务，遇到新机器人或新任务时只需少量数据微调。2024 年伯克利等团队开源的 Octo 是典型例子，用 Open X-Embodiment（多家机构汇总的跨机器人数据集）中的 80 万条轨迹训练，在 9 种机器人平台上验证。之后的 OpenVLA、π0 等 VLA 模型也都以通用策略为目标。",
+"example": "Octo 预训练好之后，研究者在一台新机器人上只采少量演示数据，用消费级显卡微调几个小时，就能让它适应新的相机输入和新的动作空间。",
+"related": ["策略", "专用策略", "Octo", "跨本体", "视觉-语言-动作模型", "泛化"],
+"sources": [
+{"title": "Octo: An Open-Source Generalist Robot Policy (arXiv:2405.12213)", "url": "https://arxiv.org/abs/2405.12213"},
+{"title": "OpenVLA: An Open-Source Vision-Language-Action Model (arXiv:2406.09246)", "url": "https://arxiv.org/abs/2406.09246"}
+],
+"as_of": "2024-06"
+},
+{
+"name_zh": "分层架构",
+"name_en": "Hierarchical Architecture",
+"abbr": "",
+"aliases": ["分层策略", "分层方案", "Hierarchical Policy", "高层规划 + 底层执行", "分层 VLA"],
+"tier": 1,
+"one_liner": "把机器人决策拆成高层规划和底层执行两级，分别由不同模型负责。",
+"explanation": "分层架构把「做什么」和「怎么做」拆开：高层通常是大语言模型或视觉语言模型，读懂指令和画面，把长任务拆成一步步子任务，运行频率低；底层是技能库、VLA 策略或运动控制器，把每个子任务变成电机指令，运行频率高。两层之间可以传语言指令、关键点或隐向量。早期代表是谷歌 2022 年的 SayCan，让大语言模型从机器人已有的技能里挑下一步；2025 年 Physical Intelligence 与斯坦福、伯克利的 Hi Robot 让视觉语言模型输出简短的语言指令，交给 π0 执行。它常被拿来和端到端（一个模型直接从输入算到动作）对比，但两者并不互斥：国内常说的大小脑、快慢双系统都属于分层思路，而 Helix 这类快慢双系统虽分两层，却是端到端联合训练的。",
+"example": "Figure 的 Helix 分两层：70 亿参数的视觉语言模型以 7–9Hz 理解场景和指令，8000 万参数的底层策略以 200Hz 把它给出的语义表示变成连续动作。",
+"related": ["快慢双系统", "大脑 / 小脑（大小脑架构）", "端到端", "SayCan", "Hi Robot", "长程任务"],
+"sources": [
+{"title": "Do As I Can, Not As I Say: Grounding Language in Robotic Affordances (SayCan, arXiv:2204.01691)", "url": "https://arxiv.org/abs/2204.01691"},
+{"title": "Hi Robot: Open-Ended Instruction Following with Hierarchical Vision-Language-Action Models (arXiv:2502.19417)", "url": "https://arxiv.org/html/2502.19417"},
+{"title": "Helix: A Vision-Language-Action Model for Generalist Humanoid Control (Figure)", "url": "https://www.figure.ai/news/helix"}
+],
+"as_of": "2025-02"
+},
+{
+"name_zh": "推理延迟",
+"name_en": "Inference Latency",
+"abbr": "",
+"aliases": ["推理时延", "模型延迟"],
+"tier": 1,
+"one_liner": "模型从拿到输入到算出输出所花的时间，决定机器人反应快慢。",
+"explanation": "推理延迟指模型收到一帧观测（图像、关节状态、指令）后，跑完前向计算、给出动作所需的时间，常以毫秒计。大模型计算量大，延迟常跟不上机器人几十到几百赫兹的控制频率：70 亿参数的 OpenVLA 在 RTX 4090 上约 6Hz 出一次动作；π0 论文在同款显卡上测得，3 路图像时一次完整推理约 73 毫秒，改在机器人外的电脑上算、经 Wi-Fi 传输则约 86 毫秒。延迟过大会让机器人在两段动作之间停顿，或跟不上移动的物体。常见对策有动作分块（一次输出几十步动作）、异步推理（执行当前动作的同时计算下一段）、量化与推理加速，以及让大小模型分层、各按自己的频率运行。",
+"example": "π0 控制 50Hz 的机器人时，一次推理输出 50 步动作，执行 25 步（0.5 秒）后再推理下一段，而不是每一步都跑一次大模型。",
+"related": ["推理（前向计算）", "动作分块", "异步推理", "实时动作分块", "控制频率", "训练后量化"],
+"sources": [
+{"title": "π0: A Vision-Language-Action Flow Model for General Robot Control (arXiv:2410.24164)", "url": "https://arxiv.org/html/2410.24164"},
+{"title": "OpenVLA: An Open-Source Vision-Language-Action Model (arXiv:2406.09246)", "url": "https://arxiv.org/html/2406.09246"},
+{"title": "Real-Time Execution of Action Chunking Flow Policies (arXiv:2506.07339)", "url": "https://arxiv.org/abs/2506.07339"}
+],
+"as_of": "2025-06"
+},
+{
+"name_zh": "大语言模型",
+"name_en": "Large Language Model",
+"abbr": "LLM",
+"aliases": ["大模型", "语言大模型"],
+"tier": 1,
+"one_liner": "用海量文本训练、能理解和生成自然语言的超大神经网络。",
+"explanation": "大语言模型是用海量文本训练的神经网络，一般基于 Transformer 架构，主要训练目标是「预测下一个 token」（token 是模型处理文本的最小单位）。规模变大后，它们不改参数、只看提示里的几个例子就能做新任务：OpenAI 2020 年的 GPT-3 有 1750 亿参数，论文展示了这种少样本能力；2022 年底 ChatGPT 发布后大语言模型开始被广泛使用。机器人领域主要用它理解人的指令、把长任务拆成步骤（如 SayCan）、生成控制代码（如代码即策略）。多数 VLA 模型的主干也是大语言模型，例如 OpenVLA 基于 Llama 2，再接上视觉编码器。",
+"example": "对机器人说「我把可乐洒了，能拿个东西来清理吗」，SayCan 让大语言模型给机器人会的每个技能打分，再结合「这一步现在能否做成」的估计，依次选出「找到海绵、拿起海绵、拿给你、结束」，机器人逐步执行。",
+"related": ["Transformer", "token（词元）", "下一个 token 预测", "视觉语言模型", "大模型任务规划", "SayCan"],
+"sources": [
+{"title": "Language Models are Few-Shot Learners (GPT-3, arXiv:2005.14165)", "url": "https://arxiv.org/abs/2005.14165"},
+{"title": "Large language model (Wikipedia)", "url": "https://en.wikipedia.org/wiki/Large_language_model"},
+{"title": "SayCan project page", "url": "https://say-can.github.io/"}
+],
+"as_of": ""
+},
+{
+"name_zh": "神经网络",
+"name_en": "Neural Network (Deep Neural Network)",
+"abbr": "",
+"aliases": ["人工神经网络", "深度神经网络", "ANN", "DNN"],
+"tier": 1,
+"one_liner": "由大量人工神经元分层连接、靠调整连接权重从数据中学习的模型。",
+"explanation": "神经网络是一类机器学习模型，由许多简单的计算单元（人工神经元）连接而成：每个单元把输入加权求和，再经过一个非线性函数（激活函数）传给下一层。连接的强弱叫权重，也就是模型的参数。训练时先用损失函数衡量输出和正确答案的差距，再用反向传播算出每个权重该往哪个方向改，反复迭代让误差变小。输入层和输出层之间的隐藏层不少于两层时，一般称为深度神经网络。2012 年 AlexNet 在 ImageNet 图像识别比赛中大幅领先传统方法，带动了深度学习的兴起。如今具身智能里的视觉编码器、Transformer、VLA 和强化学习策略，本质上都是神经网络。",
+"example": "足式机器人常用的强化学习行走策略往往就是一个几层的多层感知机：输入关节角度、IMU 读数和速度指令，输出每个关节的目标角度。",
+"related": ["多层感知机", "卷积神经网络", "Transformer", "反向传播", "参数量", "损失函数"],
+"sources": [
+{"title": "Neural network (machine learning) (Wikipedia)", "url": "https://en.wikipedia.org/wiki/Neural_network_(machine_learning)"}
+],
+"as_of": ""
+},
+{
+"name_zh": "参数量",
+"name_en": "Parameter Count (Model Size)",
+"abbr": "",
+"aliases": ["模型规模", "模型大小", "B（十亿参数）", "M（百万参数）"],
+"tier": 1,
+"one_liner": "模型里可训练数值（权重）的总个数，常用 B（十亿）、M（百万）表示。",
+"explanation": "参数是神经网络里通过训练学出来的数值，主要是各层的权重和偏置，参数量就是它们的总数。7B 指 70 亿（billion）个参数，300M 指 3 亿（million）。参数量大体决定模型的容量，以及训练和部署要花多少算力、显存和时间。只算权重的话，显存可粗估为「参数量 × 每个参数的字节数」：名为 7B 的 OpenVLA 实际约 75 亿参数，用 bfloat16（每参数 2 字节）加载约占 15GB，运行时还要再多一些。机器人模型规模跨度很大：RT-2 最大 550 亿，π0 约 33 亿，Hugging Face 的 SmolVLA 只有 4.5 亿。参数多不一定更好：OpenVLA 的参数只有 RT-2-X（550 亿）的约七分之一，在 29 个任务上的总体成功率反而高 16.5 个百分点。",
+"example": "Figure 的 Helix 让两部分规模悬殊：负责理解的视觉语言模型 70 亿参数、每秒只跑 7–9 次，负责出动作的策略 8000 万参数、每秒跑 200 次。",
+"related": ["神经网络", "缩放定律", "推理延迟", "训练后量化", "端侧模型", "基础模型"],
+"sources": [
+{"title": "OpenVLA: An Open-Source Vision-Language-Action Model (arXiv:2406.09246)", "url": "https://arxiv.org/html/2406.09246"},
+{"title": "RT-2: Vision-Language-Action Models (project page)", "url": "https://robotics-transformer2.github.io/"},
+{"title": "SmolVLA: Efficient Vision-Language-Action Model trained on LeRobot Community Data (Hugging Face blog)", "url": "https://huggingface.co/blog/smolvla"}
+],
+"as_of": "2025-06"
+},
+{
+"name_zh": "大脑 / 小脑（大小脑架构）",
+"name_en": "Robot Brain / Cerebellum (Brain-Cerebellum Architecture)",
+"abbr": "",
+"aliases": ["大小脑架构", "大小脑", "具身大脑", "运动小脑", "Brain-Cerebellum Architecture"],
+"tier": 1,
+"one_liner": "国内对机器人分层系统的叫法：「大脑」管理解和规划，「小脑」管动作控制。",
+"explanation": "这是国内具身智能圈借用人脑分工的通俗说法，本质是一种分层架构。「大脑」一般是多模态大模型（能同时处理图像和文字的大模型），负责看懂场景、理解指令、拆解任务和纠错，运行频率低；「小脑」负责把子任务变成连续、稳定的关节动作，可以是 VLA 策略、技能库，也可以是强化学习训练出的或基于模型预测控制的运动控制器，频率高、更贴近硬件。智源研究院 2025 年的 RoboOS 把多模态大模型 RoboBrain 作为大脑，把可插拔的技能库称为小脑。各家对「小脑」边界的说法不一，有的只指行走、平衡等运动控制，有的把抓取策略也算进去。工信部 2023 年印发的《人形机器人创新发展指导意见》也按「大脑、小脑、肢体」划分关键技术：大脑基于人工智能大模型，小脑负责运动控制。",
+"example": "在智源 RoboOS 的餐厅演示里，顾客说「我饿了，要一个普通汉堡」，RoboBrain 把它拆成备餐、送餐等子任务，分给一台人形机器人和一台双臂机器人，各自再调用小脑技能库里的技能执行。",
+"related": ["分层架构", "快慢双系统", "大脑-小脑架构（大小脑）", "智源 RoboBrain（具身大脑）", "运动控制", "全身控制"],
+"sources": [
+{"title": "RoboOS: A Hierarchical Embodied Framework for Cross-Embodiment and Multi-Agent Collaboration (arXiv:2505.03673)", "url": "https://arxiv.org/abs/2505.03673"},
+{"title": "《人形机器人创新发展指导意见》解读（工业和信息化部）", "url": "https://www.miit.gov.cn/zwgk/zcjd/art/2023/art_e3f5686c2f0d49f9968b7ae011d558e1.html"}
+],
+"as_of": "2025-06"
+},
+{
+"name_zh": "token（词元）",
+"name_en": "Token",
+"abbr": "",
+"aliases": ["词元", "token", "标记"],
+"tier": 1,
+"one_liner": "模型处理数据的基本单位，文字、图像小块、动作都能切成 token。",
+"explanation": "Token 是 Transformer 类模型读入和输出的基本单位。文本先由分词器（tokenizer）切成词或子词片段，每个片段在词表里有一个编号，再转成向量（嵌入）送进模型；大语言模型的训练目标就是预测下一个 token。英文里一个 token 常是一个词或词的一部分，一个汉字可能对应一个 token，也可能被拆开或与相邻字合并，取决于分词器。这个概念后来推广到其他模态：ViT 把图片切成 16×16 像素的小块，每块算一个视觉 token；RT-2 和 OpenVLA 把每个动作维度离散成 256 档，每档对应一个 token，让语言模型像写字一样输出动作。上下文长度按 token 数计算，推理耗时也随 token 数增加。",
+"example": "OpenVLA 把 Llama 分词器里最少用的 256 个 token 改作动作档位，一个 7 维动作（位置、姿态、夹爪开合）就输出 7 个 token。",
+"related": ["分词器", "嵌入向量", "视觉 token", "动作分词器", "下一个 token 预测", "上下文长度"],
+"sources": [
+{"title": "Tokenizers (Hugging Face LLM Course, Chapter 2)", "url": "https://huggingface.co/learn/llm-course/chapter2/4"},
+{"title": "OpenVLA: An Open-Source Vision-Language-Action Model (arXiv:2406.09246)", "url": "https://arxiv.org/html/2406.09246"},
+{"title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale (ViT, arXiv:2010.11929)", "url": "https://arxiv.org/abs/2010.11929"}
+],
+"as_of": ""
+},
+{
+"name_zh": "Transformer",
+"name_en": "Transformer",
+"abbr": "",
+"aliases": ["Transformer 架构", "变换器"],
+"tier": 1,
+"one_liner": "以注意力机制为核心的神经网络架构，是大模型和 VLA 的共同主干。",
+"explanation": "Transformer 由谷歌团队在 2017 年的论文《Attention Is All You Need》中提出，最初用于机器翻译。它完全去掉了循环和卷积结构，只靠注意力机制（让序列里每个 token 直接参考其他所有 token，按相关程度加权汇总信息）处理序列。相比逐步处理的循环神经网络，它能并行计算、训练更快、更容易扩大规模，因此成了 GPT、Llama 等大语言模型和 ViT 等视觉模型的共同架构。原版是编码器-解码器结构，GPT 类模型只用解码器部分。机器人领域在 2022 年前后开始大量采用，谷歌的 RT-1（Robotics Transformer）是代表之一；如今的 VLA、世界模型和不少扩散策略都以 Transformer 为主干。",
+"example": "OpenVLA 的主干 Llama 2 是一个仅解码器的 Transformer：图像 token 和指令 token 排成一个序列输入，模型再逐个输出代表动作的 token。",
+"related": ["注意力机制", "自注意力", "仅解码器架构", "编码器-解码器", "视觉 Transformer", "RT-1"],
+"sources": [
+{"title": "Attention Is All You Need (Vaswani et al., arXiv:1706.03762)", "url": "https://arxiv.org/abs/1706.03762"},
+{"title": "OpenVLA: An Open-Source Vision-Language-Action Model (arXiv:2406.09246)", "url": "https://arxiv.org/abs/2406.09246"}
+],
+"as_of": ""
+},
+{
+"name_zh": "视觉编码器",
+"name_en": "Vision Encoder",
+"abbr": "",
+"aliases": ["图像编码器", "Image Encoder", "视觉骨干网络"],
+"tier": 1,
+"one_liner": "把图像转成一组特征向量（视觉 token）供后续模型使用的网络。",
+"explanation": "视觉编码器负责把像素变成模型能用的特征：输入一张图，输出一组向量，每个向量概括图中一小块区域的内容。早期多用卷积神经网络（如 ResNet），现在主流是视觉 Transformer（ViT），它把图像切成小块（原版 ViT 是 16×16 像素），每块先变成一个向量，再用注意力让各块互相交换信息。编码器的能力主要来自预训练：OpenAI 2021 年的 CLIP 用 4 亿对网络图文训练，把图像和文字对齐到同一空间；SigLIP 是谷歌在它基础上改进的版本；Meta 的 DINOv2 只用图像做自监督训练，保留的空间和几何细节更多。VLA 通常直接用现成的视觉编码器，经投影层把特征接到语言模型上，训练时可冻结，也可一起微调。",
+"example": "OpenVLA 把 224×224 的图像同时送进 SigLIP 和 DINOv2，把两路特征按通道拼在一起，再用一个两层 MLP 投影层变成语言模型能读的视觉 token。",
+"related": ["视觉 Transformer", "CLIP", "SigLIP", "DINOv2", "投影层", "视觉 token"],
+"sources": [
+{"title": "An Image is Worth 16x16 Words (ViT, arXiv:2010.11929)", "url": "https://arxiv.org/abs/2010.11929"},
+{"title": "Learning Transferable Visual Models From Natural Language Supervision (CLIP, arXiv:2103.00020)", "url": "https://arxiv.org/abs/2103.00020"},
+{"title": "OpenVLA: An Open-Source Vision-Language-Action Model (arXiv:2406.09246)", "url": "https://arxiv.org/html/2406.09246"}
+],
+"as_of": "2024-06"
+},
+{
+"name_zh": "视觉语言模型",
+"name_en": "Vision-Language Model",
+"abbr": "VLM",
+"aliases": ["视觉语言大模型", "视觉-语言模型", "图文大模型"],
+"tier": 1,
+"one_liner": "能同时看图和读文字、再用文字作答的模型，是多数 VLA 的底座。",
+"explanation": "视觉语言模型接收图像和文本、输出文本，能描述图片、回答关于图片的问题、指出物体位置。常见结构有三部分：视觉编码器把图像变成特征，投影层把特征对齐到语言模型的输入空间，语言模型负责理解和生成文字。2023 年的 LLaVA 就是 CLIP 编码器加投影层加 Vicuna 语言模型；谷歌 2024 年开源的 PaliGemma 由 SigLIP 编码器和 Gemma-2B 组成，约 30 亿参数。VLM 从互联网图文里学到的物体、常识和空间知识正是机器人缺的，所以大多数 VLA 从 VLM 出发：RT-2 在 PaLI-X、PaLM-E 上加入机器人数据联合微调，π0 以 PaliGemma 为底座。VLM 也常单独用作分层架构的高层规划器。",
+"example": "给 VLM 一张厨房照片问「水槽左边有什么」，它用文字回答；把输出换成动作 token、再用机器人数据训练，就得到 RT-2 这类 VLA。",
+"related": ["视觉-语言-动作模型", "视觉编码器", "投影层", "大语言模型", "PaliGemma", "多模态大语言模型"],
+"sources": [
+{"title": "Vision Language Models Explained (Hugging Face blog)", "url": "https://huggingface.co/blog/vlms"},
+{"title": "PaliGemma: A versatile 3B VLM for transfer (arXiv:2407.07726)", "url": "https://arxiv.org/abs/2407.07726"},
+{"title": "RT-2: Vision-Language-Action Models (project page)", "url": "https://robotics-transformer2.github.io/"}
+],
+"as_of": "2024-07"
+}
+]}

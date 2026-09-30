@@ -1,0 +1,233 @@
+{
+ "batch": "sim-02",
+ "terms": [
+  {
+   "key": "sim-02#0",
+   "name_en": "Sim-to-Real Transfer",
+   "aliases": [
+    "Sim2Real"
+   ],
+   "one_liner": "Training a robot policy in simulation, then deploying it to work on a real robot.",
+   "explanation": "Sim-to-real transfer means training a robot policy in a simulator first, then deploying it on a real robot. Simulation can run thousands of environments at once, and a failure costs nothing, so reinforcement-learning policies for quadruped and humanoid walking and dexterous manipulation are mostly trained in simulation first. The difficulty is the sim-to-real gap: friction, mass, motor response, and visuals in simulation never fully match reality, and a policy can fail once it reaches a real robot. Common countermeasures include domain randomization (randomizing physical and visual parameters during training so the real world is just one more case the policy has seen), system identification (calibrating simulation parameters from real-robot data), actuator modeling (using real-robot data to model the simulated motors so they respond like the real ones), and teacher-student distillation (first training a teacher policy that can see the simulator's full state, then having a student policy that only uses sensors available on the real robot imitate it). In 2017, Tobin and colleagues trained an object detector using only simulated images with randomized textures and achieved about 1.5 cm of localization error in the real world — an early landmark result.",
+   "example": "ETH Zurich's ANYmal quadruped: a walking policy is trained with reinforcement learning in simulation and combined with an actuator network learned from real-robot data, then deployed directly to the real robot, where it runs faster than earlier methods and can even get back up after falling.",
+   "related": [
+    "Sim-to-real gap",
+    "Domain randomization",
+    "System identification",
+    "Actuator modeling",
+    "Real-to-sim",
+    "Teacher-student distillation"
+   ]
+  },
+  {
+   "key": "sim-02#1",
+   "name_en": "SimplerEnv",
+   "aliases": [
+    "SIMPLER: Simulated Manipulation Policy Evaluation for Real Robot Setups",
+    "SIMPLER"
+   ],
+   "one_liner": "A simulated evaluation suite that replicates common real-robot manipulation setups for cheap policy scoring.",
+   "explanation": "SimplerEnv (paper name: SIMPLER) was proposed in 2024 by researchers at UC San Diego, Stanford, UC Berkeley, and Google DeepMind, published at CoRL 2024. It replicates two widely used real-robot setups inside the SAPIEN/ManiSkill simulator: the Google Robot platform used to collect Google's RT-1 dataset, and the WidowX arm used with the Bridge dataset — so a policy trained on real-robot data can be scored without ever touching the real robot. To narrow the sim-to-real gap, it calibrates controller parameters and offers two evaluation modes: “visual matching” (compositing simulated objects onto a real background image) and “variant aggregation” (building several simulated variants with different backgrounds, lighting, and tabletop textures, then averaging the results). The authors verified that simulated and real-robot rankings of methods correlate closely, and many VLA papers since have reported success rate on it.",
+   "example": "To evaluate a WidowX policy, run tasks like “put the spoon on the towel,” “put the carrot on the plate,” and “put the eggplant in the basket” directly in SimplerEnv and tally success rate, without arranging objects by hand on a real robot each time.",
+   "related": [
+    "Simulation-based evaluation",
+    "Visual matching",
+    "Variant aggregation",
+    "Mean Maximum Rank Violation",
+    "Sim-real correlation",
+    "ManiSkill"
+   ]
+  },
+  {
+   "key": "sim-02#2",
+   "name_en": "Simulation-Based Evaluation",
+   "aliases": [
+    "Sim Evaluation"
+   ],
+   "one_liner": "Running a policy through many tasks in a simulator and tallying success rate, instead of or alongside real-robot testing.",
+   "explanation": "Simulation-based evaluation means placing a trained robot policy in a simulator and running it through tasks under fixed initial conditions and judging rules, tallying success rate and other metrics. Real-robot evaluation requires a person to place objects and reset the scene by hand, so running dozens or hundreds of trials per policy is slow, and setups differ enough between labs that results are hard to reproduce; simulated evaluation, by contrast, can run automatically, at scale, and repeatably, and is commonly used to compare algorithms, run ablation studies, and pick checkpoints. Common benchmarks include LIBERO, CALVIN, SimplerEnv, and RoboTwin. The main concern is that a simulated score doesn't always reflect real-robot performance — visuals, physics, and the controller all differ from reality, and quite a few benchmarks are already close to saturated — so researchers check the correlation between simulated and real-robot scores, and use real-robot evaluation or world-model-based evaluation as a supplement.",
+   "example": "The OpenVLA-OFT paper runs simulation-based evaluation on LIBERO's four task suites, raising OpenVLA's average success rate from 76.5% to 97.1%.",
+   "related": [
+    "Real-world evaluation",
+    "Benchmark",
+    "Success rate",
+    "SimplerEnv",
+    "LIBERO",
+    "Sim-real correlation"
+   ]
+  },
+  {
+   "key": "sim-02#3",
+   "name_en": "Simulator",
+   "aliases": [
+    "Simulation"
+   ],
+   "one_liner": "Software that models in a computer how robots, objects, and sensors move and interact.",
+   "explanation": "A simulator is software that recreates a robot and its environment inside a computer. It typically includes a physics engine, which advances the state forward each step by computing forces, collisions, and contact; a renderer, which generates camera images, depth, and other sensor data; scenes and assets, meaning the robot model and various objects; and an interface for algorithms to call, such as resetting the environment, executing one action, and returning observations and reward. In embodied AI, simulators are used to train reinforcement-learning policies, generate synthetic data, and run simulation-based evaluation, and their appeal is being cheap, safe, parallelizable, and reproducible. Common ones include MuJoCo (maintained by Google DeepMind, open-sourced in 2022), NVIDIA's Isaac Sim/Isaac Lab, PyBullet, Genesis, and SAPIEN. The core challenge is always the gap between it and reality.",
+   "example": "The ACT paper built two simulated bimanual tasks in MuJoCo, “transfer cube” and “bimanual insertion,” so others could reproduce the experiments without buying ALOHA hardware.",
+   "related": [
+    "Physics engine",
+    "Rendering",
+    "Sim-to-real transfer",
+    "MuJoCo",
+    "Isaac Sim",
+    "Simulation-based evaluation"
+   ]
+  },
+  {
+   "key": "sim-02#4",
+   "name_en": "State of the Art (SOTA)",
+   "aliases": [
+    "SOTA",
+    "SotA",
+    "state-of-the-art"
+   ],
+   "one_liner": "The best publicly reported result on a given task or benchmark, commonly abbreviated SOTA.",
+   "explanation": "“State of the art” originally refers to the highest level of technical achievement a field has reached at a given time; the English phrase already appears in engineering literature from the early 20th century. In machine learning papers, SOTA refers specifically to the best current result on a public benchmark under the same evaluation protocol — for example, “achieves SOTA on LIBERO.” It's a convenient yardstick for comparing methods, but three caveats apply: it only holds for a specific benchmark and setting, and may not carry over to different data or a different robot; embodied AI's simulated benchmarks saturate easily, so a lead of a fraction of a percentage point can be within statistical noise; and real-robot results are hard to compare across labs because of differences in setup and objects. The website Papers with Code used to aggregate leaderboards for many tasks; that domain now redirects to Hugging Face's papers page.",
+   "example": "In 2025, OpenVLA-OFT reached 97.1% average success rate across LIBERO's four task suites, which the paper describes as a new SOTA on that benchmark.",
+   "related": [
+    "Benchmark",
+    "Benchmark saturation",
+    "Benchmark hacking (leaderboard chasing)",
+    "Success rate",
+    "Ablation study"
+   ]
+  },
+  {
+   "key": "sim-02#5",
+   "name_en": "Success Rate",
+   "aliases": [
+    "SR",
+    "Task Success Rate"
+   ],
+   "one_liner": "The fraction of attempts at the same task that a policy completes successfully — the most common robotics metric.",
+   "explanation": "Success rate is the most commonly used evaluation metric in robot learning: a policy attempts the same task N times (each attempt called an episode, usually with a randomized initial object position), the number of successes is counted against a predefined criterion (such as “the block ends up in the target zone”), and that count is divided by N. It's intuitive and easy to compare across methods, but it carries limited information — it only looks at the final outcome, and doesn't distinguish a near-miss from a total failure — so it's often reported alongside subtask success rate, a progress score, or average completed length. Success rate is also very sensitive to the number of trials: one extra success out of 25 trials shifts the number by 4 percentage points, so rigorous papers report the number of trials and random seeds used, and ideally a confidence interval. Simulation can run hundreds or thousands of episodes at once; real-robot testing is usually limited to a few dozen.",
+   "example": "The ACT paper averages success rate over 3 random seeds with 50 trials each for simulated tasks; for real-robot tasks it runs 25 trials each, with “open a sealed bag” reaching 88% success.",
+   "related": [
+    "Progress score",
+    "Average completed length",
+    "Episode",
+    "Simulation-based evaluation",
+    "Real-world evaluation",
+    "Evaluation statistical significance (confidence intervals / sequential testing / multiple seeds)"
+   ]
+  },
+  {
+   "key": "sim-02#6",
+   "name_en": "Ablation Study",
+   "aliases": [
+    "ablation"
+   ],
+   "one_liner": "Removing or swapping one component of a method to see how performance changes, testing whether it matters.",
+   "explanation": "An ablation study starts from a complete method and removes or replaces one component at a time — a module, a loss term, an input modality, a data source, or a training trick — then retrains and re-evaluates under the same settings and compares the change in performance, to judge how much each design choice actually contributes. The term is borrowed from biology, where removing part of a tissue is used to study its function; according to Wikipedia, the AI pioneer Allen Newell used it in a 1974 speech-recognition tutorial. It's a paper's main evidence for explaining why it was designed a certain way: if removing a module barely changes performance, that suggests it isn't essential. Other variables need to be held fixed during an ablation, and enough trials need to be run for the comparison, or the difference observed may just be noise.",
+   "example": "The ACT paper's ablations separately remove action chunking, temporal ensembling, and CVAE training, finding that when training on human demonstration data, removing the CVAE clearly hurts success rate.",
+   "related": [
+    "Baseline",
+    "State of the art",
+    "Success rate",
+    "Action chunking",
+    "Temporal ensembling"
+   ]
+  },
+  {
+   "key": "sim-02#7",
+   "name_en": "Actuator Modeling (Actuator Network)",
+   "aliases": [
+    "Actuator Network",
+    "Actuator Net",
+    "implicit actuator",
+    "explicit actuator"
+   ],
+   "one_liner": "Simulating how a real motor's torque output actually responds to a command, to narrow the sim-to-real gap.",
+   "explanation": "Actuator modeling means describing, inside a simulation, how a real motor and gearbox actually behave: given a target joint position, how much torque it can really deliver, and with how much delay and saturation. A simulator's default ideal PD control responds faster and more cleanly than a real motor does, and a policy trained against that ideal often jitters or lags once it reaches a real robot — a significant source of the sim-to-real gap. There are two general approaches: analytical motor models that add torque limits, speed saturation, or command delay; and actuator networks, which originated in ETH Zurich and Intel's 2019 ANYmal work, where a small neural network is trained on less than 4 minutes of real-robot data to predict torque from a short history of joint position error and velocity, and is then plugged into the simulator for policy training. Isaac Lab calls the case where the physics engine computes PD control internally an “implicit actuator,” and calls this kind of custom model an “explicit actuator.”",
+   "example": "Isaac Lab provides actuator classes such as DCMotor (with speed-torque saturation), DelayedPDActuator (with command delay), and the neural-network-based ActuatorNetMLP and ActuatorNetLSTM, chosen to match the real motor's characteristics when training a quadruped policy.",
+   "related": [
+    "Sim-to-real transfer",
+    "Sim-to-real gap",
+    "System identification",
+    "PD control",
+    "Series elastic actuator",
+    "Isaac Lab"
+   ]
+  },
+  {
+   "key": "sim-02#8",
+   "name_en": "AI2-THOR",
+   "aliases": [
+    "ai2thor",
+    "iTHOR"
+   ],
+   "one_liner": "The Allen Institute for AI's interactive indoor 3D simulator, widely used for navigation and household tasks.",
+   "explanation": "AI2-THOR is an open-source indoor simulation platform from the Allen Institute for AI (Ai2), with its paper published in 2017, built on the Unity engine. It offers near-photorealistic kitchen, bedroom, bathroom, and living-room scenes that an agent can walk through and interact with — opening a cabinet door, picking up and putting down objects, turning appliances on and off — with objects' open/closed and hot/cold states, among others, changing accordingly. It emphasizes high-level semantic interaction over fine-grained contact physics, so it's mostly used for visual navigation, embodied question answering, instruction following, and task planning. It includes several sub-frameworks: iTHOR (120 rooms with over 2,000 object types), RoboTHOR (apartment scenes with a matching physical test space), ManipulaTHOR (adds robot-arm manipulation), and ProcTHOR (procedurally generates large numbers of houses).",
+   "example": "In an iTHOR kitchen scene, an agent can execute a sequence like “walk to the fridge,” “open the fridge,” and “pick up the apple,” with the fridge door's open/closed state changing accordingly.",
+   "related": [
+    "ProcTHOR",
+    "ALFRED",
+    "Habitat",
+    "Object goal navigation",
+    "Embodied question answering",
+    "Allen Institute for AI"
+   ]
+  },
+  {
+   "key": "sim-02#9",
+   "name_en": "ALOHA Sim (Transfer Cube / Insertion)",
+   "aliases": [
+    "gym-aloha",
+    "Transfer Cube",
+    "Insertion",
+    "AlohaTransferCube-v0",
+    "AlohaInsertion-v0"
+   ],
+   "one_liner": "The two bimanual simulated tasks — cube transfer and peg insertion — built in MuJoCo for the ACT paper.",
+   "explanation": "The ALOHA simulated tasks are two bimanual fine-manipulation tasks built in MuJoCo by Tony Zhao and colleagues for the 2023 ACT (Action Chunking Transformer) paper, meant to let others reproduce the results easily. Transfer Cube requires the right arm to pick up a red block on the table and hand it off into the left arm's gripper, with roughly a 1 cm clearance; Insertion requires the two arms to each pick up a socket and a peg and mate them in mid-air, with roughly a 5 mm clearance. Each task ships with 50 scripted demonstrations and 50 human-teleoperated ones. Hugging Face packaged it as the gym-aloha environment (a 14-dimensional action space: 6 joints plus 1 gripper per arm), and provides the dataset through LeRobot, making it a common starting benchmark for learning imitation learning.",
+   "example": "The ACT project's own documentation notes that, trained on 50 scripted demonstrations, success rate should land around 90% for cube transfer and around 50% for insertion.",
+   "related": [
+    "ACT",
+    "ALOHA bimanual platform",
+    "Bimanual manipulation",
+    "LeRobot",
+    "MuJoCo",
+    "Imitation learning"
+   ]
+  },
+  {
+   "key": "sim-02#10",
+   "name_en": "Arcade Learning Environment (ALE) / Atari 100k",
+   "aliases": [
+    "Arcade Learning Environment",
+    "Atari 100k",
+    "Atari 2600 benchmark"
+   ],
+   "one_liner": "The standard platform for testing reinforcement learning on Atari 2600 games; Atari 100k is its low-sample variant.",
+   "explanation": "The Arcade Learning Environment (ALE) was proposed by Bellemare and colleagues, with the paper published in JAIR in 2013. Built on the Stella emulator, it wraps over a hundred Atari 2600 games behind a uniform interface: the agent sees screen pixels, chooses joystick actions, and receives the game score as reward. After DQN reached human-level performance on it in 2015, it became the most widely used benchmark in deep reinforcement learning, and is now maintained by the Farama Foundation. Atari 100k comes from the 2019 SimPLe paper: across 26 games, the agent is allowed only about 100,000 steps of interaction (roughly two hours of gameplay), specifically to test sample efficiency, and world-model methods such as DreamerV3 and DIAMOND are commonly compared on it. A great deal of the reinforcement-learning and world-model technology used in embodied AI today was first validated here.",
+   "example": "Under the Atari 100k setting, an agent playing Breakout gets only about two hours' worth of interaction data to learn from, and its score is then compared, normalized, against human performance.",
+   "related": [
+    "Reinforcement learning",
+    "Deep Q-Network",
+    "Sample efficiency",
+    "World model",
+    "DreamerV3",
+    "DIAMOND (diffusion world model)"
+   ]
+  },
+  {
+   "key": "sim-02#11",
+   "name_en": "Articulated Object",
+   "aliases": [
+    "jointed object"
+   ],
+   "one_liner": "An object made of parts connected by joints that can rotate or slide relative to each other.",
+   "explanation": "An articulated object is made of two or more rigid parts connected by joints that let them move relative to each other — a cabinet or refrigerator door swinging on a hinge (a revolute joint), a drawer sliding out on a rail (a prismatic joint), and also things like a laptop, scissors, or a faucet. Much of what a household robot needs to handle falls into this category. Manipulating them is harder than grasping a single rigid body: the robot has to recognize which part can move, where its joint axis is, and how far it can travel, then apply force along the constrained trajectory — pull it off-axis and it jams. In simulation, articulated objects are usually described as a tree of links and joints using formats such as URDF; a common asset library is PartNet-Mobility, released by the SAPIEN team in 2020, with 46 categories and 2,346 object models annotated with joints.",
+   "example": "In SimplerEnv's Google Robot “open/close drawer” task, the drawer is connected to the cabinet body by a prismatic joint, and the robot has to pull it out or push it back in along the rail direction.",
+   "related": [
+    "Articulated object manipulation",
+    "PartNet-Mobility dataset",
+    "Revolute joint",
+    "Prismatic joint",
+    "Articulation (joint structure) estimation",
+    "Unified Robot Description Format (URDF)"
+   ]
+  }
+ ]
+}

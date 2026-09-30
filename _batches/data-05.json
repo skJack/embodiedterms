@@ -1,0 +1,202 @@
+{"category": "data", "batch": 5, "terms": [
+{
+"name_zh": "多模态数据",
+"name_en": "Multimodal Data",
+"abbr": "",
+"aliases": ["全模态数据", "Omni-modal Data"],
+"tier": 2,
+"one_liner": "同一时刻同步记录的图像、深度、关节状态、力触觉、语言等多路信号。",
+"explanation": "在具身智能里，多模态数据指机器人干活时同步采下的多路信号：多视角 RGB 图像、深度图、本体感知（关节角、末端位姿等机器人自身状态）、力或触觉读数、语言指令，有时还有声音。只靠相机看不到被手挡住的接触点，也看不出用了多大力，所以精细操作往往要把视觉之外的信号一起记下。以北京人形机器人创新中心和北大的 RoboMIND 为例，每条轨迹存成一个 HDF5 文件，里面有多视角 RGB-D、本体状态、末端状态和遥操作者的身体状态；RoboMIND 2.0 又加了 1.2 万条带触觉的片段。难点在各路信号的时间同步、存储体积，以及某一路缺失时怎么训练。",
+"example": "RoboMIND 2.0 的触觉增强片段里，同一时刻既有多视角 RGB-D 画面和关节状态，也有他山触觉传感器测到的法向力与切向力。",
+"related": ["多模态融合", "触觉数据", "本体感知", "多传感器时间同步（时间戳对齐）", "HDF5 格式", "RoboMIND 数据集"],
+"sources": [
+{"title": "RoboMIND: Benchmark on Multi-embodiment Intelligence Normative Data for Robot Manipulation (arXiv HTML)", "url": "https://arxiv.org/html/2412.13877v3"},
+{"title": "RoboMIND 2.0: A Multimodal, Bimanual Mobile Manipulation Dataset for Generalizable Embodied Intelligence", "url": "https://arxiv.org/abs/2512.24653"}
+],
+"as_of": "2025-12"
+},
+{
+"name_zh": "观测-动作对",
+"name_en": "Observation-Action Pair",
+"abbr": "",
+"aliases": ["状态-动作对", "State-Action Pair"],
+"tier": 2,
+"one_liner": "某一时刻机器人「看到了什么」和「接着做了什么」配成的一条训练样本。",
+"explanation": "模仿学习数据的最小单位。每个时间步记一份观测 o（相机图像、关节角等本体状态，常附语言指令）和这一刻执行的动作 a（目标关节角、末端位移或夹爪开合），一条演示轨迹就是按时间排好的一串 (o, a)。行为克隆把它当监督学习来做：输入 o，预测 a。严格讲，「状态」是环境的完整描述，「观测」只是传感器看得到的那部分，真机上一般只有观测。这些样本前后相关，策略一旦走偏就会遇到训练里没见过的观测，误差越积越大，这就是复合误差。LeRobot 数据集每一帧的 observation.state、observation.images 和 action 就是这种结构。",
+"example": "用 LeRobot 以每秒 30 帧录一条 SO-101 抓方块的演示，每一帧都存下相机画面、从臂的关节读数，以及主臂此刻给出的目标关节角作为动作。",
+"related": ["观测", "动作标签", "行为克隆", "轨迹", "演示数据", "复合误差"],
+"sources": [
+{"title": "LeRobotDataset v3.0 (Hugging Face LeRobot docs)", "url": "https://huggingface.co/docs/lerobot/lerobot-dataset-v3"},
+{"title": "google-research/rlds (GitHub)", "url": "https://github.com/google-research/rlds"}
+],
+"as_of": ""
+},
+{
+"name_zh": "纠偏数据",
+"name_en": "Recovery and Correction Data",
+"abbr": "",
+"aliases": ["恢复数据", "恢复与纠正数据", "Recovery Data", "纠错数据"],
+"tier": 2,
+"one_liner": "专门记录机器人快要出错或已经出错时怎样回到正轨的演示数据。",
+"explanation": "普通遥操作演示大多是一次做对的「完美轨迹」，策略没见过走偏以后的状态，一偏就不知道怎么救，错误越滚越大。纠偏数据补的就是这块：让策略自己跑，快失败时由人接管，把机器人拉回来并完成任务，再把这段接管加进训练集。思路可追溯到 2011 年的 DAgger（数据集聚合），后来有人工门控的 HG-DAgger 等变体。2025 年的 RaC 把它做成模仿学习之后的专门阶段：操作员先把机器人倒回一个熟悉的状态，再给出纠正片段，在挂衬衫、密封饭盒等长程任务上用约十分之一的采集时间超过此前方法。",
+"example": "在 RaC 的挂衬衫任务里，策略眼看要挂偏时操作员接管，先把手臂退回之前正常的姿态，再示范一遍对准衣架挂上，这段接管就成了一条纠偏数据。",
+"related": ["干预数据", "失败恢复", "DAgger（数据集聚合）", "人工门控 DAgger", "复合误差", "RaC"],
+"sources": [
+{"title": "RaC: Robot Learning for Long-Horizon Tasks by Scaling Recovery and Correction", "url": "https://arxiv.org/abs/2509.07953"},
+{"title": "A Reduction of Imitation Learning and Structured Prediction to No-Regret Online Learning (DAgger)", "url": "https://arxiv.org/abs/1011.0686"}
+],
+"as_of": "2025-09"
+},
+{
+"name_zh": "RLDS 格式",
+"name_en": "RLDS (Reinforcement Learning Datasets)",
+"abbr": "RLDS",
+"aliases": ["RLDS 数据格式"],
+"tier": 2,
+"one_liner": "谷歌提出的按「回合—步」两层组织序列决策数据的标准格式与工具链。",
+"explanation": "RLDS 是 Google Research 在 2021 年发布的数据生态，用来记录、共享和处理强化学习、离线强化学习和模仿学习数据。数据分两层：episode（回合）带 episode_id 等元数据，里面是一串 step（步）；每步必有 is_first、is_last 两个标志，可选 observation、action、reward、discount 等字段。配套 EnvLogger 记录数据，经 TensorFlow Datasets（TFDS）发布和读取。它让不同实验室的数据能用同一套代码读：Open X-Embodiment 的各个子数据集都按 RLDS 回合格式提供，Octo、OpenVLA 的训练代码直接读它。PyTorch 生态近年更多转向 LeRobotDataset，RLDS 的 GitHub 仓库已于 2025 年 11 月归档。",
+"example": "用 tfds.load 读取 Open X-Embodiment 里的 BridgeData V2 子集，逐个回合遍历其中的 steps，取出每一步的图像、语言指令和动作送进训练。",
+"related": ["Open X-Embodiment 数据集", "TFDS（TensorFlow Datasets）", "TFRecord 格式", "LeRobot 数据集格式", "HDF5 格式", "回合"],
+"sources": [
+{"title": "RLDS: an Ecosystem to Generate, Share and Use Datasets in Reinforcement Learning", "url": "https://arxiv.org/abs/2111.02767"},
+{"title": "google-research/rlds (GitHub)", "url": "https://github.com/google-research/rlds"},
+{"title": "google-deepmind/open_x_embodiment (GitHub)", "url": "https://github.com/google-deepmind/open_x_embodiment"}
+],
+"as_of": "2025-11"
+},
+{
+"name_zh": "RoboMIND 数据集",
+"name_en": "RoboMIND (Multi-embodiment Intelligence Normative Data for Robot Manipulation)",
+"abbr": "",
+"aliases": ["RoboMIND", "RoboMIND 2.0"],
+"tier": 2,
+"one_liner": "北京人形机器人创新中心与北大发布的统一规范采集的多本体真机操作数据集。",
+"explanation": "RoboMIND 由北京人形机器人创新中心、北京大学计算机学院和智源研究院于 2024 年 12 月发布，论文收录于 RSS 2025。它按统一采集规范，用 Franka、UR5e、松灵双臂和带双灵巧手的人形机器人四种本体采了 10.7 万条演示，覆盖 479 个任务、96 类物体，另有 5 千条注明原因的失败演示，并在 Isaac Sim 里搭了数字孪生环境；每条轨迹存为一个 HDF5 文件。2025 年 12 月的 RoboMIND 2.0 扩到六种本体、739 个任务、31 万多条双臂轨迹，新增 1.2 万条触觉片段、2 万条移动操作轨迹和 2 万条仿真轨迹，并提出分层双系统框架 MIND-2。数据在 ModelScope 和 Hugging Face 提供下载。",
+"example": "研究者可以只取 RoboMIND 里 UR5e 单臂的轨迹训练模仿学习策略，再对照同一任务的失败演示，看策略常在哪一步出错。",
+"related": ["跨本体数据", "真机数据", "失败数据", "AgiBot World 数据集", "Open X-Embodiment 数据集", "北京人形机器人创新中心"],
+"sources": [
+{"title": "RoboMIND: Benchmark on Multi-embodiment Intelligence Normative Data for Robot Manipulation", "url": "https://arxiv.org/abs/2412.13877"},
+{"title": "RoboMIND 2.0: A Multimodal, Bimanual Mobile Manipulation Dataset for Generalizable Embodied Intelligence", "url": "https://arxiv.org/abs/2512.24653"},
+{"title": "RoboMIND 项目主页", "url": "https://x-humanoid-robomind.github.io/"}
+],
+"as_of": "2025-12"
+},
+{
+"name_zh": "无本体采集",
+"name_en": "Robot-free (Embodiment-free) Data Collection",
+"abbr": "",
+"aliases": ["无机器人采集", "离本体采集", "Robot-free Data Collection"],
+"tier": 2,
+"one_liner": "采数据时不用真机器人，由人手持或穿戴仿机器人末端的装置直接演示。",
+"explanation": "常规遥操作要人操纵一台真机器人，设备贵，也很难搬进真实家庭。无本体采集让人手持或穿戴一个照机器人末端设计的装置直接干活，装置上的相机和传感器记下画面与动作，事后把动作换算到机器人上训练。代表是 Cheng Chi、宋舒然等人 2024 年提出的 UMI（通用操作接口）：手持夹爪上装 GoPro 当腕部相机，每条演示约 30 秒，号称两分钟内就能在任意家庭或餐厅开始采集，训出的策略可部署到不同机械臂。DexUMI 把思路推到灵巧手，用手部外骨骼对齐运动学，再把视频里的人手修补成机器人手。关键是装置和真机的外形、视角、动作能力要尽量一致，否则会留下本体差异。",
+"example": "UMI 的摆杯子任务：采集者拿着手持夹爪在不同场所示范把杯子摆到碟子上，回去用这些数据训练策略，直接部署到机械臂上执行。",
+"related": ["通用操作接口", "手持夹爪采集", "DexUMI", "可穿戴采集", "采执同构", "本体差异"],
+"sources": [
+{"title": "Universal Manipulation Interface: In-The-Wild Robot Teaching Without In-The-Wild Robots", "url": "https://arxiv.org/abs/2402.10329"},
+{"title": "UMI 项目主页", "url": "https://umi-gripper.github.io/"},
+{"title": "DexUMI: Using Human Hand as the Universal Manipulation Interface for Dexterous Manipulation", "url": "https://arxiv.org/abs/2505.21864"}
+],
+"as_of": "2025-10"
+},
+{
+"name_zh": "人类视频机器人化（人→机视频转换）",
+"name_en": "Robotizing Human Videos / Human-to-Robot Video Translation",
+"abbr": "",
+"aliases": ["人→机视频转换", "人机视频转换", "Human-to-Robot Video Translation"],
+"tier": 2,
+"one_liner": "把人手干活的视频改成「机器人在干」的画面，变成可用来训练的机器人数据。",
+"explanation": "人类视频多又便宜，但画面里是人手人臂，和机器人相机拍到的机械臂差别很大（视觉上的本体差异），直接拿来训策略效果差。人类视频机器人化就是用图像编辑或视频生成把人换成机器人：先估计手的 3D 位姿当动作标签，再把人手人臂抠掉、补全背景（inpainting），最后叠上按同一轨迹渲染出的机械臂或夹爪。斯坦福 Bohg 组 2025 年的 Phantom 只用这样改过的人类视频训出能直接上真机的策略；同组的 Masquerade 用 67.5 万帧编辑视频预训练视觉编码器。2025 年底的 H2R-Grounder 改用微调的视频扩散模型生成机器人画面，不需要人机成对数据。",
+"example": "Phantom 录下人用手把桌上多个物体扫拢的视频，抠掉人手后叠上渲染的机械臂，直接用这些改过的视频训练策略并部署到真机。",
+"related": ["人类视频数据", "跨本体图像替换", "本体差异", "手部姿态估计", "第一人称视频", "Phantom（无机器人训练）"],
+"sources": [
+{"title": "Phantom: Training Robots Without Robots Using Only Human Videos", "url": "https://arxiv.org/abs/2503.00779"},
+{"title": "Masquerade: Learning from In-the-wild Human Videos using Data-Editing", "url": "https://arxiv.org/abs/2508.09976"},
+{"title": "H2R-Grounder: A Paired-Data-Free Paradigm for Translating Human Interaction Videos into Physically Grounded Robot Videos", "url": "https://arxiv.org/abs/2512.09406"}
+],
+"as_of": "2025-12"
+},
+{
+"name_zh": "ShapeNet 3D 模型库",
+"name_en": "ShapeNet",
+"abbr": "",
+"aliases": ["ShapeNetCore", "ShapeNetSem"],
+"tier": 2,
+"one_liner": "按 WordNet 类别整理、带语义标注的大规模 3D 物体网格模型库。",
+"explanation": "ShapeNet 由斯坦福、普林斯顿等机构的研究者于 2015 年发布，收录 300 多万个 3D 模型，其中约 22 万个按 WordNet 归入 3135 个类别，并标注了统一朝向、部件、对称面、真实尺寸等信息。最常用的子集 ShapeNetCore 约 5.13 万个模型、55 个常见类别；ShapeNetSem 模型更少但标注更细。它本来服务图形学和视觉研究，后来成了机器人抓取和仿真常用的物体来源：往仿真里批量放入形状各异的物体，或自动生成抓取标注。NVIDIA 的 ACRONYM 抓取数据集就用 ShapeNetSem 的网格，在物理仿真里标注了 1770 万个平行夹爪抓取。现在通过 Hugging Face 申请下载，仅限非商业研究和教育用途。",
+"example": "ACRONYM 从 ShapeNetSem 里取出杯子、碗等网格，在仿真中逐个测试大量夹爪抓取位姿，把成功和失败的结果当作训练抓取网络的标签。",
+"related": ["Objaverse 3D 资产库", "ACRONYM 抓取数据集", "仿真资产", "YCB 物体集", "PartNet-Mobility 数据集", "域随机化"],
+"sources": [
+{"title": "ShapeNet: An Information-Rich 3D Model Repository", "url": "https://arxiv.org/abs/1512.03012"},
+{"title": "ShapeNet/ShapeNetCore (Hugging Face)", "url": "https://huggingface.co/datasets/ShapeNet/ShapeNetCore"},
+{"title": "ACRONYM: A Large-Scale Grasp Dataset Based on Simulation", "url": "https://arxiv.org/abs/2011.09584"}
+],
+"as_of": ""
+},
+{
+"name_zh": "触觉数据",
+"name_en": "Tactile Data",
+"abbr": "",
+"aliases": ["视触觉数据", "Visuo-tactile Data"],
+"tier": 2,
+"one_liner": "触觉传感器在接触物体时记下的压力、剪切力、接触面形变等信号。",
+"explanation": "触觉数据来自装在指尖、掌心或夹爪上的触觉传感器，记录接触位置、法向力（压下去的力）、切向力（剪切力，和打滑有关）以及接触面的形变。按原理大致两类：视触觉传感器（如 GelSight、DIGIT）用内置相机拍弹性胶面的变形，输出像照片一样的触觉图像；压阻、电容、磁性等阵列式传感器输出每个触觉单元的数值。手挡住视线或需要控制力度时（插孔、拧瓶盖、拿易碎物），触觉能给出相机给不了的信息。难点是传感器型号多、数据不通用，力和打滑的真值又难标注，所以 Meta 的 Sparsh 用 46 万多张无标注触觉图像做自监督预训练。RoboMIND 2.0 等数据集已把触觉与视觉、关节状态同步记录。",
+"example": "用装了 GelSight 的夹爪捏一颗草莓，触觉图像上接触面积的大小和标记点的位移，能反映捏得多紧、有没有开始打滑。",
+"related": ["触觉传感器", "视触觉传感器", "触觉表征学习", "视触觉融合", "多模态数据", "滑移检测"],
+"sources": [
+{"title": "Sparsh: Self-supervised Touch Representations for Vision-based Tactile Sensing", "url": "https://arxiv.org/abs/2410.24090"},
+{"title": "Touch and Go: Learning from Human-Collected Vision and Touch", "url": "https://arxiv.org/abs/2211.12498"},
+{"title": "RoboMIND 2.0 (arXiv HTML)", "url": "https://arxiv.org/html/2512.24653v1"}
+],
+"as_of": "2025-12"
+},
+{
+"name_zh": "轨迹回放",
+"name_en": "Trajectory / Episode Replay",
+"abbr": "",
+"aliases": ["Episode Replay", "数据回放", "动作回放"],
+"tier": 2,
+"one_liner": "把录好的动作序列重新发给机器人或仿真器执行，检查数据能不能复现。",
+"explanation": "轨迹回放指读出数据集里某条已录好的轨迹，把其中的动作按原来的频率逐帧发给真机或仿真器执行，看结果和录制时是否一致。主要用途有三：一是数据质检，确认动作标签、时间戳、坐标系没有记错，能复现原动作才说明这条数据可以拿去训练；二是检查同型号机器人之间的一致性；三是在仿真里按记录的状态重放，换相机视角重新渲染观测。Hugging Face LeRobot 提供 lerobot-replay 命令，文档说它用来测试动作的可重复性和同型号机器人间的可迁移性；robomimic 的 playback_dataset.py 既能按状态重渲染，也能按动作回放。注意真机回放是开环执行，物体位置稍有变化就可能失败，这不等于数据有错。",
+"example": "用 lerobot-replay 把自己录的第 0 条抓方块演示在 SO-101 从臂上重放，如果机械臂走出来的动作和录制时明显不同，就该检查标定或录制帧率。",
+"related": ["轨迹", "回合", "数据质检", "开环", "LeRobot", "RoboMimic"],
+"sources": [
+{"title": "Imitation Learning on Real-World Robots: Replay an episode (LeRobot docs)", "url": "https://huggingface.co/docs/lerobot/il_robots"},
+{"title": "robomimic: Dataset Contents and Visualization", "url": "https://robomimic.github.io/docs/tutorials/dataset_contents.html"}
+],
+"as_of": ""
+},
+{
+"name_zh": "互联网图文数据",
+"name_en": "Web-scale Vision-Language Data",
+"abbr": "",
+"aliases": ["网络图文数据", "web 数据", "Web Data", "Internet-scale Vision-Language Data"],
+"tier": 2,
+"one_liner": "从网上收集的海量图片-文字配对及图文问答数据，让模型认识大千世界。",
+"explanation": "指从网页收集的大规模图像-文本对，以及由此整理出的图像描述、视觉问答、目标检测等数据。例如 LAION-5B 从 Common Crawl 网页里用 CLIP 打分筛出 58.5 亿对图文。视觉语言模型（VLM）在这类数据上预训练，所以认得大量物体并掌握不少常识。机器人数据规模小得多，覆盖的物体和场景有限，VLA 模型要借网上的知识主要靠两步：拿互联网数据预训练过的 VLM 当骨干；训练时把网络数据和机器人数据一起协同训练，防止机器人微调把原有知识冲掉。RT-2 最早系统验证了这种做法，π0.5 也把 web 数据列为协同训练的数据源之一。",
+"example": "RT-2 把机器人轨迹和视觉问答等网络数据混在一起微调，模型因此能把网上学到的物体和概念用到动作上，执行机器人数据里没出现过的指令。",
+"related": ["视觉语言模型", "协同训练", "视觉-语言-动作模型", "RT-2", "灾难性遗忘", "知识隔离"],
+"sources": [
+{"title": "RT-2: Vision-Language-Action Models Transfer Web Knowledge to Robotic Control", "url": "https://robotics-transformer2.github.io/"},
+{"title": "LAION-5B: An open large-scale dataset for training next generation image-text models", "url": "https://arxiv.org/abs/2210.08402"},
+{"title": "π0.5: a Vision-Language-Action Model with Open-World Generalization", "url": "https://arxiv.org/abs/2504.16054"}
+],
+"as_of": "2025-04"
+},
+{
+"name_zh": "全身遥操作",
+"name_en": "Whole-Body Teleoperation",
+"abbr": "",
+"aliases": ["人形全身遥操作", "Whole-body Teleop"],
+"tier": 2,
+"one_liner": "一名操作员同时控制机器人的手臂、躯干、腿或底盘等全身动作。",
+"explanation": "普通遥操作一般只控制机械臂，全身遥操作让一名操作员同时指挥机器人的上肢、躯干以及腿或移动底盘，用来采需要全身配合的数据，比如边走边拿、下蹲取物。常见两种形态：一是移动操作平台，如斯坦福 2024 年的 Mobile ALOHA，操作员和底盘连在一起，用主从臂控双臂、用身体带动底盘；二是人形机器人，用动捕设备、VR 头显或外骨骼捕捉人的全身动作，经动作重定向映射到机器人，再由强化学习训出的全身控制器跟踪并保持平衡，代表有 OmniH2O（2024）和斯坦福的 TWIST（2025）。难点在于人和机器人的身体比例、平衡能力不同，操作员通常也缺少力反馈。",
+"example": "OmniH2O 中操作员可以只戴一台 VR 头显，用头部和双手的位姿驱动全尺寸人形机器人做全身动作，录下的数据组成了 OmniH2O-6 数据集。",
+"related": ["遥操作", "动作重定向", "全身控制", "OmniH2O", "TWIST", "Mobile ALOHA"],
+"sources": [
+{"title": "Mobile ALOHA: Learning Bimanual Mobile Manipulation with Low-Cost Whole-Body Teleoperation", "url": "https://arxiv.org/abs/2401.02117"},
+{"title": "OmniH2O: Universal and Dexterous Human-to-Humanoid Whole-Body Teleoperation and Learning", "url": "https://arxiv.org/abs/2406.08858"},
+{"title": "TWIST: Teleoperated Whole-Body Imitation System", "url": "https://arxiv.org/abs/2505.02833"}
+],
+"as_of": "2025-05"
+}
+]}

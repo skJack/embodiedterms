@@ -1,0 +1,113 @@
+{
+  "batch": "hardware-15",
+  "terms": [
+    {
+      "key": "hardware-15#0",
+      "name_en": "Slip Ring",
+      "aliases": ["Rotary Electrical Connector", "Conductive Slip Ring"],
+      "one_liner": "A rotating electrical connector that keeps power and signal flowing between a spinning part and a fixed one.",
+      "explanation": "A slip ring is made of a conductive ring that turns with the shaft and a fixed brush that presses against it, sliding to keep contact as the ring spins. That sliding contact carries power, encoder signals, or bus data across the rotating interface. It solves a basic wiring problem: a joint that needs to spin continuously, all the way around, would otherwise wind its cables up and snap them. In robots, slip rings show up wherever a joint needs unlimited rotation — camera pan-tilt heads, turntables, and some waist or wrist joints. Arm joints with a limited rotation range more often route cables straight through a hollow shaft instead. Slip rings wear over time and can add contact noise, so high-speed signal lines need a slip ring model rated for that.",
+      "example": "A security pan-tilt camera that can spin without limit relies on a slip ring to feed the camera power and send video back through its base.",
+      "related": ["Hollow-Shaft Routing", "Wiring Harness", "Joint Module", "Rotary Joint", "EtherCAT Bus"]
+    },
+    {
+      "key": "hardware-15#1",
+      "name_en": "Slotted vs. Slotless Brushless Motor",
+      "aliases": ["Slotted BLDC Motor", "Slotless BLDC Motor"],
+      "one_liner": "Two brushless-motor designs distinguished by whether the stator core is slotted where the windings sit.",
+      "explanation": "The common slotted brushless motor winds its coils around teeth on a slotted stator core. That concentrates the magnetic circuit, giving strong torque at low cost, but as the rotor magnets sweep past the teeth and slots the magnetic reluctance changes, producing cogging torque — a faint catch-and-release feel, most noticeable at low speed. A slotless motor instead builds the windings into a self-supporting coil that sits against a smooth, toothless core; with no teeth, cogging torque nearly disappears, so rotation feels smooth and low-speed control is fine-grained. The tradeoff is a wider air gap, meaning lower torque for a given size and a higher price. Dexterous hands and precision camera gimbals, where smoothness matters most, often use slotless or coreless motors; leg and foot joints, which need high torque, usually stay with slotted motors.",
+      "example": "Precision pan-tilt camera mounts that need smooth, jitter-free motion at low speed often choose slotless motors to avoid the cogging-torque catch.",
+      "related": ["Cogging Torque", "Brushless DC Motor (BLDC)", "Coreless Motor", "Permanent Magnet Synchronous Motor (PMSM)", "Torque Density"]
+    },
+    {
+      "key": "hardware-15#2",
+      "name_en": "Soft Gripper",
+      "aliases": ["Flexible Gripper", "Soft Robotic Hand"],
+      "one_liner": "A gripper with soft fingers, often silicone, that wraps around an object by deforming instead of gripping rigidly.",
+      "explanation": "A soft gripper's fingers are made from elastic materials such as silicone or rubber. Most are pneumatically actuated: pumping air into or out of internal chambers makes the fingers curl; some designs instead pull the fingers with tendons or small motors. Because the fingers are themselves soft, they deform to match an object's surface on contact, so the gripper doesn't need to know the object's exact shape or position in advance, and it's unlikely to crush anything fragile. That makes soft grippers the most common real-world form of soft robotics, widely used to pick and sort food, fruit, and other fresh produce. The downsides are limited grip force and positioning accuracy, and the material ages with use. Like fin-ray grippers and granular jamming grippers, soft grippers rely on passive structural compliance to adapt to what they touch, rather than active sensing and control.",
+      "example": "Food-packing lines use pneumatic soft grippers to pick up fragile items like eggs and strawberries.",
+      "related": ["Gripper", "Soft Robotics", "Pneumatic Actuation", "Fin Ray Gripper", "Granular Jamming Gripper", "Compliance"]
+    },
+    {
+      "key": "hardware-15#3",
+      "name_en": "Solid-State Battery",
+      "aliases": ["All-Solid-State Battery"],
+      "one_liner": "A lithium battery that replaces the liquid electrolyte with a solid one.",
+      "explanation": "A solid-state battery replaces the liquid electrolyte in a conventional lithium-ion cell with a solid electrolyte — oxide, sulfide, or polymer. In theory this makes the cell less prone to catching fire, and it pairs more easily with a lithium-metal anode to raise energy density. Humanoid robots are tight on both space and weight, and battery life is typically just a few hours, so a battery that packs more energy per kilogram and is safer is seen as one way to extend runtime. Full solid-state batteries are still working toward mass production; what's often marketed as “semi-solid-state” still contains a small amount of liquid electrolyte, and different companies don't use the term “solid-state” the same way, so marketing claims are worth reading carefully.",
+      "example": "",
+      "related": ["Battery Life / Runtime", "Battery Management System (BMS)", "Hot-Swappable Battery", "Autonomous Battery Swapping", "Humanoid Robot"]
+    },
+    {
+      "key": "hardware-15#4",
+      "name_en": "Stepper Motor",
+      "aliases": ["Stepping Motor"],
+      "one_liner": "A motor that turns a fixed angle per pulse, so it can be positioned open-loop without an encoder.",
+      "explanation": "A stepper motor divides one full turn into a fixed number of steps — commonly 1.8° per step, or 200 steps per revolution. Each pulse from the driver advances the rotor by exactly one step, so the controller always knows the motor's position just by counting pulses; that lets it run open-loop, with no position feedback, and keeps cost low. That makes steppers common in 3D printers, desktop CNC mills, and some low-cost desktop robot arms. The downside is that torque falls off sharply as speed rises, and if the load is too high the motor can silently “skip steps” without the controller noticing; a stepper also draws current and heats up even while just holding still. Robot joints that need force control, back-drivability, or fast dynamic response generally use a servo setup instead — a brushless motor paired with an encoder.",
+      "example": "The X, Y, and Z axes and the extruder of a desktop 3D printer are usually all driven by stepper motors.",
+      "related": ["Servo Motor", "Brushless DC Motor (BLDC)", "Encoder", "Open-Loop Control", "Desktop Robot Arm", "Position Control"]
+    },
+    {
+      "key": "hardware-15#5",
+      "name_en": "Swerve Drive",
+      "aliases": ["Steerable Drive Wheel", "Swerve Module", "Steer-and-Drive Wheel"],
+      "one_liner": "A wheel module that both drives and steers on its own, letting the whole chassis move in any direction.",
+      "explanation": "A swerve drive module puts a drive motor and a steering motor on the same wheel unit: the drive motor spins the wheel, and the steering motor rotates the whole wheel assembly around a vertical axis to point it any direction. A chassis built from two to four of these modules lets the controller work out each wheel's speed and angle independently, so the robot can translate sideways, rotate in place, or do both together. Compared with Mecanum wheels, swerve modules carry heavier loads, tolerate rougher floors, and slip less, but the mechanism and control software are more complex and more expensive. They're common on heavy-duty AGVs (automated guided vehicles) and warehouse robots, and on the chassis of some wheeled humanoid or hybrid robots.",
+      "example": "Chassis in the FIRST Robotics Competition (FRC) commonly use four swerve modules, letting the robot translate and rotate at the same time.",
+      "related": ["Mobile Base", "Mecanum Wheel", "Omni Wheel", "Differential Drive", "Automated Guided Vehicle (AGV)", "Wheeled Humanoid Robot"]
+    },
+    {
+      "key": "hardware-15#6",
+      "name_en": "System-on-Module (SoM) / Carrier Board / Developer Kit",
+      "aliases": ["SoM", "Core Board", "Baseboard", "Dev Kit"],
+      "one_liner": "An embedded-hardware pattern where a chip ships as a small module that plugs into a carrier board with the actual connectors.",
+      "explanation": "A system-on-module (SoM) packs the processor, memory, storage, and power management onto one small board, with almost no connectors of its own. A carrier board, sometimes called a baseboard, supplies the connectors the module needs to actually be used — Ethernet, USB, camera interfaces, power input. A developer kit is what a vendor sells as a ready-to-use bundle: a module plus a reference carrier board plus cooling, so a team can start developing right away. Robotics teams typically prototype and validate their software on a developer kit first, then, once the design is set, design their own compact carrier board to fit the robot's chassis and buy only the module for production. NVIDIA's Jetson line is a well-known example of this pattern.",
+      "example": "Jetson AGX Orin Developer Kit: the Orin module sits on a reference carrier board, so plugging in power and a camera is enough to start running models. For a production robot, the team later swaps in its own custom carrier board.",
+      "related": ["NVIDIA Jetson", "Jetson Orin", "Jetson Thor", "Main Controller / Compute Unit", "System on Chip (SoC)", "Embedded System"]
+    },
+    {
+      "key": "hardware-15#7",
+      "name_en": "Teach Pendant",
+      "aliases": ["TP", "Teaching Pendant", "Teach Box"],
+      "one_liner": "The handheld control unit for an industrial robot arm, used to jog it, teach positions, and write motion programs.",
+      "explanation": "A teach pendant is a handheld terminal wired to a robot's control cabinet, with a screen, buttons or a touchscreen, an emergency-stop button, and a three-position enabling switch — releasing it or pressing it all the way down both trigger a stop, so only the middle position allows motion. The operator uses it to jog the robot's joints or tool tip to a target position and record that point; stringing several recorded points together builds a program the robot then repeats automatically. This “teach and playback” method is the most traditional way of programming industrial robots from makers like FANUC, ABB, and KUKA. Collaborative arms often replace it with a tablet-style pendant or hand-guided teaching. In embodied-AI research, a teach pendant is mostly used to home the arm, change parameters, and hit emergency stop.",
+      "example": "An operator jogs the arm to a position above a workpiece using the teach pendant and saves it as a waypoint, then records a few more points to build a pick-and-place sequence.",
+      "related": ["Teach and Playback", "Industrial Robot", "Emergency Stop (E-Stop)", "Robot Controller", "Hand-Guided Teaching", "Offline Programming"]
+    },
+    {
+      "key": "hardware-15#8",
+      "name_en": "Tendon Material (UHMWPE)",
+      "aliases": ["Ultra-High-Molecular-Weight Polyethylene Fiber", "UHMWPE Fiber", "Dyneema", "Spectra", "Braided PE Line"],
+      "one_liner": "The high-strength, low-stretch, abrasion-resistant synthetic cord commonly used as tendons in tendon-driven dexterous hands.",
+      "explanation": "Ultra-high-molecular-weight polyethylene fiber (UHMWPE, sold under brand names like Dyneema and Spectra) is spun from polyethylene chains that are extremely long, which gives it far more strength per unit weight than steel wire, along with low stretch, a low friction coefficient, and good resistance to repeated bending. A tendon-driven dexterous hand has to carry pulling force from motors in the forearm, through pulleys or guide tubes at the wrist and finger joints, all the way to the fingertip: if the cord stretches, finger position becomes inaccurate, and if it frays and snaps, the hand stops working — so designers reach for this braided fiber. Its weak points are poor heat resistance and slow creep (gradual stretching) under sustained load, so designs usually add pre-tensioning and tension compensation to work around that.",
+      "example": "Many open-source tendon-driven hands simply use braided PE fishing line — the same material sold for high-strength fishing line — as the tendon.",
+      "related": ["Tendon-Driven Actuation", "Tendon Routing Configurations (N / N+1 / 2N)", "Dexterous Hand", "Bowden Cable", "Tesla Optimus Hand"]
+    },
+    {
+      "key": "hardware-15#9",
+      "name_en": "Tendon Routing Configurations (N / N+1 / 2N)",
+      "aliases": ["N-Type / N+1-Type / 2N-Type Tendon Layout"],
+      "one_liner": "Three standard ways to route tendons across N joints, named by how many cords each configuration uses.",
+      "explanation": "A tendon can only pull, never push, so one cord can only rotate a joint in one direction. There are three common ways to actuate N degrees of freedom with tendons. A 2N configuration gives every joint an antagonistic pair of tendons — one flexes it, one extends it — which gives the most direct control and even lets you tune joint stiffness, at the cost of needing twice as many motors. An N+1 configuration shares N+1 tendons across N joints, routing them so they couple across joints in a way that keeps every degree of freedom controllable while every tendon stays in tension; it uses the fewest motors. An N configuration gives each joint just one pulling tendon and relies on a spring for the return stroke, which is mechanically simple but limits return force and speed to whatever the spring provides. The right choice depends on space inside the hand, motor count, and how much force control is needed.",
+      "example": "The Stanford/JPL three-fingered hand drives each finger's 3 degrees of freedom with 4 tendons (an N+1 configuration); the Utah/MIT hand uses a 2N configuration.",
+      "related": ["Tendon-Driven Actuation", "Dexterous Hand", "Tendon Material (UHMWPE)", "Underactuation", "Degrees of Freedom (DoF)", "Proximal vs. Distal Actuator Placement"]
+    },
+    {
+      "key": "hardware-15#10",
+      "name_en": "Tesla Optimus Hand",
+      "aliases": ["Optimus Hand"],
+      "one_liner": "Tesla's in-house dexterous hand for its Optimus humanoid robot; the third generation has 22 degrees of freedom.",
+      "explanation": "The Tesla Optimus hand is the dexterous hand Tesla designed in-house for its Optimus humanoid robot. According to Wikipedia, the second-generation Optimus hand, shown in 2023, had 11 degrees of freedom; the third generation, announced in 2024, has 22. An international patent application made public in April 2026 shows a redesigned hand that moves most of the motors into the forearm, with each finger driven by three thin tendons routed through the wrist — cutting the hand's own weight and the impact load it carries — and uses a routing structure at the wrist to reduce crosstalk between wrist rotation and finger movement. As of September 2026, the complete third-generation Optimus has not been formally released, so production specifications should be treated as provisional until Tesla confirms them.",
+      "example": "According to the public patent, each finger is pulled by three tendons routed from actuators in the forearm, with almost no motors inside the palm or fingers themselves.",
+      "related": ["Dexterous Hand", "Tendon-Driven Actuation", "Tesla Optimus", "Tesla Optimus V3 (Gen 3)", "Proximal vs. Distal Actuator Placement", "T-Chain (Tesla Chain)"]
+    },
+    {
+      "key": "hardware-15#11",
+      "name_en": "Thin-Section Bearing",
+      "aliases": ["Thin-Wall Bearing", "Constant Cross-Section Bearing"],
+      "one_liner": "A bearing with a very thin cross-section and a large bore, suited to compact, hollow robot joints.",
+      "explanation": "A thin-section bearing has inner and outer rings with a very small cross-section, and — within a given product series — that cross-section stays constant instead of growing thicker as the bore diameter increases, so even a large-bore version stays thin and light. Robot joints need to be hollow for cable routing while also staying compact and light, so thin-section deep-groove, angular-contact, or four-point-contact ball bearings are common inside harmonic reducers, at the output of joint modules, and in turntables; cross-roller bearings are also often made in a thin form, since a single one can carry radial load, axial load, and tilting moment all at once. The tradeoff is lower stiffness and load capacity than a standard bearing of the same bore size, and tighter requirements on how precisely the housing and mating parts are machined.",
+      "example": "",
+      "related": ["Cross-Roller Bearing", "Joint Module", "Hollow-Shaft Routing", "Harmonic Reducer", "Weight Reduction (Magnesium Alloy / Carbon Fiber)"]
+    }
+  ]
+}

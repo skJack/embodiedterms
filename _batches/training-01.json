@@ -1,0 +1,430 @@
+{
+  "category": "training",
+  "batch": 1,
+  "terms": [
+    {
+      "name_zh": "行为克隆",
+      "name_en": "Behavior Cloning",
+      "abbr": "BC",
+      "aliases": [
+        "行为复制",
+        "Behavioral Cloning",
+        "Behavioural Cloning"
+      ],
+      "tier": 1,
+      "one_liner": "把专家演示当标注数据，用监督学习直接学「看到什么就做什么」。",
+      "explanation": "行为克隆是最基础的模仿学习方法：收集大量「观测-动作」对，比如人遥操作机器人时记录的相机画面和关节指令，把观测当输入、专家动作当标签，用监督学习训练策略网络去拟合。1988 年 Pomerleau 的 ALVINN 用神经网络从图像直接输出行驶方向，是早期代表。它简单稳定，不需要设计奖励函数，ACT、扩散策略和多数 VLA 模型的主体训练都属于行为克隆。主要缺点是复合误差：策略一旦偏离演示轨迹，就进入训练时没见过的状态，小错越积越大；DAgger、纠偏数据和强化学习微调都是针对这一点的补救。",
+      "example": "ACT 只用约 10 分钟、50 条人类遥操作演示做行为克隆，就让低成本双臂机器人以 80%–90% 的成功率完成打开半透明调料杯盖、往遥控器里装电池等精细任务。",
+      "related": [
+        "模仿学习",
+        "复合误差",
+        "DAgger（数据集聚合）",
+        "演示数据",
+        "ACT",
+        "扩散策略"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Imitation learning",
+          "url": "https://en.wikipedia.org/wiki/Imitation_learning"
+        },
+        {
+          "title": "Pomerleau 1988: ALVINN: An Autonomous Land Vehicle in a Neural Network (NeurIPS)",
+          "url": "https://proceedings.neurips.cc/paper/1988/hash/812b4ba287f5ee0bc9d43bbf5bbe87fb-Abstract.html"
+        },
+        {
+          "title": "Zhao et al. 2023: Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware (ACT)",
+          "url": "https://arxiv.org/abs/2304.13705"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "检查点",
+      "name_en": "Checkpoint",
+      "abbr": "ckpt",
+      "aliases": [
+        "权重文件",
+        "模型存档",
+        "模型检查点",
+        "模型权重",
+        "Model Checkpoint"
+      ],
+      "tier": 1,
+      "one_liner": "训练中途或结束时保存下来的模型参数文件，加载后可推理或接着训练。",
+      "explanation": "检查点是模型参数在某一时刻的存档。训练大模型常要跑几天甚至几周，程序会每隔若干步把参数存成文件，防止崩溃后从头再来，也方便事后挑验证效果最好的一版。只用来推理时存模型权重就够；要从中断处接着训练，还得一起存优化器状态、当前轮次等，PyTorch 文档提到这种完整检查点通常是单存模型的 2–3 倍大。常见文件格式有 .pt、.pth、.ckpt 和 safetensors。开源 VLA 说「放出权重」，就是公开检查点，别人下载后可以直接推理，或在上面继续微调。",
+      "example": "Physical Intelligence 的 openpi 仓库提供 pi0_base、pi05_base 等基础检查点供微调，也提供 pi05_libero、pi0_aloha_towel 等已微调好的检查点，下载即可推理。",
+      "related": [
+        "微调",
+        "预训练",
+        "开放权重",
+        "safetensors 权重格式",
+        "推理部署",
+        "训练轮次"
+      ],
+      "sources": [
+        {
+          "title": "PyTorch Tutorials: Saving and Loading Models",
+          "url": "https://docs.pytorch.org/tutorials/beginner/saving_loading_models.html"
+        },
+        {
+          "title": "Google Machine Learning Glossary: checkpoint",
+          "url": "https://developers.google.com/machine-learning/glossary#checkpoint"
+        },
+        {
+          "title": "GitHub: Physical-Intelligence/openpi",
+          "url": "https://github.com/Physical-Intelligence/openpi"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "下游任务",
+      "name_en": "Downstream Task",
+      "abbr": "",
+      "aliases": [
+        "目标任务",
+        "Target Task"
+      ],
+      "tier": 1,
+      "one_liner": "预训练模型最终要拿去解决的具体任务，通常还要在它上面做适配或微调。",
+      "explanation": "「下游」是相对「上游」的预训练说的：先在海量通用数据上训练出一个基础模型，再把它用到某个具体任务上，这个具体任务就叫下游任务。2021 年斯坦福牵头的基础模型综述，就把基础模型定义为在大规模广泛数据上训练、能适配多种下游任务的模型。适配方式有零样本直接用、给少量示例、微调等。在具身智能里，VLA 基础模型的下游任务通常是某台机器人上的具体操作，比如叠衣服、收拾餐桌，或 LIBERO 这类基准里的任务；论文常用「微调后在下游任务上的成功率」来衡量预训练值不值。",
+      "example": "π0 先在 1 万多小时、7 种机器人构型的数据上预训练，再针对叠衣服、收拾餐桌、组装纸盒等下游任务分别后训练，每个任务用 5 到 100 多小时的数据。",
+      "related": [
+        "预训练",
+        "后训练",
+        "微调",
+        "基础模型",
+        "零样本",
+        "基准测试"
+      ],
+      "sources": [
+        {
+          "title": "Bommasani et al. 2021: On the Opportunities and Risks of Foundation Models",
+          "url": "https://arxiv.org/abs/2108.07258"
+        },
+        {
+          "title": "Black et al. 2024: π0: A Vision-Language-Action Flow Model for General Robot Control",
+          "url": "https://arxiv.org/html/2410.24164v1"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "微调",
+      "name_en": "Fine-tuning",
+      "abbr": "",
+      "aliases": [
+        "finetune",
+        "Finetuning",
+        "精调"
+      ],
+      "tier": 1,
+      "one_liner": "在已训练好的模型上，用新任务的少量数据继续训练，让它更擅长这件事。",
+      "explanation": "微调是迁移学习最常见的做法：拿一个预训练好的模型当起点，用目标任务的数据继续训练，而不是从随机参数开始，这样能复用模型已学到的通用知识，省数据也省算力。按更新范围分，全参数微调改动所有权重；也可以冻结大部分层只训一部分，或用 LoRA（低秩适配，插入少量可训练的小矩阵）这类参数高效方法，只训练很少的参数。在具身智能里，拿到开源 VLA 后，用自己机器人采的演示数据微调，是最常见的上手方式。数据太少或训得太久容易过拟合，也可能让模型忘掉原有能力，即灾难性遗忘。",
+      "example": "openpi 文档给出的参考：π0 做 LoRA 微调需要 22.5 GB 以上显存（如 RTX 4090），全参数微调需要 70 GB 以上（如 A100 / H100）。",
+      "related": [
+        "预训练",
+        "后训练",
+        "全参数微调",
+        "低秩适配",
+        "监督微调",
+        "灾难性遗忘"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Fine-tuning (deep learning)",
+          "url": "https://en.wikipedia.org/wiki/Fine-tuning_(deep_learning)"
+        },
+        {
+          "title": "Google Machine Learning Glossary: fine-tuning",
+          "url": "https://developers.google.com/machine-learning/glossary#fine-tuning"
+        },
+        {
+          "title": "GitHub: Physical-Intelligence/openpi",
+          "url": "https://github.com/Physical-Intelligence/openpi"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "超参数",
+      "name_en": "Hyperparameter",
+      "abbr": "",
+      "aliases": [
+        "超参",
+        "Hyper-parameter"
+      ],
+      "tier": 1,
+      "one_liner": "训练开始前由人设定、不靠训练学出来的配置，比如学习率、批大小。",
+      "explanation": "模型里的权重叫参数，由训练自动学出来；超参数则是训练前由人设定、训练中一般不变的配置，决定「怎么学」。常见的有学习率、批大小、训练步数或轮次、网络层数和宽度、正则化强度；强化学习里还有折扣因子、PPO 的裁剪系数；具身模型还有动作块长度、扩散去噪步数等。超参数选得不好，模型可能不收敛、过拟合或效果差一截。寻找合适组合的过程叫超参数调优，常用网格搜索、随机搜索、贝叶斯优化，实践中也常沿用论文默认值再小范围调整，行话叫「调参」或「炼丹」。",
+      "example": "训练 ACT 时，动作块长度 k、学习率、CVAE 损失中 KL 项的权重 β，都是需要人手动设定的超参数。",
+      "related": [
+        "学习率",
+        "批大小",
+        "训练轮次",
+        "过拟合",
+        "炼丹 / 调参（黑话）",
+        "基于群体的训练"
+      ],
+      "sources": [
+        {
+          "title": "Google Machine Learning Glossary: hyperparameter",
+          "url": "https://developers.google.com/machine-learning/glossary#hyperparameter"
+        },
+        {
+          "title": "Wikipedia: Hyperparameter (machine learning)",
+          "url": "https://en.wikipedia.org/wiki/Hyperparameter_(machine_learning)"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "模仿学习",
+      "name_en": "Imitation Learning",
+      "abbr": "IL",
+      "aliases": [
+        "示教学习",
+        "从演示中学习",
+        "Learning from Demonstration",
+        "LfD",
+        "Programming by Demonstration"
+      ],
+      "tier": 1,
+      "one_liner": "让机器人通过模仿专家（通常是人）的示范动作来学会技能。",
+      "explanation": "模仿学习研究如何让智能体从专家演示中学会行为，适合「演示一遍比写规则或设计奖励更容易」的场景。演示通常由人通过遥操作、拖动示教或动作捕捉记录下来。主要路线有三类：行为克隆，直接用监督学习拟合演示动作；逆强化学习，先从演示反推奖励函数，再用强化学习优化；对抗式模仿如 GAIL，让策略的行为分布逼近专家。核心难题是分布偏移：执行时策略会走到演示没覆盖的状态，DAgger 等方法会在这些状态上请专家补标。当前主流 VLA 的主干训练本质上都是大规模模仿学习。",
+      "example": "Mobile ALOHA 每个任务只采 50 条人类遥操作演示，并与已有的静态 ALOHA 数据协同训练，学会了炒虾装盘、按电梯进电梯、打开壁柜放锅等移动操作任务。",
+      "related": [
+        "行为克隆",
+        "逆强化学习",
+        "生成对抗模仿学习",
+        "DAgger（数据集聚合）",
+        "演示数据",
+        "遥操作"
+      ],
+      "sources": [
+        {
+          "title": "Osa et al. 2018: An Algorithmic Perspective on Imitation Learning",
+          "url": "https://arxiv.org/abs/1811.06711"
+        },
+        {
+          "title": "Wikipedia: Imitation learning",
+          "url": "https://en.wikipedia.org/wiki/Imitation_learning"
+        },
+        {
+          "title": "Fu et al. 2024: Mobile ALOHA",
+          "url": "https://arxiv.org/abs/2401.02117"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "损失函数",
+      "name_en": "Loss Function",
+      "abbr": "",
+      "aliases": [
+        "loss",
+        "目标函数",
+        "代价函数",
+        "Cost Function"
+      ],
+      "tier": 1,
+      "one_liner": "把模型预测和正确答案的差距算成一个数，训练就是不断把它调小。",
+      "explanation": "损失函数衡量模型一次预测错得有多厉害，输出一个实数，差距越大数值越大。训练时，反向传播算出损失对每个参数的梯度，优化器沿着让损失变小的方向更新参数，反复进行直到损失不再明显下降。回归连续数值常用均方误差（MSE）或 L1 损失，分类或预测下一个 token 常用交叉熵。「目标函数」更宽泛，既可以是要最小化的损失，也可以是要最大化的量，比如强化学习里的累计奖励。在具身模型里，损失的选法直接影响动作质量：ACT 用 L1 损失回归动作，扩散策略和流匹配模型则用去噪损失或流匹配损失。",
+      "example": "ACT 论文发现，回归动作序列时用 L1 损失比更常见的 L2（均方误差）损失建模得更精确，因此改用 L1。",
+      "related": [
+        "均方误差",
+        "L1 损失",
+        "交叉熵",
+        "去噪损失",
+        "梯度下降",
+        "反向传播"
+      ],
+      "sources": [
+        {
+          "title": "Google Machine Learning Glossary: loss function",
+          "url": "https://developers.google.com/machine-learning/glossary#loss-function"
+        },
+        {
+          "title": "Wikipedia: Loss function",
+          "url": "https://en.wikipedia.org/wiki/Loss_function"
+        },
+        {
+          "title": "Zhao et al. 2023: Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware (ACT)",
+          "url": "https://arxiv.org/abs/2304.13705"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "过拟合",
+      "name_en": "Overfitting",
+      "abbr": "",
+      "aliases": [
+        "过度拟合"
+      ],
+      "tier": 1,
+      "one_liner": "模型把训练数据记得太死，换到没见过的新数据上就表现变差。",
+      "explanation": "过拟合指模型对训练数据拟合得过于紧密，连其中的噪声和偶然细节都记住了，结果在没见过的数据上预测不准。典型信号是训练损失一直下降，验证集损失却开始上升；数据少、模型大、训练轮次多时最容易出现。常用对策有增加数据或做数据增强、正则化、随机失活（Dropout）、早停，以及用验证集挑选检查点。具身智能里这个问题很突出：真机演示往往只有几十到几百条，策略容易记住演示时的摆放位置、光照和背景，物体挪几厘米或换块桌布就失败，所以论文会专门测位置泛化、场景泛化。反过来，模型连训练数据都学不好叫欠拟合。",
+      "example": "比如只用 50 条演示、杯子始终放在同一位置来训练抓杯策略，训久了在原位置几乎每次都成功，杯子挪开 10 厘米就抓空：策略记住的是那条固定轨迹，而不是「找到杯子再去抓」。",
+      "related": [
+        "欠拟合",
+        "泛化",
+        "正则化",
+        "早停",
+        "数据增强",
+        "训练集 / 验证集 / 测试集"
+      ],
+      "sources": [
+        {
+          "title": "Google Machine Learning Glossary: overfitting",
+          "url": "https://developers.google.com/machine-learning/glossary#overfitting"
+        },
+        {
+          "title": "Wikipedia: Overfitting",
+          "url": "https://en.wikipedia.org/wiki/Overfitting"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "后训练",
+      "name_en": "Post-training",
+      "abbr": "",
+      "aliases": [
+        "后训练阶段",
+        "Posttraining"
+      ],
+      "tier": 1,
+      "one_liner": "预训练之后的训练阶段，用精选数据或强化学习把基础模型调成好用的样子。",
+      "explanation": "后训练指基础模型预训练完之后的训练步骤，这个说法随大语言模型流行起来。大模型先在海量网页数据上预训练，再经过监督微调（SFT）、偏好优化、强化学习等后训练，才变成能按指令回答的助手；Ai2 的 Tulu 3 就公开了一套由 SFT、DPO 和可验证奖励强化学习组成的后训练方案。具身智能沿用了这种分工：π0 论文说，预训练阶段负责广泛能力和泛化，后训练阶段用更窄、更精心整理的数据让模型熟练完成目标任务。后训练常和微调混用，但它更强调「阶段」，里面可能包含多轮微调和强化学习微调。",
+      "example": "π0 预训练后，针对叠衣服等复杂任务做后训练：最简单的任务只需约 5 小时数据，最复杂的任务用了 100 小时以上。",
+      "related": [
+        "预训练",
+        "微调",
+        "监督微调",
+        "强化学习微调",
+        "基于人类反馈的强化学习",
+        "中训练"
+      ],
+      "sources": [
+        {
+          "title": "Lambert et al. 2024: Tulu 3: Pushing Frontiers in Open Language Model Post-Training",
+          "url": "https://arxiv.org/abs/2411.15124"
+        },
+        {
+          "title": "Black et al. 2024: π0: A Vision-Language-Action Flow Model for General Robot Control",
+          "url": "https://arxiv.org/html/2410.24164v1"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "预训练",
+      "name_en": "Pre-training",
+      "abbr": "",
+      "aliases": [
+        "Pretraining",
+        "预训练阶段"
+      ],
+      "tier": 1,
+      "one_liner": "先在海量通用数据上训练出一个基础模型，之后再针对具体任务去适配。",
+      "explanation": "预训练是训练基础模型的第一阶段：用规模大、覆盖广的数据（网页文本、图文对、视频、多种机器人的操作数据等）训练模型，让它学到通用的表示和能力。得到的模型叫预训练模型或基座模型，之后再通过微调或后训练用到具体的下游任务上。它的价值在于把昂贵的通用学习集中做一次，下游任务只需少量数据。具身智能里的预训练通常分两层：VLA 先继承一个已在互联网图文上预训练过的视觉语言模型，再在大规模、多种机器人的数据上继续训练，比如 π0 用了 1 万多小时的机器人数据。",
+      "example": "OpenVLA（7B 参数）以 Llama 2 语言模型加 DINOv2、SigLIP 视觉编码器为底座，在 Open X-Embodiment 的 97 万条真实机器人演示上预训练，之后可用 LoRA 在消费级显卡上微调到新任务。",
+      "related": [
+        "后训练",
+        "微调",
+        "基础模型",
+        "下游任务",
+        "缩放定律",
+        "自监督学习"
+      ],
+      "sources": [
+        {
+          "title": "Google Machine Learning Glossary: pre-trained model",
+          "url": "https://developers.google.com/machine-learning/glossary#pre-trained-model"
+        },
+        {
+          "title": "Kim et al. 2024: OpenVLA: An Open-Source Vision-Language-Action Model",
+          "url": "https://arxiv.org/abs/2406.09246"
+        },
+        {
+          "title": "Black et al. 2024: π0: A Vision-Language-Action Flow Model for General Robot Control",
+          "url": "https://arxiv.org/html/2410.24164v1"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "近端策略优化",
+      "name_en": "Proximal Policy Optimization",
+      "abbr": "PPO",
+      "aliases": [
+        "PPO-Clip",
+        "PPO 算法"
+      ],
+      "tier": 1,
+      "one_liner": "OpenAI 2017 年提出的强化学习算法，限制每次策略更新幅度，稳定好用。",
+      "explanation": "PPO 由 OpenAI 的 Schulman 等人在 2017 年提出，属于策略梯度方法（直接调整策略网络，让带来高回报的动作更常被选中），而且是同策略（on-policy）的：只用当前策略自己刚采的数据来更新。核心是带「裁剪」的目标函数：新策略把某个动作的概率相对旧策略改得超出一定范围后，目标函数不再因此变大，既不会一步把策略改坏，同一批数据也能反复训练多轮。它和 TRPO（信赖域策略优化）一样稳定，但实现简单得多。PPO 是仿真中训练足式、人形机器人运控的主力算法，ETH 开源的机器人强化学习库 rsl_rl 就以它为核心；InstructGPT 的 RLHF 也用了 PPO。",
+      "example": "ETH 的 Rudin 等人在 legged_gym 中用 PPO、在单块 GPU 上并行跑数千个仿真环境训练 ANYmal 四足，平地行走不到 4 分钟、崎岖地形约 20 分钟就能训出策略，并迁移到真机。",
+      "related": [
+        "强化学习",
+        "策略梯度",
+        "信赖域策略优化",
+        "同策略",
+        "广义优势估计",
+        "rsl_rl"
+      ],
+      "sources": [
+        {
+          "title": "Schulman et al. 2017: Proximal Policy Optimization Algorithms",
+          "url": "https://arxiv.org/abs/1707.06347"
+        },
+        {
+          "title": "OpenAI Spinning Up: Proximal Policy Optimization",
+          "url": "https://spinningup.openai.com/en/latest/algorithms/ppo.html"
+        },
+        {
+          "title": "Rudin et al. 2021: Learning to Walk in Minutes Using Massively Parallel Deep Reinforcement Learning",
+          "url": "https://arxiv.org/abs/2109.11978"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "强化学习",
+      "name_en": "Reinforcement Learning",
+      "abbr": "RL",
+      "aliases": [
+        "增强学习"
+      ],
+      "tier": 1,
+      "one_liner": "智能体通过反复试错、根据奖励信号不断改进行为的机器学习方法。",
+      "explanation": "强化学习是与监督学习、无监督学习并列的机器学习范式。智能体在环境中观察状态、做出动作，环境返回新状态和奖励（衡量这一步好坏的数值），目标是学出让长期累计奖励最大的策略。它不需要逐步标注「正确动作」，只要定义好奖励，但智能体得在尝试新动作（探索）和使用已知好动作（利用）之间权衡。问题通常建模为马尔可夫决策过程。在具身智能里，强化学习主要用在两处：一是在仿真器里大规模并行训练足式、人形机器人的运动控制，再迁移到真机；二是在模仿学习打底后，用强化学习微调 VLA，提升成功率和纠错能力。",
+      "example": "OpenAI 2018 年完全在仿真里用强化学习训练 Shadow 灵巧手，并随机化摩擦系数等物理参数，训出的策略直接迁移到真实灵巧手上，完成基于视觉的手内物体转向。",
+      "related": [
+        "马尔可夫决策过程",
+        "奖励函数",
+        "策略",
+        "近端策略优化",
+        "仿真到现实迁移",
+        "强化学习微调"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Reinforcement learning",
+          "url": "https://en.wikipedia.org/wiki/Reinforcement_learning"
+        },
+        {
+          "title": "OpenAI Spinning Up: Key Concepts in RL",
+          "url": "https://spinningup.openai.com/en/latest/spinningup/rl_intro.html"
+        },
+        {
+          "title": "OpenAI et al. 2018: Learning Dexterous In-Hand Manipulation",
+          "url": "https://arxiv.org/abs/1808.00177"
+        }
+      ],
+      "as_of": ""
+    }
+  ]
+}

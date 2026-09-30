@@ -1,0 +1,203 @@
+{"category": "model", "batch": 12, "terms": [
+{
+  "name_zh": "人体动作生成模型（文本生成动作）",
+  "name_en": "Human Motion Generation / Text-to-Motion (e.g. MDM)",
+  "abbr": "",
+  "aliases": ["文本生成动作", "Text-to-Motion", "人体运动生成", "动作扩散模型", "Human Motion Generation"],
+  "tier": 3,
+  "one_liner": "根据文字描述等条件，生成一段三维人体骨骼动作序列的模型。",
+  "explanation": "这类模型输入一句描述（如「一个人向前走然后坐下」）或一个动作类别，输出一段逐帧的三维人体骨骼姿态序列。常用训练数据是 2022 年发布的 HumanML3D，含 14616 段动作、44970 条文字描述，动作取自 AMASS 等动捕数据。代表作 MDM（Human Motion Diffusion Model）由 Tevet 等人提出、发表于 ICLR 2023：用 Transformer 实现扩散模型，每一步直接预测干净的动作而不是噪声，方便加入脚部接触等几何约束；同一个模型还能做动作补全、中间帧插补和身体局部编辑。这类模型原本服务于动画和游戏；在具身智能里，生成的人体动作经动作重定向（把人体关节映射到机器人关节）后，可交给人形机器人的运动跟踪控制器执行，是「用一句话让人形机器人做动作」的一条路线。",
+  "example": "给 MDM 输入「a person walks forward and then sits down」，它会输出一段先向前走几步、再坐下的三维人体骨骼动画，可再重定向到人形机器人上。",
+  "related": ["MDM（人体动作扩散模型）", "HumanML3D 数据集", "扩散模型", "动作重定向", "运动跟踪", "文本驱动动作生成"],
+  "sources": [
+    {"title": "Human Motion Diffusion Model (Tevet et al., arXiv:2209.14916)", "url": "https://arxiv.org/abs/2209.14916"},
+    {"title": "MDM 项目主页（ICLR 2023）", "url": "https://guytevet.github.io/mdm-page/"},
+    {"title": "HumanML3D 数据集（GitHub）", "url": "https://github.com/EricGuo5513/HumanML3D"}
+  ],
+  "as_of": "2023-05"
+},
+{
+  "name_zh": "自回归-扩散混合架构",
+  "name_en": "Hybrid Autoregressive-Diffusion Architecture",
+  "abbr": "",
+  "aliases": ["自回归与扩散混合模型", "AR + Diffusion", "Hybrid AR-Diffusion"],
+  "tier": 3,
+  "one_liner": "同一个模型里，离散内容用自回归逐个生成、连续内容用扩散生成的架构。",
+  "explanation": "自回归指像大语言模型那样按顺序逐个预测下一个 token，擅长文本、推理这类离散内容；扩散模型从噪声出发逐步去噪，擅长图像、动作这类连续高维数据。混合架构把两者放进同一个网络。Meta 等机构 2024 年提出的 Transfusion 用一个 Transformer 处理图文混排序列，对文字算下一个 token 预测损失、对图像算扩散损失；何恺明等人的 MAR 则在自回归框架里用扩散损失建模每个连续值 token，省掉了向量量化。机器人领域，2025 年的 HybridVLA 让一个大语言模型同时做扩散去噪和自回归动作预测，再自适应地融合两路动作。动机在于：把连续动作硬切成离散 token 会损失精度，纯扩散的动作头又较难直接利用语言模型的推理能力。",
+  "example": "HybridVLA 在同一个语言模型里，既通过扩散去噪生成连续动作，又自回归地预测离散化的动作 token，执行时把两路结果融合成最终动作。",
+  "related": ["HybridVLA", "扩散模型", "自回归解码", "统一多模态模型", "扩散动作头", "动作分词器"],
+  "sources": [
+    {"title": "Transfusion: Predict the Next Token and Diffuse Images with One Multi-Modal Model (arXiv:2408.11039)", "url": "https://arxiv.org/abs/2408.11039"},
+    {"title": "Autoregressive Image Generation without Vector Quantization (MAR, arXiv:2406.11838)", "url": "https://arxiv.org/abs/2406.11838"},
+    {"title": "HybridVLA: Collaborative Diffusion and Autoregression in a Unified VLA Model (arXiv:2503.10631)", "url": "https://arxiv.org/abs/2503.10631"}
+  ],
+  "as_of": "2025-06"
+},
+{
+  "name_zh": "归纳偏置",
+  "name_en": "Inductive Bias",
+  "abbr": "",
+  "aliases": ["归纳偏差", "学习偏置", "Learning Bias", "结构先验"],
+  "tier": 3,
+  "one_liner": "模型或算法预先内置的假设，决定它如何推广到没见过的数据。",
+  "explanation": "同一批有限的训练数据可以被许多不同的规律解释，归纳偏置就是学习算法在这些解释中做选择时依赖的假设。Tom Mitchell 在 1980 年指出，没有这类假设，模型就无法对没见过的输入做出预测。常见例子：卷积神经网络假设相邻像素相关、特征具有平移等变性（物体平移，特征图随之平移）。ViT 论文指出，Transformer 的图像归纳偏置比 CNN 少得多，在 ImageNet 这类中等规模数据上训练时准确率略低于同等大小的 ResNet，要在更大的数据集上预训练才能追上甚至超过。归纳偏置强，省数据但可能限制上限；弱，则更依赖数据规模。机器人学习中，把观测转成 3D 体素、把旋转对称性写进网络的等变策略，都是用几何归纳偏置换取少样本下的性能。",
+  "example": "PerAct 把 RGB-D 观测体素化后再预测动作，论文报告它比直接从 2D 图像预测动作的基线好 34 倍，作者将此归因于 3D 体素带来的结构先验。",
+  "related": ["卷积神经网络", "视觉 Transformer", "等变策略 / 等变网络", "图神经网络", "泛化", "苦涩的教训"],
+  "sources": [
+    {"title": "Inductive bias（Wikipedia）", "url": "https://en.wikipedia.org/wiki/Inductive_bias"},
+    {"title": "An Image is Worth 16x16 Words (ViT, arXiv:2010.11929)", "url": "https://arxiv.org/abs/2010.11929"},
+    {"title": "Relational inductive biases, deep learning, and graph networks (arXiv:1806.01261)", "url": "https://arxiv.org/abs/1806.01261"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "可交互世界模型",
+  "name_en": "Interactive World Model",
+  "abbr": "",
+  "aliases": ["动作条件视频模型", "Action-conditioned Video Model", "交互式视频生成", "生成式交互环境", "Generative Interactive Environment"],
+  "tier": 3,
+  "one_liner": "每一步接收动作输入、据此生成接下来画面的世界模型，可当神经网络模拟器用。",
+  "explanation": "普通视频生成模型根据一段文字一次性生成整段视频，中途无法干预；可交互世界模型则在每一步接收动作（键盘操作、机器人控制命令或文字事件），据此生成接下来的画面，相当于用神经网络实现的模拟器。2023 年的 UniSim 融合多种数据学习对人和机器人动作的视觉响应，并在其中训练出能零样本部署到真实世界的策略；谷歌 DeepMind 2024 年的 Genie（110 亿参数）只用无动作标签的网络视频训练，靠潜在动作模型（从前后帧自动推断「做了什么动作」）实现逐帧控制；2025 年 8 月发布的 Genie 3 能以 720p、每秒 24 帧实时交互，并在几分钟内保持场景一致。对具身智能而言，它可用于评估策略、生成训练数据，或让智能体在生成的世界里学习。",
+  "example": "DeepMind 把 SIMA 智能体放进 Genie 3 生成的世界：智能体发出前进、转向等导航动作，Genie 3 实时生成对应画面，智能体据此去完成给定目标。",
+  "related": ["世界模型", "Genie 3", "UniSim", "潜在动作模型", "视频生成模型", "世界模型评测"],
+  "sources": [
+    {"title": "Genie: Generative Interactive Environments (arXiv:2402.15391)", "url": "https://arxiv.org/abs/2402.15391"},
+    {"title": "Learning Interactive Real-World Simulators (UniSim, arXiv:2310.06114)", "url": "https://arxiv.org/abs/2310.06114"},
+    {"title": "Genie 3: A new frontier for world models（Google DeepMind 博客）", "url": "https://deepmind.google/discover/blog/genie-3-a-new-frontier-for-world-models/"}
+  ],
+  "as_of": "2025-08"
+},
+{
+  "name_zh": "中间表示",
+  "name_en": "Intermediate Representation",
+  "abbr": "",
+  "aliases": ["中间表征", "中层表示", "Mid-level Representation"],
+  "tier": 3,
+  "one_liner": "模型在指令和底层动作之间先预测出的过渡信息，如二维轨迹、关键点。",
+  "explanation": "在机器人学习里，中间表示指不从图像和指令一步输出关节命令，而是先产出一种人能看懂、较少依赖具体机器人的信息，再由下游策略或控制器据此生成动作。常见形式有画在图像上的末端运动轨迹、物体关键点、可供性热图（标出可抓、可推的位置）、子目标图像和语言子任务。谷歌 DeepMind 等 2023 年的 RT-Trajectory 用粗略的轨迹草图作为策略的条件，能完成仅靠语言条件做不到的新任务；2025 年的 HAMSTER 让高层视觉语言模型预测 2D 路径，交给具备 3D 感知的底层策略执行，真机实验平均成功率比 OpenVLA 高约 20 个百分点。好处是高层可用无动作标签视频、仿真等便宜数据训练，也便于人检查和纠正；代价是信息被压缩，表示选得不好会限制精度。编译器领域也有同名概念（IR），含义不同。",
+  "example": "只用抓取放置数据训练的语言条件策略，通常学不会「折叠」这种新任务；RT-Trajectory 改用画在图像上的手臂轨迹草图作条件，人手绘或由生成模型画出一条轨迹，策略就能照着执行训练中没见过的动作。",
+  "related": ["分层架构", "RT-Trajectory", "可供性", "语义关键点", "视觉提示", "快慢双系统"],
+  "sources": [
+    {"title": "RT-Trajectory: Robotic Task Generalization via Hindsight Trajectory Sketches (arXiv:2311.01977)", "url": "https://arxiv.org/abs/2311.01977"},
+    {"title": "HAMSTER: Hierarchical Action Models For Open-World Robot Manipulation (arXiv:2502.05485)", "url": "https://arxiv.org/abs/2502.05485"}
+  ],
+  "as_of": "2025-05"
+},
+{
+  "name_zh": "可解释性（机制可解释性）",
+  "name_en": "Interpretability (Mechanistic Interpretability)",
+  "abbr": "",
+  "aliases": ["机制可解释性", "Mechanistic Interpretability", "可解释 AI", "Explainable AI"],
+  "tier": 3,
+  "one_liner": "研究神经网络内部怎样得出输出；机制可解释性要把计算拆成人能懂的特征和回路。",
+  "explanation": "深度网络有上亿参数，输入到输出之间的计算人看不懂。可解释性研究想回答「模型为什么这样输出」，方法从画注意力热图、显著性图，到机制可解释性：像逆向工程程序那样，找出网络内部表示了哪些概念（特征），以及这些特征怎样连成完成某项计算的回路。难点之一是单个神经元往往同时参与表示多个概念；Anthropic 在 2024 年 5 月用字典学习（一种稀疏分解方法）从 Claude 3 Sonnet 中提取出数百万个特征，例如一个对多种语言的「金门大桥」文字和图片都会激活的特征。对机器人来说，它关系到调试与安全：2025 年伯克利团队在 π0-FAST、OpenVLA 内部找到对应「快/慢」「高/低」的语义方向，推理时调整这些激活就能实时改变机器人动作，无需微调或奖励信号。",
+  "example": "伯克利团队在 UR5 机械臂上运行 π0-FAST 搬运玩具，推理时增强模型内部与「快」相关的激活，机械臂移动得更快；增强与「低」相关的激活，搬运轨迹的最高点就变低，模型权重始终不变。",
+  "related": ["视觉-语言-动作模型", "大语言模型", "神经网络", "具身安全", "不确定性估计"],
+  "sources": [
+    {"title": "Mapping the Mind of a Large Language Model（Anthropic, 2024-05）", "url": "https://www.anthropic.com/research/mapping-mind-language-model"},
+    {"title": "Mechanistic interpretability for steering vision-language-action models (arXiv:2509.00328)", "url": "https://arxiv.org/abs/2509.00328"}
+  ],
+  "as_of": "2025-08"
+},
+{
+  "name_zh": "关键帧动作预测",
+  "name_en": "Keyframe Action / Next-Best-Pose Prediction",
+  "abbr": "",
+  "aliases": ["下一最佳位姿预测", "关键帧动作", "关键位姿预测", "Next-Best-Pose Prediction", "Next Best Action", "Keypose Prediction"],
+  "tier": 3,
+  "one_liner": "只预测任务中几个关键的末端位姿，两点之间的路径交给运动规划器。",
+  "explanation": "常规视觉运动策略每秒要输出几十个连续动作；关键帧方法则把一条演示压缩成少数几个关键的末端执行器位姿（如抓取前、夹住时、放下前），策略只学「下一个关键位姿在哪」，两个位姿之间的路径由运动规划器生成。帝国理工 Stephen James 等人 2021 年在 Q-attention、C2F-ARM 中提出关键帧发现，2022 年的 PerAct 沿用：按关节速度接近零等简单规则自动挑出关键帧，一条 RLBench 演示通常只剩 2 到 17 个，再把位置离散成体素、旋转离散成角度区间，预测变成分类问题。PerAct 的消融实验显示，随机或等间隔选帧会让性能降到零。这种设定在少样本下学得快，RVT、3D Diffuser Actor 等 3D 操作策略也采用；代价是依赖规划器，难以处理需要连续调节力度和速度的动态任务。",
+  "example": "让机械臂打开抽屉时，PerAct 只需依次预测几个关键位姿：把手前的预抓取位姿、夹住把手、向外拉到位；每两个位姿之间由运动规划器补全路径。",
+  "related": ["PerAct", "RVT-2", "3D Diffuser Actor", "运动规划", "RLBench", "动作表示"],
+  "sources": [
+    {"title": "Perceiver-Actor: A Multi-Task Transformer for Robotic Manipulation (arXiv:2209.05451)", "url": "https://arxiv.org/abs/2209.05451"},
+    {"title": "Q-attention: Enabling Efficient Learning for Vision-based Robotic Manipulation (arXiv:2105.14829)", "url": "https://arxiv.org/abs/2105.14829"},
+    {"title": "Coarse-to-Fine Q-attention (C2F-ARM, arXiv:2106.12534)", "url": "https://arxiv.org/abs/2106.12534"}
+  ],
+  "as_of": "2022-11"
+},
+{
+  "name_zh": "潜在扩散模型",
+  "name_en": "Latent Diffusion Model",
+  "abbr": "LDM",
+  "aliases": ["隐空间扩散模型", "Latent Diffusion", "潜空间扩散模型"],
+  "tier": 3,
+  "one_liner": "先用自编码器把数据压缩到低维隐空间，再在隐空间里做扩散生成的模型。",
+  "explanation": "扩散模型通过逐步去噪生成数据，但直接在像素上做，高分辨率图像和视频的计算量很大。2021 年 12 月，德国 CompVis 组的 Rombach 等人提出潜在扩散模型（CVPR 2022）：先训练一个自编码器，把图像压缩成尺寸小得多的隐变量，扩散模型只在这个隐空间里去噪，最后由解码器还原成图像；文字等条件通过交叉注意力注入。这大幅降低了训练和推理成本，开源的 Stable Diffusion 就基于这一框架。视频生成和世界模型普遍沿用这一思路，例如英伟达 Cosmos 中基于扩散的世界基础模型，就在 Cosmos 视频分词器（把视频压缩成隐变量的编码器）的隐空间里运行，时间和空间上的压缩比为 8×8×8。",
+  "example": "Stable Diffusion 先把 512×512 的彩色图像压缩成 64×64×4 的隐变量，在这个小得多的张量上去噪，最后再解码回 512×512 的图像。",
+  "related": ["扩散模型", "变分自编码器", "扩散 Transformer", "视频分词器", "Cosmos", "交叉注意力"],
+  "sources": [
+    {"title": "High-Resolution Image Synthesis with Latent Diffusion Models (arXiv:2112.10752)", "url": "https://arxiv.org/abs/2112.10752"},
+    {"title": "Cosmos World Foundation Model Platform for Physical AI (arXiv:2501.03575)", "url": "https://arxiv.org/html/2501.03575"}
+  ],
+  "as_of": "2025-01"
+},
+{
+  "name_zh": "潜在推理",
+  "name_en": "Latent Reasoning",
+  "abbr": "",
+  "aliases": ["隐式推理", "潜空间推理", "Latent CoT", "连续思维链", "Continuous Thought"],
+  "tier": 3,
+  "one_liner": "让模型在内部隐藏状态里完成多步推理，而不是逐字写出思维链。",
+  "explanation": "思维链（Chain-of-Thought）让大模型先用文字写出中间推理步骤再给答案，效果好，但每一步都要生成 token，既慢又受限于语言。潜在推理把中间步骤放进模型的连续隐藏状态：Meta 等 2024 年 12 月提出的 Coconut 把模型最后一层的隐藏状态当作一步「连续思维」，不解码成文字，直接作为下一步的输入嵌入，在需要大量搜索的逻辑推理题上优于文字思维链，生成的 token 也更少。2025 年 7 月的一篇综述把这一方向定义为完全在连续隐藏状态中进行、去掉逐 token 监督的推理。具身智能里，VLA 既要推理又要求低延迟，因此也借鉴这一思路，例如 ThinkAct 把多模态大模型生成的推理计划压缩成一个「视觉计划隐变量」，用它引导下游动作模型。代价是中间过程不可读，难以检查和调试。",
+  "example": "Coconut 解一道需要多步推导的逻辑题时，不写出「因为 A 所以 B」这样的文字，而是连续几步把隐藏向量回送给自己作为输入，最后才输出答案。",
+  "related": ["思维链", "具身思维链", "推理（思考）", "大语言模型", "ThinkAct", "推理延迟"],
+  "sources": [
+    {"title": "Training Large Language Models to Reason in a Continuous Latent Space (Coconut, arXiv:2412.06769)", "url": "https://arxiv.org/abs/2412.06769"},
+    {"title": "A Survey on Latent Reasoning (arXiv:2507.06203)", "url": "https://arxiv.org/abs/2507.06203"},
+    {"title": "ThinkAct: Vision-Language-Action Reasoning via Reinforced Visual Latent Planning (arXiv:2507.16815)", "url": "https://arxiv.org/abs/2507.16815"}
+  ],
+  "as_of": "2025-07"
+},
+{
+  "name_zh": "隐空间世界模型",
+  "name_en": "Latent World Model",
+  "abbr": "",
+  "aliases": ["潜在世界模型", "潜在动力学模型", "Latent Dynamics Model", "隐空间动力学模型"],
+  "tier": 3,
+  "one_liner": "在压缩后的隐状态里预测「执行某个动作后世界会怎样变化」的世界模型。",
+  "explanation": "世界模型指能根据当前状态和动作预测未来的模型。直接预测未来图像要生成大量与决策无关的像素细节，又慢又难；隐空间世界模型先把观测编码成低维隐状态，只在隐空间里预测下一步的隐状态，规划或训练策略也在隐空间完成。Hafner 等人 2018 年的 PlaNet 提出兼含确定性和随机成分的循环状态空间模型（RSSM），后来的 Dreamer 系列用它在「想象」中训练策略。另一条路线不重建像素：DINO-WM 直接预测预训练视觉模型 DINOv2 的图像块特征；Meta 2025 年的 V-JEPA 2-AC 只用不到 62 小时的 DROID 机器人视频训练动作条件预测器，就在两个实验室的 Franka 机械臂上零样本完成抓取放置。难点是隐状态无法直接查看，不重建像素的方法还要防止表征坍缩（所有输入被编码成几乎相同的向量）。",
+  "example": "V-JEPA 2-AC 做抓取放置时，把目标图像编码成隐向量，在隐空间里对多组候选动作分别预测结果，选出预测结果最接近目标的动作去执行，全程不生成图像。",
+  "related": ["世界模型", "循环状态空间模型", "DINO-WM", "V-JEPA 2", "联合嵌入预测架构", "想象中学习"],
+  "sources": [
+    {"title": "Learning Latent Dynamics for Planning from Pixels (PlaNet, arXiv:1811.04551)", "url": "https://arxiv.org/abs/1811.04551"},
+    {"title": "DINO-WM: World Models on Pre-trained Visual Features enable Zero-shot Planning (arXiv:2411.04983)", "url": "https://arxiv.org/abs/2411.04983"},
+    {"title": "V-JEPA 2: Self-Supervised Video Models Enable Understanding, Prediction and Planning (arXiv:2506.09985)", "url": "https://arxiv.org/abs/2506.09985"}
+  ],
+  "as_of": "2025-06"
+},
+{
+  "name_zh": "可学习查询",
+  "name_en": "Learnable Query / Action Query",
+  "abbr": "",
+  "aliases": ["动作查询", "Action Query", "读出 token", "Readout Token", "Object Query", "查询向量"],
+  "tier": 3,
+  "one_liner": "作为模型参数训练的一组向量，通过注意力从输入中汇总任务需要的信息。",
+  "explanation": "可学习查询是一组随机初始化、随训练更新的向量，本身不来自输入，而是在注意力计算中充当「查询」去读取输入特征，把需要的信息汇总到固定数量的输出上。2020 年 Facebook 的目标检测模型 DETR 用一组 object query，每个输出一个检测结果；2023 年 BLIP-2 的 Q-Former 用 32 个可学习查询从冻结的图像编码器中抽取视觉特征，再送进大语言模型。机器人模型里，Octo 在序列中插入读出 token：它们能看到前面的观测和任务 token，却不会被这些 token 看到，动作头在其输出上生成动作；2025 年的 VLA-Adapter 在视觉语言模型中加入 ActionQuery（实验中 64 个效果最好），专门汇总与动作相关的多模态信息交给策略网络。它的作用是把长度不定的输入压缩成固定大小、面向任务的表示。",
+  "example": "BLIP-2 中，一张图片先被视觉编码器变成数百个特征 token，Q-Former 的 32 个查询向量通过交叉注意力把它们汇总成 32 个输出，投影后接在文字前面送进大语言模型。",
+  "related": ["Q-Former", "交叉注意力", "Perceiver 重采样器", "动作头", "Octo", "VLA-Adapter"],
+  "sources": [
+    {"title": "BLIP-2: Bootstrapping Language-Image Pre-training with Frozen Image Encoders and LLMs (arXiv:2301.12597)", "url": "https://arxiv.org/abs/2301.12597"},
+    {"title": "Octo: An Open-Source Generalist Robot Policy (arXiv:2405.12213)", "url": "https://arxiv.org/html/2405.12213"},
+    {"title": "VLA-Adapter: An Effective Paradigm for Tiny-Scale VLA Model (arXiv:2509.09372)", "url": "https://arxiv.org/html/2509.09372"}
+  ],
+  "as_of": "2025-09"
+},
+{
+  "name_zh": "Mamba",
+  "name_en": "Mamba (Selective State Space Model)",
+  "abbr": "",
+  "aliases": ["选择性状态空间模型", "Selective State Space Model", "Selective SSM", "Mamba-2"],
+  "tier": 3,
+  "one_liner": "用随输入变化的状态空间模型替代注意力、计算量随序列长度线性增长的序列模型。",
+  "explanation": "Mamba 由卡内基梅隆大学的 Albert Gu 和普林斯顿大学的 Tri Dao 于 2023 年 12 月提出。Transformer 的自注意力计算量随序列长度平方增长，长序列代价很高；状态空间模型（SSM）像循环网络一样用固定大小的隐状态逐步吸收输入，计算量线性增长，但早期 SSM 参数固定，不能按内容决定记住还是忘掉什么。Mamba 让这些参数随当前输入变化（即「选择性」），配合面向 GPU 的并行扫描算法，整个架构不用注意力，也不用单独的 MLP 块。论文报告其推理吞吐量约为 Transformer 的 5 倍，Mamba-3B 的效果与两倍参数的 Transformer 相当；2024 年两人又推出快 2–8 倍的 Mamba-2。机器人领域有 RoboMamba 等工作用它降低 VLA 的推理延迟。",
+  "example": "RoboMamba 以 Mamba 语言模型为骨干构建 VLA，只微调约 0.1% 的参数就学会操作技能，论文报告其推理速度是当时已有 VLA 模型的 3 倍。",
+  "related": ["状态空间模型", "Transformer", "循环神经网络", "RoboMamba", "推理延迟", "上下文长度"],
+  "sources": [
+    {"title": "Mamba: Linear-Time Sequence Modeling with Selective State Spaces (arXiv:2312.00752)", "url": "https://arxiv.org/abs/2312.00752"},
+    {"title": "Transformers are SSMs (Mamba-2, arXiv:2405.21060)", "url": "https://arxiv.org/abs/2405.21060"},
+    {"title": "RoboMamba: Efficient Vision-Language-Action Model for Robotic Reasoning and Manipulation (arXiv:2406.04339)", "url": "https://arxiv.org/abs/2406.04339"}
+  ],
+  "as_of": "2024-05"
+}
+]}

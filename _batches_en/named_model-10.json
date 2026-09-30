@@ -1,0 +1,230 @@
+{
+  "batch": "named_model-10",
+  "terms": [
+    {
+      "key": "named_model-10#0",
+      "name_en": "F3RM",
+      "aliases": [
+        "Feature Fields for Robotic Manipulation",
+        "Distilled Feature Fields Enable Few-Shot Language-Guided Manipulation"
+      ],
+      "one_liner": "A 2023 MIT method that distills 2D features like CLIP into a 3D field, letting a robot grasp objects from language instructions with few demonstrations.",
+      "explanation": "F3RM (Feature Fields for Robotic Manipulation) comes from William Shen, Ge Yang, Phillip Isola, and colleagues at MIT CSAIL, published at CoRL 2023. 2D image models like CLIP and DINO understand semantics but have no notion of an object's precise 3D position and shape, and robotic grasping can't do without geometry. F3RM first takes multiple photos of a scene and trains a neural radiance field (NeRF, a method that reconstructs a 3D scene from multi-view photos), while simultaneously distilling features from models like CLIP into that same 3D field, producing a distilled feature field where every point in space carries a semantic feature. A robot then optimizes its gripper pose within this field, learning 6-DOF grasping and placing from just a handful of demonstrations; the target object can be specified with free-form text, and the approach generalizes to objects it has never seen. It shares its core idea with LERF (which embeds language features into a radiance field), and is a representative example of carrying 2D foundation-model knowledge into 3D for manipulation.",
+      "example": "Given just two demonstrations per task, such as grasping a mug by its handle or its rim, the robot can pick up mugs of different colors and sizes; typing a short text description lets it pick out the matching object in a scene to grasp.",
+      "related": [
+        "Distilled Feature Field",
+        "Neural Radiance Field (NeRF)",
+        "CLIP",
+        "LERF",
+        "Open-vocabulary",
+        "Few-shot"
+      ]
+    },
+    {
+      "key": "named_model-10#1",
+      "name_en": "Dita",
+      "aliases": [
+        "RoboDita",
+        "Scaling Diffusion Transformer for Generalist Vision-Language-Action Policy"
+      ],
+      "one_liner": "An open-source, roughly 330-million-parameter generalist VLA policy that denoises a whole action sequence directly with a single Transformer.",
+      "explanation": "Dita is a generalist robot policy released in March 2025 by researchers from Shanghai AI Lab, Zhejiang University, SenseTime, CUHK, Peking University, Tsinghua University, and other institutions, published at ICCV 2025. Many diffusion-based VLA models attach a small diffusion action head — a small network dedicated to turning noise into actions — after the main model, so the action generation only ever sees compressed features. Dita instead concatenates language tokens, visual tokens from historical images, and noisy action tokens into a single causal Transformer and denoises them together, a form of in-context conditioning that lets the action align directly with raw visual detail and better capture action deltas and differences across environments. The model is pretrained on cross-embodiment data from Open X-Embodiment, with about 334 million total parameters (about 221 million trainable), and matches or approaches the best contemporary results on simulation benchmarks including SimplerEnv, LIBERO, CALVIN, and ManiSkill2. The code is open-source, and the project positions itself as a lightweight, easily reproducible diffusion VLA baseline.",
+      "example": "When moved to a new physical robot and a new scene, Dita can be fine-tuned with just 10 demonstrations per task from a single third-person camera, and still complete multi-step, long-horizon tasks while handling changes in background, clutter placement, and lighting.",
+      "related": [
+        "Diffusion Transformer",
+        "Vision-Language-Action Model",
+        "Diffusion Action Head",
+        "Open X-Embodiment Dataset",
+        "Causal Attention",
+        "LIBERO"
+      ]
+    },
+    {
+      "key": "named_model-10#2",
+      "name_en": "DM0",
+      "aliases": [
+        "Dexmal DM0",
+        "DM0.5",
+        "An Embodied-Native Vision-Language-Action Model towards Physical AI"
+      ],
+      "one_liner": "An “embodiment-native” VLA model open-sourced by Dexmal in 2026, pretrained from the start on a mix of driving and robot data.",
+      "explanation": "DM0 is a vision-language-action (VLA) model released and open-sourced in February 2026 by Dexmal (原力灵机) together with StepFun (阶跃星辰). Most VLA models start from a vision-language model that has only ever seen internet images and text, then fine-tune it on robot data; DM0 instead follows an “embodiment-native” philosophy, training from the start on a mix of web text, autonomous-driving scenes, and robot interaction logs — about 1.2 trillion tokens in all. Training runs in three stages: pretraining a unified VLM (its language component is based on Qwen3-1.7B), mid-training that adds a flow-matching action expert (a sub-network dedicated to producing continuous actions) on top of it, and post-training that fine-tunes with a mixed strategy. When training on embodied data, gradients from the action expert are not backpropagated into the VLM, to preserve its general understanding ability; the model also uses a spatial chain of thought, reasoning about spatial relationships before producing an action. It has about 2 billion parameters and supports both manipulation and navigation in one model. In July 2026, Dexmal released a roughly 6-billion-parameter successor, DM0.5, along with an accompanying open-source framework called OpenDM.",
+      "example": "According to the paper, on the RoboChallenge Table30 real-robot benchmark, DM0 reached an average success rate of 62.0% in the task-specific setting and 37.3% in the general setting, ranking first on both at the time of release.",
+      "related": [
+        "Vision-Language-Action Model",
+        "Action Expert",
+        "Flow Matching",
+        "Mid-training",
+        "RoboChallenge",
+        "Dexbotic"
+      ]
+    },
+    {
+      "key": "named_model-10#3",
+      "name_en": "Dobb-E",
+      "aliases": [
+        "On Bringing Robots Home",
+        "An Open-Source, General Framework for Learning Household Robotic Manipulation"
+      ],
+      "one_liner": "An open-source household-robot framework from NYU and Meta, released in 2023, that teaches a robot a new task from just 5 minutes of demonstration.",
+      "explanation": "Dobb-E is an open-source household robot-learning framework released in November 2023 by Lerrel Pinto's group at NYU together with Meta, in a paper titled On Bringing Robots Home. Real homes vary enormously in lighting, furniture, and objects, so policies trained in a lab often fail once moved into a house, while collecting robot data inside people's homes is expensive. The team built a demonstration tool called the Stick: a $25 reacher-grabber fitted with a few 3D-printed parts and an iPhone, which an ordinary person can hold and use to record demonstrations just by going about a chore. Using it, they recorded 13 hours of data across 22 New York households (the HoNY dataset), pretrained a visual representation called HPR (built on ResNet-34) with self-supervised learning, and deployed it on the commercial mobile robot Hello Robot Stretch, where a new task needs only a handful of demonstrations plus brief fine-tuning. Code, data, models, and hardware designs are all open-source. Dobb-E is an early example of the “handheld gripper data collection” approach, and the same team later built Robot Utility Models.",
+      "example": "Over about 30 days of testing across 10 households in the New York area, Dobb-E attempted 109 household tasks, using just 5 minutes of demonstration and 15 minutes of model adaptation per new task, reaching an overall success rate of 81%.",
+      "related": [
+        "Handheld Gripper Data Collection",
+        "Universal Manipulation Interface",
+        "Hello Robot Stretch",
+        "Household Tasks",
+        "Pretrained Visual Representation",
+        "Robot Utility Models"
+      ]
+    },
+    {
+      "key": "named_model-10#4",
+      "name_en": "DreamDojo",
+      "aliases": [
+        "A Generalist Robot World Model from Large-Scale Human Videos"
+      ],
+      "one_liner": "A generalist robot world model NVIDIA released in 2026, pretrained on about 44,000 hours of human video.",
+      "explanation": "DreamDojo is a generalist robot world model — a model that predicts future video frames conditioned on actions — released in February 2026, led by NVIDIA together with UC Berkeley, HKUST (Hong Kong University of Science and Technology), Stanford, and others. Robot data is scarce and expensive to collect, while videos of humans doing everyday things are abundant but carry no action labels. DreamDojo assembles about 44,700 hours of first-person human video (mainly its own crowdsourced dataset, DreamDojo-HV, about 43,800 hours, plus EgoDex and a small amount of lab data), which the paper describes as the largest video collection used to pretrain a world model at the time. It uses continuous latent actions learned from the video itself as a unified “proxy action.” The model first learns how objects behave under interaction from unlabeled video, and is then post-trained on robot data to turn it into a simulator that accepts real action commands. The model is built on Cosmos-Predict2.5, comes in 2B and 14B versions, and after distillation generates in real time at about 10.8 frames per second on an H100, making it usable for policy evaluation, real-time teleoperation, and model-based planning.",
+      "example": "After post-training, it was adapted to robots including Fourier's GR-1, Unitree's G1, AgiBot, and the YAM arm: given a current frame and a sequence of actions, the model generates in real time what the video would look like after executing them, letting a policy be evaluated without running it on a real robot.",
+      "related": [
+        "World Model",
+        "Latent Action",
+        "Egocentric Video",
+        "EgoDex Dataset",
+        "Cosmos Predict",
+        "World Model Evaluation"
+      ]
+    },
+    {
+      "key": "named_model-10#5",
+      "name_en": "Dreamer 4",
+      "aliases": [
+        "Training Agents Inside of Scalable World Models"
+      ],
+      "one_liner": "A 2025 Google DeepMind world-model agent that mined diamonds in Minecraft using only offline data.",
+      "explanation": "Dreamer 4 is an agent released in September 2025 by Danijar Hafner, Wilson Yan, and Timothy Lillicrap at Google DeepMind, the newest generation in the Dreamer line (following DreamerV3 and earlier versions). The core idea behind the Dreamer approach is “learning in imagination”: first learn a world model, then train the policy with reinforcement learning entirely on experience generated by that model, without having to repeatedly interact with the real environment. Dreamer 4 scales the world model to about 2 billion parameters (a 400-million-parameter video tokenizer plus a 1.6-billion-parameter dynamics model), using a training objective called “shortcut forcing” together with an efficient Transformer to achieve real-time interactive inference on a single GPU. It learns most of its knowledge from video with no action labels, needing only a small amount of action-labeled data to learn action conditioning. It is the first agent to obtain a diamond in Minecraft using purely offline data. Because trial and error is slow and unsafe on real robots, this style of training inside a world model is seen as highly relevant to robotics.",
+      "example": "Mining a diamond in Minecraft requires more than 20,000 consecutive mouse and keyboard actions from raw pixels; trained on just 2,541 hours of offline player recordings, Dreamer 4 obtained a diamond in 0.7% of episodes, outperforming OpenAI's offline VPT agent while using about 100 times less data.",
+      "related": [
+        "World Model",
+        "Learning in Imagination",
+        "DreamerV3",
+        "Model-Based Reinforcement Learning",
+        "VPT (Video PreTraining)",
+        "Offline Reinforcement Learning"
+      ]
+    },
+    {
+      "key": "named_model-10#6",
+      "name_en": "DreamGen",
+      "aliases": [
+        "GR00T Dreams",
+        "GR00T-Dreams",
+        "Isaac GR00T-Dreams",
+        "Unlocking Generalization in Robot Learning through Video World Models"
+      ],
+      "one_liner": "An NVIDIA 2025 method that uses a video world model to generate robot videos and infer actions from them to synthesize training data.",
+      "explanation": "DreamGen is a synthetic-data pipeline proposed by NVIDIA's GEAR Lab and others in May 2025; its open-source implementation is called the Isaac GR00T-Dreams blueprint, announced that same month at Computex in Taipei. Teaching a robot a new skill usually requires a human to teleoperate it to collect large amounts of data. DreamGen works in four steps: first fine-tune an image-to-video generation model on data from the target robot (the open-source implementation uses Cosmos-Predict2); then, given a single starting frame and a language instruction, have the model generate a realistic video of the robot performing the new action in a new environment; next, use an inverse dynamics model or a latent action model to infer pseudo action labels from that video; and finally train a visuomotor policy on these “neural trajectories” together with real data. The paper also proposes DreamGen Bench, finding that higher video-generation quality leads to a better-trained policy. NVIDIA says that using GR00T-Dreams, it generated training data for GR00T N1.5 in 36 hours, versus roughly three months for manual collection.",
+      "example": "Using only teleoperation data from a single pick-and-place task in one environment, plus videos generated by DreamGen, the GR1 humanoid robot learned 22 new behaviors and could perform them in 10 environments it had never seen.",
+      "related": [
+        "Neural Trajectory",
+        "Video Generation Model",
+        "Inverse Dynamics Model",
+        "Latent Action Model",
+        "GR00T N1 Series",
+        "Cosmos Predict"
+      ]
+    },
+    {
+      "key": "named_model-10#7",
+      "name_en": "DreamVLA",
+      "aliases": [
+        "A Vision-Language-Action Model Dreamed with Comprehensive World Knowledge"
+      ],
+      "one_liner": "A VLA model that first predicts future dynamic regions, depth, and semantic features, then generates actions conditioned on them.",
+      "explanation": "DreamVLA is a vision-language-action (VLA) model proposed in July 2025 by researchers from Shanghai Jiao Tong University, the Eastern Institute of Technology in Ningbo, Tsinghua University, Peking University, Galbot, and other institutions, published at NeurIPS 2025. Some VLA models first “imagine” a complete next frame before producing an action, but most pixels in a full image are irrelevant to the task. DreamVLA instead predicts only three compact kinds of “world knowledge”: where things will move (dynamic regions), monocular depth, and high-level semantics (using features from DINOv2 and SAM); conditioned on these, a diffusion Transformer then generates a segment of future actions — effectively predicting the outcome first and working backward to figure out what to do, an inverse-dynamics-style approach. To keep the three kinds of information from interfering with each other inside attention, it separates them with a block-structured attention mask. It is a representative example of the “VLA combined with world-model-style prediction” direction.",
+      "example": "On the CALVIN ABC-D long-horizon benchmark, it completes an average of 4.44 consecutive sub-tasks, and reaches a 76.7% success rate on real-robot manipulation tasks.",
+      "related": [
+        "Vision-Language-Action Model",
+        "World Model",
+        "Inverse Dynamics Model",
+        "Diffusion Transformer",
+        "Attention Mask",
+        "CALVIN Benchmark"
+      ]
+    },
+    {
+      "key": "named_model-10#8",
+      "name_en": "DreamWaQ",
+      "aliases": [
+        "Learning Robust Quadrupedal Locomotion With Implicit Terrain Imagination via Deep Reinforcement Learning"
+      ],
+      "one_liner": "A 2023 KAIST reinforcement-learning method for blind quadruped locomotion that “imagines” the terrain underfoot using only proprioception.",
+      "explanation": "DreamWaQ is a locomotion control method for quadruped robots from Hyun Myung's group at KAIST (Korea Advanced Institute of Science and Technology), published at ICRA 2023. Many approaches to walking over complex terrain rely on a camera or lidar, but these sensors can fail in bad weather or poor lighting. DreamWaQ instead walks blind, using only proprioception (the robot's own internal signals, such as joint angles, angular velocities, and body orientation): it trains a context-aided estimator network (CENet) that estimates the body's velocity from the last few steps of observation, and uses a variational autoencoder to infer a latent variable representing the terrain — effectively an “implicit imagination” of what's underfoot; the policy then combines these estimates to output joint actions. Training is done in Isaac Gym with 4,096 domain-randomized parallel environments, using an asymmetric actor-critic — where the critic can see privileged information available only in simulation, while the policy sees only what a real robot could observe — before being transferred zero-shot to the real robot.",
+      "example": "On the Unitree A1 quadruped, the DreamWaQ policy, without any external perception, was able to cross complex terrain such as steps during a single long-distance continuous outdoor walk.",
+      "related": [
+        "Blind Locomotion",
+        "Proprioception",
+        "Asymmetric Actor-Critic",
+        "Privileged Information",
+        "Variational Autoencoder",
+        "Unitree A1"
+      ]
+    },
+    {
+      "key": "named_model-10#9",
+      "name_en": "DreamZero",
+      "aliases": [
+        "World Action Models are Zero-shot Policies"
+      ],
+      "one_liner": "NVIDIA's 2026 world action model, built on a 14B video diffusion model that predicts frames and actions together.",
+      "explanation": "DreamZero is a world action model (WAM, a model that jointly predicts future video frames and actions) released in February 2026 by an NVIDIA research team including Jim Fan and Yuke Zhu, in a paper titled World Action Models are Zero-shot Policies. Mainstream VLA models use a vision-language model as their backbone, which is good at understanding semantics but has limited grasp of physical dynamics. DreamZero instead uses a pretrained video diffusion model as its backbone (Tongyi Wanxiang's Wan2.1 image-to-video model, 14B parameters), autoregressively generating future video and robot actions together, treating video as dense supervision for “how the world changes” — which lets it learn from diverse, non-repetitive, heterogeneous robot data. The paper reports that its generalization to new tasks and new environments is more than double that of the best VLA models at the time; after model and system optimization, a single inference takes about 150 milliseconds on a GB200, enabling 7Hz closed-loop control. The team says it will open-source the model weights and inference code.",
+      "example": "Trained mainly on about 500 hours of teleoperation data from the AgiBot G1, it reaches an average task-progress score of 62.2% on tasks seen during training, versus 27.4% for the best VLA baseline; adding just 10–20 minutes of video from other robots or humans lifts performance on unseen tasks by more than 42% relative, and just 30 minutes of play data is enough to adapt it to the new YAM robot.",
+      "related": [
+        "World Action Model",
+        "Video Generation Model",
+        "Tongyi Wanxiang",
+        "Zero-shot",
+        "Cross-Embodiment",
+        "Fast-WAM"
+      ]
+    },
+    {
+      "key": "named_model-10#10",
+      "name_en": "DrEureka",
+      "aliases": [
+        "Language Model Guided Sim-To-Real Transfer"
+      ],
+      "one_liner": "Uses a large language model to automatically write reward functions and domain-randomization ranges, transferring a simulation-trained policy to a real robot.",
+      "explanation": "DrEureka is a method proposed in June 2024 by the University of Pennsylvania, NVIDIA, and UT Austin, published at RSS 2024, extending the same team's earlier Eureka (which used a large language model to write reward functions). Moving a policy trained in simulation onto a real robot usually requires a person to repeatedly hand-tune the reward function and the domain-randomization ranges (randomizing physical parameters like friction and mass during training so the policy can tolerate real-world discrepancies). DrEureka automates this in three steps: first, a large language model generates a reward function with safety constraints and trains a policy in simulation with it; then that policy is tested across a range of physical parameters to find the range over which it still works well (reward-aware physics priors, RAPP); finally, the large language model writes a domain-randomization configuration within that range, a final policy is trained on it, and that policy is deployed directly. The simulator used is Isaac Gym, and the policy takes only proprioceptive input.",
+      "example": "On the Unitree Go1 quadruped, the policy DrEureka trained let the robot dog balance and walk on a yoga ball, with no manual, repeated parameter tuning during training; on standard quadruped forward-walking and dexterous-hand cube-rotation tasks, it performed on par with or better than hand-designed solutions.",
+      "related": [
+        "Eureka",
+        "Sim-to-Real Transfer",
+        "Domain Randomization",
+        "Reward Function",
+        "Reward Engineering",
+        "Large Language Model"
+      ]
+    },
+    {
+      "key": "named_model-10#11",
+      "name_en": "DriveVLM",
+      "aliases": [
+        "DriveVLM-Dual",
+        "The Convergence of Autonomous Driving and Large Vision-Language Models"
+      ],
+      "one_liner": "A 2024 Tsinghua and Li Auto autonomous-driving system where a vision-language model thinks slowly and a traditional planner executes fast.",
+      "explanation": "DriveVLM is an autonomous-driving method proposed in February 2024 by Hang Zhao's group at Tsinghua University's Institute for Interdisciplinary Information Sciences together with Li Auto, published at CoRL 2024. Traditional autonomous-driving pipelines have limited ability to handle rare, complex long-tail scenarios. DriveVLM uses a vision-language model (VLM, built on Qwen-VL) to work through a chain of thought in three steps — scene description, scene analysis, and hierarchical planning — before finally outputting a driving trajectory. But a VLM isn't precise enough at spatial localization and is slow to run inference, so the paper also proposes DriveVLM-Dual: the VLM outputs a rough reference trajectory at low frequency (the slow system), while a traditional perception-and-planning module refines it into the actual trajectory at high frequency (the fast system), the two working together asynchronously. The paper reports the system has been deployed in production vehicles, with average inference of about 410 milliseconds on an onboard platform with two Orin X chips. This division of labor matches the fast-slow dual-system architecture also seen in robotics, such as Figure's Helix.",
+      "example": "When it encounters an unusual road situation, the VLM first describes the scene, identifies key objects that could affect the vehicle and analyzes their impact, then gives a high-level decision such as “slow down and go around” along with a rough trajectory, which the traditional planner refines in real time into an executable trajectory.",
+      "related": [
+        "Fast-Slow Dual System",
+        "Autonomous Driving",
+        "Vision-Language Model",
+        "Chain of Thought",
+        "Long-tail Problem",
+        "Qwen-VL"
+      ]
+    }
+  ]
+}

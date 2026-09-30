@@ -1,0 +1,230 @@
+{
+  "batch": "named_model-18",
+  "terms": [
+    {
+      "key": "named_model-18#0",
+      "name_en": "Meta Motivo",
+      "aliases": [
+        "FB-CPR",
+        "Forward-Backward Representations with Conditional-Policy Regularization",
+        "Zero-Shot Whole-Body Humanoid Control via Behavioral Foundation Models"
+      ],
+      "one_liner": "Meta's simulated-humanoid behavior foundation model that does motion tracking, reaching a target pose, and reward-driven behavior with no further training.",
+      "explanation": "Meta Motivo was released by Meta FAIR in December 2024, with the paper published at ICLR 2025; the company calls it the first behavior foundation model for humanoids. It controls a virtual humanoid character in physics simulation (the HumEnv environment), not a real robot. Its core algorithm, FB-CPR, builds on forward-backward representations, an unsupervised reinforcement-learning method that encodes state, reward, and policy into the same latent space; a discriminator is added on top, constraining the policy to stay close to unlabeled motion-capture data, so the learned motion looks human while still generalizing. Once pretrained, giving it a reference motion, a target pose, or a reward function directly yields the corresponding policy, with no additional training or planning needed; it is also somewhat robust to changes like gravity, wind, and external shoves. Code and several models, ranging from 24.5 million to 288 million parameters, are all open-source.",
+      "example": "Feed the same pretrained model a motion-capture reference clip, a target standing pose, or a “spin in place” reward function, and it can directly control the simulated humanoid to do each one, with no retraining needed per task.",
+      "related": [
+        "Behavior Foundation Model",
+        "Unsupervised Skill Discovery",
+        "Motion Tracking",
+        "Zero-shot",
+        "BFM-Zero",
+        "Adversarial Motion Priors"
+      ]
+    },
+    {
+      "key": "named_model-18#1",
+      "name_en": "MimicPlay",
+      "aliases": [
+        "Long-Horizon Imitation Learning by Watching Human Play"
+      ],
+      "one_liner": "An imitation-learning method that learns high-level plans from video of human hands playing freely, then low-level actions from a little teleoperation data.",
+      "explanation": "MimicPlay was released in February 2023 by Chen Wang, Linxi Fan, Fei-Fei Li, Yuke Zhu, and colleagues at Stanford, NVIDIA, and other institutions, an oral presentation at CoRL 2023. Collecting data purely through teleoperation is expensive for long-horizon tasks (tasks requiring many steps done in sequence). MimicPlay uses a hierarchical structure: the high level learns a latent plan from “human play data” — video of a person freely moving objects around a scene by hand — representing what the 3D trajectory of a human hand should look like given a goal image; the low level trains a visuomotor policy on only a small number of teleoperation demonstrations, outputting robot actions that follow this plan. Human-hand video is cheap and works across embodiments, filling exactly the gap left by scarce robot data. Across 14 real long-horizon manipulation tasks, it beat the contemporary baselines on success rate, generalization, and robustness to disturbance.",
+      "example": "For a multi-step task like “open the microwave, put the bowl inside, then close the door,” the high level predicts the 3D trajectory a human hand should follow given the goal image, and the low-level policy drives the robot arm step by step along that trajectory to complete the task.",
+      "related": [
+        "Imitation Learning",
+        "Long-Horizon Task",
+        "Play Data",
+        "Human Video Data",
+        "Hierarchical Architecture",
+        "Visuomotor Policy"
+      ]
+    },
+    {
+      "key": "named_model-18#2",
+      "name_en": "MiMo-Embodied (Xiaomi)",
+      "aliases": [
+        "MiMo-Embodied-7B",
+        "X-Embodied Foundation Model"
+      ],
+      "one_liner": "An open-source 7B vision-language model from Xiaomi covering both autonomous-driving and embodied-AI understanding and planning.",
+      "explanation": "MiMo-Embodied is a vision-language model (VLM) whose technical report was released, and weights open-sourced, by Xiaomi's embodied-AI team in November 2025; it has about 7 billion parameters, with weights public on Hugging Face. The premise is that autonomous driving and indoor robots both need spatial understanding and planning, yet are usually trained entirely separately. MiMo-Embodied puts both kinds of data into a single model, trained through multiple stages with curated data plus chain-of-thought and reinforcement-learning fine-tuning, covering affordance prediction, task planning, and spatial understanding on the embodied side, and environment perception, state prediction, and driving planning on the driving side. The report says it matches or beats comparable open- and closed-source models across 17 embodied-AI benchmarks and 12 autonomous-driving benchmarks, and observes positive transfer between the two domains, each reinforcing the other. It evaluates understanding, reasoning, and planning ability; it does not directly output a robot's joint actions itself.",
+      "example": "Show it a kitchen photo and ask “where should the cup be grasped,” and it can point out the graspable location on the image; show it driving footage, and it can describe the state of surrounding vehicles and give a next driving plan.",
+      "related": [
+        "Vision-Language Model",
+        "Embodied Reasoning",
+        "Affordance",
+        "Spatial Reasoning",
+        "Autonomous Driving",
+        "Cross-Embodiment"
+      ]
+    },
+    {
+      "key": "named_model-18#3",
+      "name_en": "MiniCPM-Robot series (ModelBest / OpenBMB)",
+      "aliases": [
+        "MiniCPM-RobotManip",
+        "MiniCPM-RobotTrack"
+      ],
+      "one_liner": "MiniCPM's embodied model family, focused on small, on-device models for manipulation and for following a target on command.",
+      "explanation": "This is an embodied model family open-sourced in July 2026 by the OpenBMB open-source community, led by ModelBest (面壁智能), with two models in the first release. MiniCPM-RobotManip is a 1.5-billion-parameter generalist VLA (vision-language-action model), with one set of weights covering multiple tasks; it uses streaming inference to keep past frames in context, retaining up to about 1 minute of visual memory, and reuses MiniCPM-V 4.6's visual-token compression, cutting each frame from 256 tokens down to 64. The company reports results on benchmarks like LIBERO, CALVIN, and RoboTwin 2.0 that come close to or beat the much larger π0.5. MiniCPM-RobotTrack is built on MiniCPM4-0.5B, about 900 million parameters, dedicated to following a target on a language instruction; it runs purely on vision on a Unitree Go2 robot dog's onboard compute, at more than 5 frames per second with about 180 milliseconds of end-to-end latency, which the company says is the best open-source result on EVT-Bench.",
+      "example": "Say “follow that person” on a Unitree Go2 EDU, and RobotTrack follows along using only its onboard camera and local compute; official demos include riding an elevator and passing through an underground parking garage.",
+      "related": [
+        "Vision-Language-Action Model",
+        "On-Device / Edge Deployment",
+        "Embodied Visual Tracking",
+        "Visual Token Pruning",
+        "Unitree Go2",
+        "π0.5"
+      ]
+    },
+    {
+      "key": "named_model-18#4",
+      "name_en": "Mobility VLA",
+      "aliases": [
+        "MINT (Multimodal Instruction Navigation with demonstration Tours)",
+        "Multimodal Instruction Navigation with Long-Context VLMs and Topological Graphs"
+      ],
+      "one_liner": "A hierarchical navigation system that has a long-context VLM watch a tour video, then follows an image-and-text instruction to find the destination.",
+      "explanation": "This was released by Google DeepMind in July 2024. The task it targets is called MINT (Multimodal Instruction Navigation with demonstration Tours): someone first walks through the environment with a camera to record a tour video, and afterward the user can give instructions with text plus an image — for example, holding an object and asking “where does this go back.” The system has two layers: the high level uses Gemini 1.5 Pro, with a context length of up to 1 million tokens, to read through the entire tour video and the instruction and locate the frame where the target is; the low level uses COLMAP (a tool that recovers camera pose from images) to build a topological map from the video — a map where locations are nodes and passable connections are edges — and generates waypoint actions from it for the base to execute. In a real, occupied 836-square-meter office, end-to-end success rates for instructions requiring reasoning and for multimodal instructions were 86% and 90%, respectively.",
+      "example": "The user holds up a charger and asks “where should this go back,” and the robot first locates, within the tour video, the desk where the charger belongs, then drives there along the topological map.",
+      "related": [
+        "Vision-and-Language Navigation",
+        "Topological Map",
+        "Hierarchical Architecture",
+        "Gemini (Google Multimodal Model Series)",
+        "Context Length",
+        "Structure from Motion"
+      ]
+    },
+    {
+      "key": "named_model-18#5",
+      "name_en": "MOKA",
+      "aliases": [
+        "Open-World Robotic Manipulation through Mark-Based Visual Prompting"
+      ],
+      "one_liner": "A training-free method that marks up an image for GPT-4V to pick keypoints, then converts those into robot-arm actions.",
+      "explanation": "MOKA was released in March 2024 by Fangchen Liu, Kuan Fang, Pieter Abbeel, and Sergey Levine at UC Berkeley, published at RSS 2024. A vision-language model has plenty of common sense, but doesn't directly output robot actions. MOKA rewrites “how to manipulate this” as a picture-answering question: it overlays candidate points, a grid, and text labels onto the camera image as marks (visual prompting), and has GPT-4V hierarchically pick out a grasp point, the point where a tool contacts an object, a target point, and intermediate waypoints, which are then converted into robot-arm motion. It requires no robot-data collection for a new task, and can handle tabletop tasks such as tool use, deformable-object manipulation, and object rearrangement; successful experience gathered during execution can also serve as in-context examples, or be distilled into a policy network. It is a representative example of connecting a VLM to a robot through visual prompting.",
+      "example": "Given the instruction “use the brush to sweep the debris aside,” GPT-4V picks, on the marked image, the grasp point on the brush handle, the contact point where the bristles touch the table, and waypoints along the sweeping direction, and the robot executes them in that order.",
+      "related": [
+        "Visual Prompting (Set-of-Mark)",
+        "Affordance",
+        "Vision-Language Model",
+        "Zero-shot",
+        "Tool Use",
+        "PIVOT"
+      ]
+    },
+    {
+      "key": "named_model-18#6",
+      "name_en": "Molmo (Ai2)",
+      "aliases": [
+        "Molmo and PixMo",
+        "Molmo 2"
+      ],
+      "one_liner": "An Ai2 vision-language model open-sourced with both weights and training data that can answer questions by “pointing” on the image.",
+      "explanation": "Molmo is an open vision-language model family released by the Allen Institute for AI (Ai2) in September 2024, in several sizes — MolmoE-1B, Molmo-7B-O, Molmo-7B-D, and Molmo-72B — using CLIP as the vision encoder and OLMo or Qwen2, respectively, for the language component. It has two distinguishing features. First, its training dataset, PixMo, is released alongside it, and the data was not obtained by distilling a closed-source model — PixMo's detailed image captions come from annotators describing images out loud, then transcribed and cleaned up. Second, it can “point”: it can output the 2D coordinates of an object in an image directly, useful for counting and localization. Pointing is practical for robots, since it can tell a robot where to grasp or where to place something, and Ai2's later MolmoAct was built on top of Molmo. Molmo 2, released in December 2025, extended these abilities to video understanding, spatiotemporal grounding, and object tracking.",
+      "example": "Ask Molmo “how many cups are in this image,” and it first places a point on each cup, then gives the total count.",
+      "related": [
+        "Vision-Language Model",
+        "Pointing (Point Prediction)",
+        "MolmoAct",
+        "Open Weights",
+        "Allen Institute for AI (Ai2)",
+        "CLIP"
+      ]
+    },
+    {
+      "key": "named_model-18#7",
+      "name_en": "MolmoAct",
+      "aliases": [
+        "MolmoAct2",
+        "Action Reasoning Model (ARM)",
+        "Action Reasoning Models that can Reason in Space"
+      ],
+      "one_liner": "Ai2's open-source “action reasoning model,” a VLA that reasons about depth and sketches a trajectory before outputting an action.",
+      "explanation": "MolmoAct was released by Ai2 in August 2025, built on the company's own Molmo vision-language model, with 7 billion parameters; the model, code, data, and evaluation scripts are all open-source. It splits VLA decision-making into three steps: first it outputs perceptual tokens carrying depth information to understand 3D space, then it draws a waypoint trajectory for the end effector directly on the image, and finally it decodes that trajectory into specific arm and gripper actions. Because the planned trajectory is overlaid directly on the image, a person can see what it intends to do before execution, and can also draw a path on a phone or tablet to guide it. At release, it reported a 72.1% success rate on SimplerEnv out-of-distribution tasks and 86.6% on LIBERO. MolmoAct2, from May 2026, switched to the embodied-reasoning backbone Molmo2-ER and attached a flow-matching action expert, cutting single-action-inference time from about 6.7 seconds down to 180 milliseconds, and released a companion dataset of more than 720 hours of bimanual YAM data.",
+      "example": "Given the instruction “put the pillow on the sofa,” MolmoAct first draws a trajectory from pillow to sofa on the camera view; after the user confirms it or redraws it on a tablet, it converts that into robot-arm actions to execute.",
+      "related": [
+        "Vision-Language-Action Model",
+        "Molmo",
+        "Embodied Reasoning",
+        "Action Chain-of-Thought",
+        "Flow Matching",
+        "Bimanual YAM Dataset"
+      ]
+    },
+    {
+      "key": "named_model-18#8",
+      "name_en": "Motion Policy Networks",
+      "aliases": [
+        "MπNets",
+        "MPiNets"
+      ],
+      "one_liner": "A neural motion planner that generates collision-free robot-arm motion directly from a single depth camera's point cloud.",
+      "explanation": "Motion Policy Networks was released in October 2022 by Adam Fishman, Byron Boots, Dieter Fox, and colleagues at the University of Washington and NVIDIA, published at CoRL 2022. Classical motion planning (such as sampling-based planning like RRT) needs a complete, accurate model of the environment and is slow to compute in cluttered scenes. MπNets replaces this with an end-to-end neural network: given the point cloud a single depth camera sees of the scene plus the robot's current state, it outputs joint motion toward the target pose step by step, which strung together forms a smooth, obstacle-avoiding trajectory. All training data is generated automatically in simulation using classical planning tools (OMPL and Geometric Fabrics), covering more than 500,000 environments and more than 3 million planning problems. The result beats prior neural planners by 46%, is much faster than a global planner, can handle dynamic scenes, and, even trained only on simulation data, transfers to noisy partial point clouds on a real robot. Code, weights, and data are open-source.",
+      "example": "To reach into one compartment of a cabinet to grab something, MπNets just looks at the depth camera's point cloud once and gives a real-time joint trajectory that routes around the cabinet's panels, with no need to first build a complete map and then run a planner.",
+      "related": [
+        "Neural Motion Planning",
+        "Motion Planning",
+        "Point Cloud",
+        "Obstacle Avoidance",
+        "Sampling-Based Motion Planning",
+        "Geometric Fabrics"
+      ]
+    },
+    {
+      "key": "named_model-18#9",
+      "name_en": "Motus",
+      "aliases": [
+        "A Unified Latent Action World Model"
+      ],
+      "one_liner": "A latent-action world model that combines understanding, video generation, and action into three experts inside one model.",
+      "explanation": "Motus was released in December 2025 by Jun Zhu's group at Tsinghua University together with Peking University and Horizon Robotics, with code and weights open-sourced under Apache 2.0. Earlier approaches often split understanding, a world model (predicting future frames), and control into separate models, making it hard to jointly exploit large-scale heterogeneous data. Motus uses a Mixture-of-Transformers (MoT) architecture to connect an understanding expert, a video-generation expert, and an action expert together — the video part is built on Wan2.2-5B and the understanding part on Qwen3-VL-2B, about 8 billion parameters in total — and uses UniDiffuser-like scheduling to switch among modes such as world model, VLA, inverse dynamics model, and video generation. It learns latent actions from optical flow, letting video with no action labels also join pretraining, paired with three-stage training and a six-tier data pyramid. Across 50 tasks on RoboTwin 2.0, it reaches an average success rate of about 87%, which the paper reports as 15% higher than X-VLA and 45% higher than π0.5.",
+      "example": "The same Motus model: given the current frame and an instruction, it outputs an action directly (VLA mode); given a frame and an action, it predicts the following video (world-model mode); given a before-and-after pair of frames, it infers what action happened in between (inverse-dynamics mode).",
+      "related": [
+        "World Action Model",
+        "Latent Action",
+        "Mixture-of-Transformers",
+        "Inverse Dynamics Model",
+        "Data Pyramid",
+        "RoboTwin"
+      ]
+    },
+    {
+      "key": "named_model-18#10",
+      "name_en": "MT-Opt",
+      "aliases": [
+        "Continuous Multi-Task Robotic Reinforcement Learning at Scale"
+      ],
+      "one_liner": "A Google multi-task reinforcement-learning system that used 7 real robots to gather 9,600 hours of data while learning 12 tasks at once.",
+      "explanation": "MT-Opt was released in April 2021 by Dmitry Kalashnikov, Chelsea Finn, Sergey Levine, Karol Hausman, and colleagues at Robotics at Google, a multi-task extension of QT-Opt (Google's large-scale Q-learning-based grasping reinforcement-learning system). The team used 7 robots to continuously gather about 9,600 robot-hours across more than 800,000 episodes over 57 days, learning 12 real tasks at once — picking a specific object, placing it in a container, aligning objects, covering, and more. Two design choices are key: a multi-task success detector that automatically judges whether a task is done and assigns reward, and sharing episodes from one task with the others while rebalancing the amount of data, so tasks with little data can borrow experience from more common ones. Average success rate on rare tasks rose from 1% under single-task QT-Opt to 50%, and a new task could be fine-tuned in about a day. It is an important piece of Google's exploration of scaling up real-robot learning before RT-1.",
+      "example": "To teach the robot a new task, “cover an object with a towel,” there's no need to train from scratch; collecting about a day's worth of additional data to fine-tune on top of already-learned skills like grasping is enough.",
+      "related": [
+        "QT-Opt",
+        "Reinforcement Learning",
+        "Multi-Task Learning",
+        "Success Detector",
+        "Real-Robot Reinforcement Learning",
+        "Offline Reinforcement Learning"
+      ]
+    },
+    {
+      "key": "named_model-18#11",
+      "name_en": "MuZero",
+      "aliases": [
+        "Mastering Atari, Go, Chess and Shogi by Planning with a Learned Model"
+      ],
+      "one_liner": "A DeepMind algorithm that masters Go and Atari through tree search inside a learned internal model, with no rules given.",
+      "explanation": "MuZero was posted as a preprint by Julian Schrittwieser, David Silver, and colleagues at DeepMind in November 2019, and published in Nature in December 2020, the successor to AlphaGo and AlphaZero. AlphaZero needs to know the rules of a game to simulate it out “in its head”; MuZero no longer needs the rules at all: it learns a latent-space model that predicts only the three things most useful for decision-making — reward, policy, and value — without reconstructing the full image, then uses Monte Carlo tree search to plan ahead and choose an action inside that learned model. It reached AlphaZero's level at Go, chess, and shogi, and beat every algorithm at the time across 57 Atari games. It is a representative example of model-based reinforcement learning, embodying the idea that a world model only needs to serve planning, and is often discussed alongside the Dreamer series.",
+      "example": "Playing an Atari game, MuZero is never told the rules; seeing only the screen and the score, it simulates the consequences of several different moves inside its own learned internal model and picks whichever has the highest expected return.",
+      "related": [
+        "Model-Based Reinforcement Learning",
+        "World Model",
+        "Monte Carlo Tree Search",
+        "Latent World Model",
+        "Value Function",
+        "DreamerV3"
+      ]
+    }
+  ]
+}

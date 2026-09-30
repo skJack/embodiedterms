@@ -1,0 +1,205 @@
+{
+  "category": "control",
+  "batch": 8,
+  "terms": [
+    {
+      "name_zh": "零力拖动",
+      "name_en": "Zero-Force Drag (Free-Drive / Hand Guiding Mode)",
+      "abbr": "",
+      "aliases": ["拖动模式", "自由驱动模式", "零力控制", "手动引导", "Hand guiding", "Freedrive", "Guiding mode"],
+      "tier": 2,
+      "one_liner": "让机械臂抵消自身重力和摩擦，人用很小的力就能推着它走。",
+      "explanation": "零力拖动是协作机械臂的一种手动引导模式，UR 叫 Freedrive，Franka 叫 Guiding mode。开启后，控制器实时输出抵消自身重力（重力补偿）和关节摩擦（摩擦补偿）所需的力矩，机械臂像失重一样停在原处，人轻轻一推就跟着动。实现大致有三种：带关节力矩传感器的臂直接在力矩模式下做补偿；不少没有力矩传感器的协作臂靠电机电流估计外力；传统工业臂则在腕部装六维力传感器，用导纳控制把测到的力换成运动。它最主要的用途是拖动示教：人手把手带着机械臂做一遍动作，控制器记下轨迹或存成演示数据。「零力」指人需要施加的力接近零，并不是电机不出力。",
+      "example": "Franka 机械臂按住法兰附近两个相对的按钮即可进入引导模式，libfranka 的 setGuidingMode 还能只放开部分方向（比如只允许平移、锁住转动）；UR 的 ROS 2 驱动提供 freedrive_mode_controller，需要持续发布 True 消息，默认 1 秒收不到就自动退出。",
+      "related": ["拖动示教", "重力补偿", "摩擦补偿", "导纳控制", "关节力矩传感器", "演示数据"],
+      "sources": [
+        {"title": "libfranka robot.h（setGuidingMode：Guiding mode can be enabled by pressing the two opposing buttons near the robot's flange）", "url": "https://raw.githubusercontent.com/frankaemika/libfranka/master/include/franka/robot.h"},
+        {"title": "Universal Robots ROS 2 Driver: ur_controllers 文档（FreedriveModeController / ForceModeController）", "url": "https://github.com/UniversalRobots/Universal_Robots_ROS2_Driver/blob/main/ur_controllers/doc/index.rst"},
+        {"title": "Enabling Scalable Kinesthetic Teaching via Observer-based Hand-guiding with Active Support (arXiv:2608.10847)", "url": "https://arxiv.org/abs/2608.10847"}
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "自抗扰控制",
+      "name_en": "Active Disturbance Rejection Control",
+      "abbr": "ADRC",
+      "aliases": ["自抗扰控制器", "线性自抗扰控制", "LADRC", "扩展状态观测器控制"],
+      "tier": 3,
+      "one_liner": "把模型误差和外部干扰合成「总扰动」，实时估计出来再抵消的控制方法。",
+      "explanation": "自抗扰控制由中国学者韩京清在 1990 年代提出，2009 年以英文论文《From PID to Active Disturbance Rejection Control》系统介绍。它不追求精确建模，只需知道系统阶数和控制增益的大致值 b₀，把未建模动力学、参数变化、外力等统统看作一个「总扰动」f，当成额外状态交给扩展状态观测器（ESO，一种根据输入输出估计内部状态的算法）实时估出，再在控制量里减掉：u = (u₀ − f̂) / b₀。抵消后对象近似变成积分器串联，用简单的 PD 就能控好。原始版本还含跟踪微分器和非线性反馈；后来常用的线性 ADRC 只需调观测器带宽和控制器带宽，这种按带宽整定的思路来自 Zhiqiang Gao 2003 年的工作。它与扰动观测器思路相近，但后者通常需要名义模型；与自适应控制的区别是不去估计具体参数。",
+      "example": "关节电机换了负载、摩擦随温度变化时，PID 往往要重新调参；ADRC 把这些变化都算进总扰动由 ESO 估计补偿，线性版本主要只调观测器带宽 ω_o 和控制器带宽 ω_c 两个参数。",
+      "related": ["PID 控制", "扰动观测器", "状态观测器", "鲁棒控制", "自适应控制"],
+      "sources": [
+        {"title": "Wikipedia: Active disturbance rejection control", "url": "https://en.wikipedia.org/wiki/Active_disturbance_rejection_control"},
+        {"title": "Han J. From PID to Active Disturbance Rejection Control. IEEE Transactions on Industrial Electronics, 2009", "url": "https://doi.org/10.1109/TIE.2008.2011621"},
+        {"title": "Herbst G. Transfer Function Analysis and Implementation of Active Disturbance Rejection Control (arXiv:2011.01044)", "url": "https://arxiv.org/abs/2011.01044"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "自适应控制",
+      "name_en": "Adaptive Control",
+      "abbr": "",
+      "aliases": ["模型参考自适应控制", "MRAC", "自校正控制", "Self-tuning control"],
+      "tier": 3,
+      "one_liner": "运行中在线估计未知或变化的参数，并据此自动调整控制器。",
+      "explanation": "自适应控制指控制器在运行中根据实际响应在线估计未知或变化的参数，并随之调整自己，基础是参数估计。常见形式有模型参考自适应控制（MRAC，让系统去跟随一个理想参考模型的响应）和自校正控制，又分直接法（直接调控制器参数）和间接法（先估对象参数再算控制器）。它和鲁棒控制的区别：鲁棒控制事先给参数变化划定范围，用一套固定控制器扛住最坏情况；自适应控制不需要预知范围，边运行边修正。机器人里的经典是 Slotine 与 Li 1987 年的算法：PD 反馈加完整动力学前馈，负载等未知参数在线估计；它利用机械臂动力学的结构，不需测关节加速度，也不用对估计的质量矩阵求逆。强化学习运控里的快速运动适应（RMA）是用学习方法做类似的事。",
+      "example": "机械臂抓起一个质量未知的工件，按旧模型算力矩的控制器会出现跟踪误差；自适应控制器根据误差在线更新负载质量等参数，重复几次运动后误差逐渐减小。",
+      "related": ["鲁棒控制", "计算力矩控制", "动力学参数辨识", "系统辨识", "快速运动适应", "自抗扰控制"],
+      "sources": [
+        {"title": "Wikipedia: Adaptive control", "url": "https://en.wikipedia.org/wiki/Adaptive_control"},
+        {"title": "Slotine J.-J. E., Li W. On the Adaptive Control of Robot Manipulators. IJRR, 1987", "url": "https://doi.org/10.1177/027836498700600303"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "踝策略/髋策略/跨步策略",
+      "name_en": "Ankle, Hip and Stepping Strategies",
+      "abbr": "",
+      "aliases": ["踝关节策略", "髋关节策略", "跨步策略", "Ankle strategy", "Hip strategy", "Stepping strategy"],
+      "tier": 3,
+      "one_liner": "受推后保持平衡的三级手段：动脚踝、甩上身、迈一步。",
+      "explanation": "这组概念来自人体姿势控制研究。Horak 和 Nashner 1986 年让受试者站在会突然平移的支撑面上，发现正常站立时人主要绕踝关节转动身体恢复平衡，称为踝策略；站在比脚掌还短的窄面上时，改为以髋关节为主的屈伸，称为髋策略；扰动更大时人会迈步重建支撑，即跨步策略。人形机器人的推恢复借用了这套分级：踝策略相当于在脚底范围内调节压力中心（CoP）；髋策略靠上身快速转动产生角动量，相当于调节质心力矩枢轴点（CMP）；当捕获点（要停稳必须踩到的地面点）落到支撑多边形之外，就只能跨步。Stephens 2007 年按这三种策略推导了判断不迈步是否必然跌倒的解析边界。",
+      "example": "人形机器人站立时被轻推一下，只调脚踝力矩就能站稳；推力加大，上身前后甩动或挥臂吸收冲量；再大就朝受力方向迈出一步。",
+      "related": ["推恢复", "平衡控制", "捕获点", "压力中心", "质心力矩枢轴点", "支撑多边形"],
+      "sources": [
+        {"title": "Horak F. B., Nashner L. M. Central programming of postural movements: adaptation to altered support-surface configurations. J Neurophysiol, 1986", "url": "https://europepmc.org/article/MED/3734861"},
+        {"title": "Stephens B. Humanoid push recovery. IEEE-RAS Humanoids, 2007", "url": "https://doi.org/10.1109/ICHR.2007.4813931"},
+        {"title": "Push Recovery of a Position-Controlled Humanoid Robot Based on Capture Point Feedback Control (arXiv:1710.10598)", "url": "https://arxiv.org/abs/1710.10598"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "BIT*",
+      "name_en": "Batch Informed Trees",
+      "abbr": "BIT*",
+      "aliases": ["批量知情树", "BITstar"],
+      "tier": 3,
+      "one_liner": "分批撒采样点、再按启发式顺序搜索最优路径的运动规划算法。",
+      "explanation": "BIT*（批量知情树）是 Gammell、Srinivasa、Barfoot 提出的基于采样的运动规划算法，2015 年发表于 ICRA，完整版 2020 年刊于 IJRR。RRT* 一类算法每次加一个随机点逐步长树；BIT* 则一次撒一批点，把它们看成一张隐式随机几何图（边不预先连好，用到才做碰撞检查），再像 A* 那样按「经过这条边的路径最短可能多长」的启发式顺序搜索。找到第一条解后，只在能改进当前解的椭球区域里撒下一批点（沿用 Informed RRT* 的做法），逐轮细化。它随时能给出当前最好解、越跑越优，并且概率完备、渐近最优；论文实验中，尤其在高维问题上，它比 RRT*、Informed RRT*、FMT* 更快找到更好的解。OMPL 已内置 BIT*，后续还有 ABIT*、AIT*、EIT* 等变体。",
+      "example": "给 7 自由度机械臂规划绕过货架隔板的路径时，可在 OMPL 里把规划器从 RRTConnect 换成 BITstar：前者只求尽快找到一条能用的路径，后者在给定时间内持续把路径缩短。",
+      "related": ["Informed RRT*", "RRT*", "A* 算法", "基于采样的规划", "概率完备性", "OMPL"],
+      "sources": [
+        {"title": "Gammell, Srinivasa, Barfoot. Batch Informed Trees (BIT*) (arXiv:1405.5848, ICRA 2015)", "url": "https://arxiv.org/abs/1405.5848"},
+        {"title": "OMPL: ompl::geometric::BITstar Class Reference", "url": "https://ompl.kavrakilab.org/classompl_1_1geometric_1_1BITstar.html"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "贝塞尔曲线轨迹",
+      "name_en": "Bézier Curve Trajectory",
+      "abbr": "",
+      "aliases": ["贝塞尔曲线", "Bezier curve", "贝塞尔多项式"],
+      "tier": 3,
+      "one_liner": "用几个控制点决定形状的光滑多项式曲线，常用来描述机器人轨迹。",
+      "explanation": "贝塞尔曲线由雷诺公司工程师 Pierre Bézier 在 1960 年代推广用于车身设计，雪铁龙的 de Casteljau 更早独立提出了它的计算方法。n 阶曲线由 n+1 个控制点 P₀…Pₙ 决定：B(s) = Σᵢ C(n,i)(1−s)ⁿ⁻ⁱ sⁱ Pᵢ，参数 s 从 0 走到 1，C(n,i) 是组合数。它适合做轨迹有三点原因：曲线必过首尾控制点；起点和终点的切线方向由相邻控制点决定，便于和前后段衔接；整条曲线落在控制点围成的凸包内，控制点避开障碍，曲线就不会越界。中间控制点不在曲线上，只负责拉动形状。机器人里常用于足端摆动轨迹和末端路径平滑，混合零动态方法也用贝塞尔多项式描述步态参考轨迹。长路径一般用多段低阶曲线拼接，而不是一条高阶曲线。",
+      "example": "MIT 开源的 Cheetah-Software 用三次贝塞尔曲线生成摆动腿轨迹：水平方向从起点平滑过渡到落脚点，竖直方向前半段升到抬腿高度、后半段落回地面，再对曲线求导直接得到足端速度和加速度。",
+      "related": ["足端轨迹规划", "三次样条插值", "五次多项式插值", "最小加加速度轨迹", "路点", "混合零动态"],
+      "sources": [
+        {"title": "Wikipedia: Bézier curve", "url": "https://en.wikipedia.org/wiki/B%C3%A9zier_curve"},
+        {"title": "MIT Cheetah-Software: FootSwingTrajectory.cpp（Currently uses Bezier curves like Cheetah 3 does）", "url": "https://github.com/mit-biomimetics/Cheetah-Software/blob/master/common/src/Controllers/FootSwingTrajectory.cpp"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "包围盒",
+      "name_en": "Bounding Volume (AABB / OBB)",
+      "abbr": "AABB/OBB",
+      "aliases": ["包围体", "轴对齐包围盒", "有向包围盒", "包围体层次 BVH", "Bounding Volume Hierarchy"],
+      "tier": 3,
+      "one_liner": "用盒子、球等简单形状包住复杂物体，先粗筛再精算碰撞。",
+      "explanation": "包围体是能完全包住一个物体的简单几何体，用来加速碰撞检测：两个包围体不相交，里面的物体一定不碰，可直接跳过精确计算。最常用的是 AABB（轴对齐包围盒，各边平行于世界坐标轴，相交判断只需逐轴比较最小和最大坐标，但物体一转就要重算，还可能包进大片空白）和 OBB（有向包围盒，跟着物体自身坐标系旋转，包得更紧，判断更费时）；此外还有包围球、胶囊体、k-DOP 和凸包。把大量包围体组织成树就是包围体层次（BVH）：父节点不相交，子节点都不用再查，查询量从线性降到对数级。物理引擎和运动规划里，通常先用 AABB 做宽相粗筛出可能相撞的物体对，再在窄相用 GJK 等算法精确计算。",
+      "example": "碰撞检测库 FCL 的宽相管理器一般推荐动态 AABB 树；对三角网格模型，它默认建立 OBBRSS（OBB 与矩形扫掠球的组合）类型的 BVH 做窄相查询。",
+      "related": ["碰撞检查", "宽相 / 窄相碰撞检测", "GJK 算法", "碰撞体", "凸分解", "FCL"],
+      "sources": [
+        {"title": "Wikipedia: Bounding volume", "url": "https://en.wikipedia.org/wiki/Bounding_volume"},
+        {"title": "Wikipedia: Bounding volume hierarchy", "url": "https://en.wikipedia.org/wiki/Bounding_volume_hierarchy"},
+        {"title": "FCL (Flexible Collision Library) README", "url": "https://github.com/flexible-collision-library/fcl"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "笛卡尔阻抗控制",
+      "name_en": "Cartesian Impedance Control",
+      "abbr": "",
+      "aliases": ["任务空间阻抗控制", "末端阻抗控制", "Task-space impedance control"],
+      "tier": 3,
+      "one_liner": "让机械臂末端像挂在弹簧阻尼上：被推会让开，松手会回位。",
+      "explanation": "阻抗控制由 Hogan 在 1984–1985 年提出，笛卡尔阻抗控制是它在任务空间（末端位姿空间）的形式：不硬锁末端位置，而是规定末端偏离目标时产生多大的回复力，F = K·e + D·ė，e 是目标位姿与实际位姿之差，K 是刚度（每偏 1 米回多少牛），D 是阻尼（抑制晃动）；再用雅可比转置换成关节力矩 τ = JᵀF，并补偿科氏力和重力。K 可按方向设置，比如插孔时让垂直于孔轴的方向软一些，便于自动对中。和关节阻抗控制相比，它的弹簧定义在末端而不是每个关节；和导纳控制相反，阻抗是「测位置、出力」，适合 Franka、KUKA iiwa 这类能直接控力矩的臂，导纳是「测力、出位置」，适合只接收位置指令的工业臂。7 自由度臂还会加零空间项管住多余的自由度。",
+      "example": "franka_ros 的笛卡尔阻抗示例控制器按 τ = Jᵀ(−K·e − D·J·q̇) + 零空间项 + 科氏力补偿 计算关节力矩，平移刚度默认 200 N/m：末端被推偏 1 厘米，约产生 2 N 的回复力，刚度可在运行时动态调节。",
+      "related": ["阻抗控制", "关节阻抗控制", "导纳控制", "力位混合控制", "零空间控制", "操作空间控制"],
+      "sources": [
+        {"title": "Hogan N. Impedance Control: An Approach to Manipulation: Part II—Implementation. ASME JDSMC, 1985", "url": "https://doi.org/10.1115/1.3140713"},
+        {"title": "franka_ros: cartesian_impedance_example_controller.cpp", "url": "https://github.com/frankaemika/franka_ros/blob/develop/franka_example_controllers/src/cartesian_impedance_example_controller.cpp"},
+        {"title": "Mayr, Salt-Ducaju. A C++ Implementation of a Cartesian Impedance Controller for Robotic Manipulators (arXiv:2212.11215)", "url": "https://arxiv.org/abs/2212.11215"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "中枢模式发生器",
+      "name_en": "Central Pattern Generator",
+      "abbr": "CPG",
+      "aliases": ["中央模式发生器", "中枢模式生成器", "CPG 振荡器"],
+      "tier": 3,
+      "one_liner": "无需节律输入就能自己产生节律信号、用来驱动步态的神经回路或振荡器。",
+      "explanation": "中枢模式发生器原是神经科学概念：脊髓等处的神经回路在没有节律性输入时也能自行产生有节奏的输出，驱动行走、游泳和呼吸。Graham Brown 1911 年的实验最早表明脊髓能独立产生踏步模式，七鳃鳗和猫是经典研究对象。机器人借用这一思路，用一组相互耦合的振荡器给每条腿或每个关节生成周期信号：调幅值改步幅，调频率改步速，调振荡器之间的相位差就能切换步态。Ijspeert 团队 2007 年在 Science 发表的蝾螈机器人，用脊髓 CPG 模型实现了从游泳到行走的切换。CPG 节律稳定、参数少，但适应复杂地形要另加感觉反馈。强化学习运控里常用的步态相位时钟与之类似，CPG-RL 等工作则让神经网络去调制振荡器参数。",
+      "example": "EPFL 的 CPG-RL（2022）给四足每条腿配一个振荡器，强化学习策略只输出各振荡器的幅值和频率；部署到宇树 A1 上后，能承受相当于机器人自重 115% 的 13.75 kg 附加负载。",
+      "related": ["步态", "步态相位（相位时钟）", "腿足运动", "仿生机器人", "强化学习运控", "极限环"],
+      "sources": [
+        {"title": "Wikipedia: Central pattern generator", "url": "https://en.wikipedia.org/wiki/Central_pattern_generator"},
+        {"title": "Ijspeert A. J. Central pattern generators for locomotion control in animals and robots: a review. Neural Networks, 2008", "url": "https://europepmc.org/article/MED/18555958"},
+        {"title": "Bellegarda, Ijspeert. CPG-RL: Learning Central Pattern Generators for Quadruped Locomotion (arXiv:2211.00458)", "url": "https://arxiv.org/abs/2211.00458"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "碰撞反应",
+      "name_en": "Collision Reaction",
+      "abbr": "",
+      "aliases": ["碰撞后反应策略", "碰撞反射", "Collision reflex"],
+      "tier": 3,
+      "one_liner": "机器人检测到碰撞后，决定停下、变软还是退让的应对策略。",
+      "explanation": "碰撞反应是机器人碰撞处理的最后一步。Haddadin、De Luca 等人 2017 年的综述把它放在一条碰撞事件流水线里：先检测是否撞了，再定位撞在哪个连杆、估计碰撞力的大小和方向，判断是意外碰撞还是有意接触，最后才决定怎么反应。常见反应有：立即停止（保护性停止）；切到只补偿重力的力矩模式，让臂变软、可被推开；沿碰撞力方向主动退让；切换成阻抗或导纳控制，以柔顺方式继续。De Luca 等人 2006 年在 DLR-III 轻型臂上用基于广义动量的方法，只靠机器人自身传感器检测碰撞，并给出碰撞方向，供不同反应策略使用。如果人被夹在机器人和桌面之间，单纯刹停不能解除挤压，所以协作场景很看重退让、变软这类反应。",
+      "example": "Franka 机械臂可用 setCollisionBehavior 为各关节和末端各方向分别设「接触」和「碰撞」两级阈值：力在两者之间只记为接触，超过碰撞阈值机器人立即停止运动，要调用 automaticErrorRecovery 复位后才能继续。",
+      "related": ["碰撞检测（本体安全）", "动量观测器", "保护性停止", "功率与力限制", "阻尼模式", "物理人机交互"],
+      "sources": [
+        {"title": "Haddadin, De Luca, Albu-Schäffer. Robot Collisions: A Survey on Detection, Isolation, and Identification. IEEE T-RO, 2017", "url": "https://doi.org/10.1109/TRO.2017.2723903"},
+        {"title": "De Luca et al. Collision Detection and Safe Reaction with the DLR-III Lightweight Manipulator Arm. IROS 2006", "url": "https://doi.org/10.1109/IROS.2006.282053"},
+        {"title": "libfranka robot.h（setCollisionBehavior / automaticErrorRecovery）", "url": "https://raw.githubusercontent.com/frankaemika/libfranka/master/include/franka/robot.h"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "计算力矩控制",
+      "name_en": "Computed Torque Control",
+      "abbr": "CTC",
+      "aliases": ["逆动力学控制", "Inverse dynamics control", "计算转矩控制"],
+      "tier": 3,
+      "one_liner": "用动力学模型算出所需力矩，抵消非线性后再做 PD 控制。",
+      "explanation": "计算力矩控制是经典的基于模型的机械臂运动控制方法，也叫逆动力学控制。机械臂动力学写作 τ = M(q)q̈ + C(q,q̇)q̇ + g(q)，M 是质量矩阵，C 项对应科氏力和离心力，g 是重力。控制律取 τ = M̂(q)(q̈_d + K_d·ė + K_p·e) + Ĉq̇ + ĝ，其中 q̈_d 是期望加速度，e 是期望与实际关节角之差，带帽的是模型估计值。模型准确时非线性项被抵消，误差满足 ë + K_d·ė + K_p·e = 0，每个关节变成互不耦合的线性二阶系统，按期望响应选增益即可。它是反馈线性化在机器人上的典型应用。和「PD + 重力补偿」相比，它还补偿惯性和科氏力，高速跟踪更准；代价是依赖准确的动力学参数，模型不准时性能下降，于是有了自适应和鲁棒版本。任务空间的对应做法是操作空间控制。",
+      "example": "用 Pinocchio 的 rnea（递归牛顿-欧拉算法）函数，把当前 q、q̇ 和「期望加速度 + PD 修正项」作为加速度输入，一次调用就能算出计算力矩控制所需的关节力矩。",
+      "related": ["逆动力学", "反馈线性化", "前馈控制", "重力补偿", "操作空间控制", "递归牛顿-欧拉算法"],
+      "sources": [
+        {"title": "Wikipedia: Computed torque control", "url": "https://en.wikipedia.org/wiki/Computed_torque_control"},
+        {"title": "Pinocchio rnea.hpp（computes the inverse dynamics, aka the joint torques）", "url": "https://github.com/stack-of-tasks/pinocchio/blob/master/include/pinocchio/algorithm/rnea.hpp"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "恒力控制",
+      "name_en": "Constant Force Control (Force Tracking)",
+      "abbr": "",
+      "aliases": ["力跟踪控制", "恒力跟踪", "恒力打磨", "Force tracking control"],
+      "tier": 3,
+      "one_liner": "让机器人末端对接触面保持设定的恒定压力，比如持续压 10 牛。",
+      "explanation": "恒力控制也叫力跟踪控制，指让末端与环境之间的接触力跟随一个设定值，常用于打磨、抛光、去毛刺、擦拭和超声扫查等需要稳定压力的任务。难点在于环境的位置和刚度往往不准：纯位置控制下，工件位置差 1 毫米，压在硬表面上的力就可能差很多。常见做法有：直接对力误差做 PI 控制（显式力控）；力位混合控制，法向控力、切向控位置；在阻抗或导纳控制外面再套一层力环，按力误差在线修正参考位置，Seraji 和 Colbaugh 1997 年就用自适应方法做到了在环境刚度和位置都未知时跟踪期望力。它和普通阻抗控制的区别是：阻抗控制只规定「偏多少、出多少力」，实际接触力取决于环境；恒力控制以力本身为目标。通常需要六维力传感器或关节力矩传感器测力。",
+      "example": "UR 机械臂的 Force Mode 可在任务坐标系里把 z 轴设为柔顺轴并给定目标力（如向下 10 N），x、y 方向照常按程序走位置，从而沿平面移动时保持恒定压力；UR 文档特别说明它不是导纳控制，被设为力控的方向会覆盖该方向的运动指令。",
+      "related": ["力控", "阻抗控制", "导纳控制", "力位混合控制", "六维力传感器", "接触丰富操作"],
+      "sources": [
+        {"title": "Seraji H., Colbaugh R. Force Tracking in Impedance Control. IJRR, 1997", "url": "https://doi.org/10.1177/027836499701600107"},
+        {"title": "Universal Robots ROS 2 Driver: ForceModeController 文档", "url": "https://github.com/UniversalRobots/Universal_Robots_ROS2_Driver/blob/main/ur_controllers/doc/index.rst"}
+      ],
+      "as_of": ""
+    }
+  ]
+}

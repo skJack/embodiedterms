@@ -1,0 +1,415 @@
+{
+ "category": "perception",
+ "batch": 16,
+ "terms": [
+  {
+   "name_zh": "GVHMR",
+   "name_en": "GVHMR: World-Grounded Human Motion Recovery via Gravity-View Coordinates",
+   "abbr": "",
+   "aliases": [],
+   "tier": 3,
+   "one_liner": "从单目视频恢复人在世界坐标系里 3D 动作的方法。",
+   "explanation": "GVHMR 是浙江大学 ZJU3DV 团队发表于 SIGGRAPH Asia 2024 的方法：输入单目视频，输出 SMPL-X 人体参数（一种参数化人体模型）和人在世界坐标系里的运动轨迹。难点在于相机本身也在动，只在相机坐标系里估姿态，说不清人往哪走、身体是否竖直。它为每帧定义「重力-视角」坐标系：一根轴对齐重力，另一根参考相机视线，在其中预测人体朝向，再用视觉里程计或陀螺仪得到的相机相对旋转换回世界坐标。它逐帧并行预测，避免了 WHAM 这类自回归方法在长视频上的误差累积。具身领域常用它从网络视频里提取人体动作，再重定向给人形机器人。",
+   "example": "GMR 通用动作重定向工具支持先用 GVHMR 从一段单目视频里提取人体动作，再重定向到人形机器人上。",
+   "related": [
+    "人体网格恢复",
+    "SMPL 人体模型",
+    "视频动捕（无标记动捕）",
+    "GMR 通用动作重定向",
+    "动作重定向",
+    "视觉里程计"
+   ],
+   "sources": [
+    {
+     "title": "arXiv 2409.06662: World-Grounded Human Motion Recovery via Gravity-View Coordinates",
+     "url": "https://arxiv.org/abs/2409.06662"
+    },
+    {
+     "title": "GVHMR 项目主页（ZJU3DV）",
+     "url": "https://zju3dv.github.io/gvhmr/"
+    },
+    {
+     "title": "GMR: General Motion Retargeting（GitHub README）",
+     "url": "https://github.com/YanjieZe/GMR"
+    }
+   ],
+   "as_of": "2024-12"
+  },
+  {
+   "name_zh": "HaMeR",
+   "name_en": "HaMeR (Hand Mesh Recovery)",
+   "abbr": "",
+   "aliases": [
+    "Reconstructing Hands in 3D with Transformers"
+   ],
+   "tier": 3,
+   "one_liner": "从单张 RGB 图像重建 3D 手部网格的 Transformer 模型。",
+   "explanation": "HaMeR 由 UC Berkeley、密歇根大学、纽约大学的研究者提出，发表于 CVPR 2024。它用 ViT-H 视觉 Transformer 作骨干，从图像中的手部区域回归 MANO 手部模型参数（MANO 用少量姿态和形状参数描述一只手的 3D 网格）以及相机参数。作者把 10 个带 2D 或 3D 手部标注的数据集合并成约 270 万个训练样本，还从 Ego4D 等视频里标注了 HInt 评测集，专门考察真实场景中的手。它是单帧方法，但用在视频上结果也比较平滑。在具身智能里，它是从人类视频提取手指姿态的常用工具，结果可重定向给灵巧手或夹爪，作为模仿学习的动作来源。",
+   "example": "OKAMI 从一段人类演示视频教人形机器人做操作时，身体动作用 SLAHMR 重建，手部姿态则对每只手用 HaMeR 估计。",
+   "related": [
+    "MANO 手部模型",
+    "手部姿态估计",
+    "WiLoR",
+    "人体网格恢复",
+    "OKAMI",
+    "人类视频数据"
+   ],
+   "sources": [
+    {
+     "title": "arXiv 2312.05251: Reconstructing Hands in 3D with Transformers",
+     "url": "https://arxiv.org/abs/2312.05251"
+    },
+    {
+     "title": "HaMeR 项目主页",
+     "url": "https://geopavlakos.github.io/hamer/"
+    },
+    {
+     "title": "OKAMI: Teaching Humanoid Robots Manipulation Skills through Single Video Imitation",
+     "url": "https://arxiv.org/html/2410.11792"
+    }
+   ],
+   "as_of": "2024-06"
+  },
+  {
+   "name_zh": "高度扫描",
+   "name_en": "Height Scan",
+   "abbr": "",
+   "aliases": [
+    "height_scan",
+    "足端周围高度采样",
+    "地形高度图",
+    "Height Samples"
+   ],
+   "tier": 3,
+   "one_liner": "在机器人周围按固定图案采样地面高度，作为运控策略的地形输入。",
+   "explanation": "高度扫描是足式机器人强化学习运控里常用的地形观测：以机身为中心，在周围一片区域或每只脚周围按固定图案采样若干点的地面高度，拼成向量喂给策略网络。仿真里通常从机器人上方向下打射线，直接读出真值高度；真机没有这种上帝视角，要先用深度相机或激光雷达建高程图（2.5D 的地面高度栅格），再从图上采样。真机高程图有噪声和遮挡，常见做法是先用无噪高度训练教师策略，再蒸馏给读真实高程图的学生策略。只靠本体感知、不用高度扫描的策略叫盲走。",
+   "example": "Isaac Lab 的速度跟踪任务在机身挂一个射线投射传感器，以 0.1 m 间隔在 1.6 m × 1.0 m 的网格上测地面高度；Miki 等人 2022 年的 ANYmal 工作则在每只脚周围按 5 圈同心圆采 52 个点，四条腿共 208 维。",
+   "related": [
+    "高程图",
+    "感知行走",
+    "盲走",
+    "教师-学生蒸馏",
+    "Isaac Lab",
+    "legged_gym"
+   ],
+   "sources": [
+    {
+     "title": "Isaac Lab velocity_env_cfg.py（height_scanner 与 height_scan 观测定义）",
+     "url": "https://raw.githubusercontent.com/isaac-sim/IsaacLab/main/source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/velocity_env_cfg.py"
+    },
+    {
+     "title": "Learning robust perceptive locomotion for quadrupedal robots in the wild（Science Robotics 2022）",
+     "url": "https://arxiv.org/html/2201.08117"
+    },
+    {
+     "title": "legged_gym legged_robot_config.py（measured_points 配置）",
+     "url": "https://raw.githubusercontent.com/leggedrobotics/legged_gym/master/legged_gym/envs/base/legged_robot_config.py"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "禾赛 JT128",
+   "name_en": "Hesai JT128",
+   "abbr": "",
+   "aliases": [
+    "禾赛 JT 系列",
+    "Hesai JT Series",
+    "JT128/64P"
+   ],
+   "tier": 3,
+   "one_liner": "禾赛科技面向机器人的 128 线小体积、超广视场 3D 激光雷达。",
+   "explanation": "JT128 是禾赛科技 JT 系列激光雷达中的 128 线型号，同系列还有 JT64P、JT16 等。「线数」指竖直方向的激光通道数，线数越多点云越密。按禾赛官网参数，JT128 视场为 360°×189°，覆盖范围超过一个半球；10% 反射率下测距 40 m，最远 60 m；单回波每秒约 115.2 万点；直径 62.5 mm、高 73 mm，重 265 g，防护等级 IPX7。传统旋转式雷达的竖直视场多为几十度，装在机器人上容易留下盲区；JT 系列用超广竖直视场减少盲区。官网列出的应用包括具身智能机器人、配送机器人、AGV/AMR 和清洁机器人，可用于建图定位、避障和地形感知。",
+   "example": "",
+   "related": [
+    "激光雷达",
+    "激光雷达线数",
+    "视场角",
+    "禾赛科技",
+    "览沃 Mid-360",
+    "速腾聚创 Airy"
+   ],
+   "sources": [
+    {
+     "title": "Hesai JT128/64P 产品页",
+     "url": "https://www.hesaitech.com/product/jt128/"
+    },
+    {
+     "title": "Hesai Newsroom（含 2025-05 JT 系列产品介绍）",
+     "url": "https://www.hesaitech.com/news/"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "单应性矩阵",
+   "name_en": "Homography",
+   "abbr": "",
+   "aliases": [
+    "单应矩阵",
+    "H 矩阵",
+    "单应变换",
+    "Homography Matrix"
+   ],
+   "tier": 3,
+   "one_liner": "描述同一平面在两张图像之间像素对应关系的 3×3 矩阵。",
+   "explanation": "单应性矩阵 H 是一个 3×3 矩阵，整体缩放不改变映射，所以只有 8 个自由度。在针孔相机模型下，同一个平面被两个视角拍到时，两张图的对应像素满足 x' ∝ Hx（x 用齐次坐标表示）；相机只绕光心旋转、不平移时，任意场景的两张图也满足单应关系。求 H 至少需要 4 对对应点，常用直接线性变换（DLT）求解，再用 RANSAC 剔除误匹配。它用于图像拼接、透视校正、把地面或桌面图像变成俯视图，也用于相机标定：张正友标定法先求棋盘格平面到每张图像的单应，再从中分解出相机内参。拍一般三维场景且相机有平移时，就要改用对极几何中的基础矩阵或本质矩阵。",
+   "example": "桌面操作实验里，在桌面四角贴标记并量出它们在桌面上的坐标，就能求出图像到桌面平面的单应，把检测到的物体像素位置直接换算成桌面上的 x、y 坐标。",
+   "related": [
+    "针孔相机模型",
+    "相机标定",
+    "对极几何",
+    "特征匹配",
+    "随机采样一致性",
+    "鸟瞰图"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Homography (computer vision)",
+     "url": "https://en.wikipedia.org/wiki/Homography_(computer_vision)"
+    },
+    {
+     "title": "Zhang: A Flexible New Technique for Camera Calibration（IEEE TPAMI 2000）",
+     "url": "https://www.microsoft.com/en-us/research/publication/a-flexible-new-technique-for-camera-calibration/"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "人体网格恢复",
+   "name_en": "Human Mesh Recovery",
+   "abbr": "HMR",
+   "aliases": [
+    "人体网格重建",
+    "3D 人体姿态与形状估计",
+    "Human Mesh Reconstruction"
+   ],
+   "tier": 3,
+   "one_liner": "从图像或视频估计人体完整 3D 网格（姿态加体型）的任务。",
+   "explanation": "人体网格恢复指从 RGB 图像或视频中估计人的完整 3D 身体表面，而不只是十几个关节点。通常做法是回归 SMPL 这类参数化人体模型的参数：姿态参数描述各关节旋转，形状参数描述高矮胖瘦，代入模型就得到一个人体网格。这个名字来自 Kanazawa、Black、Malik 等人 CVPR 2018 的论文 HMR，它直接从图像像素回归 SMPL 参数，并用对抗判别器约束结果像真实人体。后续 HMR 2.0 / 4D-Humans 换成 ViT 骨干并加入跨帧跟踪，GVHMR 等方法进一步恢复人在世界坐标系里的运动轨迹，手部对应的方法有 HaMeR。在具身智能里，它是从人类视频获取全身动作、再重定向给人形机器人的关键一环。",
+   "example": "4D-Humans 能从一段多人视频里逐帧重建每个人的 SMPL 网格并跨帧跟踪身份，结果可交给动作重定向工具转成人形机器人的关节轨迹。",
+   "related": [
+    "SMPL 人体模型",
+    "GVHMR",
+    "HaMeR",
+    "人体姿态估计",
+    "无标记动捕",
+    "动作重定向"
+   ],
+   "sources": [
+    {
+     "title": "arXiv 1712.06584: End-to-end Recovery of Human Shape and Pose（HMR, CVPR 2018）",
+     "url": "https://arxiv.org/abs/1712.06584"
+    },
+    {
+     "title": "4D-Humans / HMR 2.0 项目主页（ICCV 2023）",
+     "url": "https://shubham-goel.github.io/4dhumans/"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "混元3D（Hunyuan3D）",
+   "name_en": "Hunyuan3D (Tencent image-to-3D asset generation, 2.0 / 2.1 / 2.5)",
+   "abbr": "",
+   "aliases": [
+    "Hunyuan3D 2.0",
+    "Hunyuan3D-2.1",
+    "Hunyuan3D 2.5",
+    "腾讯混元3D"
+   ],
+   "tier": 3,
+   "one_liner": "腾讯开源的图生 3D 资产模型系列，能从图片生成带贴图的 3D 网格。",
+   "explanation": "混元3D 是腾讯混元团队的 3D 资产生成模型系列。2.0 版于 2025 年 1 月开源，分两步：先用基于流匹配的扩散 Transformer（Hunyuan3D-DiT）按输入图片生成几何形状，再用 Hunyuan3D-Paint 给网格生成贴图。2025 年 6 月开源的 2.1 版把贴图升级为 PBR 材质（基于物理的渲染材质，含金属度、粗糙度等），形状模型 3.3B 参数、贴图模型 2B 参数，并公开了训练代码；同月发布的 2.5 技术报告把形状模型扩大到最高 10B 参数。在具身智能里，这类模型能从一张照片快速得到物体网格，用来扩充仿真资产库；不过生成结果还要补上质量、摩擦等物理属性并处理碰撞体，才能放进物理仿真。",
+   "example": "拍一张马克杯照片交给 Hunyuan3D-2.1，得到带 PBR 贴图的 GLB 网格；转换格式、用凸分解生成碰撞体并设定质量后，就能导入 Isaac Sim 当抓取物体。",
+   "related": [
+    "单图生成3D",
+    "仿真资产",
+    "网格（三角网格）",
+    "基于物理的渲染",
+    "凸分解",
+    "腾讯混元世界模型"
+   ],
+   "sources": [
+    {
+     "title": "GitHub: Tencent-Hunyuan/Hunyuan3D-2（含版本时间线）",
+     "url": "https://github.com/Tencent-Hunyuan/Hunyuan3D-2"
+    },
+    {
+     "title": "GitHub: Tencent-Hunyuan/Hunyuan3D-2.1",
+     "url": "https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1"
+    },
+    {
+     "title": "arXiv 2506.16504: Hunyuan3D 2.5",
+     "url": "https://arxiv.org/abs/2506.16504"
+    }
+   ],
+   "as_of": "2025-06"
+  },
+  {
+   "name_zh": "ISP（图像信号处理器）",
+   "name_en": "Image Signal Processor",
+   "abbr": "ISP",
+   "aliases": [
+    "图像信号处理器",
+    "图像处理器",
+    "Image Processor"
+   ],
+   "tier": 3,
+   "one_liner": "把图像传感器输出的原始数据加工成正常彩色图像的处理单元。",
+   "explanation": "ISP 是相机成像链路里的专用处理器，可以是独立芯片，更常见的是集成在手机、Jetson 等片上系统（SoC）里。CMOS 图像传感器输出的是 Bayer 格式原始数据，每个像素只记录红、绿、蓝中的一种；ISP 依次做去马赛克（插值还原全彩）、降噪、白平衡、自动曝光、伽马与色彩校正、锐化等，输出 RGB 或 YUV 图像。机器人上接 MIPI 接口的裸传感器时，要靠主控芯片的 ISP 处理并调参；USB 相机和部分自带 ISP 的相机模组则直接输出处理好的图像。自动曝光、自动白平衡会让同一场景的亮度和颜色随时间变化，影响训练数据的一致性，采集数据时常把它们手动固定。",
+   "example": "英伟达 Jetson 开发套件的 OV5693 摄像头模组本身没有 ISP，用 V4L2 直接读出的是原始 Bayer 数据；走 libargus（nvarguscamerasrc）才会经过 Jetson 内置 ISP，输出正常彩色图像。",
+   "related": [
+    "CMOS 图像传感器",
+    "MIPI CSI-2 相机接口",
+    "RGB相机",
+    "英伟达 Jetson",
+    "全局快门 / 卷帘快门"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Image processor",
+     "url": "https://en.wikipedia.org/wiki/Image_processor"
+    },
+    {
+     "title": "NVIDIA Jetson Linux Developer Guide: Camera Software Development Solution",
+     "url": "https://docs.nvidia.com/jetson/archives/r36.4/DeveloperGuide/SD/CameraDevelopment/CameraSoftwareDevelopmentSolution.html"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "隐式表示 / 显式表示",
+   "name_en": "Implicit vs. Explicit 3D Representation",
+   "abbr": "",
+   "aliases": [
+    "隐式表征",
+    "显式表征",
+    "神经隐式表示",
+    "Implicit Neural Representation"
+   ],
+   "tier": 3,
+   "one_liner": "3D 场景是直接存几何元素，还是存成一个可按坐标查询的函数。",
+   "explanation": "显式表示直接存几何元素：点云存点，网格存顶点和三角面，体素存每个格子的值，3D 高斯泼溅（3DGS）存大量带颜色和透明度的 3D 高斯椭球。隐式表示把场景写成函数，输入空间坐标、输出该点的属性，表面藏在函数的某个等值面里：符号距离函数（SDF）输出到表面的有符号距离，值为 0 处就是表面；DeepSDF、神经辐射场（NeRF）用神经网络拟合这类函数。隐式表示连续、紧凑，分辨率不受网格限制，但取表面或渲染要反复查询网络，比较慢；显式表示渲染和编辑快，精度受离散化限制。机器人规划和物理仿真通常还是要网格或体素，隐式重建后常再提取成网格。",
+   "example": "NeRF 用一个全连接网络把 5D 坐标（3D 位置加观察方向）映射为密度和颜色，是典型的隐式表示；3DGS 直接存一堆 3D 高斯并用光栅化渲染，是显式表示，所以能实时渲染。",
+   "related": [
+    "神经辐射场",
+    "3D高斯泼溅",
+    "符号距离场",
+    "截断符号距离函数",
+    "点云",
+    "体素"
+   ],
+   "sources": [
+    {
+     "title": "arXiv 2003.08934: NeRF（ECCV 2020）",
+     "url": "https://arxiv.org/abs/2003.08934"
+    },
+    {
+     "title": "arXiv 1901.05103: DeepSDF",
+     "url": "https://arxiv.org/abs/1901.05103"
+    },
+    {
+     "title": "3D Gaussian Splatting for Real-Time Radiance Field Rendering（SIGGRAPH 2023）",
+     "url": "https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "IMU 预积分",
+   "name_en": "IMU Preintegration",
+   "abbr": "",
+   "aliases": [
+    "IMU 预积分因子",
+    "惯性预积分",
+    "IMU Pre-integration"
+   ],
+   "tier": 3,
+   "one_liner": "把两帧之间的大量 IMU 读数预先积成一条相对运动约束的技术。",
+   "explanation": "IMU（惯性测量单元）以几百赫兹输出角速度和加速度，而相机、激光雷达关键帧只有十几到几十赫兹。优化式的视觉惯性里程计要在相邻关键帧间加一条 IMU 约束，但直接积分依赖起点的位姿和速度，每次优化改了起点就得重新积分，很慢。预积分把这段 IMU 数据在起点的机体坐标系下积成相对旋转、速度和位置增量，与全局位姿无关，只需算一次；零偏（IMU 的系统性偏移）估计值变化时，用一阶近似修正即可，不必重算。Forster 等人 2016 年在 IEEE T-RO 上给出了在旋转流形 SO(3) 上的完整推导，这套方法成了 VINS-Mono、LIO-SAM 等视觉/激光惯性里程计和 GTSAM 因子图库里的标准组件。",
+   "example": "VINS-Mono 在紧耦合非线性优化中，把相邻关键帧之间的 IMU 数据预积分成一条约束，和视觉特征观测一起求解相机轨迹。",
+   "related": [
+    "惯性测量单元",
+    "视觉惯性里程计",
+    "因子图优化",
+    "VINS-Mono / VINS-Fusion",
+    "紧耦合 / 松耦合融合",
+    "激光惯性里程计"
+   ],
+   "sources": [
+    {
+     "title": "arXiv 1512.02363: On-Manifold Preintegration for Real-Time Visual-Inertial Odometry（IEEE T-RO 2016）",
+     "url": "https://arxiv.org/abs/1512.02363"
+    },
+    {
+     "title": "arXiv 1708.03852: VINS-Mono",
+     "url": "https://arxiv.org/abs/1708.03852"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "间接飞行时间",
+   "name_en": "Indirect Time of Flight",
+   "abbr": "iToF",
+   "aliases": [
+    "iTOF",
+    "相位式 ToF",
+    "连续波 ToF",
+    "CW-ToF",
+    "AMCW ToF"
+   ],
+   "tier": 3,
+   "one_liner": "发射调制光、通过测回波相位差来算距离的深度测量方式。",
+   "explanation": "间接飞行时间（iToF）是飞行时间法的一种：光源发出按一定频率调制的连续红外光，传感器每个像素测出回波相对发射信号的相位差，由相位换算往返时间，再得到距离。与直接测光脉冲往返时间的 dToF 相比，iToF 像素结构简单，容易做到高分辨率深度图，近距离精度好，常用在深度相机和手机上。它有几个局限：相位每过 2π 就重复，超过无模糊距离（c/2f，f 为调制频率）的物体会被算成近处，要用多个调制频率组合来解缠；强日光会淹没调制信号，户外效果差；光在多个表面间来回反射的多径干扰，以及物体边缘前后景混在同一像素产生的飞点，都会引入误差。",
+   "example": "微软 Azure Kinect 和奥比中光 Femto Bolt 都用微软的 iToF 深度方案：100 万像素深度传感器，宽视场模式最高 1024×1024@15fps，工作距离随模式约 0.25–5.46 m。",
+   "related": [
+    "飞行时间法",
+    "直接飞行时间",
+    "深度相机",
+    "飞点",
+    "奥比中光 Femto Bolt",
+    "Azure Kinect 深度相机"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Time-of-flight camera",
+     "url": "https://en.wikipedia.org/wiki/Time-of-flight_camera"
+    },
+    {
+     "title": "Orbbec Femto Bolt 产品页",
+     "url": "https://www.orbbec.com/products/tof-camera/femto-bolt/"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "交互式感知",
+   "name_en": "Interactive Perception",
+   "abbr": "",
+   "aliases": [
+    "交互感知"
+   ],
+   "tier": 3,
+   "one_liner": "机器人主动推、拨、拉物体，借动作引起的变化来看懂环境。",
+   "explanation": "交互式感知指机器人通过与环境的物理接触（推、戳、拉、拿起翻看）改变场景，并利用动作带来的感官变化去理解环境。Bohg、Hausman、Brock、Kragic 等人 2017 年在 IEEE T-RO 发表的综述系统总结了这个方向，核心观点有两条：交互会产生静止观察得不到的信号；知道自己做了什么动作，就能更好地预测和解释随之而来的信号。它和主动感知不同：主动感知一般只移动相机、换视角，不改变环境；交互式感知则动手改变环境。典型用途有分割挤在一起的物体、估计抽屉或柜门的铰接轴、判断物体的质量和摩擦等物理属性。",
+   "example": "几块积木紧挨着，只看图像分不清边界；机器人推一下，一起移动的像素属于同一块积木，据此完成分割。拉开抽屉时跟踪把手的运动，也能估出抽屉的滑动方向。",
+   "related": [
+    "主动感知",
+    "铰接结构估计",
+    "可供性",
+    "感知-行动闭环",
+    "非抓取操作",
+    "具身感知"
+   ],
+   "sources": [
+    {
+     "title": "arXiv 1604.03670: Interactive Perception: Leveraging Action in Perception and Perception in Action（IEEE T-RO 2017）",
+     "url": "https://arxiv.org/abs/1604.03670"
+    }
+   ],
+   "as_of": ""
+  }
+ ]
+}

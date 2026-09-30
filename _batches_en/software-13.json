@@ -1,0 +1,113 @@
+{
+  "batch": "software-13",
+  "terms": [
+    {
+      "key": "software-13#0",
+      "name_en": "LLaMA-Factory / ms-swift (ModelScope SWIFT)",
+      "aliases": ["LlamaFactory", "SWIFT", "ms-swift"],
+      "one_liner": "Two popular open-source fine-tuning frameworks for LLMs and VLMs, usable by just editing a config file.",
+      "explanation": "LLaMA-Factory is an open-source fine-tuning framework maintained by the developer hiyouga (Yaowei Zheng and others), with an accompanying paper presented as a system demonstration at ACL 2024; ms-swift is the equivalent framework from Alibaba's ModelScope team. Both package full-parameter fine-tuning, parameter-efficient methods like LoRA/QLoRA, and preference-alignment and reinforcement-learning methods like DPO and GRPO into a configuration file or command-line interface, and both support multimodal models such as Qwen-VL and InternVL. In embodied AI, they're commonly used to supervised-fine-tune a VLM — for example, training a model for embodied reasoning, spatial question-answering, or task planning — which can then serve as a VLA's backbone or its high-level planner.",
+      "example": "Write a YAML file for LLaMA-Factory and use your own annotated robot-scene question-answering data to LoRA-fine-tune Qwen2.5-VL.",
+      "related": ["Fine-tuning", "Low-Rank Adaptation (LoRA)", "Supervised Fine-Tuning", "Qwen-VL series (Qwen2.5-VL / Qwen3-VL)", "ModelScope", "Hugging Face Transformers"]
+    },
+    {
+      "key": "software-13#1",
+      "name_en": "M-Robots OS (OpenHarmony-based Robot OS)",
+      "aliases": ["Kaihong M-Robots OS"],
+      "one_liner": "A Chinese robot operating system built on open-source HarmonyOS, focused on multi-robot collaboration.",
+      "explanation": "M-Robots OS is a robot operating system reportedly led by Shenzhen KaiHong Digital Industry Development Co. (深开鸿), built on top of OpenHarmony, the open-source HarmonyOS project incubated by the OpenAtom Foundation. The problem it's trying to solve is that robots and devices from different manufacturers and with different chips each run their own separate system, making it hard for them to connect and collaborate. M-Robots OS draws on HarmonyOS capabilities like its distributed soft bus to let heterogeneous robots discover each other, communicate, and divide up work. It occupies the same layer of the software stack as ROS 2, but its ecosystem and focus lean toward domestic Chinese technology and multi-device collaboration, and it's currently being promoted mainly through universities and industry alliances.",
+      "example": "",
+      "related": ["Robot Operating System", "ROS 2", "Multi-Robot Collaboration", "Middleware", "Huawei"]
+    },
+    {
+      "key": "software-13#2",
+      "name_en": "Meshcat",
+      "aliases": ["meshcat-python"],
+      "one_liner": "A lightweight visualization tool that displays robots and 3D scenes in a web browser.",
+      "explanation": "Meshcat is an open-source 3D visualization tool Robin Deits developed during his PhD at MIT, built on WebGL (the browser's 3D graphics interface) and three.js. A backend program sends meshes, point clouds, coordinate frames, and poses over WebSocket to a web page, which can then be opened in a browser to view and rotate — no desktop graphics environment needed, which makes it well suited to remote servers and Jupyter notebooks. Drake has it built in, and libraries such as Pinocchio provide a Meshcat interface too; it's commonly used to check inverse-kinematics results, replay trajectories, or inspect collision geometry.",
+      "example": "In Jupyter, load a URDF with Pinocchio, call MeshcatVisualizer, and watch the arm's pose update in the browser as joint angles change.",
+      "related": ["Drake", "Pinocchio", "Viser", "RViz / RViz2", "Unified Robot Description Format (URDF)"]
+    },
+    {
+      "key": "software-13#3",
+      "name_en": "micro-ROS",
+      "aliases": [],
+      "one_liner": "A framework that brings ROS 2 onto microcontrollers.",
+      "explanation": "micro-ROS is an open-source framework that lets even microcontrollers (chips with only tens to hundreds of kilobytes of memory) join a ROS 2 system, originating from an EU-funded project with contributions from eProsima, Bosch, and others, now maintained by an official ROS working group. A microcontroller can't run a full DDS communication middleware, so micro-ROS substitutes the lightweight Micro XRCE-DDS instead, running on real-time operating systems such as FreeRTOS or Zephyr, and connecting over a serial port or UDP to an Agent running on a host computer, which forwards its traffic into standard ROS 2 topics. That lets a motor driver board or sensor board publish and subscribe to topics directly, without the need to hand-write a serial protocol.",
+      "example": "Running micro-ROS on an ESP32 publishes IMU data as a ROS 2 topic, which a node on a computer can subscribe to directly.",
+      "related": ["ROS 2", "Microcontroller Unit (MCU)", "FreeRTOS", "Data Distribution Service (DDS)", "Lower-level Controller (Slave Computer)"]
+    },
+    {
+      "key": "software-13#4",
+      "name_en": "MindSpore",
+      "aliases": ["Shengsi"],
+      "one_liner": "Huawei's open-source deep-learning framework, built mainly to pair with Ascend chips.",
+      "explanation": "MindSpore (Chinese name 昇思) is a deep-learning framework Huawei open-sourced in 2020, occupying the same role as PyTorch or TensorFlow — defining networks, and running training and inference. It supports CPU and GPU, but is optimized primarily for Huawei's Ascend NPUs, calling into the hardware underneath through Ascend CANN (Huawei's chip operator and compiler software stack). It's something you're likely to encounter when training or deploying models in a domestic Chinese compute environment; running a VLA or similar model on an Ascend server or Ascend edge chip for embodied AI generally means either porting PyTorch code over to MindSpore or using PyTorch's Ascend adaptation plugin.",
+      "example": "",
+      "related": ["Compute Architecture for Neural Networks (Huawei Ascend, CANN)", "PyTorch", "Huawei", "Inference Deployment", "Huawei Cloud CloudRobo Embodied AI Platform"]
+    },
+    {
+      "key": "software-13#5",
+      "name_en": "mink (MuJoCo inverse kinematics)",
+      "aliases": [],
+      "one_liner": "An open-source Python library for differential inverse kinematics, built on MuJoCo.",
+      "explanation": "mink is an open-source Python library by Kevin Zakka that performs inverse kinematics (working backward from a desired end-effector position to joint angles) using a MuJoCo model. It uses differential inverse kinematics: at each step, requirements such as “get the end effector close to the target,” “hold the desired orientation,” “stay within joint limits,” and “avoid collisions” are written as a quadratic program, solved for joint velocities, which are then integrated forward — a design that draws on the Pinocchio-based Pink library. Because it reads an MJCF model directly, it works out of the box with robots from MuJoCo Menagerie, and it's commonly used for teleoperation retargeting, generating demonstration trajectories, and whole-body IK for humanoids.",
+      "example": "Use mink to set an end-effector target pose for the Franka model in Menagerie and iteratively solve for a sequence of joint angles.",
+      "related": ["Inverse Kinematics (IK)", "Differential Kinematics", "MuJoCo (Multi-Joint dynamics with Contact)", "Pink (Python inverse kinematics based on Pinocchio)", "MuJoCo Menagerie", "Quadratic Programming"]
+    },
+    {
+      "key": "software-13#6",
+      "name_en": "Model Context Protocol (ROS MCP Server)",
+      "aliases": ["model context protocol", "ros-mcp-server"],
+      "one_liner": "A bridge that lets large models call ROS robot interfaces through a single, unified protocol.",
+      "explanation": "MCP (Model Context Protocol) is an open standard Anthropic released in November 2024, defining a common format for how an LLM application calls external tools and data sources. ROS-MCP-Server is a community open-source project that exposes ROS as an MCP tool: it connects to a robot through rosbridge (ROS's WebSocket interface), letting models such as Claude or GPT list topics, read sensor data, publish velocity commands, or call services — all without modifying the robot's existing code, and it supports both ROS 1 and ROS 2. It's well suited to quickly prototyping natural-language robot control, but having a large model issue commands directly lacks real-time guarantees and safety assurances, so it can't substitute for low-level control.",
+      "example": "Telling a large model “move the cart forward one meter” makes it publish a velocity message to the cmd_vel topic via ROS-MCP-Server.",
+      "related": ["Large Language Model (LLM)", "rosbridge", "ROS 2", "LLM-based Task Planning", "cmd_vel Topic (geometry_msgs/Twist velocity command)"]
+    },
+    {
+      "key": "software-13#7",
+      "name_en": "MuJoCo Menagerie",
+      "aliases": [],
+      "one_liner": "Google DeepMind's curated collection of high-quality MuJoCo robot models.",
+      "explanation": "MuJoCo Menagerie is an open-source model collection maintained by Google DeepMind, gathering MJCF models (MuJoCo's robot description files) for a large number of common robots — arms like the Franka and UR5e, quadrupeds and humanoids like the Unitree Go2 and G1, the ALOHA dual-arm platform, and dexterous hands like Shadow's. Every model has had its mass, inertia, joint limits, actuators, and collision geometry cleaned up, along with notes on its source and license. Converting a robot from URDF yourself often runs into issues like wrong collision geometry or missing parameters, and using Menagerie directly skips that work — projects like MuJoCo Playground and mink use it as their default source of models.",
+      "example": "Download the unitree_g1 directory from Menagerie and load scene.xml directly in the MuJoCo viewer to look at the Unitree G1.",
+      "related": ["MuJoCo (Multi-Joint dynamics with Contact)", "MJCF (MuJoCo XML Format)", "MuJoCo Playground", "mink (MuJoCo inverse kinematics)", "Simulation Assets", "Google DeepMind"]
+    },
+    {
+      "key": "software-13#8",
+      "name_en": "MuJoCo MPC (MJPC)",
+      "aliases": ["MJPC"],
+      "one_liner": "Google DeepMind's open-source tool for interactive, real-time model predictive control inside MuJoCo.",
+      "explanation": "MuJoCo MPC (MJPC) is an interactive tool Google DeepMind open-sourced in 2022 that uses the MuJoCo simulator to run model predictive control — at every instant, simulating a short window into the future, optimizing an action sequence, executing only the first step, and repeating. It has built-in planners including iLQG, gradient descent, and Predictive Sampling; a user adjusts cost-function weights in a graphical interface and sees the robot's behavior change live. It doesn't train a neural network at all, which makes it well suited to quickly generating motion for quadrupeds, humanoids, or dexterous hands, and it's also commonly used as a model-based control baseline to compare against reinforcement learning.",
+      "example": "Pick a quadruped task in the MJPC interface, drag a target point, and the robot walks over to it via real-time online planning.",
+      "related": ["Model Predictive Control (MPC)", "Sampling-based MPC", "Iterative Linear Quadratic Regulator (iLQR)", "MuJoCo (Multi-Joint dynamics with Contact)", "DIAL-MPC (Diffusion-Inspired Annealing for Legged MPC)"]
+    },
+    {
+      "key": "software-13#9",
+      "name_en": "Nerfstudio / gsplat",
+      "aliases": [],
+      "one_liner": "Open-source toolkits for reconstructing 3D scenes from photos, covering both NeRF and Gaussian splatting.",
+      "explanation": "Nerfstudio is an open-source neural radiance field (NeRF — representing a 3D scene with a neural network) framework from a UC Berkeley team, presented at SIGGRAPH 2023, providing data processing, training, and a web viewer, with methods like Nerfacto built in. gsplat is a CUDA-accelerated 3D Gaussian splatting (representing a scene as a large number of colored 3D Gaussian points) rendering and training library from the same team, used by projects such as Nerfstudio's own Splatfacto. In robotics, they're commonly used to scan a real scene into a renderable 3D asset for real-to-sim transfer, Gaussian-splatting-based simulation, and data augmentation.",
+      "example": "Film a video circling a tabletop with a phone, process and train it through Nerfstudio, and get a Gaussian-splatting scene that can be rendered from novel viewpoints.",
+      "related": ["Neural Radiance Fields (NeRF)", "3D Gaussian Splatting", "Real-to-Sim", "Gaussian-Splatting-based Simulation", "COLMAP", "Novel View Synthesis"]
+    },
+    {
+      "key": "software-13#10",
+      "name_en": "NVIDIA Isaac ROS",
+      "aliases": [],
+      "one_liner": "A collection of GPU-accelerated ROS 2 packages from NVIDIA.",
+      "explanation": "Isaac ROS is an open-source collection of ROS 2 software packages from NVIDIA, aimed at GPU-equipped platforms such as Jetson. It rewrites commonly used modules as GPU-accelerated versions — visual SLAM (cuVSLAM), 3D mapping (nvblox), stereo depth, AprilTag recognition, object pose estimation (FoundationPose), and motion planning (cuMotion) among them — and uses a mechanism called NITROS to keep large data like images in GPU memory as it passes between nodes, cutting down on copies. Developers can drop these in as replacements for the corresponding nodes in an existing ROS 2 system to speed up perception and planning, and it's also an important part of the deployment side of NVIDIA's Isaac platform.",
+      "example": "Run Isaac ROS Visual SLAM on a Jetson Orin to estimate a mobile robot's pose in real time using a stereo camera.",
+      "related": ["ROS 2", "NVIDIA Isaac Platform", "NVIDIA Jetson", "NVIDIA nvblox (GPU TSDF/ESDF Mapping)", "NVIDIA Isaac ROS cuMotion", "Zero-Copy (Shared-Memory IPC)"]
+    },
+    {
+      "key": "software-13#11",
+      "name_en": "NVIDIA Isaac ROS cuMotion",
+      "aliases": ["isaac_ros_cumotion"],
+      "one_liner": "NVIDIA's GPU-based ROS 2 motion-planning package for robot arms, built on cuRobo.",
+      "explanation": "cuMotion is the robot-arm motion-planning package within NVIDIA's Isaac ROS, with its core algorithm coming from cuRobo (NVIDIA's GPU-parallel motion-planning library). It plugs into MoveIt 2 as a plugin, replacing or supplementing traditional sampling-based planners, optimizing large numbers of candidate trajectories in parallel on the GPU to produce smooth, obstacle-avoiding joint trajectories in a short amount of time. It can also avoid obstacles using the environment map built by nvblox, and it provides a way to segment the robot's own arm out of a depth image so the robot doesn't mistake itself for an obstacle.",
+      "example": "Select the cuMotion planner in MoveIt 2's RViz interface to have the arm plan a path around obstacles on the table to reach a grasp.",
+      "related": ["cuRobo (NVIDIA GPU-accelerated motion planning)", "MoveIt Motion Planning Framework", "NVIDIA Isaac ROS", "Motion Planning", "Obstacle Avoidance", "NVIDIA nvblox (GPU TSDF/ESDF Mapping)"]
+    }
+  ]
+}

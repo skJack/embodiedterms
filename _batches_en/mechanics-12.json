@@ -1,0 +1,113 @@
+{
+  "batch": "mechanics-12",
+  "terms": [
+    {
+      "key": "mechanics-12#0",
+      "name_en": "Intrinsic vs. Extrinsic Rotations",
+      "aliases": ["Intrinsic Rotation", "Extrinsic Rotation", "Euler Angle Rotation Order Convention"],
+      "one_liner": "For successive rotations, whether each step turns about the new, moving axes (intrinsic) or the original, fixed axes (extrinsic).",
+      "explanation": "Describing orientation with three angles (Euler angles) requires a convention for which axis each step rotates about. Intrinsic rotation turns about the object's own, moving coordinate axes, so the axis used at each subsequent step has already changed with the previous rotation; extrinsic rotation always turns about the fixed axes of the world frame. The two are interchangeable: applying the same three angles intrinsically in the order Z→Y→X gives the same rotation matrix as applying them extrinsically in the reverse order X→Y→Z, namely R = Rz(α)Ry(β)Rx(γ) (Rz(α) denotes the rotation matrix for an angle α about the z-axis, and so on). The ZYX Euler angles commonly used in robotics are intrinsic, while roll-pitch-yaw (RPY) angles are usually defined as extrinsic XYZ, which is why the two end up with the same numerical values. Conventions differ across software and datasets, so before reading someone else's pose data, it's important to check whether it's intrinsic or extrinsic and what the axis order is.",
+      "example": "SciPy's Rotation.from_euler uses uppercase 'ZYX' for intrinsic rotation and lowercase 'zyx' for extrinsic; the same set of angles written as 'XYZ' versus 'xyz' produces a different orientation, so a single letter's case can send a robot arm's end effector spinning the wrong way.",
+      "related": ["Euler Angles", "Roll-Pitch-Yaw Angles", "Rotation Matrix", "Gimbal Lock", "Coordinate Transformation", "Quaternion"]
+    },
+    {
+      "key": "mechanics-12#1",
+      "name_en": "Jacobian Pseudoinverse",
+      "aliases": ["Moore-Penrose Pseudoinverse", "Generalized Inverse", "J⁺", "J†"],
+      "one_liner": "The stand-in for a Jacobian inverse when it doesn't exist, giving the solution with the smallest error and least joint motion.",
+      "explanation": "The Jacobian matrix J maps joint velocity θ̇ to end-effector velocity ẋ: ẋ = Jθ̇. Solving for joint velocity requires inverting J, but J is often not square (a 7-joint arm's J is 6×7), or it becomes non-invertible near a singular pose (an orientation where the end effector loses the ability to move in some direction). The usual fix is the Moore-Penrose pseudoinverse J⁺ (proposed independently by Moore in 1920, Bjerhammar in 1951, and Penrose in 1955): when an exact solution exists, it gives the one with the least joint motion (smallest norm) among all solutions; when no exact solution exists, it gives the least-squares solution with the smallest error. When J has full rank and there are more joints than task dimensions, J⁺ = Jᵀ(JJᵀ)⁻¹. It's a basic tool of numerical inverse kinematics, but solutions blow up near a singularity, so damped least squares is often used instead in practice.",
+      "example": "A 7-DoF arm solves for joint velocity using θ̇ = J⁺ẋ + (I − J⁺J)φ: the first term makes the end effector track the desired velocity ẋ, while the second projects an arbitrary vector φ into the null space, adjusting the elbow and other posture without affecting the end effector — useful for avoiding joint limits, a technique introduced by Liégeois in 1977.",
+      "related": ["Jacobian Matrix", "Numerical Inverse Kinematics", "Damped Least Squares", "Null Space", "Singular Configuration", "Kinematic Redundancy"]
+    },
+    {
+      "key": "mechanics-12#2",
+      "name_en": "Jacobian Transpose Method",
+      "aliases": ["Jᵀ Method", "Transpose Jacobian Method"],
+      "one_liner": "Uses the Jacobian's transpose instead of its inverse to iteratively solve IK — cheap to compute but slower to converge.",
+      "explanation": "The Jacobian transpose method is a numerical approach to inverse kinematics, applied to IK in 1984 independently by Balestrino and colleagues and by Wolovich and Elliott. Each step sets Δθ = αJᵀe, where e is the position error between the end effector and the target, Jᵀ is the transpose of the Jacobian matrix, and α is a small step size. The reasoning comes from the statics relation τ = JᵀF: imagine a virtual spring pulling the end effector toward the target, producing a force F; converted into joint torques, that force is JᵀF, and moving the joints along it is guaranteed to reduce the error whenever the step is small enough, since ⟨JJᵀe, e⟩ = ‖Jᵀe‖² ≥ 0. It never requires a matrix inverse, so each step is very cheap and it never blows up numerically near a singularity — at the cost of slower, sometimes oscillatory, convergence. The same Jᵀ map is also the core of Cartesian impedance control: a virtual spring force at the end effector is converted to joint torques through Jᵀ.",
+      "example": "Making an animated character's or robot arm's hand reach for a target point: each iteration computes Δθ = αJᵀe to update the joint angles, and after a few dozen steps the hand gradually approaches the target. In Buss's comparison tests, the method worked adequately for a single end effector but performed noticeably worse than damped least squares on a Y-shaped branching structure with multiple end effectors.",
+      "related": ["Jacobian Matrix", "Numerical Inverse Kinematics", "Jacobian Pseudoinverse", "Damped Least Squares", "Cartesian Impedance Control", "Principle of Virtual Work"]
+    },
+    {
+      "key": "mechanics-12#3",
+      "name_en": "Kinematic Calibration",
+      "aliases": ["DH Parameter Calibration", "Robot Calibration"],
+      "one_liner": "Measuring a robot's actual end-effector positions to correct the model's link lengths, joint zero offsets, and other geometric parameters.",
+      "explanation": "A controller computes end-effector position from a nominal set of kinematic parameters — such as DH parameters: link length, twist angle, offset, and joint zero position — but manufacturing tolerances and wear cause the real parameters to drift from the drawings, so the robot ends up with good repeatability (returning to the same point) but poor absolute accuracy (reaching a specified coordinate). Kinematic calibration corrects these parameters: the robot is driven through many poses, an external device such as a laser tracker or camera measures the true end-effector position, the measurements are compared against the model's predictions, and an optimization such as least squares solves for the parameter errors, which are then written back into the controller as a correction. Calibration is usually split into three levels: level one calibrates only the joint zero offsets (the gap between encoder readings and true angles), level two calibrates all the geometric parameters, and level three adds non-geometric errors such as joint flexibility and friction. According to Wikipedia, calibrating a six-axis industrial robot can improve absolute accuracy by roughly an order of magnitude, usually bringing the error down to under 1 millimeter.",
+      "example": "Offline-programmed trajectories, or a single trajectory shared across several arms of the same model, will land in different places on an uncalibrated robot. One approach mounts a calibration board on the end effector, photographs it with a single camera across a few dozen poses, and optimizes the corrected DH parameters against pixel reprojection error (arXiv:2005.08420).",
+      "related": ["DH Parameters", "Modified Denavit-Hartenberg Parameters", "Zero Position Calibration", "Absolute Positioning Accuracy", "Repeatability", "Hand-Eye Calibration"]
+    },
+    {
+      "key": "mechanics-12#4",
+      "name_en": "Kinematic Pair",
+      "aliases": ["Joint (Mechanism)", "Revolute Pair / Prismatic Pair", "Lower Pair / Higher Pair"],
+      "one_liner": "A connection between two parts that stay in contact while allowed to move relative to each other, like a hinge, a slider, or meshing gears.",
+      "explanation": "A kinematic pair is a basic concept in mechanism design, introduced by the German engineer Franz Reuleaux, referring to a connection between two members that keeps them in contact while restricting their relative motion to a specific type. Kinematic pairs split into two classes by contact type. Lower pairs make surface contact and include the revolute pair (R, a hinge, 1 rotational degree of freedom), the prismatic pair (P, a slider, 1 translational degree of freedom), the screw pair, the cylindrical pair (2 degrees of freedom), and the spherical pair (3 degrees of freedom). Higher pairs make point or line contact, such as a cam and follower, meshing gear teeth, or a wheel rolling on the ground. What robotics calls a 'joint' is a kinematic pair: a revolute joint is a revolute pair, and a prismatic joint is a prismatic pair. Grübler's formula for counting a mechanism's degrees of freedom works by subtracting the constraints each kinematic pair introduces from the members' total degrees of freedom. The original paper introducing DH parameters was even titled 'A kinematic notation for lower-pair mechanisms based on matrices.'",
+      "example": "A planar four-bar linkage: including the frame, it has 4 members and 4 revolute pairs; by the planar Grübler formula, degrees of freedom = 3×(4−1−4) + 4×1 = 1, so a single motor is enough to drive the whole mechanism.",
+      "related": ["Revolute Joint", "Prismatic Joint", "Ball Joint", "Degrees of Freedom", "Grübler's Formula", "Four-Bar Linkage"]
+    },
+    {
+      "key": "mechanics-12#5",
+      "name_en": "Kinematic Tree",
+      "aliases": ["Tree-Structured Kinematic Chain"],
+      "one_liner": "A tree structure with links as nodes and joints as edges, branching outward from a root to each end effector.",
+      "explanation": "A kinematic tree describes the structure of a multi-link robot: links are nodes, and joints are the edges connecting a parent link to a child link; each link has only one parent and there are no closed loops, so the structure branches outward from a root node — a fixed base, or the pelvis for a humanoid — to each end. A single robot arm is the special case with just one branch (a serial chain), while humanoids, dexterous hands, and quadrupeds are trees with multiple branches. URDF (Unified Robot Description Format) can only describe tree structures and can't directly represent closed chains such as a Stewart platform; MuJoCo likewise organizes every rigid body into a tree rooted at 'world' with no loops allowed, so closed loops like four-bar linkages or parallel ankle mechanisms have to be added back in as extra equality constraints. Dynamics libraries such as Pinocchio recurse over this tree and exploit the sparsity that its structure provides to speed up computation.",
+      "example": "In a humanoid robot's URDF, the pelvis is the root, branching down into the left and right legs and up through the waist to the torso, which then branches into the two arms and the head; each dexterous hand further branches into five fingers, making the whole robot a multi-level branching tree.",
+      "related": ["Kinematic Chain", "Serial Mechanism", "Parallel Mechanism", "Unified Robot Description Format (URDF)", "Floating Base", "Articulated Body Algorithm"]
+    },
+    {
+      "key": "mechanics-12#6",
+      "name_en": "Lie Group",
+      "aliases": ["Matrix Lie Group", "Continuous Transformation Group"],
+      "one_liner": "A mathematical object that is both a group and a smooth manifold; rotations and poses in robotics are both Lie groups.",
+      "explanation": "A Lie group, named after the Norwegian mathematician Sophus Lie (1842–1899), is a group that is also a smooth manifold, where both multiplication and inversion are smooth operations. Being a group guarantees elements can be composed (two rotations combine into one) and inverted; being a manifold (a surface that looks locally like flat space) guarantees you can take derivatives and run optimization on it. Robotics relies on two above all: SO(3), the set of all 3D rotation matrices, and SE(3), rigid-body poses combining rotation and translation. Their tangent spaces at the identity element are called Lie algebras — so(3), made up of skew-symmetric matrices, corresponds to SO(3) — and the two convert into each other through the exponential map. This makes it possible to add, subtract, and take gradients using ordinary 3D vectors, then map the result back to a rotation while guaranteeing the result is still a valid one. SLAM, visual odometry, state estimation, pose optimization, and the product of exponentials formula are all built on this foundation.",
+      "example": "When optimizing a camera's orientation in visual SLAM, the rotation matrix R's 9 numbers aren't updated directly; instead, a small 3D increment δ is solved for and applied as R ← R·exp([δ]×) ([δ]× is the skew-symmetric matrix built from δ, and exp is the matrix exponential), so the updated R is guaranteed to remain a valid rotation matrix.",
+      "related": ["Special Orthogonal Group SO(3)", "Exponential Map", "Skew-Symmetric Matrix", "Adjoint Representation", "Product of Exponentials Formula", "Screw Theory"]
+    },
+    {
+      "key": "mechanics-12#7",
+      "name_en": "Limit Cycle",
+      "aliases": ["Stable Periodic Orbit", "Attracting Periodic Orbit"],
+      "one_liner": "An isolated closed periodic trajectory in a nonlinear system that nearby states get pulled toward and circle around.",
+      "explanation": "A limit cycle is a concept from nonlinear dynamics, with the systematic study of it starting with Poincaré: in a state space (such as an angle-versus-angular-velocity plane), it's a closed periodic trajectory that nearby trajectories spiral toward over time (a stable limit cycle) or spiral away from (an unstable one). A stable limit cycle means the system spontaneously settles into an oscillation at a fixed rhythm, and returns to that same rhythm even after a disturbance; the classic example is the Van der Pol oscillator. Walking-robot research treats a stable periodic gait as a stable limit cycle: McGeer's passive-dynamic walking robots have no motors at all, and walk stably down a shallow slope powered only by gravity. Analysis typically takes the state at each foot-touchdown instant to build a Poincaré map (a return map), turning the question of whether a gait is stable into whether this discrete map has a stable fixed point.",
+      "example": "An unpowered 'rimless wheel' (a wheel with spokes but no rim) placed on a slope will, across a fairly wide range of starting speeds, quickly converge to the same stable rolling rhythm — a stable limit cycle, and a classic example from Tedrake's Underactuated Robotics.",
+      "related": ["Passive Dynamic Walking", "Gait", "Central Pattern Generator", "Hybrid Zero Dynamics", "Lyapunov Stability", "Gait Phase (Phase Clock)"]
+    },
+    {
+      "key": "mechanics-12#8",
+      "name_en": "Manipulability",
+      "aliases": ["Manipulability Ellipsoid", "Yoshikawa Manipulability"],
+      "one_liner": "How freely an arm's end effector can move in each direction from its current pose, and how close it is to a singularity.",
+      "explanation": "Manipulability was first given a quantitative definition by T. Yoshikawa in a 1985 IJRR paper. Given the Jacobian matrix J (which maps joint velocity to end-effector velocity), letting the joint velocity range over the unit sphere ‖θ̇‖ = 1 traces out an ellipsoid of corresponding end-effector velocities, called the manipulability ellipsoid: its principal axes point along the eigenvectors of JJᵀ, and the length of each semi-axis is the square root of the corresponding eigenvalue. The longer the ellipsoid is along some direction, the more easily the end effector can move that way; a direction where it's squashed flat signals the arm is approaching a singular pose (an orientation where it loses the ability to move in that direction), and the ellipsoid collapses into a line segment or a plane exactly at a singularity. The commonly used scalar index w = √det(JJᵀ) is proportional to the ellipsoid's volume and equals zero at a singularity. It's used to choose good working poses and to guide structural design, and is also a common optimization objective for null-space motion in redundant arms, steering the arm actively away from singularities.",
+      "example": "For a planar two-link arm (link lengths L1, L2), manipulability is w = L1·L2·|sin θ2|, where θ2 is the elbow angle: fully extended (θ2 = 0) gives w = 0, meaning the end effector can no longer extend further along the arm's direction; bent to 90° at the elbow gives the maximum w, where the end effector moves freely in every direction.",
+      "related": ["Jacobian Matrix", "Singular Configuration", "Kinematic Redundancy", "Null Space", "Jacobian Pseudoinverse"]
+    },
+    {
+      "key": "mechanics-12#9",
+      "name_en": "Modified Denavit-Hartenberg Parameters",
+      "aliases": ["MDH", "Craig DH", "Craig Convention"],
+      "one_liner": "A variant of DH parameters that places each link's frame on the joint axis nearer the base, with a different transform order.",
+      "explanation": "Modified DH parameters are the convention John J. Craig adopted in his textbook Introduction to Robotics: Mechanics and Control. Like the standard DH convention introduced by Denavit and Hartenberg in 1955, it describes the relationship between two adjacent frames using 4 parameters per joint: link length a, twist angle α, offset d, and joint angle θ. The difference is in where frame i is placed and in what order the transforms are composed: frame i sits on joint i's own axis (the proximal end of the link), whereas standard DH places it on joint i+1's axis (the distal end); the transform order becomes Rot_x(α_{i−1})·Trans_x(a_{i−1})·Rot_z(θ_i)·Trans_z(d_i) — rotate and translate about the previous x-axis first, then rotate and translate about this joint's own z-axis — which is why a and α in the parameter table carry an index one less than θ and d. The two parameter conventions cannot be mixed, or forward kinematics will come out wrong. Appendix C of Modern Robotics also uses this convention.",
+      "example": "Franka Research 3's official documentation notes that its DH table 'follows the Craig convention' — for example, joint 1 has a = 0, d = 0.333 m, α = 0, and joint 4 has a = 0.0825 m, d = 0, α = π/2. Plugging this table directly into the standard-DH formula would give the wrong end-effector pose.",
+      "related": ["DH Parameters", "Homogeneous Transformation Matrix", "Forward Kinematics", "Product of Exponentials Formula", "Kinematic Calibration", "Franka Robot Arm (Panda / FR3)"]
+    },
+    {
+      "key": "mechanics-12#10",
+      "name_en": "Multibody Dynamics",
+      "aliases": ["Multibody System Dynamics"],
+      "one_liner": "The study of how systems of rigid or flexible bodies, connected by joints, move under applied forces.",
+      "explanation": "Multibody dynamics studies how systems of rigid or flexible bodies, connected by joints and possibly undergoing large translations and rotations, move under applied forces; it's used in aerospace, automotive engineering, biomechanics, and robotics. Each rigid body in space has 6 degrees of freedom (3 translational, 3 rotational), and joints remove some of them. Modeling follows one of two approaches: redundant coordinates, where every body is described by its full pose and constraint equations then tie them together, or minimal (generalized) coordinates, which use independent variables like joint angles directly, so the constraints are automatically satisfied. Robot dynamics is a branch of it, producing equations of the form M(q)q̈ + C(q,q̇)q̇ + g(q) = τ (q is the joint angles, M the mass matrix, C the Coriolis and centrifugal terms, g the gravity term, τ the joint torques). Both MuJoCo and Pinocchio compute dynamics using generalized coordinates.",
+      "example": "A quadruped robot with 12 joints has 13 rigid bodies (the torso plus 12 leg segments). Generalized coordinates need only 6 (the torso's floating base) + 12 (joint angles) = 18 variables; redundant coordinates would need 13×6 = 78 variables, with 12 revolute joints each contributing 5 constraint equations — 60 in total — to eliminate the extra degrees of freedom.",
+      "related": ["Rigid Body Dynamics", "Generalized Coordinates", "Recursive Newton-Euler Algorithm", "Articulated Body Algorithm", "Physics Engine", "Kinematic Tree"]
+    },
+    {
+      "key": "mechanics-12#11",
+      "name_en": "Natural Frequency",
+      "aliases": ["ωn", "Resonant Frequency"],
+      "one_liner": "The frequency at which a system oscillates on its own with no sustained outside force; matching this frequency causes resonance.",
+      "explanation": "Natural frequency is the frequency at which a vibrating system oscillates on its own, with no sustained external excitation. For the simplest mass-spring system, ω₀ = √(k/m), where k is the spring stiffness and m is the mass, in rad/s (divide by 2π to convert to hertz). The stiffer the spring or the lighter the mass, the faster it vibrates. When an external force's frequency approaches the natural frequency, the amplitude grows sharply — this is resonance. It matters for robots in two ways. One is structural: harmonic drives, long slender links, and flexible joints all have some elasticity, so the whole machine has natural frequencies, and either too-high control gains or a sudden change in trajectory acceleration can excite unwanted vibration. The other is control: under PD control, a joint's error obeys a second-order equation whose natural frequency is ωn = √(Kp/M) (Kp is the proportional gain, M is the rotational inertia), which, together with the damping ratio, determines how fast the response is and how much it overshoots.",
+      "example": "With a joint inertia M = 0.1 kg·m² and proportional gain Kp = 10 N·m/rad, ωn = √(10/0.1) = 10 rad/s, about 1.6 Hz; raising Kp to 40 doubles ωn to 20 rad/s, giving a faster response but also making it easier to excite structural vibration from unmodeled flexibility.",
+      "related": ["Damping Ratio", "Mass-Spring-Damper System", "Stiffness", "Flexible Joint", "PD Control", "Control Bandwidth"]
+    }
+  ]
+}

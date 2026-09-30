@@ -1,0 +1,391 @@
+{
+ "category": "perception",
+ "batch": 11,
+ "terms": [
+  {
+   "name_zh": "鸟瞰图",
+   "name_en": "Bird's-Eye View",
+   "abbr": "BEV",
+   "aliases": [
+    "BEV 感知",
+    "BEV 表示",
+    "俯视图"
+   ],
+   "tier": 3,
+   "one_liner": "从正上方往下看的二维栅格表示，把多个传感器的信息统一铺到地面平面上。",
+   "explanation": "鸟瞰图（BEV）是一种以地面为平面、从正上方俯视的二维网格表示，每个格子存该位置的特征或语义。自动驾驶最先大规模使用它：Lift-Splat-Shoot（NVIDIA，ECCV 2020）先给每个像素预测深度分布，再把图像特征「拍扁」到 BEV 网格；BEVFormer（ECCV 2022，上海人工智能实验室等）用 Transformer 的交叉注意力从多路相机特征中查询 BEV 特征，并融合历史帧。好处是多相机、激光雷达都能对齐到同一坐标系，检测、分割和路径规划直接在这张图上做。机器人导航用的占据栅格、高程图和语义地图本质上也是 BEV 形式；它压缩了高度信息，所以桌面操作等更依赖高度的任务通常改用点云或体素。",
+   "example": "自动驾驶车把 6 路环视相机的图像转成一张以自车为中心、前后左右各几十米范围的 BEV 特征图，在上面同时框出车辆、画出车道线，再交给规划模块。",
+   "related": [
+    "自动驾驶",
+    "3D目标检测",
+    "占用网络",
+    "高程图",
+    "多传感器融合",
+    "语义地图"
+   ],
+   "sources": [
+    {
+     "title": "BEVFormer (arXiv 2203.17270, ECCV 2022)",
+     "url": "https://arxiv.org/abs/2203.17270"
+    },
+    {
+     "title": "Lift, Splat, Shoot (arXiv 2008.05711, ECCV 2020)",
+     "url": "https://arxiv.org/abs/2008.05711"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "BOP 位姿估计基准",
+   "name_en": "BOP: Benchmark for 6D Object Pose Estimation",
+   "abbr": "BOP",
+   "aliases": [
+    "BOP Challenge",
+    "BOP 挑战赛"
+   ],
+   "tier": 3,
+   "one_liner": "捷克理工大学维护的 6D 物体位姿估计公开基准和年度挑战赛。",
+   "explanation": "BOP 由 Tomáš Hodaň 等人在 ECCV 2018 提出，由布拉格的捷克理工大学维护。它把 LM-O、T-LESS、YCB-V 等多个物体位姿数据集统一成同一格式，给出统一的误差函数（能处理对称物体的位姿歧义）和在线评测系统，并在 2019、2020、2022–2025 年举办挑战赛，配套 R6D 等研讨会。任务从「已见物体」扩展到「未见物体」：2023 年要求方法只凭 CAD 模型快速上手新物体，2024 年加入只给参考视频的无模型任务和 BOP-H3 数据集，2025 年加入面向工业场景的 BOP-Industrial 数据集。2024 年报告指出，未见物体的 2D 检测仍比已见物体低约 35%，是主要瓶颈。FoundationPose、MegaPose、SAM-6D 等方法都在这里比成绩。",
+   "example": "新提出的零样本位姿估计方法在 BOP-Classic-Core 数据集上跑出结果，上传到 BOP 在线评测系统拿到 AR 分数，再和 FoundationPose 等方法在排行榜上对比。",
+   "related": [
+    "6D位姿估计",
+    "FoundationPose",
+    "MegaPose",
+    "SAM-6D",
+    "YCB 物体集",
+    "ADD / ADD-S 位姿误差指标"
+   ],
+   "sources": [
+    {
+     "title": "BOP: Benchmark for 6D Object Pose Estimation（官网）",
+     "url": "https://bop.felk.cvut.cz/home/"
+    },
+    {
+     "title": "BOP: Benchmark for 6D Object Pose Estimation (arXiv 1808.08319, ECCV 2018)",
+     "url": "https://arxiv.org/abs/1808.08319"
+    },
+    {
+     "title": "BOP Challenge 2024 on Model-Based and Model-Free 6D Object Pose Estimation (arXiv 2504.02812)",
+     "url": "https://arxiv.org/abs/2504.02812"
+    }
+   ],
+   "as_of": "2025-11"
+  },
+  {
+   "name_zh": "光束法平差",
+   "name_en": "Bundle Adjustment",
+   "abbr": "BA",
+   "aliases": [
+    "捆绑调整",
+    "束调整",
+    "集束调整"
+   ],
+   "tier": 3,
+   "one_liner": "同时微调所有相机位姿和三维点坐标，让重投影误差最小的优化步骤。",
+   "explanation": "光束法平差源自 20 世纪 50 年代的摄影测量，「光束」指从各个三维点射向相机光心的光线束。给定多张图像中匹配好的特征点，它把所有相机的位姿（有时连内参和畸变）以及所有三维点坐标一起当未知量，最小化重投影误差，也就是三维点按当前参数投影回图像后与实际观测位置之间距离的平方和；图像噪声为零均值高斯时，这等价于最大似然估计。通常用 Levenberg–Marquardt 等非线性最小二乘方法求解，并利用问题的稀疏结构加速。它是运动恢复结构（SfM）和视觉 SLAM 后端的核心步骤，COLMAP 重建、ORB-SLAM 的局部与全局优化都在做 BA，常用求解库有 Ceres、g2o、GTSAM。",
+   "example": "用手机绕桌子拍几十张照片，SfM 先粗估每张照片的相机位姿并三角化出稀疏点云，再跑一次 BA 统一微调，重投影误差下降，点云和相机轨迹都更准。",
+   "related": [
+    "运动恢复结构",
+    "重投影误差",
+    "同步定位与建图",
+    "SLAM 前端 / 后端",
+    "因子图优化",
+    "Ceres Solver"
+   ],
+   "sources": [
+    {
+     "title": "Bundle adjustment - Wikipedia",
+     "url": "https://en.wikipedia.org/wiki/Bundle_adjustment"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "CDM 相机深度模型",
+   "name_en": "Camera Depth Models",
+   "abbr": "CDM",
+   "aliases": [
+    "Camera Depth Model",
+    "Manipulation as in Simulation"
+   ],
+   "tier": 3,
+   "one_liner": "字节 Seed 提出的深度修复模型，把深度相机的噪声深度修成接近仿真的精确深度。",
+   "explanation": "CDM 出自 2025 年 9 月字节跳动 Seed 联合上海交大、浙大、清华发布的论文「Manipulation as in Simulation」。普通深度相机在反光、透明、细长物体和边缘处噪声大、缺失多，用深度或点云训练的策略很难从仿真直接迁到真机。CDM 是接在相机后面的软件插件：输入 RGB 图和原始深度，输出去噪后的度量深度（真实米制尺度）。训练数据来自作者的「神经数据引擎」，通过模拟各款相机的深度噪声模式批量生成成对数据；按相机型号提供模型，覆盖 RealSense 多个型号、Azure Kinect 和 ZED 2i，模型和 ByteCameraDepth 数据集均已开源。论文显示，只用仿真深度训练的操作策略接上 CDM 后，不加噪声、不微调就能在真机上处理铰接、反光和细长物体。",
+   "example": "在仿真里只用干净深度图训练「把碗放进微波炉」的策略，部署时先把 RealSense 的原始深度送进对应型号的 CDM，再把输出的深度喂给策略，不用真机数据微调。",
+   "related": [
+    "深度补全",
+    "仿真到现实迁移",
+    "虚实差距",
+    "深度相机",
+    "透明/反光物体感知",
+    "蚂蚁灵波 LingBot-Depth"
+   ],
+   "sources": [
+    {
+     "title": "Manipulation as in Simulation: Enabling Accurate Geometry Perception in Robots (arXiv 2509.02530)",
+     "url": "https://arxiv.org/abs/2509.02530"
+    },
+    {
+     "title": "Manipulation as in Simulation 项目页",
+     "url": "https://manipulation-as-in-simulation.github.io/"
+    }
+   ],
+   "as_of": "2025-09"
+  },
+  {
+   "name_zh": "相机-IMU联合标定",
+   "name_en": "Camera-IMU Calibration",
+   "abbr": "",
+   "aliases": [
+    "视觉惯性标定",
+    "相机 IMU 外参与时延标定",
+    "Visual-Inertial Calibration"
+   ],
+   "tier": 3,
+   "one_liner": "求出相机与 IMU 之间的相对位姿和时间偏移，让两路数据能对齐融合。",
+   "explanation": "视觉惯性里程计（VIO，用相机加 IMU 估计自身运动）要把两种传感器的数据放在一起算，前提是知道它们的空间外参（IMU 相对相机的旋转和平移）和时间偏移（两者时间戳之间因触发、传输造成的固定延迟），求这两样就是相机-IMU 联合标定。最常用的离线工具是 ETH 开源的 Kalibr，方法来自 Furgale 等人 IROS 2013 的工作：用连续时间 B 样条表示运动轨迹，对着 Aprilgrid 标定板把设备沿各个轴充分晃动，同时优化外参和时间偏移；IMU 的噪声参数通常先用 Allan 方差测好作为输入。VINS-Mono 等系统还能在运行中在线估计时间偏移（Qin 与 Shen，IROS 2018）。标定不准时，VIO 会明显漂移甚至发散。",
+   "example": "给手持数据采集设备上的 RealSense D435i 做标定：录一段对着 Aprilgrid 做平移和旋转的数据包，用 Kalibr 求出相机到 IMU 的变换矩阵和时间偏移（通常是毫秒级），写进 VINS-Fusion 的配置文件。",
+   "related": [
+    "视觉惯性里程计",
+    "Kalibr",
+    "惯性测量单元",
+    "相机外参",
+    "多传感器时间同步（时间戳对齐）",
+    "Allan 方差（IMU 噪声标定）"
+   ],
+   "sources": [
+    {
+     "title": "ethz-asl/kalibr（GitHub）",
+     "url": "https://github.com/ethz-asl/kalibr"
+    },
+    {
+     "title": "Online Temporal Calibration for Monocular Visual-Inertial Systems (arXiv 1808.00692, IROS 2018)",
+     "url": "https://arxiv.org/abs/1808.00692"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "相机-激光雷达联合标定",
+   "name_en": "Camera-LiDAR Extrinsic Calibration",
+   "abbr": "",
+   "aliases": [
+    "相机雷达外参标定",
+    "激光雷达-相机标定",
+    "LiDAR-Camera Calibration"
+   ],
+   "tier": 3,
+   "one_liner": "求出激光雷达与相机之间的旋转和平移，让点云能准确投影到图像上。",
+   "explanation": "机器人和自动驾驶车常同时装激光雷达和相机：雷达给准确距离，相机给颜色和纹理。要融合二者，先要知道雷达坐标系相对相机坐标系的刚体变换（3 个旋转加 3 个平移参数），即外参。有标定板的方法用棋盘格、ChArUco 或 Aprilgrid，在图像里检测角点，在点云里拟合平面找到对应角点，再解出变换；无标定板的方法直接利用环境的结构和纹理配准，例如日本产综研（AIST）Koide 等人 ICRA 2023 开源的工具，也支持 Livox 这类非重复扫描雷达。结果用于给点云上色、把点云投到图像上辅助检测，或作为 BEV 融合感知的输入；常用的检查办法是看投影后的点云边缘是否与图像中物体边缘重合。",
+   "example": "四足机器人上装一台 Livox Mid-360 和一台 RGB 相机，标定后把点云投到图像上，检查台阶边缘的点是否落在图像里的台阶轮廓上，再用这组外参给点云上色建彩色地图。",
+   "related": [
+    "相机外参",
+    "激光雷达",
+    "多传感器融合",
+    "标定板",
+    "相机标定",
+    "鸟瞰图"
+   ],
+   "sources": [
+    {
+     "title": "What Is Lidar-Camera Calibration? - MATLAB & Simulink",
+     "url": "https://www.mathworks.com/help/lidar/ug/lidar-and-camera-calibration.html"
+    },
+    {
+     "title": "koide3/direct_visual_lidar_calibration（GitHub）",
+     "url": "https://github.com/koide3/direct_visual_lidar_calibration"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "电容式触觉传感",
+   "name_en": "Capacitive Tactile Sensing",
+   "abbr": "",
+   "aliases": [
+    "电容式传感器",
+    "电容式触觉传感器",
+    "电容皮肤"
+   ],
+   "tier": 3,
+   "one_liner": "按压改变电极间距或介电层，用测到的电容变化推算接触力的触觉传感方式。",
+   "explanation": "电容式触觉传感是触觉传感器的主要原理之一，与压阻式、压电式、磁性式和视触觉并列。基本结构是两层电极夹一层可压缩的介电材料：受压时电极间距或重叠面积变化，电容随之改变，读出电路把它换算成压力；许多这样的单元（触元）排成阵列，就能给出接触压力的分布。优点是灵敏度高、可以做得小而薄且柔性、便于铺满大面积表面，还能感知人体靠近；缺点是易受寄生电容和电磁干扰、有温度漂移，弹性介电层会带来迟滞。典型例子是意大利理工学院（IIT）为 iCub 人形机器人做的大面积电容皮肤，改进版用 3D 织物做介电层来降低迟滞。",
+   "example": "在协作机械臂外壳上贴一层电容触觉皮肤，人手碰到或靠近某块区域时电容突变，控制器据此立刻减速或停机。",
+   "related": [
+    "触觉传感器",
+    "压阻式触觉传感",
+    "压电式触觉传感",
+    "电子皮肤",
+    "触觉单元（触元）",
+    "接近觉传感器"
+   ],
+   "sources": [
+    {
+     "title": "A Flexible and Robust Large Scale Capacitive Tactile System for Robots (arXiv 1411.6837)",
+     "url": "https://arxiv.org/abs/1411.6837"
+    },
+    {
+     "title": "Tactile sensor - Wikipedia",
+     "url": "https://en.wikipedia.org/wiki/Tactile_sensor"
+    },
+    {
+     "title": "Capacitive sensing - Wikipedia",
+     "url": "https://en.wikipedia.org/wiki/Capacitive_sensing"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "类别级位姿估计",
+   "name_en": "Category-Level Pose Estimation",
+   "abbr": "",
+   "aliases": [
+    "类别级 6D 位姿",
+    "类别级 6D 位姿与尺寸估计",
+    "Category-Level 6D Object Pose and Size Estimation"
+   ],
+   "tier": 3,
+   "one_liner": "不需要具体物体的 CAD 模型，对某一类里没见过的物体估计 6D 位姿和尺寸。",
+   "explanation": "实例级 6D 位姿估计要求事先有每个物体精确的 3D 模型，只能处理训练时见过的那几个物体。类别级位姿估计把条件放宽为：只知道物体属于哪一类（杯子、碗、笔记本电脑等），对这一类里没见过的新实例估计位置、朝向和三维尺寸。难点是同类物体形状差别大。斯坦福 Guibas 组王鹤等人在 CVPR 2019 提出 NOCS（归一化物体坐标空间），让网络把每个像素映射到该类别共享的标准坐标，再结合深度图求出位姿和尺寸，并发布了 CAMERA（合成）和 REAL275（真实）两个常用数据集。它适合「拿起任意一个杯子」这类家庭任务；FoundationPose 等零样本方法则换了思路，需要新物体的模型或参考图像。",
+   "example": "机器人看到桌上一只从没见过的马克杯，网络把杯子像素映射到「杯子」类的标准坐标，再和深度点云对齐，算出杯子的位置、朝向和尺寸，据此规划抓杯柄的位姿。",
+   "related": [
+    "6D位姿估计",
+    "NOCS 归一化物体坐标空间",
+    "FoundationPose",
+    "位姿跟踪",
+    "物体泛化",
+    "BOP 位姿估计基准"
+   ],
+   "sources": [
+    {
+     "title": "Normalized Object Coordinate Space for Category-Level 6D Object Pose and Size Estimation (arXiv 1901.02970, CVPR 2019)",
+     "url": "https://arxiv.org/abs/1901.02970"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "倒角距离",
+   "name_en": "Chamfer Distance",
+   "abbr": "CD",
+   "aliases": [
+    "Chamfer 距离"
+   ],
+   "tier": 3,
+   "one_liner": "两组点云互相找最近点并把距离平均，用来衡量两个形状有多接近。",
+   "explanation": "倒角距离衡量两个点集的相似程度：对点集 A 中每个点找 B 里最近的点，求距离（常用平方欧氏距离）的平均；再反过来对 B 做一遍，两项相加。它不要求两组点数相同，也不需要点与点一一对应，只用最近邻搜索，几乎处处可微，适合当损失函数。名字来自早期图像匹配中的 chamfer matching。Fan、Su、Guibas 在 CVPR 2017 的单图生成点云工作中，把它和推土机距离（EMD）一起作为点云生成的损失，此后它成为三维重建、点云补全和形状生成的标准损失与评测指标，PyTorch3D 等库直接提供实现。缺点是对点的分布密度不敏感，预测点可能扎堆，所以论文里常与 EMD、F-score 一起报告。",
+   "example": "点云补全网络输入只拍到半边的椅子点云，输出一组完整的椅子点；训练时用输出与真实完整点云之间的倒角距离作损失，距离越小说明补得越像。",
+   "related": [
+    "点云",
+    "点云补全 / 形状补全",
+    "单图生成3D",
+    "损失函数",
+    "PointNet",
+    "前馈式三维重建"
+   ],
+   "sources": [
+    {
+     "title": "A Point Set Generation Network for 3D Object Reconstruction from a Single Image (arXiv 1612.00603)",
+     "url": "https://arxiv.org/abs/1612.00603"
+    },
+    {
+     "title": "pytorch3d.loss.chamfer_distance 文档",
+     "url": "https://pytorch3d.readthedocs.io/en/latest/modules/loss.html"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "CMOS 图像传感器",
+   "name_en": "CMOS Image Sensor",
+   "abbr": "CIS",
+   "aliases": [
+    "CMOS 传感器",
+    "有源像素传感器",
+    "Active-Pixel Sensor"
+   ],
+   "tier": 3,
+   "one_liner": "相机里把光变成数字图像的芯片，每个像素自带放大电路，是当今相机的主流。",
+   "explanation": "CMOS 图像传感器是用 CMOS 工艺制造的有源像素传感器：每个像素有一个光电二极管收集光生电荷，再由几颗晶体管就地放大、读出（常见 4T 结构）。20 世纪 90 年代初，三菱电机和 NASA 喷气推进实验室（Eric Fossum 等）先后做出 CMOS 有源像素传感器；它成本低、功耗低，还能把模数转换和图像处理集成在同一芯片上，2007 年销量超过 CCD，如今占绝对主流。索尼是最大厂商。对机器人来说，它决定相机的分辨率、帧率、弱光噪声和动态范围，也决定快门类型：多数 CMOS 用卷帘快门逐行曝光，快速运动时画面会歪斜，VIO、高速抓取等场景常选全局快门型号。",
+   "example": "给机械臂选腕部相机时，看参数表里的快门类型、像素尺寸和帧率；手臂运动很快时选全局快门 CMOS，拍出的物体边缘不会被拉斜。",
+   "related": [
+    "RGB相机",
+    "全局快门 / 卷帘快门",
+    "ISP（图像信号处理器）",
+    "事件相机",
+    "深度相机",
+    "MIPI CSI-2 相机接口"
+   ],
+   "sources": [
+    {
+     "title": "Active-pixel sensor - Wikipedia",
+     "url": "https://en.wikipedia.org/wiki/Active-pixel_sensor"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "互补滤波",
+   "name_en": "Complementary Filter",
+   "abbr": "",
+   "aliases": [
+    "互补滤波器",
+    "Mahony 互补滤波"
+   ],
+   "tier": 3,
+   "one_liner": "陀螺仪管短期、加速度计管长期，按比例混合两者来估计姿态角的简单滤波方法。",
+   "explanation": "互补滤波是 IMU 姿态估计里最常用的简单方法。陀螺仪测角速度，积分得到角度，短时间内平滑准确，但零偏会让误差随时间累积成漂移（低频误差）；加速度计借助重力方向能直接算出俯仰和横滚角，长期不漂，但受振动和运动加速度干扰、噪声大（高频误差），偏航角可再借助磁力计。互补滤波让陀螺仪积分结果走高通、加速度计结果走低通再相加，常见写法是：角度 = α ×（上一时刻角度 + 角速度 × Δt）+（1 − α）× 加速度计角度，α 取接近 1 的值。计算量极小，适合单片机；Mahony 等人 2008 年在 IEEE TAC 上把它推广到三维旋转（SO(3)），即常用的 Mahony 滤波。它不需要噪声模型，但权重需手调。",
+   "example": "自平衡小车的主控每个控制周期读一次 IMU，用 α = 0.98 的互补滤波算出车身俯仰角，作为平衡控制的反馈量。",
+   "related": [
+    "惯性测量单元",
+    "卡尔曼滤波",
+    "扩展卡尔曼滤波",
+    "姿态解算（AHRS 航姿参考系统）",
+    "传感器漂移（零漂）",
+    "状态估计"
+   ],
+   "sources": [
+    {
+     "title": "Complementary Filter - AHRS 文档",
+     "url": "https://ahrs.readthedocs.io/en/latest/filters/complementary.html"
+    },
+    {
+     "title": "complementaryFilter - MATLAB Sensor Fusion and Tracking Toolbox",
+     "url": "https://www.mathworks.com/help/fusion/ref/complementaryfilter-system-object.html"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "ConceptGraphs",
+   "name_en": "ConceptGraphs: Open-Vocabulary 3D Scene Graphs for Perception and Planning",
+   "abbr": "",
+   "aliases": [
+    "开放词汇 3D 场景图（ConceptGraphs）"
+   ],
+   "tier": 3,
+   "one_liner": "把多视角图像融合成开放词汇的 3D 物体场景图，供大模型推理和机器人规划使用。",
+   "explanation": "ConceptGraphs 由 MIT、蒙特利尔大学、多伦多大学等团队提出（第一作者 Qiao Gu），发表于 ICRA 2024。它逐帧用通用分割模型切出物体区域，提取每块区域的 CLIP 特征，借助深度投影成 3D 点云，再跨视角把属于同一物体的区域合并，得到一组带语义特征的 3D 物体；随后用 LLaVA 为物体生成文字描述、用 GPT-4 推断物体间的空间关系作为边，构成 3D 场景图（节点是物体，边是关系）。全程不需要 3D 标注，也不微调模型。建好的图可转成文本交给大模型，回答「找一个篮球」这类查询；论文在 Jackal 等移动机器人上演示了物体检索、重定位，以及判断哪些障碍物可以推开的导航任务。",
+   "example": "机器人先在房子里转一圈建好场景图，用户说「找个能把手机垫高的东西」，大模型从图中物体描述里挑出「书」，机器人按该节点的 3D 位置导航过去。",
+   "related": [
+    "3D场景图",
+    "开放词汇",
+    "语义地图",
+    "CLIP",
+    "大模型任务规划",
+    "SayPlan"
+   ],
+   "sources": [
+    {
+     "title": "ConceptGraphs (arXiv 2309.16650)",
+     "url": "https://arxiv.org/abs/2309.16650"
+    },
+    {
+     "title": "ConceptGraphs 项目页",
+     "url": "https://concept-graphs.github.io/"
+    }
+   ],
+   "as_of": "2024-05"
+  }
+ ]
+}

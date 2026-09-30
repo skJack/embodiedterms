@@ -1,0 +1,113 @@
+{
+  "batch": "model-11",
+  "terms": [
+    {
+      "key": "model-11#0",
+      "name_en": "Energy-Based Model",
+      "aliases": ["EBM", "Implicit Behavioral Cloning", "IBC"],
+      "one_liner": "A model that scores input-output pairs instead of predicting the output directly; the lowest-scoring output is the answer.",
+      "explanation": "An energy-based model doesn't predict its output directly; instead, it learns a scoring function E(x, y) — the better x and y match, the lower the 'energy' — and inference means searching for the y with the lowest energy. The best-known robotics application is Google's 2021 Implicit Behavioral Cloning (IBC): a network assigns an energy score to an 'observation, candidate action' pair, then derivative-free optimization or Langevin sampling (noisy gradient descent) is used to find the lowest-scoring action. This lets a single observation map to several valid actions and lets the policy represent discontinuities, and the paper reached about 1 mm of precision on contact-rich real-robot tasks. The cost is that training needs sampled negative examples to approximate the normalization constant, and the Diffusion Policy paper notes that IBC training is unstable and hard to tune. Since then, modeling multimodal actions has mostly shifted to Diffusion Policy and flow matching instead.",
+      "example": "On the same tabletop image, pushing a block from the left or from the right both complete the task. An energy-based model assigns low energy to both actions and lands on one of them at inference; a mean-squared-error regression model instead outputs their average, which is wrong either way.",
+      "related": ["Behavior Cloning", "Action Multimodality", "Diffusion Policy", "Mixture Density Network", "InfoNCE Loss", "Generative Model"]
+    },
+    {
+      "key": "model-11#1",
+      "name_en": "Equivariant Policy / Equivariant Neural Network",
+      "aliases": ["Equivariant Diffusion Policy", "EquiDiff", "G-CNN"],
+      "one_liner": "A network whose output rotates or shifts the same way as its input, building symmetry directly into the architecture.",
+      "explanation": "Equivariance means that when the input undergoes some transformation — rotation, translation, mirroring — the output transforms in a corresponding way. Cohen and Welling proposed the group-equivariant convolutional network (G-CNN) in 2016, building symmetry directly into the network's layers instead of relying on data augmentation to learn it slowly. Robot manipulation naturally has this kind of symmetry: if a cup on the table is rotated 90 degrees, the grasping action should rotate by the same 90 degrees. Wang and colleagues' Equivariant Diffusion Policy (EquiDiff, CoRL 2024) adds planar rotation symmetry around the vertical axis (SO(2)) into Diffusion Policy, reaching about 21.9% higher average success rate than the original across 12 MimicGen simulation tasks, and learning real-robot tasks from just 20-60 demonstrations. The cost is a more complex network implementation, and it only helps for the specific kind of symmetry it's designed for.",
+      "example": "EquiDiff reaches 80% success on a real-robot 'bagel toasting' task using 58 demonstrations, where the original Diffusion Policy only reaches 10% with the same data.",
+      "related": ["Diffusion Policy", "Inductive Bias", "Data Augmentation", "Sample Efficiency", "Neural Descriptor Fields", "Convolutional Neural Network"]
+    },
+    {
+      "key": "model-11#2",
+      "name_en": "Exposure Bias",
+      "aliases": ["Train-Test Mismatch"],
+      "one_liner": "The problem where a model sees ground truth during training but its own output at inference, so errors compound.",
+      "explanation": "Exposure bias is a classic problem in sequence generation models. Autoregressive models (models that predict the next element step by step) are usually trained with teacher forcing, feeding in the real history at every step; but at inference, the only history available is the model's own previous output. Because the model never saw its own mistakes during training, once it drifts off the training distribution, its errors compound further and further. Bengio and colleagues' scheduled sampling (2015, gradually switching training to use the model's own predictions as input) and Ranzato and colleagues' sequence-level training (2016) were early representative fixes. In embodied AI it shows up in two common forms: a behavior-cloning policy drifting further and further from the demonstrated trajectory once it deviates (often called compounding error or covariate shift), and an autoregressive video world model's image quality collapsing after generating dozens of frames in a row — methods like Self Forcing try to ease this by having the model continue generating from its own generated frames during training too.",
+      "example": "Given a video world model one current frame and asked to autoregressively predict the next 100 frames: during training it saw the real previous frame at every step, but at inference it sees its own slightly flawed generated frame, so objects tend to deform and the image tends to blur more and more the further out it goes.",
+      "related": ["Teacher Forcing", "Autoregressive Decoding", "Compounding Error", "Distribution Shift / Covariate Shift", "Self Forcing", "Diffusion Forcing"]
+    },
+    {
+      "key": "model-11#3",
+      "name_en": "Feature-wise Linear Modulation",
+      "aliases": ["FiLM", "FiLM Layer", "FiLM Conditioning"],
+      "one_liner": "Using conditioning information to compute a per-channel scale and shift that modulates a network's intermediate features.",
+      "explanation": "FiLM was proposed by Ethan Perez, Aaron Courville, and colleagues (AAAI 2018) as a general-purpose layer for injecting conditioning information into a neural network. The idea is simple: a small network computes a scale γ and a shift β for each feature channel from the condition (such as a language-instruction vector), and the intermediate feature is transformed into γ·x + β. The original paper roughly halved the best error rate at the time on the CLEVR visual-reasoning benchmark. It's common in robotics: RT-1 uses FiLM to inject the language instruction into its pretrained EfficientNet image encoder, zero-initializing the layers that produce γ and β so FiLM starts out as an identity transform and doesn't disturb the pretrained weights; the CNN version of Diffusion Policy also uses FiLM at every convolutional layer to inject observation features.",
+      "example": "In RT-1, the instruction 'pick up the coke can' is first turned into a vector by the Universal Sentence Encoder, then modulates EfficientNet's layer features through FiLM, so the same image produces different visual features under different instructions.",
+      "related": ["Adaptive Layer Normalization", "Language-conditioned Policy", "RT-1", "Diffusion Policy", "EfficientNet", "Cross-Attention"]
+    },
+    {
+      "key": "model-11#4",
+      "name_en": "Finite Scalar Quantization",
+      "aliases": ["FSQ"],
+      "one_liner": "Rounding each dimension of a continuous vector directly to a few fixed levels, replacing a VQ codebook for discretization.",
+      "explanation": "Finite scalar quantization was proposed in 2023 by Mentzer and colleagues at Google Research, in a paper subtitled 'VQ-VAE Made Simple.' Traditional vector quantization (VQ) maintains a learnable codebook, and training often suffers from 'codebook collapse,' where large numbers of code entries never get used, requiring extra tricks like commitment loss and entropy penalties to fix. FSQ instead projects features down to very few dimensions (usually fewer than 10), clips each dimension to a range, and rounds it directly to a small number of fixed levels; the combination of levels across dimensions forms an implicit codebook. There's no codebook to learn and no collapse to worry about, and it performs on par with VQ on tasks like image generation and depth estimation. It's commonly used to turn images, video, or action sequences into discrete tokens for an autoregressive Transformer to process.",
+      "example": "NVIDIA's Cosmos Tokenizer discrete version uses FSQ to compress video into discrete tokens, with an index range of about 64,000 (64K).",
+      "related": ["Vector Quantization", "Vector-Quantized Variational Autoencoder", "Action Tokenizer", "Video Tokenizer / Video VAE", "Token", "NVIDIA Cosmos"]
+    },
+    {
+      "key": "model-11#5",
+      "name_en": "Florence-2",
+      "aliases": ["Florence-2-base", "Florence-2-large"],
+      "one_liner": "Microsoft's small open-source vision foundation model that switches between captioning, detection, and segmentation via text prompts.",
+      "explanation": "Florence-2 is a vision foundation model Microsoft released in November 2023, open-sourced under the MIT license in two sizes: 0.23B (base) and 0.77B (large). It uses a sequence-to-sequence design — an image encoder plus a text decoder: given an image and a task prompt, such as <OD> for object detection or <CAPTION> for image captioning, the model outputs the result, including box coordinates, entirely as text, so a single model can do captioning, detection, phrase grounding, segmentation, OCR, and more. Its training data, FLD-5B, contains 126 million images and 5.4 billion annotations generated through an iterative automated pipeline. Because it's small and has strong spatial grounding ability, it's often used as the vision-language backbone for lightweight VLAs.",
+      "example": "FLOWER (CoRL 2025) uses only half of Florence-2-L's layers as its backbone; X-VLA-0.9B also uses Florence-Large to encode the main-view image and the language instruction.",
+      "related": ["Vision Foundation Model", "Vision-Language Model", "Open-Vocabulary Object Detection", "Visual Grounding", "X-VLA", "Backbone Network"]
+    },
+    {
+      "key": "model-11#6",
+      "name_en": "Force-aware Vision-Language-Action Model",
+      "aliases": ["Force-aware VLA"],
+      "one_liner": "A VLA that takes force/torque signals as input alongside vision and language.",
+      "explanation": "A force-aware VLA is a vision-language-action model that adds force signals, such as those from a six-axis force/torque sensor (measuring force along three axes and torque around three axes), as an input modality alongside image and language. An ordinary VLA relies only on cameras, but in contact-rich tasks like plugging in a cord, wiping a table, or assembly, whether contact is properly made and how much force is being applied is often invisible to a camera, leading to getting stuck or pressing too hard. The representative work, ForceVLA (Yu et al., NeurIPS 2025), builds on π0 and uses a force-aware mixture-of-experts module (FVLMoE) to fuse a force token during action decoding, reaching 23.2% higher average performance than the π0 baseline across five contact-rich tasks, while simply concatenating force into the input only gave a small improvement. ForceVLA2, from March 2026, adds hybrid force/position control and reports 48% and 35% improvements over π0 and π0.5 respectively.",
+      "example": "When plugging in a cord, as the plug touches the edge of the socket the camera image barely changes, but the force sensor reading jumps; ForceVLA uses this signal to correct the pose, reaching up to 80% success on plugging tasks.",
+      "related": ["Vision-Language-Action Model", "Six-Axis Force/Torque Sensor", "Contact-rich Manipulation", "Hybrid Force/Position Control", "Vision-Tactile-Language-Action Model", "Mixture of Experts"]
+    },
+    {
+      "key": "model-11#7",
+      "name_en": "Gaussian Mixture Model",
+      "aliases": ["GMM", "GMM Policy", "GMM Action Head"],
+      "one_liner": "A probability model that describes data as a weighted combination of several Gaussian distributions, which can have multiple peaks.",
+      "explanation": "A Gaussian mixture model assumes data comes from one of K Gaussian (normal) distributions, each with its own mean, variance (covariance), and weight, with the weights summing to 1. Parameters are usually estimated iteratively with the expectation-maximization (EM) algorithm: first compute each point's probability of belonging to each component, then update the parameters using those probabilities. It's a classic tool for clustering and density estimation. Robot learning has two common uses for it. One is traditional learning from demonstration, which uses a GMM together with Gaussian mixture regression (GMR) to encode trajectories from a handful of demonstrations. The other is as a policy's action head, where the network directly outputs several sets of means, variances, and weights (this is called a mixture density network), representing several valid actions for the same scene. robomimic's BC-RNN-GMM works this way, and it's also one of the main comparison baselines in the Diffusion Policy paper. The number of components has to be fixed in advance, and expressiveness is limited for high-dimensional actions.",
+      "example": "Going around an obstacle on a table, passing on the left or the right are both fine. A policy with a single Gaussian averages the two into a straight path into the obstacle; a GMM policy can give the left and right options their own components and sample one of them.",
+      "related": ["Mixture Density Network", "Action Multimodality", "Gaussian Policy", "Gaussian Mixture Regression / Task-Parameterized GMM", "robomimic", "Diffusion Policy"]
+    },
+    {
+      "key": "model-11#8",
+      "name_en": "Gaussian Policy",
+      "aliases": ["Diagonal Gaussian Policy"],
+      "one_liner": "A stochastic policy where the network outputs an action's mean and standard deviation, then samples from that normal distribution.",
+      "explanation": "A Gaussian policy is the most common form of stochastic policy for continuous-action reinforcement learning. A neural network outputs a mean for each action dimension given the observation; the standard deviation is either also output by the network or kept as a separate learnable parameter independent of the observation, usually stored in log form to keep it positive. The action is sampled as 'mean + standard deviation × standard normal noise,' with each dimension usually assumed independent, which is why it's also called a diagonal Gaussian policy. It has a closed-form log-probability, which makes computing the policy gradient easy, and the size of the standard deviation directly controls how much exploration happens. Mainstream algorithms like PPO and SAC both use it, and reinforcement learning for legged locomotion control is almost always built on this kind of policy. At deployment, the mean alone is usually taken as the action. Because it has only one peak, it can't represent several sharply different valid actions, which is why imitation learning often replaces it with a GMM or Diffusion Policy.",
+      "example": "Training quadruped walking in Isaac Lab with rsl_rl's PPO: the policy outputs the means of 12 target joint angles, paired with a set of learnable standard deviations for exploration during sampling; on the real robot, only the mean is used.",
+      "related": ["Policy", "Deterministic vs. Stochastic Policy", "Proximal Policy Optimization", "Soft Actor-Critic", "Entropy Regularization", "Continuous Action Regression"]
+    },
+    {
+      "key": "model-11#9",
+      "name_en": "Gaussian Process",
+      "aliases": ["GP", "Gaussian Process Regression", "GPR", "Kriging"],
+      "one_liner": "A method that puts a probability distribution directly over functions, giving a prediction with uncertainty at every point.",
+      "explanation": "A Gaussian process is a stochastic process: for any finite set of input points, the corresponding function values follow a joint (multivariate) normal distribution. It's fully specified by a mean function and a covariance function, also called a kernel, which describes how correlated the function values at two input points are. Used for regression, it lets you compute a predicted mean and variance at any new input given a small number of observations, giving uncertainty for free. The standard reference is Rasmussen and Williams's 2006 textbook 'Gaussian Processes for Machine Learning.' Its drawback is that computation scales as n³ with the number of data points n, so sparse approximations are needed once data gets large. In robotics it's mostly used where data is scarce: learning a dynamics model (such as Deisenroth and Rasmussen's 2011 PILCO, which learns control from scratch in just a handful of trials), or tuning control parameters with Bayesian optimization.",
+      "example": "PILCO uses a Gaussian process to learn the dynamics of a cart-pole, folding the model's uncertainty into its long-horizon predictions, and learns to control it using only a handful of real trials, where ordinary reinforcement learning often needs hundreds or thousands.",
+      "related": ["System Identification", "Model-Based Reinforcement Learning", "Uncertainty Estimation / Quantification", "Sample Efficiency", "Safe Reinforcement Learning", "Kalman Filter"]
+    },
+    {
+      "key": "model-11#10",
+      "name_en": "Graph Neural Network",
+      "aliases": ["GNN", "Graph Network", "Message-Passing Neural Network"],
+      "one_liner": "A neural network built for graph-structured data, where each node repeatedly exchanges information with its neighbors along edges.",
+      "explanation": "A graph neural network processes data made of nodes and edges; its core operation is message passing: at each layer, every node aggregates information from its neighbors to update its own features, and stacking multiple layers lets information reach further-away nodes, with the result independent of how the nodes happen to be numbered. Scarselli and colleagues proposed the 'graph neural network model' in 2009, followed by variants such as graph convolutional networks (GCN) and graph attention networks (GAT). Embodied AI has three common uses for it: representing a robot's own body as a graph, with joints and limbs as nodes — as in NerveNet, which lets a policy transfer across agents with different body shapes; representing particles or objects as a graph to learn physics, as in DeepMind's 2020 Graph Network Simulator (GNS); and representing object relationships in a 3D scene graph for reasoning and planning.",
+      "example": "GNS treats every particle of a material like fluid or sand as a node, connects nearby particles with edges, and predicts each particle's next position through several rounds of message passing; at test time it can handle an order of magnitude more particles than it was trained with.",
+      "related": ["3D Scene Graph", "Neural Simulator", "Point Cloud Encoder", "Transformer", "Morphology-Control Co-design", "Inductive Bias"]
+    },
+    {
+      "key": "model-11#11",
+      "name_en": "History Encoder",
+      "aliases": ["Adaptation Module", "History Observation Encoder"],
+      "one_liner": "A module that compresses a recent window of observations and actions into a vector, letting the policy infer current conditions.",
+      "explanation": "A history encoder is the part of a policy network dedicated to processing information from the past several steps, commonly implemented with a 1D convolution, an RNN, or a Transformer. The most typical use is in reinforcement learning for legged robots: real-world parameters like ground friction, payload, and motor condition can't be measured directly, but they leave traces in the recent sequence of states and actions. RMA (Kumar et al., RSS 2021) trains in two stages: first, a base policy is trained in simulation using an 8-dimensional extrinsics vector compressed from privileged information (ground-truth parameters only available in simulation); then, an 'adaptation module' is trained to regress that same vector just from the last 50 steps (0.5 seconds) of state-and-action history. At deployment, the adaptation module runs at 10 Hz while the base policy runs at 100 Hz. This 'teacher first, then student' approach has since been widely reused across legged and humanoid locomotion work.",
+      "example": "Suddenly strapping extra weight onto a Unitree A1's back, RMA's adaptation module estimates the new extrinsics from the joint response over the last half second, and the base policy adjusts its gait accordingly in under a second, with no retraining needed.",
+      "related": ["Rapid Motor Adaptation", "Privileged Information", "Teacher-Student Distillation", "Proprioception", "System Identification", "Domain Randomization"]
+    }
+  ]
+}

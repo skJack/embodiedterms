@@ -1,0 +1,113 @@
+{
+  "batch": "software-05",
+  "terms": [
+    {
+      "key": "software-05#0",
+      "name_en": "Over-the-Air (OTA) Update",
+      "aliases": ["OTA", "over-the-air update"],
+      "one_liner": "Updating a device's firmware, system, or models remotely over a network, without opening it up or plugging in a cable.",
+      "explanation": "An OTA update means a device downloads and installs new software wirelessly, over Wi-Fi or cellular, first popularized in phones and cars. For a robot, what gets updated can be low-level firmware (the code in driver boards or joint motors), the higher-level operating system, or even a motion-control policy or large model's weights. It solves a specific problem: once machines are sold and scattered across many sites, how do you keep fixing bugs and adding features without shipping them back to the factory or sending an engineer out? Building OTA properly means handling rollback after a power loss, version verification, and staged rollout — get it wrong, and a failed update can leave a robot unable to boot. At the mass-production and scaled-deployment stage, OTA capability is often treated as a sign that a product has matured.",
+      "example": "A humanoid robot maker pushes a new motion-control policy to robots already delivered to customers; the user taps update in an app, the robot downloads it, and gains the new behavior after a restart.",
+      "related": ["Firmware", "Driver (device driver)", "Mass Production", "Large-Scale Deployment", "On-Device / Edge Deployment"]
+    },
+    {
+      "key": "software-05#1",
+      "name_en": "Package (ROS)",
+      "aliases": ["ROS package", "package"],
+      "one_liner": "The basic unit for organizing code in ROS — one package groups a set of related nodes and configuration.",
+      "explanation": "A package is the basic unit for organizing and distributing code in ROS / ROS 2. A package typically contains source code, launch files, message definitions, and configuration parameters, along with a package.xml manifest describing its name, version, and dependencies; a C++ package also has a CMakeLists.txt, and a Python package has a setup.py. In ROS 2, ros2 pkg create scaffolds a new package, and colcon builds an entire workspace at once. Splitting code into packages lets others reuse just your camera driver or navigation module on its own, and lets rosdep automatically install dependencies based on package.xml. For newcomers reading an open-source robotics project, looking at what packages exist and what each one is responsible for is the fastest way in.",
+      "example": "Running ros2 pkg create my_robot_bringup --build-type ament_python generates the skeleton of a Python package.",
+      "related": ["ROS Workspace", "colcon", "rosdep", "ament", "Node (ROS)", "Launch File"]
+    },
+    {
+      "key": "software-05#2",
+      "name_en": "Package Mirror Sources in China (pip / conda / apt / Docker mirrors)",
+      "aliases": ["mirror source", "Tsinghua mirror", "Aliyun mirror", "switching sources"],
+      "one_liner": "Redirecting pip, conda, apt, and similar tools to a Chinese mirror instead of the slow or blocked default servers.",
+      "explanation": "Tools like pip, conda, apt, and Docker default to downloading packages from servers overseas, which are often slow or time out entirely from within China. Universities and cloud providers maintain synced copies — such as the mirror hosted by Tsinghua University's TUNA student association, plus mirrors run by Alibaba Cloud, USTC, and Shanghai Jiao Tong University — and pointing a tool's configured download URL at one of these is what's called “switching sources” (换源). Embodied-AI environments have a lot of dependencies (PyTorch, ROS, simulators, assorted Python packages), so switching sources is nearly always the first step in setting one up. A few caveats: mirror syncing lags behind, so the very latest release may not be available yet; multiple Chinese Docker Hub mirrors reportedly stopped operating starting in 2024, so pulling images may require finding another working source; and Hugging Face models have their own separate options, the Hugging Face mirror and ModelScope.",
+      "example": "Running pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple switches pip's default source to the Tsinghua mirror.",
+      "related": ["Conda", "Docker", "uv (Python package manager)", "Hugging Face Mirror (hf-mirror.com)", "ModelScope", "Ubuntu Linux"]
+    },
+    {
+      "key": "software-05#3",
+      "name_en": "Pinocchio",
+      "aliases": ["pin"],
+      "one_liner": "An open-source rigid-body dynamics library for fast robot kinematics, dynamics, and their derivatives.",
+      "explanation": "Pinocchio is an open-source C++ library, with a Python interface, developed mainly by the LAAS-CNRS and INRIA teams in France. It loads a robot model such as a URDF and efficiently computes forward and inverse kinematics, Jacobians, the recursive Newton-Euler algorithm (for inverse dynamics), the articulated-body algorithm (for forward dynamics), the mass matrix, and more — and it can also produce analytical derivatives of these quantities with respect to joint state. Those derivatives matter a lot for trajectory optimization and model predictive control, which is why libraries such as Crocoddyl, TSID, and Pink are all built on top of it. It's close to a standard tool for humanoid and quadruped whole-body control and MPC research; researchers working on learning-based methods also often use it for forward kinematics or IK-based retargeting.",
+      "example": "Load a G1 humanoid's URDF with Pinocchio and call forwardKinematics to get the wrist end-effector's pose in the world frame.",
+      "related": ["Rigid-Body Dynamics", "Recursive Newton-Euler Algorithm", "Articulated-Body Algorithm", "Crocoddyl (Contact RObot COntrol by Differential DYnamic programming Library)", "TSID", "Pink (Python inverse kinematics based on Pinocchio)"]
+    },
+    {
+      "key": "software-05#4",
+      "name_en": "Point Cloud Library (PCL)",
+      "aliases": ["PCL"],
+      "one_liner": "An open-source C++ library for processing 3D point clouds — filtering, registration, and segmentation included.",
+      "explanation": "PCL is an open-source C++ library for point-cloud processing, originally started at Willow Garage and formally introduced in a 2011 ICRA paper, released under the BSD license. It packages the common steps of point-cloud processing into modules: voxel downsampling and outlier removal (filtering); computing features like surface normals and FPFH; ICP and NDT registration; RANSAC plane fitting and clustering-based segmentation; and surface reconstruction. Depth cameras and lidar both output point clouds, so PCL has long been a foundational tool for 3D perception in robotics, and ROS interconverts with it through the perception_pcl package. If most of the work is happening in Python, Open3D is a lighter-weight alternative.",
+      "example": "Use PCL's RANSAC to fit and remove the tabletop plane, then run Euclidean clustering on the remaining points to get a separate point cloud for each object on the table.",
+      "related": ["Point Cloud", "Open3D", "Iterative Closest Point (ICP)", "Point Cloud Registration", "Point Cloud Segmentation", "OpenCV (Open Source Computer Vision Library)"]
+    },
+    {
+      "key": "software-05#5",
+      "name_en": "Policy Server (Remote Inference)",
+      "aliases": ["remote inference", "server-client deployment", "inference server"],
+      "one_liner": "Running a large policy on a GPU server and having the robot send it observations and get actions back.",
+      "explanation": "A policy server is a deployment pattern: a large model policy, such as a VLA, runs on a GPU-equipped workstation or in the cloud, while a lightweight client on the robot sends camera images, joint states, and instructions over the network; the server runs inference and returns a chunk of actions, which the client passes to the low-level controller for execution. It solves the problem of a robot's onboard compute not being enough to hold a model with billions of parameters, and it also makes it easy for multiple robots to share one model, or to swap models without touching the robot-side code. The tradeoff is network latency and jitter, so it's usually paired with action chunking and asynchronous inference, letting the robot execute its current action chunk while requesting the next one. openpi serves its policy over WebSocket, and LeRobot also has a gRPC-based asynchronous inference option.",
+      "example": "Start openpi's serve_policy script on an RTX 4090 workstation to load π0; the client on the robot arm sends an observation each cycle and gets back a chunk of actions.",
+      "related": ["Inference Deployment", "Asynchronous Inference", "Inference Latency", "Action Chunking", "openpi (Physical Intelligence)", "Cloud-Edge-Device Collaboration"]
+    },
+    {
+      "key": "software-05#6",
+      "name_en": "Publish-Subscribe",
+      "aliases": ["pub/sub", "publisher/subscriber"],
+      "one_liner": "Senders publish messages on a topic and receivers subscribe to it, with neither side needing to know the other.",
+      "explanation": "Publish-subscribe is a communication pattern: publishers send messages to a named “topic,” and every receiver subscribed to that topic gets them, without the publisher needing to know who's listening or subscribers needing to know who's sending. That keeps modules loosely coupled — adding a new subscriber, say for recording or visualization, doesn't require touching existing code. ROS / ROS 2's topic mechanism is a textbook example: a camera driver node publishes an image topic, and a perception node and RViz can both subscribe to it at once. It suits continuously flowing data such as sensor readings and state; a one-off request-response interaction should use a service instead, and a long-running task should use an action. ROS 2 implements this over DDS underneath, with QoS settings for tuning reliability and buffer depth.",
+      "example": "A lidar node publishes the /scan topic, and both a mapping node and a rosbag recording session subscribe to it at the same time.",
+      "related": ["Topic (ROS)", "Node (ROS)", "Service (ROS)", "Data Distribution Service (DDS)", "Quality of Service (QoS)", "Middleware"]
+    },
+    {
+      "key": "software-05#7",
+      "name_en": "Real-Time Operating System (RTOS)",
+      "aliases": ["RTOS", "real-time system"],
+      "one_liner": "An operating system that guarantees tasks finish within a set deadline, used for timing-sensitive control.",
+      "explanation": "What defines a real-time operating system is not raw speed but punctuality: through mechanisms such as priority-based preemptive scheduling, it guarantees critical tasks execute within a fixed deadline, with small and predictable timing jitter. A regular desktop Linux is optimized for throughput, and an occasional few milliseconds of delay doesn't matter; but a robot's joint current loop or force-control loop needs to run at a fixed period — 1 kHz or higher — reliably, and missing a cycle can cause jitter or instability. There are two common approaches: running a lightweight RTOS such as FreeRTOS, RT-Thread, or Zephyr on a microcontroller, or using a main controller running Linux patched with PREEMPT_RT, or Xenomai, to get real-time behavior. Higher-level AI policies typically run on a non-real-time system, with low-level control kept on the real-time system, the two communicating over a bus or shared memory.",
+      "example": "The MCU on a joint driver board runs FreeRTOS to execute the current loop at a fixed period, while the main controller runs a PREEMPT_RT Linux kernel to drive a 1 kHz EtherCAT master.",
+      "related": ["FreeRTOS", "RT-Thread", "PREEMPT_RT Real-Time Linux Patch", "Xenomai", "Hard Real-Time", "Timing Jitter"]
+    },
+    {
+      "key": "software-05#8",
+      "name_en": "Rerun",
+      "aliases": ["rerun.io", "Rerun Viewer"],
+      "one_liner": "An open-source visualization tool for multimodal, time-series robot data — images, point clouds, and curves played back in sync.",
+      "explanation": "Rerun is an open-source visualization SDK and viewer developed by the Swedish company Rerun, with bindings for Python, Rust, and C++. Developers call rr.log in their code to record images, depth maps, point clouds, 3D poses, scalar curves, text, and more, each tagged with a timestamp; the viewer lays all of it out on one shared timeline that can be scrubbed, replayed, and compared. It doesn't depend on ROS — installing a single pip package is enough to use it — which makes it convenient for debugging perception algorithms, inspecting a dataset, or watching a policy's inference process. Hugging Face's LeRobot uses it to visualize the camera footage and joint trajectories in its datasets, and many embodied-AI projects use it as a quicker alternative to RViz.",
+      "example": "Opening an episode with LeRobot's dataset-visualization script shows the wrist camera footage and each joint's angle curve side by side in Rerun.",
+      "related": ["RViz / RViz2", "Foxglove Studio", "PlotJuggler", "LeRobot (Hugging Face)", "Viser"]
+    },
+    {
+      "key": "software-05#9",
+      "name_en": "ROS 2 Navigation Stack (Nav2)",
+      "aliases": ["Navigation2", "ROS navigation stack", "move_base"],
+      "one_liner": "ROS 2's official navigation framework, letting a mobile robot autonomously drive itself from point A to point B.",
+      "explanation": "Nav2 is ROS 2's navigation framework, succeeding the move_base-centered navigation stack from ROS 1, led primarily by Steve Macenski and others. Given a map and a goal point, it handles localization (commonly AMCL), maintains a costmap, does global path planning (e.g. NavFn or the Smac Planner), tracks a local trajectory (e.g. DWB, MPPI, or Regulated Pure Pursuit), and orchestrates the whole process with a behavior tree — automatically backing up, rotating, or performing other recovery behaviors when the robot gets stuck. Every stage is a swappable plugin. Indoor navigation for wheeled bases and quadrupeds most often starts here, typically paired with a SLAM package to build a map first, then Nav2 to run point-to-point navigation.",
+      "example": "Clicking a “2D Goal Pose” in RViz gives Nav2 a target; it plans a path and drives a TurtleBot around obstacles to reach it.",
+      "related": ["Navigation", "Costmap", "Adaptive Monte Carlo Localization (AMCL)", "Behavior Tree", "Global and Local Planning", "ROS 2"]
+    },
+    {
+      "key": "software-05#10",
+      "name_en": "ROS Bag",
+      "aliases": ["ros2 bag", "rosbag2", "bag file"],
+      "one_liner": "ROS's data-recording tool, which logs topic messages with timestamps so they can be replayed later.",
+      "explanation": "rosbag is ROS's built-in tool for recording and replaying data. It subscribes to specified topics and writes each message to a file along with its timestamp; on playback, it republishes the messages in their original time order, so downstream nodes behave as if the real robot were running live. ROS 1 uses the .bag format; the ROS 2 counterpart is rosbag2 (the ros2 bag command), which used SQLite storage by default early on and switched to the MCAP format by default starting with the Iron release. It's used to reproduce bugs, debug algorithms offline, and share data, and it's also the raw capture format behind many robot datasets — for imitation learning, the images and joint-state topics in a bag are commonly time-aligned and converted into training formats such as LeRobot or HDF5.",
+      "example": "ros2 bag record -a records every topic, ros2 bag info shows the duration and message counts, and ros2 bag play replays it.",
+      "related": ["MCAP (log file format)", "Topic (ROS)", "Trajectory Playback", "Multi-Sensor Time Synchronization (timestamp alignment)", "LeRobotDataset (LeRobot dataset format)", "Foxglove Studio"]
+    },
+    {
+      "key": "software-05#11",
+      "name_en": "ROS Distribution",
+      "aliases": ["Noetic", "Humble", "Jazzy", "Kilted", "Lyrical Luth", "ROS release"],
+      "one_liner": "A versioned, fixed bundle of ROS core libraries and packages, with each release tied to a specific Ubuntu version.",
+      "explanation": "A ROS distribution is a set of ROS core libraries and packages that have been tested together and pinned to fixed versions, each with its own codename, released in alphabetical order. ROS 2 ships a new distribution every May; even-numbered years get a Long-Term Support (LTS) release, supported for about five years, each tied to the Ubuntu LTS current at the time: Humble pairs with 22.04, Jazzy with 24.04, Kilted Kaiju is a non-LTS release, and 2026's Lyrical Luth is the newest LTS; there's also a continuously updated Rolling development distribution. Noetic, the final ROS 1 release, reached end of maintenance in May 2025. Picking a distribution means making sure the OS, the ROS release, and any third-party packages all line up — a mismatch is a frequent source of dependency failures — and a new project usually goes with whichever LTS is current.",
+      "example": "To install ROS 2 Humble, first install Ubuntu 22.04, then activate the environment with source /opt/ros/humble/setup.bash.",
+      "related": ["ROS 2", "Robot Operating System", "Ubuntu Linux", "FishROS One-Click Installer", "ros1_bridge"]
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "batch": "mechanics-05",
+  "terms": [
+    {
+      "key": "mechanics-05#0",
+      "name_en": "Grasp Taxonomy (Power Grasp vs. Precision Grasp / Pinch)",
+      "aliases": ["Power Grasp", "Precision Grasp", "Pinch Grasp", "Cutkosky Grasp Taxonomy", "GRASP Taxonomy"],
+      "one_liner": "A classification of hand grasps by how the hand contacts an object, split at the top level into power grasps and precision grasps.",
+      "explanation": "Grasp taxonomy organizes the ways a human or robotic hand can grip something into a system of categories. In 1956, John Napier split human grasping into two broad types: a power grasp wraps the object with the palm and all four fingers, favoring stability and force, while a precision grasp mainly opposes the thumb pad against the pads of the other fingers, favoring fine position control. Pinching falls under precision grasping, holding a small object with just the fingertips or the sides of the fingers. In 1989, Mark Cutkosky observed manufacturing workers using tools and proposed a grasp taxonomy tree aimed at robotic hand design; Feix and colleagues later surveyed over a dozen sources and compiled 33 grasp types, further broken down by the opposition type (palm, fingertip, or finger side) and thumb posture, publishing this as the GRASP taxonomy in 2016. It's commonly used to decide which degrees of freedom a dexterous hand needs to keep, and as a category label in grasping datasets.",
+      "example": "Gripping a hammer handle to drive a nail is a power grasp; pinching a screw between thumb and index fingertip is a precision grasp. Evaluating a new dexterous hand often means checking, one by one, whether it can reproduce these standard grasp types.",
+      "related": ["Grasping", "Dexterous Hand", "Dexterous Manipulation", "Hand Synergies", "Thumb Opposition", "Grasp Planning"]
+    },
+    {
+      "key": "mechanics-05#1",
+      "name_en": "Ground Reaction Force (GRF)",
+      "aliases": ["GRF"],
+      "one_liner": "The force the ground pushes back onto a foot; legged robots stand, walk, and jump entirely by means of it.",
+      "explanation": "Ground reaction force is the force the ground exerts on whatever is touching it. By Newton's third law, whatever force a foot presses into the ground, the ground pushes back with an equal and opposite force. It splits into two parts: a vertical component, the supporting (normal) force, and a horizontal component, friction — pushing off to walk forward or pushing sideways to turn both draw on the horizontal part. Biomechanics researchers measure it with a force plate, combining it with motion-capture data to work out human joint torques. For a legged robot, aside from gravity, GRF is essentially the only external force that can accelerate the body's center of mass, and the robot can only adjust it indirectly, through joint torques. That's why many quadruped and humanoid controllers — MPC, whole-body control — treat each foot's GRF directly as an optimization variable, and require it to stay inside the friction cone: horizontal force can't exceed the friction coefficient times vertical force, or the foot slips.",
+      "example": "A 60 kg person standing still on both feet has a combined vertical ground reaction force roughly equal to their weight: 60 × 9.8 ≈ 588 N. At the instant of push-off during running, this force exceeds body weight.",
+      "related": ["Contact Force", "Friction Cone", "Zero Moment Point (ZMP)", "Center of Pressure (CoP)", "Foot Force Sensor", "Centroidal Dynamics"]
+    },
+    {
+      "key": "mechanics-05#2",
+      "name_en": "Homogeneous Transformation Matrix",
+      "aliases": ["SE(3) Matrix", "Rigid Transformation"],
+      "one_liner": "A 4×4 matrix combining rotation and translation into one, describing one frame's pose relative to another.",
+      "explanation": "The homogeneous transformation matrix T is the standard way robotics represents pose: the upper-left 3×3 block is the rotation matrix R (orientation), the upper-right 3×1 block is the translation vector p (position), and the bottom row is fixed at [0 0 0 1]. The set of all such matrices forms the special Euclidean group SE(3). Adding that bottom row lets a point, written as [x, y, z, 1], have rotation and translation applied together in a single matrix multiplication. It's used three ways: to represent frame {b}'s pose relative to {s} as T_sb; to change reference frames, chaining transforms by canceling matching subscripts, as in T_sc = T_sb·T_bc; and to apply a translation and rotation to a frame or an object. Forward kinematics is exactly the product of each joint's transform, giving the end effector's pose relative to the base; ROS's TF tree also stores poses this way. Note that matrix multiplication doesn't commute, so left-multiplying and right-multiplying mean different things.",
+      "example": "A camera mounted on an arm's wrist: given the base-to-end-effector transform T_base_ee and the end-effector-to-camera transform T_ee_cam (from hand-eye calibration), multiplying them gives T_base_cam, which converts whatever point the camera sees into the base frame so the arm can grasp it.",
+      "related": ["Rotation Matrix", "Coordinate Transformation", "Pose", "Forward Kinematics", "Hand-Eye Calibration", "TF Tree"]
+    },
+    {
+      "key": "mechanics-05#3",
+      "name_en": "Inertial Parameters",
+      "aliases": ["Mass Properties"],
+      "one_liner": "The set of values describing how heavy a rigid body is, where its center of mass sits, and how hard it is to rotate about each axis.",
+      "explanation": "Inertial parameters describe the mass distribution of each rigid link in a robot, commonly given as 10 numbers: mass m (1 value), center-of-mass position c, or equivalently the first mass moment m·c (3 values), and the inertia tensor I (a 3×3 symmetric matrix with 6 independent entries, describing how hard the body is to rotate about each axis). Robot description files like URDF and MJCF store exactly these numbers in each link's inertial field. Kinematics only deals with geometry, but the moment dynamics enters the picture — gravity compensation, inverse dynamics, torque control, physics simulation — inertial parameters become essential. Values exported straight from CAD often diverge from the real hardware, since cables, screws, and other small parts get left out, so dynamic parameter identification is typically needed afterward, along with checks for physical consistency, such as positive mass and a positive-definite inertia tensor. Inaccurate inertial parameters are one source of the sim-to-real gap, and domain randomization commonly perturbs link mass to compensate.",
+      "example": "A link's inertial tag in URDF includes mass, origin (center-of-mass position), and the six values ixx, ixy, ixz, iyy, iyz, izz of the inertia tensor. legged_gym provides an added_mass_range parameter that randomly adds or removes mass from the torso during training.",
+      "related": ["Mass Matrix", "Inertia Tensor", "Center of Mass (CoM)", "Dynamic Parameter Identification", "URDF (Unified Robot Description Format)", "Dynamics Randomization"]
+    },
+    {
+      "key": "mechanics-05#4",
+      "name_en": "Inverse Dynamics",
+      "aliases": [],
+      "one_liner": "Working backward from a desired motion (position, velocity, acceleration) to the torque each joint needs to produce.",
+      "explanation": "A robot's dynamics equation can be written τ = M(θ)θ̈ + h(θ, θ̇): θ is the joint angle vector, θ̇ and θ̈ are joint velocity and acceleration, M is the mass matrix, h lumps together gravity, Coriolis, and centrifugal terms, and τ is joint torque. Given θ, θ̇, and θ̈, solving for τ is inverse dynamics; going the other way, given τ, solving for θ̈ is forward dynamics — which is what a simulator computes at every step. Inverse dynamics is commonly solved with the recursive Newton-Euler algorithm: velocities and accelerations propagate from the base out to the tip, then forces are propagated back from the tip to the base. It's the core of computed-torque control, gravity compensation, and whole-body control, and biomechanics researchers also use it to work back from motion-capture data and ground reaction forces to human joint torques. It's distinct from inverse kinematics, which only solves for joint angles, and also distinct from an “inverse dynamics model” in embodied learning, which infers an action from a pair of consecutive frames.",
+      "example": "To lift a 2 kg object along a planned acceleration profile, a controller first uses inverse dynamics to compute the torque each joint needs at that instant as a feedforward term, then adds PD feedback on top to correct any error — this is computed-torque control.",
+      "related": ["Forward Dynamics", "Recursive Newton-Euler Algorithm", "Mass Matrix", "Computed-Torque Control", "Gravity Compensation", "Inverse Dynamics Model (Learned)"]
+    },
+    {
+      "key": "mechanics-05#5",
+      "name_en": "Inverted Pendulum Model (IPM)",
+      "aliases": ["Cart-Pole"],
+      "one_liner": "A simplified model of a robot as a pole on the ground balancing a point mass, used to analyze and control balance.",
+      "explanation": "An inverted pendulum is a pendulum with its center of mass above its pivot — an unstable equilibrium that tips over at the slightest disturbance, and must be actively controlled, moving the pivot back underneath the center of mass, to stay upright. A standing person is roughly an inverted pendulum pivoting at the feet, and a Segway balances on exactly the same principle. In bipedal and humanoid research, lumping the robot's entire mass into a single point at the center of mass and treating the legs as massless struts gives the inverted pendulum model, which describes which way the body is tipping and where the foot should land using very few equations. In 2001, Shuuji Kajita and colleagues added the further assumption that the center-of-mass height z_c stays constant, giving the linear inverted pendulum model (LIPM): in the horizontal direction, ẍ = (g/z_c)·x, where x is the center of mass's horizontal offset from the pivot and g is gravitational acceleration. Making the equation linear makes real-time gait planning tractable, and methods like ZMP preview control and the capture point are both built on top of it.",
+      "example": "The CartPole environment commonly used to introduce reinforcement learning is exactly a cart-pole inverted pendulum: the agent can only push the cart left or right, and the goal is to keep the pole balanced upright.",
+      "related": ["Linear Inverted Pendulum Model (LIPM)", "Zero Moment Point (ZMP)", "Capture Point", "Center of Mass (CoM)", "Spring-Loaded Inverted Pendulum (SLIP)", "Balance Control"]
+    },
+    {
+      "key": "mechanics-05#6",
+      "name_en": "Jacobian Matrix",
+      "aliases": ["Spatial Jacobian", "Body Jacobian"],
+      "one_liner": "The matrix that converts joint speeds into end-effector velocity; it changes as the robot's posture changes.",
+      "explanation": "In mathematics, a Jacobian matrix is the array of first-order partial derivatives of a multivariable function. In robotics, it describes the linear relationship between joint velocities and end-effector velocity: V = J(θ)·θ̇. Here θ̇ is the velocity of n joints; V is the end effector's 6-dimensional velocity (3D angular velocity plus 3D linear velocity, also called a twist); and J is a 6×n matrix whose i-th column shows how the end effector moves when only the i-th joint turns at unit speed. J depends on the current joint angles θ, so it has to be recomputed whenever the posture changes. It has three main uses: its inverse or pseudoinverse converts a desired end-effector velocity back into joint velocities, which is the basis of numerical inverse kinematics; checking whether J has lost rank reveals a singular configuration, where the end effector can't move in certain directions; and the static-force mapping τ = Jᵀ·F converts a desired end-effector force F into joint torques τ, which underlies force control and impedance control.",
+      "example": "When a planar two-link arm is fully extended, no combination of joint rotations can move the end effector any farther outward along the arm's own direction — at that point J has lost rank, and the arm is in a singular configuration.",
+      "related": ["Differential Kinematics", "Jacobian Pseudoinverse", "Singular Configuration", "Inverse Kinematics", "Manipulability", "Geometric vs. Analytical Jacobian"]
+    },
+    {
+      "key": "mechanics-05#7",
+      "name_en": "Jerk",
+      "aliases": ["Jolt"],
+      "one_liner": "The rate of change of acceleration over time — the third time-derivative of position — measured in m/s³.",
+      "explanation": "Jerk, j, is the time derivative of acceleration a: j = da/dt = d³x/dt³ (x is position), measured in m/s³, and it captures how abruptly acceleration itself is changing. A sudden change in acceleration means large jerk, which feels jarring to a person, and also excites mechanical vibration and accelerates wear. That's why robot trajectory planning commonly bounds jerk: cubic polynomial time-scaling has acceleration jump discontinuously at the start and end, which is equivalent to infinite jerk; an S-curve velocity profile splits motion into seven segments to keep jerk bounded throughout; and a minimum-jerk trajectory minimizes the integral of squared jerk over the whole motion. Tamar Flash and Neville Hogan found in 1985 that natural human arm movements approximately follow this minimum-jerk principle. Reinforcement-learning locomotion controllers use a similar idea, commonly penalizing the difference between consecutive actions in the reward function to keep motion smooth.",
+      "example": "If an elevator's acceleration jumped instantly from 0 to its set value at startup, passengers would feel a hard jolt; real elevators ramp acceleration up gradually over time, which is exactly bounding jerk.",
+      "related": ["Minimum-Jerk Trajectory", "S-Curve Velocity Profile", "Quintic Polynomial Interpolation", "Trajectory Planning", "Action Smoothing", "Trapezoidal Velocity Profile"]
+    },
+    {
+      "key": "mechanics-05#8",
+      "name_en": "Joint Limits",
+      "aliases": ["Joint Range", "Joint Position Limits"],
+      "one_liner": "The allowed range of motion for each joint, and more broadly the velocity and torque limits that go with it.",
+      "explanation": "Joint limits are the range of values a joint variable is allowed to take — a revolute joint might only turn between −90° and 90°, mostly set by the mechanical structure; more broadly, the term also covers velocity and torque limits. In URDF, revolute and prismatic joints specify four values in a limit tag: lower, upper, velocity, and effort; a revolute joint with no rotation limit is instead typed continuous. Limits affect many parts of the pipeline: an inverse-kinematics solution has to be checked against them, motion planning has to cut the parts of configuration space they rule out, and real robot controllers commonly set software limits tighter than the mechanical hard limits, to leave a margin. Reinforcement-learning training commonly penalizes states that approach the limits — legged_gym's soft_dof_pos_limit, for instance, sets a penalty threshold as a percentage of the URDF's limits.",
+      "example": "In Modern Robotics, a 2R arm is limited to 0°≤θ1≤180° and 0°≤θ2≤150°: a straight-line path in joint space is fine, but the path that moves the end effector in a straight line through task space ends up exceeding the joint limits.",
+      "related": ["Soft Limits", "Configuration Space", "Inverse Kinematics", "Torque Limiting", "URDF (Unified Robot Description Format)", "Workspace"]
+    },
+    {
+      "key": "mechanics-05#9",
+      "name_en": "Joint Zero-Position Calibration (Homing / Offset Calibration)",
+      "aliases": ["Homing", "Zero Offset Calibration", "Homing Offset"],
+      "one_liner": "Measuring the actual joint angle when a sensor reads zero, so the software model matches the physical robot.",
+      "explanation": "A robot's forward kinematics and its URDF model both assume that when every joint angle reads 0, the robot is in one specific, well-defined posture (the zero position). But when an encoder is physically installed, its reading origin is essentially arbitrary, and assembly tolerances or a motor swap can leave the reading offset from the model's angle by some fixed amount. Zero-position calibration measures that offset and stores it, so every later reading gets corrected by it. A joint using an incremental encoder (which only tracks relative changes) needs to be re-homed every time it powers on: it's driven to a mechanical hard stop, a limit switch, or an encoder index pulse, and the count is reset there; an absolute encoder usually only needs calibrating once. Servos have an analogous parameter too, such as Dynamixel's Homing Offset. An inaccurate zero position introduces a systematic error into the end-effector position, and also means the same policy won't transfer cleanly to a different physical robot.",
+      "example": "After assembling a LeRobot SO-101 arm, you run lerobot-calibrate: first every joint is moved to the middle of its own range of motion, then each is rotated through its full range in turn. The official docs explain this step ensures the leader and follower arms read the same value at the same physical pose, which is what lets a trained model transfer to another robot.",
+      "related": ["Encoder", "Incremental Encoder", "Absolute Encoder", "Kinematic Calibration", "Joint Limits", "Leader-Follower Teleoperation"]
+    },
+    {
+      "key": "mechanics-05#10",
+      "name_en": "Kinematic Chain",
+      "aliases": ["Open Chain", "Closed Chain"],
+      "one_liner": "A mechanism model made of rigid links strung together by joints, split into open chains and closed chains.",
+      "explanation": "A kinematic chain is a set of rigid bodies (links) connected by joints, used to describe how a mechanism can move; Franz Reuleaux systematized the idea in his 1876 book Kinematics of Machinery. When the links connect one after another with no loop, it's called an open chain (or serial chain) — the typical example is an ordinary robot arm, with a motor driving every joint. When the links form one or more closed loops, it's a closed chain — examples include the Stewart platform, Delta parallel robots, and the parallel ankle joints found in some humanoid robots — and typically only some of a closed chain's joints are actively driven. A mechanism's degrees of freedom can be estimated with the Grübler formula: M = d(N−1−j) + Σf_i, where d is 3 in the plane or 6 in space, N is the number of links (including the ground), j is the number of joints, and f_i is the i-th joint's degrees of freedom. Open chains have simple forward kinematics but hard inverse kinematics; closed chains are usually the other way around.",
+      "example": "A tabletop 6-axis arm, from base to gripper, is an open chain; a Delta parallel robot's three supporting arms all meet at the moving platform, forming a closed chain.",
+      "related": ["Serial Mechanism", "Parallel Mechanism", "Kinematic Tree", "Grübler's Formula", "Degrees of Freedom (DoF)", "Parallel Ankle Joint"]
+    },
+    {
+      "key": "mechanics-05#11",
+      "name_en": "Kinematic Redundancy",
+      "aliases": ["Redundancy Resolution", "Redundant Manipulator"],
+      "one_liner": "Having more joints than a task strictly needs, so the same end-effector pose can be reached by infinitely many joint configurations.",
+      "explanation": "If a robot has more joints, n, than the dimensionality of the task space, m, it's said to be kinematically redundant for that task, and the extra n−m degrees of freedom are called the redundancy. A full end-effector pose is 6-dimensional, so a 7-axis arm has 1 redundant degree of freedom: with the end effector held fixed, the elbow can still move through a range of positions. This kind of internal motion that doesn't affect the end effector is called self-motion, and corresponds to the null space of the Jacobian matrix. Redundancy means a single target has infinitely many joint-angle solutions, and redundancy resolution is choosing one of them by some criterion: the most common approach, the Jacobian pseudoinverse, gives the solution with the smallest sum of squared joint velocities, and secondary objectives — avoiding obstacles, staying away from joint limits or singular configurations — can be layered into the null space on top of that. The cost is that inverse kinematics no longer has a unique answer and needs extra optimization. Redundancy is relative to the task: even a 6-axis arm counts as redundant if all that matters is a 3-dimensional end-effector position.",
+      "example": "Keeping your palm flat on a table without moving it, you can still raise or lower your elbow — that's the redundant degree of freedom in a human arm. A 7-axis robot arm can likewise adjust its elbow position while the end effector stays put, to steer around a nearby obstacle.",
+      "related": ["Null Space", "Jacobian Pseudoinverse", "7-DoF Arm", "Arm Angle (Elbow Self-Motion Angle)", "Null-Space Control", "Inverse Kinematics"]
+    }
+  ]
+}

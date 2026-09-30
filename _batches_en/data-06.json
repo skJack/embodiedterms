@@ -1,0 +1,113 @@
+{
+  "batch": "data-06",
+  "terms": [
+    {
+      "key": "data-06#0",
+      "name_en": "YCB Object and Model Set",
+      "aliases": ["YCB", "YCB Objects", "Yale-CMU-Berkeley Object Set"],
+      "one_liner": "A standard set of purchasable everyday objects with 3D scans, letting grasping and manipulation research compare results directly.",
+      "explanation": "YCB was proposed in 2015 by researchers at Yale, Carnegie Mellon, and Berkeley (its name comes from the three schools' initials), with the paper published in IEEE Robotics & Automation Magazine. It includes everyday objects numbered 1 through 73, split into five categories — food, kitchen items, tools, shape primitives, and task objects — such as cans, mugs, a power drill, wooden blocks, and rope. Every object was scanned on a multi-camera turntable, yielding 600 RGB-D images, 600 high-resolution color photos, segmentation masks, and a textured 3D mesh. Before YCB, each lab picked its own objects and results couldn't be compared directly; YCB let everyone use the same physical objects and the same models in simulation, and came with template manipulation-benchmark protocols. Today it is commonly imported into simulators as grasping targets, and is also the object source behind several pose-estimation datasets.",
+      "example": "PoseCNN's YCB-Video pose-estimation dataset (2017) was built by filming YCB objects on cluttered tabletops, totaling 133,827 frames.",
+      "related": ["Grasping", "Simulation Assets", "6D Object Pose Estimation", "Benchmark", "Google Scanned Objects: A High-Quality Dataset of 3D Scanned Household Items", "BOP: Benchmark for 6D Object Pose Estimation"]
+    },
+    {
+      "key": "data-06#1",
+      "name_en": "ACRONYM: A Large-Scale Grasp Dataset Based on Simulation",
+      "aliases": [],
+      "one_liner": "An NVIDIA grasp dataset labeled in bulk through physics simulation, containing about 17.7 million parallel-jaw grasps.",
+      "explanation": "ACRONYM was released in November 2020 by NVIDIA's Clemens Eppner, Arsalan Mousavian, and Dieter Fox. It selected 8,872 objects across 262 categories from the ShapeNetSem 3D model library, generated 2,000 candidate grasps per object using antipodal sampling (finding two opposing contact points on the surface), and then simulated each one in NVIDIA's FleX physics engine — closing a Franka Panda gripper and shaking the object to see whether it stayed held — yielding about 17.7 million labeled grasps, roughly 59% of them successful. Testing grasps one by one on a real robot is far too costly, so this kind of bulk simulated labeling gave learned grasping networks enough training data. The release also includes a tool for generating cluttered scenes with multiple objects randomly placed on support surfaces, capable of rendering depth images and point clouds.",
+      "example": "NVIDIA's Contact-GraspNet, trained on about 17 million of these simulated grasps, exceeded a 90% success rate grasping previously unseen objects in real cluttered scenes.",
+      "related": ["Grasping", "Contact-GraspNet: Efficient 6-DoF Grasp Generation in Cluttered Scenes", "Simulation Data", "Antipodal Grasp", "Grasp Pose Detection", "ShapeNet"]
+    },
+    {
+      "key": "data-06#2",
+      "name_en": "AgileX Pika",
+      "aliases": ["Pika Sense", "Pika Gripper", "Pika Pro"],
+      "one_liner": "AgileX Robotics' handheld data-collection kit that records manipulation demonstrations without needing a real robot.",
+      "explanation": "Pika is an embodied-AI data-collection product from AgileX Robotics, similar in concept to UMI: rather than using a real robot, a person holds a gripper-equipped capture device to perform the task, recording footage and motion at the same time. According to the official open-source repository, it consists of the Pika Sense capture device, the Pika Gripper (the same gripper used for inference deployment), a positioning base station, and a data backpack, recording 6-DoF pose, depth, ultra-wide RGB images, and gripper opening state; the SDK documentation shows Sense carries a fisheye camera, a RealSense depth camera, and a Vive Tracker for localization. The collection and deployment grippers share the same camera layout, so once a policy is trained on collected data, the Pika Gripper can be mounted on a robot arm's end effector to execute it directly. The newer Pika Pro kit adds an egocentric head-mounted capture device called Pika EGO.",
+      "example": "A typical workflow: a collector holds Pika Sense and repeatedly performs “put the cup in the sink” in a real kitchen, trains a diffusion policy on the recorded wrist footage and gripper pose, then mounts the Pika Gripper on a robot arm to execute it.",
+      "related": ["Handheld Gripper Data Collection", "Universal Manipulation Interface", "Robot-free (Embodiment-free) Data Collection", "Collection-Execution Isomorphism", "AgileX Robotics", "FastUMI: A Scalable and Hardware-Independent Universal Manipulation Interface"]
+    },
+    {
+      "key": "data-06#3",
+      "name_en": "AirExo",
+      "aliases": ["AirExo-2"],
+      "one_liner": "A low-cost bimanual exoskeleton from Shanghai Jiao Tong's Cewu Lu group that can both teleoperate a robot and collect data without one.",
+      "explanation": "AirExo is an open-source bimanual exoskeleton proposed by Cewu Lu's group at Shanghai Jiao Tong University in September 2023, published at ICRA 2024. A person wears it on both arms; the exoskeleton's joints correspond one-to-one with the robot's joints, so it can do joint-level teleoperation, and it can also be worn away from the robot to record “in-the-wild” demonstrations directly in real environments. Its structural parts can all be 3D-printed, costing about $300 per arm, originally designed for a Flexiv Rizon dual-arm setup but adaptable to UR5, Franka, and others. AirExo-2 (CoRL 2025) adds a vision adapter that converts footage of a person wearing the exoskeleton into “pseudo-robot demonstrations,” paired with a policy called RISE-2 that fuses 3D point clouds with 2D semantic features; using no real-robot data at all, it approaches the performance of a policy trained on teleoperation data. The official cost is about $600 per full kit, compared with roughly $60,000 for a teleoperation platform.",
+      "example": "In the AirExo paper's experiments, a policy trained on just 3 minutes of teleoperation demonstrations plus a large amount of in-the-wild exoskeleton demonstrations matched or exceeded one trained on more than 20 minutes of teleoperation data alone.",
+      "related": ["Exoskeleton Teleoperation", "Robot-free (Embodiment-free) Data Collection", "Leader-Follower Teleoperation", "In-the-wild Data", "SJTU Machine Vision and Intelligence Group", "Flexiv Rizon"]
+    },
+    {
+      "key": "data-06#4",
+      "name_en": "All Robots In One",
+      "aliases": ["ARIO", "ARIO Data Standard"],
+      "one_liner": "A unified embodied-data format standard from Peng Cheng Laboratory and partners, and a roughly 3-million-item dataset built to that standard.",
+      "explanation": "ARIO was released in August 2024 by the Institute of Multi-Agent and Embodied Intelligence at Peng Cheng Laboratory, together with Southern University of Science and Technology, Sun Yat-sen University, and others; it is both a data-format standard and a large dataset assembled under it. The authors argue that aggregating datasets such as Open X-Embodiment still leave formats inconsistent and modalities incomplete, so ARIO specifies: control data from robots of different forms recorded in one unified format, sensors of differing frequency aligned by timestamp, organization by a three-level “series–task–episode” hierarchy, and support for five modalities — image, 3D, sound, text, and touch. The dataset contains about 3 million episodes, 258 series, and more than 320,000 tasks, drawn from three sources: 3,662 episodes from a self-built real-robot platform; about 700,000 from simulators such as Habitat and MuJoCo; and roughly 2.33 million converted from existing open datasets.",
+      "example": "ARIO's real-robot portion used the AgileX Cobot Magic dual-arm platform to collect more than 30 kinds of manipulation tasks in real household scenes.",
+      "related": ["Cross-Embodiment Data", "Open X-Embodiment", "Multimodal Data", "Heterogeneous Data", "AgileX Cobot Magic", "RLDS (Reinforcement Learning Datasets)"]
+    },
+    {
+      "key": "data-06#5",
+      "name_en": "AnyTeleop: A General Vision-Based Dexterous Robot Arm-Hand Teleoperation System",
+      "aliases": [],
+      "one_liner": "A general vision-based teleoperation system that uses an ordinary camera to capture hand motion and drive many arms and dexterous hands.",
+      "explanation": "AnyTeleop was proposed in July 2023 by Yuzhe Qin and colleagues at UC San Diego and NVIDIA, published at RSS 2023. The operator wears no glove or exoskeleton — they simply move in front of a camera: the system estimates hand and wrist pose from the image, then converts it through motion retargeting (mapping human hand joints onto a structurally different robot hand) into commands for a dexterous hand and arm, with collision avoidance built in. Earlier vision-based teleoperation systems were usually tied to one specific piece of hardware; AnyTeleop instead supports many arms, dexterous hands, and camera configurations within the same system, connecting to a real robot or to simulators such as SAPIEN and Isaac Gym, and also supporting remote browser viewing and multi-robot collaboration. The paper reports it performs better than systems custom-built for the same hardware. Its retargeting module has been open-sourced as the dex-retargeting library.",
+      "example": "Inside a simulator, an operator performs a grasping motion in front of a camera, and AnyTeleop drives a virtual arm and dexterous hand in real time to grasp the object, with the recorded trajectory usable directly for training an imitation-learning policy.",
+      "related": ["Teleoperation", "Motion Retargeting", "dex-retargeting (AnyTeleop hand retargeting library)", "Dexterous Manipulation", "Open-TeleVision: Teleoperation with Immersive Active Visual Feedback", "Bunny-VisionPro"]
+    },
+    {
+      "key": "data-06#6",
+      "name_en": "Apache Parquet",
+      "aliases": ["Parquet"],
+      "one_liner": "An open-source column-oriented file format; LeRobot datasets use it to store numeric data like state and actions.",
+      "explanation": "Apache Parquet is an open-source column-oriented data file format, introduced by Twitter and Cloudera in 2013 and made an Apache top-level project in 2015. “Column-oriented” means values from the same column are stored contiguously rather than row by row; grouping similar data together compresses better and lets a reader pull out only the columns it needs. Tools such as Spark, pandas, and DuckDB can all read and write it directly. In embodied AI, Hugging Face's LeRobot dataset format uses Parquet to store low-dimensional, high-frequency data such as joint state, actions, and timestamps, while camera footage is separately encoded as MP4 video, with JSON/Parquet metadata recording where each episode starts and ends within the files. Version 3 packs multiple episodes into the same batch of Parquet files and supports streaming directly from the Hub.",
+      "example": "Open a LeRobot dataset's data/ directory files with pandas.read_parquet to see columns such as observation.state, action, and timestamp for every frame.",
+      "related": ["LeRobotDataset", "Hierarchical Data Format version 5", "RLDS (Reinforcement Learning Datasets)", "Zarr", "LeRobot (Hugging Face)", "MCAP"]
+    },
+    {
+      "key": "data-06#7",
+      "name_en": "ARCTIC: A Dataset for Dexterous Bimanual Hand-Object Manipulation",
+      "aliases": [],
+      "one_liner": "A motion-capture dataset of two-handed dexterous manipulation of articulated objects, with precise 3D meshes for hands and objects every frame.",
+      "explanation": "ARCTIC was released in 2022 by ETH Zurich, the Max Planck Institute for Intelligent Systems, and the University of Amsterdam, published at CVPR 2023. Ten subjects used both hands to manipulate 11 articulated objects (objects with moving parts, such as scissors and a laptop), producing 339 sequences and 2.1 million frames of imagery, filmed synchronously from 8 fixed viewpoints and 1 egocentric viewpoint. The team used a 54-camera infrared Vicon optical motion-capture system to track small markers attached to the hands and objects, and solved for a MANO hand mesh, an SMPL-X body mesh, object pose and joint angle, and hand-object contact information for every frame. Earlier hand-object interaction datasets were mostly single-handed, rigid-object, and slow-motion; ARCTIC fills the gap with precise 3D ground truth for fast, two-handed manipulation of moving objects, and can also serve as a reference for learning dexterous manipulation from human data.",
+      "example": "ARCTIC contains sequences of both hands opening a laptop and opening and closing scissors, with the 3D mesh of both hands and the rotation angle of the object's moving part given for every frame.",
+      "related": ["Hand-Object Interaction", "MANO (hand Model with Articulated and Non-rigid defOrmations)", "Skinned Multi-Person Linear Model", "Optical Motion Capture", "Articulated Object", "HOI4D: A 4D Egocentric Dataset for Category-Level Human-Object Interaction"]
+    },
+    {
+      "key": "data-06#8",
+      "name_en": "Arm Farm (Google large-scale grasping data collection)",
+      "aliases": ["Google Arm Farm"],
+      "one_liner": "Google's 2016 setup of a dozen-plus robot arms autonomously attempting grasps side by side to collect data at scale.",
+      "explanation": "Arm Farm is the informal name for a 2016 Google Research project: Sergey Levine and colleagues ran 6 to 14 robot arms side by side, repeatedly attempting to grasp clutter in bins on their own, accumulating more than 800,000 grasp attempts over two months — around 3,000 robot-hours. Every attempt was automatically judged successful or not by the system, with no human labeling needed — a form of self-supervised data collection. The team used this data to train a convolutional neural network that, from a single monocular camera image alone, predicted whether a given gripper motion would succeed, and used that prediction for real-time closed-loop visual servoing without needing camera calibration. According to Google's blog, adding continuous visual feedback dropped the initial grasp-failure rate from 34% to 18%. It is an early example of “many robots plus lots of data” end-to-end robot learning, and 2018's QT-Opt followed the same approach, autonomously collecting more than 580,000 real grasps with multiple arms.",
+      "example": "After repeated attempts at clutter in a bin, the arms learned on their own to first nudge apart objects that were touching before grasping them — a behavior nobody explicitly programmed.",
+      "related": ["Autonomous Data Collection", "QT-Opt: Scalable Deep Reinforcement Learning for Vision-Based Robotic Manipulation", "Self-Supervised Learning", "Grasping", "Bin Picking", "Google DeepMind"]
+    },
+    {
+      "key": "data-06#9",
+      "name_en": "Auto-labeling",
+      "aliases": ["Automated Annotation"],
+      "one_liner": "Using pretrained models or scripts, instead of humans, to automatically add language instructions, bounding boxes, and other labels to robot data.",
+      "explanation": "Auto-labeling means using a program or a pretrained model — a vision-language model, an object detector, a large language model — to automatically add labels to collected data instead of a human doing it. Robot data often lacks several kinds of information: what a trajectory is doing (a language instruction), where it splits into subtasks, and where objects are in the frame (bounding boxes, masks). Manual annotation one item at a time is expensive and slow, and can't keep up once data volume grows. Two typical approaches: using an image-text model like CLIP to match un-annotated demonstrations to instructions, as Google's DIAL does; or, like Berkeley's ECoT, using Grounding DINO to box objects and a large model to write out task decomposition and reasoning steps as extra supervision for training a VLA with reasoning ability. Auto-labeling is less reliable than human annotation, so it is usually spot-checked or filtered with rules, and commonly paired with data quality inspection, hindsight relabeling, and instruction augmentation.",
+      "example": "Google's 2022 DIAL used CLIP to automatically add language labels to about 80,000 demonstrations (96.5% of which originally had no crowd-sourced label), and the resulting policy could execute 60 new instructions absent from the original data.",
+      "related": ["Data Annotation", "Language Annotation", "Hindsight Relabeling", "Instruction Augmentation", "Subtask Segmentation", "Data Quality Inspection"]
+    },
+    {
+      "key": "data-06#10",
+      "name_en": "Autonomous Data Collection",
+      "aliases": ["Robot Self-Collection"],
+      "one_liner": "Letting a robot propose its own tasks, attempt them, and log the results, with little or no human teleoperation.",
+      "explanation": "Autonomous data collection means a robot decides for itself what to do, executes it, and records the data with no human directing it step by step — a human only intervenes occasionally, mostly for safety oversight. Teleoperated collection needs one person per robot, so cost scales linearly with data volume; letting robots collect on their own means more robots simply means more data. Three difficulties stand out: the robot needs to propose meaningful and diverse tasks; it needs to automatically judge success or failure; and autonomously collected data tends to have a lower success rate and more variable quality, requiring methods that can learn from imperfect data. An early example is Google's 2016 Arm Farm, which used automatically judged grasp outcomes as labels; Google DeepMind's AutoRT uses a vision-language model to understand a scene and a large language model to propose tasks, orchestrating more than 20 robots; and Berkeley's SOAR uses a VLM to propose and judge tasks, autonomously collecting more than 30,000 trajectories across 5 tabletop environments to improve a policy.",
+      "example": "AutoRT ran more than 20 robots across multiple office buildings, with a large language model proposing tasks, collecting about 77,000 real-robot trajectories total through a mix of teleoperation and autonomous execution.",
+      "related": ["Arm Farm (Google large-scale grasping data collection)", "AutoRT: Embodied Foundation Models for Large Scale Orchestration of Robotic Agents", "Data Flywheel", "Self-improvement", "Real-World Reinforcement Learning", "Success Detector"]
+    },
+    {
+      "key": "data-06#11",
+      "name_en": "Baihu-VTouch Visuo-Tactile Dataset",
+      "aliases": ["VTouch"],
+      "one_liner": "A cross-embodiment visuotactile dataset released in 2026 by China's National Humanoid Robot Innovation Center and Weitai Robotics.",
+      "explanation": "Baihu-VTouch was released on January 26, 2026 by the National and Local Co-built Humanoid Robotics Innovation Center (Shanghai) together with Shanghai Weitai Robotics, a visuotactile-sensor company. A visuotactile sensor uses a built-in camera to photograph the deformation of a soft gel surface as it's pressed, sensing the shape and force of contact. According to the release, the dataset totals over 60,000 minutes and about 90.72 million real object-contact samples, recording visuotactile images, RGB-D footage, and joint poses in sync; the embodiments used include wheeled-arm robots, the bipedal humanoid Qinglong, and handheld smart terminals. Tasks span 4 scene categories — household chores, industrial manufacturing, food service, and specialized operations — with more than 380 tasks, over 100 atomic skills, and more than 500 real objects in total. Most existing large-scale robot data has only vision and action; this dataset adds the missing dimension of contact. The first 6,000 minutes have already been released on the OpenLoong open-source community.",
+      "example": "The dataset includes more than 260 contact-intensive tasks; when training a manipulation policy that needs a sense of “feel,” these visuotactile images can be used as input alongside vision and pose.",
+      "related": ["Vision-Based Tactile Sensor", "Tactile Data", "Cross-Embodiment Data", "Weitai Robotics", "Qinglong (OpenLoong)", "National and Local Co-built Humanoid Robotics Innovation Center (Shanghai)"]
+    }
+  ]
+}

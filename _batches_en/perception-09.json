@@ -1,0 +1,113 @@
+{
+  "batch": "perception-09",
+  "terms": [
+    {
+      "key": "perception-09#0",
+      "name_en": "Visual SLAM",
+      "aliases": ["vSLAM", "VSLAM"],
+      "one_liner": "Uses only cameras to simultaneously estimate where it is and build a map of the surroundings.",
+      "explanation": "Visual SLAM is the branch of simultaneous localization and mapping (SLAM) that uses a camera as the main sensor — monocular, stereo, or RGB-D — often fused with an IMU (inertial measurement unit). Systems are usually split into a front end and a back end: the front end extracts feature points from images and matches them across frames to estimate camera motion (this part is also called visual odometry); the back end uses graph optimization or bundle adjustment to reduce accumulated error, and loop closure — recognizing that the camera has returned to a place it has already been — removes drift. Cameras are cheap and information-rich, but a monocular camera can’t recover absolute scale, and weak texture, reflections, and fast motion make tracking easy to lose. Well-known open-source systems include ORB-SLAM3, which supports monocular, stereo, RGB-D, and visual-inertial modes, and the learning-based DROID-SLAM; visual SLAM is widely used for localization and navigation in mobile robots, AR glasses, and drones.",
+      "example": "The ORB-SLAM3 paper reports that, running on the EuRoC drone dataset with stereo cameras plus an IMU, the average error of the estimated trajectory is about 3.6 centimeters; the input is an image sequence, and the output is the camera pose for every frame plus a sparse map point cloud.",
+      "related": ["Simultaneous Localization and Mapping", "Visual Odometry", "Visual-Inertial Odometry", "Loop Closure", "ORB-SLAM3", "ATE / RPE (Absolute / Relative Trajectory Error)"]
+    },
+    {
+      "key": "perception-09#1",
+      "name_en": "Voxel",
+      "aliases": ["Voxel Grid", "Voxel Downsampling", "Volumetric Pixel"],
+      "one_liner": "A small cube in 3D space — the volumetric equivalent of a pixel.",
+      "explanation": "A voxel (a blend of “volume” and “pixel”) is one small cube produced by slicing 3D space into a regular grid; each cell can store whether it’s occupied, a color, a distance to the nearest surface, or a feature vector, just as a pixel does in a 2D image. Compared with a point cloud — a scattered set of 3D points — voxels are arranged regularly, so they can be processed directly with 3D convolutions and make it easy to check whether a given location is blocked; the tradeoff is that memory use grows fast with resolution, since halving the cell size multiplies the cell count by eight. Common robotics uses include occupancy grid maps and octree maps, which use voxels to mark where a robot can go; the truncated signed distance function (TSDF), which stores a distance value in each voxel for 3D reconstruction; and voxel downsampling of point clouds, which merges all points inside one cell into a single average point. The manipulation policy PerAct divides the workspace into a 100×100×100 voxel grid and directly predicts which cell the gripper should move to next.",
+      "example": "In Open3D, a single line — pcd.voxel_down_sample(voxel_size=0.05) — downsamples a dense point cloud to one point per 5-centimeter cell (with coordinates in meters), sharply cutting the point count before it’s sent on for registration or grasp detection.",
+      "related": ["Point Cloud", "Occupancy Grid Map", "Octree Map", "Truncated Signed Distance Function", "Point Cloud Filtering and Downsampling", "PerAct"]
+    },
+    {
+      "key": "perception-09#2",
+      "name_en": "Wheel Odometry",
+      "aliases": ["Wheel Encoder Odometry"],
+      "one_liner": "Counts how much the wheels have turned to estimate how far a robot has traveled and how much it has turned.",
+      "explanation": "Wheel odometry is the most basic method of relative localization: an encoder on each drive wheel reads how far it has rotated, which multiplied by the wheel radius gives distance traveled; for a differential-drive base, dividing the difference between the left and right wheels’ distances by the wheelbase gives the body’s turning angle, and accumulating this frame by frame gives the robot’s pose relative to its starting point. It’s cheap, runs at high frequency, is unaffected by lighting, and comes built into almost every wheeled base. The drawback is that error only grows: wheel slip, uneven ground, and inaccurate wheel-radius calibration all push the estimate further off over time — drift — so wheel odometry is usually fused with an IMU, lidar, or visual odometry, for example with an extended Kalman filter, and then corrected further by a SLAM or localization algorithm. ROS 2’s diff_drive_controller computes and publishes the odom topic from exactly this kind of left/right wheel feedback.",
+      "example": "A differential-drive robot with a 0.4-meter wheelbase has its left wheel travel 1.0 meter and its right wheel travel 1.2 meters over some interval: the body center moves forward about 1.1 meters while turning left by (1.2 − 1.0)/0.4 = 0.5 radians, about 29°.",
+      "related": ["Encoder", "Differential-Drive Kinematics", "Visual Odometry", "Leg Odometry", "Extended Kalman Filter", "Wheel Slip"]
+    },
+    {
+      "key": "perception-09#3",
+      "name_en": "YOLO",
+      "aliases": ["You Only Look Once", "YOLOv8", "YOLO11", "YOLO26"],
+      "one_liner": "A family of real-time object detectors that locate every object in an image with a single pass through the network.",
+      "explanation": "YOLO was introduced by Joseph Redmon and colleagues in 2015 (published at CVPR 2016), framing object detection as a regression problem: the whole image passes through the network only once, producing the location and class of every detection box simultaneously; the original version ran at 45 frames per second, far faster than two-stage methods that first propose candidate boxes and then classify each one. YOLO has since grown into a large family released in relays by different teams; Ultralytics’ YOLOv5, YOLOv8, and YOLO11 are the most widely used. According to its documentation, YOLO26, released in January 2026, can optionally drop non-maximum suppression (NMS, the post-processing step that removes duplicate boxes) and supports segmentation, pose, and rotated-box tasks. Robots commonly use YOLO for fast 2D detection, then combine it with a depth map to get an object’s 3D position; for finding arbitrary categories by text, there’s the open-vocabulary version, YOLO-World.",
+      "example": "Desktop sorting: a wrist-camera image is fed into YOLO to get a bounding box for “cup”; the depth pixels inside the box are back-projected into 3D as the target position for the robot arm’s grasp.",
+      "related": ["Object Detection", "Bounding Box", "Non-Maximum Suppression", "YOLO-World", "Mean Average Precision"]
+    },
+    {
+      "key": "perception-09#4",
+      "name_en": "3D Object Detection",
+      "aliases": ["3D Bounding Box Detection", "3D Detection"],
+      "one_liner": "Finds objects in 3D space and outputs their category along with an oriented 3D box.",
+      "explanation": "3D object detection extends 2D object detection into three dimensions: the input can be a lidar point cloud, an RGB-D image, or even a single color image, and the output is each object’s category plus a 3D bounding box, usually described by a center coordinate, length, width, height, and orientation angle. A 2D box only says which pixels an object occupies; robots that need to grasp, avoid, or navigate around objects need to know their position, size, and orientation in real space. Autonomous driving has been the main driver of this field — the classic KITTI benchmark has 7,481 training images with matching point clouds, evaluating cars, pedestrians, and cyclists, where a car’s 3D box needs an intersection-over-union (IoU) of 0.7 to count as correct. For indoor and general scenes there’s the Omni3D benchmark (234,000 images, 98 categories) with its companion Cube R-CNN model. 3D object detection is often contrasted with 6D pose estimation, which is more fine-grained and gives an object’s full 3D rotation.",
+      "example": "A warehouse robot runs 3D detection on a lidar point cloud to get each crate’s center position, size, and orientation, then plans where to slide a fork or place a grasp accordingly.",
+      "related": ["Object Detection", "Point Cloud", "Lidar", "Bird’s-Eye View", "Intersection over Union", "6D Pose Estimation"]
+    },
+    {
+      "key": "perception-09#5",
+      "name_en": "3D Point Tracking",
+      "aliases": ["TAP-3D", "Tracking Any Point in 3D", "SpatialTrackerV2"],
+      "one_liner": "Continuously tracks arbitrary pixels through a video and outputs their motion trajectory in 3D space.",
+      "explanation": "3D point tracking is the three-dimensional version of tracking any point — following any chosen pixel through a video: given a video and a set of query points, it outputs each point’s 3D coordinates and whether it’s occluded at every frame. 2D tracking can’t tell whether the object is moving or the camera is, and it carries no depth; a 3D trajectory directly describes how an object moves and rotates in space. SpatialTracker (CVPR 2024) uses monocular depth estimation to lift pixels into 3D before tracking them; the follow-up SpatialTrackerV2 (ICCV 2025) folds point tracking, monocular depth, and camera pose estimation into one feed-forward model that works from monocular video alone. The TAPVid-3D benchmark is used to evaluate this task. In robot learning, 3D point trajectories can serve as an intermediate representation for turning human videos into robot actions — for example, General Flow predicts the future 3D trajectories of points on an object, guided by language instructions, to direct manipulation.",
+      "example": "Filming someone pulling open a drawer and running SpatialTrackerV2 to track points on the handle gives a 3D trajectory moving outward in a straight line; from that, the drawer’s sliding direction can be inferred, and a robot can pull along the same direction.",
+      "related": ["Tracking Any Point", "CoTracker", "Scene Flow", "Monocular Depth Estimation", "4D Reconstruction"]
+    },
+    {
+      "key": "perception-09#6",
+      "name_en": "3D Scene Graph",
+      "aliases": ["3DSG"],
+      "one_liner": "Organizes a 3D scene’s floors, rooms, objects, and their relationships into a layered graph.",
+      "explanation": "A 3D scene graph is a structured scene representation: nodes are entities in the scene — buildings, floors, rooms, objects, camera positions, and so on — and edges are the relationships between them, like “inside,” “on top of,” or “next to,” with each node carrying attributes such as category, size, and 3D position. Armeni and colleagues introduced this structure at ICCV 2019, with building, room, object, and camera layers; MIT’s Hydra (RSS 2022) lets a robot build a hierarchical scene graph in real time while exploring. Compared with a dense point cloud or mesh, a scene graph is compact and semantically clear — it can directly answer “which room is the fridge in?” — and it’s easy to convert to text for a large language model to use in task planning. ConceptGraphs builds open-vocabulary scene graphs using 2D foundation models, while SayPlan has a large model search and plan long-horizon, multi-room tasks directly over a scene graph.",
+      "example": "A robot given the instruction “bring the apple from the kitchen table to the living room” first follows kitchen → table → apple through the scene graph to find the target node and the living-room node, then calls its navigation, grasping, and placing skills in sequence.",
+      "related": ["ConceptGraphs", "SayPlan", "Semantic Map", "Scene Understanding", "LLM Task Planning"]
+    },
+    {
+      "key": "perception-09#7",
+      "name_en": "3D Vision-Guided Robotics",
+      "aliases": ["3D Vision-Guided Robot", "Vision-Guided Robotics", "VGR"],
+      "one_liner": "Uses a 3D camera to find a workpiece’s position and orientation and guides an industrial robot to pick or process it.",
+      "explanation": "3D vision-guided robotics is the industrial-automation term for this setup: a 3D camera — commonly structured light, stereo, or laser triangulation — is mounted at a robot workstation, captures a point cloud of the workpiece, and recognition plus pose estimation gives each workpiece’s 3D position and orientation; hand-eye calibration then converts this into the robot’s coordinate frame to guide the arm to pick, place, assemble, or polish. Traditional industrial robots rely on teach-and-playback, which requires the workpiece to be in exactly the same spot every time; adding 3D vision lets the robot handle parts that sit in random positions or messy stacks. Typical applications include bin picking (picking loose parts from a bin), mixed-case depalletizing, machine tending, and locating parts for assembly; Chinese vendors in this space include Mech-Mind and Percipio. It can be seen as the mature, factory-grade engineering version of the “perceive, then grasp” pipeline, though the object types and tasks are usually fixed in advance.",
+      "example": "At a parts factory, a 3D camera photographs metal parts piled randomly in a bin; software matches the point cloud against each part’s CAD model to compute its pose and a graspable point, guiding the robot arm to pick up parts one by one and place them on a machine tool — this is bin picking for machine tending.",
+      "related": ["Bin Picking", "Machine Vision (Industrial Vision)", "Structured Light", "Hand-Eye Calibration", "6D Pose Estimation", "Mech-Mind"]
+    },
+    {
+      "key": "perception-09#8",
+      "name_en": "3D Visual Grounding",
+      "aliases": ["3D Grounding", "3D Referring Expression Grounding"],
+      "one_liner": "Finds the object in a 3D scene that a sentence describes.",
+      "explanation": "3D visual grounding brings 2D visual grounding — using text to draw a box around a target in an image — into 3D scenes: given a scene’s point cloud or multi-view images plus a description such as “the trash can next to the chair by the window,” it outputs the target object’s 3D bounding box. The Chinese term for this, 视觉定位, is also commonly used for a camera estimating its own position, but here it means grounding. The main difficulty is that a scene often has multiple objects of the same category, so the model must understand spatial relationships like “on the left,” “the biggest one,” or “next to the door” to tell them apart. ScanRefer and ReferIt3D, both published at ECCV 2020, built benchmarks on ScanNet indoor scans: ScanRefer has about 52,000 descriptions covering 11,000 objects, while ReferIt3D provides two sets, Nr3D (natural descriptions) and Sr3D (spatial-relation descriptions). For robots, this is the key step that grounds a language instruction in an actual object.",
+      "example": "A user says “hand me the blue cup on the far right of the desk”; the robot runs 3D visual grounding on the reconstructed room point cloud to get that cup’s 3D box, then plans a grasp.",
+      "related": ["Visual Grounding", "ScanNet", "3D Object Detection", "3D Scene Graph", "Open-Vocabulary Detection", "Language Grounding"]
+    },
+    {
+      "key": "perception-09#9",
+      "name_en": "4D Reconstruction",
+      "aliases": ["Dynamic Scene Reconstruction", "4D Gaussian Splatting"],
+      "one_liner": "Reconstructs a 3D scene that moves — the geometry plus how it changes over time.",
+      "explanation": "4D reconstruction recovers a 3D scene that changes over time from video, monocular or multi-view — the fourth dimension is time: it needs to capture not just what the scene looks like, but the shape and position of people, hands, and objects at every moment. Static-reconstruction methods like NeRF and 3D Gaussian splatting assume the scene doesn’t move, and produce ghosting artifacts on moving objects. One family of approaches optimizes per scene: Dynamic 3D Gaussians lets Gaussian points move and rotate over time, and 4D Gaussian Splatting (CVPR 2024) uses a deformation field to predict each Gaussian’s displacement at every moment, rendering 800×800 frames at 82 FPS on an RTX 3090. Another family is feed-forward — MonST3R (ICLR 2025) extends the static reconstruction model DUSt3R to dynamic video, outputting point maps directly frame by frame. In embodied AI, 4D reconstruction is used to recover the 3D motion of hand-object interaction from human videos and to build replayable digital twins.",
+      "example": "Filming someone pouring water with a phone and running 4D reconstruction recovers the 3D shape of the hand, cup, and pitcher at every frame, which can be replayed from any viewpoint or mined for the cup’s motion trajectory to have a robot imitate.",
+      "related": ["3D Gaussian Splatting", "Neural Radiance Field", "Feed-Forward 3D Reconstruction", "DUSt3R", "3D Point Tracking", "4D World Model"]
+    },
+    {
+      "key": "perception-09#10",
+      "name_en": "9DTact",
+      "aliases": [],
+      "one_liner": "An open-source, compact vision-based tactile sensor from Tsinghua’s Huazhe Xu group that measures contact shape and 6D force.",
+      "explanation": "9DTact is a vision-based tactile sensor from Huazhe Xu’s group at Tsinghua University along with the Shanghai Qi Zhi Institute and other collaborators; the paper was published in IEEE RA-L and presented at ICRA 2024. The “9D” in the name refers to 3D shape plus 6D force. It’s a GelSight-style design: an internal camera photographs the back of a soft gel pad, and when an object presses on it, the gel deforms and reflects less light, so the image’s shading pattern reflects contact depth. It exploits the optical properties of a translucent gel to estimate three-axis force and three-axis torque directly from the image with a neural network, without needing markers on the gel surface. It was trained on about 100,000 paired image-force samples from 175 objects and generalizes to unseen objects. It measures about 32.5 × 25.5 × 25.5 millimeters, with an average shape-reconstruction error of about 0.046 millimeters. Both hardware and software are open source, with a build guide included.",
+      "example": "Mounted on a gripper fingertip, 9DTact reads the normal and shear forces at the fingertip during a grasp, which can be used to judge whether an object is starting to slip and whether to increase grip force.",
+      "related": ["Vision-Based Tactile Sensor", "GelSight", "DIGIT", "Six-Axis Force Sensor", "Photometric Stereo", "Slip Detection"]
+    },
+    {
+      "key": "perception-09#11",
+      "name_en": "Absolute Trajectory Error / Relative Pose Error",
+      "aliases": ["ATE", "RPE", "APE", "Absolute Pose Error"],
+      "one_liner": "Two standard metrics for how far a SLAM or odometry system’s estimated trajectory deviates from ground truth.",
+      "explanation": "ATE and RPE are the two most common metrics for evaluating localization algorithms like visual SLAM and visual odometry; the TUM RGB-D benchmark from the Technical University of Munich gave the widely used definitions and evaluation scripts. ATE (absolute trajectory error) first matches the estimated trajectory to the ground-truth trajectory by timestamp, then aligns the two as a whole with a single rigid-body transform (monocular SLAM also needs an extra scale estimate), and computes the root-mean-square error (RMSE, in meters) of the position differences at each moment, reflecting the trajectory’s overall global consistency. RPE, strictly “relative pose error,” compares relative motion over a fixed time or distance interval — for example, translational error in m/s and rotational error in deg/s — reflecting local drift, which suits evaluating odometry that has no loop closure. The popular open-source tool evo supports TUM, KITTI, EuRoC, and other formats, where the metric corresponding to ATE is called APE.",
+      "example": "Comparing a SLAM system’s output trajectory to ground truth with evo_ape: an ATE RMSE of 0.02 means the whole trajectory deviates by about 2 centimeters on average after alignment; running evo_rpe with a 1-second interval then shows how much drift accumulates every second.",
+      "related": ["Visual SLAM", "Visual Odometry", "Ground Truth", "Trajectory", "Loop Closure"]
+    }
+  ]
+}

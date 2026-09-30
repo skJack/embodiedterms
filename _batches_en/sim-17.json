@@ -1,0 +1,113 @@
+{
+  "batch": "sim-17",
+  "terms": [
+    {
+      "key": "sim-17#0",
+      "name_en": "Statistical Rigor in Policy Evaluation (Confidence Intervals / Sequential Testing / Multiple Seeds)",
+      "aliases": ["Statistically Rigorous Evaluation"],
+      "one_liner": "Using statistics to tell whether a gap in success rate between two policies is real or just noise.",
+      "explanation": "Robot-policy evaluation often runs only a few dozen trials, so the success rate itself carries a wide margin of error: 14 successes out of 20 trials gives roughly a 48%–85% 95% confidence interval by the commonly used Wilson method. Statistically rigorous evaluation means reporting a confidence interval or a Bayesian posterior instead of a single percentage; reinforcement-learning results also need to be repeated across multiple random seeds, since the same algorithm can produce very different outcomes with a different seed. Agarwal and colleagues, at NeurIPS 2021, recommended reporting interval estimates and summarizing multi-task results with interquartile means, and open-sourced the rliable library. Sequential testing runs trials while checking as it goes, stopping early once the gap is already clear enough, saving expensive real-robot trials. The Toyota Research Institute also wrote in 2024 arguing that robot learning should be evaluated to the standards of experimental science: state the experimental conditions clearly, use multiple metrics together, and run proper statistical analysis.",
+      "example": "In Toyota Research Institute's 2025 large behavior model paper, each real-robot task and policy pair was run 50 times, and each simulated task 200 times, with the evaluator not told which policy was being tested; results were shown as Bayesian posteriors under a Beta prior, pairwise policy comparisons used sequential hypothesis testing, and Bonferroni correction controlled for multiple comparisons.",
+      "related": ["Success Rate", "Evaluation Protocol", "Random Seed & Reproducibility", "Double-blind Pairwise Comparison", "Real-world Evaluation", "Rollout"]
+    },
+    {
+      "key": "sim-17#1",
+      "name_en": "Substeps",
+      "aliases": ["Substepping", "Physics Substeps"],
+      "one_liner": "Splitting one simulation step into several smaller integration steps, trading extra computation for more stable, accurate physics.",
+      "explanation": "Substeps are a setting inside a physics simulator: each time the simulator advances by one step, the engine internally divides that time span into a number of smaller pieces and does integration and constraint solving (the step that computes contact forces and joint constraints) once per piece, in sequence. Isaac Gym's SimParams has both a dt and a substeps parameter; Genesis's SimOptions also has substeps, and its documentation says it means how many times the solver integrates within each scene.step() call. More substeps means a smaller effective timestep, which makes high-speed collisions and stiff contacts less likely to tunnel through geometry or blow up numerically, but the computation cost also grows proportionally. It is not the same thing as control decimation: decimation means the policy only issues a new action every few simulation steps, while substeps subdivide inside a single simulation step. Substeps, together with control decimation and the simulation timestep, jointly determine the physics frequency and the control frequency.",
+      "example": "legged_gym's default configuration uses a simulation timestep dt=0.005 seconds, substeps=1, and decimation=4 — physics at 200 Hz and the policy at 50 Hz; changing substeps to 2 makes the engine integrate internally every 2.5 milliseconds while the policy's frequency stays the same.",
+      "related": ["Simulation Timestep", "Control Decimation", "Numerical Integrator (Semi-implicit Euler / RK4)", "Simulation Instability (Blow-up)", "Solver Iteration Count (Position / Velocity Iterations)", "Physics Engine"]
+    },
+    {
+      "key": "sim-17#2",
+      "name_en": "TacSL: A Library for Visuotactile Sensor Simulation and Learning",
+      "aliases": ["TacSL"],
+      "one_liner": "NVIDIA's open-source GPU library for simulating vision-based tactile sensors and training policies that use them.",
+      "explanation": "TacSL was proposed by NVIDIA's Iretiayo Akinola, Yashraj Narang, and colleagues, posted to arXiv in August 2024, and later published in IEEE Transactions on Robotics. It uses the GPU inside NVIDIA's Isaac simulators to simultaneously generate visuotactile images (the deformation image an internal camera would capture on a sensor's gel pad, as with GelSight-style sensors) and contact force distributions, which the paper reports as more than 200 times faster than the best prior method — necessary for training tactile-input policies at large parallel scale. The library also includes contact-rich training environments, such as peg-in-hole insertion, and an asymmetric actor-critic distillation (AACD) algorithm for learning tactile policies and transferring them to real robots. The code first shipped inside the IsaacGymEnvs repository, and today Isaac Lab's visuotactile sensor module is implemented on top of TacSL.",
+      "example": "Isaac Lab's visuotactile sensors offer GelSight R1.5 and GelSight Mini configurations, computing penalty-based normal and shear forces via signed-distance-field queries while also outputting an RGB tactile image, usable directly as an observation for reinforcement or imitation learning.",
+      "related": ["Tactile Simulation", "Vision-Based Tactile Sensor", "GelSight", "NVIDIA Isaac Lab", "Asymmetric Actor-Critic", "Sim-to-Real Transfer"]
+    },
+    {
+      "key": "sim-17#3",
+      "name_en": "Tactile Simulation",
+      "aliases": ["Tactile Sensor Simulation"],
+      "one_liner": "Simulating what a tactile sensor would read inside a physics simulator, so tactile-equipped policies can be trained in sim.",
+      "explanation": "Tactile simulation means generating the output a tactile sensor should produce inside a physics simulator — for instance, the tactile image from a visuotactile sensor (a sensor with a built-in camera that photographs the deformation of an elastic gel pad, such as GelSight or DIGIT), the displacement of markers embedded in the gel, or the pressure map from a piezoresistive array. The hard part is handling contact, soft-material deformation, lighting, and image formation all at once — the result has to look real and still be fast to compute. Common approaches fall into three groups: rendering an image directly from contact geometry, as in Meta's open-source TACTO; calibrating a lookup table from a small number of real samples, as in Carnegie Mellon's Taxim; and computing contact force fields and images in parallel on the GPU, as in NVIDIA's TacSL. It lets sim-to-real transfer extend to contact-rich tasks like peg insertion and screwing, though a gap between simulated and real sensor readings remains, usually addressed with domain randomization or a small amount of real-robot data.",
+      "example": "The TACTO paper used simulation to generate tactile data for 1 million grasps, training a model to predict whether a given grasp would be stable.",
+      "related": ["Vision-Based Tactile Sensor", "TACTO: A Fast, Flexible, and Open-source Simulator for High-Resolution Vision-based Tactile Sensors", "Taxim: An Example-based Simulation Model for GelSight Tactile Sensors", "TacSL: A Library for Visuotactile Sensor Simulation and Learning", "Sensor Simulation", "Tactile Image"]
+    },
+    {
+      "key": "sim-17#4",
+      "name_en": "TACTO: A Fast, Flexible, and Open-source Simulator for High-Resolution Vision-based Tactile Sensors",
+      "aliases": ["TACTO Simulator"],
+      "one_liner": "Meta's open-source visuotactile simulator, using PyBullet to render tactile images for sensors like DIGIT.",
+      "explanation": "TACTO was developed by Shaoxiong Wang, Mike Lambeta, Po-Wei Chou, and Roberto Calandra, with code released in Meta's facebookresearch repository; the paper appeared in IEEE RA-L and was presented at ICRA 2022. It uses the PyRender renderer to generate hundreds of high-resolution tactile images per second from the contact geometry between an object and an elastic gel pad, and provides an interface that connects to the PyBullet physics engine, shipping with built-in models and configurations for the DIGIT and OmniTact sensors. The authors note explicitly that TACTO does not itself model the physical accuracy of contact dynamics (deformation, friction) — that is left to existing physics engines. It is open source under the MIT license and installs directly with pip.",
+      "example": "The paper used TACTO to simulate 1 million grasps for training a grasp-stability predictor, and also demonstrated a task using touch to control a rolling marble, along with preliminary sim-to-real transfer.",
+      "related": ["Tactile Simulation", "DIGIT", "PyBullet (Bullet Physics)", "Taxim: An Example-based Simulation Model for GelSight Tactile Sensors", "Vision-Based Tactile Sensor"]
+    },
+    {
+      "key": "sim-17#5",
+      "name_en": "Taxim: An Example-based Simulation Model for GelSight Tactile Sensors",
+      "aliases": ["Taxim Simulation Model"],
+      "one_liner": "An example-based simulation model for GelSight visuotactile sensors, calibrated from a small amount of real data.",
+      "explanation": "Taxim was proposed in 2021 by Zilin Si and Wenzhen Yuan at Carnegie Mellon University's RoboTouch lab, built specifically to simulate GelSight-type visuotactile sensors. “Example-based” means it does not model the optical path from scratch; instead it calibrates a polynomial lookup table from real samples captured on the actual sensor, mapping gel-pad deformation geometry directly to camera pixel brightness, while the motion of markers printed on the gel is computed separately by superimposing elastic-deformation theory. Calibration needs fewer than 100 real data points, so it is easy to port to different GelSight models. The paper reports lower per-pixel intensity error than prior methods, and it runs on a CPU. It is often compared with TACTO: TACTO renders images with a general-purpose renderer, while Taxim calibrates its output from measured data.",
+      "example": "Give Taxim an object's point cloud and indentation depth, and it returns the corresponding GelSight tactile image; given loads along the x, y, and z directions, it can also return the resulting displacement field of the gel's surface markers.",
+      "related": ["Tactile Simulation", "GelSight", "TACTO: A Fast, Flexible, and Open-source Simulator for High-Resolution Vision-based Tactile Sensors", "Marker Tracking (Tactile Markers)", "Photometric Stereo"]
+    },
+    {
+      "key": "sim-17#6",
+      "name_en": "Termination vs. Truncation",
+      "aliases": ["terminated / truncated", "Time-limit Truncation"],
+      "one_liner": "An episode can end two ways: termination means the task itself is over; truncation means it was cut off by a time limit.",
+      "explanation": "This is a pair of concepts from the reinforcement-learning environment interface. Termination means the agent has entered a terminal state of the Markov decision process — the task is complete, or the robot has fallen over. Truncation means the episode was cut off for a reason outside the task itself, most commonly a maximum step count set for training. The two affect training differently: after termination there is no future reward, so the value target is just the immediate reward; a truncated state is not actually an endpoint, so its target should still bootstrap using the value estimate of the next state (substituting an estimate for return that hasn't actually been observed yet). Pardo and colleagues' ICML 2018 paper specifically analyzed the problems caused by treating a time limit as termination. Starting with version 0.26, Gymnasium's step() returns terminated and truncated separately, replacing the old single done flag; Isaac Lab similarly uses a time_out flag to distinguish the two.",
+      "example": "In legged_gym, an episode terminates when contact force on designated body parts exceeds a threshold; it truncates when the step count exceeds the limit, which is passed to rsl_rl through a time_outs field in extras — PPO adds the discounted value estimate back into the reward at truncated steps, effectively continuing to bootstrap.",
+      "related": ["Episode", "Early Termination", "Value Function", "Bootstrapping (in RL)", "Environment (Env; reset/step interface)", "Gymnasium (formerly OpenAI Gym)"]
+    },
+    {
+      "key": "sim-17#7",
+      "name_en": "The Colosseum: A Benchmark for Evaluating Generalization for Robotic Manipulation",
+      "aliases": ["Colosseum"],
+      "one_liner": "A benchmark applying 14 kinds of systematic environmental perturbations to RLBench tasks to test manipulation policies' generalization.",
+      "explanation": "The Colosseum was proposed by Wilbert Pumacay, Jiafei Duan, Dieter Fox, and colleagues, and published at RSS 2024. Built on the PyRep simulation framework, it selects 20 of RLBench's 100 tasks, and each task can be perturbed along 14 dimensions: the color, texture, and size of both the manipulated object and static objects, light color, table color and texture, background texture, number of distractor objects, camera pose, and object friction and mass. The authors used it to test methods including PerAct, RVT, R3M, MVP, and VoxPoser, and found that a single perturbation alone drops success rate by 30%–50%, and applying several perturbations together drops it by more than 75%, with distractor count, target-object color, and lighting having the biggest effects. In a real-robot replication experiment, the R² between simulation and real-robot results was 0.614.",
+      "example": "For the same task, run separate trials changing only the table texture, only adding distractors, and only changing the camera pose, then compare each success rate against the unperturbed baseline to see which kind of change the policy is most sensitive to.",
+      "related": ["RLBench", "Generalization / Robustness Evaluation (Perturbation Test)", "Distractor Objects", "Domain Randomization", "Perceiver-Actor: A Multi-Task Transformer for Robotic Manipulation", "Visual Generalization"]
+    },
+    {
+      "key": "sim-17#8",
+      "name_en": "unitree_rl_gym (Unitree RL Gym)",
+      "aliases": ["Unitree RL Gym"],
+      "one_liner": "Unitree's official open-source reinforcement-learning example framework, covering everything from simulated training to real-robot deployment.",
+      "explanation": "unitree_rl_gym is a reinforcement-learning example repository Unitree Robotics open-sourced on GitHub, built on ETH Zurich's legged_gym (a legged-robot training framework on top of Isaac Gym) and the rsl_rl algorithm library, supporting the Go2 quadruped as well as the H1, H1_2, and G1 humanoids. It splits the workflow into four steps: train in Isaac Gym (Train), replay and check the result in simulation (Play), move the policy into MuJoCo for sim-to-sim validation (Sim2Sim), and finally deploy to the real robot (Sim2Real). The repository can export either MLP or LSTM policy networks, and provides a C++ deployment example for the G1. Unitree separately maintains a unitree_rl_lab repository built on Isaac Lab (2.3 and above), which is a different project.",
+      "example": "A common path for newcomers: run the repo's train.py with --task=g1 to train a G1 walking policy, use play.py to replay and export the network, load it in MuJoCo to confirm it doesn't fall, then deploy it to the real robot.",
+      "related": ["legged_gym (Isaac Gym Environments for Legged Robots)", "NVIDIA Isaac Gym", "RSL RL", "Sim-to-Sim Transfer", "Unitree G1", "MuJoCo (Multi-Joint dynamics with Contact)"]
+    },
+    {
+      "key": "sim-17#9",
+      "name_en": "Variant Aggregation (SimplerEnv)",
+      "aliases": ["VA"],
+      "one_liner": "One of SimplerEnv's two evaluation modes: testing a policy across many visually randomized scene variants and averaging the results.",
+      "explanation": "Variant Aggregation is one of two “real-to-sim” evaluation approaches proposed by SimplerEnv (SIMPLER), from a paper by Xuanlin Li and colleagues at CoRL 2024. Simulated images and real-robot images always differ somewhat; the other approach, Visual Matching, tries to make the simulated image look as close to reality as possible. Variant Aggregation instead does the opposite: it applies heavy visual randomization to a scene, generating multiple environment variants along axes such as background, lighting, distractor objects, table texture, and camera pose, measures success rate separately in each, then averages them to estimate how a policy performs overall under visual variation. The paper uses Mean Maximum Rank Violation (MMRV) and the Pearson correlation coefficient to measure whether simulated results agree with real-robot results; in the paper's experiments, Visual Matching agreed with real robots better overall. VLA papers reporting SimplerEnv results on Google-robot tasks commonly list both a VM and a VA column.",
+      "example": "For the “pick up the Coke can” task, run the same policy through several variants — a different background, different lighting, added distractors, a different table texture, a different camera angle — and average the success rates across them to get its VA score.",
+      "related": ["SimplerEnv (SIMPLER: Simulated Manipulation Policy Evaluation for Real Robot Setups)", "Visual Matching (SimplerEnv)", "Mean Maximum Rank Violation", "Sim-to-Real Correlation (Pearson r)", "Visual Randomization", "Simulation-based Evaluation"]
+    },
+    {
+      "key": "sim-17#10",
+      "name_en": "VBench: Comprehensive Benchmark Suite for Video Generative Models",
+      "aliases": ["VBench", "VBench++", "VBench-2.0"],
+      "one_liner": "An open-source benchmark that scores video-generation quality separately across 16 dimensions instead of giving one overall number.",
+      "explanation": "VBench was proposed by a team from Nanyang Technological University and the Shanghai AI Laboratory, among others (first author Ziqi Huang), released in November 2023 and selected as a CVPR 2024 Highlight. Rather than a single vague score, it breaks text-to-video quality into 16 dimensions — subject consistency, background consistency, temporal flickering, motion smoothness, dynamic degree, aesthetic quality, object class, and spatial relationships among them — each with dedicated prompts and an automated evaluation method, checked against human preference annotations to see whether the scoring agrees with human judgment. The follow-up VBench++ extended it to image-to-video, long-video, and trustworthiness evaluation; VBench-2.0, from March 2025, shifted toward “intrinsic faithfulness” — commonsense reasoning, physical realism, and human motion. In embodied AI, evaluating video world models often borrows some of its metrics.",
+      "example": "When evaluating a model meant to generate robot training videos, VBench's subject-consistency and motion-smoothness dimensions can check whether the robot arm deforms or jitters partway through the clip; checking whether the motion obeys physics still requires a dedicated benchmark such as Physics-IQ.",
+      "related": ["Video Generation Model", "World Model", "Fréchet Video Distance", "Physics-IQ (Do generative video models understand physical principles?)", "WorldScore: A Unified Evaluation Benchmark for World Generation", "EWMBench: Evaluating Scene, Motion, and Semantic Quality in Embodied World Models"]
+    },
+    {
+      "key": "sim-17#11",
+      "name_en": "VIMA-Bench",
+      "aliases": ["VIMABench"],
+      "one_liner": "A tabletop manipulation benchmark driven by interleaved text-and-image prompts, with four levels of generalization testing.",
+      "explanation": "VIMA-Bench was introduced alongside the VIMA model, first-authored by Yunfan Jiang with collaborators including Fei-Fei Li and Anima Anandkumar, published at ICML 2023. Built on the Ravens simulator (a PyBullet-based tabletop manipulation environment), it extends to 17 meta-tasks whose instructions are written as multimodal prompts interleaving text and images, spanning categories such as simple object manipulation, visual goal reaching, novel-concept understanding, one-shot video imitation, visual-constraint satisfaction, and visual reasoning, and it provides 650,000 successful demonstration trajectories. Evaluation has four levels: L1 only randomizes object placement; L2 recombines already-seen objects and textures in new ways; L3 introduces new objects and textures; L4 is entirely new tasks — 4 of the 17 tasks are held out specifically to test zero-shot generalization. The action space is one grasp pose plus one placement pose.",
+      "example": "The VIMA paper reports that under the hardest zero-shot generalization setting, with the same amount of training data VIMA's task success rate was up to 2.9 times that of other approaches, and still 2.7 times higher with 10 times less training data.",
+      "related": ["VIMA: General Robot Manipulation with Multimodal Prompts", "Benchmark", "Compositional Generalization", "Zero-shot", "Tabletop Manipulation", "Transporter Networks: Rearranging the Visual World for Robotic Manipulation"]
+    }
+  ]
+}

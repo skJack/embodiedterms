@@ -1,0 +1,113 @@
+{
+  "batch": "sim-12",
+  "terms": [
+    {
+      "key": "sim-12#0",
+      "name_en": "Gym/Gymnasium MuJoCo Tasks",
+      "aliases": ["Gymnasium MuJoCo Environments", "MuJoCo Locomotion Tasks", "HalfCheetah / Hopper / Walker2d"],
+      "one_liner": "A classic set of MuJoCo-based continuous-control environments in Gymnasium, a standard test bed for reinforcement-learning papers.",
+      "explanation": "This is a set of 11 MuJoCo physics-simulation environments, originally released with OpenAI Gym and now maintained by the Farama Foundation's Gymnasium; the most commonly used are HalfCheetah (a 2D running cheetah), Hopper (a single-leg hopper), Walker2d (a 2D biped walker), Ant (a quadruped), and Humanoid. Actions are continuous joint torques, the reward is roughly “move forward as fast as possible, minus energy spent on actions,” and each episode runs at most 1,000 steps. Reinforcement-learning algorithms such as SAC, TD3, and PPO all report scores on them, and several of the D4RL offline datasets are also built on top of them. They test only locomotion control, with no vision or real-robot detail involved, making them well suited for learning the ropes and comparing algorithms. Version v5 is currently recommended (requires mujoco≥2.3.3), and scores from different versions cannot be compared directly.",
+      "example": "HalfCheetah-v5: the action is 6 joint torques (a 6-dimensional vector), the observation is 17-dimensional joint positions and velocities, there's no fall-based termination, the episode truncates at 1,000 steps, and the score equals a forward-velocity reward minus a control cost.",
+      "related": ["MuJoCo", "Gymnasium", "D4RL", "Soft Actor-Critic", "Proximal Policy Optimization", "DeepMind Control Suite"]
+    },
+    {
+      "key": "sim-12#1",
+      "name_en": "Hardware-in-the-Loop / Software-in-the-Loop Simulation",
+      "aliases": ["HIL / SIL", "HITL / SITL", "Hardware-in-the-Loop Testing"],
+      "one_liner": "Connecting a real controller or real control code to a simulated plant for testing — a standard validation step before deploying to a real robot.",
+      "explanation": "These are two testing methods borrowed from automotive and aerospace embedded engineering. Software-in-the-loop (SIL): the control program runs directly on a computer and interfaces with a simulated robot and sensors. Hardware-in-the-loop (HIL): the control program runs on the actual controller board, connected through real I/O signals or a communication bus to a real-time simulated model, so the controller believes it's controlling the real machine. MathWorks places these alongside model-in-the-loop (MIL) and processor-in-the-loop (PIL) as a chain of tests that progressively approach the real hardware. The benefit is that dangerous conditions and edge cases can be tested repeatedly in simulation with no risk of damaging the real machine. A common robotics practice is to let the same control code connect to either simulation or the real robot by changing only the communication configuration, as with PX4 drones' SITL/HITL or Unitree's unitree_mujoco.",
+      "example": "unitree_mujoco uses the same DDS communication as the real robot: a control program written with Unitree's SDK can be debugged in simulation using the local loopback network interface and domain ID 1, and switching to the network interface connected to the real robot with domain ID 0 drives the real robot directly.",
+      "related": ["Sim-to-Real Transfer", "Sim-to-Sim Transfer", "Digital Twin", "Real-Time Control", "PX4 / ArduPilot", "Unitree SDK"]
+    },
+    {
+      "key": "sim-12#2",
+      "name_en": "Headless Mode",
+      "aliases": ["--headless", "Headless Rendering"],
+      "one_liner": "Running a simulator with no graphical window open, commonly used for batch training and data collection on a server.",
+      "explanation": "Headless means running a program without a graphical user interface (GUI). In embodied AI, this mainly means running simulators such as Isaac Sim/Isaac Lab or MuJoCo on a GPU server with no monitor attached: no window pops up and nothing is displayed in real time, which saves overhead and speeds up training and data generation. Isaac Lab scripts just need a --headless flag added, which its documentation describes as launching “without a graphical interface”; if the environment has cameras that need to output images, --enable_cameras also needs to be added to enable off-screen rendering. Tools in the MuJoCo family use the environment variable MUJOCO_GL=egl for windowless rendering on the GPU, while osmesa does pure CPU software rendering. Note that headless doesn't mean no rendering at all — it just means nothing is displayed; to view the output remotely, Isaac Lab's livestream feature or video recording can be used instead.",
+      "example": "Running python scripts/reinforcement_learning/rsl_rl/train.py --task=Isaac-Cartpole-v0 --headless on a server trains a cart-pole policy with no window opened.",
+      "related": ["Isaac Lab", "Isaac Sim", "MuJoCo", "Batched Rendering", "GPU-Accelerated Parallel Simulation", "Simulation Throughput"]
+    },
+    {
+      "key": "sim-12#3",
+      "name_en": "Heightfield Terrain",
+      "aliases": ["Height Map Terrain", "hfield"],
+      "one_liner": "Representing uneven terrain with a 2D grid that stores the ground height at each point — the standard approach for legged-robot training.",
+      "explanation": "A heightfield is a 2D elevation matrix: the ground is divided into a grid, and each cell stores just one height value, much like a grayscale image where lighter means higher. Simulators use it as a cheap way to represent ramps, stairs, rubble, and other uneven terrain. MuJoCo's hfield asset can be loaded from a PNG or binary file, or generated at runtime from sensor data, and is treated as a set of triangular prisms during collision detection; Isaac Lab instead converts a heightfield into a triangle mesh, and comes with built-in terrains such as random rough ground, pyramid slopes, stairs, discrete obstacles, waves, and stepping stones, each with a difficulty parameter, making it easy to train from easy to hard using a terrain curriculum. The limitation is that a heightfield can only have one height per horizontal position, so it can't represent overhangs or caves.",
+      "example": "Isaac Lab's pyramid stairs terrain has taller steps as its difficulty parameter increases; when training quadruped locomotion, it's often mixed with randomly rough terrain and difficulty is ramped up gradually via a terrain curriculum.",
+      "related": ["Terrain Curriculum", "Rough-Terrain Locomotion", "Elevation Map", "Height Scan", "legged_gym", "MuJoCo"]
+    },
+    {
+      "key": "sim-12#4",
+      "name_en": "Holodeck",
+      "aliases": ["Language Guided Generation of 3D Embodied AI Environments"],
+      "one_liner": "Given a one-sentence description, automatically generates an interactive 3D indoor scene using GPT-4 and Objaverse assets.",
+      "explanation": "Holodeck is a collaboration between the University of Pennsylvania, Stanford, the University of Washington, and the Allen Institute for AI (Ai2), published at CVPR 2024. Embodied agents need large numbers of diverse training scenes, but building 3D rooms by hand is expensive. Holodeck lets a user type a description like “apartment for a researcher with a cat,” and GPT-4 supplies the common-sense knowledge: room layout, wall and floor materials, doors and windows, which objects belong in the scene, and spatial-relationship constraints between objects (such as a chair being next to a table); an optimization algorithm then solves for object placement, with objects retrieved from the Objaverse 3D asset library. The generated scene is loaded and used through AI2-THOR. In the paper's experiments, an object-goal navigation agent trained on Holodeck scenes generalized better zero-shot to new scene types such as music rooms and daycares.",
+      "example": "Given the input “apartment for a researcher with a cat,” Holodeck automatically plans the rooms, chooses wall and floor materials, picks furniture from Objaverse, and arranges it according to the constraints; the resulting scene can be loaded directly in AI2-THOR.",
+      "related": ["AI2-THOR", "ProcTHOR", "Objaverse", "Generative Simulation", "Procedural Generation", "Object-Goal Navigation"]
+    },
+    {
+      "key": "sim-12#5",
+      "name_en": "Humanoid-Gym",
+      "aliases": ["Reinforcement Learning for Humanoid Robot with Zero-Shot Sim2Real Transfer"],
+      "one_liner": "RobotEra's open-source reinforcement-learning framework for humanoid walking, built around zero-shot sim-to-real transfer.",
+      "explanation": "Humanoid-Gym is a reinforcement-learning framework open-sourced in 2024 by the RobotEra (星动纪元) team; the paper's authors are Xinyang Gu, Yen-Jen Wang, and Jianyu Chen (Tsinghua IIIS), and it appeared at the ICRA 2024 workshop on agile robotics. It trains humanoid walking policies (with PPO) at massive scale on NVIDIA Isaac Gym, with code borrowed from legged_gym and rsl_rl. Its distinguishing feature is an Isaac Gym-to-MuJoCo sim2sim pipeline: retesting a trained policy in a different physics engine can expose behavior that only worked because it exploited quirks of the single original simulator, improving the odds of success on the real robot. The authors validated zero-shot transfer to the real world on two humanoid robots, the 1.2-meter XBot-S and the 1.65-meter XBot-L. It's also commonly used as a starting point for getting other humanoid robots walking with reinforcement learning.",
+      "example": "A walking policy for XBot-L is first trained with PPO in Isaac Gym, then dropped into MuJoCo to run sim2sim checks for continued stability, and deployed to the real robot once it passes.",
+      "related": ["legged_gym", "Isaac Gym", "Sim-to-Sim Transfer", "Sim-to-Real Transfer", "RobotEra", "Reinforcement Learning-based Locomotion Control"]
+    },
+    {
+      "key": "sim-12#6",
+      "name_en": "HumanoidBench",
+      "aliases": ["Simulated Humanoid Benchmark for Whole-Body Locomotion and Manipulation", "humanoid-bench"],
+      "one_liner": "A simulated humanoid benchmark from Berkeley and others, covering 27 whole-body locomotion and manipulation tasks.",
+      "explanation": "HumanoidBench was proposed by researchers at UC Berkeley and Yonsei University (Carmelo Sferrazza, Pieter Abbeel, and colleagues), published at RSS 2024. Humanoid robot hardware is expensive and fragile, which makes algorithm research hard to run at scale. The benchmark builds a Unitree H1 fitted with two Shadow dexterous hands in MuJoCo, with 27 whole-body control tasks: 12 locomotion tasks (walk, run, hurdle, crawl, climb stairs, and more) and 15 manipulation tasks (open a cabinet, open a door, push, shoot a basketball, insert, and more). The codebase also provides variants such as an H1 without hands and a Unitree G1, along with DreamerV3, TD-MPC2, SAC, and PPO baselines. The paper found that the strongest reinforcement-learning algorithms at the time performed poorly on most tasks, while methods that first learn low-level skills like walking and reaching, then add hierarchical control on top, performed better.",
+      "example": "The same two-handed H1 has to complete locomotion tasks such as walk, hurdle, and stair, as well as manipulation tasks such as cabinet, door, basketball, and insert, all trained and scored with the same algorithm.",
+      "related": ["Humanoid Robot", "Unitree H1", "Shadow Dexterous Hand", "MuJoCo", "Whole-Body Control", "TD-MPC2"]
+    },
+    {
+      "key": "sim-12#7",
+      "name_en": "iGibson",
+      "aliases": ["Interactive Gibson", "iGibson 1.0", "iGibson 2.0"],
+      "one_liner": "Stanford's interactive indoor simulation platform, used for navigation and mobile-manipulation research in household settings.",
+      "explanation": "iGibson was developed by Stanford's Vision and Learning Lab (Fei-Fei Li, Silvio Savarese, and colleagues), as an interactive version of the earlier Gibson environment. Version 1.0 (IROS 2021) provides 15 fully interactive scenes reconstructed from real homes, totaling 108 rooms, where furniture, cabinet doors, drawers, and other rigid and articulated objects can all be pushed or opened by the robot; it can output RGB, depth, segmentation, and lidar sensor signals, with physics based on the Bullet engine, and it comes with its own motion planner. Version 2.0 (CoRL 2021) added object states such as temperature, wetness, cleanliness, and being sliced, and supports collecting human demonstrations with VR, used for the BEHAVIOR household-task benchmark. Stanford's BEHAVIOR-1K later switched to OmniGibson, built on NVIDIA Isaac Sim, and most new projects have since moved to that instead.",
+      "example": "In an iGibson household scene, a mobile robot is made to navigate to the kitchen and open a cabinet door, using the built-in motion planner to generate a collision-free arm trajectory.",
+      "related": ["OmniGibson", "BEHAVIOR-1K", "Habitat", "AI2-THOR", "Mobile Manipulation", "PyBullet"]
+    },
+    {
+      "key": "sim-12#8",
+      "name_en": "Incremental Potential Contact",
+      "aliases": ["IPC", "Barrier-based Contact"],
+      "one_liner": "A contact-simulation algorithm that uses barrier potentials to guarantee objects never interpenetrate, well suited to large soft-body deformation.",
+      "explanation": "IPC was proposed by Minchen Li and colleagues at the University of Pennsylvania, Adobe Research, and NYU, published at SIGGRAPH 2020 (ACM TOG). Traditional physics engines often allow objects to interpenetrate slightly before pushing them apart, which makes interpenetration or numerical blow-up likely once the timestep grows large. IPC instead formulates every implicit timestep as an optimization problem, adding a barrier potential that grows sharply as an object's distance to another approaches zero, combined with a line search that incorporates continuous collision detection, guaranteeing the entire trajectory has no intersections and no mesh elements flip — regardless of material, timestep size, or amount of deformation — and it also supports friction. The cost is heavy computation, running far slower than rigid-body engines like MuJoCo. Later extensions include C-IPC for cloth and rods, a rigid-body version called rigid-ipc, and the IPC Toolkit, which can be embedded in other simulators.",
+      "example": "In the paper's demonstrations, IPC handled scenes with up to about 498,000 contacts and 2.3 million tetrahedra within a single timestep, remaining interpenetration-free across timesteps ranging from 2×10⁻⁵ seconds to 2 seconds.",
+      "related": ["Contact Model", "Interpenetration", "Continuous Collision Detection", "Soft-Body Simulation", "Finite Element Method", "Cloth Simulation"]
+    },
+    {
+      "key": "sim-12#9",
+      "name_en": "Infinigen",
+      "aliases": ["Infinite Photorealistic Worlds using Procedural Generation", "Infinigen Indoors", "Infinigen-Articulated", "Infinigen-Sim"],
+      "one_liner": "Princeton's open-source procedural 3D world generator, where every asset is generated from scratch by randomized mathematical rules.",
+      "explanation": "Infinigen was developed by Princeton's Vision and Learning Lab (Jia Deng's group), built on Blender, and open-sourced under the BSD license. The first version (CVPR 2023) generates natural outdoor scenes — terrain, plants, animals, and phenomena like fire, clouds, rain, and snow — with every asset's shape and texture generated from scratch by randomized mathematical rules, using no external assets at all, which allows infinite variation and automatic output of ground-truth depth, optical flow, segmentation, and normals. Infinigen Indoors (CVPR 2024) extended this indoors, using a constraint description language and a solver to place furniture and appliances, and can export to real-time simulators such as Omniverse for training embodied agents. Infinigen-Articulated (also called Infinigen-Sim, 2025) further procedurally generates articulated, simulation-ready objects, exportable as URDF, MJCF, or USD for use in MuJoCo and Isaac.",
+      "example": "Running the same indoor-generation rules with a different random seed produces a new room with a different layout, furniture shapes, and materials, complete with pixel-accurate ground-truth depth and segmentation, ready to use as visual training data.",
+      "related": ["Procedural Generation", "Synthetic Data", "Simulation Assets", "Articulated Object", "Blender", "Generative Simulation"]
+    },
+    {
+      "key": "sim-12#10",
+      "name_en": "InternUtopia",
+      "aliases": ["GRUtopia"],
+      "one_liner": "Shanghai AI Lab's city-scale embodied-AI simulation platform built on Isaac Sim, formerly named GRUtopia.",
+      "explanation": "InternUtopia was developed by Shanghai AI Lab, previously named GRUtopia (Chinese name 浦源·桃源); it was released with a public paper at the World Artificial Intelligence Conference in July 2024, shipped version 2.0 in February 2025, and was renamed to InternUtopia with version 2.2.0 in July of that year. It's built on top of NVIDIA Isaac Sim and has three parts: GRScenes, a scene library of about 100,000 finely annotated interactive scenes across 89 categories, extending from homes to service settings like supermarkets and hospitals; GRResidents, virtual residents (NPCs) driven by a large language model that can converse with a robot and generate tasks; and the GRBench benchmark, focused on legged robots, with three task categories — object navigation, social navigation, and mobile manipulation. The platform also supports VR teleoperation and hand motion-capture control, and is used together with companion projects InternNav and InternManip.",
+      "example": "In GRBench's social-navigation task, a robot can ask a GRResidents-driven virtual resident for information about a target object before walking to its location.",
+      "related": ["Isaac Sim", "Shanghai AI Lab", "Social Navigation", "Mobile Manipulation", "Object-Goal Navigation", "InternVLA Series"]
+    },
+    {
+      "key": "sim-12#11",
+      "name_en": "LeIsaac",
+      "aliases": ["leisaac"],
+      "one_liner": "Lightwheel's open-source Isaac Lab teleoperation data-collection framework, plugging the SO-101 arm into the LeRobot pipeline.",
+      "explanation": "LeIsaac is open-sourced by Lightwheel (光轮智能) under the Apache 2.0 license. It places a simulated SO-101 robot arm (single- or dual-arm) inside NVIDIA Isaac Lab, letting a user teleoperate the simulated follower arm with a real SO-101 leader arm, with keyboard and gamepad also supported; besides manual teleoperation, it can also generate demonstration trajectories automatically with a state-machine script. The collected HDF5 data can be converted to LeRobot's dataset format, used to fine-tune policies such as GR00T N1.5/N1.6 and deploy them to a real robot. It's also the official simulated imitation-learning environment for LeRobot's EnvHub, loadable in one line of code for tasks such as picking oranges, lifting blocks, tidying a toy table, and bimanual cloth folding, and it can also run in the cloud when no local GPU is available.",
+      "example": "Using LeRobot's make_env to load the so101_pick_orange task from LightwheelAI/leisaac_env: three oranges are placed onto a plate, and the arm then returns to its initial pose.",
+      "related": ["Isaac Lab", "LeRobot", "EnvHub", "SO-100 / SO-101 Arm", "Lightwheel", "GR00T N1 Series"]
+    }
+  ]
+}

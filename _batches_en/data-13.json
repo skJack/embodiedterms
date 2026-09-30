@@ -1,0 +1,113 @@
+{
+  "batch": "data-13",
+  "terms": [
+    {
+      "key": "data-13#0",
+      "name_en": "Play Data",
+      "aliases": ["Free Play Data"],
+      "one_liner": "Robot data recorded while an operator freely manipulates a scene with no specific task in mind.",
+      "explanation": "Play data is a collection approach introduced by Corey Lynch and colleagues in the 2019 paper Learning Latent Plans from Play (CoRL 2019): an operator teleoperates a robot around a scene full of objects, opening drawers, pushing sliders, and grabbing blocks out of curiosity, with no task specified in advance. Its advantage is cost: there's no need to segment by task, label anything, or reset the scene between attempts. The paper reports that, for the same amount of collection time, this approach covers roughly 4 times the range of interactions that task-by-task demonstrations do. The tradeoff is that there are no task labels, so this data is usually paired with hindsight relabeling (treating the endpoint of a segment as its goal) to train a goal-conditioned policy, or given a language description after the fact. The CALVIN benchmark and MimicPlay both build on this idea.",
+      "example": "In the Play-LMP paper, an operator teleoperates a simulated robot through VR, freely manipulating a tabletop scene with drawers, sliding doors, and blocks; the resulting continuous data, with no segmentation or task labels, is used to train a policy that can complete various tasks given a goal image.",
+      "related": ["Goal-Conditioned Policy", "Hindsight Relabeling", "Teleoperation", "Demonstration Data", "CALVIN", "MimicPlay"]
+    },
+    {
+      "key": "data-13#1",
+      "name_en": "Project Aria Glasses",
+      "aliases": ["Aria Glasses", "Aria Gen 2"],
+      "one_liner": "Meta's research eyewear for collecting first-person data; it only records, it doesn't display anything to the wearer.",
+      "explanation": "Project Aria is a research project from Meta Reality Labs, centered on a pair of sensor-laden glasses that look close to ordinary eyewear, used to collect multimodal first-person data. The first generation carries 1 RGB camera, 2 SLAM cameras (for localization and mapping), 2 eye-tracking cameras, plus an IMU, microphones, and more; the second generation increases the SLAM cameras to 4, adds a heart-rate (PPG) sensor and a contact microphone, runs 6–8 hours on a charge, and can perform localization, hand tracking, and eye tracking directly on the device. Meta provides it to academic and industry partners by application, and its website states more than 200 partners so far. In embodied AI, it's mainly used to cheaply collect first-person human manipulation video and hand trajectories for robot learning; datasets such as Nymeria and HOT3D were both collected with it.",
+      "example": "Georgia Tech's EgoMimic has people wear Aria glasses while performing tabletop manipulation, then trains a policy on the recorded first-person video and hand trajectories together with a small amount of robot data.",
+      "related": ["First-Person Video (Egocentric Video)", "Human Video Data", "EgoMimic", "Nymeria", "HOT3D", "Wearable Data Collection"]
+    },
+    {
+      "key": "data-13#2",
+      "name_en": "Project Go-Big",
+      "aliases": ["Go-Big"],
+      "one_liner": "Figure's plan to pretrain its humanoid robot using massive amounts of first-person human video.",
+      "explanation": "Project Go-Big is a data initiative the U.S. humanoid robot company Figure AI announced on September 18, 2025, aimed at building “internet-scale” humanoid pretraining data for its VLA (vision-language-action) model, Helix. Figure partnered with the asset management firm Brookfield, which provides access to more than 100,000 residential units along with large amounts of office and logistics space, used to collect first-person video of people doing everyday things in real homes. Figure says Helix learned to navigate a cluttered home from language instructions — going straight from images and language to chassis velocity commands — using human video alone, and describes this as the first time a humanoid robot has learned this capability end-to-end purely from human video; navigation and manipulation were also merged into the same Helix network. It represents the strategy of substituting human video for part of the teleoperation data a humanoid would otherwise need.",
+      "example": "A user says “walk over to the kitchen table,” and Helix outputs walking-speed commands directly from the camera feed; the training data behind this capability came entirely from first-person human video, with no robot demonstrations involved.",
+      "related": ["Helix", "Figure AI", "Human Video Data", "First-Person Video (Egocentric Video)", "Zero-Shot", "Vision-Language-Action (VLA) Model"]
+    },
+    {
+      "key": "data-13#3",
+      "name_en": "Pseudo Action Labels",
+      "aliases": ["Pseudo-Action Labeling", "Pseudo-Actions"],
+      "one_liner": "Action labels inferred by a model from video, standing in for actions that were never actually recorded.",
+      "explanation": "When video itself doesn't record what action a human or robot took, a model can “guess” the action at each step from the surrounding frames, and those guesses can be used as labels to train a policy — this is a pseudo action label. There are two common approaches. One trains an inverse-dynamics model (which infers the action between two adjacent frames) on a small amount of action-labeled data, then uses it to label a huge amount of video in bulk — OpenAI's VPT did exactly this to add keyboard-and-mouse action labels to a large collection of Minecraft videos from the internet. The other uses a latent-action model to learn an abstract action encoding directly from video. NVIDIA's DreamGen uses both approaches to add pseudo actions to video generated by a world model, producing trainable “neural trajectories.” This lets video with no action labels be used for training too, though the labels carry error and usually still need fine-tuning on real data.",
+      "example": "VPT first had people play Minecraft while recording their keyboard and mouse actions, trained an inverse-dynamics model on that data, then used it to label pseudo actions across a large collection of internet videos, and finally ran behavioral cloning on that labeled data.",
+      "related": ["Inverse Dynamics Model", "Latent Action Model", "Action-Label-Free Video", "Neural Trajectories", "DreamGen (GR00T Dreams)", "VPT (Video PreTraining)"]
+    },
+    {
+      "key": "data-13#4",
+      "name_en": "Real2Render2Real",
+      "aliases": ["R2R2R"],
+      "one_liner": "A method that renders large amounts of robot training data from a phone scan plus one video of a human demonstration.",
+      "explanation": "Real2Render2Real is a data-generation method released in May 2025 by UC Berkeley (Ken Goldberg's group) and the Toyota Research Institute. It needs only two inputs: a 3D scan of an object taken with a phone, and one video of a person performing the task by hand. The system reconstructs the object's shape with 3D Gaussian splatting, tracks the object's 6-DoF motion throughout the video, converts it into a mesh, pairs it with a robot model, and re-renders thousands of demonstrations with varied object positions and camera viewpoints. It only renders images and does no dynamics simulation at all (collisions are turned off), so there's no need to tune physical parameters or use a real robot. The paper reports that a model trained on data generated from just 1 human demonstration matches the performance of one trained on 150 teleoperated demonstrations, and that generation takes about 1/27th the time of teleoperation.",
+      "example": "Scanning a cup with a phone and recording one video of a person placing the cup onto a plate, R2R2R can render thousands of image-action demonstrations of a robot arm performing the same motion, used to train π0-FAST or a diffusion policy.",
+      "related": ["Synthetic Data", "3D Gaussian Splatting", "Real-to-Sim-to-Real", "Human Video Data", "Teleoperation", "Diffusion Policy"]
+    },
+    {
+      "key": "data-13#5",
+      "name_en": "RH20T",
+      "aliases": ["RH20T: A Comprehensive Robotic Dataset for Learning Diverse Skills in One-Shot"],
+      "one_liner": "A multimodal real-robot manipulation dataset from Shanghai Jiao Tong University, with force, audio, and human demonstration video.",
+      "explanation": "RH20T is a real-robot manipulation dataset released in 2023 by Cewu Lu's group (the MVIG lab) at Shanghai Jiao Tong University. It contains over 110,000 contact-rich manipulation sequences covering 147 tasks (48 drawn from RLBench, 29 from Meta-World, and 70 designed by the authors), collected across 7 different robot configurations. Beyond multi-view RGB and depth images, each sequence also includes 6-axis force/torque readings, audio, and action records, with fingertip tactile data on some configurations; every robot sequence is also paired with a video of a human performing the same task plus a language description, aimed at supporting one-shot imitation learning — learning a task from watching a single human demonstration. The full dataset totals about 40TB.",
+      "example": "One RH20T sequence provides synchronized RGB-D footage from multiple cameras, 100Hz force/torque readings, dual-microphone audio, and a video of a human performing the same task.",
+      "related": ["SJTU MVIG Lab (Cewu Lu's Group)", "Multimodal Data", "Contact-Rich Manipulation", "6-Axis Force/Torque Sensor", "Real-Robot Data", "One-Shot Imitation Learning"]
+    },
+    {
+      "key": "data-13#6",
+      "name_en": "RoboCOIN",
+      "aliases": ["RoboCoin", "RoboCOIN: An Open-Sourced Bimanual Robotic Data Collection for Integrated Manipulation"],
+      "one_liner": "A cross-embodiment bimanual manipulation dataset led by BAAI, open-sourced across 15 kinds of robots.",
+      "explanation": "RoboCOIN is a bimanual-manipulation dataset led by the Beijing Academy of Artificial Intelligence (BAAI), open-sourced in November 2025 together with more than twenty universities and robotics companies. It contains over 180,000 demonstrations from 15 robot platforms, including bimanual robots, half-body humanoids, and full-body humanoids (models from manufacturers such as AgileX, Galaxea, AgiBot, Galbot, Leju Robotics, Unitree, and others), covering 16 environments, 421 bimanual tasks, and 432 objects, with tasks organized into 39 categories of bimanual coordination behavior. Annotation is done at three levels: a task concept for the whole trajectory, segmented subtasks, and frame-by-frame kinematic information. A companion processing pipeline, CoRobot, built on LeRobot, handles data quality control, automatic annotation, and unified management of cross-embodiment data.",
+      "example": "A single bimanual demonstration carries three layers of annotation: the whole trajectory states what task is being done, segments mark the start and end of each subtask, and each frame carries kinematic data; the data can be loaded directly for training using tools from the LeRobot ecosystem.",
+      "related": ["Beijing Academy of Artificial Intelligence (BAAI)", "Bimanual Manipulation", "Cross-Embodiment Data", "LeRobot Dataset Format", "Subtask Segmentation", "AgiBot World"]
+    },
+    {
+      "key": "data-13#7",
+      "name_en": "RoboGen",
+      "aliases": ["RoboGen: Towards Unleashing Infinite Data for Automated Robot Learning via Generative Simulation"],
+      "one_liner": "A generative simulation framework where a large model proposes tasks, builds the simulated scene, and learns the skill.",
+      "explanation": "RoboGen is a robot-learning framework proposed in November 2023 by researchers at CMU, MIT, the Tsinghua-affiliated IIIS, UMass Amherst, and other institutions, published at ICML 2024. Rather than having a large model output actions directly, it runs a “propose–generate–learn” loop: a large model first proposes a skill to learn, then automatically builds the matching simulated scene and objects, breaks the task into subtasks, and writes supervision signals such as reward functions; finally, depending on the task type, it picks reinforcement learning, motion planning, or trajectory optimization to learn the skill. This needs almost no manual task design, yet can continuously produce demonstration data for a wide range of skills, spanning articulated objects, deformable-object manipulation, and legged locomotion. The project page states it uses the Genesis simulation engine for physics and rendering. It's a representative example of “generative simulation.”",
+      "example": "A large model proposes the task “pull out a suitcase's handle”; RoboGen automatically places a suitcase model into the scene, sets up the initial state, generates a reward function, and trains the skill with reinforcement learning.",
+      "related": ["Generative Simulation", "Genesis", "Procedural Generation", "LLM Task Planning", "Reward Function", "Simulation Data"]
+    },
+    {
+      "key": "data-13#8",
+      "name_en": "RoboNet",
+      "aliases": ["RoboNet: Large-Scale Multi-Robot Learning"],
+      "one_liner": "A 2019 dataset of multi-robot interaction video, about 15 million frames across 7 kinds of robots.",
+      "explanation": "RoboNet is an early large-scale multi-robot dataset released in 2019 by researchers at Berkeley, Stanford, Penn, and CMU, including Sergey Levine and Chelsea Finn. It pools about 15 million frames of video and corresponding actions from 7 robot platforms, ranging from the industrial Kuka arm to the low-cost WidowX, as well as the Sawyer, Franka, Baxter, Fetch, and Google's R3. The data was collected autonomously by having robots execute random actions, requiring almost no human demonstration and carrying no task labels; it's mainly used to train action-conditioned video-prediction models for visual foresight planning. The paper found that pretraining on RoboNet and then transferring to a new robot outperformed training from scratch on that robot with 4 to 20 times as much data. It was an early attempt at a cross-embodiment dataset.",
+      "example": "A researcher collects only 300–400 random trajectories on a new robot arm, fine-tunes a video-prediction model pretrained on RoboNet, and then uses it to plan pushing actions on objects.",
+      "related": ["Cross-Embodiment Data", "Visual Foresight (Model-Based Planning)", "Video Prediction Model", "Autonomous Data Collection", "Open X-Embodiment", "Pretraining"]
+    },
+    {
+      "key": "data-13#9",
+      "name_en": "RoboSet",
+      "aliases": [],
+      "one_liner": "A real-robot kitchen-task dataset from CMU and Meta, with multi-task demonstrations and 4 camera views per frame.",
+      "explanation": "RoboSet is a real-robot dataset that Carnegie Mellon University and Meta AI made public as part of the RoboAgent project (2023), set mostly in home-kitchen activities. According to the dataset's page, it totals 28,500 trajectories: 9,500 collected through teleoperation with an Oculus Quest 2 controller, and 19,000 obtained through kinesthetic-teaching replay (replaying an existing trajectory in a rearranged version of the scene). Every frame carries 4 camera views, and tasks are organized by “activity,” with each activity containing 4–6 language-instructed subtasks. RoboAgent used about 7,500 of these trajectories to train its MT-ACT policy, which learned 12 manipulation skills. The data is released in HDF5 format under the MIT license.",
+      "example": "Opening one RoboSet trajectory with h5py gives images from 4 camera views, the robot arm's state, the corresponding actions, and the language instruction for that task.",
+      "related": ["RoboAgent (MT-ACT)", "Action Chunking", "Teleoperation", "Kinesthetic Teaching", "Multi-View", "HDF5"]
+    },
+    {
+      "key": "data-13#10",
+      "name_en": "RoboTurk",
+      "aliases": ["RoboTurk Crowdsourcing Platform"],
+      "one_liner": "Stanford's 2018 platform for crowdsourced robot demonstrations, teleoperated remotely from a smartphone.",
+      "explanation": "RoboTurk is a crowdsourced data-collection platform published at CoRL 2018 by Fei-Fei Li, Silvio Savarese, and colleagues at Stanford, named after the crowdsourcing platform Amazon Mechanical Turk. It lets ordinary people perform 6-DoF teleoperation using a smartphone like an iPhone: moving the phone through the air makes the remote robot's end effector move the same way, with no VR headset or special equipment needed, so collection tasks can be distributed to remote workers anywhere. In an initial trial totaling 22 hours of system usage, it collected 137.5 hours of operation data and over 2,200 successful demonstrations; the paper also found that remote users could complete demonstrations successfully even with low bandwidth and high latency. It's a representative example of crowdsourced collection, and the multi-operator demonstration data in the robomimic benchmark was also collected with it.",
+      "example": "A remote worker opens the app at home, watching a live video feed streamed back over the web while moving their phone to control a robot arm through a pick-and-place task; the data uploads automatically for imitation learning.",
+      "related": ["Crowdsourced Data Collection", "Teleoperation", "Demonstration Data", "RoboMimic", "Imitation Learning", "Stanford Artificial Intelligence Laboratory (SAIL)"]
+    },
+    {
+      "key": "data-13#11",
+      "name_en": "RoboVQA",
+      "aliases": ["RoboVQA: Multimodal Long-Horizon Reasoning for Robotics"],
+      "one_liner": "A video question-answering dataset from Google DeepMind, built around long-horizon robot tasks.",
+      "explanation": "RoboVQA is a dataset and modeling effort released by Google DeepMind (Pierre Sermanet and others) in November 2023. The dataset contains about 830,000 video-text pairs across 29,500 distinct instructions, with questions centered on long-horizon tasks: what to do next, whether the current step is finished, or whether a certain action can be performed right now. Collection follows a “bottom-up” crowdsourcing approach: open-ended long-horizon tasks are collected first, then executed and annotated by a robot, a person, or a person holding a handheld grasping tool, which the paper reports gives 2.2 times the throughput of traditional step-by-step collection. The authors used it to train a video vision-language model, RoboVQA-VideoCoCa, measuring performance with a unified metric based on the human-intervention rate; the results show that models taking video input have a 19% lower average error rate than models that only see a single image.",
+      "example": "Shown a video of a robot in a kitchen and asked “is the task done?” or “what should happen next?”, the model answers in text, for instance “put the sponge in the sink.”",
+      "related": ["Visual Question Answering (VQA)", "Embodied Reasoning", "Long-Horizon Task", "Vision-Language Model (VLM)", "Google DeepMind", "Language Annotation"]
+    }
+  ]
+}

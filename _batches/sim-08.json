@@ -1,0 +1,203 @@
+{
+  "category": "sim",
+  "batch": 8,
+  "terms": [
+    {
+      "name_zh": "仿真爆炸",
+      "name_en": "Simulation Instability (Blow-up)",
+      "abbr": "",
+      "aliases": ["数值不稳定", "数值爆炸", "NaN 爆炸", "Simulation Blow-up", "Numerical Instability"],
+      "tier": 2,
+      "one_liner": "物理仿真数值发散，机器人抽搐、物体乱飞，状态变成 NaN 或极大值。",
+      "explanation": "仿真爆炸是物理仿真里的常见故障：积分器每一步算出的速度、加速度越滚越大，最后变成 NaN（非数）或天文数字，画面上表现为机器人剧烈抖动、零件飞出、物体穿透后被弹飞。常见原因有仿真步长太大、关节 PD 增益（位置控制的刚度和阻尼）设得太硬、质量或惯量参数不合理、初始时刻物体互相穿插、约束求解器迭代次数不够。MuJoCo 文档明确说步长过大会让仿真不稳定；引擎每步检查加速度是否为 NaN 或超出上限，发现后发出警告并默认自动重置。做大规模并行强化学习时，一个环境产生的 NaN 可能污染整批训练数据，所以通常要检测并单独重置出问题的环境。",
+      "example": "在 MuJoCo 里把步长调大、同时把关节刚度设得很高，机械臂可能几步之内就剧烈抖动、状态变成 NaN，MuJoCo 会报加速度异常（BADQACC）警告并自动重置仿真。",
+      "related": ["仿真步长", "积分器", "约束求解器", "穿模", "求解器迭代次数", "MuJoCo"],
+      "sources": [
+        {"title": "MuJoCo Documentation: Computation - Numerical integration", "url": "https://mujoco.readthedocs.io/en/stable/computation/index.html#numerical-integration"},
+        {"title": "MuJoCo Documentation: XML Reference (option/flag autoreset)", "url": "https://mujoco.readthedocs.io/en/stable/XMLreference.html#option-flag-autoreset"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "仿真步长",
+      "name_en": "Simulation Timestep",
+      "abbr": "dt",
+      "aliases": ["物理步长", "时间步长", "physics dt", "timestep", "sim dt"],
+      "tier": 2,
+      "one_liner": "物理引擎每算一步推进的仿真时间，决定精度、稳定性和速度。",
+      "explanation": "仿真步长（常记作 dt）是物理引擎每次积分向前推进的时间，比如 0.002 秒表示仿真 1 秒要算 500 步。步长越小，接触和高速运动算得越准、越不容易爆炸，但同样时长要算更多步，速度更慢。MuJoCo 默认步长 0.002 秒，文档称它是影响速度与精度权衡最重要的单个参数；Isaac Lab 的 SimulationCfg 默认 1/60 秒，具体任务常改得更小。仿真步长通常比策略的控制周期短：策略每输出一次动作，仿真连续跑若干步，这个倍数叫控制降频（decimation）；有的引擎还会把一步再拆成若干子步。",
+      "example": "Isaac Lab 的足式机器人速度跟踪任务把 sim.dt 设为 0.005 秒（200 Hz），decimation 设为 4，所以策略以 50 Hz 输出动作。",
+      "related": ["控制降频", "子步", "积分器", "仿真爆炸", "控制频率", "实时因子"],
+      "sources": [
+        {"title": "MuJoCo Documentation: XML Reference (option timestep)", "url": "https://mujoco.readthedocs.io/en/stable/XMLreference.html#option-timestep"},
+        {"title": "Isaac Lab source: velocity_env_cfg.py (locomotion velocity task)", "url": "https://github.com/isaac-sim/IsaacLab/blob/main/source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/velocity_env_cfg.py"},
+        {"title": "Isaac Lab source: simulation_cfg.py (SimulationCfg)", "url": "https://github.com/isaac-sim/IsaacLab/blob/main/source/isaaclab/isaaclab/sim/simulation_cfg.py"}
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "路径长度加权成功率",
+      "name_en": "Success weighted by Path Length",
+      "abbr": "SPL",
+      "aliases": ["路径加权成功率", "Success weighted by (normalized inverse) Path Length"],
+      "tier": 2,
+      "one_liner": "导航评测指标：既看有没有到达目标，也看走的路是否接近最短路径。",
+      "explanation": "SPL 由 Peter Anderson、Jitendra Malik 等 11 位研究者在 2018 年的论文《On Evaluation of Embodied Navigation Agents》中提出，并建议作为具身导航的首要指标。算法：对每个测试回合 i，成功则 S_i 记 1，否则记 0；l_i 是起点到目标的最短路径长度，p_i 是智能体实际走的路程；SPL 是所有回合 S_i·l_i/max(p_i, l_i) 的平均值。「成功」要求智能体主动输出停止动作，且此时离目标足够近，论文建议阈值默认取机身宽度的 2 倍，距离用绕开障碍的最短路径距离而不是直线距离。它惩罚绕远路，避免只看成功率时乱逛碰巧到达也拿满分。点目标导航、物体目标导航等任务通常同时报告成功率和 SPL。",
+      "example": "论文举例：一半回合成功且都走最短路，SPL 为 0.5；全部成功但每次走的路程都是最短路的两倍，SPL 同样是 0.5；一半成功且路程是两倍，SPL 为 0.25。",
+      "related": ["成功率", "点目标导航", "物体目标导航", "导航", "归一化动态时间规整", "导航误差 / Oracle 成功率 / 轨迹长度"],
+      "sources": [
+        {"title": "On Evaluation of Embodied Navigation Agents (arXiv 1807.06757)", "url": "https://arxiv.org/abs/1807.06757"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "并行环境",
+      "name_en": "Vectorized Environments",
+      "abbr": "",
+      "aliases": ["向量化环境", "num_envs", "Vector Env", "Parallel Environments"],
+      "tier": 2,
+      "one_liner": "同时运行许多份相互独立的环境副本，一次批量收集交互数据。",
+      "explanation": "并行环境是强化学习里提高采样速度的做法：把同一个环境复制 N 份（N 就是代码里的 num_envs），每一步把 N 个动作一起送进去，拿回 N 份观测、奖励和结束标志，正好组成一个批次喂给神经网络。Gymnasium 提供顺序执行的 SyncVectorEnv 和多进程的 AsyncVectorEnv，某个副本回合结束时自动重置它，不用等其他副本。Isaac Gym、Isaac Lab、MJX 等 GPU 仿真器更进一步，把成千上万个环境放在一块 GPU 上同时算，数据直接以 PyTorch 张量交给训练代码，Isaac Gym 论文称比 CPU 仿真快两到三个数量级。Rudin 等人 2021 年借此让 ANYmal 四足机器人在平地上不到 4 分钟学会行走。",
+      "example": "Isaac Lab 的足式机器人速度跟踪任务默认 num_envs=4096，即在一块 GPU 上同时仿真 4096 个机器人副本，用 PPO 训练行走策略。",
+      "related": ["GPU 并行仿真", "大规模并行强化学习", "Isaac Lab", "Isaac Gym", "仿真吞吐量", "近端策略优化"],
+      "sources": [
+        {"title": "Gymnasium Documentation: Vector environments", "url": "https://gymnasium.farama.org/api/vector/"},
+        {"title": "Isaac Gym: High Performance GPU-Based Physics Simulation For Robot Learning (arXiv 2108.10470)", "url": "https://arxiv.org/abs/2108.10470"},
+        {"title": "Learning to Walk in Minutes Using Massively Parallel Deep Reinforcement Learning (arXiv 2109.11978)", "url": "https://arxiv.org/abs/2109.11978"}
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "视觉随机化",
+      "name_en": "Visual Randomization",
+      "abbr": "",
+      "aliases": ["纹理随机化", "光照随机化", "视觉域随机化", "Texture Randomization", "Lighting Randomization"],
+      "tier": 2,
+      "one_liner": "训练时随机改变仿真画面的纹理、颜色、光照和相机，让视觉策略不挑画面。",
+      "explanation": "视觉随机化是域随机化中针对「看」的那部分：在仿真里随机更换物体和背景的纹理、颜色，改变光源位置和强度、相机位姿，再加入干扰物，让模型见过足够多样的画面，从而把真实世界当成又一种变化。Tobin 等人（OpenAI、伯克利）2017 年系统地做了这件事：只用随机渲染的仿真图像训练物体检测器，在真实场景中定位精度约 1.5 厘米，并用于抓取。它主要缩小虚实差距里的视觉部分；随机化质量、摩擦等物理参数则叫动力学随机化。Isaac Lab 内置了随机纹理、随机颜色等事件项，可在每个回合开始时自动执行。",
+      "example": "训练一个抓方块的视觉策略时，每个回合随机把桌面换成木纹、大理石或纯色，随机调整灯光方向和亮度，并轻微挪动相机位置。",
+      "related": ["域随机化", "动力学随机化", "仿真到现实迁移", "虚实差距", "视觉泛化", "变体聚合"],
+      "sources": [
+        {"title": "Domain Randomization for Transferring Deep Neural Networks from Simulation to the Real World (arXiv 1703.06907)", "url": "https://arxiv.org/abs/1703.06907"},
+        {"title": "Isaac Lab source: envs/mdp/events.py (randomize_visual_texture_material / randomize_visual_color)", "url": "https://github.com/isaac-sim/IsaacLab/blob/main/source/isaaclab/isaaclab/envs/mdp/events.py"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "VSI-Bench 视觉空间智能基准",
+      "name_en": "VSI-Bench (Thinking in Space: Visual-Spatial Intelligence Benchmark)",
+      "abbr": "",
+      "aliases": ["VSI-Bench", "Thinking in Space", "视觉空间智能基准"],
+      "tier": 2,
+      "one_liner": "用室内视频考多模态大模型能否记住并推理空间关系的问答基准。",
+      "explanation": "VSI-Bench 出自论文《Thinking in Space》，作者来自纽约大学、耶鲁和斯坦福（含谢赛宁、李飞飞），2024 年 12 月发布，入选 CVPR 2025 口头报告。它从 ScanNet、ScanNet++、ARKitScenes 选了 288 段室内第一人称视频，出了 5000 多道问答，分 8 个任务：物体计数、绝对距离、物体尺寸、房间大小、相对距离、相对方向、路线规划、出现顺序，有选择题也有数值题。论文测得最好的模型平均约 45%，人类约 79%；约 71% 的错误出在空间推理上；思维链提示没有帮助，而先让模型画出「认知地图」能提升相对距离题的准确率。它是衡量多模态模型空间智能的常用评测之一。",
+      "example": "看完一段扫描厨房的视频后回答：「如果站在冰箱旁、面朝炉灶，水槽在你的左边还是右边？」这属于相对方向题。",
+      "related": ["空间智能", "空间推理", "多模态大语言模型", "具身推理", "ERQA 具身推理问答基准", "ScanNet 数据集"],
+      "sources": [
+        {"title": "Thinking in Space: How Multimodal Large Language Models See, Remember, and Recall Spaces (arXiv 2412.14171)", "url": "https://arxiv.org/abs/2412.14171"},
+        {"title": "Thinking in Space project page", "url": "https://vision-x-nyu.github.io/thinking-in-space.github.io/"},
+        {"title": "GitHub: vision-x-nyu/thinking-in-space", "url": "https://github.com/vision-x-nyu/thinking-in-space"}
+      ],
+      "as_of": "2025-02"
+    },
+    {
+      "name_zh": "世界模型评测",
+      "name_en": "World-Model-based Policy Evaluation",
+      "abbr": "",
+      "aliases": ["世界模型当评估器", "基于世界模型的策略评估", "World Model as Policy Evaluator"],
+      "tier": 2,
+      "one_liner": "用可交互的视频世界模型代替真机，闭环推演策略来估计它的表现。",
+      "explanation": "世界模型评测是把机器人策略接到一个以动作为条件的视频生成模型上闭环运行：策略看生成的画面输出动作，世界模型据此预测接下来的画面，如此循环，最后由人或视觉语言模型判断任务是否完成。它针对的是真机评测慢、贵、难复现，而传统仿真器搭场景费力、画面和物理又不够真的问题。2025 年起出现了 WorldEval、WorldGym、Ctrl-World 等工作；谷歌 DeepMind 用 Veo 视频模型评测 Gemini Robotics 策略，并以 1600 多次真机评测对照，显示它能预测不同策略的相对优劣，还能用于分布外泛化和安全红队测试。2026 年仍有新工作跟进，当前主要用来给检查点排序和筛查风险。",
+      "example": "谷歌 DeepMind 在 Veo 世界模拟器里给场景换上新物体、新背景和干扰物，比较 8 个 Gemini Robotics 策略检查点在 5 个双臂任务上的表现，再用真机结果验证排序是否一致。",
+      "related": ["世界模型", "Veo 世界模拟器", "WorldEval", "Ctrl-World", "仿真-真机相关性", "真机评测"],
+      "sources": [
+        {"title": "Evaluating Gemini Robotics Policies in a Veo World Simulator (arXiv 2512.10675)", "url": "https://arxiv.org/abs/2512.10675"},
+        {"title": "WorldEval: World Model as Real-World Robot Policies Evaluator (arXiv 2505.19017)", "url": "https://arxiv.org/abs/2505.19017"}
+      ],
+      "as_of": "2026-07"
+    },
+    {
+      "name_zh": "Adroit 灵巧手任务",
+      "name_en": "Adroit (Dexterous Manipulation Suite with ShadowHand in MuJoCo)",
+      "abbr": "",
+      "aliases": ["Adroit Hand", "ADROIT", "DAPG 任务"],
+      "tier": 3,
+      "one_liner": "在 MuJoCo 中控制 24 自由度仿真五指手完成开门、敲钉等四项任务的基准。",
+      "explanation": "Adroit 任务出自 Rajeswaran、Vikash Kumar、Sergey Levine 等人（华盛顿大学、OpenAI、伯克利）2018 年的论文，在 MuJoCo 里仿真 24 自由度的 ADROIT 拟人手（D4RL 称其为仿真 Shadow 手），设计了四个任务：把球搬到目标位置、在手里转笔到指定朝向、用锤子敲钉子、拉开带门闩的门。作者用 VR 数据手套为每个任务采集 25 条人类演示，并提出 DAPG：先用演示做行为克隆，再用带演示项的策略梯度做强化学习微调。之后 D4RL 把它收入离线强化学习基准，提供 human、cloned、expert 三类数据，Gymnasium-Robotics 也维护这些环境。它常用来测高维灵巧操作、稀疏奖励和演示辅助学习。",
+      "example": "D4RL 中的 pen-human 数据集就是转笔任务的 25 条人类演示，离线强化学习论文常用它比较算法。",
+      "related": ["灵巧操作", "手内操作", "Shadow 灵巧手", "D4RL", "MuJoCo", "稀疏奖励"],
+      "sources": [
+        {"title": "Learning Complex Dexterous Manipulation with Deep Reinforcement Learning and Demonstrations (arXiv 1709.10087)", "url": "https://arxiv.org/abs/1709.10087"},
+        {"title": "D4RL: Datasets for Deep Data-Driven Reinforcement Learning (arXiv 2004.07219)", "url": "https://arxiv.org/abs/2004.07219"},
+        {"title": "Gymnasium-Robotics: Adroit Hand", "url": "https://robotics.farama.org/envs/adroit_hand/"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "ALFRED",
+      "name_en": "ALFRED (Action Learning From Realistic Environments and Directives)",
+      "abbr": "",
+      "aliases": ["ALFRED 基准"],
+      "tier": 3,
+      "one_liner": "让智能体按自然语言指令在仿真家庭里完成多步家务的基准。",
+      "explanation": "ALFRED 由 Mohit Shridhar 等人（华盛顿大学、卡内基梅隆大学、艾伦人工智能研究所、英伟达）提出，发表于 CVPR 2020，基于 AI2-THOR 仿真器。它有 120 个室内场景（厨房、浴室、卧室、客厅各 30 个）、8055 条专家演示和 25743 条英文指令，每条演示平均约 50 步，任务分 7 类，如放置、叠放后放置、加热、冷却、清洗后放置、在灯下查看物体。智能体只能看第一人称画面和指令，输出离散的导航与交互动作，交互时还要给出目标物体的像素掩码。指标是任务成功率和目标条件成功率，另有按路径长度加权的版本。原论文基线在未见场景的成功率不到 1%，人类约 91%。ALFWorld、TEACh 都建立在它之上。",
+      "example": "高层目标「把杯子冲洗干净放进咖啡机」，配有逐步指令如「走到右边的咖啡机前」，智能体要依次导航、拿杯子、到水槽冲洗、再放进咖啡机。",
+      "related": ["指令跟随", "长程任务", "AI2-THOR", "ALFWorld", "家务任务", "视觉语言导航"],
+      "sources": [
+        {"title": "ALFRED: A Benchmark for Interpreting Grounded Instructions for Everyday Tasks (arXiv 1912.01734)", "url": "https://arxiv.org/abs/1912.01734"},
+        {"title": "ALFRED project site", "url": "https://askforalfred.com/"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "ALFWorld",
+      "name_en": "ALFWorld (Aligning Text and Embodied Environments for Interactive Learning)",
+      "abbr": "",
+      "aliases": ["ALFWorld 文字家务环境"],
+      "tier": 3,
+      "one_liner": "把 ALFRED 家务任务同步做成文字游戏，可先在文字里学、再到画面中执行。",
+      "explanation": "ALFWorld 由 Shridhar、Xingdi Yuan 等人（华盛顿大学、微软研究院、卡内基梅隆大学）提出，发表于 ICLR 2021。它用 PDDL（规划领域定义语言）描述 ALFRED 的每个场景，再借微软的 TextWorld 引擎生成等价的文字冒险游戏：智能体读到房间里有哪些家具和物品的文字描述，输入 go to desk 1 这类文字命令行动。任务分 6 类，训练用 3553 个游戏。作者的 BUTLER 智能体先在文字环境里学高层策略，再配上视觉识别（Mask R-CNN）和底层控制模块，迁移到 AI2-THOR 画面中执行，训练比只在画面里学快约 7 倍且泛化更好。大语言模型兴起后，ReAct 等智能体工作把它当作常用测试环境。",
+      "example": "「在台灯下查看闹钟」任务，文字版里依次输入 go to desk 1、take alarmclock 2 from desk 1、use desklamp 1 即可完成。",
+      "related": ["ALFRED", "AI2-THOR", "大模型任务规划", "规划领域定义语言", "长程任务", "EmbodiedBench"],
+      "sources": [
+        {"title": "ALFWorld: Aligning Text and Embodied Environments for Interactive Learning (arXiv 2010.03768)", "url": "https://arxiv.org/abs/2010.03768"},
+        {"title": "ALFWorld project site", "url": "https://alfworld.github.io/"},
+        {"title": "ReAct: Synergizing Reasoning and Acting in Language Models (arXiv 2210.03629)", "url": "https://arxiv.org/abs/2210.03629"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "ARNOLD",
+      "name_en": "ARNOLD (A Benchmark for Language-Grounded Task Learning with Continuous States in Realistic 3D Scenes)",
+      "abbr": "",
+      "aliases": ["ARNOLD 基准"],
+      "tier": 3,
+      "one_liner": "在 Isaac Sim 中考察机器人按语言把物体操作到指定连续状态的基准。",
+      "explanation": "ARNOLD 由北京通用人工智能研究院（BIGAI）联合 UCLA、北大、清华、哥伦比亚大学提出，发表于 ICCV 2023。以往的语言操作基准大多把目标当成「开 / 关」这样的二值状态，ARNOLD 则要求达到连续的目标值，比如把抽屉拉开到指定程度、倒出指定比例的水，并让物体状态保持在目标附近的范围内才算成功。它基于英伟达 Isaac Sim 和 PhysX 5.0，包含 8 个任务（拿起物体、调整朝向、开关抽屉、开关柜门、倒水、转移水）、40 种物体、20 个场景和 1 万条专家演示，语言指令由模板生成。评测除同分布测试外，还单列新物体、新场景、新目标状态等泛化划分；作者发现当时的语言条件策略在这些划分上明显变差。",
+      "example": "指令要求把柜门打开到一半，机器人不仅要打开柜门，还要让开合程度停在目标值附近的允许范围内才算成功。",
+      "related": ["语言条件策略", "铰接物体操作", "Isaac Sim", "PhysX", "泛化与鲁棒性评测", "基准测试"],
+      "sources": [
+        {"title": "ARNOLD: A Benchmark for Language-Grounded Task Learning With Continuous States in Realistic 3D Scenes (arXiv 2304.04321)", "url": "https://arxiv.org/abs/2304.04321"},
+        {"title": "ARNOLD project page", "url": "https://arnold-benchmark.github.io/"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "AutoEval",
+      "name_en": "AutoEval (Autonomous Evaluation of Generalist Robot Manipulation Policies in the Real World)",
+      "abbr": "",
+      "aliases": ["自动真机评测", "AutoEval 真机评测平台"],
+      "tier": 3,
+      "one_liner": "伯克利搭建的全天候无人值守真机评测系统，自动判成败、自动复位。",
+      "explanation": "AutoEval 由伯克利 Sergey Levine 组的 Zhiyuan Zhou、Pranav Atreya 等人提出（其中一位作者同时隶属英伟达），2025 年 3 月上线 arXiv，代码仓库注明发表于 CoRL 2025。它把真机评测里最费人的两件事自动化：用微调过的 PaliGemma 视觉语言模型当成功检测器，回答「抽屉开了吗」这类问题；用几十条遥操作演示微调 OpenVLA（或回放录好的轨迹）作为复位策略，把场景恢复原状。用户像向计算集群提交作业一样，在网页上提交自己的策略服务器，系统在 WidowX 机械臂的 Bridge 场景里排队执行。论文报告：与人工评测的平均皮尔逊相关系数为 0.942，一个工位 24 小时约跑 850 个回合、只需 3 次人工介入，人工时间减少 99% 以上，并向社区开放了公共场景。",
+      "example": "研究者把自己的 VLA 策略部署成可公网访问的服务器，在 AutoEval 网页上提交「把茄子放进篮子」任务的评测，系统自动跑数十个回合后返回成功率报告。",
+      "related": ["真机评测", "成功检测器", "BridgeData V2 数据集", "OpenVLA", "RoboArena", "仿真-真机相关性"],
+      "sources": [
+        {"title": "AutoEval: Autonomous Evaluation of Generalist Robot Manipulation Policies in the Real World (arXiv 2503.24278)", "url": "https://arxiv.org/abs/2503.24278"},
+        {"title": "AutoEval project page", "url": "https://auto-eval.github.io/"},
+        {"title": "GitHub: zhouzypaul/auto_eval", "url": "https://github.com/zhouzypaul/auto_eval"}
+      ],
+      "as_of": "2025-09"
+    }
+  ]
+}

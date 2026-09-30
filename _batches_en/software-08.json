@@ -1,0 +1,113 @@
+{
+  "batch": "software-08",
+  "terms": [
+    {
+      "key": "software-08#0",
+      "name_en": "Cloud-Edge-Device Collaboration",
+      "aliases": ["cloud-edge collaboration"],
+      "one_liner": "Splitting a robot's compute across the cloud, an edge server, and the robot itself, with each layer handling a different job.",
+      "explanation": "This is an approach to splitting compute across layers: the cloud handles training and any large-model inference that needs a lot of GPU memory, an edge server (a local machine in the same building or facility) handles low-latency vision and planning, and the robot's own onboard controller runs only the control loops that absolutely must be real time. This split exists because a large embodied-AI model's compute needs conflict with a robot body's constraints on power, heat, and cost: running everything onboard is often too slow, but running everything in the cloud means a network hiccup can cause a loss of control. A common pattern is a remote policy server for inference, with locomotion control on the robot itself as a fallback — directly related to on-device deployment, inference latency, and asynchronous inference.",
+      "example": "openpi, the open-source implementation of π0, provides both a policy server and a client: the policy runs on a GPU-equipped machine, while the robot side only sends observations and receives actions.",
+      "related": ["On-Device / Edge Deployment", "Policy Server (Remote Inference)", "Inference Latency", "Asynchronous Inference", "On-Device Model", "Main Controller"]
+    },
+    {
+      "key": "software-08#1",
+      "name_en": "cmd_vel Topic (geometry_msgs/Twist velocity command)",
+      "aliases": ["/cmd_vel"],
+      "one_liner": "ROS's de facto standard topic for sending a mobile robot linear and angular velocity commands.",
+      "explanation": "cmd_vel is a topic name that has become a convention in ROS / ROS 2 (a topic being a publish-subscribe data channel), carrying messages of type geometry_msgs/Twist, which holds a three-component linear velocity and a three-component angular velocity. Navigation stacks, teleoperation, and keyboard-control programs all publish to /cmd_vel, and a base-driver node subscribes and converts it into left/right wheel speeds or a steering angle. Its purpose is to decouple high-level decision-making from the low-level base: differential-drive, mecanum, and Ackermann bases can all expose this same interface externally. Nav2 publishes this topic by default too, and a timestamped variant, TwistStamped, has become more common in recent years.",
+      "example": "Publishing commands to /cmd_vel with teleop_twist_keyboard drives a TurtleBot forward at 0.2 m/s while turning in place at 0.5 rad/s.",
+      "related": ["Topic (ROS)", "Message (msg / srv / action interface)", "Robot Operating System", "ROS 2", "ROS 2 Navigation Stack (Nav2)", "Differential-Drive Kinematics"]
+    },
+    {
+      "key": "software-08#2",
+      "name_en": "CoACD (Collision-Aware Approximate Convex Decomposition)",
+      "aliases": ["CoACD"],
+      "one_liner": "A tool that automatically slices a mesh into a set of convex chunks for use as a physics engine's collision shape.",
+      "explanation": "CoACD is an open-source approximate convex-decomposition tool from Hao Su's group at UC San Diego (Wei et al., SIGGRAPH 2022). Physics engines compute collisions fastest against convex shapes, but simulation assets are usually arbitrarily shaped triangle meshes, which are slow and unstable to use directly; the older, commonly used V-HACD tends to fill in important concave structures — a cup's rim, the gap of a drawer — making grasping and insertion tasks impossible to simulate correctly. CoACD explicitly accounts for collision-aware concavity during decomposition and uses a tree search to choose where to cut, preserving those structures. In practice, an OBJ or STL is run through the tool once, and the resulting set of convex pieces is written into a URDF's or MJCF's collision fields.",
+      "example": "Before importing a cup or piece of furniture's mesh into MuJoCo or Isaac Sim, run it through CoACD first to generate convex collision geometry, so the gripper doesn't fail to fit into the cup's opening.",
+      "related": ["Convex Decomposition", "Collision Geometry", "Simulation Assets", "Mesh File (STL / OBJ / DAE / glTF)", "Unified Robot Description Format (URDF)", "MJCF (MuJoCo XML Format)"]
+    },
+    {
+      "key": "software-08#3",
+      "name_en": "COLMAP",
+      "aliases": [],
+      "one_liner": "An open-source 3D reconstruction pipeline combining structure-from-motion and multi-view stereo.",
+      "explanation": "COLMAP is a general-purpose 3D reconstruction pipeline created by Johannes Schönberger and others. It first runs structure-from-motion (SfM — recovering camera poses and a sparse point cloud simultaneously from multiple photos), then multi-view stereo (MVS — densifying that into a full point cloud and mesh). It matters because it has become close to the de facto standard for “getting camera poses from photos”: training data for neural radiance fields and 3D Gaussian splatting is almost always pose-labeled using COLMAP first. It ships with both a command-line and a graphical interface, and is also commonly called from scripts; in robotics, it's often used to turn a video taken circling an object or scene into a usable 3D asset.",
+      "example": "Before training a 3D Gaussian splatting model, run a set of images taken circling a tabletop through COLMAP to get camera intrinsics, extrinsics, and a sparse point cloud.",
+      "related": ["Structure from Motion (SfM)", "Multi-View Stereo (MVS)", "3D Gaussian Splatting", "Neural Radiance Fields (NeRF)", "Bundle Adjustment", "Camera Extrinsics"]
+    },
+    {
+      "key": "software-08#4",
+      "name_en": "Common ROS SLAM Packages (GMapping / SLAM Toolbox / RTAB-Map)",
+      "aliases": [],
+      "one_liner": "Three ready-to-run ROS packages for mapping and localization that just need a config file, not custom code.",
+      "explanation": "GMapping is the oldest 2D lidar SLAM package (particle-filter-based, originating from OpenSLAM), and was the default choice for teaching robots in the ROS 1 era. SLAM Toolbox, developed by Steve Macenski, is the main option for 2D lidar mapping in ROS 2 today; it's graph-optimization-based and supports continuing to map on top of an existing map, as well as large environments. RTAB-Map, developed by Mathieu Labbé, targets RGB-D and stereo cameras, with built-in appearance-based loop-closure detection, and can output a dense 3D map. Their value is in turning SLAM into something you can get running just by changing a configuration file, producing a navigable occupancy grid map that plugs directly into Nav2; the tradeoff is that accuracy and robustness fall short of an algorithm specially tuned for a given environment.",
+      "example": "Run SLAM Toolbox on a mobile base with a 2D lidar to build a grid map of a building floor, then hand it to Nav2 for navigation.",
+      "related": ["Simultaneous Localization and Mapping (SLAM)", "Lidar SLAM", "Occupancy Grid Map", "ROS 2 Navigation Stack (Nav2)", "RTAB-Map", "Package (ROS)"]
+    },
+    {
+      "key": "software-08#5",
+      "name_en": "Composable Nodes (Components) & Intra-process Communication",
+      "aliases": ["ROS 2 components", "Component"],
+      "one_liner": "Loading several ROS 2 nodes into a single process, so they pass data as raw pointers instead of copying it.",
+      "explanation": "This is a ROS 2 mechanism: a node is compiled into a shared library, and at runtime a container process loads several of them on demand — nodes built this way are called composable nodes. Publish-subscribe within the same process can then use intra-process communication, passing messages as smart pointers instead of paying for serialization and a memory copy; communication across processes still has to go through the middleware (DDS) and the network stack. This matters a great deal for high-bandwidth data — if several camera image streams and point clouds get copied at every hop, CPU load and latency both suffer. The practice is to register a node as a component when writing it, then use a launch file to load a camera driver, an image-processing node, and an inference node into the same container; Isaac ROS's vision pipelines are organized this way by default.",
+      "example": "Load a camera driver, an undistortion node, and an object-detection node into one component container, so images flow between them within the process with zero copying.",
+      "related": ["Node (ROS)", "ROS 2", "Middleware", "Data Distribution Service (DDS)", "Zero-Copy (Shared-Memory IPC)", "ROS 2 Executors and Callback Groups"]
+    },
+    {
+      "key": "software-08#6",
+      "name_en": "Compute Architecture for Neural Networks (Huawei Ascend, CANN)",
+      "aliases": ["CANN"],
+      "one_liner": "The low-level compute architecture and operator compilation toolchain for Huawei's Ascend NPUs.",
+      "explanation": "CANN, short for Compute Architecture for Neural Networks, is Huawei's heterogeneous computing software stack for its Ascend AI processors, occupying a role similar to CUDA plus cuDNN on the NVIDIA side: it interfaces with Ascend chips underneath and supports frameworks like MindSpore and PyTorch above. It includes the AscendCL programming interface, a graph compilation and optimization engine, accelerated operator libraries, and Ascend C for writing custom operators. For embodied AI, it matters as the deployment foundation for the domestic Chinese compute route: to run a model on an Ascend board or server, it has to be converted, compiled, and tuned through CANN, occupying a role analogous to TensorRT for NVIDIA or RKNN-Toolkit for Rockchip.",
+      "example": "After exporting a vision model trained in PyTorch, convert it into an Ascend offline model with the CANN toolchain to run inference on an Ascend board.",
+      "related": ["Operator (Kernel)", "MindSpore", "NVIDIA TensorRT", "Inference Deployment", "On-Device / Edge Deployment", "Huawei"]
+    },
+    {
+      "key": "software-08#7",
+      "name_en": "Crocoddyl (Contact RObot COntrol by Differential DYnamic programming Library)",
+      "aliases": [],
+      "one_liner": "A contact-aware optimal control library that solves robot trajectories using differential dynamic programming.",
+      "explanation": "The name is an acronym for Contact RObot COntrol by Differential DYnamic programming Library, open-sourced by researchers at the University of Edinburgh and LAAS-CNRS (Mastalli and others). It formulates optimal-control problems for multi-body dynamics with contact in a unified way, then iterates on solvers such as DDP and FDDP to produce joint torques and a full trajectory — fast enough to run as online model predictive control. Legged robots can't avoid this class of tool: jumping or climbing a step requires simultaneously deciding foothold locations, contact forces, and whole-body motion, which inverse kinematics alone can't produce. It uses Pinocchio for the underlying dynamics, provides C++ and Python interfaces, and is often compared with OCS2 and acados.",
+      "example": "To plan a jump for a quadruped robot, define the contact sequence and cost function in Crocoddyl and solve for the torque trajectory with FDDP.",
+      "related": ["Differential Dynamic Programming", "Optimal Control", "Trajectory Optimization", "Model Predictive Control (MPC)", "Pinocchio", "OCS2 (Optimal Control for Switched Systems)"]
+    },
+    {
+      "key": "software-08#8",
+      "name_en": "Cross-compilation",
+      "aliases": ["cross-building"],
+      "one_liner": "Compiling on an x86 computer a program meant to run on a robot's ARM-based onboard controller.",
+      "explanation": "Cross-compilation means building, on one machine (the host), an executable meant to run on a different CPU architecture or operating system. In robotics this is a very practical need: the onboard controller is often an ARM board like a Jetson, Raspberry Pi, or Rockchip device, with limited compute and memory, and compiling a large project directly on it — a ROS 2 workspace, OpenCV, an inference engine — can take forever or fail to complete at all, while the development machine is x86. The approach is to install a toolchain for the target architecture (e.g. aarch64-linux-gnu-gcc) plus the target system's headers and libraries, and configure a CMake toolchain file accordingly; Docker combined with QEMU emulation of the target architecture is also common, as a way to sidestep environment mismatches.",
+      "example": "Compile ROS 2 nodes and an inference program on an x86 workstation using an aarch64 toolchain, then copy them onto a Jetson Orin to run directly.",
+      "related": ["Embedded Software Development", "CMake", "NVIDIA Jetson", "Docker", "On-Device / Edge Deployment", "Firmware"]
+    },
+    {
+      "key": "software-08#9",
+      "name_en": "CUDA Deep Neural Network Library (cuDNN)",
+      "aliases": ["cuDNN"],
+      "one_liner": "NVIDIA's GPU-accelerated library of the operators most commonly used in deep learning.",
+      "explanation": "cuDNN is NVIDIA's acceleration library for deep-learning primitives, providing highly optimized implementations, across GPU generations, of common operators (an operator being a basic unit of computation in a neural network) such as convolution, pooling, normalization, and attention. Frameworks like PyTorch and TensorFlow don't write these low-level kernels themselves — they call into cuDNN — so whether it's installed correctly, and whether its version matches the CUDA toolkit and driver, directly determines whether training runs at all and how fast it goes. It isn't a standalone tool but a library installed alongside the CUDA ecosystem; in practice, the most common issues are mismatched environment versions, and the first few batches running slower while cuDNN auto-tunes to pick the fastest convolution algorithm.",
+      "example": "Turning on torch.backends.cudnn.benchmark in PyTorch lets cuDNN search for the fastest convolution implementation for a fixed input size.",
+      "related": ["CUDA", "PyTorch", "NVIDIA TensorRT", "Operator (Kernel)", "GPU Memory (VRAM)", "Mixed-Precision Training"]
+    },
+    {
+      "key": "software-08#10",
+      "name_en": "CUDA Graphs",
+      "aliases": ["CUDA graph"],
+      "one_liner": "Recording a sequence of GPU operations as a single graph, so it can be replayed in one submission with less launch overhead.",
+      "explanation": "CUDA Graphs is an execution model in CUDA: a sequence of kernel launches, memory copies, and their dependencies within a computation are first recorded as a graph, and afterward only that graph needs to be submitted each time, letting the driver schedule the whole thing in one go. It addresses CPU-side launch overhead — when a model has many small operators, the CPU time spent launching each kernel individually can exceed the time the GPU actually spends computing, becoming the bottleneck. This is especially useful for robot-policy inference: vision-language-action models and diffusion policies repeatedly run a forward pass with a fixed structure within tens of milliseconds, with unchanging tensor shapes, which is exactly the situation graph capture is suited for. PyTorch exposes this capability through graph capture and torch.compile's low-overhead mode.",
+      "example": "Capture a diffusion action head's multi-step denoising loop as a CUDA Graph, reducing kernel-launch overhead within a single frame of inference.",
+      "related": ["CUDA", "Inference Latency", "torch.compile", "NVIDIA TensorRT", "Operator (Kernel)", "Policy Inference Frequency"]
+    },
+    {
+      "key": "software-08#11",
+      "name_en": "cuRobo (NVIDIA GPU-accelerated motion planning)",
+      "aliases": ["CuRobo"],
+      "one_liner": "NVIDIA's GPU-parallel motion-planning library that produces collision-free arm trajectories in milliseconds.",
+      "explanation": "cuRobo is NVIDIA's open-source motion-generation library for robot arms, writing inverse kinematics, collision checking (against meshes, point clouds, or signed distance fields), and trajectory optimization all as parallel GPU kernels, optimizing thousands of candidate trajectories at once — which lets it produce smooth, collision-free trajectories that respect joint limits on the order of milliseconds. It targets the problem that traditional sampling-based planners (the RRT family) are too slow and produce jittery results for arm grasping, and it's also often used as the low-level executor underneath a large-model system: the upper layers just supply a target pose, and cuRobo figures out how to get there. cuMotion in Isaac ROS is a wrapper around it.",
+      "example": "Once an upstream system provides a target end-effector pose, cuRobo solves for a joint trajectory that avoids the table and any boxes in tens of milliseconds.",
+      "related": ["Motion Planning", "Inverse Kinematics (IK)", "Trajectory Optimization", "NVIDIA Isaac ROS cuMotion", "Signed Distance Field", "NVIDIA Isaac ROS"]
+    }
+  ]
+}

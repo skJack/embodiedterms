@@ -1,0 +1,113 @@
+{
+  "batch": "software-18",
+  "terms": [
+    {
+      "key": "software-18#0",
+      "name_en": "Simulation Description Format (SDFormat)",
+      "aliases": ["SDF", "SDFormat"],
+      "one_liner": "The XML format used by Gazebo that can describe a robot and an entire simulated world.",
+      "explanation": "SDFormat is an XML-based description format, originally designed for the Gazebo simulator and now maintained by Open Robotics. Unlike URDF (the Unified Robot Description Format), which describes only a single robot, SDFormat can describe an entire “world” in one file: multiple models, lights, the ground plane, sensors, and physics parameters, and it also supports closed kinematic chains, which URDF can only represent as a tree. It's commonly used to write scenes for Gazebo simulation; a common workflow is to start from a URDF and automatically convert it to SDF for loading. Note that this SDF is unrelated to the “signed distance field,” which uses the same abbreviation.",
+      "example": "Build a warehouse scene in Gazebo: use a single .sdf file to place shelving, the floor, light sources, and a mobile robot fitted with a lidar.",
+      "related": ["Unified Robot Description Format (URDF)", "Gazebo", "MJCF", "Universal Scene Description (OpenUSD)", "Xacro"]
+    },
+    {
+      "key": "software-18#1",
+      "name_en": "skrl",
+      "aliases": [],
+      "one_liner": "A modular Python reinforcement learning library that plugs directly into Isaac Lab.",
+      "explanation": "skrl is an open-source Python reinforcement learning library started by Antonio Serrano-Muñoz, supporting both PyTorch and JAX backends. It splits agents, memory (experience storage), models, and trainers into separate, swappable modules, and includes common algorithms such as PPO (Proximal Policy Optimization), SAC, and TD3 out of the box. Its defining feature is native support for Gymnasium as well as NVIDIA's GPU-parallel environments, Isaac Gym and Isaac Lab; it's one of the few reinforcement learning libraries officially supported by Isaac Lab, alongside rsl_rl, rl_games, and Stable-Baselines3.",
+      "example": "When training quadruped locomotion in Isaac Lab, swap the training script's library argument from rsl_rl to skrl, and run the same task with its PPO implementation instead.",
+      "related": ["Isaac Lab", "rsl_rl", "rl_games", "Stable-Baselines3", "Proximal Policy Optimization", "Gymnasium"]
+    },
+    {
+      "key": "software-18#2",
+      "name_en": "Slurm Workload Manager",
+      "aliases": ["Slurm", "SLURM"],
+      "one_liner": "The scheduling system that queues jobs and allocates GPUs on a shared compute cluster.",
+      "explanation": "Slurm is an open-source Linux cluster job-scheduling system, originally from Lawrence Livermore National Laboratory in the US and now maintained primarily by the company SchedMD; it's used by a large share of supercomputing centers, universities, and companies' GPU clusters. When many people share a pool of machines, instead of logging into a specific machine and running a job directly, everyone submits jobs to Slurm, which queues and allocates nodes and GPUs by resource availability and priority. Common commands include sbatch (submit a script), srun (run directly), squeue (check the queue), and scancel (cancel a job). Training large models like VLAs, or doing multi-node, multi-GPU distributed training, can hardly avoid it.",
+      "example": "Write a train.sh that declares a need for 2 nodes with 8 GPUs each, then submit it with sbatch train.sh and check whether it's been scheduled with squeue.",
+      "related": ["Distributed training (data parallelism / model parallelism)", "Distributed data parallel", "Ray", "Docker", "SSH remote login"]
+    },
+    {
+      "key": "software-18#3",
+      "name_en": "SocketCAN",
+      "aliases": ["can-utils"],
+      "one_liner": "The Linux kernel's built-in CAN bus driver, which makes a CAN port behave like a network interface.",
+      "explanation": "SocketCAN is the CAN bus driver and protocol stack built into the Linux kernel, originally contributed by Volkswagen's research division. It abstracts a CAN interface into a network interface just like an Ethernet card (for example, can0), so programs can send and receive CAN frames using the ordinary socket API, without depending on the proprietary driver of any particular USB-CAN adapter. Many robot joint motors, grippers, and arms communicate over CAN bus (a serial bus known for strong noise resistance); a common setup is to plug a USB-CAN device into the host computer, bring up the interface at the right bit rate with the ip command, and then debug with candump and cansend from can-utils — a routine step when building desktop arms and motor drives.",
+      "example": "Run ip link set can0 up type can bitrate 1000000 to bring up the interface, then use candump can0 to view the feedback frames sent back by a motor.",
+      "related": ["CAN bus", "CANopen / CiA 402 drive protocol", "Motor driver", "Host computer (upper computer)", "Ubuntu"]
+    },
+    {
+      "key": "software-18#4",
+      "name_en": "SolidWorks to URDF Exporter",
+      "aliases": ["sw2urdf", "sw_urdf_exporter"],
+      "one_liner": "A plugin that exports a SolidWorks assembly directly into a URDF robot model.",
+      "explanation": "This is a SolidWorks plugin maintained by the ROS community. Mechanical engineers typically design a robot in SolidWorks (a 3D CAD modeling program), while simulators and ROS need a model description in URDF format. The plugin lets users specify links, joint types, rotation axes, and coordinate frames directly in the assembly, then exports a ROS package containing the URDF file, an STL mesh for each link, and a launch file, with mass and inertia computed automatically from the CAD model's mass properties. The exported result usually still needs a manual check of joint directions, limits, and inertia before it's used in a simulator such as Isaac Sim or MuJoCo.",
+      "example": "Design a six-axis arm in SolidWorks, set a reference axis for each joint, export it with the plugin, and check the joint rotation directions in RViz.",
+      "related": ["Unified Robot Description Format (URDF)", "CAD software (SolidWorks / Onshape / Fusion 360)", "onshape-to-robot", "Mesh file", "Inertial parameters"]
+    },
+    {
+      "key": "software-18#5",
+      "name_en": "Stable-Baselines3",
+      "aliases": ["SB3"],
+      "one_liner": "A PyTorch-based library of classic reinforcement learning algorithms, with a simple API and reliable implementations.",
+      "explanation": "Stable-Baselines3 is an open-source, PyTorch-based reinforcement learning library maintained by Antonin Raffin and colleagues at the German Aerospace Center's Robotics Institute (DLR-RM). It's the successor to Stable Baselines, itself derived from OpenAI Baselines, with the associated paper published in JMLR in 2021. It provides reliable implementations of algorithms including PPO, SAC, TD3, DQN, and A2C — training a policy on a Gymnasium environment can take just a few lines of code — with thorough documentation and tests, and it's often used as a starting point or a reference baseline. It mainly targets a single environment or a small number of parallel ones; for large-scale GPU-parallel simulation training, people more often reach for rsl_rl or rl_games instead.",
+      "example": "model = PPO(“MlpPolicy”, env); model.learn(100000) — a few lines of code are enough to train a policy on Gymnasium's cart-pole task.",
+      "related": ["Reinforcement learning", "Proximal Policy Optimization", "Soft Actor-Critic", "Gymnasium", "CleanRL", "skrl"]
+    },
+    {
+      "key": "software-18#6",
+      "name_en": "starVLA",
+      "aliases": [],
+      "one_liner": "An open-source codebase for assembling and training VLA models like building blocks.",
+      "explanation": "starVLA is an open-source codebase for developing vision-language-action (VLA) models, self-described as “LEGO-style”: it splits a vision-language-model backbone and various types of action head into swappable modules, so researchers can combine autoregressive discrete-action, continuous-regression, or flow-matching action heads within the same codebase and compare them under one unified training and evaluation pipeline. According to its project page, it uses the Qwen-VL model family as its main backbone and plugs into common benchmarks such as LIBERO and SimplerEnv. It suits newcomers who want to quickly reproduce and compare different VLA design choices.",
+      "example": "Keep the Qwen-VL backbone fixed and swap only the action head, from discrete tokens to a flow-matching head, then compare the two on LIBERO success rate.",
+      "related": ["Vision-language-action model", "Action head", "Qwen-VL", "LIBERO", "Dexbotic", "openpi"]
+    },
+    {
+      "key": "software-18#7",
+      "name_en": "SwanLab",
+      "aliases": [],
+      "one_liner": "An open-source Chinese experiment-tracking and visualization tool for model training, similar to W&B.",
+      "explanation": "SwanLab is an open-source experiment-tracking tool built by a team in China, functionally similar to Weights & Biases: add a few lines to training code, and it logs loss curves, hyperparameters, images, and hardware usage to a web dashboard, making it easy to compare multiple runs and share results with a team. It offers both a cloud-hosted version and a self-hostable one, is directly accessible from within mainland China, and integrates with common frameworks such as PyTorch, Hugging Face Transformers, and LLaMA-Factory. It's a common substitute when training models in China, where reaching W&B's servers can be inconvenient.",
+      "example": "Call swanlab.init in a training script, then swanlab.log at every step to record the loss, and compare the curves of three different learning rates on the web dashboard.",
+      "related": ["Weights & Biases", "TensorBoard", "Hyperparameter", "LLaMA-Factory / ms-swift (LLM and VLM fine-tuning frameworks)"]
+    },
+    {
+      "key": "software-18#8",
+      "name_en": "Taichi Programming Language / Quadrants",
+      "aliases": ["Taichi", "Quadrants (Genesis fork)"],
+      "one_liner": "A high-performance parallel programming language embedded in Python; the engine underneath the Genesis simulator.",
+      "explanation": "Taichi is a high-performance, parallel programming language embedded in Python, proposed by Yuanming Hu during his PhD at MIT (SIGGRAPH Asia 2019). Users write computational kernels using Python syntax, and Taichi just-in-time compiles them to run in parallel on CUDA, Vulkan, Metal, or CPU — a particularly good fit for physics simulations like the material point method, fluids, and soft bodies. The Genesis simulator's physics computation is built on Taichi; the Genesis team reportedly later maintained their own fork of Taichi, named Quadrants, so they could keep improving and adapting it for their needs. Students in embodied AI mostly encounter it when reading Genesis's source code or writing custom simulations.",
+      "example": "Decorate a Python function with @ti.kernel to write a million-particle material-point-method simulation that runs directly on the GPU.",
+      "related": ["Genesis", "Material point method", "Differentiable simulation", "Warp", "GPU-parallel simulation"]
+    },
+    {
+      "key": "software-18#9",
+      "name_en": "TSID (Task Space Inverse Dynamics)",
+      "aliases": ["Task Space Inverse Dynamics library"],
+      "one_liner": "A C++ library that solves whole-body control as a task-space inverse-dynamics quadratic program.",
+      "explanation": "TSID is an open-source C++ library (with a Python interface) developed by Andrea Del Prete and colleagues at LAAS-CNRS in France, built on the Pinocchio dynamics library. It formulates whole-body control as a quadratic program (QP): given several tasks — such as maintaining the center of mass, tracking a hand's position, or holding an orientation — plus constraints like keeping contact forces inside the friction cone and staying under joint torque limits, it solves, on every control cycle, for the joint accelerations, torques, and contact forces that satisfy the constraints while getting as close as possible to each task's goal. It's commonly used for model-based whole-body control on humanoid and quadruped robots, and is also popular as teaching code for learning how whole-body control (WBC) works.",
+      "example": "Give a humanoid robot three tasks — keep both feet in contact, track a reference center-of-mass trajectory, and move the right hand to a target point — and use TSID to solve for joint torques every 1 millisecond.",
+      "related": ["Whole-body control", "Inverse dynamics", "Quadratic programming", "Pinocchio", "Task-space control", "Crocoddyl"]
+    },
+    {
+      "key": "software-18#10",
+      "name_en": "Tencent Tairos Embodied AI Open Platform",
+      "aliases": ["Tairos"],
+      "one_liner": "Tencent's open platform for embodied AI, offering foundation models and developer tools for robots.",
+      "explanation": "Tairos is an embodied-AI open platform launched by Tencent, led by its Robotics X lab, with a Chinese nickname (钛螺丝) that translates roughly as “titanium screw”; it reportedly launched in 2025. Tencent's positioning is not to build complete robots itself, but to supply “brain”-layer capabilities to robot makers and developers: perception, planning, and action models, along with development tools, simulation, and data services, which manufacturers can call on a modular, as-needed basis and install on their own robot bodies. It represents one path for a large Chinese internet company entering embodied AI: build the platform and the models, and partner with hardware makers.",
+      "example": "",
+      "related": ["Tencent Robotics X Lab", "Tencent HY-Embodied (Hunyuan Embodied)", "Foundation-model (brain) company", "Software-hardware decoupling (model and embodiment decoupled)", "Huawei Cloud CloudRobo"]
+    },
+    {
+      "key": "software-18#11",
+      "name_en": "TensorFlow",
+      "aliases": ["TF"],
+      "one_liner": "Google's open-source deep learning framework; robotics datasets often use its data format.",
+      "explanation": "TensorFlow is the deep learning framework Google Brain open-sourced in 2015, with version 2.x adopting Keras as its high-level interface. Academic model training has largely shifted to PyTorch and JAX since then, but TensorFlow still shows up regularly in robotics: Google's RT-1 and other work is built on it, and datasets such as Open X-Embodiment are stored in the RLDS format as TFRecord files, read through TensorFlow Datasets (TFDS); the data-loading pipelines for Octo and OpenVLA also depend on tf.data. So even when training a VLA in PyTorch, TensorFlow usually still needs to be installed just to read the data.",
+      "example": "Use tfds.builder to load the BridgeData V2 subset from Open X-Embodiment, then convert it to PyTorch tensors to feed into fine-tuning OpenVLA.",
+      "related": ["PyTorch", "JAX", "TFDS (TensorFlow Datasets)", "RLDS format", "TFRecord format", "Open X-Embodiment dataset"]
+    }
+  ]
+}

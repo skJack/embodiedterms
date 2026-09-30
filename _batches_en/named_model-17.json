@@ -1,0 +1,227 @@
+{
+  "batch": "named_model-17",
+  "terms": [
+    {
+      "key": "named_model-17#0",
+      "name_en": "LingBot-VA (Robbyant)",
+      "aliases": [
+        "LingBot-VA 2.0",
+        "Causal World Modeling for Robot Control"
+      ],
+      "one_liner": "Robbyant's open-source video-action world model that predicts future frames and outputs robot actions at the same time.",
+      "explanation": "LingBot-VA is a robot control model open-sourced in January 2026 by Robbyant, the embodied-AI company under Ant Group, in a paper titled Causal World Modeling for Robot Control, accepted to RSS 2026. It follows the “world action model” approach: it generates segment by segment with autoregressive diffusion, alternately predicting future video frames and actions within the same sequence; visual and action tokens share a latent space, processed by a Mixture-of-Transformers (MoT). At execution time, each segment is corrected against real observations (closed-loop rollout), and action prediction runs asynchronously in parallel with motor execution to cut latency. Its video encoding reuses the VAE from Tongyi Wanxiang's Wan2.2. Version 2.0, released in July 2026, switched to causal pretraining from scratch with a sparse MoE backbone.",
+      "example": "The company reports success rates of 92.9% (easy) and 91.6% (hard) across 50 bimanual simulation tasks on RoboTwin 2.0, and an average of 98.5% on LIBERO.",
+      "related": [
+        "World Action Model",
+        "World Model",
+        "Mixture-of-Transformers",
+        "Asynchronous Inference",
+        "Autoregressive Video Generation",
+        "Robbyant"
+      ]
+    },
+    {
+      "key": "named_model-17#1",
+      "name_en": "LingBot-VLA (Robbyant)",
+      "aliases": [
+        "LingBot-VLA 2.0",
+        "A Pragmatic VLA Foundation Model"
+      ],
+      "one_liner": "Robbyant's open-source VLA foundation model, pretrained on about 20,000 hours of bimanual real-robot data across 9 arm configurations.",
+      "explanation": "LingBot-VLA is a vision-language-action (VLA) foundation model open-sourced by Robbyant in January 2026, in a paper titled A Pragmatic VLA Foundation Model, emphasizing practicality: strong generalization and low data and compute cost when adapting to a new platform. It uses Qwen2.5-VL-3B as its vision-language backbone (also supporting PaliGemma), pretrained on about 20,000 hours of real-robot data across 9 mainstream bimanual configurations, and systematically evaluated with 100 tasks each (GM-100) on 4 platforms including AgiBot G1, AgileX, and Galaxea R1 Pro. Its companion training code reaches a throughput of 261 samples per second on 8 GPUs, 1.5 to 2.8 times faster than existing VLA codebases. The July 2026 version 2.0 expanded the data to about 60,000 hours (including 10,000 hours of human first-person video), and extended the action space to the head, waist, base, and dexterous hands.",
+      "example": "In the GM-100 evaluation, each task gets only 130 post-training demonstrations, and success rate is then compared against other VLA models on the same real-robot platform.",
+      "related": [
+        "Vision-Language-Action Model",
+        "Qwen-VL",
+        "Cross-Embodiment",
+        "Post-training",
+        "π0",
+        "Robbyant"
+      ]
+    },
+    {
+      "key": "named_model-17#2",
+      "name_en": "LingBot-World (Robbyant)",
+      "aliases": [
+        "LingBot-World 2.0",
+        "LingBot-World-Infinity",
+        "Advancing Open-source World Models"
+      ],
+      "one_liner": "Robbyant's open-source interactive world model that generates the next frame in real time from keyboard and camera commands.",
+      "explanation": "LingBot-World is a world model Robbyant open-sourced in January 2026, adapted from the Tongyi Wanxiang Wan2.2 video-generation model. Given a starting image or text description, the user controls it step by step with keyboard actions or camera pose, and the model generates the corresponding footage — the paper calls this a world simulator. The company reports it keeps a scene consistent over minutes-long durations (called long-term memory), and interacts in real time at 16 frames per second with under 1 second of latency; code and weights are released under the Apache 2.0 license, aimed at narrowing the gap between open- and closed-source world models, for content creation, games, and robot learning. Version 2.0 (LingBot-World-Infinity), from July 2026, supports interaction of unlimited duration, with a distilled real-time version driving 720p, 60fps video, offered at 14B and 1.3B sizes.",
+      "example": "Given an indoor photo as a starting point, pressing W moves forward and A/D turns, and the model generates the following footage from the corresponding viewpoint, segment by segment.",
+      "related": [
+        "World Model",
+        "Interactive World Model",
+        "Genie 3",
+        "Tongyi Wanxiang",
+        "Autoregressive Video Generation",
+        "Robbyant"
+      ]
+    },
+    {
+      "key": "named_model-17#3",
+      "name_en": "LM-Nav",
+      "aliases": [
+        "Robotic Navigation with Large Pre-Trained Models of Language, Vision, and Action"
+      ],
+      "one_liner": "Combines GPT-3, CLIP, and a visual navigation model so a robot can navigate by following natural-language instructions.",
+      "explanation": "LM-Nav was released in July 2022 by Dhruv Shah, Brian Ichter, Sergey Levine, and colleagues, published at CoRL 2022. Directing a robot's navigation with language usually needs a lot of trajectory data with text descriptions, which is expensive to annotate. LM-Nav does no fine-tuning at all and uses no language-labeled robot data; instead, it combines three off-the-shelf pretrained models: the large language model GPT-3 breaks the instruction down into a sequence of landmarks; the image-text model CLIP judges which landmark corresponds to what the robot's camera sees; and the visual navigation model ViNG builds a topological map of the environment from previously collected images and runs a go-to-point policy. The system then searches for the shortest route that passes through those landmarks in order. It completed long-distance navigation in real outdoor environments, and is an early representative example of assembling a robot system out of foundation models.",
+      "example": "For example, the user says “go past the stop sign and head to the white building”; GPT-3 extracts the two landmarks “stop sign” and “white building,” CLIP locates the corresponding positions in the topological map, and ViNG drives to them in sequence.",
+      "related": [
+        "Vision-and-Language Navigation",
+        "CLIP",
+        "Topological Map",
+        "LLM-based Task Planning",
+        "GNM",
+        "ViNT"
+      ]
+    },
+    {
+      "key": "named_model-17#4",
+      "name_en": "Magma (Microsoft)",
+      "aliases": [
+        "Magma-8B",
+        "A Foundation Model for Multimodal AI Agents"
+      ],
+      "one_liner": "A multimodal agent foundation model from Microsoft that can both operate software interfaces and control a robot arm.",
+      "explanation": "Magma is a multimodal foundation model released by Microsoft Research in February 2025, published at CVPR 2025, with the open-source version Magma-8B (language backbone Llama-3-8B). It aims to have one model handle agent tasks in both the digital and physical world: clicking through web pages and phone interfaces (UI navigation), and controlling a robot arm to pick and place objects. The key is two kinds of annotation: Set-of-Mark (SoM) numbers the actionable elements in an image, letting the model express where to act by “choosing which mark”; Trace-of-Mark (ToM) labels the future motion trajectory of marked points in a video, teaching the model to predict what happens next. With ToM, it can learn spatiotemporal planning from large amounts of instructional video that has no action labels at all. Training data includes UI-navigation data, Open X-Embodiment robot data, and web video.",
+      "example": "The same Magma-8B model can output “click the button marked 3” on a phone screenshot, and also output a robot arm's movement trajectory and gripper action on a robot camera feed.",
+      "related": [
+        "Visual Prompting (Set-of-Mark)",
+        "Vision-Language-Action Model",
+        "Multimodal Large Language Model",
+        "Open X-Embodiment Dataset",
+        "Llama",
+        "Microsoft Research"
+      ]
+    },
+    {
+      "key": "named_model-17#5",
+      "name_en": "MANO",
+      "aliases": [
+        "hand Model with Articulated and Non-rigid defOrmations"
+      ],
+      "one_liner": "The most widely used parametric 3D hand model, describing a hand with a small number of shape and pose parameters.",
+      "explanation": "MANO, short for hand Model with Articulated and Non-rigid defOrmations, was proposed by Javier Romero and Dimitrios Tzionas in Michael Black's group at the Max Planck Institute for Intelligent Systems in Germany, published at SIGGRAPH Asia 2017. It was learned from about 1,000 high-precision 3D hand scans of 31 people: given shape parameters (commonly 10-dimensional, describing the hand's size and thickness) and pose parameters (the rotation of each finger joint, which can be compressed to fewer dimensions with principal component analysis), it outputs a 3D hand mesh complete with finger bending and skin deformation. It can also attach to the SMPL body model to form SMPL+H. In embodied AI, MANO is a common representation for learning dexterous manipulation from human-hand video: hand-reconstruction methods like HaMeR output MANO parameters, which are then mapped, through motion retargeting, onto a robot dexterous hand's joints.",
+      "example": "MANO parameters are estimated frame by frame from a first-person video of a person picking up a cup, yielding a trajectory of finger joint angles, which is then retargeted into a demonstration for a robot dexterous hand.",
+      "related": [
+        "SMPL",
+        "HaMeR",
+        "Hand Pose Estimation",
+        "Motion Retargeting",
+        "Dexterous Hand",
+        "Human Video Data"
+      ]
+    },
+    {
+      "key": "named_model-17#6",
+      "name_en": "Marble (World Labs)",
+      "aliases": [],
+      "one_liner": "World Labs' world-generation product that turns text, images, or video into a persistent, exportable 3D scene.",
+      "explanation": "Marble is the generative world model product that World Labs, co-founded by Fei-Fei Li, formally launched on November 12, 2025. A user provides text, one or more images, or video, or first blocks out a rough 3D layout with the companion tool Chisel, and Marble generates a persistent 3D scene that can be freely walked through and viewed, exportable as a Gaussian splat (representing the scene with a large number of semi-transparent ellipsoids), a triangle mesh (including a simplified mesh for collision), or a video rendered along a specified camera path. Unlike a video world model that generates frames one at a time, it outputs explicit 3D assets that can be dropped into a game engine or simulator. In July 2026, World Labs demonstrated using generated scenes for real-to-sim-to-real robot training; in September, its underlying model, Atlas, was released and will power later versions of Marble; on September 28, AMD announced it would acquire World Labs, with the deal expected to close before the end of 2026.",
+      "example": "Upload a photo of a living room, and Marble generates a 3D living room you can look around in; export the collision mesh and drop it into a simulator to let a robot practice navigating inside it.",
+      "related": [
+        "Spatial Intelligence",
+        "World Model",
+        "3D Gaussian Splatting",
+        "Generative Simulation",
+        "World Labs",
+        "Real-to-Sim-to-Real"
+      ]
+    },
+    {
+      "key": "named_model-17#7",
+      "name_en": "MVP",
+      "aliases": [
+        "Masked Visual Pre-training",
+        "Masked Visual Pre-training for Motor Control",
+        "Real-World Robot Learning with Masked Visual Pre-training"
+      ],
+      "one_liner": "Uses a masked autoencoder to pretrain a vision encoder on huge amounts of natural images, then freezes it for robot use.",
+      "explanation": "MVP (Masked Visual Pre-training) refers to two papers from Jitendra Malik and Trevor Darrell's groups at UC Berkeley: Masked Visual Pre-training for Motor Control (Tete Xiao and colleagues), from March 2022, validated in simulation, and Real-World Robot Learning with Masked Visual Pre-training (Ilija Radosavovic and colleagues, CoRL 2022), from October 2022, extending it to the real robot. The method first self-supervised-pretrains a ViT vision encoder on web images and first-person video using a masked autoencoder (MAE, which hides most small patches of an image and has the network fill them back in), then freezes the encoder and trains only a small control module on top of it. Results show this representation beats CLIP, ImageNet-supervised pretraining, and training from scratch; a 307-million-parameter ViT trained on 4.5 million images keeps improving further still. Together with R3M and VC-1, it helped drive forward the direction of pretrained visual representations.",
+      "example": "Freeze an MVP-pretrained ViT to serve as the robot's eyes, and training only a small control head on top of it with a handful of demonstrations is enough to learn grasping on a new task.",
+      "related": [
+        "Pretrained Visual Representation",
+        "Masked Autoencoder",
+        "Self-Supervised Learning",
+        "R3M",
+        "VC-1",
+        "Vision Transformer"
+      ]
+    },
+    {
+      "key": "named_model-17#8",
+      "name_en": "MaskedMimic",
+      "aliases": [
+        "Unified Physics-Based Character Control Through Masked Motion Inpainting"
+      ],
+      "one_liner": "An NVIDIA unified physics-based humanoid controller that treats every control mode as filling in missing motion.",
+      "explanation": "MaskedMimic was released in September 2024 by Chen Tessler, Xue Bin Peng, and colleagues at NVIDIA Research, published at SIGGRAPH Asia 2024 (ACM TOG). Previously, controlling a humanoid character in physics simulation — tracking a motion, walking, reaching for an object, acting out text — usually meant training a separate policy with its own reward for each. MaskedMimic unifies all of these as a motion-inpainting problem: given only partial constraints (target positions for a few joints, some keyframes, a line of text, or an object to interact with), with the rest masked out, the model generates complete, physically plausible whole-body motion. Training happens in two steps: first, reinforcement learning trains a teacher controller on AMASS motion-capture data that fully tracks a reference motion; then DAgger-style behavior cloning distills it into a conditional-VAE student policy that can handle randomly masked input. The code is included in NVIDIA's open-source framework, ProtoMotions.",
+      "example": "Given only the head and hand target positions corresponding to a VR headset and its two controllers, with every other joint masked out, MaskedMimic generates complete whole-body motion for standing, walking, and reaching.",
+      "related": [
+        "Motion Tracking",
+        "PHC (Perpetual Humanoid Control)",
+        "DeepMimic",
+        "Conditional Variational Autoencoder",
+        "DAgger (Dataset Aggregation)",
+        "ProtoMotions"
+      ]
+    },
+    {
+      "key": "named_model-17#9",
+      "name_en": "Matrix-Game (Skywork)",
+      "aliases": [
+        "Matrix-Game 2.0",
+        "Matrix-Game 3.0"
+      ],
+      "one_liner": "Skywork's open-source real-time interactive world model that generates game footage frame by frame from keyboard and mouse input.",
+      "explanation": "Matrix-Game is a series of interactive world models open-sourced by Skywork AI, under Kunlun Wanwei; version 1.0 was released in May 2025, and 2.0 in August 2025. The model reads the current frame plus the user's keyboard and mouse input at each frame, then generates the next segment of video, producing a game world generated as you play. 2.0's main ideas are three: automatically collecting about 1,200 hours of interaction-annotated video using Unreal Engine and the GTA5 environment; injecting keyboard-and-mouse actions into the model frame by frame; and distilling the diffusion model into a few-step causal autoregressive generator that produces minutes-long video in real time at 25 FPS, with weights and code both open-sourced. Version 3.0, released in late March 2026, added camera-position-based long-term memory, reaching 720p at 40 FPS with a 5B model. This family of models follows the same line as Genie 3, and is seen as a potential tool for robot simulation and data generation.",
+      "example": "In a GTA-style driving scene, holding W and moving the mouse right makes the model generate, in real time, footage of the car driving forward and turning right.",
+      "related": [
+        "Interactive World Model",
+        "World Model",
+        "Genie 3",
+        "Autoregressive Video Generation",
+        "Self Forcing",
+        "Diffusion Step Distillation"
+      ]
+    },
+    {
+      "key": "named_model-17#10",
+      "name_en": "MDM (Motion Diffusion Model)",
+      "aliases": [
+        "Human Motion Diffusion Model"
+      ],
+      "one_liner": "A landmark method that generates a 3D human motion sequence from text or an action category using a diffusion model.",
+      "explanation": "MDM (Human Motion Diffusion Model) is work released in September 2022 by Guy Tevet, Amit Bermano, and colleagues at Tel Aviv University in Israel, published at ICLR 2023. It applies the diffusion models used in image generation to human motion: using a Transformer as the network, it progressively denoises a sequence of joint motion from noise, with classifier-free guidance letting generation be controlled by text or an action category. A key design choice is predicting the clean motion directly at every step rather than the noise, which makes it possible to add geometric losses on joint position, velocity, and foot contact, producing more natural motion. It achieved the best results at the time on text-to-motion benchmarks such as HumanML3D and KIT, and became the baseline for a large amount of follow-up motion-generation work. In embodied AI, the human motion this kind of model generates can, after motion retargeting, be handed to a humanoid robot's motion-tracking controller for execution.",
+      "example": "Given the prompt “a person walks forward a few steps and then sits down,” MDM generates a corresponding 3D human skeletal motion sequence.",
+      "related": [
+        "Diffusion Model",
+        "Human Motion Generation (Text-to-Motion)",
+        "HumanML3D Dataset",
+        "Classifier-Free Guidance",
+        "Motion Retargeting",
+        "Motion Tracking"
+      ]
+    },
+    {
+      "key": "named_model-17#11",
+      "name_en": "MemoryVLA",
+      "aliases": [
+        "Perceptual-Cognitive Memory in Vision-Language-Action Models for Robotic Manipulation"
+      ],
+      "one_liner": "Adds working memory and a memory bank to a VLA, so the robot remembers what it has already seen and done.",
+      "explanation": "MemoryVLA is work from Gao Huang's group at Tsinghua University, in collaboration with Dexmal (原力灵机), Megvii, and others, released in August 2025 and published at ICLR 2026. Most VLA models decide on an action by looking only at the current frame, but for many manipulation tasks a single current frame isn't enough — the footage right before and right after pressing a button can look nearly identical, and without any memory of history there's no way to tell whether it's already been pressed. MemoryVLA borrows the cognitive-science concepts of working memory and episodic memory: a 7B vision-language model encodes observations into perceptual tokens and cognitive tokens, serving as working memory; a separate memory bank stores past low-level detail and high-level semantics, retrieved as needed and fused with current information; a diffusion action expert then outputs a segment of action. The paper reports a 71.9% success rate on SimplerEnv-Bridge, 96.5% on LIBERO, and 84.0% on real-robot tasks, with especially large gains on long-horizon tasks.",
+      "example": "For a task like “press three buttons in sequence,” the footage barely changes after each press, so only the memory bank remembering which ones are already pressed can prevent the robot from pressing the same one twice or skipping one.",
+      "related": [
+        "Memory-augmented VLA",
+        "Embodied Memory",
+        "Vision-Language-Action Model",
+        "Long-Horizon Task",
+        "Diffusion Action Head",
+        "Dexmal"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "batch": "named_model-05",
+  "terms": [
+    {
+      "key": "named_model-05#0",
+      "name_en": "Tesla FSD v12",
+      "aliases": ["FSD Beta v12", "Full Self-Driving (Supervised) v12", "End-to-End Neural Network Driving"],
+      "one_liner": "Tesla's 2024 driver-assist release that replaced its city-street driving stack with a single end-to-end neural network.",
+      "explanation": "FSD (Full Self-Driving) is Tesla's driver-assistance software; its official name includes “Supervised,” meaning a driver must still monitor it. V12 changed the underlying architecture. Elon Musk livestreamed a test drive in August 2023, it rolled out to users in early 2024, and v12.3 expanded the rollout with a free one-month trial for US owners in March. According to Tesla, the city-driving stack was replaced with a single end-to-end neural network trained on millions of video clips, replacing more than 300,000 lines of hand-written C++ rules: camera footage goes in, driving controls come out, with no hand-designed rules in between. In November 2024, v12.5.6.3 extended end-to-end driving to highways too, but only for cars with HW4 hardware. V12 turned “end-to-end” into an industry buzzword, and both the self-driving and embodied-AI communities often cite it as evidence that a data-driven approach can work; Tesla has not published model details.",
+      "example": "During Musk's roughly 45-minute livestreamed test drive of V12 in August 2023, he took over the wheel only once, when the car misread a signal at a busy intersection and was about to run a red light. He said there was no code specifically written to handle traffic lights — this kind of behavior was learned entirely from fleet video.",
+      "related": ["End-to-End", "Autonomous Driving", "Imitation Learning", "Tesla", "Data Flywheel", "UniAD (Planning-Oriented End-to-End Autonomous Driving)"]
+    },
+    {
+      "key": "named_model-05#1",
+      "name_en": "TWIST",
+      "aliases": ["TWIST: Teleoperated Whole-Body Imitation System"],
+      "one_liner": "Stanford's 2025 whole-body teleoperation system for humanoids: the robot mirrors the operator's entire body in real time.",
+      "explanation": "TWIST was released in May 2025 by Jiajun Wu and C. Karen Liu's teams at Stanford, working with Xue Bin Peng at Simon Fraser University, and published at CoRL 2025 with Yanjie Ze as first author. Earlier humanoid teleoperation usually controlled the upper and lower body separately, which couldn't produce coordinated whole-body moves like squatting to lift a box or kicking a ball. TWIST captures a person's full-body motion with OptiTrack optical motion capture, retargets it in real time (converting human motion into robot joint angles) onto a 29-degree-of-freedom Unitree G1, and tracks it with a single unified neural-network controller. That controller is trained in Isaac Gym simulation on about 42 hours of human motion-capture data: first a teacher policy that can see 2 seconds of future reference motion is trained, then it's distilled — using reinforcement learning plus behavior cloning — into a student policy that sees only the current frame, cutting latency. A later version, TWIST2, switches to a PICO VR headset and no longer needs motion capture, making it easier to collect data at scale.",
+      "example": "An operator on the motion-capture stage bends down to pick up a box from the floor, and the G1 mirrors the same whole-body motion in sync; when the operator kicks a ball or dances a waltz step, the robot follows along in real time.",
+      "related": ["Whole-Body Teleoperation", "Motion Retargeting", "Motion Tracking", "Teacher-Student Distillation", "TWIST2", "Unitree G1"]
+    },
+    {
+      "key": "named_model-05#2",
+      "name_en": "V-JEPA 2",
+      "aliases": ["V-JEPA 2-AC", "V-JEPA", "V-JEPA 2.1"],
+      "one_liner": "Meta's self-supervised video model that predicts video in feature space, usable as a world model for planning robot actions.",
+      "explanation": "V-JEPA 2 is an open-source video model, about 1.2 billion parameters, released by Meta FAIR (Yann LeCun's team) in June 2025. It follows the JEPA (Joint Embedding Predictive Architecture) approach: instead of generating pixels, it masks part of a video and has the model predict the masked content in an abstract feature space, learning motion and physical regularities this way. The first stage does self-supervised pretraining on more than 1 million hours of web video and 1 million images; the second stage freezes the encoder and trains an action-conditioned predictor, called V-JEPA 2-AC, on fewer than 62 hours of unlabeled robot video from the DROID dataset. In use, given a goal image, the model searches in feature space for the action whose predicted outcome comes closest to the goal (model-predictive control). On Franka arms in two different labs, it grasped and placed unseen objects zero-shot with 65–80% success. In 2026 Meta also released V-JEPA 2.1, with improved dense features.",
+      "example": "In a new lab where no data was ever collected, given a photo showing an object already placed at its target position, V-JEPA 2-AC imagines the outcome of several candidate actions in feature space at each step, executes whichever one lands closest to the goal image, and moves the object into place step by step.",
+      "related": ["Joint Embedding Predictive Architecture", "World Model", "Latent World Model", "Self-Supervised Learning", "Model-Predictive Control", "DROID Dataset"]
+    },
+    {
+      "key": "named_model-05#3",
+      "name_en": "VoxPoser",
+      "aliases": ["VoxPoser: Composable 3D Value Maps for Robotic Manipulation with Language Models"],
+      "one_liner": "A zero-shot method where a large model writes code to build a 3D value map, which a planner turns into a trajectory.",
+      "explanation": "VoxPoser was released in July 2023 by Fei-Fei Li and Jiajun Wu's groups at Stanford, working with Yunzhu Li at UIUC, and received an oral presentation at CoRL 2023, with Wenlong Huang as first author. Large language models know a lot of commonsense, but not where in 3D space an action should land. VoxPoser has an LLM write code, from an instruction, that calls a vision-language model to locate relevant objects, then assembles an “affordance map” (where to go) and a “constraint map” (where to avoid) on a voxel grid (space cut into small cubes); these maps become cost functions handed to a motion planner, which computes the end-effector's trajectory. The whole process needs no task-specific policy training, so it's zero-shot, and it replans in closed loop during execution, handling objects that get moved. It's a landmark example of the “large model plus intermediate representation plus classical planning” approach, and later work like ReKep continues in the same direction.",
+      "example": "Given the instruction “open the top drawer, careful of the vase nearby,” the LLM-written code first locates the top drawer's handle and marks the area around it with high value; it then locates the vase and marks the nearby region as high cost; the planner uses this to compute a trajectory to the handle that avoids the vase.",
+      "related": ["LLM Task Planning", "Code as Policies", "Affordance", "Intermediate Representation", "ReKep", "Motion Planning"]
+    },
+    {
+      "key": "named_model-05#4",
+      "name_en": "π*0.6",
+      "aliases": ["π0.6", "pi0.6", "pi*0.6", "pi-star-0.6"],
+      "one_liner": "π0.6 after reinforcement learning with RECAP, able to keep improving from demonstrations, corrections, and its own experience.",
+      "explanation": "π*0.6 is a vision-language-action model Physical Intelligence released in November 2025. Its base, π0.6, builds on π0.5 but switches to a Gemma 3 4B vision-language backbone and grows the action expert to 860 million parameters; the asterisk marks that it was further trained with reinforcement learning using the RECAP method. A model trained purely on human demonstrations tends to drift further off course after a small mistake (compounding error), making it hard to succeed reliably. RECAP trains on three kinds of data at once: human demonstrations, corrections made when an expert teleoperates in to take over, and the robot's own successes and failures from autonomous runs. It first trains a value function that estimates how many steps remain to completion, uses that to judge whether a stretch of actions made things better or worse (its advantage), then trains the model together with an “Advantage: positive / negative” text condition, and at deployment only asks it for the “positive” behavior. On the hardest tasks, this more than doubled throughput and roughly halved the failure rate.",
+      "example": "After RECAP training, π*0.6 made espresso drinks continuously for 13 hours, folded unfamiliar laundry without interruption for more than two hours in a new home, and assembled real shipping boxes on a factory floor.",
+      "related": ["RECAP", "Vision-Language-Action Model", "Reinforcement Learning Fine-tuning", "Advantage Conditioning", "Value Function", "Physical Intelligence"]
+    },
+    {
+      "key": "named_model-05#5",
+      "name_en": "π0-FAST",
+      "aliases": ["pi0-FAST", "pi0_fast", "π0 + FAST"],
+      "one_liner": "An autoregressive VLA that tokenizes π0's actions into discrete tokens with the FAST tokenizer and predicts them one by one.",
+      "explanation": "π0-FAST is a model Physical Intelligence released in January 2025 alongside the FAST action tokenizer; it shares π0's backbone network and training data, differing only in how actions are output. π0 generates continuous actions with flow matching, while π0-FAST turns actions into discrete tokens and predicts them one at a time, like a language model. Traditional discretization — binning each dimension at each timestep separately — barely learns anything on high-frequency, dexterous tasks. FAST instead applies a discrete cosine transform (DCT, the same transform used in JPEG compression) to a chunk of actions, quantizes it, and compresses it further with byte-pair encoding (BPE), so a chunk of actions typically needs only 30–60 tokens. This trains up to 5x faster with performance comparable to the flow-matching version, and produced the first generalist policy trained on the DROID dataset able to follow instructions zero-shot in new environments. The cost is that autoregressive decoding is noticeably slower than flow matching. Weights are open-sourced in openpi.",
+      "example": "A bimanual robot controlled at 50Hz with 14 dimensions per step means 700 numbers per second of action. The old per-dimension binning approach would need 700 tokens; after FAST compression, only a few dozen remain, letting the model learn to fold clothes with next-token prediction, then convert tokens back into continuous actions at inference time.",
+      "related": ["π0", "Action Tokenizer", "Discrete Cosine Transform", "Byte-Pair Encoding", "Bin-based Discretization", "Autoregressive Decoding"]
+    },
+    {
+      "key": "named_model-05#6",
+      "name_en": "π0.7",
+      "aliases": ["pi0.7", "pi07"],
+      "one_liner": "PI's 2026 generalist robot model that can be steered with rich prompts and shows early signs of compositional generalization.",
+      "explanation": "π0.7 is a robot foundation model Physical Intelligence released in April 2026. Simply mixing data from different robots, human videos, and autonomous runs (including failures) together in training doesn't work well. π0.7's approach is to attach a richer prompt to every piece of data: language describing the task and its substeps, metadata like speed and quality, a label for whether joint-space or end-effector control was used, and subgoal images showing what things look like after a substep is done (which, at inference, can be generated by a lightweight world model). This lets data of different quality and different ways of doing the same task all be used, and at inference the prompt specifies “how to do it” — steerability. PI reports that without fine-tuning it matches the level of task-specific π*0.6 models at folding laundry, making coffee, and folding paper boxes, and shows the first signs of compositional generalization: it learns to use an air fryer it has never seen through step-by-step language guidance, and folds laundry on a bimanual UR5e with no laundry-folding data of its own.",
+      "example": "Asked to put a sweet potato in an air fryer, the robot only partially completes the task on a few tries when given just one instruction; guided step by step in language by a person, it finishes the task; fine-tuning a high-level policy on that guidance data then lets it generate its own substeps and complete the task fully autonomously.",
+      "related": ["Steerability", "π*0.6", "π0.5", "Compositional Generalization", "Cross-Embodiment", "Hi Robot"]
+    },
+    {
+      "key": "named_model-05#7",
+      "name_en": "1X World Model",
+      "aliases": ["1X World Model Challenge"],
+      "one_liner": "Humanoid company 1X's video world model, first used to evaluate policies, later used directly to control NEO.",
+      "explanation": "The 1X World Model is a video-generation world model developed by the humanoid robotics company 1X. It was first announced in September 2024, trained on thousands of hours of video and action data collected by EVE robots in homes and offices: given the current image and a sequence of actions, it predicts the resulting video, and can simulate falling objects, cloth, doors, and drawers; 1X also released more than 100 hours of data and launched the 1X World Model Challenge. From June 2025 it was used to evaluate NEO's Redwood policy — running rollouts inside the model to compare policies and checkpoints while reducing real-robot testing. In January 2026, 1X connected it directly to NEO as a policy: a 14-billion-parameter text-conditioned video diffusion model first generates a video of the task being completed, and an inverse-dynamics model then infers actions from that footage; training used web video, 900 hours of first-person human video, and 70 hours of NEO data. Generating a 5-second video currently takes about 11 seconds, and dexterous tasks like pouring water remain difficult.",
+      "example": "Given the phrase “pull out a tissue” and the current image, 1XWM generates a video of NEO completing the action, and the inverse-dynamics model derives the actions for NEO to execute from it; generating several candidate videos in parallel and picking the best one raised this task's success rate from 30% to 45%.",
+      "related": ["World Model", "World Model Evaluation", "Inverse Dynamics Model", "Video Generation Model", "1X NEO", "1X Redwood"]
+    },
+    {
+      "key": "named_model-05#8",
+      "name_en": "3D Diffuser Actor",
+      "aliases": ["3D Diffuser Actor: Policy Diffusion with 3D Scene Representations"],
+      "one_liner": "An imitation-learning policy that combines diffusion policies with 3D scene representations to generate robot-arm end-effector trajectories.",
+      "explanation": "3D Diffuser Actor was proposed in February 2024 by Katerina Fragkiadaki's group at Carnegie Mellon University (Tsung-Wei Ke, Nikolaos Gkanatsios), published at CoRL 2024. Two earlier lines of work each had a strength: diffusion policies can represent multiple valid ways of doing something (action multimodality), while 3D policies fuse multi-view images into 3D features using depth, making them more robust to camera-viewpoint changes. This model combines both: it lifts image features into 3D points using depth, then uses a denoising Transformer with 3D relative-position attention, conditioned on the language instruction and proprioceptive state, to progressively denoise a noised trajectory of end-effector poses. At release it beat the previous best method by 18.1 absolute percentage points in the multi-view RLBench setting and 13.1 points single-view, with a 9% relative improvement on CALVIN; on a real Franka arm, it learned 12 tasks from roughly a dozen demonstrations each.",
+      "example": "On RLBench's “open drawer” task, it builds a 3D feature point cloud of the scene from multiple RGB-D cameras, then repeatedly denoises from random noise to produce the arm's next key pose — a position in front of the handle with a specific gripper orientation.",
+      "related": ["Diffusion Policy", "3D Diffusion Policy", "PerAct", "RLBench", "CALVIN", "Keyframe Action Prediction"]
+    },
+    {
+      "key": "named_model-05#9",
+      "name_en": "3D-LLM",
+      "aliases": ["3D-LLM: Injecting the 3D World into Large Language Models"],
+      "one_liner": "A large language model that takes 3D scene features directly as input to answer spatial questions and break down tasks.",
+      "explanation": "3D-LLM was proposed in July 2023 by Yining Hong, Chuang Gan, and colleagues from UCLA, UMass Amherst, MIT, and other institutions, a NeurIPS 2023 spotlight. LLMs and vision-language models only handle text or 2D images, and struggle with inherently three-dimensional concepts like spatial relationships and layout. 3D-LLM renders a 3D scene from multiple viewpoints into images, extracts features with a 2D feature extractor, and maps them back onto 3D points to get semantically rich 3D features, which then feed into an off-the-shelf vision-language model such as BLIP-2 for training; it adds a 3D localization mechanism to help the model understand position. The authors designed three prompting methods and collected more than 300,000 3D-language data points covering scene captioning, 3D question answering, task decomposition, localization, and navigation. It beat the previous best method's BLEU-1 score on ScanQA by 9%. It's one of the earlier works connecting 3D scenes to large models, and later work like 3D-VLA and LEO continues this direction.",
+      "example": "Given a 3D scan of a room, 3D-LLM can answer “which side of the sofa is the fridge on,” or break down “make breakfast” into steps like walking to the kitchen, opening the fridge, and taking out eggs.",
+      "related": ["3D-VLA", "Multimodal Large Language Model", "Spatial Reasoning", "3D Visual Grounding", "LEO (Embodied Generalist Agent)", "ScanNet Dataset"]
+    },
+    {
+      "key": "named_model-05#10",
+      "name_en": "3D-ViTac",
+      "aliases": ["3D-ViTac: Learning Fine-Grained Manipulation with Visuo-Tactile Sensing"],
+      "one_liner": "A system that places low-cost tactile-sensor readings and a visual point cloud in the same 3D space to learn fine manipulation.",
+      "explanation": "3D-ViTac was proposed in October 2024 by researchers from Columbia University, UIUC, and the University of Washington (first author Binghao Huang, advised by Yunzhu Li), published at CoRL 2024. Vision alone isn't enough when the gripper itself blocks the camera's view of an object, or when the task requires judging how hard to squeeze. The system covers the soft gripper's fingertips with flexible piezoresistive tactile pads: each pad has a 16×16 grid of 256 sensing cells, each about 3 square millimeters and under 1 millimeter thick, costing about $20, for 1,024 cells total across a bimanual four-finger setup. The key idea is to use robot kinematics to compute each tactile cell's 3D position, turning its reading into a “tactile point,” merged into a single point cloud together with the camera's point cloud, and then trained with imitation learning using a diffusion policy. Across four long-horizon tasks — steaming an egg, preparing grapes, collecting hex keys, and handing over a sandwich — overall success reached 80–90%, versus only 45–60% for a vision-only version.",
+      "example": "While gripping an egg, the camera can't tell how much force is being applied, but the tactile points directly show contact location and pressure, letting the policy hold it gently without crushing it; when reorienting a hex key in the gripper, the tactile points tell the policy the key's current orientation.",
+      "related": ["Visuo-tactile Fusion", "Tactile Sensor", "Diffusion Policy", "Point Cloud", "3D Diffusion Policy", "Bimanual Manipulation"]
+    },
+    {
+      "key": "named_model-05#11",
+      "name_en": "Google DeepMind Table Tennis Robot",
+      "aliases": ["Achieving Human Level Competitive Robot Table Tennis", "Robot Table Tennis"],
+      "one_liner": "DeepMind's 2024 table-tennis robot, the first learning-based robot to reach amateur human level in real matches.",
+      "explanation": "This work was released by Google DeepMind in August 2024, and the paper claims it's the first learning-based robot to reach amateur human level in competitive table tennis. The hardware is a 6-degree-of-freedom ABB IRB 1100 arm mounted on two linear rails that let it move forward, back, left, and right, with two 125Hz cameras tracking the ball. Control has two layers: low-level specialized skills (such as forehand and backhand), each carrying a “skill descriptor” recording what it's good and bad at; and a high-level controller that picks a skill based on the incoming ball and statistics about the opponent, adapting to that opponent in real time during a match. The skills are trained with reinforcement learning in MuJoCo simulation and deployed zero-shot to the real robot; the distribution of incoming balls observed in real matches is then fed back into simulation, forming an iterative training curriculum. Playing 29 human opponents it had never faced before, the robot won 45% of matches overall: it won every match against beginners, 55% against intermediate players, and lost every match against advanced players.",
+      "example": "Against an opponent it has never played before, the high-level controller keeps tallying each low-level skill's return success rate during the match, and increasingly picks whichever skills are working against that particular opponent.",
+      "related": ["Sim-to-Real Transfer", "Hierarchical Architecture", "Reinforcement Learning", "Dynamic Manipulation", "MuJoCo", "Google DeepMind"]
+    }
+  ]
+}

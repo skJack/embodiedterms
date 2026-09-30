@@ -1,0 +1,400 @@
+{
+  "category": "concept",
+  "batch": 5,
+  "terms": [
+    {
+      "name_zh": "失败恢复",
+      "name_en": "Failure Recovery",
+      "abbr": "",
+      "aliases": [
+        "自我纠错",
+        "错误恢复",
+        "Error Recovery"
+      ],
+      "tier": 2,
+      "one_liner": "机器人发现自己做错或快要失败时，自己调整并把任务继续做完的能力。",
+      "explanation": "失败恢复指机器人在执行中察觉异常（抓空、物体滑落、卡住），再通过重试、换做法或退回安全状态把任务继续下去。只学过成功示范的模仿学习策略一旦偏离示范轨迹，就会进入没见过的状态，小错越积越大（即复合误差），所以恢复能力往往决定长程任务能不能做完。常见思路有两类：一是先检测并解释失败再重新规划，如 CoRL 2023 的 REFLECT 用大语言模型总结机器人经历、说明哪里出错，2024 年的 AHA 专门训练视觉语言模型判断失败；二是把恢复动作直接教给策略，如 2025 年的 RaC 在快失败时由人介入，先把机器人退回熟悉状态再示范纠正，用这类数据训练策略。",
+      "example": "RaC 让双臂机器人挂衬衫、装箱时，人在即将失败处接管，把机器人退回到熟悉的状态再演示纠正动作，策略从这些数据里学会自己补救。",
+      "related": [
+        "纠偏数据",
+        "干预数据",
+        "复合误差",
+        "人在回路",
+        "RaC",
+        "长程任务"
+      ],
+      "sources": [
+        {
+          "title": "REFLECT: Summarizing Robot Experiences for Failure Explanation and Correction (arXiv 2306.15724)",
+          "url": "https://arxiv.org/abs/2306.15724"
+        },
+        {
+          "title": "AHA: A Vision-Language-Model for Detecting and Reasoning Over Failures in Robotic Manipulation (arXiv 2410.00371)",
+          "url": "https://arxiv.org/abs/2410.00371"
+        },
+        {
+          "title": "RaC: Robot Learning for Long-Horizon Tasks by Scaling Recovery and Correction (arXiv 2509.07953)",
+          "url": "https://arxiv.org/abs/2509.07953"
+        }
+      ],
+      "as_of": "2025-09"
+    },
+    {
+      "name_zh": "跌倒恢复（摔倒起身）",
+      "name_en": "Fall Recovery / Getting Up",
+      "abbr": "",
+      "aliases": [
+        "摔倒起身",
+        "起身控制",
+        "Standing-up Control"
+      ],
+      "tier": 2,
+      "one_liner": "人形或足式机器人摔倒后，从躺、趴等姿势自己重新站起来的能力。",
+      "explanation": "跌倒恢复指腿足机器人摔倒后，从仰躺、俯卧、侧卧、靠墙等姿势重新站起，回到能继续行走的状态。人形机器人重心高、脚底支撑面小，在真实环境里摔倒难以完全避免，如果每次都要人扶，就谈不上自主部署。起身比走路难学：躯干、四肢多处同时触地，接触顺序不固定，奖励又很稀疏。过去常用人工编排的固定起身动作，换个姿势或地形就容易失败。2025 年出现了在仿真里用强化学习训练、直接迁移到宇树 G1 真机的方法，如 HoST 和 HumanUP，均发表于 RSS 2025。与之相关的还有跌倒保护，即摔倒过程中尽量减小冲击、保护硬件。",
+      "example": "HumanUP 在宇树 G1 上测试，机器人能从仰躺和俯卧两种姿势出发，在草地、雪地和斜坡上自己站起来。",
+      "related": [
+        "HoST（人形起身）",
+        "跌倒保护与摔倒恢复",
+        "推恢复",
+        "平衡控制",
+        "强化学习运控",
+        "人形机器人"
+      ],
+      "sources": [
+        {
+          "title": "Learning Humanoid Standing-up Control across Diverse Postures (HoST, arXiv 2502.08378)",
+          "url": "https://arxiv.org/abs/2502.08378"
+        },
+        {
+          "title": "Learning Getting-Up Policies for Real-World Humanoid Robots (HumanUP, arXiv 2502.12152)",
+          "url": "https://arxiv.org/abs/2502.12152"
+        }
+      ],
+      "as_of": "2025-04"
+    },
+    {
+      "name_zh": "少样本",
+      "name_en": "Few-shot",
+      "abbr": "",
+      "aliases": [
+        "小样本",
+        "少样本学习",
+        "Few-shot Learning"
+      ],
+      "tier": 2,
+      "one_liner": "只给几个到几十个示例，模型就能学会或做对一个新任务。",
+      "explanation": "少样本指面对新任务时只用很少的示例。在大语言模型里，它通常指把几个示例直接写进提示词，不更新参数就让模型照着做；2020 年 GPT-3 的论文《Language Models are Few-Shot Learners》让这种用法广为人知，这种能力也叫上下文学习。在机器人领域，少样本更多指只采集几条到几十条演示数据（人遥操作机器人完成任务的记录），在预训练模型基础上微调就学会新任务。真机数据采集又慢又贵，一个方法学新任务需要多少条演示，是衡量它是否实用的重要指标。它与零样本（一个示例都不给）相对。",
+      "example": "RVT-2 在真机上只用 10 条演示，就能学会需要高精度的操作任务。",
+      "related": [
+        "零样本",
+        "上下文学习",
+        "微调",
+        "演示数据",
+        "样本效率",
+        "单样本模仿学习"
+      ],
+      "sources": [
+        {
+          "title": "Language Models are Few-Shot Learners (GPT-3, arXiv 2005.14165)",
+          "url": "https://arxiv.org/abs/2005.14165"
+        },
+        {
+          "title": "RVT-2: Learning Precise Manipulation from Few Demonstrations (arXiv 2406.08545)",
+          "url": "https://arxiv.org/abs/2406.08545"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "精细操作",
+      "name_en": "Fine-grained Manipulation",
+      "abbr": "",
+      "aliases": [
+        "精密操作",
+        "Precise Manipulation",
+        "Fine Manipulation"
+      ],
+      "tier": 2,
+      "one_liner": "对位置和力度要求很高、容错很小的操作，如插电池、穿线、拧小螺丝。",
+      "explanation": "精细操作指容错空间很小、需要毫米级定位或细致力度控制的操作任务，比如把电池插进槽里、揭开半透明小杯的盖子、把线穿过小孔。难点有两处：视觉上目标小、常被手或夹爪挡住，稍有偏差就失败；接触时用力稍大就会压坏物体或卡死。早期多靠精确建模加力控，近年主流是端到端模仿学习。2023 年 Zhao 等人的 ALOHA 论文用低成本双臂加 ACT 算法，只用约 10 分钟演示，就在 6 个精细任务上做到 80–90% 成功率。也有工作引入触觉，如 3D-ViTac 融合视觉与触觉来处理易碎物体。它和灵巧操作常一起出现，但后者更强调多指手。",
+      "example": "ALOHA 的双臂从半透明的小酱料杯上揭开盖子，或把电池准确插进槽里。",
+      "related": [
+        "灵巧操作",
+        "接触丰富操作",
+        "ACT",
+        "3D-ViTac",
+        "视触觉融合",
+        "双臂操作"
+      ],
+      "sources": [
+        {
+          "title": "Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware (ALOHA / ACT, arXiv 2304.13705)",
+          "url": "https://arxiv.org/abs/2304.13705"
+        },
+        {
+          "title": "3D-ViTac: Learning Fine-Grained Manipulation with Visuo-Tactile Sensing (arXiv 2410.24091)",
+          "url": "https://arxiv.org/abs/2410.24091"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "衣物操作",
+      "name_en": "Garment Manipulation",
+      "abbr": "",
+      "aliases": [
+        "叠衣服",
+        "叠衣服任务",
+        "Cloth Folding",
+        "Laundry Folding",
+        "Cloth Manipulation"
+      ],
+      "tier": 2,
+      "one_liner": "让机器人展平、折叠、悬挂、整理衣物，是柔性物体操作里最典型的一类。",
+      "explanation": "衣物操作指机器人处理衣服、毛巾等织物的任务，包括展平、折叠、挂衣、整理一堆待洗衣物，甚至帮人穿衣。它属于柔性物体操作：布料能任意变形，没法像刚体那样用一个位姿描述状态，皱成一团时大面积自我遮挡，看不清哪是领口哪是袖子，物理仿真也难做准。因此叠衣服长期被当作检验机器人操作能力的标志性任务。2024 年 Physical Intelligence 的 π0 论文把叠衣服列为代表任务之一；同年的 GarmentLab（NeurIPS 2024）提供了覆盖多种衣物和机器人的仿真基准，并指出现有方法在新衣物上泛化仍然不足。",
+      "example": "机器人面对一堆揉皱的 T 恤，要先抓起一件、抖开铺平，再按固定步骤对折叠好，放到一边后接着处理下一件。",
+      "related": [
+        "柔性物体操作",
+        "布料仿真",
+        "双臂操作",
+        "π0",
+        "长程任务",
+        "家务任务"
+      ],
+      "sources": [
+        {
+          "title": "GarmentLab: A Unified Simulation and Benchmark for Garment Manipulation (arXiv 2411.01200)",
+          "url": "https://arxiv.org/abs/2411.01200"
+        },
+        {
+          "title": "π0: A Vision-Language-Action Flow Model for General Robot Control (arXiv 2410.24164)",
+          "url": "https://arxiv.org/abs/2410.24164"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "目标条件策略",
+      "name_en": "Goal-conditioned Policy",
+      "abbr": "",
+      "aliases": [
+        "目标条件化策略"
+      ],
+      "tier": 2,
+      "one_liner": "除了当前观测，还把「要达到的目标」作为输入来决定动作的策略。",
+      "explanation": "目标条件策略是把目标也当作输入的策略，常写作 π(a | s, g)：s 是当前状态或观测，g 是目标，可以是一个目标位置、一张目标图像或一个目标状态。普通策略只学一个固定任务，目标条件策略用同一个网络完成「到达不同目标」的一族任务，换目标不用重新训练。在强化学习里这叫目标条件强化学习，常配合后见之明经验回放（HER，把没达成原目标的轨迹按实际到达的位置重新标注成功）缓解稀疏奖励；在模仿学习里，Lynch 等人 2019 年的 Play-LMP 用无任务标签的玩耍数据训练，测试时给出目标就能完成对应动作。目标用一句话描述时，就是语言条件策略。",
+      "example": "给机械臂一张「积木在桌子左上角」的照片作为目标，策略就把积木往那里推；换一张照片，同一个策略就去完成新目标。",
+      "related": [
+        "目标条件强化学习",
+        "后见之明经验回放",
+        "语言条件策略",
+        "目标条件模仿学习",
+        "事后重标注",
+        "策略"
+      ],
+      "sources": [
+        {
+          "title": "Goal-Conditioned Reinforcement Learning: Problems and Solutions (IJCAI 2022 Survey, arXiv 2201.08299)",
+          "url": "https://arxiv.org/abs/2201.08299"
+        },
+        {
+          "title": "Hindsight Experience Replay (arXiv 1707.01495)",
+          "url": "https://arxiv.org/abs/1707.01495"
+        },
+        {
+          "title": "Learning Latent Plans from Play (arXiv 1903.01973)",
+          "url": "https://arxiv.org/abs/1903.01973"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "语言接地",
+      "name_en": "Grounding / Language Grounding",
+      "abbr": "",
+      "aliases": [
+        "落地",
+        "接地",
+        "Grounding",
+        "语义落地",
+        "语言落地"
+      ],
+      "tier": 2,
+      "one_liner": "把语言里的词和指令，对应到真实世界中具体的物体、位置和动作上。",
+      "explanation": "语言接地指让模型理解的语言和物理世界对上号：「红杯子」是桌上哪个物体，「放左边」对应哪块区域，「打开抽屉」要做哪些动作。它源自 Harnad 1990 年提出的符号落地问题：符号如果只靠别的符号来定义，就永远碰不到真实含义。大语言模型读过海量文本，却没在具体环境里行动过，可能提出当前机器人做不到的计划。2022 年谷歌等的 SayCan 用每个技能的价值函数（估计该技能在当前场景下能否成功）给语言模型的建议打分，把规划落到机器人真能做的事上。注意中文「落地」也常指商业部署，要看上下文；把文字对应到图中位置的视觉任务另称视觉定位。",
+      "example": "用户说「我把饮料洒了，帮帮我」，SayCan 让语言模型列出候选步骤，再用价值函数挑出当前场景里真能做成的，比如先去拿海绵。",
+      "related": [
+        "符号落地问题",
+        "SayCan",
+        "视觉定位（Grounding）",
+        "可供性",
+        "指令跟随",
+        "大语言模型"
+      ],
+      "sources": [
+        {
+          "title": "Symbol grounding problem - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Symbol_grounding_problem"
+        },
+        {
+          "title": "Do As I Can, Not As I Say: Grounding Language in Robotic Affordances (SayCan, arXiv 2204.01691)",
+          "url": "https://arxiv.org/abs/2204.01691"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "幻觉",
+      "name_en": "Hallucination",
+      "abbr": "",
+      "aliases": [
+        "AI 幻觉",
+        "模型幻觉"
+      ],
+      "tier": 2,
+      "one_liner": "模型一本正经地输出与事实或眼前场景不符的内容。",
+      "explanation": "幻觉指大模型生成看似合理、实际与事实或输入不符的内容，最早在大语言模型上被广泛讨论，比如编造不存在的论文；视觉模型也会「看到」图里并不存在的物体。到了具身场景，幻觉会从「说错」变成「做错」：规划器可能让机器人去拿房间里根本没有的东西，或对无法完成的指令硬着头皮执行。2025 年的 HEAL 研究（EMNLP 2025 Findings）专门测试了大语言模型驱动的具身智能体，在两个仿真环境中评测 12 个模型，发现指令与场景对不上时模型普遍识别不出来，在专门构造的测试集上幻觉率最高可达普通提示的 40 倍。常见对策包括用感知结果核对计划、让模型不确定时向人求助、做不确定性估计。",
+      "example": "厨房里没有苹果，用户却说「把苹果放进冰箱」，基于大语言模型的规划器仍然生成「走到苹果旁、拿起苹果」的步骤。",
+      "related": [
+        "大语言模型",
+        "视觉语言模型",
+        "语言接地",
+        "不确定性估计",
+        "KnowNo（会求助的机器人）",
+        "具身安全"
+      ],
+      "sources": [
+        {
+          "title": "A Survey on Hallucination in Large Language Models (arXiv 2311.05232)",
+          "url": "https://arxiv.org/abs/2311.05232"
+        },
+        {
+          "title": "HEAL: An Empirical Study on Hallucinations in Embodied Agents Driven by Large Language Models (arXiv 2506.15065)",
+          "url": "https://arxiv.org/abs/2506.15065"
+        },
+        {
+          "title": "Hallucination (artificial intelligence) - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Hallucination_(artificial_intelligence)"
+        }
+      ],
+      "as_of": "2025-10"
+    },
+    {
+      "name_zh": "手眼协调",
+      "name_en": "Hand-Eye Coordination",
+      "abbr": "",
+      "aliases": [
+        "眼手协调"
+      ],
+      "tier": 2,
+      "one_liner": "用相机看到的信息实时引导机械臂和夹爪动作，边看边调的能力。",
+      "explanation": "手眼协调原本描述人和动物的能力：眼睛看到目标，手就能准确伸过去抓住，并边看边修正。放到机器人上，指把相机图像和机械臂动作连成闭环。传统做法先做手眼标定，算出相机和机械臂之间的坐标变换，再把检测到的目标位置换算成手臂坐标一次性执行，标定稍有偏差就会抓偏。2016 年 Levine 等人在谷歌用 6 到 14 台机械臂、两个月采集了 80 多万次抓取尝试，训练卷积网络直接从单目图像判断某个夹爪运动能否抓成功，不需要相机标定，还能在抓取过程中持续调整，是端到端学习手眼协调的代表工作。注意它和手眼标定是两个概念。",
+      "example": "物体在抓取途中被碰歪了，机器人根据相机画面不断修正夹爪位置，而不是按一开始算好的坐标直接伸过去。",
+      "related": [
+        "手眼标定",
+        "视觉伺服",
+        "视觉运动策略",
+        "闭环",
+        "Google 机械臂农场（大规模抓取自监督）",
+        "抓取"
+      ],
+      "sources": [
+        {
+          "title": "Learning Hand-Eye Coordination for Robotic Grasping with Deep Learning and Large-Scale Data Collection (arXiv 1603.02199)",
+          "url": "https://arxiv.org/abs/1603.02199"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "家务任务",
+      "name_en": "Household Tasks",
+      "abbr": "",
+      "aliases": [
+        "家庭任务",
+        "家务劳动"
+      ],
+      "tier": 2,
+      "one_liner": "在真实家庭里收拾、清洁、洗衣、做饭等日常活，是通用机器人的主要目标场景。",
+      "explanation": "家务任务泛指在住宅里完成的日常活动，如收拾桌面、把碗放进洗碗机、擦台面、叠衣服、铺床。家庭是典型的非结构化环境：每户布局、物品、光照都不同，东西随处乱放，任务往往由很多步组成，还常涉及衣物这类柔性物体和抽屉、柜门这类铰接物体。因此能否在没见过的家里做家务，常被当作检验通用机器人泛化能力的试金石。斯坦福等发布的 BEHAVIOR-1K 基准依据「你希望机器人为你做什么」的调研，定义了 1000 种日常活动，在 OmniGibson 仿真器里评测；2025 年 4 月 Physical Intelligence 发布的 π0.5 展示了在全新住宅里清理厨房或卧室。",
+      "example": "在一户从没进去过的房子里，机器人把散落的衣服放进洗衣篮、把餐具收进水槽，再把台面擦干净。",
+      "related": [
+        "长程任务",
+        "移动操作",
+        "结构化 / 非结构化环境",
+        "BEHAVIOR-1K",
+        "π0.5",
+        "衣物操作"
+      ],
+      "sources": [
+        {
+          "title": "BEHAVIOR-1K: A Human-Centered, Embodied AI Benchmark with 1,000 Everyday Activities and Realistic Simulation (arXiv 2403.09227)",
+          "url": "https://arxiv.org/abs/2403.09227"
+        },
+        {
+          "title": "π0.5: a Vision-Language-Action Model with Open-World Generalization (arXiv 2504.16054)",
+          "url": "https://arxiv.org/abs/2504.16054"
+        }
+      ],
+      "as_of": "2025-04"
+    },
+    {
+      "name_zh": "人-物交互",
+      "name_en": "Human-Object Interaction",
+      "abbr": "HOI",
+      "aliases": [
+        "人物交互"
+      ],
+      "tier": 2,
+      "one_liner": "研究人怎样拿、推、打开、使用物体，是机器人向人学动作的重要素材。",
+      "explanation": "人-物交互（HOI）研究人和物体之间发生了什么动作。在计算机视觉里，经典任务是 HOI 检测：在图像中框出人和物体，并判断二者关系，输出「人、动作、物体」三元组，如「人、骑、自行车」，代表数据集是 WACV 2018 的 HICO-DET。之后研究扩展到视频、3D 和 4D，关注手怎样接触物体、物体怎样随之运动，如 CVPR 2022 的 HOI4D 含 240 万帧第一人称 RGB-D 视频、800 个物体实例。对具身智能来说，人的交互视频比机器人数据多得多、便宜得多，从中提取接触位置、手部轨迹和可供性（物体能被怎样使用），是给机器人扩充训练数据的重要路线。缩写 HOI 有时也指手物交互。",
+      "example": "从大量人开冰箱的视频里，识别出「人、拉开、冰箱门」的交互和手握把手的位置，再用来教机器人开门。",
+      "related": [
+        "手物交互",
+        "可供性",
+        "人类视频数据",
+        "HOI4D 数据集",
+        "第一人称视频",
+        "OMOMO 人-物交互动作数据集"
+      ],
+      "sources": [
+        {
+          "title": "Learning to Detect Human-Object Interactions (HICO-DET, arXiv 1702.05448)",
+          "url": "https://arxiv.org/abs/1702.05448"
+        },
+        {
+          "title": "HOI4D: A 4D Egocentric Dataset for Category-Level Human-Object Interaction (arXiv 2203.01577)",
+          "url": "https://arxiv.org/abs/2203.01577"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "人机协作",
+      "name_en": "Human-Robot Collaboration",
+      "abbr": "HRC",
+      "aliases": [
+        "人机协同"
+      ],
+      "tier": 2,
+      "one_liner": "人和机器人在同一空间里分工配合，共同完成一项任务。",
+      "explanation": "人机协作指人和机器人共享工作空间、一起完成同一任务，而不是把机器人关在围栏里单独干活，是人机交互的一个分支。工业上最常见：1996 年美国西北大学的 Colgate 和 Peshkin 发明了协作机器人（cobot），后来发展成可以在人身边工作的轻量机械臂品类。国际机器人联合会把协作程度分为共存、顺序协作、同时协作、响应式协作四级，目前工厂里多数应用停在前两级。安全是核心问题，ISO 10218 和 ISO/TS 15066 对协作应用提出了功率与力限制、速度与分离监控等要求。对具身智能来说，机器人进入工厂和家庭后，还要能读懂人的意图、配合人的动作，比如一起抬桌子、递接工具。",
+      "example": "装配线上工人负责对准零件，旁边的协作机械臂托住较重的部件，人靠近时自动减速，人离开后再恢复速度。",
+      "related": [
+        "协作机器人",
+        "人机交互",
+        "物理人机交互",
+        "ISO/TS 15066 协作机器人安全标准",
+        "功率与力限制",
+        "人机物体交接"
+      ],
+      "sources": [
+        {
+          "title": "Cobot - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Cobot"
+        }
+      ],
+      "as_of": ""
+    }
+  ]
+}

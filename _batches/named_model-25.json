@@ -1,0 +1,399 @@
+{
+ "category": "named_model",
+ "batch": 25,
+ "terms": [
+  {
+   "name_zh": "银河通用 TrackVLA",
+   "name_en": "TrackVLA: Embodied Visual Tracking in the Wild (Galbot)",
+   "abbr": "",
+   "aliases": [
+    "TrackVLA"
+   ],
+   "tier": 3,
+   "one_liner": "只靠第一视角相机，边认出目标边规划路线去跟随它的具身跟踪 VLA",
+   "explanation": "北京大学 EPIC 实验室（王鹤团队）与银河通用等机构 2025 年 5 月发布的视觉-语言-动作模型（VLA），发表于 CoRL 2025。任务是具身视觉跟踪：机器人只用自己的第一视角相机，在动态环境里认出并持续跟住指定目标。以往做法把「认出目标」和「规划怎么走」拆成两个模块，误差会层层累积；TrackVLA 让两者共用一个大语言模型骨干（Vicuna-7B），语言头负责识别，基于锚点的扩散模型负责输出行进轨迹。训练数据约 170 万条，一半是自建 EVT-Bench 仿真基准里的跟踪样本，一半是视频问答识别样本。真机部署在宇树 Go2 四足上，模型跑在远程 RTX 4090 服务器，推理约 10 帧/秒，对遮挡和目标快速移动比较鲁棒。",
+   "example": "对宇树 Go2 说「跟着穿蓝衣服的人」，它只靠头上一台 RGB 相机在人群中认出目标并一路跟随，目标短暂被挡住后还能接着跟。",
+   "related": [
+    "具身视觉跟踪（目标跟随）",
+    "视觉-语言-动作模型",
+    "银河通用 NavFoM",
+    "导航",
+    "扩散模型",
+    "宇树 Go2"
+   ],
+   "sources": [
+    {
+     "title": "TrackVLA: Embodied Visual Tracking in the Wild (arXiv 2505.23189)",
+     "url": "https://arxiv.org/abs/2505.23189"
+    },
+    {
+     "title": "TrackVLA project page",
+     "url": "https://pku-epic.github.io/TrackVLA-web/"
+    }
+   ],
+   "as_of": "2025-05"
+  },
+  {
+   "name_zh": "Transporter Networks",
+   "name_en": "Transporter Networks: Rearranging the Visual World for Robotic Manipulation",
+   "abbr": "",
+   "aliases": [
+    "Transporter",
+    "Transporter 网络"
+   ],
+   "tier": 3,
+   "one_liner": "把抓放操作看成「在图像上把一块区域挪到另一处」的高样本效率操作网络",
+   "explanation": "Robotics at Google（Andy Zeng、Pete Florence 等）2020 年 10 月发布，发表于 CoRL 2020，入围最佳论文。它把桌面抓取放置类任务看成一连串「空间位移」：先在俯视图像上预测在哪抓，再把抓取点周围的深度特征裁下来，与整张场景的特征做互相关（逐位置比对），找出最合适的放置位置和旋转角度。这种设计不需要先检测物体，又天然利用了平移、旋转对称性，所以非常省数据，少量示教就能学会堆积木、套件装配、理绳子、推物体等任务，也能扩展到 6 自由度抓放。论文同时开源了基于 PyBullet 的 Ravens 仿真任务集。后来的 CLIPort 在它上面加入 CLIP 语言理解，成为语言条件操作的常用基线。",
+   "example": "套件装配任务：模型从俯视图里找出每个零件该从哪里抓、放进模具的哪个槽、转多少度，只用少量示教就能学会。",
+   "related": [
+    "CLIPort",
+    "抓取放置",
+    "物体重排",
+    "桌面操作",
+    "模仿学习",
+    "等变策略 / 等变网络"
+   ],
+   "sources": [
+    {
+     "title": "Transporter Networks (arXiv 2010.14406)",
+     "url": "https://arxiv.org/abs/2010.14406"
+    },
+    {
+     "title": "Transporter Networks project page",
+     "url": "https://transporternets.github.io/"
+    }
+   ],
+   "as_of": "2020-10"
+  },
+  {
+   "name_zh": "TWIST2",
+   "name_en": "TWIST2: Scalable, Portable, and Holistic Humanoid Data Collection System",
+   "abbr": "",
+   "aliases": [
+    "TWIST 2"
+   ],
+   "tier": 3,
+   "one_liner": "不用动捕棚、戴 VR 头显就能采人形机器人全身数据的便携遥操作系统",
+   "explanation": "斯坦福、亚马逊 FAR、USC、UC Berkeley、CMU 联合 2025 年 11 月发布（作者含 Yanjie Ze、Pieter Abbeel、Guanya Shi、Jiajun Wu、C. Karen Liu 等），是全身遥操作系统 TWIST 的升级版。人形机器人全身数据难采，前作依赖固定场地的光学动捕。TWIST2 改用 PICO 4 Ultra 头显加两个 PICO 体感追踪器捕捉操作员全身动作，再给宇树 G1 加装一个约 250 美元、2 自由度的主动脖子，让机器人有第一视角视觉，整套设备可带到任何环境。论文报告 15 分钟可采约 100 条演示、成功率接近 100%。在此基础上训练分层策略：底层是仿真强化学习得到的全身动作跟踪器，上层是用采集数据做模仿学习的视觉运动策略。系统、硬件设计和数据集全部开源。",
+   "example": "操作员戴上 PICO 头显、绑好追踪器做抓放动作，宇树 G1 同步复现全身动作，15 分钟就能录下一百多条双手抓放演示。",
+   "related": [
+    "TWIST",
+    "全身遥操作",
+    "VR 遥操作",
+    "宇树 G1",
+    "分层架构",
+    "运动跟踪"
+   ],
+   "sources": [
+    {
+     "title": "TWIST2 (arXiv 2511.02832)",
+     "url": "https://arxiv.org/abs/2511.02832"
+    },
+    {
+     "title": "TWIST2 project page",
+     "url": "https://yanjieze.com/projects/TWIST2/"
+    }
+   ],
+   "as_of": "2025-11"
+  },
+  {
+   "name_zh": "优必选 Thinker",
+   "name_en": "UBTech Thinker (Thinker / Thinker-WM / Thinker-VLA embodied model stack)",
+   "abbr": "",
+   "aliases": [
+    "Thinker-4B",
+    "Thinker-WM",
+    "Thinker-VLA"
+   ],
+   "tier": 3,
+   "one_liner": "优必选自研的具身模型体系，含基础模型、世界模型和动作模型三层",
+   "explanation": "优必选（UBTech）为人形机器人打造的自研具身模型体系，据报道分为基础模型 Thinker、世界模型 Thinker-WM 和动作模型 Thinker-VLA 三层。其中 Thinker 是面向具身智能的视觉语言模型，2026 年 1 月开源 Thinker-4B（基于 Qwen3-VL 架构、4B 参数、非商业许可）并发布论文。它针对通用视觉语言模型用到机器人上时视角混淆、时序理解弱等问题，用第一视角视频、视觉定位、空间理解和思维链数据训练，主打任务规划、视觉定位和空间理解，官方称在 7 个具身基准上领先。据报道，Thinker-WM 在 LIBERO 基准上排名第一，Thinker-VLA 在工业场景把推理效率提升 176%。这套模型服务于优必选 Walker S 系列等工业人形机器人。",
+   "example": "给 Thinker-4B 一段机器人第一视角画面和指令「把零件放进料箱」，它能输出分步任务计划，并在图像里框出目标零件的位置。",
+   "related": [
+    "优必选",
+    "优必选 Walker S2",
+    "视觉语言模型",
+    "世界模型",
+    "视觉-语言-动作模型",
+    "通义千问 Qwen-VL"
+   ],
+   "sources": [
+    {
+     "title": "UBTECH-Robot/Thinker (GitHub)",
+     "url": "https://github.com/UBTECH-Robot/Thinker"
+    },
+    {
+     "title": "Thinker: A vision-language foundation model for embodied intelligence (arXiv 2601.21199)",
+     "url": "https://arxiv.org/abs/2601.21199"
+    },
+    {
+     "title": "Embodied Intelligence 2026: Farewell to Narrative Hype, Practical Deployment Reigns Supreme (36Kr)",
+     "url": "https://eu.36kr.com/en/p/3953394550537606"
+    }
+   ],
+   "as_of": "2026-08"
+  },
+  {
+   "name_zh": "UH-1 / Humanoid-X",
+   "name_en": "UH-1: Learning from Massive Human Videos for Universal Humanoid Pose Control (Humanoid-X dataset)",
+   "abbr": "UH-1",
+   "aliases": [
+    "Humanoid-X",
+    "Universal Humanoid Pose Control"
+   ],
+   "tier": 3,
+   "one_liner": "从海量互联网人类视频学习、按文字指令生成人形机器人动作的大模型",
+   "explanation": "南加州大学（王越团队）、UC Berkeley 与丰田研究院 2024 年 12 月发布，后在 Humanoids 2025 会议做口头报告。人形机器人数据主要靠强化学习和遥操作获得，难以扩大规模；这项工作改从互联网人类视频里学。团队先建 Humanoid-X 数据集：从视频中提取 3D 人体姿态并自动生成文字描述，再重定向成人形机器人的关键点和动作，共约 16.4 万段动作、2000 多万个机器人姿态。在此基础上训练 UH-1：先把人形动作离散成 token，再用 Transformer 根据文字指令自回归生成动作 token。输出既可以是关键点，交给目标条件策略去跟踪；也可以直接是机器人动作，开环执行。它展示了「人类视频加文本，转成人形动作」这条扩大数据规模的路线。",
+   "example": "输入文字「挥手打招呼」，UH-1 生成对应的人形动作序列，交给底层控制器驱动人形机器人做出挥手动作。",
+   "related": [
+    "Humanoid-X 数据集",
+    "人类视频数据",
+    "动作重定向",
+    "文本驱动动作生成",
+    "动作分词器",
+    "人形机器人"
+   ],
+   "sources": [
+    {
+     "title": "Learning from Massive Human Videos for Universal Humanoid Pose Control (arXiv 2412.14172)",
+     "url": "https://arxiv.org/abs/2412.14172"
+    },
+    {
+     "title": "UH-1 project page (PSI Lab)",
+     "url": "https://psi-lab.ai/UH-1/"
+    }
+   ],
+   "as_of": "2024-12"
+  },
+  {
+   "name_zh": "UniAct（通用动作空间）",
+   "name_en": "UniAct: Universal Actions for Enhanced Embodied Foundation Models",
+   "abbr": "UniAct",
+   "aliases": [
+    "Universal Actions",
+    "通用动作"
+   ],
+   "tier": 3,
+   "one_liner": "用一套跨机器人共享的离散「通用动作」来训练具身基础模型的方法",
+   "explanation": "清华大学智能产业研究院（AIR，詹仙园团队）联合商汤、北大、北邮、上海人工智能实验室 2025 年 1 月发布，发表于 CVPR 2025。不同机器人的动作空间差别很大（关节数、控制方式、坐标系都不同），直接混训跨本体数据会互相干扰。UniAct 学一个「通用动作空间」：由视觉语言模型把观测和指令映射到一个向量量化码本里的离散通用动作，每个码代表不同机器人共有的原子行为；再给每种机器人配一个轻量的专属解码头，把通用动作翻译成具体控制指令。0.5B 参数的 UniAct 在多项真机和仿真评测中与 7B 的 OpenVLA 相当或更好；适配新机器人时，主要训练新的轻量解码头即可。",
+   "example": "在 WidowX、Franka 等多种机械臂数据上一起预训练后，换到一台新机械臂时只需训练一个小解码头，就能把通用动作翻译成它的控制指令。",
+   "related": [
+    "统一动作空间",
+    "跨本体",
+    "向量量化",
+    "本体专属头",
+    "OpenVLA",
+    "潜在动作"
+   ],
+   "sources": [
+    {
+     "title": "Universal Actions for Enhanced Embodied Foundation Models (arXiv 2501.10105)",
+     "url": "https://arxiv.org/abs/2501.10105"
+    },
+    {
+     "title": "UniAct project page",
+     "url": "https://2toinf.github.io/UniAct/"
+    }
+   ],
+   "as_of": "2025-03"
+  },
+  {
+   "name_zh": "UniAD（规划导向的端到端自动驾驶）",
+   "name_en": "UniAD: Planning-oriented Autonomous Driving",
+   "abbr": "UniAD",
+   "aliases": [
+    "Unified Autonomous Driving",
+    "Planning-oriented Autonomous Driving"
+   ],
+   "tier": 3,
+   "one_liner": "把感知、预测、规划串进一个网络、一切为规划服务的端到端自动驾驶框架",
+   "explanation": "上海人工智能实验室 OpenDriveLab（李弘扬团队）等机构 2022 年 12 月发布，获 CVPR 2023 最佳论文奖。传统自动驾驶把感知、预测、规划拆成独立模块或并列的多任务头分别优化，模块之间信息会丢失、误差会累积。UniAD 主张「以规划为目标」：在一个网络里依次完成目标跟踪、在线建图、运动预测、占用栅格预测和轨迹规划，模块之间用统一的查询向量（query）传递信息，整体朝最终规划效果优化。它在 nuScenes 数据集上各项指标都超过当时的方法，成为端到端自动驾驶的代表作，具身智能领域谈端到端设计时也常引用它。2025 年 10 月团队发布了 UniAD 2.0 代码版本。",
+   "example": "UniAD 输入车上多路环视相机画面，在同一个网络里跟踪周围车辆、画出车道线、预测它们未来几秒的走向，最后直接输出自车接下来的行驶轨迹。",
+   "related": [
+    "自动驾驶",
+    "端到端",
+    "特斯拉 FSD V12（端到端自动驾驶）",
+    "DriveVLM（快慢双系统智驾）",
+    "鸟瞰图",
+    "占用网络"
+   ],
+   "sources": [
+    {
+     "title": "Planning-oriented Autonomous Driving (arXiv 2212.10156)",
+     "url": "https://arxiv.org/abs/2212.10156"
+    },
+    {
+     "title": "OpenDriveLab/UniAD (GitHub)",
+     "url": "https://github.com/OpenDriveLab/UniAD"
+    },
+    {
+     "title": "CVPR 2023 Awards",
+     "url": "https://cvpr2023.thecvf.com/Conferences/2023/Awards"
+    }
+   ],
+   "as_of": "2025-10"
+  },
+  {
+   "name_zh": "UVA",
+   "name_en": "Unified Video Action Model",
+   "abbr": "UVA",
+   "aliases": [
+    "Unified Video Action Model"
+   ],
+   "tier": 3,
+   "one_liner": "视频和动作共用一个潜在表示、推理时可跳过视频生成的机器人模型",
+   "explanation": "斯坦福大学 Shuang Li、Yihuai Gao、Dorsa Sadigh、宋舒然 2025 年 2 月发布，发表于 RSS 2025。用视频生成做机器人策略能学到环境会怎么变化，但动作精度和推理速度往往不如直接输出动作的策略。UVA 让视频和动作共享一个联合潜在表示，训练时一起学，解码时分开：用两个轻量扩散头分别解出未来画面和动作，推理时可以跳过视频生成、只解动作，所以速度快。再配合掩码训练，同一个模型可以当策略、正向动力学模型、逆动力学模型或视频预测模型用。在叠毛巾、摆杯子等真机多任务实验里，它在没见过的环境和物体上优于基于 UMI 数据训练的扩散策略基线。",
+   "example": "机器人叠毛巾时，UVA 只解码下一段动作、跳过画面生成来保证实时；离线分析时，同一个模型也能根据给定动作预测执行后的画面。",
+   "related": [
+    "视频预测策略",
+    "世界动作模型",
+    "正向动力学模型",
+    "逆动力学模型",
+    "扩散策略",
+    "通用操作接口"
+   ],
+   "sources": [
+    {
+     "title": "Unified Video Action Model (arXiv 2503.00200)",
+     "url": "https://arxiv.org/abs/2503.00200"
+    },
+    {
+     "title": "UVA project page",
+     "url": "https://unified-video-action-model.github.io/"
+    }
+   ],
+   "as_of": "2025-04"
+  },
+  {
+   "name_zh": "UWM（统一世界模型）",
+   "name_en": "Unified World Models: Coupling Video and Action Diffusion for Pretraining on Large Robotic Datasets",
+   "abbr": "UWM",
+   "aliases": [
+    "Unified World Models"
+   ],
+   "tier": 3,
+   "one_liner": "把动作扩散和视频扩散合进一个模型、能用无动作视频预训练的机器人框架",
+   "explanation": "华盛顿大学（Abhishek Gupta 团队）与丰田研究院 2025 年 4 月发布，发表于 RSS 2025。模仿学习需要带动作标签的机器人数据，大量没有动作标签的视频很难直接用上。UWM 在一个 Transformer 里同时跑动作扩散和视频扩散，并给两种模态各自独立的去噪时间步：把某个模态设成纯噪声，就相当于不看它。于是同一个模型通过不同时间步组合，可以当策略、正向动力学模型、逆动力学模型或视频预测器用；遇到无动作视频，就把缺失的动作当成完全加噪来训练。在 DROID 大规模数据上预训练再微调，比单纯行为克隆预训练泛化更好，加入无动作视频还能进一步提升效果。",
+   "example": "把 DROID 里的机器人轨迹和一批没有动作标签的操作视频一起拿来预训练 UWM，再用少量示教把它微调成某个具体任务的策略。",
+   "related": [
+    "世界模型",
+    "扩散模型",
+    "无动作标签视频",
+    "逆动力学模型",
+    "DROID 数据集",
+    "UVA"
+   ],
+   "sources": [
+    {
+     "title": "Unified World Models (arXiv 2504.02792)",
+     "url": "https://arxiv.org/abs/2504.02792"
+    },
+    {
+     "title": "UWM project page",
+     "url": "https://weirdlabuw.github.io/uwm/"
+    }
+   ],
+   "as_of": "2025-05"
+  },
+  {
+   "name_zh": "宇树 UnifoLM 系列",
+   "name_en": "UnifoLM (Unitree: UnifoLM-WMA-0 / UnifoLM-VLA-0 / UnifoLM-WLA-1.0)",
+   "abbr": "",
+   "aliases": [
+    "UnifoLM-WMA-0",
+    "UnifoLM-VLA-0",
+    "UnifoLM-WLA-1.0"
+   ],
+   "tier": 3,
+   "one_liner": "宇树科技开源的机器人大模型系列，涵盖世界模型、VLA 和人形通用模型",
+   "explanation": "宇树科技（Unitree）开源的机器人基础模型系列，主要有三款。UnifoLM-WMA-0（2025 年 9 月）是世界模型加动作头的架构：世界模型预测机器人与环境交互后的未来画面，既能配合动作头辅助决策，也能当交互式模拟器生成训练数据，支持 Z1 机械臂和 G1 人形。UnifoLM-VLA-0（2026 年 1 月）基于 Qwen2.5-VL，在操作数据上继续预训练，用单一策略在 G1 上完成 12 类操作任务。UnifoLM-WLA-1.0（2026 年 9 月）是 6B 参数的人形通用基础模型，官方称用约 2500 小时真机数据训练，覆盖桌面操作和全身操作 64 项任务，支持二指夹爪和多款五指灵巧手，以 Apache 2.0 许可开源。这个系列体现了宇树从卖本体硬件向开源模型延伸。",
+   "example": "UnifoLM-WMA-0 的世界模型可以预测宇树 Z1 机械臂叠箱子时接下来的画面，既能辅助选动作，也能生成合成训练数据。",
+   "related": [
+    "宇树科技",
+    "宇树 G1",
+    "世界动作模型",
+    "视觉-语言-动作模型",
+    "宇树 Z1 机械臂",
+    "开放权重"
+   ],
+   "sources": [
+    {
+     "title": "unitreerobotics/unifolm-world-model-action (GitHub)",
+     "url": "https://github.com/unitreerobotics/unifolm-world-model-action"
+    },
+    {
+     "title": "unitreerobotics/unifolm-vla (GitHub)",
+     "url": "https://github.com/unitreerobotics/unifolm-vla"
+    },
+    {
+     "title": "unitreerobotics/unifolm-wla (GitHub)",
+     "url": "https://github.com/unitreerobotics/unifolm-wla"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "UniPi",
+   "name_en": "UniPi: Learning Universal Policies via Text-Guided Video Generation",
+   "abbr": "",
+   "aliases": [
+    "Universal Policies via Text-Guided Video Generation"
+   ],
+   "tier": 3,
+   "one_liner": "先按文字生成一段完成任务的视频，再从视频里反推出机器人动作的方法",
+   "explanation": "MIT、Google Brain、UC Berkeley 与阿尔伯塔大学（Yilun Du、Pieter Abbeel 等）2023 年 1 月发布，发表于 NeurIPS 2023。它把决策问题改写成「文本条件视频生成」：给定文字目标和当前画面，用视频扩散模型生成一段完成任务的未来视频当作计划，再用逆动力学模型（根据前后两帧推算中间动作的模型）从相邻帧算出机器人该执行的动作。因为不同机器人、不同环境都统一成了图像，模型能跨任务共享知识；文字目标可以自由组合，带来组合泛化；在互联网图文视频上预训练，也能提升对新指令的泛化。它是「视频生成模型当策略」路线的早期代表，UniSim、视频预测策略等后续工作沿用了相近思路。",
+   "example": "输入「把红色积木放进蓝色碗里」，UniPi 先生成一段机器人完成这件事的短视频，再由逆动力学模型逐帧反推出动作去执行。",
+   "related": [
+    "UniSim",
+    "视频生成模型",
+    "逆动力学模型",
+    "视频预测策略",
+    "SuSIE",
+    "世界模型"
+   ],
+   "sources": [
+    {
+     "title": "Learning Universal Policies via Text-Guided Video Generation (arXiv 2302.00111)",
+     "url": "https://arxiv.org/abs/2302.00111"
+    },
+    {
+     "title": "UniPi project page",
+     "url": "https://universal-policy.github.io/unipi/"
+    }
+   ],
+   "as_of": "2023-11"
+  },
+  {
+   "name_zh": "UniSim",
+   "name_en": "UniSim: Learning Interactive Real-World Simulators",
+   "abbr": "",
+   "aliases": [
+    "Universal Simulator",
+    "Learning Interactive Real-World Simulators"
+   ],
+   "tier": 3,
+   "one_liner": "用视频生成模型学出来、能响应动作的「真实世界模拟器」",
+   "explanation": "UC Berkeley、Google DeepMind 与 MIT（Sherry Yang、Yilun Du、Pieter Abbeel 等）2023 年 10 月发布，获 ICLR 2024 杰出论文奖。它用视频生成模型学一个真实世界模拟器：给定当前画面和一个动作，生成执行后的画面。动作既可以是「打开抽屉」这样的高层语言指令，也可以是「移动到某个坐标」这样的低层控制。没有单一数据集能同时覆盖这些信息，作者就把图像数据（物体种类多）、机器人数据（动作多）、导航数据（运动多）等拼在一起训练。训练好后，可以在 UniSim 里训练视觉语言策略和强化学习策略，再零样本迁移到真机；它生成的数据也能帮助视频字幕等模型。它是可交互世界模型、神经模拟器方向的早期代表。",
+   "example": "给 UniSim 一张厨房画面并输入「打开抽屉」，它生成抽屉被拉开的后续视频；强化学习策略可以在这类生成画面里反复试错训练。",
+   "related": [
+    "UniPi",
+    "可交互世界模型",
+    "神经模拟器",
+    "世界模型",
+    "Genie（初代）",
+    "视频生成模型"
+   ],
+   "sources": [
+    {
+     "title": "Learning Interactive Real-World Simulators (arXiv 2310.06114)",
+     "url": "https://arxiv.org/abs/2310.06114"
+    },
+    {
+     "title": "UniSim project page",
+     "url": "https://universal-simulator.github.io/unisim/"
+    }
+   ],
+   "as_of": "2024-05"
+  }
+ ]
+}

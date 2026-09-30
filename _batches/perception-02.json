@@ -1,0 +1,432 @@
+{
+ "category": "perception",
+ "batch": 2,
+ "terms": [
+  {
+   "name_zh": "RGB相机",
+   "name_en": "RGB Camera",
+   "abbr": "",
+   "aliases": [
+    "彩色相机",
+    "单目相机",
+    "Monocular Camera",
+    "彩色摄像头"
+   ],
+   "tier": 1,
+   "one_liner": "输出彩色图像的普通相机，每个像素记录红、绿、蓝三个亮度值。",
+   "explanation": "RGB 相机就是最常见的彩色相机：图像传感器前覆一层颜色滤镜阵列，最常用的是柯达工程师 Bryce Bayer 1976 年取得专利的拜耳滤镜，一半像素感绿、红和蓝各占四分之一，再用去马赛克算法插值出每个像素完整的 R、G、B 值。它便宜、分辨率高、信息丰富，是多数模仿学习策略和 VLA 的主要输入。局限是单个 RGB 相机（单目）只拍到三维世界的二维投影，不知道物体离多远；要拿到深度得配深度相机、双目相机，或用单目深度估计模型去推。装机时还要考虑视场角、帧率，以及是全局快门（整幅画面同时曝光）还是卷帘快门（逐行曝光，快速运动时画面会歪斜）。",
+   "example": "初代 ALOHA 双臂平台装了 4 个普通网络摄像头：两个装在手腕上，一个在正前方、一个在顶部俯拍。ACT 策略只用这些彩色图像加上关节角，不用深度，靠约 10 分钟的示范就学会了打开半透明调料杯、插电池等动作，成功率 80–90%。",
+   "related": [
+    "深度相机",
+    "双目相机",
+    "腕部相机",
+    "单目深度估计",
+    "相机内参",
+    "全局快门 / 卷帘快门"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Bayer filter",
+     "url": "https://en.wikipedia.org/wiki/Bayer_filter"
+    },
+    {
+     "title": "ALOHA / ACT project page (Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware)",
+     "url": "https://tonyzhaozh.github.io/aloha/"
+    },
+    {
+     "title": "arXiv 2304.13705: Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware",
+     "url": "https://arxiv.org/abs/2304.13705"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "编码器",
+   "name_en": "Rotary Encoder",
+   "abbr": "",
+   "aliases": [
+    "关节编码器",
+    "Joint Encoder",
+    "角度编码器",
+    "旋转编码器"
+   ],
+   "tier": 1,
+   "one_liner": "装在电机或关节上、把转轴角度转换成电信号的位置传感器。",
+   "explanation": "旋转编码器是把转轴的角位置或转动量转换成模拟或数字信号的机电器件，机器人每个关节至少装一个，告诉控制器「现在转到了多少度」。按输出分两类：增量式只报告转了多少，通常输出相位差 90° 的 A、B 两路方波来判断方向，断电后要回零才知道绝对位置；绝对值式直接给出当前角度，断电也不丢。按原理有光电、磁、电容、电感等。分辨率用每圈脉冲数或位数表示。关节模组常在电机端和减速器输出端各装一个（双编码器），直接测出输出端的真实角度，减小减速器背隙（齿轮之间的空程间隙）带来的误差。策略输入里的关节角这类本体感知信息，就来自编码器读数。",
+   "example": "一个 14 位绝对值磁编码器把一圈分成 2^14 = 16384 份，角分辨率约 360° ÷ 16384 ≈ 0.022°。",
+   "related": [
+    "绝对值编码器",
+    "增量式编码器",
+    "磁编码器",
+    "双编码器",
+    "本体感知",
+    "关节模组"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Rotary encoder",
+     "url": "https://en.wikipedia.org/wiki/Rotary_encoder"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "同步定位与建图",
+   "name_en": "Simultaneous Localization and Mapping",
+   "abbr": "SLAM",
+   "aliases": [
+    "SLAM 建图定位",
+    "同时定位与地图构建",
+    "即时定位与地图构建"
+   ],
+   "tier": 1,
+   "one_liner": "机器人在陌生环境里一边画地图、一边算出自己在地图上的位置。",
+   "explanation": "同步定位与建图指机器人进入未知环境时，同时构建地图并估计自己在图中的位姿。难点是两件事互相依赖：定位要有地图，建图又要先知道自己在哪。源头可追溯到 Smith 和 Cheeseman 1986 年关于空间不确定性的工作和 Durrant-Whyte 团队 90 年代初的研究，SLAM 这个缩写则是 1995 年在国际机器人研究研讨会（ISRR）的一篇综述论文里首次提出。经典解法有扩展卡尔曼滤波、粒子滤波和图优化；按传感器分激光 SLAM、视觉 SLAM 等，开源实现有谷歌 Cartographer、ORB-SLAM3。扫地机和仓储自主移动机器人（AMR）的导航、AR 头显的空间定位，很多都靠它。",
+   "example": "扫地机第一次进新家，一边走一边用激光雷达扫出户型图，同时实时算出自己在图上的坐标，之后的清扫就按这张图规划路线。",
+   "related": [
+    "视觉SLAM",
+    "激光SLAM",
+    "回环检测",
+    "视觉惯性里程计",
+    "占据栅格地图",
+    "AMCL 自适应蒙特卡洛定位"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Simultaneous localization and mapping",
+     "url": "https://en.wikipedia.org/wiki/Simultaneous_localization_and_mapping"
+    },
+    {
+     "title": "Cartographer documentation",
+     "url": "https://google-cartographer.readthedocs.io/en/latest/"
+    },
+    {
+     "title": "Durrant-Whyte & Bailey, Simultaneous Localisation and Mapping (SLAM): Part I (IEEE RAM 2006)，含 SLAM 缩写 1995 年在 ISRR 提出的说明",
+     "url": "https://people.eecs.berkeley.edu/~pabbeel/cs287-fa09/readings/Durrant-Whyte_Bailey_SLAM-tutorial-I.pdf"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "六维力传感器",
+   "name_en": "Six-Axis Force/Torque Sensor",
+   "abbr": "F/T",
+   "aliases": [
+    "力/力矩传感器",
+    "F/T 传感器",
+    "六轴力传感器",
+    "六维力矩传感器",
+    "Force/Torque Sensor",
+    "多轴力传感器"
+   ],
+   "tier": 1,
+   "one_liner": "同时测三个方向的力和绕三根轴的力矩，常装在机械臂手腕上。",
+   "explanation": "六维力传感器一次测出 6 个量：沿 x、y、z 三个方向的力 Fx、Fy、Fz，和绕这三根轴的力矩 Tx、Ty、Tz。常见结构是在金属弹性体上贴应变片，受力后的微小形变让电阻变化，经惠斯通电桥和标定换算成六个分量，也有电容式等方案。在机械臂上它通常夹在手腕法兰和夹爪之间，让控制器知道末端被推了多大劲、往哪边拧，是力控、阻抗控制、轴孔装配、打磨、拖动示教和碰撞检测的基础。代表厂商有 ATI、Robotiq，国内有宇立仪器、坤维科技等。也有机械臂不装它，改用各关节力矩传感器间接估算末端受力。",
+   "example": "Robotiq FT 300-S 装在协作臂手腕和夹爪之间，量程为力 ±300 N、力矩 ±30 N·m，以 100 Hz 输出数据，常用于插孔装配和表面打磨。",
+   "related": [
+    "应变片",
+    "力控",
+    "阻抗控制",
+    "轴孔装配",
+    "维间耦合",
+    "关节力矩传感器"
+   ],
+   "sources": [
+    {
+     "title": "ATI Industrial Automation: Multi-Axis Force/Torque Sensors",
+     "url": "https://www.ati-ia.com/products/ft/sensors.aspx"
+    },
+    {
+     "title": "Robotiq FT 300-S Force Torque Sensor",
+     "url": "https://robotiq.com/products/ft-300-force-torque-sensor"
+    },
+    {
+     "title": "Wikipedia: Strain gauge",
+     "url": "https://en.wikipedia.org/wiki/Strain_gauge"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "双目相机",
+   "name_en": "Stereo Camera",
+   "abbr": "",
+   "aliases": [
+    "双目视觉",
+    "立体相机",
+    "Stereo Vision",
+    "被动双目",
+    "双目深度相机"
+   ],
+   "tier": 1,
+   "one_liner": "两个并排的相机同时拍照，靠左右图像的差异算出每个点的距离。",
+   "explanation": "双目相机把两个相机隔开固定距离（基线）并排安装，模仿人的双眼。同一物点在左右图中的水平位置差叫视差；经过标定和极线校正，用立体匹配找出对应点，就能按 Z = f·B / d 算深度（f 为焦距，B 为基线，d 为视差）：视差越大越近，基线越长远处越准。只靠环境光的叫被动双目，在白墙、光滑桌面这类缺少纹理的区域容易匹配失败，所以 RealSense D435、D455 这类主动双目会额外投射红外散斑。近年也有用深度网络做匹配的，如 FoundationStereo。它常作为机器人头部或腕部的深度传感器。",
+   "example": "焦距 700 像素、基线 0.12 米的双目相机看到某点视差为 42 像素，则深度 Z = 700 × 0.12 ÷ 42 = 2 米。Stereolabs ZED 2i 的基线就是 120 mm。",
+   "related": [
+    "视差",
+    "立体匹配",
+    "基线",
+    "主动双目",
+    "深度相机",
+    "FoundationStereo"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Computer stereo vision",
+     "url": "https://en.wikipedia.org/wiki/Computer_stereo_vision"
+    },
+    {
+     "title": "Stereolabs ZED 2i product page",
+     "url": "https://www.stereolabs.com/products/zed-2"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "触觉传感器",
+   "name_en": "Tactile Sensor",
+   "abbr": "",
+   "aliases": [
+    "触觉感知",
+    "Tactile Sensing",
+    "触觉"
+   ],
+   "tier": 1,
+   "one_liner": "让机器人感知接触的传感器，测压力分布、接触位置、剪切力和滑动。",
+   "explanation": "触觉传感器测量机器人与物体接触时产生的信息，包括压力分布、接触位置、法向力和剪切力、振动与滑移，有的还能感知纹理和温度。按原理有压阻式、电容式、压电式、磁性式，以及视触觉式：在透明弹性体后放一个小相机，拍下接触时胶面的形变，代表有 MIT 起源的 GelSight，和 Facebook AI 等 2020 年发表的开源低成本传感器 DIGIT。相机看不到手指和物体贴合的那一小块，也测不出重量、软硬和摩擦，而拧瓶盖、插线、捏鸡蛋恰恰依赖这些。触觉数据常以触觉图像或触元（taxel，单个触觉感应点）阵列的形式和视觉一起输入策略。",
+   "example": "DIGIT 论文中，研究者给多指机械手装上 DIGIT，用触觉信号训练神经网络控制器，让手在掌中拨动玻璃弹珠。",
+   "related": [
+    "视触觉传感器",
+    "电子皮肤",
+    "GelSight",
+    "DIGIT 视触觉传感器",
+    "滑移检测",
+    "视触觉融合"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Tactile sensor",
+     "url": "https://en.wikipedia.org/wiki/Tactile_sensor"
+    },
+    {
+     "title": "arXiv 2005.14679: DIGIT: A Novel Design for a Low-Cost Compact High-Resolution Tactile Sensor",
+     "url": "https://arxiv.org/abs/2005.14679"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "腕部相机",
+   "name_en": "Wrist Camera",
+   "abbr": "",
+   "aliases": [
+    "手腕相机",
+    "手眼相机",
+    "Wrist-mounted Camera",
+    "眼在手上相机"
+   ],
+   "tier": 1,
+   "one_liner": "装在机械臂手腕或夹爪上、跟着手一起移动的相机，专看手边近景。",
+   "explanation": "腕部相机固定在机械臂末端靠近夹爪的位置，属于视觉伺服里说的「眼在手上」配置：相机随手移动，看的是手与目标的相对位置；与之相对的是固定在环境里的第三视角相机，即「眼在手外」。它的好处是抓取、插入的最后几厘米看得最清楚，不容易被机械臂自己挡住，物体在画面中的位置也和夹爪直接对应，所以模仿学习和 VLA 的数据采集大多会配一个，与一两个第三视角相机一起输入策略。缺点是视角随动作剧烈变化、看不到全局，距离太近时深度相机可能测不准；要用它的图像做几何计算，还得先做手眼标定。",
+   "example": "DROID 数据集在每台 Franka 机械臂上装了 3 个相机：2 个位置可调的外部 ZED 2 双目相机，加 1 个装在手腕上的 ZED Mini。",
+   "related": [
+    "眼在手上",
+    "第三视角相机",
+    "头部相机",
+    "手眼标定",
+    "多视角",
+    "遮挡"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Visual servoing (eye-in-hand vs. eye-to-hand)",
+     "url": "https://en.wikipedia.org/wiki/Visual_servoing"
+    },
+    {
+     "title": "DROID: A Large-Scale In-the-Wild Robot Manipulation Dataset (project page)",
+     "url": "https://droid-dataset.github.io/"
+    },
+    {
+     "title": "ALOHA project page",
+     "url": "https://tonyzhaozh.github.io/aloha/"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "2D激光雷达",
+   "name_en": "2D LiDAR (Single-Line Laser Scanner)",
+   "abbr": "",
+   "aliases": [
+    "单线激光雷达",
+    "2D 激光扫描仪",
+    "Laser Scanner",
+    "二维激光雷达",
+    "平面激光雷达"
+   ],
+   "tier": 2,
+   "one_liner": "旋转扫描一个水平面，测出四周各方向障碍物距离的激光测距仪。",
+   "explanation": "2D 激光雷达也叫单线激光雷达，只有一束测距激光，靠电机或转镜在一个水平面内旋转扫描，每圈输出一串「角度—距离」读数，画出来是一圈轮廓线。测距用飞行时间法（d = c·t / 2，c 为光速，t 为往返时间），低成本产品也有用三角测距的。它便宜、数据量小、精度稳定，是扫地机、仓储 AMR、AGV 做 2D 激光 SLAM、AMCL 定位和避障的常用配置，ROS 里对应 LaserScan 消息。局限是只看得到安装高度那一个平面，桌面、悬空横杆等不在扫描面上的障碍会漏掉，需要深度相机或多线激光雷达补充。",
+   "example": "思岚 RPLIDAR A1 做 360° 扫描，每秒测距 8000 多次，扫描频率 2–10 Hz 可调，采用三角测距，官方定位是用于 SLAM 建图、机器人导航和扫地机。",
+   "related": [
+    "激光雷达",
+    "激光SLAM",
+    "AMCL 自适应蒙特卡洛定位",
+    "占据栅格地图",
+    "代价地图",
+    "扫地机器人"
+   ],
+   "sources": [
+    {
+     "title": "SLAMTEC RPLIDAR A1",
+     "url": "http://www.slamtec.com/en/lidar/a1"
+    },
+    {
+     "title": "Wikipedia: Lidar",
+     "url": "https://en.wikipedia.org/wiki/Lidar"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "3D高斯泼溅",
+   "name_en": "3D Gaussian Splatting",
+   "abbr": "3DGS",
+   "aliases": [
+    "高斯泼溅",
+    "3D 高斯",
+    "Gaussian Splatting",
+    "GS",
+    "高斯溅射"
+   ],
+   "tier": 2,
+   "one_liner": "用大量带颜色的三维高斯椭球表示场景，可实时渲染任意新视角。",
+   "explanation": "3D 高斯泼溅由 Inria 等机构的 Kerbl 等人提出，发表于 SIGGRAPH 2023。它把场景表示成大量三维高斯分布，可想成半透明的彩色椭球，每个都有位置、形状与朝向、不透明度和随视角变化的颜色。先对多视角照片做运动恢复结构，得到相机位姿和稀疏点云作初始化，再用可微光栅化反复比对渲染图和真实照片来优化这些高斯。论文报告在 1080p 下能以不低于 30 帧每秒实时合成新视角，比神经辐射场（NeRF）快得多。具身智能里常用它把真实场景搬进仿真、做高斯泼溅 SLAM，或渲染新视角做数据增强。",
+   "example": "绕一张桌子拍一圈照片，用 COLMAP 求出相机位姿和稀疏点，再训练 3DGS，就能在电脑上从任意角度实时查看这张桌子。",
+   "related": [
+    "神经辐射场",
+    "新视角合成",
+    "运动恢复结构",
+    "高斯泼溅仿真",
+    "高斯泼溅 SLAM",
+    "现实到仿真"
+   ],
+   "sources": [
+    {
+     "title": "3D Gaussian Splatting for Real-Time Radiance Field Rendering (project page, Inria)",
+     "url": "https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/"
+    },
+    {
+     "title": "arXiv 2308.04079: 3D Gaussian Splatting for Real-Time Radiance Field Rendering",
+     "url": "https://arxiv.org/abs/2308.04079"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "3D视觉",
+   "name_en": "3D Vision",
+   "abbr": "",
+   "aliases": [
+    "三维视觉",
+    "3D 感知",
+    "三维感知"
+   ],
+   "tier": 2,
+   "one_liner": "让机器从图像或传感器数据中获得物体和场景三维几何信息的技术总称。",
+   "explanation": "3D 视觉是计算机视觉里研究三维几何的分支，目标是得到深度、点云、网格、物体位姿这类「东西在哪、长什么形状」的信息。获取方式分两类：主动式自己发光测距，如结构光、飞行时间相机、激光雷达；被动式只用普通相机，如双目视差、多视角运动恢复结构，以及用神经网络从单张图估计深度。常见任务有深度估计、三维重建、点云分割与配准、6D 位姿估计、3D 目标检测。机器人伸手、避障、放东西都要精确距离，纯二维图像给不了，所以抓取规划、3D 扩散策略、3D VLA 都依赖它；DUSt3R、VGGT 等前馈重建模型让它更易用。",
+   "example": "机械臂抓杯子前，深度相机把画面转成点云，算法在点云里分割出杯子、估计杯把的位置和朝向，再换算成夹爪要到达的三维坐标。",
+   "related": [
+    "点云",
+    "深度相机",
+    "双目相机",
+    "6D位姿估计",
+    "前馈式三维重建",
+    "3D VLA"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: 3D reconstruction",
+     "url": "https://en.wikipedia.org/wiki/3D_reconstruction"
+    },
+    {
+     "title": "Wikipedia: Computer stereo vision",
+     "url": "https://en.wikipedia.org/wiki/Computer_stereo_vision"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "6D位姿估计",
+   "name_en": "6D Object Pose Estimation",
+   "abbr": "6DoF Pose",
+   "aliases": [
+    "物体位姿估计",
+    "6DoF 位姿估计",
+    "物体六自由度位姿估计",
+    "Object Pose Estimation"
+   ],
+   "tier": 2,
+   "one_liner": "从图像中算出物体相对相机的三维位置和三维朝向，共六个自由度。",
+   "explanation": "6D 位姿估计是给定 RGB 或 RGB-D 图像，求刚体物体相对相机的 3 个平移量和 3 个旋转量，通常输出旋转矩阵加平移向量。按对物体了解多少，分实例级（见过这个具体物体及其 CAD 模型）、类别级（只知道它属于「杯子」这类）和面向新物体的方法，后者又分给 CAD 模型的 model-based 和只给参考图的 model-free。基准 BOP 自 2018 年起组织评测。英伟达 2023 年的 FoundationPose 用一个框架兼顾两种设定，还能连续跟踪。抓取、装配和 AR 都要用它：知道物体在哪、朝哪，才能算出夹爪该去哪。",
+   "example": "桌上有一把已知 CAD 模型的电钻，位姿估计模型从 RGB-D 图像求出它在相机坐标系下的位置和朝向，再结合手眼标定结果，就能算出机械臂去抓握把的目标位姿。",
+   "related": [
+    "位姿",
+    "FoundationPose",
+    "BOP 位姿估计基准",
+    "类别级位姿估计",
+    "位姿跟踪",
+    "ADD / ADD-S 位姿误差指标"
+   ],
+   "sources": [
+    {
+     "title": "BOP: Benchmark for 6D Object Pose Estimation",
+     "url": "https://bop.felk.cvut.cz/home/"
+    },
+    {
+     "title": "arXiv 2312.08344: FoundationPose: Unified 6D Pose Estimation and Tracking of Novel Objects",
+     "url": "https://arxiv.org/abs/2312.08344"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "AMCL 自适应蒙特卡洛定位",
+   "name_en": "Adaptive Monte Carlo Localization",
+   "abbr": "AMCL",
+   "aliases": [
+    "自适应蒙特卡洛定位",
+    "KLD 采样蒙特卡洛定位",
+    "amcl",
+    "nav2_amcl"
+   ],
+   "tier": 2,
+   "one_liner": "在已知地图上用粒子滤波和激光扫描估计机器人位置的 ROS 定位模块。",
+   "explanation": "AMCL 是 ROS 导航栈里的二维定位包，实现 Dieter Fox 提出的自适应（KLD 采样）蒙特卡洛定位；ROS 1 版作者署名 Brian Gerkey，Nav2 将它原样移植为 nav2_amcl。蒙特卡洛定位由 Dellaert、Fox、Burgard、Thrun 于 1999 年提出，用一群粒子表示机器人可能的位置：移动时按里程计推动粒子并加噪声，激光扫描到来时给与地图吻合的粒子更高权重，再按权重重采样，粒子逐渐聚到真实位置。「自适应」指粒子数随不确定程度自动增减。它只管定位，地图要先用 SLAM 建好。",
+   "example": "仓库 AMR 开机后，操作员在 RViz 里用「2D Pose Estimate」大致点出初始位置，机器人开始移动，AMCL 的粒子云从一大片逐渐收缩成一小团，位置就锁定了。",
+   "related": [
+    "粒子滤波",
+    "同步定位与建图",
+    "2D激光雷达",
+    "轮式里程计",
+    "占据栅格地图",
+    "Nav2"
+   ],
+   "sources": [
+    {
+     "title": "ROS amcl package.xml (ros-planning/navigation, noetic-devel)",
+     "url": "https://raw.githubusercontent.com/ros-planning/navigation/noetic-devel/amcl/package.xml"
+    },
+    {
+     "title": "Nav2 nav2_amcl README",
+     "url": "https://raw.githubusercontent.com/ros-navigation/navigation2/main/nav2_amcl/README.md"
+    },
+    {
+     "title": "Wikipedia: Monte Carlo localization",
+     "url": "https://en.wikipedia.org/wiki/Monte_Carlo_localization"
+    }
+   ],
+   "as_of": ""
+  }
+ ]
+}

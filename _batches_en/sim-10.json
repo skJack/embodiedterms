@@ -1,0 +1,113 @@
+{
+  "batch": "sim-10",
+  "terms": [
+    {
+      "key": "sim-10#0",
+      "name_en": "Convex Decomposition",
+      "aliases": ["Approximate Convex Decomposition", "ACD", "CoACD", "V-HACD"],
+      "one_liner": "Cutting a concave mesh into several approximately convex pieces so it can serve as simulation collision geometry.",
+      "explanation": "When a physics engine does collision detection, convex shapes (where the line between any two points stays inside the shape) are fast and numerically stable to work with, which is why engines like MuJoCo automatically replace a mesh's collision geometry with its convex hull (the smallest convex shape that contains it). For concave objects like cups, bowls, and drawers, taking the convex hull directly “seals up” the opening, so nothing can be placed inside. Convex decomposition instead cuts a concave mesh into several approximately convex pieces, takes the convex hull of each piece, and assembles them to approximate the original shape. Two tools are commonly used: V-HACD (voxelized hierarchical approximate convex decomposition by Karim Mammou, now unmaintained) and CoACD (from Hao Su's group at UC San Diego, SIGGRAPH 2022, which uses “collision-aware concavity” plus tree search to choose cutting planes, preserving more detail, and installs via pip). When preparing simulation assets, object meshes are usually run through convex decomposition before entering the simulator.",
+      "example": "A coffee mug mesh reduced to a single convex hull has its opening sealed shut, so a spoon can't be placed inside it in simulation; decomposed with CoACD into several convex pieces instead, the wall and handle each become their own piece and the interior space is preserved.",
+      "related": ["Collision Body", "Collision Detection", "CoACD", "Simulation Assets", "MuJoCo", "Interpenetration"]
+    },
+    {
+      "key": "sim-10#1",
+      "name_en": "CoppeliaSim",
+      "aliases": ["V-REP", "Virtual Robot Experimentation Platform"],
+      "one_liner": "A general-purpose robot simulator from Coppelia Robotics in Switzerland, the successor to V-REP.",
+      "explanation": "CoppeliaSim is robot simulation software maintained by Coppelia Robotics, based in Zurich, Switzerland; it was formerly called V-REP, originally developed within Toshiba's R&D division, and remains fully compatible with V-REP after the rename. Its defining feature is breadth: it can switch between five physics engines — MuJoCo, Bullet, ODE, Newton, and Vortex — and has built-in forward/inverse kinematics, collision and distance computation, and OMPL-based motion planning, controllable from Python, Lua, C/C++, and other languages through embedded scripts, plugins, or a remote API. It comes in an educational edition (restricted to students and teachers, non-commercial) and a commercial edition. In embodied learning, it is most commonly used indirectly through the PyRep interface, and the classic manipulation benchmark RLBench is built on top of it. It is primarily single-machine CPU simulation, so reinforcement-learning training that needs thousands of parallel environments generally switches to GPU simulators like Isaac Lab instead.",
+      "example": "RLBench's tabletop manipulation tasks, such as opening a drawer or stacking blocks, all run inside CoppeliaSim 4.1, with researchers using PyRep's Python interface to control a simulated Franka arm for data collection and policy testing.",
+      "related": ["Simulator", "Physics Engine", "RLBench", "MuJoCo", "Gazebo", "Webots"]
+    },
+    {
+      "key": "sim-10#2",
+      "name_en": "D4RL",
+      "aliases": ["Datasets for Deep Data-Driven Reinforcement Learning"],
+      "one_liner": "The most widely used standard datasets and benchmark for offline reinforcement learning.",
+      "explanation": "D4RL was released in 2020 by Justin Fu, Aviral Kumar, Ofir Nachum, George Tucker, and Sergey Levine at UC Berkeley and Google Brain. At the time, offline reinforcement learning (training a policy purely from pre-collected data, with no further interaction with the environment during training) lacked dedicated test data, making it hard to compare results across papers. D4RL designs its datasets around how the data was collected: trajectories from hand-coded controllers, human demonstrations, multi-task data, and data mixed from several different policies, covering Maze2D and AntMaze maze navigation, Gym-MuJoCo locomotion control, Adroit dexterous-hand tasks, Franka Kitchen manipulation, and even Flow traffic and CARLA driving. It provides normalized scores to make comparison across tasks easier. Offline RL algorithm papers such as CQL and IQL commonly report D4RL scores. The original repository is no longer maintained: its environments moved to Gymnasium-Robotics and its data moved to Minari.",
+      "example": "halfcheetah-medium-v2 consists of running data for the HalfCheetah collected from a policy trained to medium skill level; an offline algorithm can only learn from this fixed batch of data, and results are reported as a normalized score via get_normalized_score.",
+      "related": ["Offline Reinforcement Learning", "Benchmark", "Gym MuJoCo Continuous Control Tasks", "Adroit", "Franka Kitchen", "Conservative Q-Learning"]
+    },
+    {
+      "key": "sim-10#3",
+      "name_en": "DeepMind Control Suite",
+      "aliases": ["DMC", "dm_control", "DM Control"],
+      "one_liner": "DeepMind's standard set of MuJoCo-based continuous-control reinforcement-learning tasks.",
+      "explanation": "The DeepMind Control Suite was released in 2018 by Yuval Tassa and colleagues at DeepMind, as part of the open-source dm_control library. It uses the MuJoCo physics engine to build a set of continuous-control tasks across domains such as the cart-pole, cheetah, planar biped walker, humanoid, quadruped, and finger, with tasks of varying difficulty within each domain. Every task shares a uniform structure and an interpretable reward: each step's reward falls between 0 and 1, and every episode runs a fixed 1,000 steps, so a perfect score is 1,000. Input can be either joint states or raw camera pixels alone, which is why it became a standard benchmark for sample efficiency and for “learning control from pixels,” with algorithms such as Dreamer, DrQ, and TD-MPC all reporting results on it. dm_control also ships with tools for editing MJCF models, building environments from composable parts, and multi-agent soccer.",
+      "example": "In the walker-walk task, a planar biped model learns to walk forward using only camera images as input, and different algorithms are compared on how much return (up to a ceiling of 1,000) they achieve within the same number of interaction steps.",
+      "related": ["Reinforcement Learning", "MuJoCo", "Benchmark", "DreamerV3", "TD-MPC2", "Sample Efficiency"]
+    },
+    {
+      "key": "sim-10#4",
+      "name_en": "Digital Cousin",
+      "aliases": ["ACDC", "Automated Creation of Digital Cousins"],
+      "one_liner": "A simulated scene that only needs to be geometrically and semantically similar to reality, not an exact one-to-one replica.",
+      "explanation": "Digital cousin was proposed by Fei-Fei Li and Jiajun Wu's group at Stanford in their CoRL 2024 paper “Automated Creation of Digital Cousins for Robust Policy Learning,” as a counterpart to the “digital twin” (a virtual copy that precisely replicates one real scene down to the last detail). A digital cousin doesn't replicate any specific real scene; it only needs to be geometrically and semantically similar — for a kitchen cabinet, for instance, it's enough for the shape, size, and opening mechanism to be close, built directly by picking similar objects from an existing asset library. This costs less than precise modeling, and generating several cousin scenes at once brings built-in diversity, making a trained policy less prone to overfitting to one specific scene. The paper's ACDC pipeline builds a simulated environment automatically from a single real RGB photo, through three steps: extracting object information, matching similar assets, and generating an interactive scene. In its reported zero-shot sim-to-real transfer, policies trained on digital cousins reached about 90% success versus about 25% for digital twins.",
+      "example": "Given one photo of a kitchen cabinet at home, ACDC automatically picks several cabinets from its asset library with similar shapes and opening mechanisms, generates several cousin scenes, trains a cabinet-opening policy in simulation, and deploys it directly to the real cabinet.",
+      "related": ["Digital Twin", "Real-to-Sim-to-Real", "Sim-to-Real Transfer", "Domain Randomization", "Simulation Assets", "OmniGibson"]
+    },
+    {
+      "key": "sim-10#5",
+      "name_en": "DISCOVERSE",
+      "aliases": ["Efficient Robot Simulation in Complex High-Fidelity Environments"],
+      "one_liner": "An open-source real-to-sim-to-real simulation framework combining 3D Gaussian Splatting rendering with MuJoCo physics.",
+      "explanation": "DISCOVERSE is an open-source robot simulation framework released jointly by Tsinghua University, Zhejiang University, and other institutions together with DISCOVER Robotics and D-Robotics (地瓜机器人); its paper was accepted at IROS 2025, and the code is MIT-licensed. It uses 3D Gaussian Splatting (3DGS, a method that reconstructs and quickly renders a real scene using a large number of colored 3D Gaussian points) for visuals and MuJoCo for physics: a real scene is first reconstructed with photorealistic appearance and then paired with collision and physics models, producing a simulated environment that “looks like the real world,” narrowing the visual sim-to-real gap. It supports parallel simulation of multiple cameras and sensors, is compatible with existing 3D assets, robot models, and ROS plugins, and has been adapted to embodiments including Airbot Play, AgileX PiPER, UR5e, Franka Panda, and the LEAP Hand. Its project page reports rendering 5 channels of 640×480 RGB-D cameras at up to 650 FPS (about 240 FPS on a laptop); the paper's imitation-learning experiments show better zero-shot sim-to-real transfer than other simulators.",
+      "example": "A lab tabletop is scanned and reconstructed as a 3DGS scene inside DISCOVERSE; demonstrations are collected in simulation to train a grasping policy, which is then deployed directly to the same real tabletop with no real-robot fine-tuning.",
+      "related": ["Gaussian Splatting-based Simulation", "3D Gaussian Splatting", "MuJoCo", "Real-to-Sim-to-Real", "Sim-to-Real Gap", "Photorealistic Rendering"]
+    },
+    {
+      "key": "sim-10#6",
+      "name_en": "Discrete Element Method",
+      "aliases": ["DEM", "Distinct Element Method"],
+      "one_liner": "A simulation method that treats a material as a large number of independent particles and computes each one's forces and motion.",
+      "explanation": "The discrete element method is a class of numerical simulation methods that treat a material as a large number of independent small particles, computing each particle's motion individually. Peter Cundall introduced an early version in 1971, formally published with Strack in 1979. At each timestep, the method first finds which particles are in contact with each other, computes collision and friction forces from a contact model, adds gravity, and then numerically integrates to update every particle's position, velocity, and rotation. Unlike the finite element method, which treats a material as a continuum, DEM is naturally suited to granular materials such as sand, gravel, grain, and powder, and is widely used in mining, pharmaceuticals, and agriculture. Its drawback is heavy computation, which slows further as particle count grows; large-scale use now generally relies on GPU parallelism to handle millions of particles. In embodied AI, it can be used to simulate a robot walking on sand or gravel, or digging and scooping granular material; the material point method (MPM) can handle similar problems too.",
+      "example": "DEM is used to simulate a patch of sand and let a quadruped robot's foot step into it, computing the force on each grain of sand as it gets pushed aside, to study how the robot sinks and slips on the beach.",
+      "related": ["Material Point Method", "Finite Element Method", "Soft-Body Simulation", "Physics Engine", "Smoothed-Particle Hydrodynamics", "Contact Model"]
+    },
+    {
+      "key": "sim-10#7",
+      "name_en": "Double-blind Pairwise Comparison",
+      "aliases": ["A/B Evaluation", "Blind A/B Evaluation", "Pairwise Preference Evaluation"],
+      "one_liner": "An evaluation method where a judge, without knowing which model is which, decides only which of two policies performed better.",
+      "explanation": "Double-blind pairwise comparison is an evaluation method: two models or policies each run once under the same conditions, the evaluator doesn't know beforehand which is which, and simply judges which one did better; a large number of these “who won” records are then aggregated into a ranking. Chatbot Arena, in the large-language-model world, ranks models this way through anonymous head-to-head comparisons. A leading example in embodied AI is RoboArena (2025): 7 universities ran over 600 real-robot pairwise evaluations on the DROID platform to compare 7 generalist policies; evaluators could choose their own tasks and scenes, but always compared two policies blind. This avoids having to standardize scenes and success criteria in advance, and also reduces evaluators favoring their own institution's model; the win/loss records from many evaluation sites are then converted into scores using an Elo or Bradley-Terry model (a statistical model that estimates each competitor's ability score from win/loss outcomes). The paper argues that this kind of distributed evaluation produces more accurate and more scalable rankings than centralized evaluation.",
+      "example": "An evaluator gives the instruction “fold the towel” in their own lab, the system sends two anonymous policies, A and B, to perform it in turn, and the evaluator judges B to be better; that preference is recorded toward the leaderboard.",
+      "related": ["Elo Rating", "RoboArena", "Real-robot Evaluation", "Evaluation Protocol", "DROID Dataset", "Benchmark"]
+    },
+    {
+      "key": "sim-10#8",
+      "name_en": "Embodied Arena",
+      "aliases": ["A Comprehensive, Unified, and Evolving Evaluation Platform for Embodied AI"],
+      "one_liner": "An evaluation platform that plugs in benchmarks for embodied question answering, navigation, and task planning under one live leaderboard.",
+      "explanation": "Embodied Arena is an embodied-AI evaluation platform released jointly by over a dozen institutions in China and abroad, including Tianjin University and Huawei's Noah's Ark Lab, with its paper posted to arXiv in September 2025. It addresses the problem that embodied AI has many benchmarks but each operates in isolation, making models hard to compare directly and leaving unclear what capabilities embodied AI actually requires. The platform first defines a capability taxonomy with three layers — perception, reasoning, and task execution — broken into 7 core capabilities and 25 finer-grained dimensions. It then plugs 22 existing benchmarks into a unified evaluation backend, covering 2D/3D embodied question answering (such as OpenEQA, VSI-Bench, and ERQA), navigation (such as R2R-CE and HM3D), and task planning (such as EB-ALFRED and EB-Habitat), evaluating over 30 models from more than 20 institutions; it also uses an LLM-driven pipeline to automatically generate new evaluation data, keeping the question pool continuously updated. Results are published as three live leaderboards, viewable either by benchmark or by capability dimension.",
+      "example": "To check a multimodal model's spatial-reasoning ability, a user can simply look at that dimension's aggregate score in Embodied Arena's capability view, instead of running VSI-Bench, ERQA, and other benchmarks separately.",
+      "related": ["Benchmark", "EmbodiedBench", "ERQA", "OpenEQA", "VSI-Bench", "Embodied Question Answering"]
+    },
+    {
+      "key": "sim-10#9",
+      "name_en": "EmbodiedBench",
+      "aliases": ["Comprehensive Benchmarking Multi-modal Large Language Models for Vision-Driven Embodied Agents", "EB-ALFRED", "EB-Habitat", "EB-Navigation", "EB-Manipulation"],
+      "one_liner": "A benchmark with 4 environments testing how well multimodal large models perform as the “brain” of an embodied agent.",
+      "explanation": "EmbodiedBench was proposed by Rui Yang, Tong Zhang, and colleagues at UIUC and other institutions, published at ICML 2025, specifically to evaluate how well multimodal large language models (MLLMs, models that can both look at images and read text) perform as the “brain” of an embodied agent. It has 4 environments totaling 1,128 test tasks, split into two levels: EB-ALFRED and EB-Habitat test high-level task decomposition and planning (for example, “put the book on the table,” where the model outputs a sequence of high-level skills); EB-Navigation and EB-Manipulation test low-level action planning (directly outputting control values such as translation and rotation), which demands precise perception and spatial reasoning. Tasks are also grouped by 6 capabilities: basic tasks, common-sense reasoning, complex-instruction understanding, spatial awareness, visual perception, and long-horizon planning. The authors tested 24 closed- and open-source models and found they were good at high-level tasks but struggled with low-level manipulation; the paper's abstract reports the best model, GPT-4o, averaging only 28.9%.",
+      "example": "In EB-Manipulation, a model sees a tabletop image and the instruction “stack the red block on the blue block” and must directly output the arm end effector's position, orientation, and gripper state, rather than calling a ready-made “grasp” skill.",
+      "related": ["Benchmark", "Multimodal Large Language Model", "ALFRED", "Habitat", "LLM Task Planning", "Embodied Arena"]
+    },
+    {
+      "key": "sim-10#10",
+      "name_en": "ERQA",
+      "aliases": ["Embodied Reasoning Question Answer Benchmark"],
+      "one_liner": "A 400-question multiple-choice benchmark from Google DeepMind, pairing images and text to test embodied reasoning.",
+      "explanation": "ERQA is a benchmark Google DeepMind open-sourced in March 2025 alongside Gemini Robotics, used to measure a multimodal model's embodied reasoning: its ability to understand real physical scenes and make judgments for robot action. It has 400 multiple-choice questions (options A–D) that mix images and text, with scenes mostly drawn from real robot-relevant environments; question types include spatial reasoning, trajectory reasoning, action reasoning, state estimation, pointing, multi-view reasoning, and task reasoning, and 28% of questions require looking at multiple images. Because it's purely multiple-choice, it needs no robot or simulator, and any vision-language model can run it directly. In the Gemini Robotics technical report, Gemini 2.0 Pro Experimental scored 48.3%, GPT-4o scored 47.0%, and Claude 3.5 Sonnet scored 35.5%, showing that models at the time were still far from reliable embodied reasoning. Evaluation platforms such as Embodied Arena have also incorporated it.",
+      "example": "A typical question shows a photo of a robot arm holding a cup of water and asks, “to pour the water into the bowl next to it, which direction should the gripper rotate next?” with four options, A through D, to choose from.",
+      "related": ["Embodied Reasoning", "Gemini Robotics-ER", "Visual Question Answering", "Multimodal Large Language Model", "Embodied Arena", "VSI-Bench"]
+    },
+    {
+      "key": "sim-10#11",
+      "name_en": "Evaluation Protocol",
+      "aliases": ["Testing Protocol"],
+      "one_liner": "The set of rules specifying under what conditions a policy is tested, how many trials, and what counts as success.",
+      "explanation": "An evaluation protocol is a set of rules that spells out exactly how a policy is tested: which scenes and objects it's tested on, how the initial state is arranged, how many trials each condition gets, the maximum duration of a trial, what counts as success, whether human intervention is allowed mid-trial, and what metrics summarize the results. Robot evaluation results are very sensitive to these details — the same policy can get a very different success rate depending on object placement or how loosely success is defined — and if a paper doesn't spell out its protocol, readers can't tell whether the results are reproducible or comparable across methods. A 2024 paper by Kress-Gazit and colleagues, “Robot Learning as an Empirical Science,” recommends clearly reporting experimental conditions and success criteria, supplementing success rate with other metrics, doing statistical analysis, and qualitatively describing failure modes. Simulation benchmarks (such as LIBERO and CALVIN) usually come with a fixed protocol built in; real-robot evaluation more often relies on practices like a fixed table of initial positions, alternating between methods during testing, and double-blind pairwise comparison to keep things fair.",
+      "example": "A protocol might read: test each task 20 times, drawing the object's initial position in turn from 20 pre-marked points, cap each trial at 60 seconds, count success only when the object is fully inside the box and the gripper has released, and allow no manual resets mid-trial.",
+      "related": ["Benchmark", "Real-robot Evaluation", "Simulation Evaluation", "Success Rate", "Statistical Significance in Evaluation (Confidence Intervals / Sequential Testing / Multiple Seeds)", "Double-blind Pairwise Comparison"]
+    }
+  ]
+}

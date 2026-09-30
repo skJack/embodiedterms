@@ -1,0 +1,226 @@
+{
+ "batch": "model-13",
+ "terms": [
+  {
+   "key": "model-13#0",
+   "name_en": "MeanFlow",
+   "aliases": [
+    "Mean Flows"
+   ],
+   "one_liner": "A generative method that learns the 'average velocity' over a time interval, letting it produce a sample from noise in a single step.",
+   "explanation": "MeanFlow was proposed in May 2025 by Zhengyang Geng, J. Zico Kolter, Kaiming He, and colleagues as a one-step generation method. Flow matching trains a network to predict the 'instantaneous velocity' at a given moment, and generation requires integrating along that velocity field over many small steps, which is slow at inference. MeanFlow instead predicts the 'average velocity' over a time interval — the total displacement across that interval divided by its length — and derives an identity relating average velocity to instantaneous velocity to use as the training objective, so it needs no pretrained teacher model or distillation and can sample in one step even trained from scratch. The paper reports an FID (a metric for how close generated images are to real ones, lower is better) of 3.43 for one-step generation on ImageNet 256×256. In robotics, work such as MP1 has already used it as an action-generation head to cut a policy's inference latency.",
+   "example": "MP1 uses MeanFlow on a point-cloud-based robot-arm policy, generating a whole action chunk in a single network forward pass; the paper reports about 6.8 ms of inference time, roughly 19x faster than the 3D diffusion policy DP3, with a 10.2-point higher average success rate.",
+   "related": [
+    "Flow Matching",
+    "Velocity Field",
+    "One-step Generation",
+    "Consistency Model",
+    "Rectified Flow",
+    "Denoising Steps / Number of Function Evaluations"
+   ]
+  },
+  {
+   "key": "model-13#1",
+   "name_en": "Memory-Augmented VLA",
+   "aliases": [],
+   "one_liner": "A VLA with an added history-memory module, so it can act based on what happened earlier, not just the current frame.",
+   "explanation": "Memory-augmented VLA is an umbrella term for a research direction, not one specific model. Most mainstream VLAs (vision-language-action models) only look at the current frame or the last few frames to produce an action, implicitly assuming the current view holds all the information decisions need. But many manipulation tasks depend on history: a button looks the same whether or not it's already been pressed, and an object hidden behind something else isn't visible in the frame at all. Stuffing a long history of frames straight into the model would blow up the token count and inference time. This line of work instead maintains a separate memory: past observations are compressed into features and stored in a memory bank, and at decision time relevant entries are retrieved and fused with the current features before going to the action head. Representative work includes MemoryVLA, proposed in 2025 by Tsinghua and Yuanli Robotics, among others; the MIKASA-Robo benchmark specifically tests this kind of memory ability across 32 tabletop manipulation tasks.",
+   "example": "In MemoryVLA's real-robot task 'press three buttons in a specified color order,' a pressed and an unpressed button look identical, so progress can't be judged from the current frame alone; MemoryVLA completes the task using history stored in its memory bank, and the paper reports it beats the strongest baseline by 26 points on long-horizon tasks.",
+   "related": [
+    "MemoryVLA",
+    "Vision-Language-Action Model",
+    "Embodied Memory",
+    "Long-horizon Task",
+    "Partially Observable Markov Decision Process",
+    "History Encoder"
+   ]
+  },
+  {
+   "key": "model-13#2",
+   "name_en": "Mixture Density Network",
+   "aliases": [
+    "MDN",
+    "GMM Policy Head"
+   ],
+   "one_liner": "A neural network that outputs the parameters of a Gaussian mixture distribution, instead of a single value directly.",
+   "explanation": "The mixture density network was proposed by Christopher Bishop in a 1994 technical report. An ordinary regression network trained with mean squared error learns the average output for a given input; when the same input has several correct answers, that average is often none of them. An MDN instead has the network output the weights, means, and variances of several Gaussian distributions, combined into a Gaussian mixture model, letting it represent a multimodal conditional distribution. One of Bishop's original demonstrations was robot-arm inverse kinematics, where the same end-effector position can correspond to several different sets of joint angles. In robot imitation learning, it's commonly used as a policy's output head to handle action multimodality, as in robomimic's GMM policy; later generative action heads such as Diffusion Policy outperform it on many tasks, but an MDN is cheap to train and run, so it's still often used as a baseline.",
+   "example": "Going around an obstacle on a table, some demonstrations go left and some go right. A policy trained with mean squared error averages the two into 'drive straight into it'; an MDN outputs two Gaussian components, one for going left and one for right, and just picks one at execution time.",
+   "related": [
+    "Gaussian Mixture Model",
+    "Action Multimodality",
+    "Gaussian Policy",
+    "Continuous Action Regression",
+    "Diffusion Policy",
+    "Inverse Kinematics"
+   ]
+  },
+  {
+   "key": "model-13#3",
+   "name_en": "Mixture-of-Transformers",
+   "aliases": [
+    "MoT",
+    "Mixture-of-Transformer-Experts"
+   ],
+   "one_liner": "Giving each modality its own set of Transformer parameters, while every layer's self-attention still lets them all see each other.",
+   "explanation": "Mixture-of-Transformers was proposed in November 2024 by Stanford's Weixin Liang and researchers at Meta. It splits the feedforward network, attention projection matrices, and layer normalization parameters by modality: text tokens use one set of weights, image tokens use another, but each layer's self-attention is still computed over the whole sequence, so the modalities interact as usual. Unlike a Mixture of Experts (MoE, where a router picks experts per token), MoT assigns a fixed division of labor by modality and needs no routing to be learned. The paper reports that at 7B scale, on a combined text-and-image generation setup, it matches a dense model's performance using only about 55.8% of the compute. In embodied AI, π0's 'VLM backbone + action expert' design is a similar approach (the paper describes it as resembling an MoE with two members), while ByteDance's BAGEL adopts the MoT structure directly.",
+   "example": "π0's roughly 3-billion-parameter backbone comes from PaliGemma, plus a separate action expert of about 300 million parameters: image and text tokens use the backbone's weights, and robot state and noisy action tokens use the action expert's weights, with the two parts visible to each other in every layer's attention.",
+   "related": [
+    "Mixture of Experts",
+    "Action Expert",
+    "π0",
+    "BAGEL",
+    "Unified Multimodal Model",
+    "Self-Attention"
+   ]
+  },
+  {
+   "key": "model-13#4",
+   "name_en": "Noise Schedule",
+   "aliases": [
+    "Noise Scheduler"
+   ],
+   "one_liner": "The timetable specifying how much noise a diffusion model adds at each step, which affects training and generation quality.",
+   "explanation": "The noise schedule is a design choice in a diffusion model: it specifies, at step t of the forward noising process, how much of the original data remains and how much is noise. 2020's DDPM used a linear schedule; in 2021, OpenAI's Nichol and Dhariwal found that on low-resolution images this wastes steps, since the later steps are already almost pure noise, and proposed a cosine schedule instead, which removes information at a steady rate through the middle and changes more gently at both ends. The schedule determines how much training gets allocated to each noise level and noticeably affects generation quality; in flow matching, the corresponding design choice is the sampling distribution over training timesteps. Robot policies need this tuning too: Diffusion Policy uses a cosine schedule, and π0 deliberately oversamples high-noise timesteps when training with flow matching.",
+   "example": "The Diffusion Policy paper compares options and settles on the cosine schedule proposed by iDDPM, training with 100 diffusion steps but running only 10 DDIM steps at inference on the real robot, producing an action roughly every 0.1 seconds on an RTX 3080.",
+   "related": [
+    "Diffusion Model",
+    "Denoising Diffusion Probabilistic Model",
+    "Denoising Steps / Number of Function Evaluations",
+    "Flow Matching",
+    "Diffusion Policy",
+    "Prediction Target Parameterization"
+   ]
+  },
+  {
+   "key": "model-13#5",
+   "name_en": "Normalization Layers",
+   "aliases": [
+    "LayerNorm",
+    "RMSNorm",
+    "BatchNorm"
+   ],
+   "one_liner": "Layers that rescale a network's intermediate features back into a stable numeric range, making deep networks train faster and more stably.",
+   "explanation": "A normalization layer rescales intermediate features by something like 'subtract the mean, divide by the standard deviation,' then multiplies by a learnable scale and adds a learnable shift, keeping values from spiraling out of control as depth increases and making training more stable. Batch normalization (BN, 2015) computes each channel's mean and variance across a batch, and became standard in convolutional networks, but it depends on batch size and behaves differently during training versus inference. Layer normalization (LN, 2016) instead computes statistics across all of a single sample's features, behaving the same way in training and inference, which made it the standard for Transformers. RMSNorm (2019) drops the mean-subtraction step and only divides by the root-mean-square, saving compute; large models like Llama use it, so VLAs built on them as a language backbone mostly use RMSNorm too. Diffusion Transformers also commonly use adaptive layer normalization to inject conditions like the timestep.",
+   "example": "Diffusion Policy replaces every batch normalization layer in its ResNet-18 vision encoder with group normalization (GroupNorm), because batch normalization was found to train unstably when combined with the exponential moving average (EMA) weights diffusion models commonly use.",
+   "related": [
+    "Adaptive Layer Normalization",
+    "Transformer",
+    "Residual Network",
+    "Convolutional Neural Network",
+    "Llama",
+    "Exponential Moving Average"
+   ]
+  },
+  {
+   "key": "model-13#6",
+   "name_en": "Normalizing Flow",
+   "aliases": [
+    "Flow-based Generative Model"
+   ],
+   "one_liner": "A generative model that turns a simple distribution into a complex one through a chain of invertible transforms, with exact probabilities computable.",
+   "explanation": "A normalizing flow is a class of generative model: starting from a simple distribution such as a standard Gaussian, it passes the sample through a chain of invertible neural-network transforms to arrive at a complex data distribution. Because every step is invertible, the change-of-variables formula from probability theory gives the exact likelihood of a sample, so the model can be trained directly by maximum likelihood; to generate, you just sample noise and run it forward through the network once. The cost is that every layer must be invertible, with an easy-to-compute Jacobian determinant (which measures how much a transform expands or shrinks volume), which restricts the network design. Rezende and Mohamed popularized the idea for variational inference in 2015; representative models include NICE, RealNVP, and Glow. The 2018 continuous normalizing flow wrote the transform as an ordinary differential equation, and flow matching is precisely a simulation-free way of training a continuous normalizing flow — the two share the word 'flow' for a reason.",
+   "example": "Glow (2018) builds a flow model out of coupling layers and invertible 1×1 convolutions, able both to generate realistic face images and to report the exact log-likelihood of any given image.",
+   "related": [
+    "Generative Model",
+    "Flow Matching",
+    "Variational Autoencoder",
+    "Diffusion Model",
+    "Generative Adversarial Network",
+    "Velocity Field"
+   ]
+  },
+  {
+   "key": "model-13#7",
+   "name_en": "NVIDIA Eagle VLM",
+   "aliases": [
+    "Eagle 2",
+    "Eagle 2.5",
+    "NVEagle"
+   ],
+   "one_liner": "NVIDIA's open-source vision-language model series, used as the vision-language backbone in GR00T N1 through N1.6.",
+   "explanation": "Eagle is an open-source vision-language model (VLM) series from NVIDIA's research team. The original Eagle (August 2024) studied how to combine multiple vision encoders, finding that simply concatenating the visual tokens from several complementary encoders worked well; Eagle 2 (January 2025) published the details of its post-training data strategy, with sizes including 1B, 2B, and 9B; Eagle 2.5 (technical report released April 2025) targets long context, supporting up to 128K tokens and strengthening long-video and high-resolution image understanding. Its main role in embodied AI is as the 'System 2' vision-language backbone for GR00T: GR00T N1 uses Eagle 2, while N1.5 and N1.6 use improved versions from the Eagle 2.5 family. According to the official GR00T repository, N1.7 onward switches to Cosmos-Reason2-2B instead.",
+   "example": "GR00T N1.5 starts from Eagle 2.5 and fine-tunes it further for object localization and physical understanding, while keeping this VLM frozen during both pretraining and fine-tuning so its parameters never update.",
+   "related": [
+    "NVIDIA Isaac GR00T N1",
+    "Vision-Language Model",
+    "Vision Encoder",
+    "Dual-System Architecture",
+    "NVIDIA Cosmos Reason",
+    "Vision-Language-Action Model"
+   ]
+  },
+  {
+   "key": "model-13#8",
+   "name_en": "One-step Generation",
+   "aliases": [
+    "1-NFE Generation",
+    "One-step Sampling"
+   ],
+   "one_liner": "Producing a result directly from noise with just one network forward pass, solving diffusion models' slow sampling.",
+   "explanation": "One-step generation means a generative model produces a sample with just a single network forward computation (1 NFE, or number of function evaluations = 1). GANs, VAEs, and normalizing flows are naturally one-step generators; diffusion models and flow matching, by contrast, need tens to thousands of iterative steps starting from noise, giving high quality but at a slow pace. For robots, every extra step in an action head adds control latency, so compressing a diffusion or flow-based policy down to one step is an important direction. There are three common approaches: distillation, training a one-step student from a multi-step teacher, as in consistency distillation; changing the training objective so the model learns to 'jump straight to the endpoint' in one step, as in consistency models and MeanFlow; and straightening the generation path, as in rectified flow. The usual cost is a small quality drop or a more complicated training setup.",
+   "example": "Consistency Policy distills Diffusion Policy into a consistency model, running an order of magnitude faster than the fastest existing methods and fitting on a laptop GPU; MP1 uses MeanFlow to generate an action in one step, at about 6.8 ms of inference time.",
+   "related": [
+    "Denoising Steps / Number of Function Evaluations",
+    "Consistency Model",
+    "MeanFlow",
+    "Rectified Flow",
+    "Consistency Policy",
+    "Inference Latency"
+   ]
+  },
+  {
+   "key": "model-13#9",
+   "name_en": "Parallel Decoding",
+   "aliases": [
+    "Non-autoregressive Decoding"
+   ],
+   "one_liner": "Producing an entire sequence in one forward pass, instead of generating it token by token like autoregressive decoding.",
+   "explanation": "Parallel decoding is defined in contrast to autoregressive decoding: an autoregressive model only predicts the next token each time, so producing N tokens takes N forward passes; parallel decoding instead has the model predict every position in a single forward pass. It was first studied systematically in machine translation as 'non-autoregressive translation' (Gu et al., 2017), cutting latency by roughly an order of magnitude at the cost of weaker modeling of dependencies between positions and somewhat lower quality. The issue is especially visible in VLAs: OpenVLA discretizes each action dimension into a single token and generates them one at a time, so a 7-dimensional action needs 7 forward passes, and action chunking makes it even slower. OpenVLA-OFT instead feeds in a set of empty action placeholder embeddings and replaces the causal attention mask with bidirectional attention, producing the entire action chunk in a single forward pass. Methods like discrete diffusion also fall under parallel or few-step parallel decoding.",
+   "example": "OpenVLA-OFT combines parallel decoding with action chunking (outputting 8 steps of 7-dimensional action at once) on LIBERO, raising action throughput from OpenVLA's 4.2 Hz to 108.8 Hz, about 26x faster.",
+   "related": [
+    "Autoregressive Decoding",
+    "Action Chunking",
+    "OpenVLA-OFT",
+    "Causal Attention",
+    "Discrete Diffusion",
+    "Speculative Decoding"
+   ]
+  },
+  {
+   "key": "model-13#10",
+   "name_en": "Perceiver Resampler",
+   "aliases": [
+    "Perceiver"
+   ],
+   "one_liner": "A module that uses a small set of learnable query vectors to compress a variable number of visual features into a fixed number of tokens.",
+   "explanation": "The Perceiver Resampler is a connector module DeepMind introduced in its 2022 Flamingo vision-language model, based on ideas from the 2021 Perceiver model. The number of features a vision encoder outputs varies with image resolution and video frame count, and is often large, making it expensive to feed directly into a language model. The resampler instead defines a small, fixed set of learnable query vectors (64 of them in Flamingo) that 'read' all the visual features through cross-attention, producing a fixed number of visual tokens as output. Flamingo's ablations show it outperforms an ordinary Transformer or MLP as the connector. It's conceptually close to BLIP-2's Q-Former, both compressing visual information with query vectors. In robot models, ByteDance's GR-1 uses it to compress image tokens too.",
+   "example": "ByteDance's GR-1 first encodes each frame into a large number of patch tokens with an MAE-pretrained ViT, compresses them down with a Perceiver Resampler, then feeds the result together with language and robot state into a GPT-style Transformer to predict actions and future frames.",
+   "related": [
+    "Projector / Connector",
+    "Q-Former",
+    "Learnable Query",
+    "Cross-Attention",
+    "Visual Token",
+    "GR-1"
+   ]
+  },
+  {
+   "key": "model-13#11",
+   "name_en": "Point Cloud Encoder",
+   "aliases": [
+    "Point Cloud Backbone"
+   ],
+   "one_liner": "A module that converts an unordered set of 3D points into feature vectors a neural network can use.",
+   "explanation": "A point cloud encoder turns a point cloud from a depth camera or lidar — an unordered set of 3D points with xyz coordinates, and sometimes color — into features. The difficulty is that points have no fixed order and no fixed count, so the convolutions built for image grids don't directly apply. Stanford's 2016 PointNet extracts per-point features with a shared MLP, then aggregates them with an order-independent operation like max pooling, pioneering the direct-on-point-cloud approach; stronger architectures followed, such as PointNet++ and the Point Transformer series. Any policy that uses 3D input in embodied AI depends on this: 3D Diffusion Policy (DP3) first downsamples the point cloud to 512 or 1024 points with farthest point sampling, then uses a lightweight encoder of three MLP layers plus max pooling to get a 64-dimensional feature, and the paper's ablations show this outperforms more complex encoders like PointNet++.",
+   "example": "DP3's point cloud encoder deliberately skips the color channel and uses only geometric coordinates, which the paper says generalizes better to changes in an object's appearance.",
+   "related": [
+    "Point Cloud",
+    "PointNet / PointNet++",
+    "Point Transformer V3",
+    "3D Diffusion Policy",
+    "Farthest Point Sampling",
+    "Vision Encoder"
+   ]
+  }
+ ]
+}

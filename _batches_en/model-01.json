@@ -1,0 +1,240 @@
+{
+ "batch": "model-01",
+ "terms": [
+  {
+   "key": "model-01#0",
+   "name_en": "Action Chunking",
+   "aliases": [
+    "Action Chunk",
+    "Chunk",
+    "Action Sequence Prediction"
+   ],
+   "one_liner": "A policy predicts a short sequence of upcoming actions at once, instead of outputting just one action per step.",
+   "explanation": "Action chunking means a policy's inference outputs a sequence of the next k steps of action at once, a “chunk,” executes some or all of it, then re-observes and predicts again. The term entered robot learning through Tony Zhao, Chelsea Finn, and colleagues' 2023 ACT paper, borrowed from a neuroscience idea about packaging a sequence of movements into one unit for execution: ACT controls a dual-arm robot at 50Hz, predicting the next 100 steps of joint targets each time. It solves two problems: it cuts the number of decisions to 1/k of the original, easing the compounding error that behavior cloning suffers from small per-step mistakes; and it makes it easier to learn timing habits in human demonstrations, such as pauses, that a single-step policy struggles to model. Mainstream models today — Diffusion Policy, π0 (50 steps at a time), GR00T N1 (16 steps at a time) — all output action chunks, usually stitched together across chunks with temporal ensembling or real-time chunking to avoid sudden jumps in motion.",
+   "example": "ACT performed six fine-motor tasks on the low-cost dual-arm platform ALOHA, each using only 10 to 20 minutes (about 50 demonstrations) of data: opening a translucent condiment-cup lid succeeded 84% of the time, inserting a battery into a remote 96%, and the hardest task, threading a velcro strap, only 20%. It outputs the next 100 steps of joint targets each time, about 2 seconds at 50Hz.",
+   "related": [
+    "Action Horizon",
+    "Temporal Ensembling",
+    "Real-Time Chunking",
+    "Compounding Error",
+    "ACT",
+    "Diffusion Policy"
+   ]
+  },
+  {
+   "key": "model-01#1",
+   "name_en": "Action Expert",
+   "aliases": [
+    "Action Expert Module"
+   ],
+   "one_liner": "A separate set of parameters inside a VLA dedicated to producing continuous actions, apart from the vision-and-language backbone.",
+   "explanation": "The term “action expert” became popular through Physical Intelligence's 2024 π0. π0 uses a roughly 3-billion-parameter PaliGemma vision-language model as its backbone, plus a separate, newly initialized Transformer of about 300 million parameters that handles robot state and action tokens; that second set of weights is the action expert. The two share the same attention layers but keep separate weights, similar to a mixture-of-experts with just two experts, and information flows only one way: action tokens can attend to the image and text tokens, but not the reverse, so the backbone doesn't get pulled off its original pretraining. The action expert generates continuous action chunks with flow matching; the paper found that giving state and action tokens their own dedicated weights works better than sharing the backbone's weights. π0.5 and SmolVLA keep this same name, and GR00T N1's action module is a similar design.",
+   "example": "At inference, π0's PaliGemma backbone first encodes the camera images and language instruction, and the action expert then integrates 10 steps of flow matching to output a continuous action chunk 50 steps long, with a control frequency of up to 50Hz.",
+   "related": [
+    "Vision-Language-Action Model",
+    "Action Head",
+    "Flow Matching",
+    "Mixture of Experts",
+    "π0",
+    "Backbone Network"
+   ]
+  },
+  {
+   "key": "model-01#2",
+   "name_en": "Action Head",
+   "aliases": [
+    "Action Decoder",
+    "Policy Head"
+   ],
+   "one_liner": "The output module attached after a backbone that turns extracted features into concrete robot actions.",
+   "explanation": "The action head follows the same “backbone plus head” split used in vision: the backbone extracts features from images, language, and proprioceptive state, and the head turns those features into whatever output the task needs, which for a robot policy means joint angles, an end-effector pose, or gripper open/close. Three kinds of action heads are common: an MLP head that regresses continuous values directly, trained with mean squared error, which tends to average multiple valid ways of doing something into one; a head that discretizes actions and predicts them as classification over tokens; and a diffusion or flow-matching head, which can express a multimodal action distribution. Octo attaches a lightweight diffusion action head after its Transformer output, and when fine-tuning to a new robot it can simply swap in a new action head to match a different action space; GR00T N1 uses a diffusion Transformer as its action module.",
+   "example": "Octo is pretrained with a diffusion action head predicting a segment of future action; when transferred to a new arm with a different action dimensionality, the pretrained Transformer body is kept, a new action head matching the new action space is attached, and the whole model is fine-tuned together on about 100 demonstrations.",
+   "related": [
+    "Backbone Network",
+    "Diffusion Action Head",
+    "Action Expert",
+    "Continuous Action Regression",
+    "Octo",
+    "Action Multimodality"
+   ]
+  },
+  {
+   "key": "model-01#3",
+   "name_en": "Attention Mechanism",
+   "aliases": [
+    "Attention"
+   ],
+   "one_liner": "A way of weighting parts of the input by relevance and combining them, letting a model focus on what matters.",
+   "explanation": "Attention in deep learning is usually traced to Bahdanau, Cho, and Bengio's 2014 neural machine translation paper: when translating each word, the model automatically looks for the most relevant words in the source sentence, instead of compressing the whole sentence into one fixed-length vector. The now-common form has every position produce a query (Q), a key (K), and a value (V); the similarity between Q and each K is normalized with softmax into weights, and those weights are used to sum up V. The 2017 Transformer, by Vaswani and colleagues, replaced recurrence and convolution entirely with attention, which made training parallelizable and far easier to scale, and it became the shared foundation of large language models and VLAs. In embodied models, self-attention lets image patches, text, and action tokens exchange information with each other, and cross-attention is commonly used to let the action module read visual-language features.",
+   "example": "Given the instruction “put the red cup in the sink,” when the model processes the text tokens for “red cup,” attention weights concentrate on the image patches showing the red cup, tying the language to the picture.",
+   "related": [
+    "Transformer",
+    "Self-Attention",
+    "Cross-Attention",
+    "Causal Attention",
+    "Attention Mask",
+    "Key-Value Cache"
+   ]
+  },
+  {
+   "key": "model-01#4",
+   "name_en": "Autoregressive Decoding",
+   "aliases": [
+    "AR",
+    "Autoregressive Model",
+    "Token-by-token Generation"
+   ],
+   "one_liner": "Generating output one piece at a time, with each step conditioned on everything generated so far.",
+   "explanation": "Autoregressive decoding is how large language models such as GPT generate text: predict only the next token, append it to the input, predict the next one again, and repeat until done. Applying this to robots first requires discretizing continuous actions into tokens. Google DeepMind's 2023 RT-2 wrote actions as a string of number tokens and had the vision-language model output them the same way it outputs text; OpenVLA splits each action dimension into 256 bins, reusing the 256 least-used tokens in Llama's vocabulary. The upside is directly reusing a language model's architecture and training recipe; the downside is that generation has to happen one token at a time, which is slow — OpenVLA runs at only about 6Hz on an RTX 4090. This led to compressive action tokenizers such as FAST, parallel decoding, and alternatives that generate actions with diffusion or flow matching instead.",
+   "example": "One of RT-2's action outputs is a string of tokens like “1 128 91 241 5 101 127 217,” corresponding in order to whether the episode should end, end-effector translation and rotation, and gripper open/close, which then get converted back into continuous values sent to the robot.",
+   "related": [
+    "Next-Token Prediction",
+    "Action Tokenizer",
+    "Action Binning",
+    "Parallel Decoding",
+    "RT-2",
+    "OpenVLA"
+   ]
+  },
+  {
+   "key": "model-01#5",
+   "name_en": "Backbone Network",
+   "aliases": [
+    "Backbone"
+   ],
+   "one_liner": "The main network that extracts general-purpose features from raw input, with task-specific heads attached after it.",
+   "explanation": "“Backbone network” originally comes from computer vision — 2017's Mask R-CNN paper, for instance, splits the network into a convolutional backbone that extracts features from the whole image, such as a ResNet-50, and heads that do classification, box regression, and mask prediction. A backbone is usually pretrained on large-scale data first and then reused across different tasks, and swapping in a stronger backbone tends to lift performance across the board. In embodied models, the backbone is usually an already-pretrained vision-language model: OpenVLA uses Llama 2 with DINOv2 and SigLIP vision encoders, π0 uses PaliGemma, and GR00T N1 uses NVIDIA's Eagle-2. The backbone supplies semantic knowledge, while an action head or action expert turns its features into actions; whether to freeze the backbone during fine-tuning is a common design choice.",
+   "example": "1.34 billion of GR00T N1's 2.2 billion parameters belong to the Eagle-2 vision-language backbone; it feeds the action module features from the backbone's 12th layer rather than its last layer, which the paper says makes inference faster and also raises the policy's success rate.",
+   "related": [
+    "Vision Encoder",
+    "Vision-Language Model",
+    "Action Head",
+    "Backbone Freezing",
+    "Pre-training",
+    "Residual Network"
+   ]
+  },
+  {
+   "key": "model-01#6",
+   "name_en": "Diffusion Model",
+   "aliases": [
+    "Diffusion"
+   ],
+   "one_liner": "A generative model that learns to remove noise step by step, then generates new data by denoising from pure noise.",
+   "explanation": "A diffusion model has two processes: a forward process that keeps adding Gaussian noise to real data until it becomes pure noise, and a reverse process where a neural network is trained to predict and remove the noise at each step. Generation runs the reverse process from random noise, denoising repeatedly to produce a new sample. The idea was proposed by Sohl-Dickstein and colleagues in 2015, and Ho and colleagues' 2020 DDPM made it genuinely practical, after which it became the mainstream approach behind image and video generators such as Stable Diffusion. In robotics it is used to generate actions: 2023's Diffusion Policy denoises a segment of future action conditioned on the current observation, and can represent several equally valid ways of doing something in the same scene, called action multimodality, which a single regressed average cannot capture. The cost is that denoising takes multiple steps, so inference tends to be slower.",
+   "example": "Diffusion Policy (Chi and colleagues, 2023) reached an average success rate 46.9% higher than prior methods across 12 manipulation tasks in 4 benchmarks; on a T-block-pushing task, faced with two equally valid ways to push, going around the left or the right, it learns both modes instead of averaging them into one.",
+   "related": [
+    "Diffusion Policy",
+    "Denoising Diffusion Probabilistic Model",
+    "Flow Matching",
+    "Action Multimodality",
+    "Denoising Steps",
+    "Generative Model"
+   ]
+  },
+  {
+   "key": "model-01#7",
+   "name_en": "Dual-System Architecture (System 1 / System 2)",
+   "aliases": [
+    "System 1 / System 2",
+    "S1 / S2",
+    "Fast-Slow System",
+    "Fast System",
+    "Slow System",
+    "System 0/1/2 Architecture"
+   ],
+   "one_liner": "A slow, deliberate large model handles understanding and planning, while a fast, lightweight model handles real-time motor control.",
+   "explanation": "The dual-system architecture borrows psychologist Daniel Kahneman's language from Thinking, Fast and Slow: System 2 is slow and deliberate, System 1 is fast and intuitive. Applied to robots, System 2 is usually a vision-language model with a few billion to a few tens of billions of parameters, running a few to a dozen times per second, looking at the scene and understanding the instruction, and outputting a semantic goal or a latent vector; System 1 is a much smaller policy network outputting joint actions at up to hundreds of hertz. This combines a large model's common sense with the low-latency demands of real-time control. Representative systems are Figure's Helix (February 2025) and NVIDIA's GR00T N1 (March 2025). Figure's Helix 02, from January 2026, adds a 1kHz System 0 for balance and contact, becoming a three-system architecture.",
+   "example": "Figure Helix's S2 is a 7-billion-parameter open-source VLM running at 7 to 9Hz; its S1 is an 80-million-parameter Transformer controlling 35 degrees of freedom across the wrists, fingers, torso, and head at 200Hz. GR00T N1's vision-language part runs at 10Hz on an L40 GPU, and its action part outputs actions at 120Hz.",
+   "related": [
+    "Embodied Reasoning Model",
+    "Hierarchical Architecture",
+    "Vision-Language-Action Model",
+    "Helix",
+    "NVIDIA Isaac GR00T N1 / N1.5 / N1.6 / N1.7",
+    "System 0 (S0/S1/S2 Three-Layer Architecture)"
+   ]
+  },
+  {
+   "key": "model-01#8",
+   "name_en": "Embodied Foundation Model",
+   "aliases": [
+    "Robot Foundation Model",
+    "RFM"
+   ],
+   "one_liner": "A large model pretrained on data spanning many robots and tasks, adaptable to many different robots and jobs.",
+   "explanation": "Embodied foundation model extends the foundation-model idea into robotics. A foundation model is one pretrained on large-scale, diverse data, usually with self-supervised learning, meaning it builds training targets from the data itself rather than from human labels, and can then adapt to many downstream tasks, GPT being an example. Embodied foundation models likewise pretrain first on data spanning many robots and tasks, then post-train on a small amount of data for a specific task or a specific robot body, rather than training a dedicated policy from scratch for every task. The term has no fixed boundary: narrowly it often means a generalist policy that outputs actions directly, such as π0, GR00T N1, or Gemini Robotics; broadly it also includes embodied reasoning models responsible for understanding and planning, and world models used to generate data or evaluate policies. Firoozi and colleagues' 2023 survey identifies the main obstacles as scarce robot data, missing safety guarantees, and real-time requirements.",
+   "example": "π0 was pretrained on more than 10,000 hours of robot data, including self-collected data spanning 7 robot configurations and 68 tasks, and then post-trained on curated data for long-horizon tasks such as folding laundry and assembling a box.",
+   "related": [
+    "Foundation Model",
+    "Vision-Language-Action Model",
+    "Generalist Robot Policy",
+    "Embodied Reasoning Model",
+    "World Model",
+    "Pre-training"
+   ]
+  },
+  {
+   "key": "model-01#9",
+   "name_en": "Embodied Reasoning Model",
+   "aliases": [
+    "ER",
+    "Embodied Brain Model",
+    "Embodied Brain",
+    "ER Model",
+    "Brain"
+   ],
+   "one_liner": "A multimodal model specialized in understanding the physical world and planning tasks, often called a robot's ‘brain’.",
+   "explanation": "An embodied reasoning model is a multimodal large model with strengthened spatial understanding and task planning; it generally does not output joint actions directly, but instead answers questions like where something is, where to grasp it, what step comes next, and whether a step is done, outputting pointing coordinates, trajectories, or a step-by-step plan for an execution layer to carry out. The representative example is Google DeepMind's Gemini Robotics-ER, released in March 2025 (ER stands for embodied reasoning); the newest version listed on the official site is currently ER 2. In China, the Beijing Academy of Artificial Intelligence (BAAI) has its RoboBrain series. This division of labor is commonly called, in China's robotics industry, a “brain-cerebellum” architecture: the “brain” is the reasoning model responsible for understanding and planning, and the “cerebellum” is the lower-level module responsible for motor control and skill execution. Compared with a dual-system architecture, the brain and cerebellum are more often trained separately and connected through an interface, rather than jointly.",
+   "example": "In the Gemini Robotics 1.5 pairing, ER 1.5 acts as the “brain”: it can call Google Search to look up local recycling rules, break the task into steps, and hand each step's natural-language instruction to the VLA model, Gemini Robotics 1.5, to carry out the pick-and-place actions.",
+   "related": [
+    "Embodied Reasoning",
+    "Dual-System Architecture",
+    "Hierarchical Architecture",
+    "Gemini Robotics-ER (Embodied Reasoning)",
+    "RoboBrain (BAAI embodied brain model)",
+    "Vision-Language-Action Model"
+   ]
+  },
+  {
+   "key": "model-01#10",
+   "name_en": "End-to-End",
+   "aliases": [
+    "E2E",
+    "End-to-End Model",
+    "End-to-End Learning"
+   ],
+   "one_liner": "Using one model to go straight from raw sensor input to control commands, with no hand-designed intermediate modules.",
+   "explanation": "A traditional robot system is a modular pipeline: a perception module identifies objects and poses, a planning module computes a path, and a control module tracks the trajectory, each designed and tuned separately and passing information through human-defined interfaces such as object coordinates. End-to-end instead hands the whole chain to one neural network, mapping raw input, such as camera images and proprioceptive state, directly to joint positions or torque commands, trained all at once toward a single objective. An early landmark in robotics is Levine, Finn, and colleagues' deep visuomotor policy work (2015 preprint, published 2016), which used a convolutional network of only about 92,000 parameters to map raw camera images directly to motor torques. The benefit is less hand-engineering and no error compounding across modules, with performance able to grow with more data; the cost is needing a lot of data, and errors are harder to trace to a cause. Most VLAs today are described as end-to-end models.",
+   "example": "Levine and colleagues had a PR2 robot's policy network read raw camera images directly, plus the robot's own joint angles and other state, and output torque commands for every joint, learning tasks such as screwing on a bottle cap and hanging a coat hanger on a rod with no separate object-detection or pose-estimation module at test time.",
+   "related": [
+    "Visuomotor Policy",
+    "Vision-Language-Action Model",
+    "Hierarchical Architecture",
+    "Sense-Plan-Act",
+    "Imitation Learning",
+    "End-to-End Training of Deep Visuomotor Policies (Guided Policy Search)"
+   ]
+  },
+  {
+   "key": "model-01#11",
+   "name_en": "Flow Matching",
+   "aliases": [
+    "FM",
+    "Conditional Flow Matching",
+    "CFM"
+   ],
+   "one_liner": "Learning a velocity field that smoothly transports noise into real data, then generating samples by integrating along it.",
+   "explanation": "Flow matching was proposed by Meta's Lipman and colleagues in 2022 (published at ICLR 2023), for training continuous normalizing flows, a class of generative model that continuously deforms noise into data. The method defines a path between a noise sample and a real sample, most commonly straight-line interpolation, and trains a network to predict the velocity at every point along that path, the velocity field, with a loss that is just the mean squared error between predicted and target velocity; training needs no simulation of the full trajectory. To generate, start from noise and numerically integrate along the network's predicted velocity; for robot actions, a handful to about ten steps is usually enough (π0 uses 10, GR00T N1 uses 4). It belongs to the same family as diffusion models, both turning noise into data step by step, and diffusion can be viewed as one specific path within flow matching; a straight-line path tends to train faster and need fewer sampling steps, in the same spirit as the contemporaneous rectified-flow idea. In robotics, π0 uses it to generate action chunks in its action expert, and GR00T N1 and others use it too.",
+   "example": "At inference, π0 starts from Gaussian noise and integrates 10 steps, each of size 0.1, to turn noise into a 50-step-long action chunk; during training, the loss is just the squared difference between the network's predicted velocity field and the target velocity.",
+   "related": [
+    "Diffusion Model",
+    "Velocity Field",
+    "Rectified Flow",
+    "Flow Matching Loss",
+    "π0",
+    "Action Expert"
+   ]
+  }
+ ]
+}

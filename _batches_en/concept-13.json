@@ -1,0 +1,68 @@
+{
+  "batch": "concept-13",
+  "terms": [
+    {
+      "key": "concept-13#0",
+      "name_en": "Symbol Grounding Problem",
+      "aliases": ["Symbol Grounding"],
+      "one_liner": "How the symbols inside a machine come to refer to real things in the world, and so mean something.",
+      "explanation": "This is a problem cognitive scientist Stevan Harnad posed in Physica D in 1990: for a system that only manipulates symbols according to rules, how do those symbols get their own meaning, rather than depending entirely on a person to interpret them? His example is trying to learn Chinese from a Chinese-Chinese dictionary alone: every word is defined using other words, and no amount of looking things up ever touches an actual object. Harnad's proposed solution is to ground the most basic symbols in perception: build sensory representations of the outside world first, then learn features that distinguish categories; symbols are the names of these categories, and complex concepts are built by combining them. Embodied AI often treats this as part of the theoretical case for “why a body is needed,” and it is frequently cited in discussions of language grounding, meaning connecting words to vision and action.",
+      "example": "Given the instruction “bring me the red cup,” a large language model can parse the sentence, but it only counts as grounded for the robot once “the red cup” is tied to a specific object in the camera feed and “bring” is tied to a sequence of grasping actions.",
+      "related": ["Grounding / Language Grounding", "Embodied Cognition", "Disembodied AI", "Three Schools of AI", "SayCan"]
+    },
+    {
+      "key": "concept-13#1",
+      "name_en": "Task-Oriented Grasping",
+      "aliases": ["TOG", "Functional Grasping"],
+      "one_liner": "Choosing a grasp based on what comes next — the same object gets held differently for different jobs.",
+      "explanation": "Ordinary grasping cares only about holding an object securely; task-oriented grasping also requires the grasp to suit the task that follows — gripping a hammer by its handle to drive a nail, but holding a pair of scissors by the blade when passing it to someone else, leaving the handle for them. It has to connect object parts, affordances (which part of an object can be used for what), and task semantics, linking “picking something up” to “using it.” In 2020, Carnegie Mellon University and collaborators published the TaskGrasp dataset at CoRL (191 objects, 56 tasks, about 250,000 grasps), encoding object-task relationships with a knowledge graph to generalize to new objects and tasks; 2023's GraspGPT and similar work began drawing on the common sense in large language models to handle object-task combinations never seen before.",
+      "example": "The same knife: a robot holds it by the handle when cutting vegetables itself, but when handing it to a person, grips the back of the blade and orients the handle toward them.",
+      "related": ["Grasping", "Affordance", "Affordance Detection", "Grasp Pose Detection", "Tool Use", "Human-Robot Handover"]
+    },
+    {
+      "key": "concept-13#2",
+      "name_en": "Text-to-Motion",
+      "aliases": ["Text-Driven Humanoid Motion Generation", "Language-Driven Humanoid Motion Generation"],
+      "one_liner": "Turning a written sentence into a matching sequence of full-body human or humanoid motion.",
+      "explanation": "This line of work originated in graphics and vision as human motion generation: given text such as “a person walks forward a few steps then waves,” a model outputs a sequence of 3D human poses. The representative dataset is HumanML3D (CVPR 2022; 14,616 motion clips, 44,970 text descriptions), and the representative model is the diffusion-based MDM (2022). Carried over to humanoid robots, the generated human motion doesn't automatically respect a robot's joint structure or physical constraints, so it typically needs motion retargeting first (mapping human motion onto the robot's skeleton), then execution by a reinforcement-learning-trained motion-tracking or whole-body control policy. UH-1, from December 2024, curated the Humanoid-X dataset from about 240 hours of video, trained a model to generate humanoid motion from text, and validated it on a real Unitree H1-2.",
+      "example": "In the UH-1 paper, a Unitree H1-2 was given 12 language instructions such as “boxing,” “clapping,” and “playing guitar,” and the model generated matching full-body motions, with the paper reporting a real-robot success rate near 100%.",
+      "related": ["MDM: Human Motion Diffusion Model", "HumanML3D", "UH-1 / Humanoid-X", "Motion Retargeting", "Motion Tracking", "Whole-Body Control"]
+    },
+    {
+      "key": "concept-13#3",
+      "name_en": "The Coffee Test",
+      "aliases": ["Wozniak Coffee Test"],
+      "one_liner": "Sending a machine into a stranger's house to find everything it needs and brew a pot of coffee.",
+      "explanation": "The Coffee Test is a proposed test for general-purpose AI put forward by Apple co-founder Steve Wozniak: a machine must walk into an ordinary American home and figure out how to make coffee on its own, finding the coffee maker, finding the coffee, adding water, finding a cup, and pressing the right buttons to brew it. Unlike the Turing test, which only examines conversation, it requires perception, search, common-sense reasoning, and manipulation in a real, unfamiliar environment, which is why it is often invoked to argue that being able to chat is not the same as being able to get things done. Per Wikipedia, Figure 01 demonstrated autonomously operating a Keurig pod coffee machine in January 2024, and researchers at the University of Edinburgh reportedly had a robot arm make coffee from voice commands with a framework called ELLMER in 2025, but neither was done in a randomly chosen stranger's home, so both still fall short of what the test actually demands.",
+      "example": "A large model can list every step of making coffee, but to pass the Coffee Test, a robot has to rummage through the cabinets of a kitchen it has never seen to find the coffee grounds, and recognize which button to press on that particular machine.",
+      "related": ["Physical Turing Test", "Embodied AGI", "Household Tasks", "Open-world", "Long-horizon Task", "Moravec's Paradox"]
+    },
+    {
+      "key": "concept-13#4",
+      "name_en": "Three Schools of AI",
+      "aliases": ["Symbolism, Connectionism, and Behaviorism", "Three Paradigms of AI"],
+      "one_liner": "A classification of AI research, common in Chinese textbooks, into logic-symbol, neural-network, and interact-with-environment approaches.",
+      "explanation": "This is a classification of AI research commonly taught in Chinese AI textbooks, dividing approaches by “where intelligence comes from” into three schools. Symbolism (also called logicism) holds that intelligence is logical reasoning over symbols; its landmarks are Allen Newell and Herbert Simon's Logic Theorist program from the 1950s and the expert systems that followed. Connectionism (also called the bionic school) holds that intelligence comes from the connections and learning of large numbers of simple neurons; today's deep learning and large models fall under this school. Behaviorism (also called the cybernetics school) holds that intelligence is expressed in a perception-action loop and does not require a complete world model to be built first; its landmark is Rodney Brooks's subsumption-architecture robots at MIT in the 1980s. Embodied AI is philosophically closest to behaviorism but methodologically relies heavily on connectionist neural networks; in practice, the three schools have largely merged today.",
+      "example": "Take the task “put the apple in the bowl”: a symbolist approach would hand-write a rule such as “if an apple is seen and the hand is empty, grasp it”; a connectionist approach would train a neural network on many demonstrations to map images directly to actions; a behaviorist approach would wire up a set of “see-reach-adjust” reflex loops and let the behavior take shape through interaction with the environment. Today's VLA models mainly follow the connectionist path.",
+      "related": ["Subsumption Architecture", "Symbol Grounding Problem", "Embodied Cognition", "Perception-Action Loop", "Neural Network (Deep Neural Network)", "Moravec's Paradox"]
+    },
+    {
+      "key": "concept-13#5",
+      "name_en": "Tri-Co Robot",
+      "aliases": ["Tri-Co", "Coexisting-Cooperative-Cognitive Robot"],
+      "one_liner": "A robot able to safely coexist and cooperate with people, other robots, and its environment, and read their intentions.",
+      "explanation": "This research direction was proposed by the National Natural Science Foundation of China (NSFC); “Tri-Co” stands for Coexisting, Cooperative, and Cognitive. According to a 2017 introduction by Han Ding and colleagues in National Science Review, the NSFC launched an eight-year major research program on Tri-Co robots that year. “Coexisting” means the robot enters human living and working spaces in an inherently safe way; “cooperative” means it works with people or other robots through communication and interaction; “cognitive” means it can sense and predict the environment's and other agents' behavior and intent. Research topics include rigid-flexible-soft hybrid structures, multimodal sensing and biosignal-based human-robot interaction, and multi-robot swarm intelligence, aimed at applications such as precision manufacturing, rehabilitation assistance, and inspection and rescue. Its concerns overlap heavily with today's human-robot collaboration and embodied AI.",
+      "example": "A rehabilitation assist device needs to read the wearer's biosignals, such as EMG, and provide assistance in the direction the person is trying to move, all while guaranteeing it won't hurt them, matching the “coexisting, cooperative, cognitive” requirements exactly.",
+      "related": ["Human-Robot Collaboration", "Collaborative Robot", "Human-Robot Interaction", "Physical Human-Robot Interaction", "Swarm Intelligence", "Multi-robot Collaboration"]
+    },
+    {
+      "key": "concept-13#6",
+      "name_en": "Visual Generalization",
+      "aliases": ["Visual Robustness", "Appearance Generalization"],
+      "one_liner": "Still completing the task when the scene looks different: new background, lighting, colors, distractors, or camera angle.",
+      "explanation": "Visual generalization is a subcategory of generalization: whether a robot policy still completes the same task under visual conditions it never saw in training, such as a new background or tablecloth, different lighting, an object with a new color or texture, extra distractor objects in the frame, or a moved camera. The task and the actions needed haven't changed, only what the scene looks like, so it is usually evaluated separately from semantic generalization (new objects, new instructions) and position generalization; OpenVLA's real-robot evaluation lists it as its own category. Imitation-learning policies that learn actions directly from pixels tend to also memorize irrelevant details like background and lighting. In 2023, Xie, Finn, and colleagues isolated these factors one by one and found that new backgrounds are the easiest to adapt to and new camera positions the hardest. Common fixes include domain randomization, data augmentation, pretrained vision encoders, and collecting data across more varied scenes.",
+      "example": "OpenVLA's real-robot evaluation of “put the eggplant in the pot” used a pot made of papier-mâché, visually different from the pots in the BridgeData V2 training data, to test whether the policy could still recognize the pot and complete the task.",
+      "related": ["Generalization", "Semantic Generalization", "Position / Spatial Generalization", "Distractor Objects", "Domain Randomization", "Data Augmentation"]
+    }
+  ]
+}

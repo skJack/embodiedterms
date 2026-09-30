@@ -1,0 +1,428 @@
+{
+  "category": "data",
+  "batch": 7,
+  "terms": [
+    {
+      "name_zh": "BC-Z 数据集",
+      "name_en": "BC-Z",
+      "abbr": "",
+      "aliases": [
+        "BC-Z: Zero-Shot Task Generalization with Robotic Imitation Learning",
+        "BC-Z Robot Dataset"
+      ],
+      "tier": 3,
+      "one_liner": "谷歌 2021 年采的 100 个任务真机演示数据集，用来研究零样本任务泛化。",
+      "explanation": "BC-Z 是 Google 与 X 登月工厂在 CoRL 2021 发表的工作，名字意为「行为克隆 + 零样本」。团队用 12 台机器人、7 名操作员，通过 VR 遥操作加「共享自主」（策略先自己执行，人在它快出错时接管纠正，即 HG-DAgger）采集了 25,877 条演示、共 125 小时、覆盖 100 个任务，另录了 18,726 段人做同样任务的视频。策略用 FiLM 层接收语言或人类视频的任务嵌入，在 24 个没训练过的任务上平均成功率 44%。它较早证明多任务数据加语言条件能带来零样本泛化，数据后被收入 Open X-Embodiment。",
+      "example": "测试时给出训练里从未一起出现过的物体组合指令，例如把某个物体放进某个没配对过的容器，策略不采任何新演示就直接执行；这类新任务共 24 个，平均成功率 44%。",
+      "related": [
+        "Open X-Embodiment 数据集",
+        "RT-1",
+        "人工门控 DAgger",
+        "语言条件策略",
+        "零样本",
+        "FiLM 特征调制"
+      ],
+      "sources": [
+        {
+          "title": "BC-Z: Zero-Shot Task Generalization with Robotic Imitation Learning (CoRL 2021, PMLR)",
+          "url": "https://proceedings.mlr.press/v164/jang22a/jang22a.pdf"
+        },
+        {
+          "title": "BC-Z 项目主页",
+          "url": "https://sites.google.com/view/bc-z/home"
+        }
+      ],
+      "as_of": "2022-02"
+    },
+    {
+      "name_zh": "双边遥操作",
+      "name_en": "Bilateral Teleoperation",
+      "abbr": "",
+      "aliases": [
+        "力反馈遥操作",
+        "Force-Feedback Teleoperation",
+        "双向力反馈遥操作",
+        "双边控制",
+        "Bilateral Control"
+      ],
+      "tier": 3,
+      "one_liner": "主从两端双向传位置和力，操作者能感到机器人碰到了什么的遥操作。",
+      "explanation": "双边遥操作是主从式遥操作的一种：人操纵本地的主端设备，远端从端机器人跟随运动，同时从端受到的接触力传回主端，让操作者手上感到阻力。单边遥操作则只把主端位置发给从端，ALOHA 这类低成本主从臂就是单边。这一方向已有半个多世纪历史，控制上要兼顾稳定性和透明度（操作者的感觉有多接近亲手操作），通信延迟是主要难点；四通道结构让两端互传位置和力，理论上可让两者同时同步。用于数据采集时，它帮人完成插接、擦拭等接触丰富的任务，并把力信号一起录下供策略学习，例如 Bi-ACT 在 ACT 上加入了力信息。",
+      "example": "筑波大学等团队用四通道双边控制采集演示训练策略：不输入力信息时，策略几乎抓不起 10–20 毫米的小物体；把力信息加入输入和输出后，拾取成功率达到 100%。",
+      "related": [
+        "遥操作",
+        "主从臂遥操作",
+        "力反馈手套",
+        "力控",
+        "接触丰富操作",
+        "ACT"
+      ],
+      "sources": [
+        {
+          "title": "Fast Bilateral Teleoperation and Imitation Learning Using Sensorless Force Control via Accurate Dynamics Model (arXiv 2507.06174)",
+          "url": "https://arxiv.org/html/2507.06174v2"
+        },
+        {
+          "title": "ALPHA-α and Bi-ACT Are All You Need（大阪大学项目页）",
+          "url": "https://mertcookimg.github.io/alpha-biact"
+        }
+      ],
+      "as_of": "2025-07"
+    },
+    {
+      "name_zh": "Bunny-VisionPro",
+      "name_en": "Bunny-VisionPro",
+      "abbr": "",
+      "aliases": [
+        "Bunny-VisionPro: Real-Time Bimanual Dexterous Teleoperation for Imitation Learning"
+      ],
+      "tier": 3,
+      "one_liner": "用 Vision Pro 实时遥操作双臂双灵巧手、带振动触觉反馈的采集系统。",
+      "explanation": "Bunny-VisionPro 是香港大学与 UCSD 王小龙组 2024 年 7 月发布的开源遥操作系统，用来为模仿学习采集双手灵巧操作演示。它用 Apple Vision Pro 跟踪人的手和手腕，实时映射到两台 xArm-7 机械臂和两只 6 自由度 Ability 灵巧手（共 24 个自由度）。手指重定向用优化方法对齐人手与机器手的指尖关键点；系统内置碰撞和奇异位形（机械臂失去某方向运动能力的姿态）规避，还用低成本振动马达把机器手指尖的触觉信号反馈给操作者。论文用它采的数据训练 ACT、扩散策略和 DP3，成功率高于用基线系统采的数据。",
+      "example": "操作者戴着 Vision Pro 远程控制双臂双手完成擦玻璃、扫地、做咖啡这类多步骤长程任务，机器手指尖碰到物体时，操作者手上的振动马达随之振动。",
+      "related": [
+        "VR 遥操作",
+        "Apple Vision Pro",
+        "AnyTeleop",
+        "双臂操作",
+        "灵巧操作",
+        "动作重定向"
+      ],
+      "sources": [
+        {
+          "title": "Bunny-VisionPro: Real-Time Bimanual Dexterous Teleoperation for Imitation Learning (arXiv 2407.03162)",
+          "url": "https://arxiv.org/html/2407.03162v1"
+        },
+        {
+          "title": "Bunny-VisionPro 项目主页",
+          "url": "https://dingry.github.io/projects/bunny_visionpro.html"
+        }
+      ],
+      "as_of": "2024-07"
+    },
+    {
+      "name_zh": "BVH / FBX 动捕文件格式",
+      "name_en": "BVH / FBX Motion Capture File Formats",
+      "abbr": "",
+      "aliases": [
+        "BioVision Hierarchy",
+        "Filmbox",
+        ".bvh",
+        ".fbx"
+      ],
+      "tier": 3,
+      "one_liner": "存人体骨架结构和逐帧关节旋转的两种常见动作捕捉文件格式。",
+      "explanation": "BVH（BioVision Hierarchy）由动捕公司 Biovision 制定，是纯文本格式：HIERARCHY 段用 ROOT、JOINT 组成的树描述骨架，写明各关节相对父关节的偏移和旋转通道；MOTION 段给出帧数、帧间隔，之后每行一帧列出各关节旋转角（根关节还有平移）。它只存骨架动作，不含网格和材质。FBX 最初是 Kaydara 为动捕软件 Filmbox 设计的格式，现归 Autodesk，可同时存几何、骨骼、动画和材质，格式不公开，通常用官方 SDK 读写。人形机器人做动作模仿时，常把这两种文件里的人体动作重定向到机器人关节上，例如 GMR 支持 LAFAN1 的 BVH 和 OptiTrack 导出的 FBX。",
+      "example": "Ubisoft 公开的 LAFAN1 动捕数据是 BVH 文件，研究者用 GMR 把其中走路、跳舞的片段重定向到宇树 G1 的关节上，作为运动跟踪策略的参考动作。",
+      "related": [
+        "动作捕捉",
+        "动作重定向",
+        "GMR 通用动作重定向",
+        "LAFAN1 动捕数据集",
+        "AMASS 人体动捕数据集",
+        "SMPL 人体模型"
+      ],
+      "sources": [
+        {
+          "title": "Biovision BVH（威斯康星大学课程资料）",
+          "url": "https://research.cs.wisc.edu/graphics/Courses/cs-838-1999/Jeff/BVH.html"
+        },
+        {
+          "title": "FBX - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/FBX"
+        },
+        {
+          "title": "GMR: General Motion Retargeting (GitHub)",
+          "url": "https://github.com/YanjieZe/GMR"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "COCO / LVIS 数据集",
+      "name_en": "COCO / LVIS (Common Objects in Context / Large Vocabulary Instance Segmentation)",
+      "abbr": "",
+      "aliases": [
+        "MS COCO",
+        "Microsoft COCO",
+        "LVIS v1.0"
+      ],
+      "tier": 3,
+      "one_liner": "最常用的检测与分割基准，LVIS 在 COCO 图片上扩展到上千个长尾类别。",
+      "explanation": "COCO 由微软等机构 2014 年发布，约 33 万张日常场景图片、150 万个物体实例，检测和实例分割用 80 个类别，另有图像描述、人体关键点等标注，是检测、分割模型最常用的训练和评测集，mAP（平均精度均值）通常在它上面报告。LVIS 由 Facebook AI Research 的 Gupta、Dollár、Girshick 在 CVPR 2019 提出，复用 COCO 图片，重新标注了 1203 个类别、约 200 万个实例掩码，类别呈长尾分布（少数类很常见，大量类样本很少），专门考察稀有类别识别。开放词汇检测（按任意文字描述找物体）常用 LVIS 稀有类衡量零样本能力。机器人感知用的检测、分割模型大多在这两个数据集上预训练或评测。",
+      "example": "YOLO 系列新版本发布时通常报告 COCO val2017 上的 mAP；YOLO-World、Grounding DINO 这类开放词汇检测器则报告在 LVIS 上的零样本 AP。",
+      "related": [
+        "目标检测",
+        "实例分割",
+        "开放词汇检测",
+        "平均精度均值",
+        "YOLO",
+        "Grounding DINO"
+      ],
+      "sources": [
+        {
+          "title": "Microsoft COCO: Common Objects in Context (arXiv 1405.0312)",
+          "url": "https://arxiv.org/abs/1405.0312"
+        },
+        {
+          "title": "LVIS: A Dataset for Large Vocabulary Instance Segmentation (arXiv 1908.03195)",
+          "url": "https://arxiv.org/abs/1908.03195"
+        },
+        {
+          "title": "COCO 官网数据集介绍",
+          "url": "https://cocodataset.org/dataset/home.htm"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "采执同构",
+      "name_en": "Collection-Execution Isomorphism",
+      "abbr": "",
+      "aliases": [
+        "采集-执行同构",
+        "采集-执行双末端同构",
+        "采执原生同构"
+      ],
+      "tier": 3,
+      "one_liner": "采集设备与机器人执行末端结构一致，采到的数据可直接用在同构机器人上。",
+      "explanation": "采执同构是国内具身数据行业近年常用的说法，指采集端（人手持或穿戴的夹爪、手套，或遥操作用的主臂）与执行端（机器人上的夹爪、灵巧手）在运动学结构、自由度、传感器布局乃至相机视角上保持一致。这样采到的关节角、触觉和画面可以直接当作执行端的观测和动作，省掉动作重定向（把人的动作换算成机器人动作）带来的误差，缩小本体差异。ALOHA 的同构主从臂、UMI 让手持夹爪与机器人共用腕部相机视角，都体现了类似思路；帕西尼等厂商则把它做成产品卖点，宣称采集手套与执行末端 1:1 物理同构、「采集即部署」。代价是采集设备绑定特定末端，换一种机械手往往就要换一套采集设备。",
+      "example": "帕西尼的 PXCap III 三指采集手套与 PXDex III 三指执行末端按传感器布局、连杆和关节自由度一致来设计，手套采到的触觉和关节数据可直接用于装同款末端的机器人。",
+      "related": [
+        "无本体采集",
+        "通用操作接口",
+        "动作重定向",
+        "本体差异",
+        "主从臂遥操作",
+        "帕西尼感知"
+      ],
+      "sources": [
+        {
+          "title": "帕西尼 PXCap III 三指数据采集手套（官网）",
+          "url": "https://paxini.com/cn/ax/pxcap3"
+        },
+        {
+          "title": "数据决定上限：25家国内具身智能数据采集厂商盘点（艾邦机器人）",
+          "url": "https://www.aibangbots.com/a/11921"
+        },
+        {
+          "title": "UMI: Universal Manipulation Interface 项目主页",
+          "url": "https://umi-gripper.github.io/"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "跨本体图像替换",
+      "name_en": "Cross-Painting (Robot Embodiment Visual Swap)",
+      "abbr": "",
+      "aliases": [
+        "Cross-Painting",
+        "机器人外观替换",
+        "Mirage"
+      ],
+      "tier": 3,
+      "one_liner": "把画面里的新机器人抠掉、换成训练时那台机器人，让视觉策略直接迁移。",
+      "explanation": "Cross-painting 由 UC Berkeley Ken Goldberg 团队与 Google DeepMind 研究者在 Mirage 方法中提出（RSS 2024）。视觉策略只见过源机器人，换一台外形不同的目标机器人后画面变了，策略就容易失效。做法是执行时实时用分割掩码遮掉画面里的目标机器人并补全背景，再按 URDF（机器人连杆和关节的模型文件）算出让源机器人末端到达同一位姿的关节角并渲染上去，让策略「看到」的仍是熟悉的机器人；控制差异另用正向动力学模型（预测执行动作后末端到哪）补偿。Mirage 在 Franka、UR5 和不同夹爪间实现了零样本迁移。类似的抠图加渲染流程也被用来把人类视频里的手换成机器人。",
+      "example": "只用 Franka 机械臂采的数据训练策略，部署到 UR5 上时把画面里的 UR5 实时换成渲染出的 Franka，策略不重新训练就能完成抓取等任务。",
+      "related": [
+        "跨本体",
+        "本体差异",
+        "零样本",
+        "人类视频机器人化（人→机视频转换）",
+        "生成式数据增强",
+        "正向动力学模型"
+      ],
+      "sources": [
+        {
+          "title": "Mirage: Cross-Embodiment Zero-Shot Policy Transfer with Cross-Painting (arXiv 2402.19249)",
+          "url": "https://arxiv.org/abs/2402.19249"
+        },
+        {
+          "title": "BerkeleyAutomation/mirage (GitHub)",
+          "url": "https://github.com/BerkeleyAutomation/mirage"
+        }
+      ],
+      "as_of": "2024-07"
+    },
+    {
+      "name_zh": "众包采集",
+      "name_en": "Crowdsourced Data Collection",
+      "abbr": "",
+      "aliases": [
+        "Crowdsourcing",
+        "众包数采",
+        "全民数采"
+      ],
+      "tier": 3,
+      "one_liner": "把采集任务分发给大量非专业人员，按审核通过的有效数据量付费。",
+      "explanation": "众包采集不依赖少数专业采集员，而是通过网页或 App 把任务分发给大量普通人，由他们远程遥操作机器人，或在家里、工作场所录下自己的操作，平台审核后按有效时长付费。早期代表是斯坦福 2018 年的 RoboTurk，用户把手机当 6 自由度控制器在网页上遥操作机械臂。2025–2026 年随着第一人称视频和无本体采集设备普及，众包转向真实场景的人类数据：据报道 Figure 于 2026 年 8 月公开了付费收集用户任务视频的 Index 项目，觅蜂科技 9 月上线「觅蜂派」，让用户戴 MEgo 设备接单采集。优点是便宜、场景广；难点是质量参差、隐私保护和清洗标注成本。",
+      "example": "RoboTurk 2019 年的真实机器人数据集由 54 名非专业用户在一周内远程遥操作采集，共 2144 条演示、111 小时。",
+      "related": [
+        "数采员",
+        "无本体采集",
+        "第一人称视频",
+        "有效数据",
+        "数据脱敏",
+        "数据质检"
+      ],
+      "sources": [
+        {
+          "title": "RoboTurk - Crowdsourcing Robotics（斯坦福）",
+          "url": "https://roboturk.stanford.edu"
+        },
+        {
+          "title": "机器人开始向更多人类买数据（新京报）",
+          "url": "https://www.bjnews.com.cn/detail/1790255981129859.html"
+        },
+        {
+          "title": "日薪120元全民数采：谁在训练下一个机器人保姆？（36氪）",
+          "url": "https://eu.36kr.com/zh/p/3810340908817928"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "戴盟 Daimon-Infinity 数据集",
+      "name_en": "Daimon-Infinity",
+      "abbr": "",
+      "aliases": [
+        "Daimon-Infinity 数据集",
+        "戴盟含触觉全模态物理世界数据集"
+      ],
+      "tier": 3,
+      "one_liner": "戴盟机器人 2026 年发布的含视触觉信号的大规模真实操作数据集。",
+      "explanation": "Daimon-Infinity 是深圳戴盟机器人（主业为视触觉传感器）于 2026 年 4 月 15 日联合数十家机构发布的具身数据集，主打含触觉的全模态。数据主要来自戴盟自研的无本体二指夹爪和五指手套，搭载 11 万感知单元、120Hz 的视触觉传感器（用摄像头拍弹性体形变来测接触），以及鱼眼相机、编码器、IMU 和双目相机，另有头戴第一人称、遥操作和仿真数据。发布时称计划开源 1 万小时，覆盖 16 个行业、80 个场景、2000 多类任务，首批 1000 小时已上线魔搭社区；官网现称总规模超百万小时。它补上了多数操作数据集缺失的接触力、滑移等信号。",
+      "example": "开源部分含 1400 多个时长超过 40 秒的长序列任务，如用夹爪或手套完成抓放、插入、堆叠，数据同时记录视触觉、画面和动作轨迹，可用来训练带触觉输入的操作策略。",
+      "related": [
+        "触觉数据",
+        "视触觉传感器",
+        "无本体采集",
+        "戴盟机器人",
+        "戴盟 DM-Tac 视触觉传感器",
+        "魔搭社区"
+      ],
+      "sources": [
+        {
+          "title": "戴盟联合数十家头部机构，发布全球最大规模含触觉全模态物理世界数据集（魔搭社区）",
+          "url": "https://modelscope.csdn.net/69e03dd70a2f6a37c5a04836.html"
+        },
+        {
+          "title": "Daimon-Infinity 数据集（戴盟官网）",
+          "url": "https://www.dmrobot.com/daas/daimon-infinity.html"
+        },
+        {
+          "title": "中国移动与戴盟机器人共建含触觉全模态物理世界数据集（新华网）",
+          "url": "http://www.zj.xinhuanet.com/20260421/603839d919c34af49dcbd0d7677e7786/c.html"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "数据脱敏",
+      "name_en": "Data Anonymization / De-identification",
+      "abbr": "",
+      "aliases": [
+        "去标识化",
+        "匿名化",
+        "De-identification",
+        "Anonymization",
+        "隐私脱敏"
+      ],
+      "tier": 3,
+      "one_liner": "把数据里的人脸、车牌、声音等个人信息模糊或删除，使其认不出具体的人。",
+      "explanation": "数据脱敏指在数据发布或用于训练前，去除或遮盖能识别具体个人的信息。我国《个人信息保护法》区分两个层次：去标识化是指处理后在不借助额外信息的情况下无法识别特定自然人；匿名化是指无法识别且不能复原，匿名化后的信息不再算个人信息。具身数据越来越多来自家庭、商店、工厂里的第一人称视频和众包采集，画面会拍到路人和采集者的脸、门牌、屏幕内容，录音里可能有对话，所以脱敏是数据发布前的必要环节。常见做法是用检测模型自动找出人脸、车牌并模糊，删除或处理音频，再人工抽检。例如 Ego4D 对视频中旁人的脸和路过的车牌做了模糊，并去掉了许多视频的音频。",
+      "example": "Meta 为 Project Aria 眼镜开源了 EgoBlur 模型，能在第一人称视频里自动检测人脸和车牌并打码，采用 Apache 2.0 许可，可用于商业用途。",
+      "related": [
+        "众包采集",
+        "第一人称视频",
+        "Ego4D 数据集",
+        "Project Aria 眼镜",
+        "数据清洗",
+        "数据质检"
+      ],
+      "sources": [
+        {
+          "title": "中华人民共和国个人信息保护法（中央网信办）",
+          "url": "https://www.cac.gov.cn/2021-08/20/c_1631050028355286.htm"
+        },
+        {
+          "title": "EGO4D's approach to privacy and ethics in data collection",
+          "url": "https://ego4d-data.org/pdfs/Ego4D-Privacy-and-ethics-consortium-statement.pdf"
+        },
+        {
+          "title": "EgoBlur（Project Aria）",
+          "url": "https://www.projectaria.com/tools/egoblur"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "采集 SOP",
+      "name_en": "Data Collection Standard Operating Procedure",
+      "abbr": "SOP",
+      "aliases": [
+        "采集规范",
+        "数据采集标准作业程序",
+        "Data Collection Protocol"
+      ],
+      "tier": 3,
+      "one_liner": "规定每条数据怎么采、采成什么样才算合格的标准操作流程。",
+      "explanation": "采集 SOP 是数据团队写给采集员的操作规程，通常写清：设备检查与相机标定、场景怎么布置和多久更换、任务指令从哪里取、一条数据的起止怎么界定、动作速度和手法、失败如何处理和标记、文件命名与上传、质检标准等。机器人学习对数据一致性很敏感，不同人做法差别大、起止不统一、夹杂长停顿，模型都难学好，所以 SOP 是保证有效数据比例的基础。SOP 也要兼顾多样性：DROID 的共享采集协议让采集员约每 20 分钟换一个场景，并随机提示调整光照、挪动相机、增减物品。国内也在推统一规范，如北京人形机器人创新中心牵头立项工信部行业标准《人工智能 具身智能 数据采集规范》。",
+      "example": "DROID 的 50 名采集员分布在多所大学，使用同一套采集协议和图形界面：界面从采集员列出的可行任务中随机抽指令，每条轨迹结束后由采集员标记成功或失败。",
+      "related": [
+        "数采员",
+        "有效数据",
+        "数据质检",
+        "演示数据",
+        "DROID 数据集",
+        "众包采集"
+      ],
+      "sources": [
+        {
+          "title": "DROID: A Large-Scale In-The-Wild Robot Manipulation Dataset (arXiv 2403.12945)",
+          "url": "https://arxiv.org/html/2403.12945v1"
+        },
+        {
+          "title": "国地共建具身智能机器人创新中心打造具身智能标准体系",
+          "url": "https://www.x-humanoid.com/news-view-50.html"
+        }
+      ],
+      "as_of": "2024-11"
+    },
+    {
+      "name_zh": "数据泄漏 / 测试集污染",
+      "name_en": "Data Leakage / Test-set Contamination",
+      "abbr": "",
+      "aliases": [
+        "Data Leakage",
+        "Train-Test Contamination",
+        "测试集泄漏",
+        "数据污染"
+      ],
+      "tier": 3,
+      "one_liner": "测试时才该有的信息在训练中被模型提前看到，导致评测分数虚高。",
+      "explanation": "数据泄漏指模型训练时接触到了测试或部署时本不该有的信息，于是离线评测好看、真用起来很差。IBM 把它分为目标泄漏（特征里夹带预测时拿不到的「答案」）和训练-测试污染（测试数据混进训练，或划分前用全部数据做归一化等预处理）。机器人学习里常见的情形有：按帧而非按整条轨迹划分训练集和验证集；在仿真基准上用与测试几乎相同的场景和初始状态训练；大模型预训练语料混进评测题。LIBERO-PRO 发现，原版 LIBERO 上成功率超 90% 的 VLA，换物体、改初始位置或指令后可降到 0，说明它们主要在背训练集。对策是按轨迹、场景划分数据，并在分布外设置下评测。",
+      "example": "把一条 30 秒演示的所有帧随机打散后再划分训练集和验证集，验证集上的动作误差会很低，因为模型几乎见过每一帧的相邻帧；改成按整条轨迹划分后，误差才能反映真实的泛化能力。",
+      "related": [
+        "训练集 / 验证集 / 测试集",
+        "过拟合",
+        "分布外",
+        "LIBERO-PRO",
+        "基准饱和",
+        "刷榜"
+      ],
+      "sources": [
+        {
+          "title": "What is Data Leakage in Machine Learning?（IBM）",
+          "url": "https://www.ibm.com/think/topics/data-leakage-machine-learning"
+        },
+        {
+          "title": "LIBERO-PRO: Towards Robust and Fair Evaluation of Vision-Language-Action Models Beyond Memorization (arXiv 2510.03827)",
+          "url": "https://arxiv.org/abs/2510.03827"
+        }
+      ],
+      "as_of": "2026-05"
+    }
+  ]
+}

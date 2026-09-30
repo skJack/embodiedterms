@@ -1,0 +1,113 @@
+{
+  "batch": "mechanics-08",
+  "terms": [
+    {
+      "key": "mechanics-08#0",
+      "name_en": "Static Stability",
+      "aliases": ["Static Balance", "Statically Stable"],
+      "one_liner": "The robot's center of mass projects straight down inside its support polygon, so it stays balanced even standing still.",
+      "explanation": "Static stability means a robot can hold its balance on its own support whenever its velocity and acceleration are both near zero. The test is simple: project the center of mass (the robot's overall center of gravity) straight down onto the ground, and check whether that point falls inside the support polygon — the convex region enclosed by all the ground-contact points. The farther the projection sits from the boundary, the more stable the robot is; that shortest distance is often called the stability margin. The advantage is that the robot can stop at any instant without a controller correcting it in real time, which is why early multi-legged robots and slow-walking humanoids were designed around it — a quadruped walking slowly, for example, lifts only one leg at a time and always keeps the other three planted in a triangle. The cost is speed: moving fast or running requires letting the center of mass leave the support region briefly, which calls for dynamic-stability criteria like the zero moment point or the capture point instead.",
+      "example": "When a hexapod robot uses a tripod gait, it lifts three legs at a time while the other three form a triangle on the ground; as long as the center-of-mass projection stays inside that triangle, the robot could stop at any instant without falling.",
+      "related": ["Support Polygon", "Dynamic Stability", "Center of Mass", "Zero Moment Point", "Quasi-static Assumption", "Quadruped Robot"]
+    },
+    {
+      "key": "mechanics-08#1",
+      "name_en": "Statics",
+      "aliases": ["Robot Statics", "Static Force Analysis"],
+      "one_liner": "The branch of mechanics that studies how forces and torques balance on an object at rest or moving at constant velocity.",
+      "explanation": "Statics is the branch of classical mechanics that studies systems with no acceleration, where the equilibrium condition is that the net force and net torque both equal zero: ΣF = 0, ΣM = 0. In robotics, the most-used result is τ = Jᵀ(θ)F: τ is the vector of joint torques, J is the Jacobian matrix (which maps joint velocities to end-effector velocity), θ is the current joint configuration, and F is the wrench — a combined 3D force and 3D torque — that the end effector applies to the outside world. The formula follows from conservation of power (virtual work), and it answers the question, 'to produce this much force at the tip, how much torque should each motor supply?' When the robot must also hold up its own weight, a gravity-compensation torque is added on top. Force control, gravity compensation, and grasp-force analysis all build on statics; once motion speeds up enough that inertial forces can't be ignored, the analysis has to switch to dynamics instead.",
+      "example": "A robot arm's end effector rests motionless against a tabletop and must press down with 10 N of force: first compute the Jacobian J for the current pose, then use τ = Jᵀ F to find the torque each joint must output, and finally add the gravity-compensation torque that offsets the arm's own weight.",
+      "related": ["Wrench", "Jacobian Matrix", "Gravity Compensation", "Principle of Virtual Work", "Quasi-static Assumption", "Dynamics"]
+    },
+    {
+      "key": "mechanics-08#2",
+      "name_en": "Stiffness",
+      "aliases": ["Rigidity", "Spring Constant"],
+      "one_liner": "How strongly an object or joint resists deforming — the same force causes less deformation the stiffer it is.",
+      "explanation": "Stiffness is defined as the ratio of an applied force to the displacement it produces, k = F/δ (F is force, δ is displacement along the force's direction), measured in N/m; for rotation, it's torque divided by angle, in N·m/rad. Its reciprocal is called compliance. The term carries two meanings in robotics. One is structural stiffness: links, gearboxes, and belts all bend or twist under load, which directly affects how accurately the end effector reaches its target. The other is control stiffness — the 'virtual spring' a controller creates, such as the proportional gain in PD control or the stiffness matrix K in impedance control. High stiffness tracks a target accurately and resists disturbances but hits hard on impact; low stiffness is more compliant and safer for tasks involving contact. The 'stiffness' and 'damping' settings in reinforcement-learning locomotion configs refer to exactly this — the PD gains applied at each joint.",
+      "example": "legged_gym sets stiffness = 80 N·m/rad for each joint of the ANYmal C robot: when the policy's target angle differs from the actual joint angle by 0.1 rad, the joint produces a restoring torque of about 8 N·m, before the damping term is subtracted.",
+      "related": ["Compliance", "Damping", "Impedance Control", "Stiffness and Damping Gains", "PD Control", "Mass-Spring-Damper System"]
+    },
+    {
+      "key": "mechanics-08#3",
+      "name_en": "Support Polygon",
+      "aliases": ["Support Region", "Base of Support", "Support Triangle"],
+      "one_liner": "The convex region enclosed by all of a robot's ground-contact points; balance criteria are measured against this boundary.",
+      "explanation": "The support polygon is the convex region on the horizontal plane enclosed by every point where a robot touches the ground. For a humanoid balanced on one foot it's roughly the outline of that foot; standing on both feet, it's the outer boundary connecting the two footprints; for a quadruped with three legs down, it forms a triangle, which is why it's also called the support triangle. It serves as the boundary for balance criteria: static stability requires the center-of-mass projection to land inside it, and dynamic walking requires the center of pressure — where the resultant ground-reaction force acts, equivalent to the zero moment point — to stay inside it, since the center of pressure can never geometrically leave the contact region. The larger the support polygon, the wider the range of center-of-mass acceleration it can tolerate, which is why slow quadruped walking keeps three legs down at all times and why humanoid feet are made large enough to matter.",
+      "example": "When a quadruped trots, only the two diagonal legs touch the ground at once, so the support polygon collapses into a line segment; the center-of-mass projection can almost never land exactly on that line, so trotting isn't statically stable — balance has to be maintained by continuously adjusting the gait instead.",
+      "related": ["Static Stability", "Zero Moment Point", "Center of Pressure", "Center of Mass", "Double Support Phase", "Diagonal Trot Gait"]
+    },
+    {
+      "key": "mechanics-08#4",
+      "name_en": "Tool Center Point",
+      "aliases": ["TCP", "Tool Frame", "TCP Point"],
+      "one_liner": "The point on the end-of-arm tool that actually does the work; the robot aims and moves this point, not the mounting flange.",
+      "explanation": "The tool center point (TCP) is a reference point defined on the end-of-arm tool, together with its own coordinate frame — for example, the midpoint between a gripper's two fingertips, the tip of a welding torch, or the center of a suction cup. The arm itself only knows where its flange (the end mounting face) is, so once a tool is attached, a fixed transform from the flange to the TCP (a position plus an orientation) must be configured before the controller can send the tool tip to a target pose, move it in a straight line, or rotate it about a point. Get the TCP wrong and the tool offsets as a whole — most noticeably when rotating about a point — so the TCP is usually recalibrated whenever the tool changes. In embodied AI, whether a dataset's or a policy's 'end-effector pose' refers to the flange or the TCP varies by convention and needs to be unified across cross-embodiment training; Franka's libfranka library, for instance, reports the flange frame and the end-effector (EE) frame separately.",
+      "example": "After mounting a parallel gripper on the arm, set the TCP at the midpoint between the two fingertips: commanding the robot to rotate about the TCP then keeps the fingertip position fixed while only changing the gripper's orientation. If the TCP were still left at the flange, the fingertips would instead swing out along an arc.",
+      "related": ["End Effector", "Tool Flange", "End-Effector Pose", "Homogeneous Transformation Matrix", "Hand-Eye Calibration", "Absolute Positioning Accuracy"]
+    },
+    {
+      "key": "mechanics-08#5",
+      "name_en": "Twist",
+      "aliases": ["Spatial Velocity", "Six-Dimensional Velocity", "Velocity Twist"],
+      "one_liner": "Packs a rigid body's angular and linear velocity into one 6-dimensional vector that fully describes its instantaneous motion.",
+      "explanation": "A twist is the 6-dimensional vector V = (ω, v) that describes a rigid body's instantaneous velocity: ω is the 3D angular velocity and v is the 3D linear velocity, both expressed in the same frame. The concept comes from screw theory: any rigid-body motion can be viewed as a rotation about some screw axis combined with a translation along that same axis, and the twist is simply that axis scaled by the rotation rate. Expressed in the world frame it's called a spatial twist; expressed in the body's own frame it's a body twist, and the two convert into each other through the adjoint transformation. What a manipulator's Jacobian actually computes is the map from joint velocities to the end effector's twist. Note that the ordering convention differs between sources: Lynch and Park's textbook Modern Robotics writes it as (angular velocity, linear velocity), while ROS's geometry_msgs/Twist message lists the linear component before the angular one.",
+      "example": "Sending a cmd_vel command to a mobile base in ROS means sending a Twist message: linear.x = 0.5 means drive forward at 0.5 m/s, angular.z = 0.3 means simultaneously turn left at 0.3 rad/s about the vertical axis, and the other four components are zero.",
+      "related": ["Wrench", "Screw Theory", "Jacobian Matrix", "Adjoint Representation", "Product of Exponentials Formula", "cmd_vel Velocity Command Topic (Twist Message)"]
+    },
+    {
+      "key": "mechanics-08#6",
+      "name_en": "Underactuation",
+      "aliases": ["Underactuated System", "Underactuated Robot"],
+      "one_liner": "The motors can't directly produce acceleration in every direction, typically because there are fewer actuators than degrees of freedom.",
+      "explanation": "Underactuation means a mechanical system cannot be commanded to track an arbitrary trajectory directly. MIT's Russ Tedrake defines it this way in Underactuated Robotics: write the dynamics as q̈ = f₁(q, q̇) + f₂(q, q̇)u, where q is the vector of generalized coordinates and u is the control input; the system is underactuated whenever f₂ has rank less than the dimension of q, meaning the motors cannot directly produce acceleration in certain directions. The most common cause is simply having fewer actuators than degrees of freedom, as in a cart-pole system or a quadrotor. Legged robots and humanoids are underactuated too: N motors control only N joints, while the body's six degrees of freedom in space have no motor of their own and can only be controlled indirectly, through the contact forces between the feet and the ground — this is the root reason walking is hard. Underactuated grippers turn the same property to their advantage, using a small number of motors to drive more joints that passively wrap around an object.",
+      "example": "The Acrobot is a two-link arm with a motor only at the elbow: the shoulder joint has no actuation at all, so swinging it up from hanging straight down to a handstand can only be done by rocking the elbow motor back and forth, 'pumping' energy into the system a little at a time.",
+      "related": ["Floating Base", "Degrees of Freedom", "Active DoF / Passive DoF", "Inverted Pendulum Model", "Adaptive Gripper", "Nonholonomic Constraint"]
+    },
+    {
+      "key": "mechanics-08#7",
+      "name_en": "Wrench",
+      "aliases": ["Force-Torque", "Six-Dimensional Force/Torque"],
+      "one_liner": "Packs a 3D force and a 3D torque into one 6-dimensional vector describing the full load acting on a rigid body.",
+      "explanation": "A wrench is the 6-dimensional vector F = (m, f): f is the 3D force and m is the 3D torque, both expressed in the same frame. It's the dual of the twist — their dot product VᵀF equals power, and because power doesn't depend on the choice of reference frame, the rule for transforming a wrench between frames follows directly from that fact. Robotics uses it anywhere the question is 'how much force is being applied': a wrist-mounted six-axis force-torque sensor reads out a wrench directly; the statics equation τ = JᵀF converts an end-effector wrench into joint torques; and grasp analysis sums the contact forces at each fingertip into the total wrench acting on the object. Component ordering isn't standardized across sources: Lynch and Park's textbook writes it as (torque, force), while ROS's geometry_msgs/Wrench and Franka's libfranka both list force before torque.",
+      "example": "An example from Modern Robotics (taking g = 10 m/s²): a 0.5 kg robot hand holds a 0.1 kg apple, and the wrist's six-axis force-torque sensor reads not just the 6 N of weight but also 0.75 N·m of torque, because the centers of mass of both the hand and the apple sit offset from the sensor.",
+      "related": ["Twist", "Six-Axis Force-Torque Sensor", "Statics", "Torque", "Grasp Matrix", "Adjoint Representation"]
+    },
+    {
+      "key": "mechanics-08#8",
+      "name_en": "Zero Moment Point",
+      "aliases": ["ZMP", "ZMP Criterion"],
+      "one_liner": "The point where the ground-reaction force produces no horizontal moment — the classic balance criterion for biped walking.",
+      "explanation": "The zero moment point (ZMP) was introduced by Miomir Vukobratović and Davor Juričić in 1968: it's the point at which the ground-reaction force produces no moment about the horizontal axes, which on flat ground coincides with the center of pressure (where the resultant ground-reaction force acts). The center of pressure can only ever fall within the support polygon, so the ZMP criterion requires that the planned ZMP stay inside the footprint's support region at all times — otherwise the robot tips over the edge of its foot. When the center-of-mass height is constant, p = x − (z/g)ẍ, where p is the horizontal ZMP position, x and z are the center of mass's horizontal position and height, ẍ is its horizontal acceleration, and g is gravitational acceleration. This lets engineers fix the footstep locations and a ZMP trajectory first, then work backward to the center-of-mass trajectory — the approach earlier-generation humanoids such as Honda's ASIMO used to walk; today's reinforcement-learning-based locomotion controllers generally don't compute ZMP explicitly.",
+      "example": "When the robot stands still, ẍ = 0 and the ZMP sits directly beneath the center of mass's vertical projection. When it wants to accelerate forward, the ZMP shifts toward the heel, moving further the harder it accelerates — and once it crosses the heel's edge, the toes lift off and the whole robot tips over backward.",
+      "related": ["Center of Pressure", "Support Polygon", "Linear Inverted Pendulum Model", "ZMP Preview Control", "Capture Point", "Bipedal Walking"]
+    },
+    {
+      "key": "mechanics-08#9",
+      "name_en": "9D Rotation Representation",
+      "aliases": ["SVD Orthogonalization", "Symmetric Orthogonalization", "9D Rotation"],
+      "one_liner": "Lets a network output nine unconstrained numbers, then uses SVD to project them onto the nearest valid rotation matrix.",
+      "explanation": "The 9D rotation representation is a way for a neural network to predict a 3D rotation: the network outputs nine unconstrained real numbers arranged into a 3×3 matrix M, which is then factored by singular value decomposition, M = UΣVᵀ. Taking R = U·diag(1, 1, det(UVᵀ))·Vᵀ gives the rotation matrix closest to M, with the det term ensuring the result is not a mirror reflection. Levinson et al. gave a systematic analysis in their NeurIPS 2020 paper 'An Analysis of SVD for Deep Rotation Estimation': the mapping is smooth almost everywhere, unlike quaternions or Euler angles, which can jump discontinuously; under noisy inputs, the expected reconstruction error is about half that of the Gram-Schmidt orthogonalization used by the 6D representation; and it achieved state-of-the-art results at the time on tasks including point-cloud alignment, object pose estimation, and inverse kinematics. Whenever a network must directly regress an object's or end-effector's orientation, this is a common alternative to quaternions or Euler angles, alongside the 6D representation.",
+      "example": "The paper's official code implements this in about ten lines: reshape the network's [batch, 9] output into 3×3 matrices, run SVD, correct the sign of the last column using det(UVᵀ), and obtain a [batch, 3, 3] rotation matrix that can be attached directly to the end of any regression network for end-to-end training.",
+      "related": ["6D Rotation Representation", "Rotation Matrix", "Quaternion", "Special Orthogonal Group SO(3)", "Geodesic Distance on SO(3)", "Euler Angles"]
+    },
+    {
+      "key": "mechanics-08#10",
+      "name_en": "Absolute Positioning Accuracy",
+      "aliases": ["Pose Accuracy", "Absolute Accuracy"],
+      "one_liner": "How far a robot's actual end-effector position ends up from the theoretical target position it was commanded to reach.",
+      "explanation": "Absolute positioning accuracy measures how close the end effector's actual position comes to the theoretical position implied by the command; the ISO 9283 standard calls this pose accuracy (AP). It's distinct from repeatability (RP) — how tightly the robot returns to the same point over repeated trials. Industrial arms are typically 'very repeatable but not very accurate,' because manufacturing tolerances in link lengths and joint zero offsets, together with deflection under load and temperature effects, cause the controller's internal kinematic model to drift away from the real machine. Hand-guiding taught points with a teach pendant only requires good repeatability, but offline programming — or sending coordinates computed in simulation or by a camera straight to the robot — is instead bottlenecked by absolute accuracy. The usual fix is kinematic calibration: measuring the true pose with equipment such as a laser tracker and using it to identify the model's errors, which typically improves a six-axis industrial arm's absolute accuracy several-fold to tenfold, often down to well under 1 millimeter.",
+      "example": "A sequence of grasp points is planned offline in simulation and sent straight to the real robot: the arm returns to the same physical spot every time (good repeatability), but that spot is offset from the intended target in simulation by a consistent amount — that offset is the absolute positioning error, and in vision-guided grasping it also stacks with hand-eye calibration error.",
+      "related": ["Repeatability", "Kinematic Calibration", "Offline Programming", "Tool Center Point", "Hand-Eye Calibration", "Digital Twin"]
+    },
+    {
+      "key": "mechanics-08#11",
+      "name_en": "Active DoF / Passive DoF",
+      "aliases": ["Active Joint", "Passive Joint", "Actuated / Passive Joint"],
+      "one_liner": "A degree of freedom is active when a motor drives it independently, and passive when it just follows a linkage or an external force.",
+      "explanation": "An active degree of freedom is a joint driven directly and independently by an actuator — a motor, a hydraulic cylinder, and so on. A passive degree of freedom has no independent actuator; its motion is instead determined by mechanical constraints, linkages, or external forces. Passive joints show up in two common places: ball joints and universal joints in parallel mechanisms — a Stewart platform, for instance, is driven by six linear actuators while its ball joints are entirely passive, their positions set by the whole closed kinematic chain — and finger joints in dexterous hands or underactuated grippers, which are coupled to an active joint through linkages or tendons. This is why reading a dexterous hand's spec sheet means distinguishing 'degrees of freedom' from 'number of joints': the former usually counts only the active DoF, which sets how many dimensions the policy can independently control — the size of its action space — while the latter also counts the passive joints that just follow along. Passive joints also need special handling in simulation (URDF mimic joints, closed-chain constraints) and when retargeting motion for teleoperation.",
+      "example": "Inspire Robots' RH56DFX dexterous hand is specified as having 6 active degrees of freedom and 12 joints: 6 motors each control one dimension, while the remaining joints follow along through linkages. The Shadow Hand, by contrast, has 20 active degrees of freedom plus 4 underactuated coupled joints, for 24 joints in total.",
+      "related": ["Degrees of Freedom", "Underactuation", "Parallel Mechanism", "Dexterous Hand", "Adaptive Gripper", "Linkage Transmission"]
+    }
+  ]
+}

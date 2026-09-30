@@ -1,0 +1,223 @@
+{
+ "batch": "training-01",
+ "terms": [
+  {
+   "key": "training-01#0",
+   "name_en": "Behavior Cloning",
+   "aliases": [
+    "Behavioral Cloning",
+    "Behavioural Cloning",
+    "BC"
+   ],
+   "one_liner": "Treating expert demonstrations as labeled data and using supervised learning to directly map observations to actions.",
+   "explanation": "Behavior cloning is the most basic form of imitation learning. You collect a large set of observation-action pairs — for example, the camera images and joint commands recorded while a human teleoperates a robot — treat the observations as inputs and the expert's actions as labels, and train a policy network with ordinary supervised learning to fit them. An early example is Pomerleau's 1988 ALVINN, which used a neural network to output a steering direction directly from images. Behavior cloning is simple and stable, and needs no reward function to be designed, so the core training of ACT, Diffusion Policy, and most VLA (vision-language-action) models is essentially behavior cloning. Its main weakness is compounding error: once the policy drifts even slightly off the demonstrated trajectory, it enters states it never saw during training, and small mistakes snowball from there. DAgger, correction data, and reinforcement-learning fine-tuning are all ways of addressing this weakness.",
+   "example": "ACT used behavior cloning on just about 10 minutes — 50 human teleoperated demonstrations — to get a low-cost bimanual robot to succeed 80–90% of the time at fine-grained tasks like opening the lid of a translucent condiment cup or putting batteries into a remote control.",
+   "related": [
+    "Imitation Learning",
+    "Compounding Error",
+    "DAgger (Dataset Aggregation)",
+    "Demonstration Data",
+    "ACT",
+    "Diffusion Policy"
+   ]
+  },
+  {
+   "key": "training-01#1",
+   "name_en": "Checkpoint",
+   "aliases": [
+    "Model Weights",
+    "Model Checkpoint",
+    "ckpt"
+   ],
+   "one_liner": "A saved snapshot of a model's parameters, taken during or after training, that can be loaded to run inference or resume training.",
+   "explanation": "A checkpoint is a saved snapshot of a model's parameters at a given moment. Training a large model often takes days or even weeks, so a program will save the parameters to a file every so often, both to avoid starting over after a crash and to make it easy to later pick the version that performed best on validation. If a checkpoint is only meant for inference, saving the model weights is enough; to resume training exactly where it left off, the optimizer state, current epoch, and similar information need to be saved alongside it — PyTorch's documentation notes that this kind of full checkpoint is typically 2 to 3 times the size of the weights alone. Common file formats include .pt, .pth, .ckpt, and safetensors. When an open-source VLA project says it has “released weights,” it means it has published a checkpoint, which anyone can download to run inference on directly or continue fine-tuning from.",
+   "example": "Physical Intelligence's openpi repository provides base checkpoints such as pi0_base and pi05_base for fine-tuning, as well as already fine-tuned checkpoints like pi05_libero and pi0_aloha_towel that can be downloaded and run for inference right away.",
+   "related": [
+    "Fine-tuning",
+    "Pre-training",
+    "Open Weights",
+    "safetensors",
+    "Inference Deployment",
+    "Training Epoch"
+   ]
+  },
+  {
+   "key": "training-01#2",
+   "name_en": "Downstream Task",
+   "aliases": [
+    "Target Task"
+   ],
+   "one_liner": "The specific task a pretrained model is ultimately meant to solve, usually reached by further adaptation or fine-tuning.",
+   "explanation": "“Downstream” is defined relative to “upstream” pretraining: a foundation model is first trained on massive, general-purpose data, and is then applied to some specific task — that specific task is the downstream task. A 2021 survey on foundation models led by Stanford defines a foundation model as one trained on broad, large-scale data that can be adapted to a wide range of downstream tasks. Adaptation can mean using the model zero-shot, giving it a few examples, or fine-tuning it. In embodied AI, a VLA foundation model's downstream task is usually a concrete manipulation job on a specific robot — folding laundry, clearing a table — or a task from a benchmark like LIBERO; papers commonly report “success rate on the downstream task after fine-tuning” as the measure of how valuable the pretraining was.",
+   "example": "π0 is first pretrained on over 10,000 hours of data spanning 7 robot configurations, then separately post-trained on downstream tasks like folding laundry, clearing a table, and assembling a cardboard box, using anywhere from 5 to over 100 hours of data per task.",
+   "related": [
+    "Pre-training",
+    "Post-training",
+    "Fine-tuning",
+    "Foundation Model",
+    "Zero-Shot",
+    "Benchmark"
+   ]
+  },
+  {
+   "key": "training-01#3",
+   "name_en": "Fine-tuning",
+   "aliases": [
+    "Finetuning"
+   ],
+   "one_liner": "Continuing to train an already-trained model on a small amount of new-task data, so it gets better at that specific job.",
+   "explanation": "Fine-tuning is the most common form of transfer learning: instead of starting from random parameters, you start from a pretrained model and keep training it on data from the target task, reusing the general knowledge the model already learned, which saves both data and compute. By how much gets updated, full fine-tuning changes every weight; alternatively, most layers can be frozen and only a subset trained, or a parameter-efficient method like LoRA (Low-Rank Adaptation, which inserts a small number of trainable low-rank matrices) can be used to train only a tiny fraction of the parameters. In embodied AI, the most common way to get started with an open-source VLA is to fine-tune it on demonstration data collected on your own robot. Too little data, or training for too long, easily leads to overfitting, and can also make the model forget capabilities it previously had — a problem called catastrophic forgetting.",
+   "example": "The openpi documentation gives this reference: fine-tuning π0 with LoRA needs at least 22.5GB of GPU memory (such as an RTX 4090), while full-parameter fine-tuning needs at least 70GB (such as an A100 or H100).",
+   "related": [
+    "Pre-training",
+    "Post-training",
+    "Full-Parameter Fine-tuning",
+    "LoRA (Low-Rank Adaptation)",
+    "Supervised Fine-tuning (SFT)",
+    "Catastrophic Forgetting"
+   ]
+  },
+  {
+   "key": "training-01#4",
+   "name_en": "Hyperparameter",
+   "aliases": [],
+   "one_liner": "A training setting chosen by a person beforehand rather than learned by the model itself, like the learning rate or batch size.",
+   "explanation": "The numbers inside a model are called parameters (or weights), and training learns them automatically. Hyperparameters, by contrast, are settings chosen by a person before training starts and usually left unchanged during it — they determine how the learning happens. Common ones include the learning rate, batch size, number of training steps or epochs, the network's depth and width, and the strength of regularization; reinforcement learning adds things like the discount factor and PPO's clipping coefficient, while embodied models add things like the action-chunk length or the number of denoising steps in a diffusion model. Poorly chosen hyperparameters can keep a model from converging, cause overfitting, or just leave performance well below what's possible. The process of searching for a good combination is called hyperparameter tuning, commonly done with grid search, random search, or Bayesian optimization; in practice, people also often just start from a paper's default values and adjust a little — informally called “tuning knobs,” or in Chinese ML slang, “alchemy” (炼丹).",
+   "example": "When training ACT, the action-chunk length k, the learning rate, and β (the weight on the KL term in the CVAE loss) are all hyperparameters that have to be set by hand.",
+   "related": [
+    "Learning Rate",
+    "Batch Size",
+    "Training Epoch",
+    "Overfitting",
+    "“Alchemy” / Hyperparameter Tuning (Slang)",
+    "Population-Based Training"
+   ]
+  },
+  {
+   "key": "training-01#5",
+   "name_en": "Imitation Learning",
+   "aliases": [
+    "Learning from Demonstration (LfD)",
+    "Programming by Demonstration",
+    "IL"
+   ],
+   "one_liner": "Teaching a robot a skill by having it imitate an expert's — usually a human's — demonstrated actions.",
+   "explanation": "Imitation learning studies how to get an agent to learn behavior from expert demonstrations, and it's well suited to situations where “just show it once” is easier than writing rules or designing a reward. Demonstrations are usually recorded from a human through teleoperation, kinesthetic teaching (physically guiding the robot's arm), or motion capture. There are three main approaches: behavioral cloning, which directly uses supervised learning to fit the demonstrated actions; inverse reinforcement learning, which first infers a reward function from the demonstrations and then optimizes a policy against it with reinforcement learning; and adversarial imitation methods such as GAIL, which push the policy's behavior distribution to match the expert's. The core difficulty is distribution shift: during execution, the policy ends up in states the demonstrations never covered, and methods like DAgger address this by asking the expert to label additional actions in exactly those states. The core training of virtually every mainstream VLA model today is, at heart, large-scale imitation learning.",
+   "example": "Mobile ALOHA collected just 50 human teleoperated demonstrations per task, co-trained with existing static-ALOHA data, and learned mobile manipulation tasks like sautéing shrimp and plating it, calling an elevator and riding it, and opening a cabinet to put away a pot.",
+   "related": [
+    "Behavioral Cloning",
+    "Inverse Reinforcement Learning",
+    "Generative Adversarial Imitation Learning (GAIL)",
+    "DAgger (Dataset Aggregation)",
+    "Demonstration Data",
+    "Teleoperation"
+   ]
+  },
+  {
+   "key": "training-01#6",
+   "name_en": "Loss Function",
+   "aliases": [
+    "Cost Function",
+    "Objective Function"
+   ],
+   "one_liner": "A single number measuring how far a model's prediction is from the correct answer; training just means shrinking it.",
+   "explanation": "A loss function measures how badly wrong a single prediction is, producing a real number that grows as the gap between prediction and target grows. During training, backpropagation computes the gradient of the loss with respect to every parameter, and the optimizer updates the parameters in the direction that shrinks the loss, repeating this until the loss stops improving meaningfully. Regression over continuous values commonly uses mean squared error (MSE) or L1 loss; classification, or predicting the next token, commonly uses cross-entropy. “Objective function” is a broader term — it can be a loss to minimize, or a quantity to maximize instead, such as cumulative reward in reinforcement learning. In embodied models, the choice of loss directly affects action quality: ACT uses L1 loss to regress actions, while diffusion policies and flow-matching models use a denoising loss or a flow-matching loss instead.",
+   "example": "The ACT paper found that L1 loss modeled the action sequence more precisely than the more common L2 (mean squared error) loss when regressing actions, so they switched to L1.",
+   "related": [
+    "Mean Squared Error (MSE)",
+    "L1 Loss",
+    "Cross-Entropy",
+    "Denoising Loss",
+    "Gradient Descent",
+    "Backpropagation"
+   ]
+  },
+  {
+   "key": "training-01#7",
+   "name_en": "Overfitting",
+   "aliases": [],
+   "one_liner": "When a model memorizes the training data too closely, so its performance drops on new data it hasn't seen.",
+   "explanation": "Overfitting means a model has fit the training data too tightly, memorizing even its noise and incidental details, so its predictions become unreliable on data it hasn't seen before. The classic sign is that training loss keeps falling while validation loss starts rising; it's most likely to happen when data is scarce, the model is large, or training runs for too many epochs. Common remedies include adding more data or using data augmentation, regularization, dropout, early stopping, and picking the checkpoint that performs best on a validation set. This problem is especially prominent in embodied AI: real-robot demonstrations often number only in the dozens to low hundreds, so a policy can end up memorizing the object placement, lighting, and background it saw during data collection — and fail once an object moves a few centimeters or the tablecloth changes — which is why papers specifically test positional and scene generalization. The opposite problem, where a model fails to fit even the training data well, is called underfitting.",
+   "example": "For instance, training a cup-grasping policy on just 50 demonstrations where the cup always sits in the same spot: after enough training, it succeeds almost every time at that original spot but grasps at empty air once the cup moves 10cm away — the policy memorized that one fixed trajectory instead of learning to “find the cup, then grasp it.”",
+   "related": [
+    "Underfitting",
+    "Generalization",
+    "Regularization",
+    "Early Stopping",
+    "Data Augmentation",
+    "Train / Validation / Test Split"
+   ]
+  },
+  {
+   "key": "training-01#8",
+   "name_en": "Post-training",
+   "aliases": [
+    "Posttraining"
+   ],
+   "one_liner": "The training stage that follows pretraining, using curated data or reinforcement learning to turn a foundation model into something actually useful.",
+   "explanation": "Post-training refers to the training steps that come after a foundation model's pretraining is done — the term became common alongside large language models. A large model is first pretrained on massive amounts of web data, then goes through post-training steps like supervised fine-tuning (SFT), preference optimization, and reinforcement learning before it becomes an assistant that can actually follow instructions; Ai2's Tulu 3, for instance, published a full post-training recipe combining SFT, DPO, and reinforcement learning with verifiable rewards. Embodied AI has adopted the same division of labor: the π0 paper states that the pretraining stage is responsible for broad capability and generalization, while the post-training stage uses narrower, more carefully curated data to make the model proficient at the actual target task. Post-training is often used interchangeably with fine-tuning, but it emphasizes the idea of a “stage,” which can itself contain multiple rounds of fine-tuning and reinforcement-learning fine-tuning.",
+   "example": "After pretraining, π0 goes through post-training for complex tasks like folding laundry: the simplest tasks need only about 5 hours of data, while the most complex ones use over 100 hours.",
+   "related": [
+    "Pre-training",
+    "Fine-tuning",
+    "Supervised Fine-tuning (SFT)",
+    "RL Fine-tuning",
+    "Reinforcement Learning from Human Feedback (RLHF)",
+    "Mid-training"
+   ]
+  },
+  {
+   "key": "training-01#9",
+   "name_en": "Pre-training",
+   "aliases": [
+    "Pretraining"
+   ],
+   "one_liner": "Training a foundation model on massive general-purpose data first, before adapting it to any specific task.",
+   "explanation": "Pretraining is the first stage of building a foundation model: the model is trained on data that's both large in scale and broad in coverage — web text, image-text pairs, video, manipulation data from many different robots — so it learns general representations and capabilities. The result is called a pretrained model, or base model, which is later adapted to a specific downstream task through fine-tuning or post-training. Its value is in doing the expensive part of general learning once, so that downstream tasks only need a small amount of additional data. In embodied AI, pretraining typically happens in two layers: a VLA model first inherits a vision-language model that was already pretrained on internet image-text data, then continues training on large-scale data from many different robots — π0, for example, used over 10,000 hours of robot data for this second layer.",
+   "example": "OpenVLA (7B parameters), built on a Llama 2 language model plus DINOv2 and SigLIP vision encoders, was pretrained on 970,000 real-robot demonstrations from Open X-Embodiment, and can then be fine-tuned to a new task with LoRA on a consumer GPU.",
+   "related": [
+    "Post-training",
+    "Fine-tuning",
+    "Foundation Model",
+    "Downstream Task",
+    "Scaling Laws",
+    "Self-Supervised Learning"
+   ]
+  },
+  {
+   "key": "training-01#10",
+   "name_en": "Proximal Policy Optimization",
+   "aliases": [
+    "PPO-Clip",
+    "PPO"
+   ],
+   "one_liner": "OpenAI's 2017 reinforcement-learning algorithm that limits how much each policy update can change the policy, making training stable.",
+   "explanation": "PPO was proposed in 2017 by Schulman and colleagues at OpenAI. It's a policy-gradient method (one that directly adjusts a policy network so that actions leading to higher return get chosen more often), and it's on-policy: it only trains on data just collected by the current version of the policy. Its core idea is an objective function with “clipping”: once the new policy changes an action's probability beyond a certain range relative to the old policy, the objective stops rewarding further change in that direction. This keeps a single update from wrecking the policy, while still allowing multiple passes of training over the same batch of data. It's about as stable as TRPO (Trust Region Policy Optimization) but far simpler to implement. PPO is the workhorse algorithm for training legged and humanoid robot locomotion in simulation — ETH Zurich's open-source robot RL library rsl_rl is built around it — and it's also the algorithm behind InstructGPT's RLHF.",
+   "example": "ETH Zurich's Rudin and colleagues used PPO in legged_gym, running thousands of simulated environments in parallel on a single GPU, to train an ANYmal quadruped: a flat-ground walking policy trained in under 4 minutes and a rough-terrain policy in about 20, both then transferred to the real robot.",
+   "related": [
+    "Reinforcement Learning",
+    "Policy Gradient",
+    "Trust Region Policy Optimization (TRPO)",
+    "On-Policy",
+    "Generalized Advantage Estimation (GAE)",
+    "rsl_rl"
+   ]
+  },
+  {
+   "key": "training-01#11",
+   "name_en": "Reinforcement Learning",
+   "aliases": [],
+   "one_liner": "A machine-learning approach where an agent improves its behavior through repeated trial and error, guided by a reward signal.",
+   "explanation": "Reinforcement learning is a machine-learning paradigm alongside supervised and unsupervised learning. An agent observes a state in an environment, takes an action, and the environment returns a new state along with a reward (a number measuring how good that step was); the goal is to learn a policy that maximizes long-term cumulative reward. It doesn't require labeling the “correct action” at every step — only a reward needs to be defined — but the agent has to balance trying new actions (exploration) against using actions already known to be good (exploitation). The problem is usually formalized as a Markov decision process. In embodied AI, reinforcement learning is mainly used in two places: training legged and humanoid robot locomotion control at massive scale in parallel simulation, then transferring it to the real robot; and fine-tuning a VLA model with reinforcement learning after an imitation-learning base has been trained, to improve success rate and error recovery.",
+   "example": "In 2018, OpenAI trained a Shadow dexterous hand entirely in simulation using reinforcement learning, randomizing physical parameters like friction coefficients; the resulting policy transferred directly to a real dexterous hand and performed vision-based in-hand object reorientation.",
+   "related": [
+    "Markov Decision Process (MDP)",
+    "Reward Function",
+    "Policy",
+    "Proximal Policy Optimization (PPO)",
+    "Sim-to-Real Transfer",
+    "RL Fine-tuning"
+   ]
+  }
+ ]
+}

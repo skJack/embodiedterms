@@ -1,0 +1,400 @@
+{
+ "category": "perception",
+ "batch": 5,
+ "terms": [
+  {
+   "name_zh": "人体姿态估计",
+   "name_en": "Human Pose Estimation",
+   "abbr": "HPE",
+   "aliases": [
+    "人体关键点检测",
+    "人体动作捕捉（视觉）"
+   ],
+   "tier": 2,
+   "one_liner": "从图像或视频里找出人的各个关节位置，连成一副骨架。",
+   "explanation": "人体姿态估计的输入是图片或视频，输出是人身上肩、肘、腕、髋、膝、踝等关节的 2D 像素坐标或 3D 位置，连起来就是一副骨架。COCO 数据集按每人 17 个关键点标注，用 OKS（按人体尺度归一化的关键点相似度）打分；卡内基梅隆的 OpenPose（CVPR 2017）先找出画面里所有关节再分配给各人，多人也能实时；谷歌 MediaPipe 可输出 33 个身体点。对具身智能，它是把人的动作变成机器人数据的第一步：遥操作时实时读取操作者姿态，或从人类视频中提取动作，再经动作重定向（映射到机器人关节）交给机器人。",
+   "example": "斯坦福的 HumanPlus 只用一个 RGB 摄像头实时估计操作者的身体和手部姿态，让自制的 33 自由度人形机器人同步模仿，并借此遥操作采集演示数据。",
+   "related": [
+    "关键点检测",
+    "无标记动捕",
+    "动作重定向",
+    "SMPL 人体模型",
+    "手部姿态估计",
+    "MediaPipe（手部/人体关键点）"
+   ],
+   "sources": [
+    {
+     "title": "Realtime Multi-Person 2D Pose Estimation using Part Affinity Fields (OpenPose, arXiv:1611.08050)",
+     "url": "https://arxiv.org/abs/1611.08050"
+    },
+    {
+     "title": "COCO Keypoint Evaluation (OKS)",
+     "url": "https://raw.githubusercontent.com/cocodataset/cocodataset.github.io/master/dataset/keypoints-eval.htm"
+    },
+    {
+     "title": "MediaPipe Pose Landmarker 官方文档",
+     "url": "https://developers.google.com/edge/mediapipe/solutions/vision/pose_landmarker"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "实例分割",
+   "name_en": "Instance Segmentation",
+   "abbr": "",
+   "aliases": [
+    "实例级分割"
+   ],
+   "tier": 2,
+   "one_liner": "把图中每个物体逐像素抠出来，同类的几个物体也要分开。",
+   "explanation": "实例分割要同时回答「这是什么」和「这是哪一个」：给图中每个可数物体（论文里叫 things）生成一张独立的像素级掩码并标上类别。它和语义分割的区别在于：语义分割只给每个像素贴类别，桌上三个杯子会连成一片「杯子」区域；实例分割会拆成杯子 1、2、3。代表方法是何恺明等人 2017 年的 Mask R-CNN，在目标检测框的基础上并行加一个预测掩码的分支；2018 年提出的全景分割又把天空、地面这类不可数背景（stuff）一起纳入。机器人抓取常先用实例分割抠出目标物体，再裁出对应点云计算抓取位姿。",
+   "example": "桌上并排放着两个同款苹果，语义分割只给出一片「苹果」区域，实例分割输出两张独立掩码，机器人才能按指令只抓左边那一个。",
+   "related": [
+    "语义分割",
+    "全景分割",
+    "掩码",
+    "目标检测",
+    "Mask R-CNN",
+    "分割一切模型"
+   ],
+   "sources": [
+    {
+     "title": "Mask R-CNN (arXiv:1703.06870)",
+     "url": "https://arxiv.org/abs/1703.06870"
+    },
+    {
+     "title": "Panoptic Segmentation (arXiv:1801.00868)",
+     "url": "https://arxiv.org/abs/1801.00868"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "交并比",
+   "name_en": "Intersection over Union",
+   "abbr": "IoU",
+   "aliases": [
+    "Jaccard 指数",
+    "杰卡德系数"
+   ],
+   "tier": 2,
+   "one_liner": "两个区域的重叠面积除以合并面积，衡量预测框或掩码准不准。",
+   "explanation": "交并比衡量两个区域的重合程度：交集面积除以并集面积，完全重合为 1，毫无交叠为 0，数学上就是 Paul Jaccard 1901 年提出的 Jaccard 指数。视觉任务用它判断检测框或分割掩码准不准：预测结果和人工标注（真值）的 IoU 超过阈值才算检测正确。PASCAL VOC 的阈值取 0.5；COCO 更严，在 0.50 到 0.95 之间每隔 0.05 取一个阈值分别算平均精度（AP）再取平均，常说的 AP50、AP75 就是阈值 0.5 和 0.75 下的结果。分割任务算法相同，只是把框换成掩码像素。",
+   "example": "标注框和预测框面积都是 100，重叠 60，并集就是 140，IoU≈0.43，低于 0.5，按 VOC 标准这次检测不算对。",
+   "related": [
+    "目标检测",
+    "检测框（边界框）",
+    "平均精度均值",
+    "非极大值抑制",
+    "实例分割",
+    "精确率 / 召回率"
+   ],
+   "sources": [
+    {
+     "title": "Jaccard index - Wikipedia",
+     "url": "https://en.wikipedia.org/wiki/Jaccard_index"
+    },
+    {
+     "title": "COCO Detection Evaluation",
+     "url": "https://raw.githubusercontent.com/cocodataset/cocodataset.github.io/master/dataset/detection-eval.htm"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "关节力矩传感器",
+   "name_en": "Joint Torque Sensor",
+   "abbr": "",
+   "aliases": [
+    "关节扭矩传感器",
+    "一维力矩传感器"
+   ],
+   "tier": 2,
+   "one_liner": "装在机器人关节里、直接测量该关节实际输出扭矩的传感器。",
+   "explanation": "关节力矩传感器装在关节减速器输出端和连杆之间，只测绕关节转轴这一个方向的扭矩，所以也叫一维力矩传感器，多基于应变片原理，靠弹性体的微小形变换算扭矩。电机电流也能推算扭矩，但减速器摩擦会让估计不准；在输出端直接测，机器人才能察觉很轻的外力。KUKA LBR iiwa 七个轴都装了这种传感器，官方称能立即察觉接触并降低力和速度，可以不加护栏与人协作；Franka 的控制接口也直接给出各关节实测扭矩 tau_J。它是碰撞检测、力矩控制、阻抗控制和拖动示教的基础，代价是成本更高、关节结构更复杂。",
+   "example": "人用手推一下正在运动的 iiwa 机械臂，关节力矩传感器读数超出动力学模型的预测值，控制器判定发生碰撞，立刻停下或顺着推力让开。",
+   "related": [
+    "六维力传感器",
+    "应变片",
+    "无传感器力估计",
+    "力矩控制",
+    "阻抗控制",
+    "碰撞检测（本体安全）"
+   ],
+   "sources": [
+    {
+     "title": "KUKA LBR iiwa 产品页",
+     "url": "https://www.kuka.com/en-us/products/robotics-systems/industrial-robots/lbr-iiwa"
+    },
+    {
+     "title": "libfranka robot_state.h（tau_J: measured link-side joint torque sensor signals）",
+     "url": "https://raw.githubusercontent.com/frankaemika/libfranka/master/include/franka/robot_state.h"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "关键点检测",
+   "name_en": "Keypoint Detection",
+   "abbr": "",
+   "aliases": [
+    "关键点",
+    "关键点定位"
+   ],
+   "tier": 2,
+   "one_liner": "在图像里定位几个事先约定含义的点，如手腕、杯把手或箱子角。",
+   "explanation": "关键点检测在图像中输出若干个含义事先约定好的点的坐标，每个点对应固定部位，比如人的左手腕、杯子把手、纸箱的角。它比检测框精细，比分割掩码轻量；和 SIFT、ORB 这类特征点不同，特征点只求局部纹理好认，没有固定含义。最常见的是人体关键点：COCO 为每个点标「未标注 / 被遮挡 / 可见」，用 OKS 相似度打分。机器人操作里，MIT 的 kPAM（2019）用几个 3D 语义关键点表示一类物体，换一个形状不同的杯子也能按同样规则挂上架子，比只估 6D 位姿更能应对同类物体的形状差异。",
+   "example": "让机器人把各种杯子挂到杯架上：先检测杯底、杯口和把手几个 3D 关键点，再规划动作让把手对准挂钩，杯子大小形状不同也能用同一套规则。",
+   "related": [
+    "人体姿态估计",
+    "语义关键点",
+    "特征点",
+    "6D位姿估计",
+    "ReKep",
+    "任意点跟踪"
+   ],
+   "sources": [
+    {
+     "title": "COCO Data Format（keypoints 标注格式）",
+     "url": "https://raw.githubusercontent.com/cocodataset/cocodataset.github.io/master/dataset/format-data.htm"
+    },
+    {
+     "title": "kPAM: KeyPoint Affordances for Category-Level Robotic Manipulation (arXiv:1903.06684)",
+     "url": "https://arxiv.org/abs/1903.06684"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "镜头畸变",
+   "name_en": "Lens Distortion",
+   "abbr": "",
+   "aliases": [
+    "径向畸变",
+    "切向畸变",
+    "去畸变"
+   ],
+   "tier": 2,
+   "one_liner": "真实镜头成像偏离理想针孔模型，把直线拍弯的现象。",
+   "explanation": "针孔相机模型假设空间中的直线拍出来仍是直线，真实镜头却会让图像变形，这就是镜头畸变。径向畸变越靠画面边缘越严重，广角和鱼眼镜头常见向外鼓的桶形畸变，长焦镜头常见向内收的枕形畸变；切向畸变来自镜片没和感光面装平行。常用 Brown–Conrady 模型描述，OpenCV 用 k1、k2、k3 三个径向系数和 p1、p2 两个切向系数表示，和焦距、主点等内参一起通过棋盘格相机标定求出，再用去畸变函数把图像拉直。机器人从像素反算 3D 位置、做手眼标定或视觉 SLAM 前都要先去畸变，否则画面边缘误差会明显变大。",
+   "example": "腕部相机的广角镜头把桌子边缘拍成弧线；标定出畸变系数后调用 OpenCV 的 cv.undistort，桌边重新变直，边缘物体的像素坐标才能准确换算到机械臂坐标系。",
+   "related": [
+    "相机标定",
+    "相机内参",
+    "针孔相机模型",
+    "鱼眼相机",
+    "标定板",
+    "OpenCV"
+   ],
+   "sources": [
+    {
+     "title": "OpenCV Tutorial: Camera Calibration",
+     "url": "https://raw.githubusercontent.com/opencv/opencv/4.x/doc/py_tutorials/py_calib3d/py_calibration/py_calibration.markdown"
+    },
+    {
+     "title": "Distortion (optics) - Wikipedia",
+     "url": "https://en.wikipedia.org/wiki/Distortion_(optics)"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "激光SLAM",
+   "name_en": "LiDAR SLAM",
+   "abbr": "",
+   "aliases": [
+    "激光雷达 SLAM"
+   ],
+   "tier": 2,
+   "one_liner": "用激光雷达扫描的点云，一边给机器人定位，一边建环境地图。",
+   "explanation": "激光 SLAM 是以激光雷达为主传感器的同步定位与建图：机器人边走边把每帧点云和已有地图对齐，推算自己的位置，同时把新点云拼进地图。激光雷达直接测距、不怕暗光，在大场景和暗处比视觉 SLAM 稳，但拿不到颜色纹理。2D 方案多见于扫地机和仓储 AGV，谷歌开源的 Cartographer 同时支持 2D 和 3D；3D 方面，卡内基梅隆 2014 年的 LOAM 把问题拆成高频里程计和低频建图，港大 MARS 实验室的 FAST-LIO2 再融合 IMU，最高能以 100 Hz 运行，也适配视场小的固态雷达。",
+   "example": "四足机器人背上装一个 3D 激光雷达，遥控它在园区走一圈，用 FAST-LIO2 建出点云地图；之后自主导航时，把实时点云和这张地图配准就知道自己在哪。",
+   "related": [
+    "同步定位与建图",
+    "激光雷达",
+    "激光惯性里程计",
+    "FAST-LIO / FAST-LIO2",
+    "视觉SLAM",
+    "回环检测"
+   ],
+   "sources": [
+    {
+     "title": "LOAM: Lidar Odometry and Mapping in Real-time (RSS 2014)",
+     "url": "https://www.roboticsproceedings.org/rss10/p07.html"
+    },
+    {
+     "title": "FAST-LIO2: Fast Direct LiDAR-inertial Odometry (arXiv:2107.06829)",
+     "url": "https://arxiv.org/abs/2107.06829"
+    },
+    {
+     "title": "Cartographer 官方文档",
+     "url": "https://google-cartographer.readthedocs.io/en/latest/"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "览沃 Mid-360",
+   "name_en": "Livox Mid-360",
+   "abbr": "",
+   "aliases": [
+    "MID-360",
+    "Mid360",
+    "Livox MID-360"
+   ],
+   "tier": 2,
+   "one_liner": "览沃科技的小型 360° 混合固态激光雷达，自带 IMU，常用于移动机器人。",
+   "explanation": "Mid-360 是览沃科技（Livox）面向移动机器人推出的混合固态激光雷达。官方参数：水平 360°、垂直 -7°～52° 视场，对 10% 反射率目标测距 40 米、最近 0.1 米，每秒 20 万点，重 265 克，内置 ICM40609 型 IMU（惯性测量单元）。它的角分辨率随积分时间提高，停留越久点云越密，官方标称密度相当于 40 线。官方定位是替代 2D 雷达、RGB-D 相机和超声波做室内导航避障；驱动 livox_ros_driver2 支持 ROS 1 和 ROS 2，自带 IMU 也便于直接跑激光惯性里程计。",
+   "example": "给一台轮式或足式机器人装上 Mid-360，用 livox_ros_driver2 发布点云和 IMU 话题，接入 FAST-LIO2 建图，再交给导航栈做避障和路径规划。",
+   "related": [
+    "激光雷达",
+    "激光SLAM",
+    "固态激光雷达",
+    "激光惯性里程计",
+    "FAST-LIO / FAST-LIO2",
+    "览沃科技"
+   ],
+   "sources": [
+    {
+     "title": "Livox Mid-360 规格参数",
+     "url": "https://www.livoxtech.com/mid-360/specs"
+    },
+    {
+     "title": "Livox Mid-360 产品页",
+     "url": "https://www.livoxtech.com/mid-360"
+    },
+    {
+     "title": "livox_ros_driver2 README",
+     "url": "https://raw.githubusercontent.com/Livox-SDK/livox_ros_driver2/master/README.md"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "机器视觉（工业视觉）",
+   "name_en": "Machine Vision (Industrial Vision)",
+   "abbr": "",
+   "aliases": [
+    "工业视觉",
+    "工业机器视觉"
+   ],
+   "tier": 2,
+   "one_liner": "用相机和软件在产线上自动检测、测量、识别，并引导机器人。",
+   "explanation": "机器视觉指在工业现场用相机、镜头、光源、处理器和图像软件，自动完成检测、测量、识别和定位，把图像直接变成「合格 / 不合格」「零件在哪」这类可执行的结论。典型应用有：外观缺陷检测和分拣、尺寸测量、读码识别，以及给机械臂提供工件位置和朝向的视觉引导。它和计算机视觉的关系是：计算机视觉是研究图像理解的学科，机器视觉更偏系统工程，重视打光设计、节拍和长期稳定性，常以规则算法为主、深度学习为辅。随着 3D 相机普及，3D 视觉引导的无序抓取、上下料已成为工业机器人的常见配置，也是具身智能进工厂时绕不开的参照方案。",
+   "example": "产线上相机逐个拍下经过的零件，软件判断有无划痕并触发剔除；隔壁工位的 3D 相机识别料框里乱放的零件位姿，引导机械臂逐个抓取上料。",
+   "related": [
+    "计算机视觉",
+    "3D 视觉引导",
+    "无序抓取",
+    "质检",
+    "结构光",
+    "梅卡曼德"
+   ],
+   "sources": [
+    {
+     "title": "Machine vision - Wikipedia",
+     "url": "https://en.wikipedia.org/wiki/Machine_vision"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "无标记动捕",
+   "name_en": "Markerless Motion Capture",
+   "abbr": "",
+   "aliases": [
+    "无标记点动作捕捉",
+    "视频动捕",
+    "视觉动捕"
+   ],
+   "tier": 2,
+   "one_liner": "不在身上贴标记点，直接从普通视频里恢复人体三维动作。",
+   "explanation": "传统光学动捕要在人身上贴反光标记点，由多台红外相机跟踪，精度高但设备贵、只能在专门场地用。无标记动捕去掉标记点，靠人体姿态估计从一台或几台普通相机的视频里找出关节，再拟合成 3D 骨架或 SMPL 这类参数化人体模型。斯坦福 2023 年的 OpenCap 用两台以上 iPhone 录像，关节角平均误差约 4.5°；浙大的 GVHMR（SIGGRAPH Asia 2024）只用单目视频就能恢复世界坐标系下的人体运动。它在遮挡、快速动作和手指细节上仍不如光学动捕。对具身智能，它让大量人类视频能变成人形机器人的动作参考。",
+   "example": "用手机拍一段人跳舞的视频，经 GVHMR 恢复成世界坐标系下的 SMPL 动作序列，再重定向到人形机器人的关节上，作为强化学习运动跟踪的参考动作。",
+   "related": [
+    "动作捕捉",
+    "光学动捕",
+    "人体姿态估计",
+    "人体网格恢复",
+    "SMPL 人体模型",
+    "动作重定向"
+   ],
+   "sources": [
+    {
+     "title": "OpenCap: Human movement dynamics from smartphone videos (PLOS Computational Biology, 2023)",
+     "url": "https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1011462"
+    },
+    {
+     "title": "GVHMR: World-Grounded Human Motion Recovery via Gravity-View Coordinates (arXiv:2409.06662)",
+     "url": "https://arxiv.org/abs/2409.06662"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "掩码",
+   "name_en": "Mask",
+   "abbr": "",
+   "aliases": [
+    "分割掩码",
+    "Segmentation Mask",
+    "二值掩码"
+   ],
+   "tier": 2,
+   "one_liner": "与图像同尺寸的逐像素标记图，标出哪些像素属于某个物体。",
+   "explanation": "掩码是一张和原图大小相同的图，每个像素取 0 或 1（或类别编号），用来标出哪些像素属于目标。分割模型的输出本质上就是掩码：语义分割每类一张，实例分割每个物体一张。它比检测框精确，框里常混着背景，掩码则贴着物体轮廓。存储时，COCO 数据集对单个物体用多边形顶点，对成群物体用游程编码（RLE）压缩。Meta 的 SAM 在 1100 万张图上标注了超过 10 亿个掩码，点一下或框一下就能得到任意物体的掩码。机器人里常用掩码从深度图或点云中只取出目标物体再算抓取。Transformer 里的注意力掩码是另一个概念，别混淆。",
+   "example": "指令「抓红色杯子」：先用 Grounded-SAM 得到杯子的掩码，叠到对齐后的深度图上，只把杯子对应的像素反投影成点云，再交给抓取检测网络。",
+   "related": [
+    "实例分割",
+    "语义分割",
+    "分割一切模型",
+    "Grounded-SAM",
+    "注意力掩码",
+    "点云分割"
+   ],
+   "sources": [
+    {
+     "title": "Segment Anything (arXiv:2304.02643)",
+     "url": "https://arxiv.org/abs/2304.02643"
+    },
+    {
+     "title": "COCO Data Format（segmentation: polygon / RLE）",
+     "url": "https://raw.githubusercontent.com/cocodataset/cocodataset.github.io/master/dataset/format-data.htm"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "单目深度估计",
+   "name_en": "Monocular Depth Estimation",
+   "abbr": "MDE",
+   "aliases": [
+    "单目深度",
+    "单图深度估计"
+   ],
+   "tier": 2,
+   "one_liner": "只用一张普通彩色图像，预测每个像素离相机有多远。",
+   "explanation": "单目深度估计只凭一台普通 RGB 相机拍的单张图像，预测每个像素的深度，输出一张深度图。它天生有歧义：同一张照片可能是近处的小物体，也可能是远处的大物体，尺度最难定，模型只能靠从数据中学到的物体大小、透视、遮挡等线索。纽约大学 Eigen 等人 2014 年最早用深度网络由粗到细预测深度；Depth Anything V2（NeurIPS 2024）用合成数据加大量伪标注真实图像训练。输出分相对深度（只知远近顺序）和度量深度（以米为单位）。对机器人，它能在没有深度相机时补上 3D 信息，也常用来从互联网视频中恢复场景几何。",
+   "example": "机械臂只有一个腕部 RGB 相机，用 Depth Anything V2 的度量深度版本从每帧图像估出深度图，再用相机内参反投影成点云，供抓取规划使用。",
+   "related": [
+    "深度估计",
+    "度量深度 / 相对深度",
+    "Depth Anything",
+    "Depth Pro",
+    "深度图",
+    "立体匹配"
+   ],
+   "sources": [
+    {
+     "title": "Depth Map Prediction from a Single Image using a Multi-Scale Deep Network (arXiv:1406.2283)",
+     "url": "https://arxiv.org/abs/1406.2283"
+    },
+    {
+     "title": "Depth Anything V2 (arXiv:2406.09414)",
+     "url": "https://arxiv.org/abs/2406.09414"
+    }
+   ],
+   "as_of": ""
+  }
+ ]
+}

@@ -1,0 +1,113 @@
+{
+  "batch": "software-19",
+  "terms": [
+    {
+      "key": "software-19#0",
+      "name_en": "TOPP-RA",
+      "aliases": ["Time-Optimal Path Parameterization based on Reachability Analysis", "toppra"],
+      "one_liner": "Open-source library that takes a path and computes the fastest way to traverse it within limits.",
+      "explanation": "TOPP-RA is a time-optimal path parameterization method proposed by Hung Pham and Quang-Cuong Pham, published in IEEE T-RO (2018) and open-sourced as the Python/C++ library toppra. The problem it solves: a motion planner typically outputs only a sequence of geometric waypoints, with no information about how fast to move at each moment. TOPP-RA discretizes the path into segments and uses reachability analysis (computing, segment by segment, the range of speeds reachable at the next step) to break the problem into a series of small linear programs, producing the shortest-time speed profile subject to constraints on joint velocity, acceleration, and torque. It's more numerically stable and less failure-prone than earlier TOPP methods based on numerical integration. Libraries such as Drake include it built in, and it's commonly chained after path planning to produce an executable trajectory.",
+      "example": "After RRT plans a collision-free path for a robot arm, use toppra to redistribute timing according to each joint's velocity and acceleration limits, producing a trajectory ready to send straight to the controller.",
+      "related": ["Time-optimal path parameterization", "Time parameterization", "Trajectory planning", "Ruckig", "Drake", "MoveIt"]
+    },
+    {
+      "key": "software-19#1",
+      "name_en": "TogetheROS.Bot (D-Robotics)",
+      "aliases": ["TROS", "D-Robotics TROS", "TROS.B"],
+      "one_liner": "D-Robotics' robot software stack, built on top of and compatible with ROS 2.",
+      "explanation": "TogetheROS.Bot is the robot operating stack that D-Robotics — the robotics business spun off from Horizon Robotics — provides for its RDK line of development boards; it was originally released under the Horizon Robotics name. It's an extension of ROS 2, with an interface compatible with it, so existing ROS 2 nodes can run on it directly. What it adds is mainly capability tied to its own chips: inference nodes that call the onboard BPU (Horizon's neural network accelerator), camera and image-processing nodes, communication optimizations that cut down large-image-data copying, and a set of ready-made perception algorithm examples. For developers building a mobile robot or arm on an RDK board, it removes the work of adapting to the hardware accelerator themselves.",
+      "example": "After installing TROS on an RDK development board, use the official object-detection example node to read a USB camera feed, run the detection model on the BPU, and publish the results as a ROS 2 topic for other nodes.",
+      "related": ["ROS 2", "D-Robotics", "D-Robotics RDK S100", "Horizon Robotics", "Zero-copy", "Robot operating system"]
+    },
+    {
+      "key": "software-19#2",
+      "name_en": "torch.compile",
+      "aliases": ["PyTorch 2 compilation"],
+      "one_liner": "The one-line model-compilation acceleration API that PyTorch has offered since version 2.0.",
+      "explanation": "torch.compile is a compilation feature introduced in PyTorch 2.0 (2023). Normally, PyTorch executes one operator at a time, eagerly — every step carries Python dispatch overhead, and there's no way to optimize across operators. torch.compile uses TorchDynamo to capture the computation graph inside a piece of Python code at runtime, then hands it to the default backend, TorchInductor, which fuses operators together and generates Triton or C++ kernels (a kernel being the low-level function that actually executes on the GPU or CPU). Using it usually just means wrapping the model in one call; the first call takes time to compile, and training or inference is faster after that. In embodied AI it's commonly used to cut per-step inference latency for large models like VLAs, and can be paired with CUDA Graphs to further reduce kernel-launch overhead.",
+      "example": "When deploying a diffusion policy, write policy = torch.compile(policy, mode=“max-autotune”); after a few warm-up calls, the time spent per denoising step drops.",
+      "related": ["PyTorch", "Inference latency", "CUDA Graph", "Operator / Kernel", "TensorRT", "Inference deployment"]
+    },
+    {
+      "key": "software-19#3",
+      "name_en": "TorchScript (torch.jit) / LibTorch",
+      "aliases": ["torch.jit", "JIT export", "LibTorch"],
+      "one_liner": "Exports a PyTorch model to a file that runs without Python, then loads it from C++.",
+      "explanation": "TorchScript is PyTorch's built-in model serialization format: torch.jit.trace (records the computation by running one example input through the model) or torch.jit.script (parses the code directly) converts a model into a .pt file that stores both its structure and its weights. LibTorch is the C++ distribution of PyTorch, letting a C++ program load that file with torch::jit::load and run inference. Robot control software is mostly written in C++ and needs a stable real-time loop, and this path lets a trained reinforcement learning policy run on the robot without depending on a Python environment. PyTorch officially now considers TorchScript to be in maintenance mode and recommends newer options such as torch.export or ONNX for new projects, but a large amount of open-source locomotion-control code still uses it.",
+      "example": "legged_gym's play script can export a trained walking policy as a JIT-format policy.pt; the deployment code loads it inside a C++ control loop, feeding in observations and reading out joint targets every control cycle.",
+      "related": ["PyTorch", "ONNX", "Inference deployment", "legged_gym", "On-device deployment", "Python and C++ (common embodied-AI languages)"]
+    },
+    {
+      "key": "software-19#4",
+      "name_en": "TRAC-IK",
+      "aliases": ["trac_ik"],
+      "one_liner": "An open-source numerical inverse-kinematics solver that's more reliable and faster than KDL.",
+      "explanation": "TRAC-IK is an open-source inverse kinematics library — solving for joint angles from a target end-effector pose — released by Patrick Beeson and Barrett Ames of TRACLabs at the 2015 IEEE Humanoids conference. The KDL solver commonly used in ROS iterates with Newton's method, which tends to get stuck and fail near joint limits. TRAC-IK instead runs two methods in parallel: a KDL-style Jacobian iteration with random restarts, and a version that formulates IK as nonlinear optimization solved with SQP (Sequential Quadratic Programming); whichever finishes first is used, giving a clear boost to both success rate and speed. It provides a C++ interface and a MoveIt plugin, and works with any serial robot arm.",
+      "example": "Switch the solver in MoveIt's kinematics.yaml from KDL to trac_ik_kinematics_plugin, and a 7-axis arm sees fewer IK failures when working near its joint limits.",
+      "related": ["Inverse kinematics", "Numerical inverse kinematics", "KDL", "IKFast", "MoveIt", "Joint limits"]
+    },
+    {
+      "key": "software-19#5",
+      "name_en": "uv",
+      "aliases": ["Astral uv"],
+      "one_liner": "An extremely fast Python package and virtual-environment manager written in Rust.",
+      "explanation": "uv is a Python package manager open-sourced in 2024 by Astral (also the maker of the Ruff linter), implemented in Rust. It folds the jobs of pip (installing packages), virtualenv (creating virtual environments), pip-tools (locking versions), and pyenv (managing Python versions) into a single command, and resolves dependencies and installs packages far faster than pip. A project declares its dependencies in pyproject.toml, and uv generates a uv.lock file that pins exact versions, so the same environment can be reproduced on a different machine. Open-source embodied-AI code tends to have many dependencies and frequent version conflicts, and more and more projects are switching to uv to manage their environments. A mirror can be configured for faster access from mainland China.",
+      "example": "Following the openpi repository's instructions, clone the code and run uv sync once to install every dependency, then use uv run to launch the training script.",
+      "related": ["Conda", "Docker", "openpi", "Domestic mirror (Tsinghua TUNA / Alibaba Cloud, etc.)", "LeRobot"]
+    },
+    {
+      "key": "software-19#6",
+      "name_en": "veRL (Volcano Engine Reinforcement Learning)",
+      "aliases": ["verl", "HybridFlow"],
+      "one_liner": "ByteDance's open-source large-model reinforcement learning framework, also used for VLA RL fine-tuning.",
+      "explanation": "veRL is a reinforcement learning training library open-sourced by ByteDance's Seed team (released under the Volcano Engine name), and is the open-source implementation of the HybridFlow paper (EuroSys 2025). Doing RL on a large model means repeatedly alternating between two things: using the current model to generate a batch of samples (rollout), then using those samples to update the parameters — and the two steps want different kinds of parallelism. veRL hands generation to inference engines such as vLLM or SGLang, hands training to FSDP or Megatron, and handles the weight synchronization and scheduling between the two, with PPO and GRPO built in. It originally targeted language models, and was later adopted by the embodied-AI community for online reinforcement-learning fine-tuning of VLAs.",
+      "example": "SimpleVLA-RL is built on veRL: it runs parallel rollouts in simulators such as LIBERO, using task success or failure as the reward to fine-tune OpenVLA-OFT with GRPO-style reinforcement learning.",
+      "related": ["Reinforcement learning fine-tuning", "Group Relative Policy Optimization (GRPO)", "Proximal Policy Optimization", "vLLM", "SimpleVLA-RL", "Ray"]
+    },
+    {
+      "key": "software-19#7",
+      "name_en": "Viser",
+      "aliases": [],
+      "one_liner": "A Python library for showing 3D scenes and interactive controls right in the browser.",
+      "explanation": "Viser is an open-source Python 3D visualization library from the nerfstudio team at UC Berkeley. Starting a server from Python opens a 3D view in the browser, into which you can add point clouds, meshes, camera frustums, and coordinate axes, as well as sliders, buttons, and other controls whose callbacks are received back in Python. Because it works over the web, when the program runs on a remote GPU server, forwarding the port to a local browser is enough to view it — no graphical desktop environment needed. It comes with a built-in tool for loading a URDF (a robot's model-description file), and projects such as the nerfstudio viewer and PyRoki use it for visualization and debugging.",
+      "example": "While training a reconstruction model on a server, use Viser to show the current point cloud and the robot's URDF live, with a slider to drag a joint angle by hand and check that the kinematics look right.",
+      "related": ["Rerun", "Meshcat", "Nerfstudio / gsplat (open-source NeRF and Gaussian-splatting toolkits)", "PyRoki", "Unified Robot Description Format (URDF)", "Vuer"]
+    },
+    {
+      "key": "software-19#8",
+      "name_en": "vLLM",
+      "aliases": [],
+      "one_liner": "An open-source, high-throughput inference and serving engine for large language models.",
+      "explanation": "vLLM originated at UC Berkeley's Sky Computing Lab; its core technique, PagedAttention, was published at SOSP 2023. During LLM inference, every request has to keep a KV cache (the attention keys and values for content already generated), and its length is unpredictable; the traditional approach reserves memory for the maximum possible length up front, which wastes a great deal of it. PagedAttention borrows the idea of paging from operating systems, allocating the KV cache in small blocks on demand, and combines this with continuous batching (new requests can be inserted into an already-running batch at any time), so a single GPU can serve far more concurrent requests. It supports mainstream open-source LLMs and VLMs and can start an OpenAI-compatible API with one command. In embodied AI it's often used to serve the large model that does task planning, and is also used by frameworks such as veRL as the generation engine for reinforcement learning.",
+      "example": "Run vllm serve on a server to load a Qwen2.5-VL model; the robot sends an image and an instruction over HTTP and gets back a list of decomposed subtasks.",
+      "related": ["KV cache", "Large language model", "Vision-language model", "TensorRT-LLM", "veRL", "Inference deployment"]
+    },
+    {
+      "key": "software-19#9",
+      "name_en": "Vuer",
+      "aliases": [],
+      "one_liner": "A Python-driven 3D visualization framework that runs inside a VR headset's browser.",
+      "explanation": "Vuer is an open-source Python 3D visualization framework by Ge Yang, built on web technology and supporting WebXR (the browser standard for accessing VR/AR devices). After starting a server on the Python side, headsets such as the Apple Vision Pro or Meta Quest can enter the 3D scene just by opening a page in their browser, with no native app needed. It can stream the rendered view to the headset while simultaneously streaming head- and hand-keypoint poses back to Python in real time — exactly the two-way channel teleoperation needs, which is why projects such as Open-TeleVision and Unitree's xr_teleoperate use it as their VR teleoperation front end.",
+      "example": "Open-TeleVision uses Vuer to display a robot's stereo head-camera feed inside the Vision Pro, while reading the operator's hand keypoints and retargeting them into arm and dexterous-hand motions for a humanoid robot.",
+      "related": ["Open-TeleVision", "VR teleoperation", "Apple Vision Pro", "Unitree xr_teleoperate (XR teleoperation)", "Viser", "Web Real-Time Communication (WebRTC)"]
+    },
+    {
+      "key": "software-19#10",
+      "name_en": "Web Real-Time Communication (WebRTC)",
+      "aliases": ["WebRTC"],
+      "one_liner": "A browser-native standard for low-latency, peer-to-peer audio, video, and data transfer.",
+      "explanation": "WebRTC is an open standard jointly developed by the W3C (web APIs) and the IETF (network protocols), driven primarily by Google, and it became an official W3C recommendation in 2021. It lets browsers and applications send audio, video, and arbitrary data directly to each other, peer to peer, without routing through a server, with built-in codecs, jitter buffering, and congestion control; end-to-end latency can typically be kept under a few hundred milliseconds. The two ends are often on different local networks, so an ICE process working with STUN/TURN servers is needed to get through NAT (the address translation done by routers). In embodied AI, it's commonly used to stream a robot's camera feed live to a remote operator, and some robot makers also use it to connect a phone app to the robot.",
+      "example": "During remote teleoperation, the robot encodes its head-camera feed and pushes it over WebRTC to the operator's browser or VR headset, with control commands sent back over WebRTC's data channel.",
+      "related": ["WebSocket", "Teleoperation", "Control latency", "Vuer", "FFmpeg (audio/video encode-decode tool)"]
+    },
+    {
+      "key": "software-19#11",
+      "name_en": "WebSocket",
+      "aliases": ["WS"],
+      "one_liner": "A protocol for sending messages both ways, in real time, over a single TCP connection.",
+      "explanation": "WebSocket is a standard protocol published by the IETF in 2011 (RFC 6455). Ordinary HTTP is “the client asks once, the server answers once”; the server can't push data on its own. WebSocket starts with a single HTTP request that upgrades the connection, after which both sides can send each other messages at any time over the same TCP connection, with low overhead and low latency, and ready-made libraries exist for browsers and nearly every language. It's used widely in robotics software: rosbridge uses it to expose ROS topics to web pages, Foxglove's live connection is also built on it, and some VLA projects use it to move observations and actions between a GPU server and a robot. Because it's built on TCP, a dropped packet triggers a retransmission wait; high-bitrate video streaming usually switches to WebRTC instead.",
+      "example": "openpi starts a WebSocket policy server on a GPU server; on every step, the robot sends over an image and its joint state, and gets back an action chunk to execute.",
+      "related": ["Policy server", "rosbridge", "Foxglove", "openpi", "Web Real-Time Communication (WebRTC)", "gRPC"]
+    }
+  ]
+}

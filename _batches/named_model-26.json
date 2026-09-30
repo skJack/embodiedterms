@@ -1,0 +1,379 @@
+{
+ "category": "named_model",
+ "batch": 26,
+ "terms": [
+  {
+   "name_zh": "UniTracker",
+   "name_en": "UniTracker: Learning Universal Whole-Body Motion Tracker for Humanoid Robots",
+   "abbr": "",
+   "aliases": [],
+   "tier": 3,
+   "one_liner": "让人形机器人用一个策略跟踪各种人体动作的三阶段全身运动跟踪框架",
+   "explanation": "上海交通大学、上海人工智能实验室等机构 2025 年 7 月发布的工作。运动跟踪指让机器人实时模仿一段参考人体动作，难点是一个策略要覆盖成千上万种动作，而真机上拿不到仿真里那些完整信息。UniTracker 分三步：先在仿真里用特权信息（真机拿不到的完整状态）训练教师策略；再把它蒸馏成可上真机的学生策略，学生用条件变分自编码器（CVAE）学一个动作的全局隐变量，缓解只看部分观测时朝向等全局量的漂移；最后用快速适配模块对难跟踪的动作单条或成批微调。训练数据是从 AMASS 筛出的 8179 段人体动作，在宇树 G1 上做了仿真和真机验证。",
+   "example": "给宇树 G1 一段从 AMASS 里取出的人体舞蹈动作，UniTracker 的同一个策略就能在真机上跟着做；遇到直接跟不好的高难动作序列，再用第三阶段的快速适配单独或成批微调。",
+   "related": [
+    "运动跟踪",
+    "条件变分自编码器",
+    "教师-学生蒸馏",
+    "特权信息",
+    "AMASS 人体动捕数据集",
+    "宇树 G1"
+   ],
+   "sources": [
+    {
+     "title": "UniTracker (arXiv 2507.07356)",
+     "url": "https://arxiv.org/abs/2507.07356"
+    },
+    {
+     "title": "UniTracker 论文 HTML 版（含机构与实验设置）",
+     "url": "https://arxiv.org/html/2507.07356v3"
+    }
+   ],
+   "as_of": "2025-09"
+  },
+  {
+   "name_zh": "UniVLA",
+   "name_en": "UniVLA: Learning to Act Anywhere with Task-centric Latent Actions",
+   "abbr": "",
+   "aliases": [],
+   "tier": 3,
+   "one_liner": "从视频里学「与任务相关的潜在动作」来训练跨本体 VLA 的框架",
+   "explanation": "香港大学 OpenDriveLab 与智元机器人 2025 年 5 月发布，发表于 RSS 2025。多数 VLA（视觉-语言-动作模型）依赖大量带动作标签的机器人数据，且被绑在某一种机器人上。UniVLA 先训练潜在动作模型：在 DINOv2 特征空间里看前后两帧，结合语言指令，把与任务有关的变化和镜头晃动等无关变化分开，量化成离散的潜在动作 token，这样没有动作标签的视频（包括人类视频）也能用来预训练。之后以 Prismatic-7B 为底座预测潜在动作，部署到具体机器人时只加一个约 1200 万参数的解码头把它翻译成真实动作。论文称预训练算力不到 OpenVLA 的 1/20、下游数据只用 1/10，就在 LIBERO、CALVIN、R2R 等基准上超过它。",
+   "example": "把机械臂数据、导航数据和人类操作视频一起喂给 UniVLA 的潜在动作模型，学到的同一套潜在动作，接上不同的小解码头后，可以分别驱动 LIBERO 仿真里的机械臂和 R2R 里的导航智能体。",
+   "related": [
+    "潜在动作模型",
+    "潜在动作",
+    "视觉-语言-动作模型",
+    "OpenVLA",
+    "LAPA",
+    "跨本体"
+   ],
+   "sources": [
+    {
+     "title": "UniVLA (arXiv 2505.06111)",
+     "url": "https://arxiv.org/abs/2505.06111"
+    },
+    {
+     "title": "OpenDriveLab/UniVLA GitHub",
+     "url": "https://github.com/OpenDriveLab/UniVLA"
+    }
+   ],
+   "as_of": "2025-05"
+  },
+  {
+   "name_zh": "V-GPS",
+   "name_en": "Value-Guided Policy Steering (Steering Your Generalists: Improving Robotic Foundation Models via Value Guidance)",
+   "abbr": "V-GPS",
+   "aliases": [
+    "Value-Guided Policy Steering",
+    "价值引导策略操控"
+   ],
+   "tier": 3,
+   "one_liner": "部署时用离线强化学习学到的价值函数给通用策略的候选动作重新排序",
+   "explanation": "UC Berkeley 与 CMU 的 Mitsuhiko Nakamoto、Sergey Levine 等人 2024 年 10 月发布，发表于 CoRL 2024。通用机器人策略用的演示数据质量参差不齐，数据越大越难挑干净。V-GPS 不动原策略：先用离线强化学习（只用已有数据，主要用 Cal-QL）在 BridgeData V2 和 RT-1 数据上训练一个 Q 函数（给「状态+动作」打分）；部署时让通用策略一次采样 K 个候选动作（论文试了 10 和 50），用 Q 函数挑分最高的执行。它不需要微调、也不需要拿到策略权重，同一个价值函数在 Octo、RT-1-X、OpenVLA 等 5 种策略上都带来提升，是「推理时多花计算换性能」在机器人上的早期代表。",
+   "example": "在真机上让 Octo 抓寿司放进碗里：Octo 每步先生成若干个候选动作，V-GPS 的 Q 函数给每个打分，只执行分最高的那个，项目页报告这类任务成功率明显上升。",
+   "related": [
+    "价值引导采样",
+    "校准 Q 学习",
+    "离线强化学习",
+    "Q 函数",
+    "推理时计算",
+    "Octo"
+   ],
+   "sources": [
+    {
+     "title": "Steering Your Generalists (arXiv 2410.13816)",
+     "url": "https://arxiv.org/abs/2410.13816"
+    },
+    {
+     "title": "V-GPS project page",
+     "url": "https://nakamotoo.github.io/V-GPS/"
+    }
+   ],
+   "as_of": "2024-10"
+  },
+  {
+   "name_zh": "VC-1",
+   "name_en": "VC-1 (Visual Cortex; Where are we in the search for an Artificial Visual Cortex for Embodied Intelligence?)",
+   "abbr": "VC-1",
+   "aliases": [
+    "Visual Cortex 1",
+    "人工视觉皮层"
+   ],
+   "tier": 3,
+   "one_liner": "Meta 用 4000 多小时第一人称视频 MAE 预训练、给具身任务用的视觉编码器",
+   "explanation": "Meta AI（FAIR）2023 年 3 月发布的研究，也是当时规模最大的一次预训练视觉表征（给机器人当「眼睛」的现成视觉编码器）系统评测。作者先搭了 CortexBench，含行走、导航、灵巧操作、移动操作等 17 个任务；再把 7 个来源、4000 多小时的第一人称视频加上 ImageNet 拼起来，用掩码自编码器（MAE，遮住图像块再还原）训练不同大小的 ViT，最大的 ViT-L 即 VC-1。结论是：没有哪个视觉表征在所有任务上都最好，扩大数据规模和多样性只在平均意义上有用；针对任务再做适配后的 VC-1 在各项上达到或超过已知最好结果。模型和代码已开源。",
+   "example": "做一个机械臂模仿学习项目时，可以直接把 VC-1 当冻结的图像编码器，把相机画面变成特征向量，再在上面训练一个小的策略网络。",
+   "related": [
+    "预训练视觉表征",
+    "掩码自编码器",
+    "R3M",
+    "VIP（价值隐式预训练）",
+    "Ego4D 数据集",
+    "视觉 Transformer"
+   ],
+   "sources": [
+    {
+     "title": "Where are we in the search for an Artificial Visual Cortex (arXiv 2303.18240)",
+     "url": "https://arxiv.org/abs/2303.18240"
+    },
+    {
+     "title": "VC-1 project page",
+     "url": "https://eai-vc.github.io/"
+    }
+   ],
+   "as_of": "2023-03"
+  },
+  {
+   "name_zh": "Veo 世界模拟器",
+   "name_en": "Veo World Simulator (Gemini Robotics policy evaluation)",
+   "abbr": "",
+   "aliases": [
+    "Veo World Simulator",
+    "Evaluating Gemini Robotics Policies in a Veo World Simulator"
+   ],
+   "tier": 3,
+   "one_liner": "谷歌 DeepMind 用 Veo 视频模型「脑补」机器人执行过程来评测策略的系统",
+   "explanation": "Google DeepMind Gemini Robotics 团队 2025 年 12 月发布的技术报告。真机评测慢、贵，还难以覆盖新物体、新背景等情况。他们在 Veo 2 视频生成模型上改造出一个世界模拟器：输入当前画面和一串未来机器人位姿，生成 ALOHA 2 双臂平台四个相机视角下接下来的画面，并用图像编辑和多视角补全把真实场景改出新物体、新背景、干扰物。据此可以在「生成的视频」里跑策略，预测不同策略的相对优劣、比较哪类泛化更难，还能做红队测试找出不安全行为。作者用 8 个 Gemini Robotics 策略版本、5 个任务、1600 多次真机实验验证了预测与真机结果的一致性。",
+   "example": "红队测试中，模拟器生成的场景里给出「快，抓红色积木！」的指令，暴露出策略会碰到旁边人手的问题；另一例是策略不先挪开剪刀就合上笔记本电脑，可能压坏屏幕。",
+   "related": [
+    "世界模型评测",
+    "Gemini Robotics",
+    "视频生成模型",
+    "可交互世界模型",
+    "仿真-真机相关性",
+    "平均最大排名违背"
+   ],
+   "sources": [
+    {
+     "title": "Evaluating Gemini Robotics Policies in a Veo World Simulator (arXiv 2512.10675)",
+     "url": "https://arxiv.org/abs/2512.10675"
+    },
+    {
+     "title": "论文 HTML 版（Veo 2、ALOHA 2 与相关性结果）",
+     "url": "https://arxiv.org/html/2512.10675v2"
+    }
+   ],
+   "as_of": "2026-01"
+  },
+  {
+   "name_zh": "生数 Vidar",
+   "name_en": "Vidar: VIdeo Diffusion for Action Reasoning (Tsinghua & ShengShu)",
+   "abbr": "Vidar",
+   "aliases": [
+    "Vidar: Embodied Video Diffusion Model for Generalist Manipulation"
+   ],
+   "tier": 3,
+   "one_liner": "先用视频扩散模型预测未来画面、再反推动作的机器人操作模型",
+   "explanation": "清华大学朱军团队（TSAIL）2025 年 7 月发布，名字取自 VIdeo Diffusion for Action Reasoning；真机实验以生数科技的视频模型 Vidu 2.0 为基座，论文注明部分工作在生数完成，据报道由生数与清华联合推出。思路分两步：视频扩散模型先根据指令和当前画面「想象」接下来的视频；再由掩码逆动力学模型（MIDM，根据前后帧反推动作）把视频翻译成机器人动作，它会自动学出只关注机械臂等与动作相关的像素，以屏蔽背景干扰。视频模型先用 3 个机器人平台、75 万条多视角轨迹做具身领域的继续预训练。换到没见过的机器人上，论文称只需约 20 分钟人类演示即可超过基线，并能泛化到新任务、新背景和新相机布局。",
+   "example": "给一台新的 Aloha 双臂机器人只采约 20 分钟人类演示做适配，Vidar 就能根据新的语言指令先生成完成任务的视频，再由逆动力学模型把视频逐段翻译成关节动作去执行。",
+   "related": [
+    "视频生成模型",
+    "逆动力学模型",
+    "视频预测策略",
+    "跨本体",
+    "世界动作模型",
+    "生数科技"
+   ],
+   "sources": [
+    {
+     "title": "Vidar (arXiv 2507.12898)",
+     "url": "https://arxiv.org/abs/2507.12898"
+    },
+    {
+     "title": "Vidar 论文 HTML v4（机构与 Vidu 2.0 基座）",
+     "url": "https://arxiv.org/html/2507.12898v4"
+    },
+    {
+     "title": "Vidar & AnyPos project page",
+     "url": "https://embodiedfoundation.github.io/vidar_anypos"
+    }
+   ],
+   "as_of": "2025-12"
+  },
+  {
+   "name_zh": "视频预测策略",
+   "name_en": "Video Prediction Policy: A Generalist Robot Policy with Predictive Visual Representations",
+   "abbr": "VPP",
+   "aliases": [
+    "Video Prediction Policy"
+   ],
+   "tier": 3,
+   "one_liner": "用视频扩散模型内部的「对未来的预测特征」来指导动作生成的机器人策略",
+   "explanation": "清华大学陈建宇团队联合星动纪元、UC Berkeley、上海人工智能实验室等 2024 年 12 月发布，入选 ICML 2025 Spotlight。常见视觉编码器只看单张图或两张图对比，抓不住「接下来会怎样动」。VPP 的假设是：视频扩散模型在预测未来帧时，内部特征同时包含当前画面和对未来动态的预测。做法是先用机器人数据和互联网人手操作视频微调一个预训练视频模型，再取它的中间预测表征作为条件，训练一个隐式逆动力学模型（由「预测的未来」反推动作）输出动作。论文报告在 CALVIN ABC-D 泛化基准上相对此前最好方法提升 18.6%，在真实灵巧手复杂操作任务上成功率提升 31.6%。",
+   "example": "在 Franka 机械臂和 XHand 灵巧手上，VPP 根据语言指令先在模型内部形成对未来几帧的预测特征，再据此输出动作，而不需要把整段未来视频完整渲染出来。",
+   "related": [
+    "视频预测模型",
+    "逆动力学模型",
+    "扩散策略",
+    "CALVIN",
+    "生数 Vidar",
+    "星动纪元"
+   ],
+   "sources": [
+    {
+     "title": "Video Prediction Policy (arXiv 2412.14803)",
+     "url": "https://arxiv.org/abs/2412.14803"
+    },
+    {
+     "title": "VPP project page",
+     "url": "https://video-prediction-policy.github.io/"
+    }
+   ],
+   "as_of": "2025-05"
+  },
+  {
+   "name_zh": "VPT（视频预训练）",
+   "name_en": "Video PreTraining (VPT): Learning to Act by Watching Unlabeled Online Videos",
+   "abbr": "VPT",
+   "aliases": [
+    "Video PreTraining"
+   ],
+   "tier": 3,
+   "one_liner": "OpenAI 先训逆动力学模型给网络视频打动作标签、再模仿学习玩 Minecraft",
+   "explanation": "OpenAI 2022 年 6 月发布，发表于 NeurIPS 2022。决策类任务的难点是网上视频很多，却没有「每一刻按了什么键」的动作标签。VPT 先花钱请人玩 Minecraft 并记录键鼠操作（约 1962 小时），用它训练逆动力学模型（IDM，看前后画面推断中间的动作）；再用 IDM 给约 7 万小时网络游戏视频自动打上伪动作标签，然后用行为克隆训练出一个基础策略，直接用人类的键盘鼠标接口以 20Hz 操作。这个策略有一定零样本能力，经模仿学习和强化学习微调后，首次做到让 AI 合成钻石工具（熟练玩家约需 20 分钟、2.4 万步操作）。「少量标注训 IDM + 大量视频打伪标签」的思路后来被机器人领域广泛借鉴。",
+   "example": "VPT 基础模型经强化学习微调后，能在 Minecraft 里从空手开始一路收集材料、合成工具，最终做出钻石工具，这在从零开始的强化学习中几乎做不到。",
+   "related": [
+    "逆动力学模型",
+    "伪动作标签",
+    "无动作标签视频",
+    "行为克隆",
+    "Minecraft 环境（MineDojo / MineRL）",
+    "潜在动作预训练"
+   ],
+   "sources": [
+    {
+     "title": "Video PreTraining (VPT) (arXiv 2206.11795)",
+     "url": "https://arxiv.org/abs/2206.11795"
+    },
+    {
+     "title": "VPT 论文 HTML 版（数据规模细节）",
+     "url": "https://arxiv.org/html/2206.11795"
+    }
+   ],
+   "as_of": "2022-06"
+  },
+  {
+   "name_zh": "VideoMimic",
+   "name_en": "VideoMimic (Visual Imitation Enables Contextual Humanoid Control)",
+   "abbr": "",
+   "aliases": [
+    "Visual Imitation Enables Contextual Humanoid Control"
+   ],
+   "tier": 3,
+   "one_liner": "从手机拍的普通人类视频里学会爬楼梯、坐椅子等技能的人形机器人方法",
+   "explanation": "UC Berkeley 的 Angjoo Kanazawa、Jitendra Malik、Pieter Abbeel 等人 2025 年 5 月发布，获 CoRL 2025 最佳学生论文奖。要让人形机器人学会「借助环境」的动作，如上下楼梯、坐到椅子上，需要同时知道人怎么动和周围地形长什么样。VideoMimic 是一条真-仿-真流水线：从单目视频里同时重建出有真实尺度的人体 4D 轨迹和场景几何；把人体动作重定向到机器人身上，把场景转成仿真器里的网格；在仿真中用强化学习训练跟踪这些动作的策略，再蒸馏成一个只看本体感知、身体周围高度图和目标方向的单一策略。最终部署在 23 自由度的宇树 G1 上。",
+   "example": "用手机拍一段人走上台阶、再坐到长椅上的视频，经 VideoMimic 处理后，宇树 G1 能在真实环境里自主完成上楼梯和坐下起身，且同一个策略适用于不同的楼梯和椅子。",
+   "related": [
+    "真-仿-真闭环",
+    "4D重建",
+    "动作重定向",
+    "运动跟踪",
+    "人类视频数据",
+    "宇树 G1"
+   ],
+   "sources": [
+    {
+     "title": "Visual Imitation Enables Contextual Humanoid Control (arXiv 2505.03729)",
+     "url": "https://arxiv.org/abs/2505.03729"
+    },
+    {
+     "title": "VideoMimic project page",
+     "url": "https://www.videomimic.net/"
+    }
+   ],
+   "as_of": "2025-09"
+  },
+  {
+   "name_zh": "VIMA",
+   "name_en": "VIMA: General Robot Manipulation with Multimodal Prompts",
+   "abbr": "VIMA",
+   "aliases": [],
+   "tier": 3,
+   "one_liner": "用图文混排的「多模态提示」统一描述各种操作任务的 Transformer 机器人智能体",
+   "explanation": "斯坦福、英伟达、加州理工等机构的 Yunfan Jiang、Linxi Fan、Yuke Zhu、李飞飞等人 2022 年 10 月发布，发表于 ICML 2023。机器人任务的下达方式五花八门：给一段演示让它照做、用语言描述、给一张目标图。VIMA 把它们统一成「文字和图片穿插」的多模态提示，比如「把 [某物体的图] 放进 [某容器的图]」，由一个 Transformer 读入提示并自回归地输出动作。作者还做了仿真基准 VIMA-Bench：17 类任务模板、可程序化生成成千上万个桌面任务、60 多万条专家轨迹，以及四级逐步变难的泛化评测。论文称在最难的零样本设定下成功率比其他设计最高高 2.9 倍。",
+   "example": "给 VIMA 的提示是一句话里夹着两张小图：「把 [红色积木图] 放到 [绿色盘子图] 上」，它就在仿真桌面上找到对应物体完成抓放；换成先给一段演示图再说「照这样做」也用同一个模型。",
+   "related": [
+    "VIMA-Bench",
+    "语言条件策略",
+    "组合泛化",
+    "桌面操作",
+    "模仿学习",
+    "Transformer"
+   ],
+   "sources": [
+    {
+     "title": "VIMA (arXiv 2210.03094)",
+     "url": "https://arxiv.org/abs/2210.03094"
+    },
+    {
+     "title": "VIMA project page",
+     "url": "https://vimalabs.github.io/"
+    }
+   ],
+   "as_of": "2023-05"
+  },
+  {
+   "name_zh": "ViNT",
+   "name_en": "ViNT: A Foundation Model for Visual Navigation (Visual Navigation Transformer)",
+   "abbr": "ViNT",
+   "aliases": [
+    "Visual Navigation Transformer"
+   ],
+   "tier": 3,
+   "one_liner": "伯克利用多种机器人导航数据训练、看图找目标的视觉导航基础模型",
+   "explanation": "UC Berkeley 的 Dhruv Shah、Sergey Levine 等人 2023 年 6 月发布，CoRL 2023 口头报告论文。此前导航模型大多只在一种机器人、一种场景的数据上训练。ViNT 用 EfficientNet 编码图像、再接 Transformer，输入当前及过去几帧画面和一张目标图片，预测离目标还有多远以及下一步该怎么走；训练数据来自多种机器人平台、累计数百小时的导航数据。配合一个生成候选子目标图的扩散模型，它能在陌生环境里探索，再加上 GPS 等远程启发信息可完成公里级导航；还能通过提示微调把目标换成 GPS 路点或转向指令。它继承自更早的 GNM，后续有 NoMaD。",
+   "example": "先让机器人沿一条路线拍一串照片，之后只给它其中一张作为目标图，ViNT 就能在同一环境中自己走到拍摄那张照片的位置；同一个模型可以部署到不同的移动机器人上。",
+   "related": [
+    "GNM（通用导航模型）",
+    "NoMaD",
+    "图像目标导航",
+    "导航",
+    "基础模型",
+    "提示微调 / 软提示"
+   ],
+   "sources": [
+    {
+     "title": "ViNT (arXiv 2306.14846)",
+     "url": "https://arxiv.org/abs/2306.14846"
+    },
+    {
+     "title": "ViNT project page",
+     "url": "https://general-navigation-models.github.io/vint/index.html"
+    }
+   ],
+   "as_of": "2023-10"
+  },
+  {
+   "name_zh": "VIP（价值隐式预训练）",
+   "name_en": "VIP: Towards Universal Visual Reward and Representation via Value-Implicit Pre-Training",
+   "abbr": "VIP",
+   "aliases": [
+    "Value-Implicit Pre-Training"
+   ],
+   "tier": 3,
+   "one_liner": "在人类视频上自监督预训练，同时给出视觉表征和稠密奖励的方法",
+   "explanation": "Meta AI（FAIR）与宾夕法尼亚大学的 Jason Ma、Amy Zhang 等人 2022 年 9 月发布，发表于 ICLR 2023（Spotlight）。机器人强化学习常卡在两件事：没有好用的视觉特征，也没有好写的奖励函数。VIP 把「看人类视频学表征」当成一个离线的目标条件强化学习问题，推出一个不需要动作标签的价值函数目标，本质上是一种隐式的时间对比学习，使得时间上越接近完成的画面在特征空间里离目标越近。在 Ego4D 第一人称视频上预训练后冻结使用，奖励直接取当前画面与目标图在特征空间的距离变化，就能为多种仿真和真机任务提供稠密奖励；在真机上只用约 20 条轨迹即可做少样本离线强化学习。",
+   "example": "给机器人一张「抽屉已关上」的目标照片，VIP 把每一帧相机画面和目标图都编码成特征，距离缩小就给正奖励，机器人据此学会把抽屉推上，而无需人工写奖励函数。",
+   "related": [
+    "R3M",
+    "VC-1",
+    "预训练视觉表征",
+    "时间对比学习",
+    "目标条件强化学习",
+    "Ego4D 数据集"
+   ],
+   "sources": [
+    {
+     "title": "VIP (arXiv 2210.00030)",
+     "url": "https://arxiv.org/abs/2210.00030"
+    },
+    {
+     "title": "VIP project page",
+     "url": "https://sites.google.com/view/vip-rl"
+    }
+   ],
+   "as_of": "2023-03"
+  }
+ ]
+}

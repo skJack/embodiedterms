@@ -1,0 +1,193 @@
+{"category": "control", "batch": 11, "terms": [
+{
+"name_zh": "摩擦补偿",
+"name_en": "Friction Compensation",
+"abbr": "",
+"aliases": ["摩擦力补偿"],
+"tier": 3,
+"one_liner": "估算关节里的摩擦力矩，提前加进控制指令把它抵消掉。",
+"explanation": "关节里的电机、减速器和轴承都有摩擦，会让机器人低速时跟不准、换向时卡顿（黏滑）；Bona 与 Indri 2005 年的综述指出它对工业机器人尤其关键。最常用的模型是 τ_f = F_c·sgn(q̇) + F_v·q̇：F_c 为库仑摩擦，大小恒定、方向与运动相反；F_v 为黏性摩擦系数，力矩与关节速度 q̇ 成正比；更细的模型还会加 Stribeck 效应（起步时静摩擦偏大）或 LuGre 等动态模型。做法是先辨识这些参数，再把估计的摩擦力矩作为前馈叠加到电机指令上，或用观测器在线估计。它按模型主动抵消，不同于等误差出现后才纠正的积分项；零力拖动、无传感器力估计、执行器建模都离不开它。",
+"example": "协作臂进入拖动示教模式时，控制器在重力补偿之外再补上各关节估计的摩擦力矩，人推机械臂时才会感觉轻而均匀，不会一顿一顿。",
+"related": ["重力补偿", "前馈控制", "零力拖动", "库仑摩擦", "静摩擦与 Stribeck 效应", "系统辨识"],
+"sources": [
+{"title": "Bona & Indri, Friction Compensation in Robotics: an Overview (CDC-ECC 2005)", "url": "https://skoge.folk.ntnu.no/prost/proceedings/cdc-ecc05/pdffiles/papers/0934.pdf"},
+{"title": "BME Robot Applications, Chapter 8: Models of Friction", "url": "https://www.mogi.bme.hu/TAMOP/robot_applications/ch07.html"}
+],
+"as_of": ""
+},
+{
+"name_zh": "前沿探索",
+"name_en": "Frontier-based Exploration",
+"abbr": "",
+"aliases": ["边界探索", "基于前沿的探索"],
+"tier": 3,
+"one_liner": "机器人反复开向「已知空地与未知区域的交界」，边走边把地图建完。",
+"explanation": "由美国海军研究实验室的 Brian Yamauchi 在 1997 年提出（IEEE CIRA 会议），回答的是：在陌生环境里，下一步去哪能获得最多新信息？做法是在占据栅格地图（把空间切成格子，标为空闲、障碍或未知）上找「前沿」——与未知格相邻的已知空闲格，把相邻前沿格聚成区域，选一个（原文取最近的）导航过去，到达后用传感器更新地图，再找新前沿，直到前沿消失。它简单、不假设墙面走向或房间形状，至今仍是移动机器人自主建图和目标导航的常用基线；后续工作把「最近」换成信息增益，或让视觉语言模型给前沿打分（如 VLFM）。",
+"example": "四足机器人被放进一栋没有预置地图的办公楼：它一边用激光 SLAM 建占据栅格，一边开向最近的前沿，走廊和房间逐个探完后不再有前沿，探索结束。",
+"related": ["主动探索", "占据栅格地图", "同步定位与建图", "物体目标导航", "VLFM（视觉语言前沿地图）", "下一最佳视角"],
+"sources": [
+{"title": "Yamauchi, A Frontier-Based Approach for Autonomous Exploration (IEEE CIRA 1997)", "url": "https://www.cs.cmu.edu/~motionplanning/papers/sbp_papers/integrated1/yamauchi_frontiers.pdf"}
+],
+"as_of": ""
+},
+{
+"name_zh": "功能安全",
+"name_en": "Functional Safety",
+"abbr": "",
+"aliases": ["IEC 61508", "ISO 13849"],
+"tier": 3,
+"one_liner": "靠自动保护功能在故障时仍把设备带到安全状态，并量化这种可靠性。",
+"explanation": "功能安全指整体安全中依赖自动保护功能正确动作的那部分，如急停、安全扭矩关断、速度监控。通用母标准是 IEC 61508（第一版 1998–2000 年，第二版 2010 年），用安全完整性等级 SIL 1–4 表示可靠程度，等级越高允许的危险失效概率越低；机械领域的 IEC 62061、汽车的 ISO 26262 都由它派生。机器人更常引用 ISO 13849-1（2023 年第四版），用性能等级 PL a–e 和架构类别 B、1–4 表示，类别 3、4 要求双通道冗余。流程是危害分析→确定每个安全功能的目标等级→用冗余、自诊断和验证证明达标。它管的是硬件和控制系统出故障时能否可靠停下，和讨论大模型「做错事」的具身安全不是一回事。",
+"example": "许多协作机械臂把急停、保护性停止等安全功能按 ISO 13849-1 的 PL d、类别 3 设计：两路独立通道互相比对，任一路出故障都能切断电机力矩。",
+"related": ["急停", "保护性停止", "安全扭矩关断", "ISO 13849 性能等级 PL（安全完整性等级 SIL）", "ISO 10218 工业机器人安全标准（2025 版）", "具身安全"],
+"sources": [
+{"title": "Wikipedia: Functional safety", "url": "https://en.wikipedia.org/wiki/Functional_safety"},
+{"title": "Wikipedia: IEC 61508", "url": "https://en.wikipedia.org/wiki/IEC_61508"},
+{"title": "Wikipedia: ISO 13849", "url": "https://en.wikipedia.org/wiki/ISO_13849"}
+],
+"as_of": "2023"
+},
+{
+"name_zh": "步态相位（相位时钟）",
+"name_en": "Gait Phase (Phase Clock / Periodic Gait Signal)",
+"abbr": "",
+"aliases": ["相位时钟", "步态时钟", "gait phase"],
+"tier": 3,
+"one_liner": "用一个在 0 到 1 之间循环的数，表示当前处在步态周期的哪一刻。",
+"explanation": "足式行走是周期运动，每条腿在支撑相（着地承重）和摆动相（离地前摆）之间交替。步态相位 φ 把一个周期归一化到 [0,1)：φ = (t mod T)/T，t 是时间，T 是步态周期。给各条腿加相位偏移就定义了步态，例如双足左右腿相差 0.5 就是交替迈步，四足对角腿同相就是小跑。模型控制里它由步态调度器给出，决定何时切换接触；强化学习里，Siekmann 等人（ICRA 2021）用它构造周期奖励——支撑相惩罚脚的速度、摆动相惩罚脚的受力，不用参考动作就在 Cassie 双足上学出走、跑、跳等步态。",
+"example": "unitree_rl_gym 的 G1 行走环境取周期 0.8 秒、左右腿相位差 0.5，某条腿相位小于 0.55 时视为应当支撑，并奖励实际触地状态与之一致。",
+"related": ["步态", "支撑相 / 摆动相", "步态周期与占空比", "接触时序（步态调度器）", "对角小跑步态", "步态相位（相位时钟输入）"],
+"sources": [
+{"title": "Siekmann et al., Sim-to-Real Learning of All Common Bipedal Gaits via Periodic Reward Composition (arXiv 2011.01387, ICRA 2021)", "url": "https://arxiv.org/abs/2011.01387"},
+{"title": "unitree_rl_gym: legged_gym/envs/g1/g1_env.py", "url": "https://github.com/unitreerobotics/unitree_rl_gym/blob/main/legged_gym/envs/g1/g1_env.py"}
+],
+"as_of": ""
+},
+{
+"name_zh": "步态相位（相位时钟输入）",
+"name_en": "Gait Phase Variable / Clock Input (sin/cos phase)",
+"abbr": "",
+"aliases": ["时钟输入", "相位观测", "clock input", "sin/cos 相位编码"],
+"tier": 3,
+"one_liner": "把步态相位编码成 sin、cos 两个数输入策略网络，让它知道节拍。",
+"explanation": "这是步态相位在学习型运控里的具体用法：训练强化学习行走策略时，在关节角、角速度、速度指令等观测之外，再输入 sin(2πφ) 和 cos(2πφ)，φ 为 0–1 循环的相位。不直接输入 φ，是因为 φ 从 0.99 跳回 0 时数值突变，而 sin/cos 对应圆上一点、始终连续，网络能看出这两个时刻其实相邻。有了这个外部节拍，没有记忆的前馈网络也能输出稳定的周期步态，并和周期奖励里的支撑、摆动时间表对齐。Walk These Ways（Margolis 与 Agrawal）为四条腿各输入一个 sin 时序信号，并把步频和腿间相位偏移作为指令，从而在线切换小跑、踱步、跳跃等步态。",
+"example": "unitree_rl_gym 的 G1 环境把 sin(2πφ)、cos(2πφ) 拼在观测向量末尾，与角速度、投影重力、速度指令、关节位置和速度、上一步动作一起送进策略网络。",
+"related": ["步态相位（相位时钟）", "强化学习运控", "Walk These Ways", "观测", "支撑相 / 摆动相", "位置编码"],
+"sources": [
+{"title": "unitree_rl_gym: legged_gym/envs/g1/g1_env.py", "url": "https://github.com/unitreerobotics/unitree_rl_gym/blob/main/legged_gym/envs/g1/g1_env.py"},
+{"title": "Siekmann et al., Periodic Reward Composition (arXiv 2011.01387)", "url": "https://arxiv.org/abs/2011.01387"}
+],
+"as_of": ""
+},
+{
+"name_zh": "高斯混合回归 / 任务参数化 GMM",
+"name_en": "Gaussian Mixture Regression / Task-Parameterized GMM",
+"abbr": "GMR / TP-GMM",
+"aliases": ["GMR", "TP-GMM", "任务参数化高斯混合模型"],
+"tier": 3,
+"one_liner": "用几个高斯分布概括示教轨迹，再按新的物体位置生成对应动作。",
+"explanation": "两者是示教学习里的经典概率方法，Sylvain Calinon 在 2016 年的教程论文中做了系统整理。GMM（高斯混合模型）先把几条示教轨迹中「时间+位置」的数据点拟合成若干高斯分量；GMR 对给定输入（如时间 t）求条件分布，输出平滑轨迹及其方差，方差大说明几次示教差异大、执行时可以放松。TP-GMM 把起点、目标物体等坐标系当作「任务参数」，在每个坐标系下各学一个 GMM，遇到新场景时把它们变换到新坐标系，再用高斯乘积融合，因此几条示教就能适应新的物体位置。它数据需求小、可解释，但表达复杂多峰动作的能力不如扩散策略等深度生成方法。",
+"example": "示教 5 次把杯子放到托盘上：在「杯子坐标系」和「托盘坐标系」下各学一个 GMM，换了摆放位置后把两者相乘，就得到经过新杯子位置、落到新托盘上的轨迹。",
+"related": ["高斯混合模型", "动态运动基元", "概率运动基元", "模仿学习", "演示数据", "坐标系"],
+"sources": [
+{"title": "Calinon, A Tutorial on Task-Parameterized Movement Learning and Retrieval (Intelligent Service Robotics, 2016)", "url": "https://calinon.ch/papers/Calinon-JIST2015.pdf"}
+],
+"as_of": ""
+},
+{
+"name_zh": "动量观测器",
+"name_en": "Generalized Momentum Observer",
+"abbr": "",
+"aliases": ["广义动量观测器", "Momentum observer", "动量残差", "GMO"],
+"tier": 3,
+"one_liner": "只用关节位置、速度和电机力矩，估计机器人身上受到的外力矩。",
+"explanation": "由 Alessandro De Luca 等人在 2003 年前后提出（最初用于执行器故障检测），2006 年用于 DLR-III 轻型臂的碰撞检测，是协作机器人不装力传感器也能感知碰撞的经典方法。它盯着广义动量 p = M(q)q̇（M 为质量矩阵，q̇ 为关节速度），把按动力学模型预测的动量变化与实测比较，得到残差 r，满足 ṙ = K(τ_ext − r)：r 就是外力矩 τ_ext 经一阶低通滤波后的估计，增益 K 越大响应越快、也越怕噪声。它不需要关节加速度，也不用求质量矩阵的逆。残差超过阈值即判定碰撞并触发碰撞反应；摩擦等模型误差会混进残差，所以常与摩擦补偿配合。",
+"example": "机械臂运动中被人手挡住，前几个关节的动量残差迅速超过阈值，控制器随即判定碰撞，停止原轨迹并切换到柔顺或退让模式。",
+"related": ["碰撞检测（本体安全）", "碰撞反应", "扰动观测器", "无传感器力估计", "质量矩阵", "摩擦补偿"],
+"sources": [
+{"title": "Haddadin, De Luca, Albu-Schäffer, Robot Collisions: A Survey on Detection, Isolation, and Identification (IEEE T-RO 2017)", "url": "https://portal.fis.tum.de/en/publications/robot-collisions-a-survey-on-detection-isolation-and-identificati"},
+{"title": "Collision detection and external force estimation for robot manipulators using a composite momentum observer (AIMS Electronics and Electrical Engineering, 2024)", "url": "https://www.aimspress.com/article/doi/10.3934/electreng.2024011?viewType=HTML"}
+],
+"as_of": ""
+},
+{
+"name_zh": "Geometric Fabrics",
+"name_en": "Geometric Fabrics (NVIDIA reactive motion generation)",
+"abbr": "",
+"aliases": ["几何织物", "fabrics"],
+"tier": 3,
+"one_liner": "NVIDIA 提出的反应式运动生成框架，实时合成避障、限位等行为且可证稳定。",
+"explanation": "由 NVIDIA 研究院的 Karl Van Wyk、Nathan Ratliff 等人提出（IEEE RA-L 2022），是黎曼运动策略（RMP）的后继。它不预先规划整条轨迹，而是每个控制周期直接算出关节加速度：把趋近目标、避障、远离关节限位、保持姿态等行为各写成所在空间的二阶微分方程，再经雅可比映射合成到关节空间。相比 RMP，它用更一般的 Finsler 几何，在保证稳定的前提下允许更灵活地塑造行为。它常被当作强化学习的安全动作空间：DextrAH-G 让策略只输出手掌目标等低维指令，避碰和关节约束交给 fabric；NVIDIA 已在 GitHub 开源基于 Warp、可 GPU 并行的 FABRICS 库。",
+"example": "DextrAH-G 中，Kuka 臂加 Allegro 手共 23 个电机，RL 策略输出手掌目标和手指低维指令，fabric 以 60 Hz 把它们转成关节指令，并自动避开桌面和自碰撞。",
+"related": ["黎曼运动策略", "DextrAH-G", "避障", "关节限位", "运动规划", "操作空间控制"],
+"sources": [
+{"title": "Van Wyk et al., Geometric Fabrics: Generalizing Classical Mechanics to Capture the Physics of Behavior (arXiv 2109.10443)", "url": "https://arxiv.org/abs/2109.10443"},
+{"title": "NVlabs/FABRICS (GitHub)", "url": "https://github.com/NVlabs/FABRICS"},
+{"title": "DextrAH-G: Pixels-to-Action Dexterous Arm-Hand Grasping with Geometric Fabrics", "url": "https://arxiv.org/html/2407.02274v2"}
+],
+"as_of": "2026-09"
+},
+{
+"name_zh": "GJK 算法",
+"name_en": "Gilbert-Johnson-Keerthi Algorithm",
+"abbr": "GJK",
+"aliases": ["GJK 距离算法", "Gilbert–Johnson–Keerthi distance algorithm"],
+"tier": 3,
+"one_liner": "判断两个凸形状是否相交、并算出它们最近距离的经典迭代算法。",
+"explanation": "由 Elmer Gilbert、Daniel Johnson 和 S. Sathiya Keerthi 于 1988 年发表。它只需要每个凸形状的「支撑函数」：给定一个方向，返回形状上沿该方向最远的点，所以球、盒子、胶囊、凸网格都能统一处理。核心事实是：两个凸体相交，当且仅当它们的闵可夫斯基差（A 中每点减 B 中每点得到的集合）包含原点。算法在差集里迭代构造点、线段、三角形、四面体等单纯形，逐步逼近离原点最近的点，从而得到最近距离或判定相交。它快且省内存，是物理引擎窄相碰撞检测的常用核心，MuJoCo 的默认碰撞管线就基于 GJK 加 EPA（扩展多面体算法，用来算穿透深度）。非凸物体要先做凸分解。",
+"example": "运动规划时检查机械臂某根连杆（用凸包表示）与桌上盒子的最近距离，GJK 迭代几步就给出距离值，规划器据此判断这段路径是否留有足够余量。",
+"related": ["碰撞检测（物理引擎）", "碰撞检查", "凸分解", "宽相 / 窄相碰撞检测", "碰撞体", "FCL"],
+"sources": [
+{"title": "Wikipedia: Gilbert–Johnson–Keerthi distance algorithm", "url": "https://en.wikipedia.org/wiki/Gilbert%E2%80%93Johnson%E2%80%93Keerthi_distance_algorithm"},
+{"title": "MuJoCo documentation: Computation (collision detection pipelines)", "url": "https://github.com/google-deepmind/mujoco/blob/main/doc/computation/index.rst"}
+],
+"as_of": ""
+},
+{
+"name_zh": "凸集图规划",
+"name_en": "Graphs of Convex Sets (GCS)",
+"abbr": "GCS",
+"aliases": ["凸集图", "Graph of Convex Sets", "GCS 运动规划"],
+"tier": 3,
+"one_liner": "把无碰撞空间拆成凸块连成图，用凸优化求出全局较优的平滑轨迹。",
+"explanation": "由 MIT Russ Tedrake 组的 Tobia Marcucci 等人提出：「凸集图上的最短路」理论发表于 SIAM Journal on Optimization（2024），运动规划应用发表于 Science Robotics（2023）。先把构型空间里的无碰撞区域分解成若干凸区域，每块是图的一个节点，相互重叠的块之间连边；再在每块内用贝塞尔曲线表示一段轨迹，同时决定走哪些块和曲线的形状。这本是混合整数优化，但它的凸松弛很紧，解一次凸优化再做简单取整，通常就能得到全局最优或接近最优的轨迹，并附带最优性界。相比 RRT、PRM 等采样式规划，轨迹更平滑、质量更高；代价是要预先做凸分解。Drake 中已有实现。",
+"example": "用 Drake 的 GcsTrajectoryOptimization：给出机械臂在货架间的若干无碰撞凸区域，求解器输出一条穿过这些区域、满足速度限制、用时尽量短的平滑轨迹。",
+"related": ["运动规划", "快速扩展随机树", "概率路线图", "凸优化", "轨迹优化", "Drake"],
+"sources": [
+{"title": "Marcucci et al., Motion Planning around Obstacles with Convex Optimization (arXiv 2205.04422)", "url": "https://arxiv.org/abs/2205.04422"},
+{"title": "Marcucci et al., Shortest Paths in Graphs of Convex Sets (arXiv 2101.11565, SIAM J. Optim. 2024)", "url": "https://arxiv.org/abs/2101.11565"},
+{"title": "Drake: GcsTrajectoryOptimization", "url": "https://drake.mit.edu/doxygen_cxx/classdrake_1_1planning_1_1trajectory__optimization_1_1_gcs_trajectory_optimization.html"}
+],
+"as_of": ""
+},
+{
+"name_zh": "HJ 可达性分析",
+"name_en": "Hamilton-Jacobi Reachability Analysis",
+"abbr": "HJ reachability",
+"aliases": ["哈密顿-雅可比可达性分析", "HJ 可达性", "Hamilton-Jacobi reachability"],
+"tier": 3,
+"one_liner": "解一个偏微分方程，算出「从哪些状态出发能保证避开危险」的安全区域。",
+"explanation": "一种形式化安全验证方法，Claire Tomlin 等人长期推动，Bansal、Chen、Herbert、Tomlin 2017 年写过综述。给定系统动力学、有界扰动和一个「失败集」（如已碰撞的状态），求解哈密顿-雅可比偏微分方程得到价值函数 V(x)，它的符号划出后向可达集：从这些状态出发，在最坏扰动下怎么控制都会进入失败集；其余状态就是安全集，同时还能得到边界上的最优安全控制。它支持非线性动力学并给出严格保证，但计算量随状态维度指数增长（维数灾难），只适合低维模型。常用作安全滤波器：平时由学习策略控制，接近安全集边界时切换到安全控制。与控制障碍函数相比，它直接算出安全集，而 CBF 通常要人先给出候选函数。",
+"example": "两架无人机对飞：以相对位置和航向为状态算出后向可达集，相对状态还在集合外时放任原控制器，一旦碰到边界就立刻执行 HJ 给出的规避动作。",
+"related": ["控制障碍函数", "安全滤波器", "安全强化学习", "最优控制", "价值函数", "具身安全"],
+"sources": [
+{"title": "Bansal, Chen, Herbert, Tomlin, Hamilton-Jacobi Reachability: A Brief Overview and Recent Advances (arXiv 1709.07523)", "url": "https://arxiv.org/abs/1709.07523"}
+],
+"as_of": ""
+},
+{
+"name_zh": "分层二次规划",
+"name_en": "Hierarchical Quadratic Programming",
+"abbr": "HQP",
+"aliases": ["分层QP", "层级二次规划", "hierarchical QP"],
+"tier": 3,
+"one_liner": "把多个控制目标按优先级排队逐层求解，低优先级绝不干扰高优先级。",
+"explanation": "机器人常要同时满足多个可能冲突的目标：不摔倒、脚不打滑、手到目标、关节不超限。加权 QP 把它们乘上权重加成一个代价，只能折中，重要任务仍可能被牺牲。HQP 则严格排序：先解最高优先级的二次规划，把其最优解集作为约束，再在剩余自由度（零空间）里解下一层，所以下层永远不会破坏上层结果。它是经典零空间投影法的推广，区别在于每层都能带不等式约束（如关节限位、摩擦锥）。Escande、Mansard、Wieber 在 2014 年的 IJRR 论文中给出同时支持等式和不等式的快速求解器，能在控制频率下为 HRP-2 人形生成全身运动；它常用于全身控制中的逆运动学或逆动力学求解。",
+"example": "人形机器人伸手取远处物体：第 1 层保证支撑脚不动、质心在支撑多边形内，第 2 层让手到达目标，第 3 层让头朝向物体、其余关节回默认姿态；够不着时被牺牲的是下层任务，而不是平衡。",
+"related": ["任务优先级", "全身控制", "二次规划", "零空间控制", "操作空间控制", "逆运动学"],
+"sources": [
+{"title": "Escande, Mansard, Wieber, Hierarchical Quadratic Programming: Fast Online Humanoid-Robot Motion Generation (IJRR 2014)", "url": "https://gepettoweb.laas.fr/uploads/Publications/2014_escande_ijrr.pdf"}
+],
+"as_of": ""
+}
+]}

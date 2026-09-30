@@ -1,0 +1,113 @@
+{
+  "batch": "mechanics-13",
+  "terms": [
+    {
+      "key": "mechanics-13#0",
+      "name_en": "Nonholonomic Constraint",
+      "aliases": ["Nonholonomic System", "Nonintegrable Constraint"],
+      "one_liner": "A constraint on velocity direction only, which can't be integrated into a position constraint — like a wheel that can't slide sideways.",
+      "explanation": "A nonholonomic constraint restricts a system's velocity in a way that cannot be integrated into an equation involving position alone; the term 'holonomic' was introduced by Hertz in 1894. The most common source is a wheel rolling without slipping: a differential-drive cart at pose (x, y, θ) must satisfy ẋ·sinθ − ẏ·cosθ = 0, where x, y are position and θ is heading, meaning it can never move sideways at any instant. This narrows the velocity directions available at any moment, but it doesn't shrink the set of poses the vehicle can eventually reach — it can still park in any spot, just by maneuvering back and forth the way parallel parking does. So planning for wheeled bases can't simply interpolate straight lines between poses; it needs methods like hybrid A* that account for steering constraints. Escaping the constraint means switching to an omnidirectional base such as one with Mecanum wheels. Finger contacts that roll across an object's surface during grasping are this same type of constraint.",
+      "example": "A vacuum-cleaning robot that wants to shift 20 cm directly to its left can't simply slide sideways — it has to either rotate 90° in place and then drive forward, or maneuver back and forth like parallel parking. That's the nonholonomic constraint at work.",
+      "related": ["Differential-Drive Kinematics", "Configuration Space", "Generalized Coordinates", "Hybrid A*", "Mecanum Wheel", "Kinodynamic Planning"]
+    },
+    {
+      "key": "mechanics-13#1",
+      "name_en": "Pace Gait",
+      "aliases": ["Pacing", "Lateral Sequence Gait"],
+      "one_liner": "A two-beat quadruped gait where both legs on the same side step together, alternating left and right.",
+      "explanation": "The pace is a two-beat gait in quadruped animals: the left front and left hind legs step together, followed by the right front and right hind legs stepping together. It differs from the trot (paired diagonal legs) only in which legs are paired up. Horses have dedicated racing breeds bred for pacing (pacers within the Standardbred breed), and camels naturally move this way. For robots, when both legs on the same side are down, the support line falls to one side of the body and the center of mass isn't directly above it, so the torso tends to rock side to side — which is why quadruped robots more often trot in everyday use. Reinforcement-learning locomotion controllers commonly describe gaits using the phase offsets between legs: Walk These Ways (2022) uses three time-offset parameters, where (0, 0, 0.5) is pacing and (0.5, 0, 0) is trotting; in their tests on randomized rough terrain, pacing had the longest average survival time.",
+      "example": "In the Walk These Ways controller, setting the gait offset to (0, 0, 0.5) makes the robot dog step with both legs on the left together and both on the right together in turn, rocking its body from side to side as it walks.",
+      "related": ["Diagonal Trot Gait", "Bound Gait", "Gallop Gait", "Gait Cycle and Duty Factor", "Gait Phase (Phase Clock)", "Walk These Ways"]
+    },
+    {
+      "key": "mechanics-13#2",
+      "name_en": "Parallel Ankle Mechanism",
+      "aliases": ["Closed-Chain Ankle", "Parallel Ankle"],
+      "one_liner": "An ankle joint where two motors, through linkages, jointly drive both pitch and roll instead of each controlling one axis alone.",
+      "explanation": "The parallel ankle mechanism is a common ankle design in humanoid and biped robots: instead of one motor controlling pitch (the toes tipping up and down) and another controlling roll (the sole tilting side to side), two motors push and pull the foot plate together through linkages, forming a closed kinematic chain. The advantage is that the motors can be moved up the shin closer to the knee, making the end of the leg lighter and reducing the swing-leg inertia, and the two motors can combine their torque output. The tradeoff is that the relationship between motor angle and ankle angle becomes nonlinearly coupled, requiring the mechanism's own forward and inverse kinematics to convert between them, with torque also converted through a Jacobian; since URDF can only describe tree structures, simulations often simplify it into two independent series pitch and roll joints instead. Unitree's G1 SDK offers exactly this choice: PR mode issues commands as if the pitch and roll joints were in series, while AB mode directly controls the two parallel motors.",
+      "example": "In a typical left-right symmetric two-link ankle: when the two motors turn in the same direction, the foot pitches; when they turn in opposite directions, the foot rolls; any other combination of motor angles is a blend of the two.",
+      "related": ["Parallel Mechanism", "Serial Mechanism", "Unified Robot Description Format (URDF)", "Unitree G1", "Biped Robot", "Reflected Inertia"]
+    },
+    {
+      "key": "mechanics-13#3",
+      "name_en": "Parallel Axis Theorem",
+      "aliases": ["Huygens–Steiner Theorem", "Steiner's Theorem"],
+      "one_liner": "Gives the moment of inertia about any parallel axis from the moment of inertia about the center-of-mass axis: I = I_c + md².",
+      "explanation": "The parallel axis theorem, also called the Huygens–Steiner theorem, states that a rigid body's moment of inertia I about some axis equals its moment of inertia I_c about a parallel axis through the center of mass, plus its mass m times the square of the distance d between the two axes: I = I_c + m·d². This shows the moment of inertia is smallest about an axis through the center of mass, and grows the farther the axis sits from it. In 3D there's a matrix version (Modern Robotics calls it the Steiner theorem): I_q = I_b + m(qᵀq·E − q·qᵀ), where I_b is the inertia tensor at the center of mass, q is the new reference point's position relative to the center of mass, and E is the 3×3 identity matrix. It's used constantly in robotics: URDF requires the inertia reference frame's origin to be at the center of mass, and dynamics libraries have to translate it when computing in joint frames; attaching a gripper or a payload to a flange means translating that payload's inertia before merging it in; and dynamic parameter identification also uses it to convert between different reference points.",
+      "example": "A uniform thin rod of mass m and length L has a moment of inertia of mL²/12 about its midpoint; about one end (equivalent to a link rotating about a joint), d = L/2, giving I = mL²/12 + m(L/2)² = mL²/3 — four times as large.",
+      "related": ["Moment of Inertia", "Inertia Tensor", "Inertial Parameters", "Center of Mass", "Dynamic Parameter Identification", "Unified Robot Description Format (URDF)"]
+    },
+    {
+      "key": "mechanics-13#4",
+      "name_en": "Passive Dynamic Walking",
+      "aliases": ["Passive Walking", "Passive Dynamic Walker"],
+      "one_liner": "A style of biped walking with no motors, powered purely by gravity and the legs' natural swing down a gentle slope.",
+      "explanation": "Passive dynamic walking was introduced by Tad McGeer in the late 1980s, with the representative paper 'Passive Dynamic Walking' published in IJRR in 1990: a two-legged mechanism with no motors and no controller, placed on a shallow slope, can walk with a stable periodic gait powered by gravity alone, with each leg swinging naturally like a pendulum. The energy lost with each step is exactly repaid by the downhill slope, and the gait converges to a limit cycle (a stable periodic motion). It demonstrates that much of walking's stability comes from the mechanism's own dynamics, without needing every joint to be precisely controlled. In 2005, Collins and colleagues showed in Science a robot built on this principle, with only a small amount of added actuation, that could walk on level ground with a cost of transport of about 0.2 — close to a human's — versus about 3.2 for ASIMO. It's a classic example for understanding low-energy gaits, limit-cycle stability, and morphological computation.",
+      "example": "A McGeer-style passive walker: two legs with knees, no motors at all, given a light push on a very shallow slope, will walk itself step by step down to the bottom.",
+      "related": ["Bipedal Walking", "Limit Cycle", "Cost of Transport", "Morphological Computation", "Inverted Pendulum Model", "Honda ASIMO"]
+    },
+    {
+      "key": "mechanics-13#5",
+      "name_en": "Plücker Coordinates",
+      "aliases": ["Plücker Ray Embedding", "Plücker Embedding", "Plücker Ray Map"],
+      "one_liner": "Represents a line in 3D space with 6 numbers — a direction plus a moment — and is often used to encode camera rays per pixel.",
+      "explanation": "Plücker coordinates, introduced by the 19th-century German mathematician Julius Plücker, describe a line in 3D space with 6 numbers: a direction d, and a moment m = p × d (p is any point on the line, × is the cross product). The moment m doesn't depend on which point p on the line is chosen, and d·m = 0. The representation is fundamental in robotics: joint axes in screw theory and Featherstone's spatial vector dynamics are both built on Plücker coordinates. In recent years it has also shown up in generative models as the 'Plücker ray embedding': for every pixel in an image, compute (o × d, d) from the camera center o and that pixel's ray direction d, producing a 6-channel map used as a camera-pose conditioning input. CameraCtrl (2024) follows the approach of Light Field Networks (2021), arguing that this is easier for a network to associate with per-pixel information than directly feeding in the intrinsic and extrinsic matrices; it's commonly used in camera-controlled video generation and world models.",
+      "example": "A camera at the origin looking along the z-axis has a ray direction d = (0, 0, 1) for the image's center pixel, with o × d = 0, giving the embedding (0, 0, 0, 0, 0, 1); after the camera translates sideways, o changes, and the same pixel's o × d changes with it, which is how the network senses camera motion.",
+      "related": ["Screw Theory", "Spatial Vector Algebra", "Camera Extrinsics", "Camera Intrinsics", "Video Generation Model", "World Model"]
+    },
+    {
+      "key": "mechanics-13#6",
+      "name_en": "Point Foot vs. Flat Foot",
+      "aliases": ["Point-Foot", "Sole Foot", "Foot Morphology"],
+      "one_liner": "Whether a leg's foot meets the ground at a single point or across a flat sole determines whether ankle torque can hold balance.",
+      "explanation": "Foot morphology refers to how a legged robot's foot contacts the ground. A point foot is a small ball or rubber tip making roughly point contact, so the ankle can't produce a moment against the ground and the center of pressure is pinned to that single contact point; as a result, a biped with point feet is underactuated (it has fewer controllable quantities than degrees of freedom to control), cannot stand still, and must balance by continuously stepping and adjusting where it plants its feet. Most quadruped robots also use point feet, but they can still stand firmly with multiple legs down at once. A flat foot has a sole, so the center of pressure can shift within the footprint, the ankle can apply a moment, the support polygon is larger, and the robot can stand still and can also plan its gait using zero-moment-point (ZMP) methods — at the cost of needing more motors at the ankle and a heavier leg tip. LimX Dynamics' TRON 1 can quick-swap its foot end among point-foot, flat-foot, and wheeled configurations; the company describes the point foot as the simplest and easiest to control leg form.",
+      "example": "The point-footed biped Hume, from a 2015 paper, has to continuously choose new footholds and keep stepping to stay balanced; a flat-footed humanoid such as Unitree's G1, by contrast, can stand still with its feet together.",
+      "related": ["Zero Moment Point", "Center of Pressure", "Support Polygon", "Underactuation", "LimX Dynamics TRON 1", "Parallel Ankle Mechanism"]
+    },
+    {
+      "key": "mechanics-13#7",
+      "name_en": "Principle of Virtual Work",
+      "aliases": ["Principle of Virtual Displacements", "Virtual Velocity Principle"],
+      "one_liner": "A system is in static equilibrium exactly when the total work done by active forces over any allowed tiny virtual displacement is zero.",
+      "explanation": "The principle of virtual work is a fundamental principle of analytical mechanics: imagine the system undergoes a hypothetical, infinitesimal displacement (a virtual displacement) that's consistent with its constraints — if the total work done by all the active forces over this displacement (the virtual work) sums to zero, the system is in static equilibrium. Johann Bernoulli gave it a systematic statement in correspondence with Varignon in 1715, and Lagrange later built analytical mechanics on top of it. Its advantage is that the reaction forces from ideal constraints — such as the internal forces at a joint — do zero virtual work, so they never need to be solved for individually. The most-used result in robotics is τ = Jᵀ(θ)F: when the end effector applies a force or wrench F to the outside world, the required joint torque τ equals the transpose of the Jacobian matrix J times F, based on the equality of virtual work (or power) done at the joints and at the end effector. Force control, impedance control, gravity compensation, and converting a legged robot's foot contact force f into joint torques via τ = J_cᵀf all rest on this relationship.",
+      "example": "A planar two-link arm needs to push horizontally against a wall with 10 N at its end effector, in some given pose: substituting F = (10, 0) into τ = JᵀF directly gives the torque each of the two joints must output, with no need to analyze the internal forces within the links.",
+      "related": ["Jacobian Matrix", "Wrench", "Statics", "Gravity Compensation", "Contact Jacobian", "Lagrangian Dynamics"]
+    },
+    {
+      "key": "mechanics-13#8",
+      "name_en": "Product of Exponentials Formula",
+      "aliases": ["PoE", "Product of Exponentials"],
+      "one_liner": "Treats each joint as motion about a screw axis, and multiplies each joint's matrix exponential together to get the end-effector pose.",
+      "explanation": "The product of exponentials formula was introduced by Roger Brockett in 1984, and is a way of describing a serial manipulator's forward kinematics; Lynch and Park's textbook Modern Robotics builds its whole treatment around it. The space form is written T(θ) = e^[S₁]θ₁ ⋯ e^[Sₙ]θₙ M: M is the end-effector's pose when every joint is at zero, Sᵢ is joint i's screw axis expressed in the fixed base frame (6-dimensional, combining a rotation direction and a linear-velocity part), θᵢ is the joint's angle or displacement, and e^[S]θ denotes the rigid-body transformation produced by moving θ along that screw axis. There's also a body form with the screw axes expressed in the end-effector frame, T = M e^[B₁]θ₁ ⋯. Compared with DH parameters, it only needs two frames — base and end effector — treats revolute and prismatic joints uniformly, and has a directly intuitive geometric meaning, at the cost of not using the fewest possible parameters. Jacobians, inverse kinematics, and kinematic calibration can all be derived on top of it.",
+      "example": "A single-joint planar arm: a link of length L rotating about the base's z-axis. At the zero configuration the end effector is at (L, 0, 0), which is M; the screw axis is S = (0, 0, 1, 0, 0, 0). T(θ) = e^[S]θ M then gives the end-effector position (L·cosθ, L·sinθ, 0).",
+      "related": ["Screw Theory", "DH Parameters", "Forward Kinematics", "Exponential Map", "Lie Group", "Kinematic Calibration"]
+    },
+    {
+      "key": "mechanics-13#9",
+      "name_en": "Quaternion Double Cover",
+      "aliases": ["q and −q Equivalence", "Quaternion Sign Ambiguity"],
+      "one_liner": "The unit quaternions q and −q represent the exact same rotation, so every orientation corresponds to two quaternions.",
+      "explanation": "When a unit quaternion q = (w, x, y, z) represents a rotation, q and −q produce exactly the same rotation matrix, because the formula converting a quaternion to a rotation is quadratic in q, so the signs cancel out. Mathematically, the map from the 3-sphere S³ of unit quaternions to the rotation group SO(3) is two-to-one (a double cover), with each orientation corresponding to a pair of antipodal points on the sphere. This is a common pitfall in embodied AI: the same end-effector orientation might appear in a dataset sometimes as q and sometimes as −q, and if a network regresses quaternions directly with an ordinary L2 loss, it will treat identical orientations as if they were very different. Orientation difference should instead be measured with 1 − |q₁·q₂|, or by taking whichever is smaller of ‖q − q̂‖ and ‖q + q̂‖. Before doing spherical interpolation, if the dot product between two quaternions is negative, one should be flipped first, or the interpolation will take the long way around. Zhou and colleagues (2019) further proved that rotation representations of four dimensions or fewer are all discontinuous, which is why many policies switch to a 6D rotation representation instead.",
+      "example": "The quaternion for a 90° rotation about the z-axis is q = (0.707, 0, 0, 0.707) (w first); −q = (−0.707, 0, 0, −0.707) is equivalent to the same rotation plus one full extra 360° turn — the orientation is identical. A common normalization is to simply enforce w ≥ 0.",
+      "related": ["Quaternion", "6D Rotation Representation", "Spherical Linear Interpolation (Slerp)", "Geodesic Distance on SO(3)", "Special Orthogonal Group SO(3)", "Quaternion Component Order Convention (wxyz / xyzw)"]
+    },
+    {
+      "key": "mechanics-13#10",
+      "name_en": "Reachability Map / Inverse Reachability Map",
+      "aliases": ["RM / IRM", "Capability Map", "Inverse Capability Map"],
+      "one_liner": "A precomputed record of which end-effector poses an arm can reach; the inverse version looks up where to place the base to reach a target.",
+      "explanation": "A reachability map is an offline precomputation of a manipulator's workspace: the space around the end effector is divided into 3D voxels, several orientations are sampled within each voxel, and inverse kinematics checks whether each one is reachable; the results (often expressed as the fraction of reachable orientations) are stored in a lookup table, so the arm doesn't have to re-solve inverse kinematics repeatedly at run time. Zacharias and colleagues introduced this kind of capability map in 2007. The inverse reachability map inverts every reachable pose to instead give a distribution of where the base can be placed relative to a target end-effector pose — Vahrenkamp and colleagues used it in 2013 to solve base placement for mobile manipulation. Both are commonly used to filter out unreachable grasps during grasp planning, to choose a standing position for mobile manipulation, and to evaluate a robot's design and mounting location; a 2024 method called RM4D compresses both into a single 4D data structure.",
+      "example": "A mobile robot approaching a table to pick up a cup: it queries the inverse reachability map centered on the candidate grasp pose, getting a region on the floor from which that grasp is reachable, filters out spots that would collide with the table or are unreachable, and picks the point with the highest reachability score as its navigation target.",
+      "related": ["Workspace", "Inverse Kinematics", "Mobile Manipulation", "Mobile Manipulator", "Grasp Planning", "Manipulability"]
+    },
+    {
+      "key": "mechanics-13#11",
+      "name_en": "Recursive Newton-Euler Algorithm",
+      "aliases": ["RNEA", "RNE", "Newton-Euler Inverse Dynamics"],
+      "one_liner": "Sweeps velocity and acceleration outward from the base, then sweeps force back inward from the tip, to compute inverse-dynamics joint torques.",
+      "explanation": "The recursive Newton-Euler algorithm computes inverse dynamics: given joint positions q, velocities q̇, and accelerations q̈, it finds the required joint torques τ = M(q)q̈ + C(q,q̇)q̇ + g(q), where M is the mass matrix, the C term is the Coriolis and centrifugal forces, and g is the gravity term. It runs in two passes: a forward pass from the base to the tip computes each link's velocity and acceleration; a backward pass from the tip back to the base applies the Newton-Euler equations to each link to find the force and moment acting on it, and projecting that onto the joint axis gives τ. The computation grows only linearly with the number of joints, far more efficient than expanding the Lagrangian equations directly. Luh, Walker, and Paul's 1980 online computation scheme is the classic form, and Featherstone gave a unified treatment using 6-dimensional spatial vectors. Both Pinocchio's rnea() and MuJoCo's mj_rne implement it; setting acceleration to zero yields the bias forces from gravity and Coriolis effects, which are commonly used for gravity compensation, computed-torque control, and model-based collision detection.",
+      "example": "With Pinocchio, pinocchio.rnea(model, data, q, v, a) directly returns the joint torques; setting v and a to zero gives exactly the gravity-compensation torque needed to hold the arm still in its current pose.",
+      "related": ["Inverse Dynamics", "Newton-Euler Equations", "Articulated Body Algorithm", "Composite Rigid Body Algorithm", "Computed Torque Control", "Pinocchio"]
+    }
+  ]
+}

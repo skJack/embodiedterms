@@ -1,0 +1,437 @@
+{
+ "category": "data",
+ "batch": 2,
+ "terms": [
+  {
+   "name_zh": "遥操作",
+   "name_en": "Teleoperation",
+   "abbr": "",
+   "aliases": [
+    "遥控操作",
+    "远程操作",
+    "teleop",
+    "Remote Operation"
+   ],
+   "tier": 1,
+   "one_liner": "人通过主臂、VR 等设备实时操控机器人；具身智能里主要用它采演示数据。",
+   "explanation": "遥操作原意是在一定距离外操作机器，是「远程控制」在学术和技术场合的说法。在具身智能里，它是采集演示数据的主力手段：操作员通过主从臂、VR 头显、3D 鼠标或动捕手套下指令，机器人照做，系统同步记下相机画面、关节状态和每一步的动作指令，得到模仿学习要用的「观测-动作」对。数据直接在机器人身上录，训练出的策略可以原样部署，不存在人手和机械手不一致的问题；代价是要有真机和熟练的数采员，速度慢、成本高。UMI 这类手持采集设备和从人类视频学习，都是为了绕开这个瓶颈。",
+   "example": "ALOHA 双臂平台用「主从臂」遥操作：操作员带动一对主臂，另一对从臂实时跟随，整套硬件预算约 2 万美元；ACT 在多数任务上只用 50 条这样录下的演示（约 10–20 分钟），就学会了打开调料杯盖、把电池插进遥控器等精细动作。",
+   "related": [
+    "演示数据",
+    "主从臂遥操作",
+    "VR 遥操作",
+    "数采员",
+    "模仿学习",
+    "通用操作接口"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Teleoperation",
+     "url": "https://en.wikipedia.org/wiki/Teleoperation"
+    },
+    {
+     "title": "ALOHA / ACT 项目页: Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware",
+     "url": "https://tonyzhaozh.github.io/aloha/"
+    },
+    {
+     "title": "Zhao et al. 2023: Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware (arXiv 2304.13705)",
+     "url": "https://arxiv.org/abs/2304.13705"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "通用操作接口",
+   "name_en": "Universal Manipulation Interface",
+   "abbr": "UMI",
+   "aliases": [
+    "UMI 夹爪",
+    "UMI 手持采集",
+    "UMI Gripper"
+   ],
+   "tier": 1,
+   "one_liner": "拿手持夹爪录演示、不用真机也能训练可部署策略的采集方案。",
+   "explanation": "UMI 由斯坦福、哥伦比亚大学和丰田研究院在 2024 年 2 月提出（Cheng Chi、Shuran Song 等）。人手持 3D 打印的平行夹爪干活，夹爪上装一台 155° 鱼眼 GoPro，两侧小镜子提供额外视角；事后用视觉 SLAM 算法 ORB-SLAM3 结合 GoPro 自带的 IMU（惯性测量单元）还原夹爪在空间中的 6 自由度位姿，用标记点跟踪手指开合，得到动作标签。手持夹爪和机器人上装的夹爪、相机位置一致，所以采集时不需要机器人在场，可以去家里、户外等真实场景录。再配合延迟匹配（补偿不同机器人相机和电机的时间延迟）和相对轨迹动作表示，同一策略能部署到 UR5e 和 Franka 上。",
+   "example": "论文用 UMI 数据训练的策略完成了摆放杯子、洗碗、把物体甩进对应的筐和双臂叠衣服等任务；夹爪物料成本约 73 美元，GoPro 及配件约 298 美元；在摆杯子任务上每小时能采约 111 条演示，是 SpaceMouse（3D 鼠标）遥操作的 3 倍多。",
+   "related": [
+    "手持夹爪采集",
+    "无本体采集",
+    "FastUMI",
+    "UMI on Legs",
+    "DexUMI",
+    "RDT2"
+   ],
+   "sources": [
+    {
+     "title": "Chi et al. 2024: Universal Manipulation Interface (arXiv 2402.10329)",
+     "url": "https://arxiv.org/abs/2402.10329"
+    },
+    {
+     "title": "UMI 项目页",
+     "url": "https://umi-gripper.github.io/"
+    }
+   ],
+   "as_of": "2024-03"
+  },
+  {
+   "name_zh": "VR 遥操作",
+   "name_en": "VR Teleoperation",
+   "abbr": "",
+   "aliases": [
+    "XR 遥操作",
+    "头显遥操作",
+    "Vision Pro 遥操作",
+    "XR Teleoperation"
+   ],
+   "tier": 1,
+   "one_liner": "戴 VR/XR 头显，用手部追踪或手柄实时操控机器人。",
+   "explanation": "VR 遥操作是遥操作的一种：VR/XR 头显的手部追踪或手柄读出人的手腕和手指位姿，再经逆运动学（由末端位姿反算关节角）和动作重定向（把人手姿态换算成机器人手的关节角）变成机器人指令；沉浸式方案还会把机器人相机的画面传回头显，操作员像站在机器人的位置上干活。它不用给每种机器人专门做一套主臂，设备现成、便携，适合人形机器人和灵巧手这类自由度多的本体，BridgeData V2、DROID、AgiBot World 等数据集都用过。不足是通常没有力反馈，手部追踪有延迟和抖动，精细接触任务不如主从臂稳；AgiBot World 论文也提到 VR 手柄只能让灵巧手做几种预设手势，复杂任务改用动捕。",
+   "example": "Open-TeleVision 用 Apple Vision Pro 操控 Unitree H1：机器人头部跟着操作员转，双目画面传回头显，双手经 dex-retargeting 跟随；宇树开源的 xr_teleoperate 支持 Apple Vision Pro、PICO 4 Ultra Enterprise 和 Meta Quest 3，并把每回合数据存下来用于模仿学习。",
+   "related": [
+    "遥操作",
+    "Open-TeleVision",
+    "Apple Vision Pro",
+    "动作重定向",
+    "宇树 xr_teleoperate（XR 遥操作）",
+    "VR 头显"
+   ],
+   "sources": [
+    {
+     "title": "Cheng et al. 2024: Open-TeleVision (arXiv 2407.01512)",
+     "url": "https://arxiv.org/abs/2407.01512"
+    },
+    {
+     "title": "GitHub: unitreerobotics/xr_teleoperate",
+     "url": "https://github.com/unitreerobotics/xr_teleoperate"
+    },
+    {
+     "title": "AgiBot World Colosseo 技术报告 (arXiv 2503.06669)",
+     "url": "https://arxiv.org/html/2503.06669"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "动作标签",
+   "name_en": "Action Label",
+   "abbr": "",
+   "aliases": [
+    "动作标注",
+    "Action Annotation"
+   ],
+   "tier": 2,
+   "one_liner": "数据里每一时刻机器人执行的动作值，是模仿学习要拟合的「答案」。",
+   "explanation": "动作标签是机器人数据中与每帧观测对齐的动作值，比如末端的位移和旋转、关节目标角度、夹爪开合。遥操作时由系统直接记录，UMI 这类手持采集则靠 SLAM 等算法事后还原。行为克隆把观测当输入、动作标签当监督信号，所以标签的频率、坐标系、是绝对量还是增量，都会直接影响模型学到什么；RT-1-X 等模型把各家数据统一成 7 维动作（位置 3 维、旋转 3 维、夹爪 1 维）。动作标签只能在机器人或专门设备上采到，这是机器人数据贵的主要原因，于是有了用逆动力学模型给视频补伪动作标签、或学潜在动作的做法。",
+   "example": "OpenAI 的 VPT 先用承包商录制的 1962 小时带键鼠操作记录的 Minecraft 数据训练逆动力学模型，再用它给约 7 万小时网络视频补上伪动作标签，最终训练出能做出钻石工具的智能体。",
+   "related": [
+    "观测-动作对",
+    "行为克隆",
+    "动作空间",
+    "伪动作标签",
+    "逆动力学模型",
+    "无动作标签视频"
+   ],
+   "sources": [
+    {
+     "title": "Baker et al. 2022: Video PreTraining (VPT) (arXiv 2206.11795)",
+     "url": "https://arxiv.org/abs/2206.11795"
+    },
+    {
+     "title": "Open X-Embodiment 项目页",
+     "url": "https://robotics-transformer-x.github.io/"
+    },
+    {
+     "title": "Ye et al. 2024: Latent Action Pretraining from Videos (LAPA)",
+     "url": "https://arxiv.org/abs/2410.11758"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "无动作标签视频",
+   "name_en": "Action-free Video",
+   "abbr": "",
+   "aliases": [
+    "无动作视频",
+    "无动作标注视频",
+    "Actionless Video"
+   ],
+   "tier": 2,
+   "one_liner": "只有画面、没有逐帧动作记录的视频，比如人类视频和网络视频。",
+   "explanation": "无动作标签视频指只有图像序列、没有逐帧动作标签的视频，常见来源是网上的人类操作视频、第一人称视频，以及只存了画面的机器人录像。它的量远大于带动作的机器人数据，里面有大量「物体怎么动、任务怎么做」的信息，但不能直接拿来做行为克隆。常见用法有几类：训练逆动力学模型给它补伪动作标签；用潜在动作模型从相邻帧学出离散的「潜在动作」做预训练，如 LAPA、Genie；先生成未来画面再推算动作，如 UniPi、AVDC；或只用来预训练视觉表征和世界模型。LAPA 报告，这样预训练的模型在真机任务上超过了用机器人动作标签训练的 VLA。",
+   "example": "AVDC 只用不带动作的 RGB 视频训练：先用视频生成模型合成机器人完成任务的画面，再根据相邻帧之间的稠密对应（光流）推算机器人该怎么动，在桌面操作和导航任务上做了验证。",
+   "related": [
+    "潜在动作预训练",
+    "人类视频数据",
+    "互联网视频数据",
+    "伪动作标签",
+    "潜在动作模型",
+    "从观测中模仿学习"
+   ],
+   "sources": [
+    {
+     "title": "Ko et al. 2023: Learning to Act from Actionless Videos through Dense Correspondences (AVDC)",
+     "url": "https://arxiv.org/abs/2310.08576"
+    },
+    {
+     "title": "Ye et al. 2024: Latent Action Pretraining from Videos (LAPA)",
+     "url": "https://arxiv.org/abs/2410.11758"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "AgiBot World 数据集",
+   "name_en": "AgiBot World",
+   "abbr": "",
+   "aliases": [
+    "智元 AgiBot World",
+    "AgiBot World Colosseo",
+    "AgiBot World Alpha",
+    "AgiBot World Beta",
+    "AGIBOT WORLD 2026"
+   ],
+   "tier": 2,
+   "one_liner": "智元机器人等发布的大规模真机操作数据集，Beta 版超百万条轨迹。",
+   "explanation": "AgiBot World 是智元机器人联合香港大学、上海人工智能实验室等发布的真机操作数据集。Alpha 版 2024 年 12 月放出约 9.2 万条轨迹；Beta 版 2025 年 3 月扩到 100 万条以上、约 2976 小时，覆盖 217 个任务、5 类场景，由 100 台智元 G1 在约 4000 平方米的采集场里用 VR 和动捕遥操作录制，带任务和子步骤语言标注并经人工质检，智元的 GO-1 模型就在它上面训练。2026 年又放出 AgiBot World 2026 预览版，改用 G2 在商业空间、家庭等真实环境采集。许可为 CC BY-NC-SA 4.0，不可商用。",
+   "example": "技术报告称，在 AgiBot World 上预训练的策略，在分布内和分布外场景中比用 Open X-Embodiment 预训练的策略平均高约 30%。",
+   "related": [
+    "智元机器人",
+    "智元 GO-1（启元大模型）",
+    "Open X-Embodiment 数据集",
+    "具身智能训练场",
+    "真机数据",
+    "智元 精灵 G1"
+   ],
+   "sources": [
+    {
+     "title": "AgiBot World Colosseo 技术报告 (arXiv 2503.06669)",
+     "url": "https://arxiv.org/abs/2503.06669"
+    },
+    {
+     "title": "GitHub: OpenDriveLab/AgiBot-World",
+     "url": "https://github.com/OpenDriveLab/AgiBot-World"
+    },
+    {
+     "title": "Hugging Face: agibot-world/AgiBotWorld2026",
+     "url": "https://huggingface.co/datasets/agibot-world/AgiBotWorld2026"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "AMASS 人体动捕数据集",
+   "name_en": "AMASS (Archive of Motion Capture as Surface Shapes)",
+   "abbr": "AMASS",
+   "aliases": [
+    "AMASS 数据集"
+   ],
+   "tier": 2,
+   "one_liner": "把 15 个光学动捕数据集统一成 SMPL 人体模型格式的大型人体动作库。",
+   "explanation": "AMASS 由德国马普智能系统研究所的 Mahmood、Black 等人提出，发表于 ICCV 2019。以前各家光学动捕数据集的标记点布置、骨架定义都不一样，很难合并使用。作者用 MoSh++ 方法把原始标记点数据拟合成 SMPL 参数化人体模型（用几十个参数描述人的姿态和体型）的序列，统一了 15 个数据集，共 300 多名受试者、1.1 万多段动作、40 多小时。在具身智能里，它是人形机器人运动跟踪和全身控制常用的人类动作来源：先把 SMPL 动作重定向成机器人关节轨迹，再在仿真里用强化学习训练策略去跟踪。需注册后下载，面向科研使用。",
+   "example": "H2O 把 AMASS 约 1.3 万段动作重定向到 Unitree H1 上得到 1 万段，再用仿真里的模仿策略筛掉机器人做不出来的动作，留下约 8500 段用于训练人形全身遥操作策略。",
+   "related": [
+    "SMPL 人体模型",
+    "动作重定向",
+    "运动跟踪",
+    "光学动捕",
+    "LAFAN1 动捕数据集",
+    "H2O（人到人形）"
+   ],
+   "sources": [
+    {
+     "title": "AMASS 官网",
+     "url": "https://amass.is.tue.mpg.de/"
+    },
+    {
+     "title": "Mahmood et al. 2019: AMASS (arXiv 1904.03278)",
+     "url": "https://arxiv.org/abs/1904.03278"
+    },
+    {
+     "title": "He et al. 2024: H2O: Learning Human-to-Humanoid Real-Time Whole-Body Teleoperation",
+     "url": "https://arxiv.org/html/2403.04436"
+    }
+   ],
+   "as_of": "2019-10"
+  },
+  {
+   "name_zh": "Apple Vision Pro",
+   "name_en": "Apple Vision Pro",
+   "abbr": "AVP",
+   "aliases": [
+    "苹果 Vision Pro",
+    "Vision Pro"
+   ],
+   "tier": 2,
+   "one_liner": "苹果的头戴显示设备，具身领域常用它的手部追踪做遥操作和采人类数据。",
+   "explanation": "Apple Vision Pro 是苹果 2023 年 6 月在 WWDC 发布、2024 年 2 月 2 日在美国开售的头显，起价 3499 美元，最初搭载 M2 芯片和专门处理传感器输入的 R1 芯片，有 12 个摄像头、5 个传感器和 6 个麦克风；2025 年 10 月推出了 M5 芯片版本。它不是机器人产品，但系统能实时追踪手腕和手指的 3D 位姿，又有高分辨率双目显示，所以被具身研究拿来做遥操作：人手动作经重定向驱动机器人，机器人头部相机画面传回头显。它也能在人做家务时同步记录第一人称视频和手部 3D 轨迹，用来采人类操作数据。",
+   "example": "Open-TeleVision 用 Vision Pro 远程操控 Unitree H1，作者在 MIT 就能操控远在加州大学圣地亚哥分校的机器人；苹果自己用 Vision Pro 采了 829 小时、194 种任务的第一人称人手操作数据集 EgoDex。",
+   "related": [
+    "VR 遥操作",
+    "VR 头显",
+    "Open-TeleVision",
+    "EgoDex 数据集",
+    "第一人称视频",
+    "Meta Quest 3 / PICO 4 Ultra 头显"
+   ],
+   "sources": [
+    {
+     "title": "Apple Newsroom: Apple Vision Pro available in the U.S. on February 2",
+     "url": "https://www.apple.com/newsroom/2024/01/apple-vision-pro-available-in-the-us-on-february-2/"
+    },
+    {
+     "title": "Wikipedia: Apple Vision Pro",
+     "url": "https://en.wikipedia.org/wiki/Apple_Vision_Pro"
+    },
+    {
+     "title": "Hoque et al. 2025: EgoDex (arXiv 2505.11709)",
+     "url": "https://arxiv.org/abs/2505.11709"
+    }
+   ],
+   "as_of": "2025-10"
+  },
+  {
+   "name_zh": "BridgeData V2 数据集",
+   "name_en": "BridgeData V2",
+   "abbr": "",
+   "aliases": [
+    "Bridge 数据集",
+    "BridgeData",
+    "Bridge V2"
+   ],
+   "tier": 2,
+   "one_liner": "伯克利团队在低成本 WidowX 机械臂上采集的约 6 万条多任务操作数据集。",
+   "explanation": "BridgeData V2 由 UC 伯克利 Sergey Levine 团队等在 2023 年 8 月发布，全部用 6 自由度的 WidowX 250 机械臂采集，共 60096 条轨迹：50365 条是用 VR 手柄遥操作的演示，9731 条来自脚本化抓放策略。数据覆盖玩具厨房、水槽、桌面等 24 种环境和抓放、推、擦、开关抽屉、叠布等 13 类技能，控制频率 5 Hz，每条轨迹配一句语言指令，许可为 CC BY 4.0。机器便宜、数据开放，它被收入 Open X-Embodiment，是 Octo、OpenVLA 等开源模型训练和评测的常客。",
+   "example": "SimplerEnv 在仿真里复刻了 Bridge 的 WidowX 场景，设了「把勺子放到毛巾上」「把胡萝卜放到盘子上」「把绿方块叠到黄方块上」「把茄子放进篮子」四个任务，专门评测用 Bridge 数据训练的策略。",
+   "related": [
+    "Open X-Embodiment 数据集",
+    "WidowX 250 机械臂",
+    "SimplerEnv",
+    "OpenVLA",
+    "Octo",
+    "遥操作"
+   ],
+   "sources": [
+    {
+     "title": "Walke et al. 2023: BridgeData V2 (arXiv 2308.12952)",
+     "url": "https://arxiv.org/abs/2308.12952"
+    },
+    {
+     "title": "BridgeData V2 项目页",
+     "url": "https://rail-berkeley.github.io/bridgedata/"
+    },
+    {
+     "title": "GitHub: simpler-env/SimplerEnv",
+     "url": "https://github.com/simpler-env/SimplerEnv"
+    }
+   ],
+   "as_of": "2024-01"
+  },
+  {
+   "name_zh": "跨本体数据",
+   "name_en": "Cross-Embodiment Data",
+   "abbr": "",
+   "aliases": [
+    "多本体数据",
+    "Multi-Embodiment Data",
+    "X-Embodiment Data"
+   ],
+   "tier": 2,
+   "one_liner": "由多种不同机器人采集、合在一起训练的数据。",
+   "explanation": "跨本体数据指来自多种机器人本体（机器人的具体硬件形态）的数据集合，这些机器人的外形、自由度、相机位置和动作空间各不相同，比如单臂、双臂、移动底盘和人形。单个实验室的数据量有限，把多家数据合起来训练，是希望模型学到不依赖某一台机器的通用技能，各本体都能受益。代表是 2023 年谷歌 DeepMind 牵头的 Open X-Embodiment：汇集 34 个实验室的 60 个数据集、22 种机器人、100 万条以上轨迹，统一成 RLDS 格式。难点是各家动作和观测不一致，要做归一化、统一动作空间或给每个本体配专属输出头；配比不当还可能出现负迁移。",
+   "example": "在 Open X-Embodiment 上训练的 RT-1-X，在几个数据量小的实验室任务上，平均成功率比各实验室只用自家数据训练的原方法高约 50%。",
+   "related": [
+    "跨本体",
+    "Open X-Embodiment 数据集",
+    "本体差异",
+    "统一动作空间",
+    "本体专属头",
+    "正迁移 / 负迁移"
+   ],
+   "sources": [
+    {
+     "title": "Open X-Embodiment Collaboration 2023: Open X-Embodiment: Robotic Learning Datasets and RT-X Models",
+     "url": "https://arxiv.org/abs/2310.08864"
+    },
+    {
+     "title": "Open X-Embodiment 项目页",
+     "url": "https://robotics-transformer-x.github.io/"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "数据标注",
+   "name_en": "Data Annotation",
+   "abbr": "",
+   "aliases": [
+    "打标",
+    "数据打标",
+    "Data Labeling"
+   ],
+   "tier": 2,
+   "one_liner": "给原始数据补上文字说明、分段、框选等标签，告诉模型每段数据是什么。",
+   "explanation": "数据标注是给原始数据加上人能看懂、模型能拿来当监督信号的标签，经典例子是给图片标类别、画框。机器人数据里，动作在采集时已自动记录，额外要标的主要是：整段任务的语言指令、子任务切分及起止时间、物体目标框、成功或失败以及失败原因等。这些标签决定了语言条件策略能不能听懂指令、长程任务能不能拆成步骤来学。标注可以全靠人工，也可以先用视觉语言模型自动生成再人工核验。有标注的数据比原始数据贵得多，标注员之间标得不一致，也会直接拖累模型效果。",
+   "example": "AgiBot World 2026 数据集提供三层标注：带子任务指令的任务帧分段、物体交互的 2D 目标框、带原子技能的步骤级指令分段；DROID 在 2024 年 12 月的更新里为约 7.5 万条成功轨迹各补了 3 条自然语言描述。",
+   "related": [
+    "语言标注",
+    "子任务切分",
+    "自动标注",
+    "动作标签",
+    "数据质检",
+    "事后重标注"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Labeled data",
+     "url": "https://en.wikipedia.org/wiki/Labeled_data"
+    },
+    {
+     "title": "Hugging Face: agibot-world/AgiBotWorld2026",
+     "url": "https://huggingface.co/datasets/agibot-world/AgiBotWorld2026"
+    },
+    {
+     "title": "DROID 数据集项目页",
+     "url": "https://droid-dataset.github.io/"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "数据清洗",
+   "name_en": "Data Cleaning",
+   "abbr": "",
+   "aliases": [
+    "数据清理",
+    "Data Cleansing"
+   ],
+   "tier": 2,
+   "one_liner": "训练前找出并修正或剔除坏数据，如失败轨迹、空动作、错位帧。",
+   "explanation": "数据清洗指识别并修正或删除数据集里损坏、错误或无关的记录，是通用的数据处理步骤。机器人数据里常见的问题有：没做完或操作失误的轨迹、开头结尾长时间不动的空闲帧、全零动作、多路相机和关节数据时间戳没对齐、丢帧、传感器读数跳变、语言指令和实际动作对不上等。这些噪声会让模仿学习把停顿和抖动也学进去。清洗手段包括规则过滤、统计异常检测和人工抽检，也可以先用一小批数据训练策略上机跑，看数据好不好用。失败数据不一定都要删，标好原因的失败和纠偏片段对学会恢复动作有用。",
+   "example": "OpenVLA 论文把表现优于 RT-2-X 的部分原因归于更仔细的数据清洗，例如去掉了 Bridge 数据里的全零动作；AgiBot World 的消融实验也显示，人工核验过的数据让任务完成分数提高了 0.18。",
+   "related": [
+    "数据质检",
+    "数据筛选",
+    "空操作 / 静止帧过滤",
+    "有效数据",
+    "失败数据",
+    "多传感器时间同步（时间戳对齐）"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Data cleansing",
+     "url": "https://en.wikipedia.org/wiki/Data_cleansing"
+    },
+    {
+     "title": "Kim et al. 2024: OpenVLA: An Open-Source Vision-Language-Action Model",
+     "url": "https://arxiv.org/abs/2406.09246"
+    },
+    {
+     "title": "AgiBot World Colosseo 技术报告 (arXiv 2503.06669)",
+     "url": "https://arxiv.org/html/2503.06669"
+    }
+   ],
+   "as_of": ""
+  }
+ ]
+}

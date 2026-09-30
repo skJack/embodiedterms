@@ -1,0 +1,113 @@
+{
+  "batch": "sim-09",
+  "terms": [
+    {
+      "key": "sim-09#0",
+      "name_en": "Automatic Domain Randomization",
+      "aliases": ["ADR"],
+      "one_liner": "A domain-randomization method, proposed by OpenAI, that automatically widens its randomization range as the policy gets better.",
+      "explanation": "ADR is an algorithm OpenAI proposed in its 2019 work on solving a Rubik's Cube with a robot hand. Ordinary domain randomization (randomly varying parameters like friction, mass, and appearance in simulation so a policy transfers to a real robot) requires a person to manually set the randomization range for every parameter, which becomes hard to tune as the number of parameters grows. ADR turns this into an automatic curriculum: the initial distribution is concentrated entirely on a single environment set to calibrated real-robot values; during training, one parameter is randomly picked and pinned to the current edge of its range for evaluation, and its range is widened if performance is above an upper threshold or narrowed if it is below a lower threshold. Difficulty then grows in step with the policy's ability, and the final range can end up far wider than anything a person would set by hand. The paper used ADR to jointly train a control policy and a vision-based pose-estimation network, both trained entirely in simulation and then transferred to a real Shadow dexterous hand.",
+      "example": "The paper's best policy achieved about a 60% success rate on real-robot cube configurations requiring 15 moves to solve, and about 20% on the hardest configurations requiring 26 moves; the solution sequence itself came from the classical Kociemba solver, while the neural network handled the hand's manipulation.",
+      "related": ["Domain Randomization", "Dynamics Randomization", "Sim-to-Real Transfer", "Curriculum Learning", "Dactyl", "Shadow Dexterous Hand"]
+    },
+    {
+      "key": "sim-09#1",
+      "name_en": "Batched Rendering",
+      "aliases": ["Tiled Rendering", "Tiled Camera", "Batch Renderer"],
+      "one_liner": "Rendering camera images for hundreds or thousands of parallel environments in one pass, feeding vision policies at high speed.",
+      "explanation": "GPU-parallel simulation can run thousands of environments at once, but if each environment's camera were rendered and copied separately, image bandwidth would become the bottleneck: Isaac Lab's documentation estimates that one 800×600 floating-point image is nearly 2 MB, so 60 frames per second alone needs 120 MB/s, before multiplying by the number of cameras and environments. Batched rendering merges the processing of the same camera across all environments. Isaac Lab's TiledCamera (supported from Isaac Sim 4.2.0) is a good example: all the cloned cameras share a single render product, and each environment's image is tiled into one large combined image that can be handed to the training code in a single sync. ManiSkill3's SAPIEN-based parallel rendering and MuJoCo Playground's built-in batched renderer offer similar capability. This is what lets pixel-based vision-motor policies be trained with massively parallel reinforcement learning too.",
+      "example": "In Isaac Lab, setting a TiledCameraCfg's camera path to /World/envs/env_.*/Camera retrieves an 80×80 RGB image for every environment in one call; the official guidance suggests around 512 cameras on an RTX 4090-class GPU.",
+      "related": ["GPU-Accelerated Parallel Simulation", "Vectorized Environments", "Rendering", "Isaac Lab", "ManiSkill", "Massively Parallel Reinforcement Learning"]
+    },
+    {
+      "key": "sim-09#2",
+      "name_en": "Benchmark Saturation",
+      "aliases": ["Leaderboard Saturation"],
+      "one_liner": "When leading models' scores on a benchmark all cluster near the maximum, so it can no longer distinguish good methods from bad ones.",
+      "explanation": "A benchmark — a shared test with fixed tasks and an evaluation protocol — tends to saturate the longer it's used: scores from different groups converge toward the ceiling, with gaps shrinking to a percentage point or two, sometimes within the range of random noise. This can happen because methods genuinely improved, but it can equally happen because everyone has repeatedly tuned against the same test set, or because the test scenes are too similar to the training data, letting a model score well through memorization. The Dynabench paper (2021) in NLP made exactly this point: models quickly achieve excellent benchmark scores yet fail on simple adversarial examples. A typical case in embodied AI is LIBERO, where multiple VLA models now score above 90% success under the standard setup. Once a benchmark saturates, the community usually releases a harder or perturbed successor, or shifts to real-robot evaluation and generalization/robustness evaluation. A small lead on a saturated benchmark carries limited weight.",
+      "example": "LIBERO-PRO (2025) shows that a model scoring above 90% success on standard LIBERO drops to 0.0% success once objects are swapped, initial states changed, instructions reworded, or the environment changed — indicating that the high score largely reflected memorization of training trajectories and scene layouts.",
+      "related": ["Benchmark", "LIBERO", "LIBERO-PRO", "LIBERO-Plus", "Benchmark Gaming", "Generalization / Robustness Evaluation"]
+    },
+    {
+      "key": "sim-09#3",
+      "name_en": "Bi-DexHands",
+      "aliases": ["DexterousHands"],
+      "one_liner": "A reinforcement-learning benchmark from a Peking University team, using two Shadow dexterous hands in Isaac Gym.",
+      "explanation": "Bi-DexHands comes from Peking University's PKU-MARL team; its paper, “Towards Human-Level Bimanual Dexterous Manipulation with Reinforcement Learning,” appeared in the NeurIPS 2022 Datasets and Benchmarks track, and its code repository is named DexterousHands. It places two Shadow dexterous hands in Isaac Gym (NVIDIA's GPU-parallel simulator), with dozens of bimanual tasks and thousands of target objects, and the tasks were designed to correspond to different levels of human motor skill drawn from the cognitive-science literature. The paper reports over 30,000 frames per second on a single RTX 3090. The benchmark covers single-agent, multi-agent (treating each hand as a separate agent), offline, multi-task, and meta-reinforcement learning. It concludes that PPO-family algorithms can master simple tasks at roughly the level of a 48-month-old child, that multi-agent methods help on tasks requiring close two-hand coordination, but that existing algorithms mostly fail under multi-task and few-shot settings.",
+      "example": "In the paper, PPO-family algorithms learn tasks like catching a thrown object or opening a bottle; tasks requiring tight two-hand coordination, such as lifting a pot or stacking blocks, are learned more easily with multi-agent reinforcement learning.",
+      "related": ["Dexterous Manipulation", "Bimanual Manipulation", "Shadow Dexterous Hand", "Isaac Gym", "Multi-Agent Reinforcement Learning", "Proximal Policy Optimization"]
+    },
+    {
+      "key": "sim-09#4",
+      "name_en": "Brax",
+      "aliases": [],
+      "one_liner": "A differentiable rigid-body physics engine from Google written in JAX, bundled with a reinforcement-learning training library.",
+      "explanation": "Brax was open-sourced by a Google team in 2021 (lead paper author C. Daniel Freeman), written in JAX (a numerical computing library that supports automatic differentiation and compiles to run on GPU/TPU). Its selling point is that both the physics simulation and the learning algorithm compile to run on the same accelerator, eliminating the back-and-forth data transfer between CPU and GPU, and it can train a usable policy on MuJoCo-like Gym tasks in a few minutes; because the simulation is differentiable, it can also compute gradients through the simulation directly to optimize a policy. Brax later offered four physics backends: MJX (MuJoCo's JAX reimplementation), generalized coordinates, position-based dynamics, and a spring model. According to its repository, as of version 0.13.0 only brax/training (its PPO, SAC, and similar training code) is still actively maintained; for physics simulation it now recommends switching to MJX or MuJoCo Warp, and MuJoCo Playground for environments.",
+      "example": "MuJoCo Playground's repository notes that to reproduce results exactly as reported in its paper, users can run Brax's training scripts directly, while the environments themselves are implemented with MJX or MuJoCo Warp.",
+      "related": ["MJX", "MuJoCo Playground", "JAX", "Differentiable Simulation", "GPU-Accelerated Parallel Simulation", "Massively Parallel Reinforcement Learning"]
+    },
+    {
+      "key": "sim-09#5",
+      "name_en": "Broad-phase / Narrow-phase Collision Detection",
+      "aliases": ["Broad Phase / Narrow Phase", "Coarse / Fine Collision Detection", "Near-phase"],
+      "one_liner": "Collision detection done in two steps: first a coarse bounding-box pass to find likely pairs, then exact contact computation.",
+      "explanation": "A physics engine has to figure out which objects are touching at every step. With n geometries, there are n(n-1)/2 possible pairs, and checking every pair exactly would be too slow, so the work is split into phases. The broad phase uses simple bounding volumes (such as axis-aligned bounding boxes, or AABBs) for a conservative test that quickly rules out pairs that clearly don't overlap, reporting only “possible collisions”; a common algorithm is sweep-and-prune, which sorts objects along an axis and looks for overlapping intervals. The narrow phase then runs an exact, geometry-specific algorithm (such as GJK/EPA for convex shapes) on the remaining candidate pairs to determine whether they actually touch, along with the contact point, normal, and penetration depth, which is handed to the constraint solver. MuJoCo inserts a mid-phase between the two, further filtering with a bounding-volume hierarchy; PhysX offers several broad-phase algorithms, including SAP, MBP, and a GPU variant. Collision filtering is usually inserted between the broad and narrow phases.",
+      "example": "MuJoCo's broad phase uses a modified sweep-and-prune, sorting along the dominant eigenvector of the covariance matrix of all geometry centers; in the narrow phase, a non-convex mesh gets replaced with its convex hull before being tested.",
+      "related": ["Collision Detection", "Bounding Box", "GJK Algorithm", "Collision Filtering (Collision Groups)", "Collision Body", "Physics Engine"]
+    },
+    {
+      "key": "sim-09#6",
+      "name_en": "CARLA",
+      "aliases": ["CARLA Simulator"],
+      "one_liner": "An open-source, Unreal Engine-based self-driving simulator commonly used for closed-loop testing of driving policies.",
+      "explanation": "CARLA was released by Alexey Dosovitskiy, German Ros, Vladlen Koltun, and colleagues at the first CoRL in 2017. It provides open-source digital assets for city road layouts, buildings, and vehicles, and lets users flexibly configure cameras, lidar, depth, and GPS sensors, along with weather, lighting, and other traffic participants. The original paper used it to compare three driving approaches: a traditional modular pipeline, an end-to-end imitation-learning model, and an end-to-end reinforcement-learning model. It has since become a standard platform for closed-loop self-driving evaluation, with an accompanying autonomous-driving Leaderboard. According to its website, version 0.10.0 (December 2024) upgraded to Unreal Engine 5.5, while the Unreal Engine 4-based 0.9.x line is still maintained, with 0.9.16 released in September 2025; the code is MIT-licensed and the assets are CC-BY licensed.",
+      "example": "The CARLA autonomous-driving Leaderboard has competing driving systems drive in closed loop along fixed routes and traffic scenarios, automatically scoring them on route completion and rule violations.",
+      "related": ["Autonomous Driving", "Simulator", "Game Engine", "Closed-loop Evaluation", "End-to-End", "Lidar"]
+    },
+    {
+      "key": "sim-09#7",
+      "name_en": "Cloth Simulation",
+      "aliases": ["Fabric Simulation"],
+      "one_liner": "Computer simulation of how cloth stretches, bends, wrinkles, and collides — essential for research on manipulating clothing.",
+      "explanation": "Cloth simulation is a category of soft-body simulation that computer graphics has studied since the 1980s. Early geometric methods (such as Weil 1986) approximated wrinkle shapes using catenary curves and ignored dynamics entirely; physics-based methods model cloth as a mesh of point masses connected by springs, accounting for stretch, shear, bending, and gravity; more refined approaches use energy models or the finite element method. The difficulty is that cloth is very thin and extremely prone to self-collision and interpenetration, while being stiff along its stretch direction, so even a moderately large timestep can trigger numerical instability. Implementations commonly used in robotics research include the particle-based NVIDIA FleX and MuJoCo's flex deformable bodies (which can represent rope, cloth, and volumetric soft bodies). Real cloth's physical parameters are hard to measure accurately, so the sim-to-real gap for cloth tasks is usually larger than for rigid-body tasks.",
+      "example": "SoftGym (CoRL 2020), built on NVIDIA FleX, provides tasks such as flattening a cloth, folding it in half, and letting it settle flat on the ground, used to test reinforcement learning on deformable-object manipulation.",
+      "related": ["Soft-Body Simulation", "Cloth Manipulation", "Deformable Object Manipulation", "Position-Based Dynamics", "Finite Element Method", "SoftGym"]
+    },
+    {
+      "key": "sim-09#8",
+      "name_en": "CoACD",
+      "aliases": ["Collision-Aware Approximate Convex Decomposition", "V-HACD"],
+      "one_liner": "Open-source tools that split a concave 3D mesh into convex pieces for use as a physics engine's collision geometry.",
+      "explanation": "Most physics engines only handle collisions between convex shapes well, and MuJoCo will even replace a non-convex mesh outright with its convex hull, which effectively “fills in” concave objects like cups and bowls. Approximate convex decomposition instead cuts a concave mesh into a small number of convex pieces that approximate the original shape. V-HACD, developed by Karim Mammou for collision detection in games and similar settings, has been widely used; its repository is now archived and points new development toward CoACD. CoACD was published at SIGGRAPH 2022 by Xinyue Wei and colleagues from Hao Su's group at UC San Diego, introducing “collision-aware concavity” to measure whether the decomposition preserves realistic collision behavior; it cuts the mesh directly with planes and uses multi-step tree search to choose the cutting planes, achieving a closer approximation with fewer convex pieces. It installs with pip install coacd, and according to its repository has been adopted by simulation frameworks including ManiSkill and SAPIEN.",
+      "example": "Using a coffee mug's mesh directly as its collision geometry would have the convex hull seal the mug's opening shut, so a spoon couldn't be placed inside it in simulation; decomposing it with CoACD into several convex pieces lets both the mug's wall and its interior collide correctly.",
+      "related": ["Convex Decomposition", "Collision Body", "Mesh File", "Simulation Assets", "SAPIEN", "ManiSkill"]
+    },
+    {
+      "key": "sim-09#9",
+      "name_en": "Collision Filtering",
+      "aliases": ["Collision Groups", "contype/conaffinity", "Collision Mask", "Collision Layers"],
+      "one_liner": "Declaring in advance which object pairs should never count as colliding, saving computation and avoiding contact that shouldn't exist.",
+      "explanation": "Not every pair of objects in a simulation needs its collisions computed: a robot's adjacent links are naturally touching right at a joint, and thousands of parallel training environments running at once shouldn't collide with each other either. Collision filtering discards these pairs after the broad phase but before the narrow phase. A common technique is a bitmask attached to each geometry. In MuJoCo, every geom has two integers, contype and conaffinity, and a pair is only checked if one's contype shares at least one set bit with the other's conaffinity — a mechanism borrowed from the ODE engine, with both defaulting to 1; MuJoCo also skips collisions within the same rigid body and between parent and child bodies by default, and pairs can be explicitly excluded with exclude. PhysX implements similar grouping through a filter shader. Getting this wrong leads to problems like a gripper failing to hold an object or a foot passing through the ground.",
+      "example": "Isaac Lab's InteractiveSceneCfg defaults to filter_collisions=True, so cloned environments never collide with each other, while all of them can still collide with global objects such as the ground.",
+      "related": ["Broad-phase / Narrow-phase Collision Detection", "Collision Detection", "Self-Collision Detection", "Collision Body", "MJCF", "Vectorized Environments"]
+    },
+    {
+      "key": "sim-09#10",
+      "name_en": "Constraint Solver",
+      "aliases": ["Contact Solver"],
+      "one_liner": "The physics-engine module that computes contact and joint constraint forces, keeping objects from interpenetrating and joints from coming apart.",
+      "explanation": "Collision detection only tells the engine where objects are touching; how much supporting and frictional force each contact needs, and how much force each joint needs to stay connected, is computed by the constraint solver. These forces must simultaneously satisfy conditions like no interpenetration and friction staying within the friction cone, which is fundamentally a complementarity problem or an optimization problem, usually solved iteratively. Projected Gauss-Seidel (PGS) updates one constraint component at a time and sweeps through them repeatedly; PhysX added Temporal Gauss-Seidel (TGS) starting with version 5.1, which splits a step into several substeps to solve, and its documentation generally recommends TGS. MuJoCo defines constraint forces as the unique global solution to a convex optimization problem, offering PGS, Conjugate Gradient (CG), and Newton's method (the default) as solvers. Too few iterations leads to interpenetration, joint drift, and grasps slipping, which is why iteration count is a key parameter to tune.",
+      "example": "PhysX rigid bodies default to 4 position iterations and 1 velocity iteration; scenes with heavy contact and many joints, such as a dexterous hand grasping something, often need the position-iteration count turned up.",
+      "related": ["Solver Iterations", "Projected Gauss-Seidel Solver", "Linear Complementarity Problem", "Contact Model", "Soft Contact", "Physics Engine"]
+    },
+    {
+      "key": "sim-09#11",
+      "name_en": "Continuous Collision Detection",
+      "aliases": ["CCD", "Tunneling"],
+      "one_liner": "Finding collisions along an object's full motion path within a step, preventing fast-moving objects from passing straight through obstacles.",
+      "explanation": "Ordinary discrete collision detection only checks whether objects overlap at the end of each timestep. When an object is very fast or very thin, it can jump from one side of an obstacle to the other within a single step, with neither the before nor after check finding any overlap — so the collision is missed entirely. This is called tunneling. Continuous collision detection instead finds the earliest time of contact along the path an object sweeps out during that step, handling the collision before the object passes through — at the cost of more computation, which grows more noticeable as speed and object density increase. PhysX requires CCD to be enabled separately at the scene, object-pair, and rigid-body levels, and also offers a cheaper speculative CCD (which enlarges the contact distance based on velocity). Another common fix is shrinking the simulation timestep or adding more substeps. Note that in MuJoCo's documentation, “CCD” instead refers to convex collision detection, not continuous collision detection.",
+      "example": "A thin rod swung quickly, or a small ball thrown fast, can pass straight through a tabletop in simulation when the timestep is too large; enabling CCD or shrinking the timestep fixes the behavior.",
+      "related": ["Collision Detection", "Interpenetration", "Simulation Timestep", "Substep", "Broad-phase / Narrow-phase Collision Detection", "PhysX"]
+    }
+  ]
+}

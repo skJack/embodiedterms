@@ -1,0 +1,425 @@
+{
+  "category": "sim",
+  "batch": 6,
+  "terms": [
+    {
+      "name_zh": "开放词汇移动操作基准",
+      "name_en": "Open-Vocabulary Mobile Manipulation (HomeRobot OVMM)",
+      "abbr": "OVMM",
+      "aliases": [
+        "HomeRobot",
+        "HomeRobot OVMM",
+        "OVMM Challenge",
+        "HomeRobot OVMM Challenge"
+      ],
+      "tier": 2,
+      "one_liner": "让机器人在没见过的房子里找到任意指定物体，并放到指定家具上的评测基准。",
+      "explanation": "HomeRobot OVMM 是 Meta FAIR、佐治亚理工、卡内基梅隆和西蒙弗雷泽大学在 2023 年推出的基准，也是 NeurIPS 2023 的一项竞赛。任务形如「把某物体从 A 家具移到 B 家具」，物体用文字指定，可以是训练时没见过的类别（开放词汇），机器人要在陌生房屋里依次完成找物体、抓取、找目标家具、放置。仿真部分基于 Habitat 和 HSSD 合成场景，共 60 个多房间住宅、129 类 2535 个物体；真机部分用低成本的 Hello Robot Stretch，配套开源软件栈 HomeRobot。它把导航、感知和抓取串在一起评，论文基线的真机成功率约 20%。",
+      "example": "指令「把玩具大象从椅子上移到桌子上」，玩具大象属于训练时没出现过的类别；机器人每完成找到物体、拿起、找到桌子、放好中的一个阶段就得 1 分，四步全成才算成功。",
+      "related": [
+        "移动操作",
+        "开放词汇",
+        "Habitat",
+        "Hello Robot Stretch",
+        "物体重排",
+        "进度分数"
+      ],
+      "sources": [
+        {
+          "title": "HomeRobot: Open-Vocabulary Mobile Manipulation (arXiv 2306.11565)",
+          "url": "https://arxiv.org/abs/2306.11565"
+        },
+        {
+          "title": "NeurIPS 2023 HomeRobot OVMM Challenge",
+          "url": "https://ovmm.github.io/"
+        }
+      ],
+      "as_of": "2023-12"
+    },
+    {
+      "name_zh": "照片级真实感渲染",
+      "name_en": "Photorealistic Rendering",
+      "abbr": "",
+      "aliases": [
+        "照片级渲染",
+        "真实感渲染",
+        "Photo-realistic Rendering"
+      ],
+      "tier": 2,
+      "one_liner": "按真实光学规律计算画面，让仿真图像看起来像真实相机拍的照片。",
+      "explanation": "照片级真实感渲染指模拟光线在场景里的传播、反射和折射，让生成的图像接近真实照片，常用路径追踪（用蒙特卡洛方法随机采样大量光路来算全局光照）配合基于物理的材质。在具身智能里，它主要用来缩小视觉上的虚实差距：视觉策略在仿真里看到的画面越像真实相机，迁到真机时越不容易因画面差异失效；合成训练数据、相机传感器仿真也依赖它。代价是算得慢，大规模并行训练常退回较快的光栅化或降低画质。英伟达 Omniverse / Isaac Sim 的 RTX 渲染器提供实时和路径追踪两档；另一条路线是用 3D 高斯泼溅从真实拍摄重建场景，直接得到照片感画面。",
+      "example": "银河通用的 GraspVLA 在 Isaac Sim 中用光线追踪渲染生成约 10 亿帧的合成抓取数据集 SynGrasp-1B，同时随机化点光源、平行光、环境光和约两千种桌面、地面、墙面纹理，用 160 块 RTX 4090 跑了约 10 天。",
+      "related": [
+        "渲染",
+        "路径追踪",
+        "基于物理的渲染",
+        "虚实差距",
+        "高斯泼溅仿真",
+        "合成数据"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Rendering (computer graphics)",
+          "url": "https://en.wikipedia.org/wiki/Rendering_(computer_graphics)"
+        },
+        {
+          "title": "NVIDIA Omniverse: RTX Renderer",
+          "url": "https://docs.omniverse.nvidia.com/materials-and-rendering/latest/rtx-renderer.html"
+        },
+        {
+          "title": "GraspVLA (arXiv 2505.03233)",
+          "url": "https://arxiv.org/abs/2505.03233"
+        }
+      ],
+      "as_of": "2025-05"
+    },
+    {
+      "name_zh": "程序化生成",
+      "name_en": "Procedural Generation",
+      "abbr": "",
+      "aliases": [
+        "程序化场景生成",
+        "程序生成",
+        "Procedural Content Generation",
+        "PCG"
+      ],
+      "tier": 2,
+      "one_liner": "用规则加随机数自动批量造出场景、物体和地形，而不是逐个手工搭建。",
+      "explanation": "程序化生成源自游戏业，指用算法加随机数自动产生内容，比如《我的世界》由一个随机种子生成整张地图。在具身智能里，它用来批量制造仿真训练环境：先写好规则（户型怎么划分、家具放哪、贴什么材质、灯光如何），再随机采样出成千上万个不同场景。手工搭一个可交互的 3D 房子很费时，场景太少策略又容易过拟合，程序化生成用规则换来数量和多样性，是提升场景泛化的常用手段。代表工作有艾伦人工智能研究所的 ProcTHOR 和普林斯顿的 Infinigen；四足强化学习里随机生成的台阶、斜坡地形也属此类。与之相对的是用大模型按文字描述造场景的生成式仿真。",
+      "example": "ProcTHOR 可随机生成 1 到 10 个房间的户型，从 108 类、1633 个可交互物体和 3278 种材质中采样布置；论文用 1 万套生成的房子预训练具身智能体，不在下游数据上微调就常超过此前的最好方法。",
+      "related": [
+        "ProcTHOR",
+        "Infinigen 程序化世界生成",
+        "域随机化",
+        "生成式仿真",
+        "场景泛化",
+        "地形课程"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Procedural generation",
+          "url": "https://en.wikipedia.org/wiki/Procedural_generation"
+        },
+        {
+          "title": "ProcTHOR: Large-Scale Embodied AI Using Procedural Generation (arXiv 2206.06994)",
+          "url": "https://arxiv.org/abs/2206.06994"
+        },
+        {
+          "title": "Infinigen",
+          "url": "https://infinigen.org/"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "进度分数",
+      "name_en": "Progress Score",
+      "abbr": "",
+      "aliases": [
+        "任务进度",
+        "部分成功分",
+        "Partial Success",
+        "Task Progress",
+        "Partial Credit"
+      ],
+      "tier": 2,
+      "one_liner": "按机器人完成了任务的几步来给分，而不只记成功或失败的评测指标。",
+      "explanation": "进度分数是一类评测指标：事先把任务拆成若干阶段或子目标，机器人完成几步就得几分，通常归一化到 0–1 或 0–100。它是对二元成功率的补充。长程、困难任务上各个策略的成功率可能都接近 0，只看成功率分不出高下；按进度给分能看出谁走得更远、卡在哪一步。缺点是评分细则由研究者自定，不同论文之间的分数不能直接比较。Physical Intelligence 的 π0 论文为每个任务单独设计评分细则；HomeRobot OVMM 把「每完成一个阶段得 1 分」的部分成功作为排名依据之一；RoboArena 则让评测员给每次试验打 0–100 的进度分。",
+      "example": "π0 论文中的叠衣服任务：从筐里取出衣物、摊平、折叠、叠放整齐各得 1 分，全部完成算满分，只做到摊平就只有一半分数。",
+      "related": [
+        "成功率",
+        "评测协议",
+        "长程任务",
+        "真机评测",
+        "RoboArena",
+        "平均完成长度"
+      ],
+      "sources": [
+        {
+          "title": "π0: A Vision-Language-Action Flow Model for General Robot Control (arXiv 2410.24164)",
+          "url": "https://arxiv.org/abs/2410.24164"
+        },
+        {
+          "title": "HomeRobot: Open-Vocabulary Mobile Manipulation (arXiv 2306.11565)",
+          "url": "https://arxiv.org/abs/2306.11565"
+        },
+        {
+          "title": "RoboArena: Distributed Real-World Evaluation of Generalist Robot Policies (arXiv 2506.18123)",
+          "url": "https://arxiv.org/abs/2506.18123"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "Push-T",
+      "name_en": "Push-T",
+      "abbr": "",
+      "aliases": [
+        "PushT",
+        "推T任务",
+        "gym-pusht"
+      ],
+      "tier": 2,
+      "one_liner": "用圆形推头把 T 形块推到目标位姿的二维任务，常用来测模仿学习策略。",
+      "explanation": "Push-T 是一个二维平面推物任务：智能体控制一个圆形推头，只能靠点接触把桌上的 T 形块推到固定的目标位置和朝向。它最早见于谷歌 2021 年的隐式行为克隆（IBC）工作，2023 年经 Diffusion Policy 改造后成为模仿学习的常用基准，Hugging Face 又把它做成了 gym-pusht 环境。任务看着简单，但要靠接触一点点调整木块姿态，而且同一状态下人往往有从左推、从右推等多种合理做法（动作多峰），很适合检验策略能否表达多峰动作分布。指标是 T 块与目标区域的重叠比例，gym-pusht 中重叠达 95% 算成功；观测可选关键点或 96×96 图像。",
+      "example": "Diffusion Policy 论文在仿真 Push-T 上与 IBC、LSTM-GMM 等方法对比，并搭了真机版：用 UR5 机械臂和 136 条人类演示训练，要求更精确的多阶段推动。",
+      "related": [
+        "扩散策略",
+        "动作多峰性",
+        "模仿学习",
+        "LeRobot",
+        "非抓取操作",
+        "ALOHA 仿真任务"
+      ],
+      "sources": [
+        {
+          "title": "Diffusion Policy: Visuomotor Policy Learning via Action Diffusion (arXiv 2303.04137)",
+          "url": "https://arxiv.org/abs/2303.04137"
+        },
+        {
+          "title": "huggingface/gym-pusht (GitHub)",
+          "url": "https://github.com/huggingface/gym-pusht"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "PyBullet",
+      "name_en": "PyBullet (Bullet Physics)",
+      "abbr": "",
+      "aliases": [
+        "Bullet",
+        "Bullet Physics",
+        "Bullet Physics SDK",
+        "pybullet"
+      ],
+      "tier": 2,
+      "one_liner": "物理引擎 Bullet 的 Python 接口，早年机器人强化学习最常用的仿真器之一。",
+      "explanation": "Bullet 是 Erwin Coumans 主导开发的开源物理引擎（C++ 编写，zlib 许可证），支持碰撞检测以及刚体和软体（布、绳）动力学，广泛用于游戏和电影特效，Coumans 为此获过奥斯卡科学技术奖。PyBullet 是它的 Python 封装，pip 一行安装，能直接加载 URDF、SDF、MJCF 机器人模型，自带正逆运动学、逆动力学和简单渲染。在 GPU 并行仿真普及之前，大量机器人强化学习和 sim-to-real 工作用它做实验。它主要跑在 CPU 上，并行规模远不如 Isaac Lab、MJX 等，新的大规模训练多已转向这些平台，但仍常用于教学和轻量实验。PyPI 上最新版 3.2.7 发布于 2025 年 1 月。",
+      "example": "谷歌 2018 年的论文《Sim-to-Real: Learning Agile Locomotion For Quadruped Robots》在 PyBullet 里训练 Minitaur 四足的小跑和疾驰步态，靠系统辨识、执行器建模和随机化后直接部署到真机。",
+      "related": [
+        "物理引擎",
+        "MuJoCo",
+        "Isaac Gym",
+        "仿真到现实迁移",
+        "统一机器人描述格式",
+        "刚体仿真"
+      ],
+      "sources": [
+        {
+          "title": "bulletphysics/bullet3 (GitHub)",
+          "url": "https://github.com/bulletphysics/bullet3"
+        },
+        {
+          "title": "pybullet on PyPI",
+          "url": "https://pypi.org/project/pybullet/"
+        },
+        {
+          "title": "Sim-to-Real: Learning Agile Locomotion For Quadruped Robots (arXiv 1804.10332)",
+          "url": "https://arxiv.org/abs/1804.10332"
+        }
+      ],
+      "as_of": "2025-01"
+    },
+    {
+      "name_zh": "现实到仿真",
+      "name_en": "Real-to-Sim",
+      "abbr": "Real2Sim",
+      "aliases": [
+        "实到虚",
+        "Real-to-Sim Reconstruction",
+        "Real2Sim"
+      ],
+      "tier": 2,
+      "one_liner": "把真实场景、物体和机器人复刻进仿真器，让仿真尽量贴近现实。",
+      "explanation": "现实到仿真是和仿真到现实（Sim-to-Real）方向相反的一步：从真实世界采集信息，在仿真器里搭出对应版本。它包括几何与外观重建（用手机扫描、NeRF 或 3D 高斯泼溅重建房间和物体）、物理参数辨识（质量、摩擦、关节阻尼等）以及机器人控制器的对齐，做出的仿真版本常被称为数字孪生。主要用途有两个：一是评测，把真实实验环境搬进仿真，用仿真分数预测真机表现，省下大量真机测试；二是训练，在复刻场景里生成数据或做强化学习，再迁回真机，即真-仿-真闭环。难点在于重建出的视觉和物理误差会直接变成新的虚实差距。",
+      "example": "SIMPLER（SimplerEnv）为谷歌机器人和 WidowX 机械臂的真实实验搭建对应的仿真环境，重点缩小控制和视觉两方面的差异；论文显示策略在其中的表现与真机结果强相关，还能复现策略对各种分布变化的敏感程度。",
+      "related": [
+        "真-仿-真闭环",
+        "数字孪生",
+        "仿真到现实迁移",
+        "虚实差距",
+        "SimplerEnv",
+        "高斯泼溅仿真"
+      ],
+      "sources": [
+        {
+          "title": "Evaluating Real-World Robot Manipulation Policies in Simulation (SIMPLER, arXiv 2405.05941)",
+          "url": "https://arxiv.org/abs/2405.05941"
+        },
+        {
+          "title": "RialTo: Real-to-Sim-to-Real Approach for Robust Manipulation (arXiv 2403.03949)",
+          "url": "https://arxiv.org/abs/2403.03949"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "真-仿-真闭环",
+      "name_en": "Real-to-Sim-to-Real",
+      "abbr": "Real2Sim2Real",
+      "aliases": [
+        "虚实闭环",
+        "Real2Sim2Real",
+        "实-虚-实"
+      ],
+      "tier": 2,
+      "one_liner": "先把真实场景复刻进仿真，在仿真里训练或造数据，再把策略部署回真机。",
+      "explanation": "真-仿-真闭环把现实到仿真和仿真到现实串成一条流水线：先扫描真实环境、重建成仿真里的数字孪生，再在这个复刻场景里做强化学习、生成大量合成数据或安全地评测，最后把得到的策略迁回真实机器人。和纯 Sim-to-Real 相比，训练场景就是部署场景的副本，虚实差距更小；和只用真机数据相比，仿真里能低成本试错、主动制造扰动，提升鲁棒性。近两年常见做法是用 3D 高斯泼溅重建出照片级画面，再配上物理引擎处理交互。局限是每换一个场景都要重新重建，摩擦、柔软度等物理参数也很难扫准。",
+      "example": "MIT 等的 RialTo：用 Polycam 等扫描工具约 25 分钟搭好场景的数字孪生，把约 15 条真实演示搬进仿真后做强化学习微调，再蒸馏回基于视觉的真机策略；论文报告在叠盘子、把书放上架等 8 个任务上鲁棒性比纯模仿学习提升超过 67%。",
+      "related": [
+        "现实到仿真",
+        "仿真到现实迁移",
+        "数字孪生",
+        "高斯泼溅仿真",
+        "强化学习微调",
+        "虚实差距"
+      ],
+      "sources": [
+        {
+          "title": "Reconciling Reality through Simulation: A Real-to-Sim-to-Real Approach for Robust Manipulation (RialTo, arXiv 2403.03949)",
+          "url": "https://arxiv.org/abs/2403.03949"
+        },
+        {
+          "title": "RoboGSim: A Real2Sim2Real Robotic Gaussian Splatting Simulator (arXiv 2411.11839)",
+          "url": "https://arxiv.org/abs/2411.11839"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "渲染",
+      "name_en": "Rendering (Rendering Engine)",
+      "abbr": "",
+      "aliases": [
+        "渲染引擎",
+        "渲染器",
+        "Renderer"
+      ],
+      "tier": 2,
+      "one_liner": "把三维场景算成相机图像的过程，仿真里相机类传感器的数据都靠它生成。",
+      "explanation": "渲染是计算机图形学术语，指根据三维模型、材质、灯光和相机参数计算出二维图像。主要方法有光栅化（把三角形投影到屏幕上逐像素着色，速度快，游戏和多数实时仿真用它）以及光线追踪、路径追踪（模拟光线传播，更真实但更慢）。在机器人仿真里，物理引擎负责算物体怎么动，渲染器负责「拍照」：生成 RGB 图、深度图、分割掩码等相机观测，供视觉策略训练和评测，也用于给人看的可视化。渲染质量决定视觉上的虚实差距大小，渲染速度则常是视觉强化学习的瓶颈，所以 ManiSkill3、Isaac Lab 等都做了 GPU 批量渲染。训练时不开图形窗口运行叫无头模式。",
+      "example": "ManiSkill3 把物理仿真和渲染都放在 GPU 上并行执行，论文报告带渲染的仿真在基准环境中可达每秒 3 万帧以上，比其他平台快 10 到 1000 倍，显存占用少 2 到 3 倍。",
+      "related": [
+        "光栅化",
+        "光线追踪",
+        "路径追踪",
+        "照片级真实感渲染",
+        "批量渲染",
+        "无头模式"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Rendering (computer graphics)",
+          "url": "https://en.wikipedia.org/wiki/Rendering_(computer_graphics)"
+        },
+        {
+          "title": "ManiSkill3: GPU Parallelized Robotics Simulation and Rendering (arXiv 2410.00425)",
+          "url": "https://arxiv.org/abs/2410.00425"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "刚体仿真",
+      "name_en": "Rigid-Body Simulation",
+      "abbr": "",
+      "aliases": [
+        "刚体动力学仿真",
+        "Rigid Body Simulation",
+        "Rigid-Body Dynamics Simulation"
+      ],
+      "tier": 2,
+      "one_liner": "假设物体不会变形，只计算它们平移、转动和相互碰撞的物理仿真。",
+      "explanation": "刚体仿真是物理引擎最基础、用得最多的部分。它假设物体受力后形状不变，每个物体的状态只需位置、姿态、速度和角速度来描述。仿真按固定步长推进：每一步先做碰撞检测找出接触点，再由接触模型和约束求解器算出接触力、摩擦力和关节约束力，最后用积分器按牛顿-欧拉方程更新状态。机器人通常被建模成若干刚体连杆由关节相连（关节体），所以四足行走、机械臂搭积木这类任务都在刚体仿真里完成。MuJoCo、PhysX、Bullet 都以刚体仿真为核心。它处理不了布料、绳子、液体和软物体，这些要靠软体、布料或流体仿真；接触和摩擦也只是近似，是虚实差距的主要来源之一。",
+      "example": "机械臂把一块方块推下桌：方块和桌面都被当作不会变形的刚体，引擎每一步检测方块与桌边、地面的碰撞，算出接触力和摩擦力，再积分出下一时刻方块的位置和转角。",
+      "related": [
+        "物理引擎",
+        "刚体动力学",
+        "关节体仿真",
+        "接触模型",
+        "软体仿真",
+        "MuJoCo"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Rigid body dynamics",
+          "url": "https://en.wikipedia.org/wiki/Rigid_body_dynamics"
+        },
+        {
+          "title": "MuJoCo Documentation: Overview",
+          "url": "https://mujoco.readthedocs.io/en/stable/overview.html"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "RLBench",
+      "name_en": "RLBench",
+      "abbr": "",
+      "aliases": [
+        "RLBench 基准",
+        "RLBench-18（PerAct 子集）"
+      ],
+      "tier": 2,
+      "one_liner": "伦敦帝国理工推出的 100 个机械臂操作任务仿真基准，基于 CoppeliaSim。",
+      "explanation": "RLBench 由伦敦帝国理工学院 Dyson 机器人实验室的 Stephen James、Andrew Davison 等人于 2019 年发布（IEEE RA-L 2020）。它包含 100 个人工设计的操作任务，从够取目标、开门到开烤箱这类多步任务都有，默认用 Franka Panda 机械臂，跑在 CoppeliaSim 仿真器上。每个任务提供多相机的 RGB、深度、分割掩码和本体状态观测，能用运动规划自动生成任意多条演示，许多任务还有颜色、位置等变体。它原本面向强化学习、模仿学习和少样本学习，后来成为三维操作策略的主要仿真基准之一：PerAct 选出的 18 个任务被 RVT、3D Diffuser Actor 等大量工作沿用。",
+      "example": "PerAct 在 RLBench 的 18 个任务（249 个变体）上训练一个多任务 Transformer，把多视角 RGB-D 观测体素化后预测下一个关键帧的末端位姿，之后的 RVT-2、3D Diffuser Actor 都在同一组任务上比较成功率。",
+      "related": [
+        "PerAct",
+        "RVT-2",
+        "3D Diffuser Actor",
+        "CoppeliaSim",
+        "关键帧动作预测",
+        "The Colosseum"
+      ],
+      "sources": [
+        {
+          "title": "RLBench: The Robot Learning Benchmark & Learning Environment (arXiv 1909.12271)",
+          "url": "https://arxiv.org/abs/1909.12271"
+        },
+        {
+          "title": "stepjam/RLBench (GitHub)",
+          "url": "https://github.com/stepjam/RLBench"
+        },
+        {
+          "title": "Perceiver-Actor (arXiv 2209.05451)",
+          "url": "https://arxiv.org/abs/2209.05451"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "RoboArena",
+      "name_en": "RoboArena",
+      "abbr": "",
+      "aliases": [
+        "Robo Arena",
+        "RoboArena 分布式真机评测"
+      ],
+      "tier": 2,
+      "one_liner": "多个实验室分布式做真机双盲对比，再汇总成排名的通用机器人策略评测平台。",
+      "explanation": "RoboArena 是 2025 年 6 月发布的真机评测框架，由 Karl Pertsch、Chelsea Finn、Sergey Levine 等来自 7 所学术机构的研究者提出。它借鉴大模型评测里「竞技场」的做法：评测员在自己实验室里自由布置场景、下达任务，系统派来两个匿名策略在同一初始条件下各跑一次，评测员给出偏好、0–100 的进度分和文字理由；再用考虑任务难度的扩展 Bradley-Terry 模型把大量两两比较汇总成排名。策略以远程推理服务器形式接入，评测端只需机器人和网络。首轮统一用 DROID 平台（Franka 机械臂），论文报告其排名比单实验室固定任务的传统评测更接近穷举测试得到的参考排名。",
+      "example": "首轮评测比较了 π0-flow-DROID、π0-FAST-DROID 和 5 个基于 PaliGemma、动作表示各不相同的 DROID 策略，在 7 所机构累计完成 600 多组双盲成对对比。",
+      "related": [
+        "双盲成对比较",
+        "Elo 评分",
+        "真机评测",
+        "DROID 数据集",
+        "进度分数",
+        "策略服务器"
+      ],
+      "sources": [
+        {
+          "title": "RoboArena: Distributed Real-World Evaluation of Generalist Robot Policies (arXiv 2506.18123)",
+          "url": "https://arxiv.org/abs/2506.18123"
+        },
+        {
+          "title": "RoboArena project page",
+          "url": "https://robo-arena.github.io/"
+        }
+      ],
+      "as_of": "2025-11"
+    }
+  ]
+}

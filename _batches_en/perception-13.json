@@ -1,0 +1,113 @@
+{
+  "batch": "perception-13",
+  "terms": [
+    {
+      "key": "perception-13#0",
+      "name_en": "Depth-to-Color Alignment",
+      "aliases": ["Depth Registration", "RGB-D Alignment"],
+      "one_liner": "Reprojects a depth map into the color camera’s viewpoint so the two images’ pixels line up one to one.",
+      "explanation": "In an RGB-D camera, the depth sensor and the color lens sit in different physical positions with different intrinsics and viewpoints, so the same pixel in each image doesn’t correspond to the same point if they’re simply overlaid. Alignment works by using the depth camera’s intrinsics to back-project each depth pixel into a 3D point, using the extrinsics between the two sensors to transform that point into the color camera’s coordinate frame, and then projecting it onto the color image plane using the color camera’s intrinsics. The resulting depth map matches the color image’s resolution and viewpoint, so a box detected or a mask segmented on the color image can look up depth directly and produce a colored point cloud. Intel RealSense SDK’s rs2::align and the ROS 2 driver’s align_depth.enable parameter do exactly this. The result is a computed approximation: changing viewpoint requires resampling, and occluded regions produce holes or misalignment, especially visible around object edges.",
+      "example": "Launching the RealSense driver in ROS 2 with align_depth.enable turned on publishes an extra topic, /camera/camera/aligned_depth_to_color/image_raw; a grasping program that boxes a cup in the color image can look up depth at the same pixel coordinates in this depth map, then back-project to get the cup’s 3D position.",
+      "related": ["Depth Camera", "Camera Intrinsics", "Camera Extrinsics", "Projection and Back-Projection", "Point Cloud", "RealSense Depth Camera (D435i / D405)"]
+    },
+    {
+      "key": "perception-13#1",
+      "name_en": "DETR",
+      "aliases": ["DEtection TRansformer", "End-to-End Object Detection with Transformers"],
+      "one_liner": "An end-to-end detector that frames object detection directly as “set prediction” using a Transformer.",
+      "explanation": "DETR is an object detection model proposed by Nicolas Carion and colleagues at Facebook AI (now Meta), published at ECCV 2020. Earlier detectors like Faster R-CNN first lay down a huge number of anchor boxes (preset candidate boxes) and finally use non-maximum suppression to delete duplicates. DETR first extracts image features with a CNN, feeds them into a Transformer encoder-decoder, and has the decoder use a fixed number of learnable “object queries” to each output one box and class; during training, bipartite matching pairs predictions with ground truth one to one, so anchor boxes and NMS are no longer needed. It matches a well-tuned Faster R-CNN’s accuracy on COCO, but converges more slowly during training. Later work — Deformable DETR, Grounding DINO, DINO-X — continued down this path; in embodied AI, ACT decodes actions with learnable queries too, with code adapted from DETR.",
+      "example": "The original DETR (ResNet-50 backbone), trained for 500 epochs on the COCO 2017 validation set, reaches 42.0 AP, on par with a same-backbone Faster R-CNN while using about half the computation.",
+      "related": ["Object Detection", "Transformer", "Bounding Box", "Non-Maximum Suppression", "Grounding DINO", "Learnable Query"]
+    },
+    {
+      "key": "perception-13#2",
+      "name_en": "Dex-Net",
+      "aliases": ["Dexterity Network", "GQ-CNN"],
+      "one_liner": "A UC Berkeley project series that trains grasp-quality networks on massive amounts of simulated grasp data.",
+      "explanation": "Dex-Net is a series of robot grasping research projects — code, datasets, and algorithms — run by Jeff Mahler and Ken Goldberg at UC Berkeley’s AUTOLAB starting in 2016. The idea: use tens of thousands of 3D object models to generate candidate grasps in bulk in simulation, use physics and mechanics models to compute whether each grasp holds under perturbation, and build a large labeled synthetic dataset from this; then train a Grasp Quality Convolutional Neural Network (GQ-CNN) that takes a depth image and a candidate grasp as input and outputs a success probability. Dex-Net 1.0 (ICRA 2016) used over 10,000 models and 2.5 million two-finger grasps; 2.0 (RSS 2017) used 6.7 million point cloud samples; 3.0 extended this to suction grippers; 4.0 (Science Robotics 2019) trained a policy that uses both a parallel-jaw gripper and a suction cup, on 5 million synthetic depth images. It was an early landmark for “simulated synthetic data plus deep learning” approaches to grasping.",
+      "example": "Dex-Net 2.0 achieves a 93% grasp success rate on known objects; on unseen household objects, every grasp the network judged graspable succeeded (100% precision), with roughly 0.8 seconds needed to plan a single grasp.",
+      "related": ["Grasp Pose Detection", "Grasp Quality Metric", "Synthetic Data", "Bin Picking", "Dex-Net (GQ-CNN Grasp Network)", "Antipodal Grasp"]
+    },
+    {
+      "key": "perception-13#3",
+      "name_en": "Digit 360",
+      "aliases": ["Meta Digit 360"],
+      "one_liner": "Meta’s humanoid fingertip-shaped multimodal tactile sensor, sensing force, vibration, temperature, and more.",
+      "explanation": "Digit 360 is a humanoid fingertip tactile sensor Meta FAIR released in late October 2024, manufactured and sold by the company GelSight. It continues the operating principle of DIGIT-style vision-based tactile sensors — an internal camera photographing the deformation of a soft gel surface — but shaped as a hemispherical fingertip that can sense contact from any direction. The paper reports about 8.3 million taxels (tactile pixels), able to distinguish surface detail down to 7 micrometers, with normal- and shear-force resolution around 1 mN, sensing vibration up to 10 kHz, and also sensing temperature and even smell; the fingertip has a built-in AI accelerator chip that can do fast, reflex-like local processing. Meta simultaneously released the Sparsh tactile encoder and the Digit Plexus platform, which connects multiple types of tactile sensors to the same hand.",
+      "example": "Meta’s Digit Plexus platform can mount Digit 360, DIGIT, ReSkin, and other tactile sensors on the same robotic hand, sending all their data back over a single cable, making it convenient to collect tactile data for dexterous manipulation.",
+      "related": ["Vision-Based Tactile Sensor", "DIGIT", "GelSight", "Sparsh", "Taxel", "Meta FAIR"]
+    },
+    {
+      "key": "perception-13#4",
+      "name_en": "DINO-X",
+      "aliases": ["DINO-X: A Unified Vision Model for Open-World Object Detection and Understanding", "DINO-X Pro", "DINO-X Edge"],
+      "one_liner": "IDEA Research’s open-world detection model that can box objects from text, examples, or no prompt at all.",
+      "explanation": "DINO-X is an object-centric vision model released by IDEA Research (the Guangdong-Hong Kong-Macao Greater Bay Area Institute of Digital Economy) in November 2024, with an architecture built on Grounding DINO 1.5’s Transformer encoder-decoder. It supports text prompts, visual prompts (giving example boxes), and customized prompts, and its “universal object prompt” mode lets the model box every object in an image with no prompt at all. It was trained on Grounding-100M, a set of over 100 million grounding samples the team curated. Beyond the detection head, it also carries segmentation, keypoint, and object-captioning heads, so it can output boxes, masks, poses, and text descriptions all at once. The paper reports DINO-X Pro reaching 56.0 AP on zero-shot COCO detection; there’s also a DINO-X Edge version for edge devices. It’s mainly offered through an API, and in robotics it can be used to find a target from a single instruction, then hand off to segmentation and grasping modules.",
+      "example": "Sending a tabletop photo and the prompt “cup” to the DINO-X API returns a detection box and confidence score for every cup; feeding those boxes to SAM 2 gives pixel-level masks, which combined with depth can compute each cup’s position for grasping.",
+      "related": ["Grounding DINO", "Open-Vocabulary Detection", "DETR", "Object Detection", "Segment Anything Model", "Grounded-SAM"]
+    },
+    {
+      "key": "perception-13#5",
+      "name_en": "Direct Time of Flight",
+      "aliases": ["dToF", "Pulsed ToF"],
+      "one_liner": "Emits a light pulse and directly times its echo, computing distance from the round-trip time.",
+      "explanation": "Direct time of flight is one variant of time-of-flight (ToF) sensing: the sensor emits an extremely short laser pulse and directly measures the time t it takes for the light to hit an object and bounce back, with distance equal to the speed of light times t, divided by two. For a target 1 meter away, the round trip takes only about 6.7 nanoseconds, so the circuitry needs to resolve extremely short time intervals: modern designs commonly use single-photon avalanche diodes (SPADs, which can trigger a signal from a single photon) as pixels, paired with a time-to-digital converter that times a large number of pulses and bins them into a histogram, taking the peak as the echo time. Compared with indirect time of flight (iToF, which computes distance from the phase difference of modulated light), dToF can measure farther and is more robust to ambient light, working both indoors and outdoors, and it’s the ranging principle behind many lidars; the cost is more complex pixel circuitry, and resolution is usually lower than iToF’s.",
+      "example": "Apple’s 2020 iPad Pro LiDAR Scanner measures distances up to 5 meters, indoors or outdoors, and Apple describes it as operating at the photon level and nanosecond speeds; reports indicate it uses a SPAD-based dToF design.",
+      "related": ["Time of Flight", "Indirect Time of Flight", "SPAD (Single-Photon Avalanche Diode)", "Lidar", "Depth Camera", "VCSEL (Vertical-Cavity Surface-Emitting Laser)"]
+    },
+    {
+      "key": "perception-13#6",
+      "name_en": "Disparity",
+      "aliases": ["Disparity Map", "Stereo Disparity"],
+      "one_liner": "The horizontal position difference of the same point between the left and right images — bigger for closer objects.",
+      "explanation": "Disparity is the fundamental quantity in binocular stereo vision: with two cameras mounted side by side and the images rectified (so the same point falls on the same row in both), the difference d = xL − xR between a point’s x-coordinate in the left image and its x-coordinate in the right image is its disparity. Disparity is inversely proportional to depth: Z = f × B / d, where f is the focal length in pixels and B is the baseline distance between the two cameras. Computing disparity pixel by pixel gives a disparity map, which converts to a depth map with this formula. The process of computing disparity is called stereo matching; classic methods include OpenCV’s StereoBM and SGBM, and recent deep-learning methods include RAFT-Stereo and FoundationStereo. Because of the inverse relationship, distant objects have a disparity of only a few pixels or less, so a small matching error causes a large depth error — stereo ranging accuracy drops off quickly with distance, and lengthening the baseline improves accuracy at range.",
+      "example": "With focal length f = 640 pixels and baseline B = 5 centimeters, a point with disparity 16 pixels has depth Z = 640 × 0.05 / 16 = 2 meters; if the disparity is off by 1 pixel to 15, the computed depth becomes about 2.13 meters.",
+      "related": ["Stereo Camera", "Stereo Matching", "Baseline", "Depth Map", "Epipolar Geometry", "FoundationStereo"]
+    },
+    {
+      "key": "perception-13#7",
+      "name_en": "Distilled Feature Fields",
+      "aliases": ["DFF", "Feature Fields", "Language-Embedded Fields"],
+      "one_liner": "Distills features from 2D models like CLIP and DINO into a 3D scene, so every point in space carries semantics.",
+      "explanation": "A distilled feature field adds a learned feature vector at every point in space to a neural radiance field (NeRF, a neural representation that reconstructs a 3D scene from multi-view photos) or a Gaussian splat, on top of color and density; the training objective is to make this feature, once rendered from any viewpoint, match the image features extracted by a 2D foundation model like CLIP or DINO — effectively distilling the 2D model’s knowledge into 3D. The name comes from a 2022 NeurIPS paper by Kobayashi, Sitzmann, and colleagues at Preferred Networks and MIT, originally used to select and edit objects in a NeRF by text or by clicking. It combines accurate geometry with the ability to locate objects in 3D space using natural language. In robotics, MIT’s F3RM uses CLIP-distilled feature fields for few-shot, language-guided 6-DoF grasping and placing, winning the CoRL 2023 best paper award; LERF takes a similar approach.",
+      "example": "F3RM first takes a set of multi-view photos of a tabletop and reconstructs a scene carrying CLIP features; with just two demonstrations for a task like “grasp the cup by the rim,” it can then grasp objects of shapes and categories it has never seen, based on a text instruction.",
+      "related": ["F3RM", "LERF", "Neural Radiance Field", "CLIP", "Knowledge Distillation", "3D Gaussian Splatting"]
+    },
+    {
+      "key": "perception-13#8",
+      "name_en": "DROID-SLAM",
+      "aliases": ["DROID-SLAM: Deep Visual SLAM for Monocular, Stereo, and RGB-D Cameras"],
+      "one_liner": "A deep-learning visual SLAM system from Princeton that iteratively estimates camera pose and dense depth.",
+      "explanation": "DROID-SLAM is a visual SLAM (simultaneous localization and mapping) system from Princeton University’s Zachary Teed and Jia Deng, published at NeurIPS 2021. It borrows the architecture of the same group’s RAFT optical flow model, computing dense pixel correspondences between correlated frames, and uses a recurrent network to repeatedly update the camera poses and the depth of every pixel, with a differentiable dense bundle adjustment (BA) layer embedded in the middle — jointly optimizing camera poses and 3D structure — putting geometric constraints directly inside the network. It is trained purely on monocular video from the synthetic TartanAir dataset, but at test time it can also take stereo or RGB-D input, and it clearly outperforms earlier methods in accuracy on TartanAir, EuRoC, TUM-RGBD, and ETH3D, with far fewer catastrophic failures. The cost is dependence on a GPU — inference needs at least 11 GB of VRAM. Later deep-SLAM work like MASt3R-SLAM often uses it as a comparison baseline.",
+      "example": "Given a video of someone walking around a room with a handheld camera, DROID-SLAM outputs the camera pose and dense depth for every frame, which can be stitched into a point cloud of the room, or used to recover the camera trajectory from a human demonstration video.",
+      "related": ["Visual SLAM", "Bundle Adjustment", "RAFT Optical Flow", "ORB-SLAM3", "MASt3R-SLAM", "Visual Odometry"]
+    },
+    {
+      "key": "perception-13#9",
+      "name_en": "DUSt3R",
+      "aliases": ["DUSt3R: Geometric 3D Vision Made Easy", "Dense and Unconstrained Stereo 3D Reconstruction"],
+      "one_liner": "A feed-forward reconstruction model that regresses a per-pixel 3D point map directly from two images, with no camera parameters needed.",
+      "explanation": "DUSt3R is a 3D reconstruction model proposed by Shuzhe Wang and colleagues at Naver Labs Europe and Aalto University, published at CVPR 2024. The traditional pipeline — structure from motion (SfM) plus multi-view stereo (MVS) — first estimates camera intrinsics and extrinsics, then triangulates matched points, a process with many steps that’s easy to break. DUSt3R flips this around: it feeds two images into a Transformer encoder-decoder and directly regresses a 3D coordinate for every pixel, called a point map, with both images’ points expressed in the first image’s camera coordinate frame and each carrying a confidence score; depth, pixel correspondence, relative pose, and focal length can all be read off the point map. With more than two images, a global alignment step then unifies all pairwise results into one coordinate system. DUSt3R is the landmark work in “feed-forward 3D reconstruction,” and later work like MASt3R, VGGT, and π³ all build on this approach. The code is released under a CC BY-NC-SA 4.0 non-commercial license.",
+      "example": "Snapping two casual phone photos of a tabletop with no camera calibration, DUSt3R outputs the corresponding 3D point cloud for both images along with the two cameras’ relative pose, which can be used to quickly reconstruct a robot’s workspace.",
+      "related": ["Point Map", "MASt3R", "VGGT", "Feed-Forward 3D Reconstruction", "Structure from Motion", "Multi-View Stereo"]
+    },
+    {
+      "key": "perception-13#10",
+      "name_en": "Elevation Map",
+      "aliases": ["2.5D Elevation Map", "Elevation Mapping", "Height Map"],
+      "one_liner": "A 2.5D terrain map that divides the ground into a grid and stores one height value per cell, commonly used by legged robots.",
+      "explanation": "An elevation map is a 2.5D map: the ground around a robot is divided into a regular grid on the horizontal plane, and each cell stores just one height value (usually with a variance representing uncertainty too), rather than a full 3D voxel grid. The data comes from range sensors like depth cameras and lidar, continuously fused and updated together with the robot’s pose estimate. elevation_mapping, developed starting in 2014 by Péter Fankhauser and colleagues at ETH Zurich, is a commonly used open-source implementation that builds the map robot-centered and explicitly accounts for pose-drift uncertainty; it is no longer maintained. The 2022 elevation_mapping_cupy moved the computation to the GPU and added traversability, semantic, and other layers. An elevation map is more compact and faster to query than a point cloud, and perceptive locomotion for quadruped and humanoid robots commonly reads terrain height in a patch around the feet from it as policy input. Its limitation is that each cell holds only one height, so it can’t represent overhangs like the underside of a table or a bridge.",
+      "example": "When training perceptive legged locomotion in Isaac Lab, a grid of terrain heights around the robot (a height scan) is commonly used as an observation; once deployed on the real robot, these heights are looked up from an elevation map built in real time.",
+      "related": ["Height Scan", "Traversability Estimation", "Perceptive Locomotion", "Occupancy Grid Map", "Complex-Terrain Locomotion", "ANYmal Quadruped"]
+    },
+    {
+      "key": "perception-13#11",
+      "name_en": "Epipolar Geometry",
+      "aliases": ["Essential Matrix", "Fundamental Matrix", "Epipolar Constraint"],
+      "one_liner": "The geometric relationship that forces the matching point of a scene point, seen by two cameras, to lie on a specific line.",
+      "explanation": "Epipolar geometry describes the geometric constraint between two viewpoints. A 3D point X together with the two cameras’ optical centers forms a plane (the epipolar plane); its intersection with each image plane is an epipolar line, and the projection of one camera’s optical center onto the other image is an epipole. The core result: the match for a point in the left image must lie on a specific epipolar line in the right image, so a search for correspondences only needs to scan along that line — reducing a 2D search to 1D. Mathematically this is expressed by the 3×3 fundamental matrix F, with corresponding points x and x′ satisfying x′ᵀFx = 0; when both cameras’ intrinsics K and K′ are known, this can be written as the essential matrix E = K′ᵀFK, which encodes the rotation and the direction-only (unscaled) translation between the two cameras, introduced to computer vision by Longuet-Higgins in 1981. F or E is usually estimated from matched points with an algorithm like the eight-point algorithm combined with RANSAC, and relative pose is then decomposed from it. It underlies stereo rectification, stereo matching, triangulation, structure from motion, and visual SLAM initialization.",
+      "example": "Stereo rectification for a stereo camera pair is exactly the process of warping both images so all epipolar lines become horizontal and aligned row by row, letting stereo matching search left-right along a single row to solve for disparity.",
+      "related": ["Triangulation", "Stereo Matching", "Homography Matrix", "Camera Calibration", "Structure from Motion", "Random Sample Consensus"]
+    }
+  ]
+}

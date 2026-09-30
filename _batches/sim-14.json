@@ -1,0 +1,424 @@
+{
+ "category": "sim",
+ "batch": 14,
+ "terms": [
+  {
+   "name_zh": "导航误差 / Oracle 成功率 / 轨迹长度",
+   "name_en": "Navigation Error / Oracle Success Rate / Trajectory Length",
+   "abbr": "NE / OSR / TL",
+   "aliases": [
+    "NE",
+    "OSR",
+    "OS",
+    "TL",
+    "Oracle Success"
+   ],
+   "tier": 3,
+   "one_liner": "视觉语言导航的三项基本指标：停下时离目标多远、途中是否到过目标、一共走了多远。",
+   "explanation": "这三项是视觉语言导航（VLN，按自然语言指令在房屋里走到目标）论文结果表的标配，Anderson 等人 2018 年提出 R2R 基准时就已使用。导航误差（NE）是智能体最终停下的位置到目标点的最短路径距离，单位米，越小越好；R2R 规定误差小于 3 米算成功。Oracle 成功率（OSR，也写作 OS）假设智能体在自己轨迹上离目标最近的那一点停下，看这样算不算成功，用来区分「走到过但没停对」和「根本没找到」。轨迹长度（TL）是实际走过的总路程，偏长说明在绕路或乱逛。它们通常和成功率、SPL、nDTW 一起报告。",
+   "example": "R2R 原论文中，在未见过的建筑组成的测试集上，人类成功率为 86.4%，作者的序列到序列基线只有 20.4%。",
+   "related": [
+    "视觉语言导航",
+    "R2R / VLN-CE 视觉语言导航基准",
+    "成功率",
+    "路径长度加权成功率",
+    "归一化动态时间规整"
+   ],
+   "sources": [
+    {
+     "title": "Vision-and-Language Navigation: Interpreting visually-grounded navigation instructions in real environments (R2R, CVPR 2018)",
+     "url": "https://arxiv.org/abs/1711.07280"
+    },
+    {
+     "title": "Beyond the Nav-Graph: Vision-and-Language Navigation in Continuous Environments (VLN-CE)",
+     "url": "https://arxiv.org/abs/2004.02857"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "归一化动态时间规整",
+   "name_en": "normalized Dynamic Time Warping",
+   "abbr": "nDTW",
+   "aliases": [
+    "归一化 DTW"
+   ],
+   "tier": 3,
+   "one_liner": "衡量智能体路线与参考路线在形状和顺序上有多贴合的导航指标，取值 0 到 1。",
+   "explanation": "nDTW 由 Ilharco、Baldridge 等人 2019 年提出，用来评估按语言指令导航的智能体。成功率只看终点，SPL 只看路程是否绕远，都不管中途是否照着指令走。nDTW 借用时间序列里的动态时间规整（DTW，把两条长短不同的序列按顺序对齐再累加距离），算出两条路径的最小累计距离，再用指数函数归一化到 0 到 1，越高越好：偏离越多扣分越多且扣得平滑，对经过顺序也敏感。作者的人工评测显示它比其他指标更贴近人类排序。论文还提出 SDTW：失败回合记 0，成功回合记 nDTW。它常与 NE、SR、SPL 一起用于 R2R、R4R、VLN-CE。",
+   "example": "指令要求「先进厨房再去卧室」，智能体直接去了卧室：终点对了，成功率照样记成功，但路径跳过了厨房，nDTW 会明显偏低。",
+   "related": [
+    "导航误差 / Oracle 成功率 / 轨迹长度",
+    "路径长度加权成功率",
+    "视觉语言导航",
+    "R2R / VLN-CE 视觉语言导航基准",
+    "成功率"
+   ],
+   "sources": [
+    {
+     "title": "General Evaluation for Instruction Conditioned Navigation using Dynamic Time Warping (arXiv 1907.05446)",
+     "url": "https://arxiv.org/abs/1907.05446"
+    },
+    {
+     "title": "Beyond the Nav-Graph: Vision-and-Language Navigation in Continuous Environments (VLN-CE)",
+     "url": "https://arxiv.org/abs/2004.02857"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "积分器",
+   "name_en": "Numerical Integrator (Semi-implicit Euler / RK4)",
+   "abbr": "",
+   "aliases": [
+    "数值积分器",
+    "半隐式欧拉",
+    "辛欧拉",
+    "RK4",
+    "四阶龙格-库塔",
+    "隐式积分"
+   ],
+   "tier": 3,
+   "one_liner": "物理引擎里根据当前受力，把速度和位置往前推进一个时间步的数值方法。",
+   "explanation": "物理引擎每一步先算出加速度，再由积分器把速度、位置推进到下一时刻。最朴素的显式欧拉用旧速度更新位置，在弹簧类系统里会不断「凭空增能」直至发散；半隐式欧拉只调换顺序，先更新速度、再用新速度更新位置，精度同为一阶却稳定得多，多数游戏物理引擎用它。RK4（四阶龙格-库塔）每步算四次导数，精度高但计算量约为四倍；隐式积分把阻尼等速度相关力的导数纳入求解，能承受更大步长。MuJoCo 默认 Euler（半隐式，带隐式关节阻尼），官方推荐多数模型改用 implicitfast。积分器与仿真步长共同决定仿真会不会「爆炸」。",
+   "example": "在 MuJoCo 模型文件的 option 元素里把 integrator 设为 implicitfast，保持默认 timestep 0.002 秒，通常比默认的 Euler 更稳定，计算量相近。",
+   "related": [
+    "物理引擎",
+    "仿真步长",
+    "子步",
+    "仿真爆炸",
+    "MuJoCo",
+    "约束求解器"
+   ],
+   "sources": [
+    {
+     "title": "MuJoCo Documentation: Computation - Numerical Integration",
+     "url": "https://mujoco.readthedocs.io/en/stable/computation/index.html"
+    },
+    {
+     "title": "Gaffer On Games: Integration Basics",
+     "url": "https://gafferongames.com/post/integration_basics/"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "Isaac Lab-Arena",
+   "name_en": "NVIDIA Isaac Lab-Arena",
+   "abbr": "",
+   "aliases": [
+    "Isaac Lab Arena",
+    "IsaacLab-Arena"
+   ],
+   "tier": 3,
+   "one_liner": "英伟达开源的 Isaac Lab 扩展，用来组合搭建仿真基准、并行评测机器人策略。",
+   "explanation": "Isaac Lab-Arena 是英伟达与光轮智能（Lightwheel）合作开发、架在 Isaac Lab 之上的开源框架，2026 年 1 月由英伟达官方博客正式介绍，目前仍为 alpha 版。以往大规模评测要为每个任务手写场景和脚本。它把环境拆成场景（摆哪些物体）、本体（机器人及其传感器、控制器）、任务（要完成什么）三个部件自由组合，支持对光照、相机、物体属性做扰动测试，按抓取、放置等子任务统计进度，可在 GPU 上同时跑成千上万个环境。它接入 LeRobot 的 EnvHub，可评测 GR00T、π0.5 等模型，已收录 RoboCasa、LIBERO、RoboTwin 2.0 的适配版。",
+   "example": "英伟达博客给出的对比中，同一批评测用 Isaac Lab-Arena 并行跑需 0.76 小时，逐个顺序执行则要 34.9 小时。",
+   "related": [
+    "Isaac Lab",
+    "仿真评测",
+    "基准测试",
+    "EnvHub",
+    "光轮 RoboFinals 工业级仿真评测平台",
+    "RoboCasa"
+   ],
+   "sources": [
+    {
+     "title": "NVIDIA Technical Blog: Simplify Generalist Robot Policy Evaluation in Simulation with NVIDIA Isaac Lab-Arena",
+     "url": "https://developer.nvidia.com/blog/simplify-generalist-robot-policy-evaluation-in-simulation-with-nvidia-isaac-lab-arena/"
+    },
+    {
+     "title": "GitHub: isaac-sim/IsaacLab-Arena",
+     "url": "https://github.com/isaac-sim/IsaacLab-Arena"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "Omniverse Replicator 合成数据生成",
+   "name_en": "NVIDIA Omniverse Replicator",
+   "abbr": "",
+   "aliases": [
+    "Replicator",
+    "omni.replicator"
+   ],
+   "tier": 3,
+   "one_liner": "英伟达 Omniverse 里的合成数据框架，随机化仿真场景并自动输出带标注的数据。",
+   "explanation": "Replicator 是英伟达 Omniverse 平台中用来搭建合成数据生成（SDG）流水线的框架，以 omni.replicator 扩展的形式集成在 Isaac Sim 里。真实图像的采集和标注很贵，而仿真里物体的位置、类别、深度都是已知的，标签天然精确。它主要由三部分组成：随机化器按域随机化思路随机采样资产、材质、光照和相机位姿；标注器输出 2D/3D 检测框、语义与实例分割、深度等真值；写入器把结果存成特定模型需要的数据格式。在机器人领域，它常用来训练目标检测、位姿估计等感知模型，Isaac Sim 文档也给了导航和操作场景的示例。",
+   "example": "英伟达 NVIDIA-AI-IOT 开源的托盘检测模型（sdg_pallet_model）完全用 Replicator 生成的合成数据训练，可用 TensorRT 部署到 Jetson 上。",
+   "related": [
+    "合成数据",
+    "域随机化",
+    "Isaac Sim",
+    "Omniverse",
+    "视觉随机化",
+    "照片级真实感渲染"
+   ],
+   "sources": [
+    {
+     "title": "Omniverse Extensions Docs: Replicator",
+     "url": "https://docs.omniverse.nvidia.com/extensions/latest/ext_replicator.html"
+    },
+    {
+     "title": "Isaac Sim Docs: Synthetic Data Generation (Replicator tutorials)",
+     "url": "https://docs.isaacsim.omniverse.nvidia.com/latest/replicator_tutorials/index.html"
+    },
+    {
+     "title": "GitHub: NVIDIA-AI-IOT/sdg_pallet_model",
+     "url": "https://github.com/NVIDIA-AI-IOT/sdg_pallet_model"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "离线策略评估",
+   "name_en": "Off-Policy Evaluation",
+   "abbr": "OPE",
+   "aliases": [
+    "异策略评估",
+    "离策略评估",
+    "Off-Policy Policy Evaluation"
+   ],
+   "tier": 3,
+   "one_liner": "只用其他策略收集的历史数据，估计一个新策略真正部署后能拿到多少回报。",
+   "explanation": "离线策略评估是强化学习里的一类问题：数据由某个行为策略收集，想在不和环境交互的前提下，估计另一个目标策略的期望回报。机器人真机测一次要人看护、会磨损硬件，若能先靠已有日志筛掉差策略，就能省下大量评测成本，也便于离线强化学习挑选检查点和超参数。常见方法有重要性采样（按两个策略选同一动作的概率之比给旧数据重新加权）、拟合 Q 评估（FQE，用数据拟合目标策略的 Q 函数）、双重稳健估计和基于模型的方法。Fu 等人 2021 年的 DOPE 基准除了看估值误差，还用排序相关性和 regret@k 衡量方法能否把好策略挑出来，因为实践中排对顺序往往比估准数值更重要。",
+   "example": "谷歌 Irpan 等人（NeurIPS 2019）在基于图像的机械臂抓取任务上把 OPE 改写成分类问题，只用离线数据就较可靠地预测了多个策略在真机上的相对优劣，包括仿真到现实迁移的情形。",
+   "related": [
+    "离线强化学习",
+    "异策略",
+    "Q 函数",
+    "真机评测",
+    "世界模型评测",
+    "重要性采样"
+   ],
+   "sources": [
+    {
+     "title": "Benchmarks for Deep Off-Policy Evaluation (DOPE, ICLR 2021)",
+     "url": "https://arxiv.org/abs/2103.16596"
+    },
+    {
+     "title": "Off-Policy Evaluation via Off-Policy Classification (NeurIPS 2019)",
+     "url": "https://arxiv.org/abs/1906.01624"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "OGBench 离线目标条件强化学习基准",
+   "name_en": "OGBench: Benchmarking Offline Goal-Conditioned RL",
+   "abbr": "OGBench",
+   "aliases": [],
+   "tier": 3,
+   "one_liner": "专门考离线目标条件强化学习算法的基准，含 8 类环境、85 个数据集。",
+   "explanation": "OGBench 由 Seohong Park、Sergey Levine 等人提出，发表于 ICLR 2025。目标条件强化学习是让策略学会到达任意指定的目标状态；离线指只用固定数据集训练，不再与环境交互。作者认为旧基准上各算法成绩接近、难分高下，于是设计了迷宫导航、方块操作、拼图等 8 类环境和 85 个数据集，分别考察轨迹拼接（把多段不完整轨迹拼成新路线）、长程推理、图像输入和环境随机性，另有 410 个标准离线强化学习任务。它基于 MuJoCo 和 Gymnasium 接口，pip 即可安装，附 GCBC、GCIQL、HIQL 等 6 个参考算法实现。",
+   "example": "数据集 antmaze-large-navigate-v0：蚂蚁四足机器人在大型迷宫中，需从起点走到评测时指定的目标位置；多数环境各提供 5 个评测目标。",
+   "related": [
+    "目标条件强化学习",
+    "离线强化学习",
+    "D4RL",
+    "基准测试",
+    "隐式 Q 学习",
+    "MuJoCo"
+   ],
+   "sources": [
+    {
+     "title": "OGBench: Benchmarking Offline Goal-Conditioned RL (ICLR 2025)",
+     "url": "https://arxiv.org/abs/2410.20092"
+    },
+    {
+     "title": "OGBench project page",
+     "url": "https://seohong.me/projects/ogbench/"
+    },
+    {
+     "title": "GitHub: seohongpark/ogbench",
+     "url": "https://github.com/seohongpark/ogbench"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "OpenEQA 开放词汇具身问答基准",
+   "name_en": "OpenEQA (Open-Vocabulary Embodied Question Answering Benchmark)",
+   "abbr": "",
+   "aliases": [
+    "OpenEQA",
+    "EM-EQA",
+    "A-EQA"
+   ],
+   "tier": 3,
+   "one_liner": "Meta 推出的具身问答基准，考智能体能否凭对真实环境的观察用自然语言答题。",
+   "explanation": "OpenEQA 由 Meta FAIR 于 2024 年 4 月发布，论文发表于 CVPR 2024。具身问答（EQA）要求智能体理解自己所处或曾经看过的环境，并用自然语言回答，比如「我把钥匙放哪了」。它包含 1600 多个人工撰写、非模板生成的问答对，对应 180 多个真实环境的视频和扫描，场景来自 HM3D 和 ScanNet。设有两种设定：情景记忆 EM-EQA，根据已录下的观察历史作答，对应智能眼镜；主动探索 A-EQA，机器人需要自己移动去收集信息。由于答案是开放词汇的自由文本，作者用大语言模型打分的 LLM-Match 指标自动评估，与人工评判高度相关。",
+   "example": "Meta 公布的结果中，GPT-4V 准确率为 48.5%，人类为 85.9%；在需要空间理解的问题上，能看图的模型并不比只读文字的模型强多少。",
+   "related": [
+    "具身问答",
+    "视觉问答",
+    "开放词汇",
+    "具身记忆",
+    "HM3D 数据集",
+    "ScanNet 数据集"
+   ],
+   "sources": [
+    {
+     "title": "Meta AI Blog: OpenEQA: From word models to world models",
+     "url": "https://ai.meta.com/blog/openeqa-embodied-question-answering-robotics-ar-glasses/"
+    },
+    {
+     "title": "OpenEQA project page",
+     "url": "https://open-eqa.github.io/"
+    },
+    {
+     "title": "GitHub: facebookresearch/open-eqa (data)",
+     "url": "https://github.com/facebookresearch/open-eqa/tree/main/data"
+    }
+   ],
+   "as_of": "2024-04"
+  },
+  {
+   "name_zh": "Orbit / IsaacGymEnvs（Isaac Lab 前身）",
+   "name_en": "Orbit / IsaacGymEnvs / OmniIsaacGymEnvs (predecessors of Isaac Lab)",
+   "abbr": "",
+   "aliases": [
+    "Isaac Orbit",
+    "OmniIsaacGymEnvs",
+    "OIGE"
+   ],
+   "tier": 3,
+   "one_liner": "英伟达三套已停止维护的机器人学习框架，后来统一被 Isaac Lab 取代。",
+   "explanation": "这是 Isaac Lab 之前英伟达生态里的三套机器人强化学习框架。IsaacGymEnvs（2021 年起）是 Isaac Gym 预览版的示例环境库，含 Ant、ShadowHand、ANYmal 等任务，展示了单张 GPU 并行跑成千上万个环境的训练方式。OmniIsaacGymEnvs 把这类任务搬到 Isaac Sim 上，4.0.0 为最后一版，官方说明并入 Isaac Lab。Orbit 由 Mayank Mittal 等人提出（RA-L 2023），基于 Isaac Sim，提供 16 种机器人平台和 20 多个基准任务，是 Isaac Lab 的代码基础。如今前两个仓库已归档，Isaac Lab 文档提供从三者迁移的指南，读老论文代码时仍常会遇到它们。",
+   "example": "老代码里的 from omni.isaac.orbit 导入，迁移到 Isaac Lab 时要改成 from isaaclab，这是官方 Orbit 迁移指南里的第一步。",
+   "related": [
+    "Isaac Lab",
+    "Isaac Gym",
+    "Isaac Sim",
+    "legged_gym",
+    "GPU 并行仿真",
+    "大规模并行强化学习"
+   ],
+   "sources": [
+    {
+     "title": "Orbit: A Unified Simulation Framework for Interactive Robot Learning Environments (RA-L 2023)",
+     "url": "https://arxiv.org/abs/2301.04195"
+    },
+    {
+     "title": "GitHub: isaac-sim/IsaacGymEnvs (archived)",
+     "url": "https://github.com/isaac-sim/IsaacGymEnvs"
+    },
+    {
+     "title": "Isaac Lab Docs: Migrating from Orbit",
+     "url": "https://isaac-sim.github.io/IsaacLab/main/source/migration/migrating_from_orbit.html"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "路径追踪",
+   "name_en": "Path Tracing",
+   "abbr": "",
+   "aliases": [
+    "路径跟踪",
+    "蒙特卡洛光线追踪"
+   ],
+   "tier": 3,
+   "one_liner": "用大量随机光线路径模拟光在场景里的多次反弹，渲染出物理上逼真画面的方法。",
+   "explanation": "路径追踪由 Jim Kajiya 在 1986 年提出，他在同一篇论文里给出了渲染方程（描述光在场景中如何传播的积分方程），并用蒙特卡洛积分（随机采样后求平均）近似求解。做法是从相机为每个像素发出光线，碰到表面后按材质随机选一个方向继续反弹，一路累计光照，因此能自然得到间接光照、软阴影、焦散等效果。代价是样本少时画面有噪点，要靠大量采样或神经网络降噪。它属于光线追踪家族，比光栅化慢得多，传统上用于电影等离线渲染。机器人仿真中，Isaac Sim 所用的 Omniverse RTX 渲染器提供路径追踪模式，可生成更接近照片的合成图像，但速度不如实时模式。",
+   "example": "Omniverse 的 RTX Interactive（Path Tracing）模式默认每帧每像素采 1 个样本、最多累积 512 个，并默认开启 OptiX 降噪器。",
+   "related": [
+    "光线追踪",
+    "光栅化",
+    "基于物理的渲染",
+    "照片级真实感渲染",
+    "渲染",
+    "Isaac Sim"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Path tracing",
+     "url": "https://en.wikipedia.org/wiki/Path_tracing"
+    },
+    {
+     "title": "Omniverse Docs: RTX Interactive (Path Tracing) Mode",
+     "url": "https://docs.omniverse.nvidia.com/materials-and-rendering/latest/rtx-renderer_pt.html"
+    },
+    {
+     "title": "Physically Based Rendering: From Theory to Implementation, 4th ed. (online)",
+     "url": "https://www.pbr-book.org/4ed/contents"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "PSNR / SSIM / LPIPS 图像相似度指标",
+   "name_en": "Peak Signal-to-Noise Ratio / Structural Similarity Index / Learned Perceptual Image Patch Similarity",
+   "abbr": "PSNR / SSIM / LPIPS",
+   "aliases": [
+    "峰值信噪比",
+    "结构相似性",
+    "学习感知图像块相似度"
+   ],
+   "tier": 3,
+   "one_liner": "衡量生成图和参考图有多像的三项常用指标，越往后越贴近人眼感受。",
+   "explanation": "三者都是把生成或重建的图像与参考图逐张比较。PSNR（峰值信噪比）由均方误差换算成分贝，8 位图像的常见值在 30–50 dB，越高越好，但只看逐像素差，与人眼感受的相关性较差。SSIM（结构相似性）由 Wang、Bovik 等人 2004 年发表，从亮度、对比度、结构三方面比较局部图块，最大为 1，越高越好。LPIPS 由 Zhang 等人在 CVPR 2018 提出，把两张图送入预训练深度网络，比较中间层特征的差异，越低越好，与人类感知判断更一致。在具身智能里，它们常用来评估新视角合成、高斯泼溅重建和世界模型预测的画面，但分数高不代表物理上合理。",
+   "example": "3D 高斯泼溅论文在 Mip-NeRF360 数据集上报告 PSNR 27.21、SSIM 0.815、LPIPS 0.214，画质与当时最好的 Mip-NeRF360 方法相当。",
+   "related": [
+    "新视角合成",
+    "3D高斯泼溅",
+    "世界模型",
+    "弗雷歇视频距离",
+    "弗雷歇初始距离",
+    "神经辐射场"
+   ],
+   "sources": [
+    {
+     "title": "The Unreasonable Effectiveness of Deep Features as a Perceptual Metric (LPIPS, CVPR 2018)",
+     "url": "https://arxiv.org/abs/1801.03924"
+    },
+    {
+     "title": "Wikipedia: Structural similarity index measure",
+     "url": "https://en.wikipedia.org/wiki/Structural_similarity_index_measure"
+    },
+    {
+     "title": "Wikipedia: Peak signal-to-noise ratio",
+     "url": "https://en.wikipedia.org/wiki/Peak_signal-to-noise_ratio"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "基于物理的渲染",
+   "name_en": "Physically Based Rendering",
+   "abbr": "PBR",
+   "aliases": [
+    "PBR 材质",
+    "物理渲染",
+    "金属度-粗糙度工作流"
+   ],
+   "tier": 3,
+   "one_liner": "按真实光学规律建模光照和材质的渲染思路，让物体在任何光照下看起来都可信。",
+   "explanation": "PBR 指依照真实世界的光学原理来描述光源和表面材质的渲染方法。这个说法在 1990 年代出现，随 Pharr 等人的同名教材流行，后经迪士尼、Epic Games 推向实时渲染，如今是 Unreal、Unity、Blender 的标准做法。它一般满足三条：用微表面模型描述表面粗糙程度；能量守恒，反射出去的光不多于入射光；采用符合物理的 BRDF（描述表面如何反射光的函数）。材质通常用基础色（albedo）、法线、金属度、粗糙度等贴图描述。仿真器用上 PBR 材质，相机画面里的反光和高光才接近真实，这是缩小视觉虚实差距的前提之一。",
+   "example": "同一只不锈钢锅，把金属度设为 1、粗糙度调低，渲染出来有清晰的高光和环境反射；把粗糙度调高，就变成磨砂质感。",
+   "related": [
+    "路径追踪",
+    "光线追踪",
+    "渲染",
+    "照片级真实感渲染",
+    "SimReady 资产",
+    "虚实差距"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Physically based rendering",
+     "url": "https://en.wikipedia.org/wiki/Physically_based_rendering"
+    },
+    {
+     "title": "LearnOpenGL: PBR Theory",
+     "url": "https://learnopengl.com/PBR/Theory"
+    },
+    {
+     "title": "Physically Based Rendering: From Theory to Implementation, 4th ed. (online)",
+     "url": "https://www.pbr-book.org/4ed/contents"
+    }
+   ],
+   "as_of": ""
+  }
+ ]
+}

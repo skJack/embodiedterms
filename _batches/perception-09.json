@@ -1,0 +1,426 @@
+{
+ "category": "perception",
+ "batch": 9,
+ "terms": [
+  {
+   "name_zh": "视觉SLAM",
+   "name_en": "Visual SLAM",
+   "abbr": "vSLAM",
+   "aliases": [
+    "VSLAM",
+    "视觉同步定位与建图"
+   ],
+   "tier": 2,
+   "one_liner": "只靠相机，边估计自己在哪、边把周围环境建成地图。",
+   "explanation": "视觉SLAM 是同步定位与建图（SLAM）里以相机为主要传感器的一类，相机可以是单目、双目或 RGB-D 深度相机，常再融合 IMU（惯性测量单元）。系统一般分前端和后端：前端从图像提特征点、跨帧匹配，估计相机运动（这部分也叫视觉里程计）；后端用图优化或光束法平差压低累计误差，并靠回环检测（认出回到了去过的地方）消除漂移。相机便宜、信息量大，但单目看不出绝对尺度，弱纹理、反光和快速运动也容易跟丢。开源代表有支持单目、双目、RGB-D 和视觉惯性的 ORB-SLAM3，以及基于学习的 DROID-SLAM；移动机器人、AR 眼镜和无人机的定位导航常用它。",
+   "example": "ORB-SLAM3 论文报告：在无人机数据集 EuRoC 上用双目加 IMU 运行，估计轨迹的平均误差约 3.6 厘米；输入是图像序列，输出是每帧相机位姿和一张稀疏的地图点云。",
+   "related": [
+    "同步定位与建图",
+    "视觉里程计",
+    "视觉惯性里程计",
+    "回环检测",
+    "ORB-SLAM3",
+    "ATE / RPE（绝对 / 相对轨迹误差）"
+   ],
+   "sources": [
+    {
+     "title": "MathWorks: What Is SLAM (Simultaneous Localization and Mapping)?",
+     "url": "https://www.mathworks.com/discovery/slam.html"
+    },
+    {
+     "title": "ORB-SLAM3: An Accurate Open-Source Library for Visual, Visual-Inertial and Multi-Map SLAM (arXiv 2007.11898)",
+     "url": "https://arxiv.org/abs/2007.11898"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "体素",
+   "name_en": "Voxel",
+   "abbr": "",
+   "aliases": [
+    "体素网格",
+    "Voxel Grid",
+    "体素下采样",
+    "体积像素"
+   ],
+   "tier": 2,
+   "one_liner": "三维空间里的小立方格，相当于立体版的像素。",
+   "explanation": "体素（voxel，由 volume 和 pixel 合成）是把三维空间切成规则网格后的一个小立方格，每格可以存是否被占据、颜色、到表面的距离或一个特征向量，就像二维图片里的像素。和点云（一堆散乱的三维点）相比，体素排列规整，能直接用 3D 卷积处理，也方便查询某处有没有障碍；代价是分辨率一高内存涨得很快，格子边长减半，格数变 8 倍。机器人里常见用法有：占据栅格地图和八叉树地图用体素标记哪里能走；截断符号距离函数（TSDF）在体素里存距离值来做三维重建；点云体素降采样把同一格里的点合并成一个均值点。操作策略 PerAct 把工作空间切成 100×100×100 的体素，直接预测夹爪下一步去哪个格子。",
+   "example": "Open3D 里一行 pcd.voxel_down_sample(voxel_size=0.05) 就能把稠密点云按每 5 厘米一格（坐标单位为米时）降采样，点数大幅减少，再送去做配准或抓取检测。",
+   "related": [
+    "点云",
+    "占据栅格地图",
+    "八叉树地图",
+    "截断符号距离函数",
+    "点云滤波与降采样（体素降采样 / 离群点去除）",
+    "PerAct"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Voxel",
+     "url": "https://en.wikipedia.org/wiki/Voxel"
+    },
+    {
+     "title": "Open3D Tutorial: Point cloud (Voxel downsampling)",
+     "url": "https://www.open3d.org/docs/release/tutorial/geometry/pointcloud.html"
+    },
+    {
+     "title": "PerAct: Perceiver-Actor project page",
+     "url": "https://peract.github.io/"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "轮式里程计",
+   "name_en": "Wheel Odometry",
+   "abbr": "",
+   "aliases": [
+    "车轮里程计",
+    "编码器里程计",
+    "Wheel Encoder Odometry"
+   ],
+   "tier": 2,
+   "one_liner": "数轮子转了多少，推算机器人走了多远、转了多少角度。",
+   "explanation": "轮式里程计是最基础的相对定位方法：在驱动轮上装编码器，读出每个轮子转过的角度，乘以轮子半径得到行驶距离；对差速底盘，再用左右轮距离之差除以轮距算出车身转过的角度，逐帧累加就得到机器人相对出发点的位姿。它便宜、频率高、不受光照影响，几乎所有轮式底盘都自带。缺点是误差只增不减：轮子打滑、地面不平、轮径标定不准都会让估计越跑越偏（漂移），所以通常和 IMU、激光雷达或视觉里程计融合（如用扩展卡尔曼滤波），再由 SLAM 或定位算法纠偏。ROS 2 的 diff_drive_controller 就是根据左右轮反馈计算并发布 odom 话题。",
+   "example": "差速小车轮距 0.4 米，某段时间左轮走了 1.0 米、右轮走了 1.2 米：车身中心前进约 1.1 米，同时向左转 (1.2−1.0)/0.4 = 0.5 弧度，约 29°。",
+   "related": [
+    "编码器",
+    "差速驱动运动学",
+    "视觉里程计",
+    "腿式里程计",
+    "扩展卡尔曼滤波",
+    "打滑"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Odometry",
+     "url": "https://en.wikipedia.org/wiki/Odometry"
+    },
+    {
+     "title": "ros2_controllers: diff_drive_controller user documentation",
+     "url": "https://control.ros.org/rolling/doc/ros2_controllers/diff_drive_controller/doc/userdoc.html"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "YOLO",
+   "name_en": "You Only Look Once",
+   "abbr": "YOLO",
+   "aliases": [
+    "YOLO 系列",
+    "YOLOv8",
+    "YOLO11",
+    "YOLO26"
+   ],
+   "tier": 2,
+   "one_liner": "整张图只过一遍网络就框出所有物体的实时目标检测模型系列。",
+   "explanation": "YOLO 由 Joseph Redmon 等人在 2015 年提出（CVPR 2016 发表），把目标检测当成回归问题：整张图只过一遍网络，同时输出所有检测框的位置和类别，基础版当时每秒能跑 45 帧，比先生成候选框再逐个分类的两阶段方法快得多。之后 YOLO 演化成由不同团队接力发布的大家族，Ultralytics 维护的 YOLOv5、YOLOv8、YOLO11 用得最广；据其文档，2026 年 1 月发布的 YOLO26 可选去掉非极大值抑制（NMS，删除重复框的后处理），并支持分割、姿态、旋转框等任务。机器人上常用它做快速 2D 检测，再结合深度图得到物体三维位置；要按文字找任意类别物体时可用开放词汇版 YOLO-World。",
+   "example": "桌面分拣：腕部相机图像送进 YOLO 得到「杯子」的检测框，取框内对应的深度像素反投影成三维点，作为机械臂抓取的目标位置。",
+   "related": [
+    "目标检测",
+    "检测框（边界框）",
+    "非极大值抑制",
+    "YOLO-World",
+    "平均精度均值"
+   ],
+   "sources": [
+    {
+     "title": "You Only Look Once: Unified, Real-Time Object Detection (arXiv 1506.02640)",
+     "url": "https://arxiv.org/abs/1506.02640"
+    },
+    {
+     "title": "Ultralytics Docs: Models Supported by Ultralytics",
+     "url": "https://docs.ultralytics.com/models/"
+    }
+   ],
+   "as_of": "2026-01"
+  },
+  {
+   "name_zh": "3D目标检测",
+   "name_en": "3D Object Detection",
+   "abbr": "",
+   "aliases": [
+    "三维目标检测",
+    "3D 包围框检测",
+    "3D Detection"
+   ],
+   "tier": 3,
+   "one_liner": "在三维空间里找出物体，给出类别和带朝向的立体框。",
+   "explanation": "3D 目标检测是 2D 目标检测在三维空间的延伸：输入可以是激光雷达点云、RGB-D 图像，甚至单张彩色图，输出每个物体的类别和一个三维包围框，通常用中心坐标、长宽高和朝向角描述。2D 框只说明物体占了画面哪块像素，机器人要抓取、避障、导航，需要的是物体在真实空间里的位置、大小和朝向。自动驾驶是主要推动者，经典基准 KITTI 有 7481 张训练图及对应点云，评测车、行人、骑车人三类，车的 3D 框交并比（IoU）要达到 0.7 才算检对。面向室内和通用场景的有 Omni3D 基准（23.4 万张图、98 类）及配套的 Cube R-CNN 模型。它常和 6D 位姿估计对照：后者更精细，要给出物体完整的三维旋转。",
+   "example": "仓储机器人用激光雷达点云做 3D 检测，得到每个货箱的中心位置、尺寸和朝向，据此规划叉取或抓取的位置。",
+   "related": [
+    "目标检测",
+    "点云",
+    "激光雷达",
+    "鸟瞰图",
+    "交并比",
+    "6D位姿估计"
+   ],
+   "sources": [
+    {
+     "title": "KITTI 3D Object Detection Evaluation 2017",
+     "url": "https://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=3d"
+    },
+    {
+     "title": "Omni3D: A Large Benchmark and Model for 3D Object Detection in the Wild (arXiv 2207.10660)",
+     "url": "https://arxiv.org/abs/2207.10660"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "3D 点跟踪",
+   "name_en": "3D Point Tracking",
+   "abbr": "",
+   "aliases": [
+    "三维点跟踪",
+    "TAP-3D",
+    "Tracking Any Point in 3D",
+    "SpatialTrackerV2"
+   ],
+   "tier": 3,
+   "one_liner": "在视频里持续追踪任意像素点，给出它在三维空间中的运动轨迹。",
+   "explanation": "3D 点跟踪是任意点跟踪（在视频里跟踪任意指定像素）的三维版本：给定视频和若干查询点，输出每个点在每一帧的三维坐标以及是否被遮挡。2D 跟踪分不清是物体在动还是相机在动，也没有深度；3D 轨迹能直接描述物体在空间里怎样移动和旋转。SpatialTracker（CVPR 2024）借单目深度估计把像素抬到三维再跟踪；后续的 SpatialTrackerV2（ICCV 2025）把点跟踪、单目深度和相机位姿估计合进一个前馈模型，只用单目视频即可工作。评测基准有 TAPVid-3D。在机器人学习里，3D 点轨迹可作为人类视频到机器人动作的中间表示，例如 General Flow 按语言指令预测物体上各点的未来 3D 轨迹来指导操作。",
+   "example": "拍一段人拉开抽屉的视频，用 SpatialTrackerV2 跟踪把手上的点，得到它沿直线外移的 3D 轨迹，可据此推断抽屉的滑动方向，再让机器人沿同一方向拉。",
+   "related": [
+    "任意点跟踪",
+    "CoTracker",
+    "场景流",
+    "单目深度估计",
+    "4D重建"
+   ],
+   "sources": [
+    {
+     "title": "SpatialTrackerV2: 3D Point Tracking Made Easy (arXiv 2507.12462)",
+     "url": "https://arxiv.org/abs/2507.12462"
+    },
+    {
+     "title": "TAPVid-3D: A Benchmark for Tracking Any Point in 3D (arXiv 2407.05921)",
+     "url": "https://arxiv.org/abs/2407.05921"
+    },
+    {
+     "title": "General Flow as Foundation Affordance for Scalable Robot Learning (arXiv 2401.11439)",
+     "url": "https://arxiv.org/abs/2401.11439"
+    }
+   ],
+   "as_of": "2025-10"
+  },
+  {
+   "name_zh": "3D场景图",
+   "name_en": "3D Scene Graph",
+   "abbr": "",
+   "aliases": [
+    "三维场景图",
+    "3DSG",
+    "3D Scene Graphs"
+   ],
+   "tier": 3,
+   "one_liner": "用分层的图把三维场景里的楼层、房间、物体和它们的关系组织起来。",
+   "explanation": "3D 场景图是一种结构化的场景表示：节点是场景里的实体（建筑、楼层、房间、物体、相机位置等），边是它们之间的关系（「在……里」「在……上」「挨着」），节点上再挂类别、尺寸、三维位置等属性。Armeni 等人在 ICCV 2019 提出这一结构，分建筑、房间、物体、相机四层；MIT 的 Hydra（RSS 2022）让机器人边探索边实时构建分层场景图。相比稠密点云或网格，场景图体积小、语义清楚，能直接回答「冰箱在哪个房间」，也便于转成文本交给大语言模型做任务规划。ConceptGraphs 用 2D 基础模型构建开放词汇场景图，SayPlan 则让大模型在场景图上搜索、规划跨房间的长程任务。",
+   "example": "机器人收到「把厨房桌上的苹果拿到客厅」：先在场景图里沿 厨房→桌子→苹果 找到目标节点和客厅节点，再依次调用导航、抓取、放置技能。",
+   "related": [
+    "ConceptGraphs",
+    "SayPlan",
+    "语义地图",
+    "场景理解",
+    "大模型任务规划"
+   ],
+   "sources": [
+    {
+     "title": "3D Scene Graph: A Structure for Unified Semantics, 3D Space, and Camera (arXiv 1910.02527)",
+     "url": "https://arxiv.org/abs/1910.02527"
+    },
+    {
+     "title": "Hydra: A Real-time Spatial Perception System for 3D Scene Graph Construction and Optimization (arXiv 2201.13360)",
+     "url": "https://arxiv.org/abs/2201.13360"
+    },
+    {
+     "title": "ConceptGraphs: Open-Vocabulary 3D Scene Graphs for Perception and Planning (arXiv 2309.16650)",
+     "url": "https://arxiv.org/abs/2309.16650"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "3D 视觉引导",
+   "name_en": "3D Vision-Guided Robotics",
+   "abbr": "",
+   "aliases": [
+    "3D 视觉引导机器人",
+    "视觉引导机器人",
+    "VGR",
+    "3D 视觉定位引导"
+   ],
+   "tier": 3,
+   "one_liner": "用 3D 相机识别工件的位置和姿态，引导工业机器人去抓取或加工。",
+   "explanation": "3D 视觉引导是工业自动化里的叫法：在机器人工作站装 3D 相机（常用结构光、双目或激光三角测量），拍下工件点云，经识别和位姿估计得到每个工件的三维位置与朝向，再通过手眼标定换算到机器人坐标系，引导机械臂去抓、放、装配或打磨。传统工业机器人靠示教再现，要求工件每次摆在同一位置；加上 3D 视觉后，它能处理位置随机、堆叠杂乱的情况。典型应用有无序抓取（从料框里取散乱零件）、混箱拆垛、机床上下料和定位装配，国内有梅卡曼德、图漾等厂商提供相机和软件。它可以看作「感知→抓取」流程在工厂里的成熟工程版，但物体种类和任务通常事先限定。",
+   "example": "零部件工厂里，3D 相机拍下料框中杂乱堆放的金属件，软件把点云和零件 CAD 模型匹配，算出每个零件的位姿和可抓点，引导机械臂逐个取出放上机床，这就是无序抓取上下料。",
+   "related": [
+    "无序抓取",
+    "机器视觉（工业视觉）",
+    "结构光",
+    "手眼标定",
+    "6D位姿估计",
+    "梅卡曼德"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Machine vision",
+     "url": "https://en.wikipedia.org/wiki/Machine_vision"
+    },
+    {
+     "title": "Wikipedia: Bin picking",
+     "url": "https://en.wikipedia.org/wiki/Bin_picking"
+    },
+    {
+     "title": "Mech-Mind Robotics 官网（3D 相机与视觉引导应用）",
+     "url": "https://www.mech-mind.com/"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "3D视觉定位",
+   "name_en": "3D Visual Grounding",
+   "abbr": "",
+   "aliases": [
+    "3D Grounding",
+    "3D 视觉接地",
+    "3D 指代定位",
+    "3D Referring Expression Grounding"
+   ],
+   "tier": 3,
+   "one_liner": "根据一句话的描述，在三维场景里找到它指的那个物体。",
+   "explanation": "3D 视觉定位把 2D 视觉定位（用文字在图片里框出目标）搬到三维场景：输入场景的点云或多视角图像，加一句描述，如「靠窗那把椅子旁边的垃圾桶」，输出目标物体的三维包围框。中文「视觉定位」也常指估计相机自身位置，这里指的是 grounding。难点是场景里常有多个同类物体，必须理解「左边」「最大的」「挨着门」这类空间关系才能区分。ScanRefer 和 ReferIt3D（均发表于 ECCV 2020）在 ScanNet 室内扫描上建立了基准，前者含约 5.2 万条描述、1.1 万个物体，后者含 Nr3D 自然描述和 Sr3D 空间关系描述两套数据。对机器人来说，它是把语言指令落到具体物体上的关键一步。",
+   "example": "用户说「把书桌上最右边那个蓝色杯子给我」，机器人先在重建好的房间点云里做 3D 视觉定位，得到那只杯子的三维框，再规划抓取。",
+   "related": [
+    "视觉定位（Grounding）",
+    "ScanNet 数据集",
+    "3D目标检测",
+    "3D场景图",
+    "开放词汇检测",
+    "语言接地"
+   ],
+   "sources": [
+    {
+     "title": "ScanRefer: 3D Object Localization in RGB-D Scans using Natural Language (ECCV 2020)",
+     "url": "https://daveredrum.github.io/ScanRefer/"
+    },
+    {
+     "title": "ReferIt3D: Neural Listeners for Fine-Grained 3D Object Identification in Real-World Scenes (ECCV 2020)",
+     "url": "https://referit3d.github.io/"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "4D重建",
+   "name_en": "4D Reconstruction (Dynamic Scene Reconstruction)",
+   "abbr": "",
+   "aliases": [
+    "动态场景重建",
+    "4D 高斯",
+    "4D Gaussian Splatting",
+    "动态三维重建"
+   ],
+   "tier": 3,
+   "one_liner": "重建会动的三维场景：三维几何加上它随时间的变化。",
+   "explanation": "4D 重建指从视频（单目或多视角）恢复随时间变化的三维场景，第四维是时间：既要知道场景长什么样，也要知道人、手和物体在每一时刻的形状与位置。NeRF、3D 高斯泼溅等静态重建默认场景不动，遇到运动物体会出现重影。一类做法是逐场景优化，如 Dynamic 3D Gaussians 让高斯点随时间移动旋转，4D Gaussian Splatting（CVPR 2024）用形变场预测每个时刻高斯的位移，在 RTX 3090 上以 82 FPS 渲染 800×800 画面；另一类是前馈式，如 MonST3R（ICLR 2025）把静态重建模型 DUSt3R 扩展到动态视频，逐帧直接输出点图。具身智能里，它用于从人类视频恢复手物交互的三维运动、构建可回放的数字孪生。",
+   "example": "用手机拍一段人倒水的视频，经 4D 重建得到每一帧手、杯子和水壶的三维形状，可从任意视角回放，也能提取杯子的运动轨迹给机器人模仿。",
+   "related": [
+    "3D高斯泼溅",
+    "神经辐射场",
+    "前馈式三维重建",
+    "DUSt3R",
+    "3D 点跟踪",
+    "4D 世界模型"
+   ],
+   "sources": [
+    {
+     "title": "4D Gaussian Splatting for Real-Time Dynamic Scene Rendering (arXiv 2310.08528)",
+     "url": "https://arxiv.org/abs/2310.08528"
+    },
+    {
+     "title": "MonST3R: A Simple Approach for Estimating Geometry in the Presence of Motion (arXiv 2410.03825)",
+     "url": "https://arxiv.org/abs/2410.03825"
+    },
+    {
+     "title": "Dynamic 3D Gaussians: Tracking by Persistent Dynamic View Synthesis (arXiv 2308.09713)",
+     "url": "https://arxiv.org/abs/2308.09713"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "9DTact",
+   "name_en": "9DTact",
+   "abbr": "",
+   "aliases": [
+    "9DTact 视触觉传感器"
+   ],
+   "tier": 3,
+   "one_liner": "清华许华哲团队等开源的小型视触觉传感器，能测接触形状和六维力。",
+   "explanation": "9DTact 是清华大学许华哲团队与上海期智研究院等机构提出的视触觉传感器，论文发表于 IEEE RA-L，并在 ICRA 2024 报告；名字里的「9D」指 3D 形状加 6D 力。它属于 GelSight 一类设计：内部摄像头拍一块软凝胶的背面，物体压上去时凝胶变形、反光变弱，图像明暗就反映接触深度。它利用半透明凝胶的光学特性，不需要在胶面加标记点，就能用神经网络从图像估计三个方向的力和三个方向的力矩；训练用了约 10 万对图像-力数据、来自 175 个物体，可泛化到没见过的物体。尺寸约 32.5×25.5×25.5 毫米，形状重建平均误差约 0.046 毫米。软硬件全部开源并附制作教程。",
+   "example": "把 9DTact 装在夹爪指尖，抓取时读出指尖受到的法向力和切向力，可用来判断物体是否开始打滑、要不要加大夹持力。",
+   "related": [
+    "视触觉传感器",
+    "GelSight",
+    "DIGIT 视触觉传感器",
+    "六维力传感器",
+    "光度立体",
+    "滑移检测"
+   ],
+   "sources": [
+    {
+     "title": "9DTact: A Compact Vision-Based Tactile Sensor for Accurate 3D Shape Reconstruction and Generalizable 6D Force Estimation (arXiv 2308.14277)",
+     "url": "https://arxiv.org/abs/2308.14277"
+    },
+    {
+     "title": "9DTact project page",
+     "url": "https://linchangyi1.github.io/9DTact/"
+    },
+    {
+     "title": "9DTact GitHub repository",
+     "url": "https://github.com/linchangyi1/9DTact"
+    }
+   ],
+   "as_of": "2024-05"
+  },
+  {
+   "name_zh": "ATE / RPE（绝对 / 相对轨迹误差）",
+   "name_en": "Absolute Trajectory Error / Relative Pose Error",
+   "abbr": "ATE / RPE",
+   "aliases": [
+    "绝对轨迹误差",
+    "相对位姿误差",
+    "APE",
+    "Absolute Pose Error"
+   ],
+   "tier": 3,
+   "one_liner": "衡量 SLAM 或里程计估计的轨迹和真值差多少的两个标准指标。",
+   "explanation": "ATE 和 RPE 是评估视觉 SLAM、视觉里程计等定位算法最常用的两个指标，慕尼黑工业大学的 TUM RGB-D 基准给出了广泛沿用的定义和评测脚本。ATE（绝对轨迹误差）先按时间戳把估计轨迹和真值轨迹一一对应，再用一个刚体变换把两条轨迹整体对齐（单目 SLAM 还要额外估一个尺度），然后算各时刻位置差的均方根（RMSE，单位米），反映整条轨迹的全局一致性。RPE 严格说是「相对位姿误差」，比较固定时间或距离间隔内的相对运动，如每秒平移误差（m/s）和旋转误差（deg/s），反映局部漂移，适合评价没有回环的里程计。常用开源工具 evo 支持 TUM、KITTI、EuRoC 等格式，其中与 ATE 对应的指标叫 APE。",
+   "example": "用 evo_ape 对比某 SLAM 的输出轨迹和真值，若 ATE RMSE 为 0.02，表示对齐后整条轨迹平均偏差约 2 厘米；再用 evo_rpe 设 1 秒间隔，看每秒累积多少漂移。",
+   "related": [
+    "视觉SLAM",
+    "视觉里程计",
+    "真值",
+    "轨迹",
+    "回环检测"
+   ],
+   "sources": [
+    {
+     "title": "TUM RGB-D Dataset: Useful tools (ATE / RPE evaluation)",
+     "url": "https://cvg.cit.tum.de/data/datasets/rgbd-dataset/tools"
+    },
+    {
+     "title": "evo: Python package for the evaluation of odometry and SLAM",
+     "url": "https://github.com/MichaelGrupp/evo"
+    }
+   ],
+   "as_of": ""
+  }
+ ]
+}

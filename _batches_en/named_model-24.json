@@ -1,0 +1,118 @@
+{
+  "batch": "named_model-24",
+  "terms": [
+    {
+      "key": "named_model-24#0",
+      "name_en": "Socratic Models",
+      "abbr": "SMs",
+      "aliases": ["Socratic Models: Composing Zero-Shot Multimodal Reasoning with Language"],
+      "one_liner": "A framework that chains several off-the-shelf large models together zero-shot using natural language as the common interface for multimodal tasks.",
+      "explanation": "Socratic Models was released by Andy Zeng, Pete Florence, and colleagues at Google in April 2022. Different foundation models have different strengths: vision-language models (VLMs) understand images, large language models (LLMs) understand commonsense and reasoning, and audio models understand sound. Rather than fine-tuning any of them, Socratic Models uses natural language as a shared interface: one model's output is written into another model's prompt, letting them exchange information as if in conversation and compose new capabilities zero-shot. The paper demonstrates this on first-person video question answering, multimodal assistant dialogue, and robot perception and planning: a vision model first turns tabletop objects into text descriptions, then an LLM breaks the instruction down into a sequence of pick-and-place actions, which are handed to a pretrained language-conditioned policy for execution. Along with SayCan and Code as Policies from the same period, it represents an early approach to using large language models as robot planners.",
+      "example": "A user says 'put all the fruit in the bowl'; a vision model first lists an apple, a banana, and a bowl on the table, and a language model writes this out as 'pick up the apple and put it in the bowl; pick up the banana and put it in the bowl,' which a lower-level pick-and-place policy then executes step by step.",
+      "related": ["Large Language Model", "Vision-Language Model", "Zero-shot", "SayCan", "Code as Policies", "Inner Monologue"]
+    },
+    {
+      "key": "named_model-24#1",
+      "name_en": "SONIC",
+      "abbr": "SONIC",
+      "aliases": ["GEAR-SONIC", "SONIC: Supersizing Motion Tracking for Natural Humanoid Whole-Body Control"],
+      "one_liner": "NVIDIA's general-purpose humanoid whole-body control foundation model, built by scaling up motion tracking training.",
+      "explanation": "SONIC was released by NVIDIA's GEAR lab (Zhengyi Luo, Linxi Fan, Yuke Zhu, and others) in November 2025, later published in Science Robotics (2026). The premise is that humanoid controllers can also get better simply by scaling up, and motion tracking — having a robot reproduce a piece of human motion in real time — is well suited to that, since motion-capture data already comes with dense supervision and needs no hand-designed reward. The team scaled the network from 1.2 million to 42 million parameters, trained on about 700 hours of motion-capture data (over 100 million frames) using roughly 21,000 GPU-hours, and deployed it on the Unitree G1. Through a unified token interface, the same policy can take motion commands from a joystick plus a real-time motion planner, VR teleoperation, video imitation, or text- and music-driven motion generation, and it can also sit behind a VLA such as GR00T N1.5 to perform whole-body mobile manipulation. The code is open-sourced in the GR00T-WholeBodyControl repository.",
+      "example": "An operator wearing VR gear tracks only their head and hands; SONIC uses a motion planner to fill in the lower body, controlling the G1 to complete a task like pushing a lawnmower while walking.",
+      "related": ["Motion Tracking", "Learning-based Whole-Body Control (Neural WBC)", "Unitree G1", "NVIDIA Isaac GR00T N1 / N1.5 / N1.6 / N1.7", "NVIDIA Generalist Embodied Agent Research Lab", "GR00T-WholeBodyControl"]
+    },
+    {
+      "key": "named_model-24#2",
+      "name_en": "SpatialLM",
+      "aliases": ["SpatialLM 1.1", "Manycore SpatialLM", "SpatialLM: Training Large Language Models for Structured Indoor Modeling"],
+      "one_liner": "Manycore's open-source 3D large model that reads an indoor point cloud and outputs a structured layout of walls, doors, windows, and furniture.",
+      "explanation": "SpatialLM was open-sourced by Hangzhou-based Manycore Tech (owner of Kujiale) in March 2025, with a technical report in June, and was selected for NeurIPS 2025. It takes as input a point cloud of an indoor scene — which can come from phone-video reconstruction, an RGB-D camera, or LiDAR — and outputs a structured scene description: the positions of walls, doors, and windows, and 3D boxes for furniture with category and orientation. Rather than designing a separate network for each task, as earlier work did, it reuses a standard multimodal large-model structure: a point-cloud encoder turns geometric information into tokens, and a small open-source language model such as Llama 1B or Qwen 0.5B then writes out the scene item by item as text. Training used point clouds and annotations from 12,328 synthetic indoor scenes (54,778 rooms). Version 1.1, released in June, switched to the Sonata point-cloud encoder and added detection restricted to user-specified categories. SpatialLM can supply structured spatial information for robot navigation and indoor layout understanding.",
+      "example": "A phone is used to film a walkthrough of a room, which is reconstructed into a point cloud via MASt3R-SLAM and fed into SpatialLM, yielding each wall's endpoints, the positions of doors and windows, and 3D boxes for the bed and nightstand.",
+      "related": ["Point Cloud", "3D Object Detection", "Scene Understanding", "Manycore Tech", "Spatial Intelligence", "Multimodal Large Language Model"]
+    },
+    {
+      "key": "named_model-24#3",
+      "name_en": "SpatialVLM",
+      "aliases": ["Spatial VLM", "SpatialVLM: Endowing Vision-Language Models with Spatial Reasoning Capabilities"],
+      "one_liner": "A method that teaches a vision-language model to estimate distance and size using a massive, automatically generated set of 3D spatial question-answer pairs.",
+      "explanation": "SpatialVLM was released by Google DeepMind together with MIT and Stanford in January 2024, published at CVPR 2024. The authors found that vision-language models (VLMs) can recognize what's in an image but struggle with quantitative spatial questions like 'how far is the cup from the box' or 'which one is taller,' because their training data lacks 3D spatial knowledge. They built an automated data pipeline: real photos go through object detection, segmentation, and metric depth estimation, lifting 2D images into 3D point clouds with real-world scale, and template-based spatial question-answer pairs are then generated from them — 2 billion question-answer pairs from 10 million images, the first internet-scale dataset for metric spatial reasoning. Models trained on this data show clear gains on both qualitative and quantitative spatial questions, can chain with a large language model for multi-step spatial reasoning, and can use the resulting distance estimates as a dense reward for robot tasks.",
+      "example": "Asked 'roughly how many centimeters is the red block from the blue bowl,' an ordinary VLM typically gives only a vague description, while SpatialVLM can give a direct distance estimate with units.",
+      "related": ["Spatial Reasoning", "Vision-Language Model", "Visual Question Answering", "Monocular Depth Estimation", "Spatial Intelligence", "Google DeepMind"]
+    },
+    {
+      "key": "named_model-24#4",
+      "name_en": "Spirit v1.5",
+      "aliases": ["Spirit-v1.5", "Spirit AI Spirit v1.5"],
+      "one_liner": "An open-source VLA foundation model from Spirit AI, built on the premise that messy, unscripted data makes a better pretraining set.",
+      "explanation": "Spirit v1.5 is a vision-language-action (VLA) model released and open-sourced by Chinese startup Spirit AI (千寻智能) in January 2026, with the inference code (MIT license), base weights, and one fine-tuned checkpoint (Apache 2.0 license) made public, followed by fine-tuning code in April. Its architecture is the common 'VLM plus action head' pattern: Qwen3-VL-4B as the vision-language backbone, followed by a diffusion Transformer (DiT) action head that generates continuous actions. Its central claim, stated in the title of its technical blog post, is that 'clean data is the enemy of a good robot foundation model': rather than giving data collectors a fixed script or staging objects carefully, they are simply given a goal and left to complete a chain of real tasks freely, so the resulting data naturally contains failed retries and task switching. The team states this raised effective per-collector data-collection time by 200%. At release, it ranked first on RoboChallenge's Table30 real-robot leaderboard.",
+      "example": "A data collector sets themselves a goal, such as 'use the robot to mix a drink today,' and the whole session — preparing ingredients, noticing a wrong ratio, adjusting, adding or removing ingredients — is recorded continuously and used for pretraining.",
+      "related": ["Spirit AI", "Vision-Language-Action Model", "RoboChallenge", "Qwen-VL series (Qwen-VL / Qwen2-VL / Qwen2.5-VL / Qwen3-VL)", "Diffusion Transformer", "Data Diversity"]
+    },
+    {
+      "key": "named_model-24#5",
+      "name_en": "Stable Video Diffusion",
+      "abbr": "SVD",
+      "aliases": ["SVD-XT", "Stable Video Diffusion: Scaling Latent Video Diffusion Models to Large Datasets"],
+      "one_liner": "Stability AI's open-source image-to-video diffusion model, commonly used in robotics research as a backbone for video prediction.",
+      "explanation": "Stable Video Diffusion is an open-source video generation model released by Stability AI on November 21, 2023, a latent diffusion model (which compresses images into a low-dimensional latent space and denoises step by step within it). It adds temporal layers on top of the Stable Diffusion image model and summarizes training into three stages — text-to-image pretraining, large-scale video pretraining, and high-quality video fine-tuning — emphasizing how much video-data curation matters. The initial release included two image-to-video models generating 14 and 25 frames respectively (the latter called SVD-XT), with a settable frame rate of 3 to 30 fps; it launched as a research preview, not for commercial use. Thanks to its open weights and modest size of about 1.5 billion parameters, SVD became a commonly used video backbone in embodied AI — for example, Video Prediction Policy (VPP) adds language conditioning on top of SVD, fine-tunes it on robot video, and extracts predictive representations of the future from it to output actions.",
+      "example": "Video Prediction Policy (VPP) fine-tunes SVD into a manipulation-video prediction model: given the current frame and the instruction 'open the drawer,' it first predicts features of the upcoming frames and then uses them to output the robot arm's actions.",
+      "related": ["Video Generation Model", "Latent Diffusion Model", "Video Prediction Policy", "Text-to-Video / Image-to-Video", "World Model", "Diffusion Model"]
+    },
+    {
+      "key": "named_model-24#6",
+      "name_en": "SuSIE",
+      "abbr": "SuSIE",
+      "aliases": ["Subgoal Synthesis via Image Editing", "Zero-Shot Robotic Manipulation with Pretrained Image-Editing Diffusion Models"],
+      "one_liner": "A method that uses an image-editing diffusion model as a high-level planner, sketching a subgoal image for a low-level policy to reach.",
+      "explanation": "SuSIE was released by Kevin Black, Sergey Levine, Chelsea Finn, and colleagues at UC Berkeley and Stanford in October 2023. The method has two levels. The high level is InstructPix2Pix, an open-source image-editing model, fine-tuned on human video and robot data: given the current camera image and a language instruction, it outputs a subgoal image showing 'what it should look like' at some point soon. The low level is a goal-conditioned policy that looks only at the target image, not the language, and is responsible for getting the robot from the current image to that subgoal image. The two levels alternate until the task is complete, letting the high level draw on internet-scale image pretraining to handle new objects and instructions, while the low level focuses purely on precise control. It achieved state-of-the-art results at the time in the zero-shot setting on the CALVIN benchmark, and outperformed RT-2-X in real-robot experiments too. SuSIE belongs to the same 'generate an image, then derive the action' family as UniPi.",
+      "example": "Given the instruction 'put the yellow block in the drawer,' SuSIE first generates an image of the gripper already holding the yellow block as a subgoal; once the low-level policy reaches that state, it generates the next subgoal image showing the block inside the drawer.",
+      "related": ["Goal-conditioned Policy", "Diffusion Model", "Hierarchical Architecture", "CALVIN", "UniPi", "Zero-shot"]
+    },
+    {
+      "key": "named_model-24#7",
+      "name_en": "TD-MPC2",
+      "abbr": "TD-MPC2",
+      "aliases": ["TD-MPC 2", "TD-MPC2: Scalable, Robust World Models for Continuous Control"],
+      "one_liner": "A reinforcement learning algorithm that plans inside a learned latent-space world model, using one set of hyperparameters across hundreds of control tasks.",
+      "explanation": "TD-MPC2 was released by Nicklas Hansen, Hao Su, and Xiaolong Wang at UC San Diego in October 2023, an ICLR 2024 Spotlight paper and an improvement on the same team's earlier TD-MPC. It is a model-based reinforcement learning method: it first learns a world model that predicts the next state, reward, and value purely in a latent space, with no image reconstruction (that is, no decoder); at decision time, it performs model predictive control (MPC) within that latent space, relying on short-horizon rollouts from the model while longer-horizon returns are estimated by a value function learned via temporal difference (TD) learning, which is where the name comes from. TD-MPC2 performs reliably with the same set of hyperparameters across 104 continuous-control tasks spanning four domains — DMControl, Meta-World, ManiSkill2, and MyoSuite — and the team also trained a 317-million-parameter multi-task agent that handles 80 tasks, showing that capability keeps growing with model and data scale.",
+      "example": "The same TD-MPC2 multi-task model can control the cheetah-run task in DMControl and also open a drawer with a robot arm in Meta-World, without needing separate hyperparameter tuning for each task.",
+      "related": ["Model-Based Reinforcement Learning", "World Model", "Model Predictive Control", "Latent World Model", "Temporal Difference Learning", "DreamerV3"]
+    },
+    {
+      "key": "named_model-24#8",
+      "name_en": "Waymo World Model",
+      "aliases": ["The Waymo World Model (built on Genie 3)"],
+      "one_liner": "Waymo's Genie-3-based generative driving simulator, able to generate camera and lidar data together.",
+      "explanation": "The Waymo World Model is a generative world model that Waymo announced on February 6, 2026, for large-scale autonomous-driving simulation. It is built on top of Genie 3, Google DeepMind's interactive world model, leveraging Genie 3's pretraining on huge amounts of video to generate photorealistic, interactive 3D driving environments, and outputting both camera and LiDAR sensor data at once. It mainly targets autonomous driving's long-tail problem: dangerous situations like extreme weather, natural disasters, or rare objects are seldom encountered during real-world test driving, yet must still be tested for in advance. It supports three kinds of control: changing the self-driving car's own actions to run 'what if we had driven differently' counterfactuals; controlling road layout and traffic conditions; and using language to change the time of day or weather, or even generate an entirely synthetic scene. It illustrates how general-purpose world models are starting to be used as both a test environment and a data source for embodied systems.",
+      "example": "A single sentence can turn a real, sunny daytime test-drive scene into a rainy night, and the self-driving car can be made to change lanes differently, to observe how the autonomous-driving system reacts on the same stretch of road.",
+      "related": ["Genie 3", "World Model", "Autonomous Driving", "Interactive World Model", "Long-tail Problem", "LiDAR (Light Detection and Ranging)"]
+    },
+    {
+      "key": "named_model-24#9",
+      "name_en": "ThinkAct",
+      "aliases": ["Fast-ThinkAct (follow-up version)", "ThinkAct: Vision-Language-Action Reasoning via Reinforced Visual Latent Planning"],
+      "one_liner": "A reasoning-based VLA that first has a multimodal large model work out a visual plan, then hands it to an action model to execute.",
+      "explanation": "ThinkAct was released by NVIDIA and National Taiwan University (Chi-Pin Huang, Fu-En Yang, and others) in July 2025, published at NeurIPS 2025. Most VLAs map directly from an image and instruction to an action with no explicit reasoning step, which makes multi-step, long-horizon tasks difficult. ThinkAct uses a dual-system design: the 'thinking' part is a multimodal large model initialized from Qwen2.5-VL 7B, first given a supervised fine-tuning cold start, then trained with GRPO reinforcement learning to generate embodied reasoning plans, with rewards coming from visual signals — whether the endpoint of the planned trajectory matches the demonstration, and whether the whole trajectory is consistent with it. The reasoning output is compressed into a visual planning latent, which conditions a downstream action model that produces the specific actions. On manipulation benchmarks such as SimplerEnv and LIBERO, and on several embodied-reasoning benchmarks, it shows few-shot adaptation, long-horizon planning, and self-correction. A follow-up, Fast-ThinkAct, was published at CVPR 2026.",
+      "example": "Given 'put the carrot on the plate,' ThinkAct first reasons that it needs to grasp the carrot and then move it above the plate, and plans the gripper's motion trajectory, which the action model then executes; if the grasp fails partway through, it can replan.",
+      "related": ["Embodied Reasoning", "Dual-System Architecture (System 1 / System 2)", "Chain-of-Thought", "Group Relative Policy Optimization", "Latent Reasoning", "LIBERO"]
+    },
+    {
+      "key": "named_model-24#10",
+      "name_en": "TinyVLA",
+      "aliases": ["Tiny-VLA", "TinyVLA: Towards Fast, Data-Efficient Vision-Language-Action Models for Robotic Manipulation"],
+      "one_liner": "A fast VLA that pairs a small multimodal model with a diffusion policy head and skips robot-data pretraining altogether.",
+      "explanation": "TinyVLA was released by Midea Group's AI Lab together with East China Normal University and others (Junjie Wen, Yichen Zhu, and colleagues) in September 2024, published in IEEE RA-L 2025. Models like OpenVLA at the time were slow at inference and also required pretraining on large-scale robot data first. TinyVLA takes a different approach: it first trains a family of small vision-language models, ranging from 70 million to 1.4 billion parameters, using Pythia as the language model and following the LLaVA training recipe, to serve as the policy backbone; when fine-tuning on robot data, the pretrained part is frozen and only about 5% of the parameters are trained via LoRA, with a diffusion policy decoder attached to output continuous actions directly. On real single-arm Franka and dual-arm UR5 robots, the largest variant, TinyVLA-H, beats OpenVLA's success rate by 25.7 points while using 5.5x fewer parameters and roughly 20x lower inference latency. The same team later built DexVLA.",
+      "example": "On a dual-arm UR5 task, OpenVLA — which relies on pretraining with single-arm Open X-Embodiment data — struggles, while TinyVLA, which skips robot pretraining and fine-tunes directly, performs better.",
+      "related": ["Vision-Language-Action Model", "OpenVLA", "Diffusion Policy", "Low-Rank Adaptation", "Inference Latency", "DexVLA"]
+    },
+    {
+      "key": "named_model-24#11",
+      "name_en": "TraceVLA",
+      "aliases": ["Visual Trace Prompting", "TraceVLA: Visual Trace Prompting Enhances Spatial-Temporal Awareness for Generalist Robotic Policies"],
+      "one_liner": "A method that draws the recent motion trace of key points onto the image as a prompt, boosting a VLA's sense of space and time.",
+      "explanation": "TraceVLA was released by the University of Maryland and Microsoft Research (Ruijie Zheng, Jianwei Yang, and others) in December 2024, published at ICLR 2025. VLAs usually see only a single current frame and have no sense of how the robot and objects have just been moving. TraceVLA introduces 'visual trace prompting': the point-tracking model CoTracker follows key points in the image over the past several frames, and their trace is drawn directly onto the image, so the model receives both the original frame and the frame with the trace overlaid. The authors used this to fine-tune OpenVLA on 150,000 manipulation trajectories they collected, producing TraceVLA, which beats OpenVLA by about 10 points across 137 configurations in SimplerEnv and reaches 3.5 times OpenVLA's performance on 4 real-robot WidowX tasks. A smaller version based on the 4-billion-parameter Phi-3-Vision comes close to the 7-billion-parameter OpenVLA.",
+      "example": "A robot arm is moving a spoon toward a towel; the input image has a colored trace overlaid showing where the gripper and spoon were in the last few steps, letting the model judge the direction and progress of the motion when deciding the next action.",
+      "related": ["OpenVLA", "Visual Prompting (e.g. Set-of-Mark)", "Tracking Any Point", "CoTracker", "SimplerEnv", "Vision-Language-Action Model"]
+    }
+  ]
+}

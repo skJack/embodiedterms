@@ -1,0 +1,201 @@
+{"category": "model", "batch": 15, "terms": [
+{
+ "name_zh": "分数函数 / 分数匹配",
+ "name_en": "Score Function / Score Matching",
+ "abbr": "",
+ "aliases": ["得分函数", "Score", "去噪分数匹配", "Denoising Score Matching", "基于分数的生成模型", "Score-based Generative Model"],
+ "tier": 3,
+ "one_liner": "「分数」是对数概率密度对输入的梯度，分数匹配是用神经网络学这个梯度的方法。",
+ "explanation": "分数函数指概率密度取对数后对输入求的梯度 ∇ₓlog p(x)，它指向数据概率升高最快的方向，计算时不需要知道难算的归一化常数。分数匹配由 Hyvärinen 在 2005 年提出，能在不知道真实分布的情况下训练模型拟合这个梯度；后来的去噪分数匹配改成「给数据加噪声，再学怎么把噪声去掉」。2019 年 Song 与 Ermon 在多种噪声强度下学分数，再用朗之万动力学（沿梯度走、每步加一点随机噪声的采样方法）生成图像；2021 年的随机微分方程（SDE）框架又说明它和去噪扩散概率模型本质上是同一类模型。扩散模型预测的噪声换个比例就是分数，所以理解分数是理解扩散策略的底层钥匙。",
+ "example": "扩散策略（Diffusion Policy）论文把自己的做法描述为学习动作分布的分数梯度场：推理时从随机噪声出发，沿这个梯度场做若干步带随机性的朗之万式迭代，最后得到一段机器人动作。",
+ "related": ["扩散模型", "去噪扩散概率模型", "能量模型", "扩散策略", "流匹配", "扩散 / 流采样器（ODE / SDE 求解器）"],
+ "sources": [
+  {"title": "Yang Song: Generative Modeling by Estimating Gradients of the Data Distribution (blog)", "url": "https://yang-song.net/blog/2021/score/"},
+  {"title": "Generative Modeling by Estimating Gradients of the Data Distribution (arXiv:1907.05600)", "url": "https://arxiv.org/abs/1907.05600"},
+  {"title": "Diffusion Policy: Visuomotor Policy Learning via Action Diffusion (arXiv:2303.04137)", "url": "https://arxiv.org/abs/2303.04137"}
+ ],
+ "as_of": ""
+},
+{
+ "name_zh": "Self Forcing（自强制训练）",
+ "name_en": "Self Forcing (Bridging the Train-Test Gap in Autoregressive Video Diffusion)",
+ "abbr": "",
+ "aliases": ["自强制", "Self-Forcing"],
+ "tier": 3,
+ "one_liner": "训练时就让视频模型接着自己生成的帧往下生成，消除训练与推理的不一致。",
+ "explanation": "Self Forcing 是 Adobe Research 与德州大学奥斯汀分校的 Xun Huang 等人 2025 年 6 月发布的方法（NeurIPS 2025 Spotlight），面向自回归视频扩散模型（逐帧或逐块往后生成的视频扩散模型）。以往用教师强制训练，每帧都以真实的前序帧为条件，推理时却只能接自己生成的、带瑕疵的帧，误差越滚越大，这叫曝光偏差。Self Forcing 在训练中就借助 KV 缓存（保存已算过的注意力键值）做自回归展开，再对整段视频用 DMD、SiD 或 GAN 这类分布匹配损失监督，并用少步扩散和随机截断梯度控制开销。结果是单卡实时的流式视频生成，这正是可交互世界模型需要的速度。",
+ "example": "论文从 Wan2.1-T2V-1.3B 初始化，生成 832×480 视频；按块生成的版本在单张 H100 上吞吐 17.0 帧/秒、延迟 0.69 秒，逐帧版本为 8.9 帧/秒、延迟 0.45 秒。",
+ "related": ["自回归视频生成", "扩散强制", "教师强制", "曝光偏差（自回归误差累积）", "KV 缓存", "可交互世界模型"],
+ "sources": [
+  {"title": "Self Forcing: Bridging the Train-Test Gap in Autoregressive Video Diffusion (arXiv:2506.08009)", "url": "https://arxiv.org/abs/2506.08009"},
+  {"title": "Self Forcing project page", "url": "https://self-forcing.github.io/"}
+ ],
+ "as_of": "2025-06"
+},
+{
+ "name_zh": "时空块",
+ "name_en": "Spacetime Patches",
+ "abbr": "",
+ "aliases": ["时空 patch", "时空补丁", "Spacetime Latent Patches", "Tubelet（管状块）"],
+ "tier": 3,
+ "one_liner": "把视频在时间和空间上一起切成的小立方块，每块当作一个 token 交给 Transformer。",
+ "explanation": "时空块是视频版的「图像切块」。视觉 Transformer 把一张图切成固定大小的方块，每块当一个 token；视频多了时间维，就切成跨若干帧、若干像素的小立方体，谷歌的 ViViT（ICCV 2021）把这种块叫 tubelet，常用 3D 卷积来切。OpenAI 2024 年 2 月发布 Sora 时让「时空块」这个说法流行开：先用视频压缩网络把视频压进潜在空间，再把潜在表示切成时空块，交给扩散 Transformer 去噪。好处是不同分辨率、时长和宽高比的视频都能变成长短不一的 token 序列统一训练，不必先裁剪缩放。现在多数视频生成模型和视频世界模型都用类似方式把视频变成 token。",
+ "example": "一段压缩后的潜在视频若切成「2 帧 × 2 × 2 格」的小块，每个小块展平后经线性层映射成一个 token；横屏和竖屏视频只是切出的块数和排布不同，可以放进同一批训练。",
+ "related": ["视觉 Transformer", "扩散 Transformer", "视频分词器", "视频生成模型", "token（词元）", "Sora（视频生成即世界模拟器）"],
+ "sources": [
+  {"title": "Sora: A Review on Background, Technology, Limitations, and Opportunities (arXiv:2402.17177)", "url": "https://arxiv.org/abs/2402.17177"},
+  {"title": "ViViT: A Video Vision Transformer (arXiv:2103.15691)", "url": "https://arxiv.org/abs/2103.15691"},
+  {"title": "Wikipedia: Sora (text-to-video model)", "url": "https://en.wikipedia.org/wiki/Sora_(text-to-video_model)"}
+ ],
+ "as_of": "2024-02"
+},
+{
+ "name_zh": "空间 Softmax",
+ "name_en": "Spatial Softmax (Keypoint Pooling)",
+ "abbr": "",
+ "aliases": ["Spatial Soft-Argmax", "软 argmax", "Soft-Argmax", "特征点层", "空间软最大值"],
+ "tier": 3,
+ "one_liner": "把卷积特征图每个通道汇聚成一个「最亮点」的二维坐标，保留物体位置信息。",
+ "explanation": "空间 Softmax 是一种把卷积特征图变成坐标的池化层，由伯克利的 Levine、Finn、Darrell、Abbeel 在 2015 年的端到端视觉运动策略工作中提出。做法是对每个通道在所有像素位置上做 softmax，得到「这个特征出现在哪」的概率分布，再对像素坐标求期望，得到一对 (x, y)，相当于可求导的 argmax。常规分类网络用全局平均池化，会把位置信息抹掉，而机器人操作恰恰需要知道东西在哪；softmax 还会压低弱的误激活，对干扰物更稳。后来它成了模仿学习视觉编码器的常见配置，扩散策略就在 ResNet-18 末端用它替换全局平均池化。",
+ "example": "Levine 等人的策略网络在三层卷积后接空间 Softmax，最后一层 32 个通道各输出一个特征点坐标，与机器人关节状态拼接后经全连接层输出电机力矩，全网络只有约 9.2 万参数。",
+ "related": ["卷积神经网络", "视觉编码器", "视觉运动策略", "扩散策略", "关键点检测", "端到端视觉运动策略（引导策略搜索）"],
+ "sources": [
+  {"title": "End-to-End Training of Deep Visuomotor Policies (arXiv:1504.00702, JMLR 2016)", "url": "https://arxiv.org/abs/1504.00702"},
+  {"title": "Deep Spatial Autoencoders for Visuomotor Learning (arXiv:1509.06113)", "url": "https://arxiv.org/abs/1509.06113"},
+  {"title": "Diffusion Policy (arXiv:2303.04137, HTML)", "url": "https://arxiv.org/html/2303.04137"}
+ ],
+ "as_of": ""
+},
+{
+ "name_zh": "投机解码",
+ "name_en": "Speculative Decoding",
+ "abbr": "",
+ "aliases": ["推测解码", "推测采样", "Speculative Sampling"],
+ "tier": 3,
+ "one_liner": "先让小模型快速猜几个 token，再让大模型一次并行核对，结果不变、速度更快。",
+ "explanation": "投机解码是大模型推理加速技术，2022 年底由谷歌的 Leviathan 等人提出（ICML 2023），DeepMind 的 Chen 等人同期提出了思路相同的「推测采样」。自回归模型每生成一个 token 都要把大模型完整跑一遍，很慢。投机解码先用便宜的草稿模型连续猜出几个 token，再让大模型在一次前向里并行给它们打分，按特定的接受规则保留猜对的前缀、从第一个不对的位置重新采样；这样输出分布与大模型单独生成完全一致，也不用重新训练。谷歌在 T5-XXL 上测到 2–3 倍加速。具身智能里，OpenVLA 这类输出离散动作 token 的 VLA 也用它降低推理延迟，2026 年还出现了结合运动学信息的改进方法。",
+ "example": "Spec-VLA（EMNLP 2025）发现直接套用标准投机解码对 VLA 提速有限，于是利用动作 token 之间的相对距离放宽接受条件，在 OpenVLA 上把接受长度提高 44%，加速 1.42 倍且成功率不降。",
+ "related": ["自回归解码", "推理延迟", "并行解码", "KV 缓存", "视觉-语言-动作模型", "OpenVLA"],
+ "sources": [
+  {"title": "Fast Inference from Transformers via Speculative Decoding (arXiv:2211.17192)", "url": "https://arxiv.org/abs/2211.17192"},
+  {"title": "Accelerating Large Language Model Decoding with Speculative Sampling (arXiv:2302.01318)", "url": "https://arxiv.org/abs/2302.01318"},
+  {"title": "Spec-VLA: Speculative Decoding for Vision-Language-Action Models with Relaxed Acceptance (arXiv:2507.22424)", "url": "https://arxiv.org/abs/2507.22424"}
+ ],
+ "as_of": "2026-03"
+},
+{
+ "name_zh": "状态空间模型",
+ "name_en": "State Space Model",
+ "abbr": "SSM",
+ "aliases": ["结构化状态空间模型", "S4", "选择性状态空间模型", "Selective SSM"],
+ "tier": 3,
+ "one_liner": "用一个随时间更新的隐藏状态处理长序列的网络，计算量随序列长度线性增长。",
+ "explanation": "状态空间模型源自控制理论：用一个隐藏状态概括过去，每来一个新输入，就按线性方程更新状态并给出输出。深度学习里的 SSM 把这套方程离散化后当作网络层，参数靠训练学出。2021 年斯坦福的 Gu、Goel、Ré 提出 S4（ICLR 2022），让它首次在上万步的长序列上好用；2023 年 Gu 与 Dao 的 Mamba 让参数随输入变化（称为选择性），能按内容决定记住还是遗忘。和 Transformer 相比，它推理时只需保留固定大小的状态，计算量随序列长度线性增长，而注意力是平方增长，因此适合长历史、高频控制和端侧部署。注意别和强化学习里的「状态空间」（所有可能状态的集合）混淆。",
+ "example": "Mamba 论文报告推理吞吐比同规模 Transformer 高约 5 倍，3B 参数的 Mamba 语言模型超过同规模 Transformer、与两倍规模的 Transformer 相当；具身领域的 RoboMamba 就用 Mamba 语言模型替代 Transformer 做 VLA 的推理骨干。",
+ "related": ["Mamba", "Transformer", "循环神经网络", "RoboMamba", "上下文长度", "状态空间"],
+ "sources": [
+  {"title": "Efficiently Modeling Long Sequences with Structured State Spaces (S4, arXiv:2111.00396)", "url": "https://arxiv.org/abs/2111.00396"},
+  {"title": "Mamba: Linear-Time Sequence Modeling with Selective State Spaces (arXiv:2312.00752)", "url": "https://arxiv.org/abs/2312.00752"}
+ ],
+ "as_of": ""
+},
+{
+ "name_zh": "System 0（三层系统架构）",
+ "name_en": "System 0 (S0/S1/S2 Three-Layer Architecture)",
+ "abbr": "S0",
+ "aliases": ["系统 0", "三系统架构", "System 0/1/2", "S0/S1/S2"],
+ "tier": 3,
+ "one_liner": "在快慢双系统之下再加一层千赫兹级全身控制网络，专管平衡、接触和全身协调。",
+ "explanation": "System 0 是 Figure AI 在 2026 年 1 月 27 日发布 Helix 02 时新增的一层。原来的 Helix 是快慢双系统：System 2 是视觉语言模型，负责理解场景和语言、给出隐式目标；System 1 是视觉运动策略，把目标变成关节指令。Helix 02 在 S1 下面加了 S0：一个约 1000 万参数的神经网络全身控制器，以 1kHz 运行，负责全身的平衡、接触和协调；它用 1000 多小时关节级人类动作数据，在 20 万个以上并行仿真环境里训练，靠域随机化迁移到真机。S1 也升级为以 200Hz 输出从腿、躯干到手指的全身关节目标。这样上层管「做什么」，底层保证「站得稳」，人形机器人才能边走边干活。",
+ "example": "Figure 展示 Helix 02 在整间厨房里自主完成约 4 分钟的洗碗机装卸任务，包含 61 个行走与操作结合的动作，全程无人干预。",
+ "related": ["快慢双系统", "分层架构", "全身控制", "学习型全身控制", "Helix 02", "大脑-小脑架构（大小脑）"],
+ "sources": [
+  {"title": "Introducing Helix 02: Full-Body Autonomy (Figure)", "url": "https://www.figure.ai/news/helix-02"},
+  {"title": "Helix: A Vision-Language-Action Model for Generalist Humanoid Control (Figure)", "url": "https://www.figure.ai/news/helix"}
+ ],
+ "as_of": "2026-01"
+},
+{
+ "name_zh": "TokenLearner",
+ "name_en": "TokenLearner",
+ "abbr": "",
+ "aliases": ["Token 学习器"],
+ "tier": 3,
+ "one_liner": "从大量图像 token 里自适应地汇总出少数几个关键 token 的模块，用来省算力。",
+ "explanation": "TokenLearner 是谷歌 Ryoo 等人 2021 年提出的模块（NeurIPS 2021），论文标题问的就是「8 个学出来的 token 能做什么」。视觉 Transformer 通常把图像切成几十到几百个块，每块一个 token，注意力计算量随 token 数平方增长。TokenLearner 根据输入内容为每个输出 token 算一张空间注意力图，用它对特征图加权汇总，把大量 token 压缩成 8 个左右，后面的层只处理这几个 token。论文在 ImageNet 和 Kinetics 等视频识别基准上以明显更少的计算量取得有竞争力的结果。它在具身领域最出名的用法是谷歌的 RT-1，用来让大模型满足实时控制的速度要求。",
+ "example": "RT-1 用 TokenLearner 把每张图的 81 个视觉 token 压到 8 个，6 帧历史一共 48 个 token 送入 Transformer；论文称这一步让推理加速约 2.4 倍。",
+ "related": ["视觉 token", "视觉 token 剪枝", "RT-1", "Perceiver 重采样器", "Q-Former", "视觉 Transformer"],
+ "sources": [
+  {"title": "TokenLearner: What Can 8 Learned Tokens Do for Images and Videos? (arXiv:2106.11297)", "url": "https://arxiv.org/abs/2106.11297"},
+  {"title": "RT-1: Robotics Transformer for Real-World Control at Scale (arXiv:2212.06817)", "url": "https://arxiv.org/abs/2212.06817"}
+ ],
+ "as_of": ""
+},
+{
+ "name_zh": "不确定性估计",
+ "name_en": "Uncertainty Estimation / Quantification",
+ "abbr": "",
+ "aliases": ["不确定性量化", "UQ", "Uncertainty Quantification", "置信度估计"],
+ "tier": 3,
+ "one_liner": "让模型在给出预测的同时说明自己有多没把握，好知道何时该停下或求助。",
+ "explanation": "不确定性估计研究怎样量化模型对自己输出的把握。通常分两类：偶然不确定性来自数据本身的随机性，比如传感器噪声，多收数据也消不掉；认知不确定性来自模型没见过、没学好，补数据可以降低。常用方法有深度集成（训练多个模型看它们的分歧）、蒙特卡洛 Dropout（推理时多次随机失活，看结果的波动）和共形预测（给出带统计覆盖保证的候选集合）。对机器人来说它直接关系安全：遇到分布外场景时，高不确定性可以触发减速、停止、请人接管或主动补采数据；基于模型的强化学习也常把集成模型的分歧当作探索信号。",
+ "example": "KnowNo（CoRL 2023）用共形预测衡量大语言模型规划器的不确定性：当候选动作集合里不止一个选项，比如桌上有两个碗而指令没说拿哪个，机器人就主动问人，在保证任务成功率的前提下尽量少求助。",
+ "related": ["分布外", "鲁棒性", "具身安全", "失败恢复", "人在回路", "KnowNo（会求助的机器人）"],
+ "sources": [
+  {"title": "Wikipedia: Uncertainty quantification", "url": "https://en.wikipedia.org/wiki/Uncertainty_quantification"},
+  {"title": "Simple and Scalable Predictive Uncertainty Estimation using Deep Ensembles (arXiv:1612.01474)", "url": "https://arxiv.org/abs/1612.01474"},
+  {"title": "Robots That Ask For Help: Uncertainty Alignment for Large Language Model Planners (arXiv:2307.01928)", "url": "https://arxiv.org/abs/2307.01928"}
+ ],
+ "as_of": ""
+},
+{
+ "name_zh": "统一多模态模型",
+ "name_en": "Unified Multimodal Model",
+ "abbr": "UMM",
+ "aliases": ["理解生成一体化模型", "统一理解与生成模型", "Unified Multimodal Understanding and Generation Model"],
+ "tier": 3,
+ "one_liner": "一个模型既能看懂图像视频、回答问题，又能生成或编辑图像视频。",
+ "explanation": "统一多模态模型指把多模态理解（看图回答问题）和视觉生成（按文字画图、改图、生成视频）放进同一个模型。过去两条路线是分开的：理解多用自回归的多模态大语言模型，生成多用扩散模型。GPT-4o 的原生图像生成让这个方向受到广泛关注，开源代表有字节 Seed 2025 年 5 月发布的 BAGEL（混合 Transformer 专家结构，70 亿激活参数、140 亿总参数）。按生成方式大致分为自回归、扩散、自回归-扩散混合三类。具身智能关心它，是因为同一个模型如果既能理解场景，又能想象「做完这个动作画面会变成什么样」，就可以同时充当策略和世界模型。",
+ "example": "阿里达摩院的 WorldVLA 把 VLA 和世界模型放进同一个自回归框架：既根据画面输出动作，也根据画面和动作预测下一帧图像，论文报告两者互相促进，效果好于单独的动作模型和世界模型。",
+ "related": ["多模态大语言模型", "原生多模态", "BAGEL", "自回归-扩散混合架构", "世界模型", "WorldVLA"],
+ "sources": [
+  {"title": "Unified Multimodal Understanding and Generation Models: Advances, Challenges, and Opportunities (arXiv:2505.02567)", "url": "https://arxiv.org/abs/2505.02567"},
+  {"title": "BAGEL (ByteDance-Seed GitHub)", "url": "https://github.com/ByteDance-Seed/Bagel"},
+  {"title": "WorldVLA: Towards Autoregressive Action World Model (arXiv:2506.21539)", "url": "https://arxiv.org/abs/2506.21539"}
+ ],
+ "as_of": "2025-06"
+},
+{
+ "name_zh": "向量量化",
+ "name_en": "Vector Quantization",
+ "abbr": "VQ",
+ "aliases": ["矢量量化", "码本", "Codebook", "残差向量量化", "Residual VQ", "RVQ"],
+ "tier": 3,
+ "one_liner": "准备一本「码本」，把连续向量换成离它最近的码字编号，变成离散 token。",
+ "explanation": "向量量化是信号处理里的经典压缩技术，1980 年代初由 Robert Gray 等人系统发展。做法是准备一组代表向量，叫码本，其中每个向量叫码字；对任意输入向量，找到离它最近的码字，只记下它的编号。它和 k-means 聚类本质相同，码字就是聚类中心。深度学习里，VQ 是把图像、音频、动作等连续信号变成离散 token 的主要手段之一，变成 token 后就能套用语言模型的「下一个 token 预测」来建模。残差向量量化（RVQ）用多本码本逐级量化上一级剩下的误差，谷歌 2021 年的 SoundStream 音频编解码器用它让同一个模型在 3–18 kbps 之间切换码率。",
+ "example": "VQ-BeT（ICML 2024）用分层的残差向量量化把机器人的连续动作编码成离散 token，取代前作 BeT 的 k-means 聚类，论文报告推理速度比扩散策略快约 5 倍。",
+ "related": ["向量量化变分自编码器", "动作分词器", "有限标量量化", "分词器", "BeT / VQ-BeT", "潜在动作"],
+ "sources": [
+  {"title": "Wikipedia: Vector quantization", "url": "https://en.wikipedia.org/wiki/Vector_quantization"},
+  {"title": "SoundStream: An End-to-End Neural Audio Codec (arXiv:2107.03312)", "url": "https://arxiv.org/abs/2107.03312"},
+  {"title": "Behavior Generation with Latent Actions (VQ-BeT, arXiv:2403.03181)", "url": "https://arxiv.org/abs/2403.03181"}
+ ],
+ "as_of": ""
+},
+{
+ "name_zh": "向量量化变分自编码器",
+ "name_en": "Vector-Quantized Variational Autoencoder",
+ "abbr": "VQ-VAE",
+ "aliases": ["矢量量化变分自编码器", "VQ-VAE-2"],
+ "tier": 3,
+ "one_liner": "编码结果被码本量化成离散编号的自编码器，常用来把图像、视频、动作变成 token。",
+ "explanation": "VQ-VAE 由 DeepMind 的 van den Oord、Vinyals、Kavukcuoglu 在 2017 年提出（NeurIPS 2017）。它和变分自编码器（VAE，把数据压成连续隐变量再还原的生成模型）有两点不同：编码器输出要先经过向量量化，换成码本里最近的码字，所以隐变量是离散的；先验不是固定的高斯分布，而是另外训练一个自回归模型（如 PixelCNN）去学。量化这一步不可求导，训练时用直通估计把解码器端的梯度直接拷给编码器，再加承诺损失让编码器输出靠近码字。它还缓解了 VAE 常见的后验坍缩。后来很多图像、视频分词器和潜在动作模型都建立在它之上。",
+ "example": "谷歌 DeepMind 的 Genie 用 VQ-VAE 把视频压成离散 token，它的潜在动作模型也用 VQ-VAE 式目标，从没有动作标签的游戏视频里学出只有 8 个码字的离散潜在动作，让人可以逐帧「操控」生成的世界。",
+ "related": ["变分自编码器", "向量量化", "视频分词器", "潜在动作模型", "Genie（初代）", "LAPA"],
+ "sources": [
+  {"title": "Neural Discrete Representation Learning (arXiv:1711.00937)", "url": "https://arxiv.org/abs/1711.00937"},
+  {"title": "Genie: Generative Interactive Environments (arXiv:2402.15391)", "url": "https://arxiv.org/abs/2402.15391"}
+ ],
+ "as_of": ""
+}
+]}

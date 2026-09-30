@@ -1,0 +1,437 @@
+{
+  "category": "control",
+  "batch": 4,
+  "terms": [
+    {
+      "name_zh": "抓取规划",
+      "name_en": "Grasp Planning",
+      "abbr": "",
+      "aliases": [
+        "抓取合成",
+        "Grasp Synthesis",
+        "抓取位姿规划"
+      ],
+      "tier": 2,
+      "one_liner": "算出夹爪或灵巧手该从物体哪里、以什么姿态和手指构型去抓。",
+      "explanation": "抓取规划（也叫抓取合成）回答「抓哪里、怎么抓」：输出夹爪的 6D 抓取位姿（位置加朝向）和开口宽度，灵巧手还要给出各手指关节角；之后再由运动规划生成一条不碰撞的路径，先到预抓取位姿再合拢。早期用解析方法：已知物体模型和摩擦系数，按力封闭（接触力能抵抗任意方向外力）等抓取质量指标搜索。Bohg 等人 2014 年的综述把数据驱动方法按物体是否见过分成已知、相似、未知三类。后来深度学习直接从深度图或点云预测抓取，如 Dex-Net、Contact-GraspNet、AnyGrasp。端到端 VLA 通常不单列这一步，工业分拣和模块化系统里仍很常用。",
+      "example": "UC 伯克利的 Dex-Net 2.0 用 670 万个合成点云及解析抓取指标训练抓取质量网络 GQ-CNN，在 ABB YuMi 上约 0.8 秒规划一次抓取，对 8 个已知物体成功率 93%。",
+      "related": [
+        "抓取",
+        "抓取位姿检测",
+        "预抓取位姿",
+        "力封闭",
+        "抓取质量指标",
+        "运动规划"
+      ],
+      "sources": [
+        {
+          "title": "Data-Driven Grasp Synthesis - A Survey (Bohg et al., IEEE T-RO 2014, arXiv 1309.2660)",
+          "url": "https://arxiv.org/abs/1309.2660"
+        },
+        {
+          "title": "Dex-Net 2.0: Deep Learning to Plan Robust Grasps with Synthetic Point Clouds and Analytic Grasp Metrics (arXiv 1703.09312)",
+          "url": "https://arxiv.org/abs/1703.09312"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "重力补偿",
+      "name_en": "Gravity Compensation",
+      "abbr": "",
+      "aliases": [
+        "重力补偿模式",
+        "重力矩补偿",
+        "Gravity Comp"
+      ],
+      "tier": 2,
+      "one_liner": "按模型算出托住机器人自重所需的关节力矩并提前加上，让手臂不因重力下垂。",
+      "explanation": "机械臂每个关节都要持续出力托住后面连杆的重量，所需力矩随姿态变化，记作 g(q)（q 为关节角）。重力补偿就是用各连杆质量、质心等模型参数实时算出 g(q)，作为前馈量（不等误差出现就提前给出的量）加到控制输出上。只用 PD 控制时，要靠残留的位置误差才能产生抵抗重力的力矩，末端会略微下垂，加上重力补偿即可消除。若只输出 g(q)、不加位置反馈，手臂能停在任意位置，人一推就动，这就是协作臂的重力补偿模式，也是拖动示教的基础。装了夹爪或抓着重物时要把负载质量和质心告诉控制器，否则补偿不准。",
+      "example": "Franka 机械臂的 libfranka 接口里，用户发送的关节力矩指令不含重力和摩擦项，由控制器内部补上；其模型库的 gravity() 函数算重力矩时要传入末端负载的质量和质心位置。",
+      "related": [
+        "零力拖动",
+        "PD 控制",
+        "前馈控制",
+        "计算力矩控制",
+        "拖动示教",
+        "摩擦补偿"
+      ],
+      "sources": [
+        {
+          "title": "Modern Robotics 11.5: Force Control（τ = g(θ) + JᵀF_tip，含重力模型）",
+          "url": "https://modernrobotics.northwestern.edu/nu-gm-book-resource/11-5-force-control/"
+        },
+        {
+          "title": "Modern Robotics 11.4: Motion Control with Torque or Force Inputs (Part 3 of 3)",
+          "url": "https://modernrobotics.northwestern.edu/nu-gm-book-resource/11-4-motion-control-with-torque-or-force-inputs-part-3-of-3/"
+        },
+        {
+          "title": "libfranka robot.h（joint-level torque commands without gravity and friction）",
+          "url": "https://github.com/frankaemika/libfranka/blob/master/include/franka/robot.h"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "回零 / 零位标定",
+      "name_en": "Homing / Joint Zero-Offset Calibration",
+      "abbr": "",
+      "aliases": [
+        "回零",
+        "零位标定",
+        "零点标定",
+        "Homing",
+        "Zero Calibration",
+        "Homing Offset"
+      ],
+      "tier": 2,
+      "one_liner": "让每个关节的编码器读数和模型里的「0 度」对上，确立角度基准。",
+      "explanation": "URDF 等机器人模型约定关节角全为 0 时对应一个确定姿态，但编码器装上去时读数原点是任意的。零位标定就是测出读数与模型角度之间的固定偏移并保存，以后每次读数都据此修正；回零指让关节运动到参考点来建立这个基准的过程。用增量式编码器（只记相对转动量）的关节断电即丢失位置，每次上电都要回零：先慢速走向限位开关或硬限位，再用编码器的索引脉冲精确定位，符合 CiA 402 规范的伺服驱动器可自行完成。绝对值编码器上电就知道位置，通常只需标定一次。软限位等安全功能以零位为基准，零位偏了，末端会有系统误差，同一个策略换台机器人也会不好用。",
+      "example": "小米 CyberGear 微电机有「设置机械零位」命令（通信类型 6），把当前位置设为零点，但断电后失效；Dynamixel 舵机用 Homing Offset 参数，读数 = 实际位置 + 偏移量。",
+      "related": [
+        "零位标定（零点标定）",
+        "关节零位标定（回零）",
+        "增量式编码器",
+        "绝对值编码器",
+        "软限位",
+        "正运动学"
+      ],
+      "sources": [
+        {
+          "title": "LinuxCNC Docs: Homing Configuration",
+          "url": "https://linuxcnc.org/docs/html/config/ini-homing.html"
+        },
+        {
+          "title": "ROBOTIS e-Manual: XM430-W350 (Homing Offset)",
+          "url": "https://emanual.robotis.com/docs/en/dxl/x/xm430-w350/"
+        },
+        {
+          "title": "Xiaomi CyberGear 微电机说明书（英译版，含零位设置与控制模式）",
+          "url": "https://github.com/belovictor/cybergear-docs/blob/main/instructionmanual/instructionmanual.md"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "力位混合控制",
+      "name_en": "Hybrid Force/Position Control",
+      "abbr": "",
+      "aliases": [
+        "力位混控",
+        "混合力/位控制",
+        "Hybrid position/force control",
+        "混合运动-力控制",
+        "Hybrid Motion-Force Control"
+      ],
+      "tier": 2,
+      "one_liner": "接触任务中把方向拆开：受约束的方向控力，自由的方向控位置。",
+      "explanation": "Raibert 和 Craig 1981 年提出。机器人接触物体时，环境会限制某些方向的运动，比如擦白板时板擦不能穿进板面，却能在板面内滑动。做法是在任务坐标系里用对角元为 1 或 0 的选择矩阵 S 把 6 个方向分成两组：S 选中的方向跟踪期望位置，其余方向（I−S）跟踪期望接触力，两路输出合成后换算成关节力矩。它要求预先知道约束方向，法线估错会压出很大的力。阻抗控制则不划分方向，在所有方向上规定力和位置偏差的关系。电机厂商说的「力位混控模式」多指单关节的 MIT 模式，与此不同。",
+      "example": "擦白板：板面内的 x、y 方向做位置控制，按轨迹移动板擦；垂直板面的 z 方向做力控制，保持恒定的压紧力。",
+      "related": [
+        "阻抗控制",
+        "力控",
+        "导纳控制",
+        "任务空间控制",
+        "恒力控制",
+        "接触丰富操作"
+      ],
+      "sources": [
+        {
+          "title": "Raibert & Craig, Hybrid Position/Force Control of Manipulators, J. Dyn. Sys., Meas., Control 103 (1981)",
+          "url": "https://doi.org/10.1115/1.3139652"
+        },
+        {
+          "title": "Modern Robotics 11.6: Hybrid Motion-Force Control",
+          "url": "https://modernrobotics.northwestern.edu/nu-gm-book-resource/11-6-hybrid-motion-force-control/"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "阻抗控制",
+      "name_en": "Impedance Control",
+      "abbr": "",
+      "aliases": [
+        "Impedance controller",
+        "阻抗控制器"
+      ],
+      "tier": 2,
+      "one_liner": "让机器人受力时像弹簧加阻尼器一样顺从，而不是硬顶着目标位置不放。",
+      "explanation": "MIT 的 Neville Hogan 于 1984–1985 年系统提出。纯位置控制碰到桌面或人会硬顶到底，纯力控制又没法在空中跟踪轨迹。阻抗控制规定的是力和运动偏差的关系，常见形式为 F = K(x_d − x) + D(ẋ_d − ẋ)：x_d 为期望位置，x 为实际位置，K 为刚度（偏离 1 米产生多少牛的力），D 为阻尼（抑制晃动）。K 大则硬、跟踪准；K 小则软，碰到障碍只产生有限的力。它通常要求机器人能直接控制力矩；导纳控制方向相反，先测力再算位置修正，适合只收位置指令的工业臂。可在关节或笛卡尔空间实现，常用于擦拭、插孔装配和人机协作。",
+      "example": "libfranka 自带的笛卡尔阻抗示例把平移刚度设为 150 N/m、转动刚度 10 N·m/rad，阻尼取 2√K（临界阻尼）；运行后可以用手推动机械臂，松手后它会弹回原位。",
+      "related": [
+        "导纳控制",
+        "笛卡尔阻抗控制",
+        "关节阻抗控制",
+        "变阻抗控制",
+        "力位混合控制",
+        "质量-弹簧-阻尼系统"
+      ],
+      "sources": [
+        {
+          "title": "Hogan, Impedance Control: An Approach to Manipulation, Part I—Theory, J. Dyn. Sys., Meas., Control 107 (1985)",
+          "url": "https://doi.org/10.1115/1.3140702"
+        },
+        {
+          "title": "Wikipedia: Impedance control",
+          "url": "https://en.wikipedia.org/wiki/Impedance_control"
+        },
+        {
+          "title": "libfranka examples/cartesian_impedance_control.cpp",
+          "url": "https://github.com/frankaemika/libfranka/blob/master/examples/cartesian_impedance_control.cpp"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "关节空间控制",
+      "name_en": "Joint-Space Control",
+      "abbr": "",
+      "aliases": [
+        "关节层控制",
+        "关节级控制",
+        "Joint-Level Control"
+      ],
+      "tier": 2,
+      "one_liner": "以各关节角度为目标和误差来控制机器人，每个关节跟踪自己的期望轨迹。",
+      "explanation": "关节空间控制把目标写成关节角随时间的序列 q_d(t)，逐个比较实际角度 q 与目标，按误差输出力矩或速度。最简单的是各关节独立 PD：τ = Kp(q_d − q) + Kd(q̇_d − q̇)，Kp、Kd 分别是刚度和阻尼增益；计算力矩控制还会用动力学模型补上惯性、科氏力和重力。与之相对的任务空间控制直接以末端位姿误差为对象，经雅可比矩阵换算成关节力矩，便于规定末端走直线或施加接触力。关节空间控制实现简单、不怕奇异位形，但末端路径要先由逆运动学或规划器转成关节轨迹。足式和人形的强化学习策略输出关节目标位置，也属于这一层。",
+      "example": "MoveIt 规划出关节轨迹后交给 ros2_control 的 joint_trajectory_controller，它在路点之间按时间插值，每个周期把各关节的目标位置（或经 PID 换算的力矩）发给驱动器。",
+      "related": [
+        "关节空间",
+        "任务空间控制",
+        "PD 控制",
+        "计算力矩控制",
+        "逆运动学",
+        "ros2_control"
+      ],
+      "sources": [
+        {
+          "title": "Modern Robotics 11.4: Motion Control with Torque or Force Inputs (Part 3 of 3)",
+          "url": "https://modernrobotics.northwestern.edu/nu-gm-book-resource/11-4-motion-control-with-torque-or-force-inputs-part-3-of-3/"
+        },
+        {
+          "title": "ros2_controllers: joint_trajectory_controller 文档",
+          "url": "https://control.ros.org/rolling/doc/ros2_controllers/joint_trajectory_controller/doc/userdoc.html"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "卡尔曼滤波",
+      "name_en": "Kalman Filter",
+      "abbr": "KF",
+      "aliases": [
+        "卡尔曼滤波器",
+        "线性卡尔曼滤波",
+        "Linear Kalman Filter"
+      ],
+      "tier": 2,
+      "one_liner": "把模型预测和带噪声的测量按各自可信度加权融合，逐步估计系统状态。",
+      "explanation": "Rudolf Kálmán 1960 年在论文《A New Approach to Linear Filtering and Prediction Problems》中提出，后用于阿波罗计划的轨道估计。每个周期分两步：预测，用运动模型推出当前状态及其不确定性（协方差）；更新，拿到测量 z 后按 x̂ = x̂⁻ + K(z − Hx̂⁻) 修正，x̂⁻ 为预测值，H 把状态换算成应有的测量，K 为卡尔曼增益，测量越可信 K 越大。线性模型、高斯噪声且噪声协方差已知时，它是最优估计。机器人模型多为非线性，常用扩展卡尔曼滤波（EKF）、无迹卡尔曼滤波（UKF）等变体，融合 IMU、编码器、视觉估计机身位姿和速度。",
+      "example": "MIT Cheetah 3 和 Mini Cheetah 的开源控制代码用线性卡尔曼滤波估计机身位置和速度：IMU 加速度用于预测，支撑腿运动学算出的足端相对位置和速度作为测量，并按触地状态调整对每条腿的信任度。",
+      "related": [
+        "扩展卡尔曼滤波",
+        "无迹卡尔曼滤波",
+        "状态估计",
+        "多传感器融合",
+        "惯性测量单元",
+        "腿式里程计"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Kalman filter",
+          "url": "https://en.wikipedia.org/wiki/Kalman_filter"
+        },
+        {
+          "title": "Kalman, A New Approach to Linear Filtering and Prediction Problems, J. Basic Engineering 82 (1960)",
+          "url": "https://doi.org/10.1115/1.3662552"
+        },
+        {
+          "title": "MIT Cheetah-Software: PositionVelocityEstimator.h（LinearKFPositionVelocityEstimator）",
+          "url": "https://github.com/mit-biomimetics/Cheetah-Software/blob/master/common/include/Controllers/PositionVelocityEstimator.h"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "基于学习的控制",
+      "name_en": "Learning-Based Control",
+      "abbr": "",
+      "aliases": [
+        "学习型控制",
+        "数据驱动控制",
+        "Data-driven Control"
+      ],
+      "tier": 2,
+      "one_liner": "用数据和机器学习得到控制器或其中的模型，而不全靠人工推公式和调参。",
+      "explanation": "泛指用数据学习来构造或改进控制器的方法，与依赖人工建模的基于模型的控制相对。典型做法有三类：学习动力学模型或其误差，再交给 MPC 等传统控制器；用强化学习或模仿学习直接训练神经网络策略，从观测输出关节目标或力矩；在线学习调整控制参数。Brunke 等人 2022 年在《Annual Review of Control, Robotics, and Autonomous Systems》的综述，把学习不确定动力学以安全提升性能的方法称为基于学习的控制，并与安全强化学习对照。它擅长处理难建模的接触、摩擦和电机特性，代价是需要大量数据或仿真，也难做严格的稳定性保证。如今四足和人形运控多用仿真训练的强化学习策略。",
+      "example": "Hwangbo 等人 2019 年发表于 Science Robotics 的工作，先用真机数据训练模拟电机特性的执行器网络，再在仿真中用强化学习训练 ANYmal 四足的策略，迁移到真机后比此前方法跑得更快，还能从复杂姿态摔倒后自己爬起。",
+      "related": [
+        "基于模型的控制",
+        "强化学习运控",
+        "强化学习",
+        "模仿学习",
+        "安全强化学习",
+        "学习型全身控制"
+      ],
+      "sources": [
+        {
+          "title": "Safe Learning in Robotics: From Learning-Based Control to Safe Reinforcement Learning (Brunke et al., arXiv 2108.06266)",
+          "url": "https://arxiv.org/abs/2108.06266"
+        },
+        {
+          "title": "Learning Agile and Dynamic Motor Skills for Legged Robots (Hwangbo et al., Science Robotics 2019, arXiv 1901.08652)",
+          "url": "https://arxiv.org/abs/1901.08652"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "学习型全身控制",
+      "name_en": "Learning-based Whole-Body Control (Neural WBC)",
+      "abbr": "",
+      "aliases": [
+        "神经全身控制器",
+        "强化学习全身控制",
+        "RL WBC",
+        "Neural Whole-Body Controller",
+        "Neural WBC"
+      ],
+      "tier": 2,
+      "one_liner": "用仿真里强化学习训出的神经网络，统一协调人形机器人全身关节。",
+      "explanation": "传统全身控制（WBC）每个控制周期都用动力学模型求解一个带任务优先级的二次规划，得出全身关节力矩，依赖精确模型和大量调参。学习型全身控制改为在仿真中用强化学习训练一个神经网络策略：输入本体状态和上层指令（行走速度、关节角、手和头的目标位置或一段人体动作），输出全身关节目标位置，再由各关节 PD 控制器执行，训练时常加域随机化以便迁移到真机。训练用的动作多来自重定向到机器人上的人体动捕数据，如 AMASS。代表工作有 ExBody、OmniH2O、HOVER、SONIC。它常充当「小脑」，接收 VLA 或遥操作给出的高层指令。",
+      "example": "HOVER（Tairan He 等，ICRA 2025）在 19 自由度的宇树 H1 上，用掩码把根部速度跟踪、局部关节角跟踪、关键点位置跟踪几种指令模式统一进一个策略，经 DAgger 从特权教师策略蒸馏而来；每种模式下 12 项指标中至少 7 项优于专用控制器。",
+      "related": [
+        "全身控制",
+        "HOVER",
+        "运动跟踪",
+        "教师-学生蒸馏",
+        "强化学习运控",
+        "大脑-小脑架构（大小脑）"
+      ],
+      "sources": [
+        {
+          "title": "HOVER: Versatile Neural Whole-Body Controller for Humanoid Robots (arXiv 2410.21229)",
+          "url": "https://arxiv.org/abs/2410.21229"
+        },
+        {
+          "title": "HOVER 全文（HTML 版，动作空间与 DAgger 蒸馏细节）",
+          "url": "https://arxiv.org/html/2410.21229"
+        },
+        {
+          "title": "A Survey of Behavior Foundation Model: Next-Generation Whole-Body Control System of Humanoid Robots (arXiv 2506.20487)",
+          "url": "https://arxiv.org/abs/2506.20487"
+        }
+      ],
+      "as_of": "2025-11"
+    },
+    {
+      "name_zh": "大模型任务规划",
+      "name_en": "LLM-based Task Planning",
+      "abbr": "",
+      "aliases": [
+        "LLM 规划",
+        "VLM 规划",
+        "大模型规划"
+      ],
+      "tier": 2,
+      "one_liner": "让大语言模型或视觉语言模型把一句高层指令拆成机器人能执行的子任务序列。",
+      "explanation": "任务规划决定先做什么、后做什么。传统方法要人工写 PDDL（规划领域定义语言）这类形式化描述，换个场景就得重写。2022 年起，研究者让大语言模型直接读指令生成步骤：谷歌的 SayCan 让 LLM 给候选技能打分，再乘上技能价值函数估计的「当前能否做成」来选下一步；代码即策略让模型写调用感知和控制接口的程序；Inner Monologue 把执行反馈写回提示，实现闭环重规划。LLM 容易给出看似合理却执行不了的步骤，LLM+P 因此只让模型把自然语言翻成 PDDL，再交给经典规划器求解。现在多用 VLM 看图规划，如 Gemini Robotics-ER，把子任务交给 VLA 执行。",
+      "example": "对「我把可乐洒了，能拿个东西来清理吗」，SayCan 在移动机械臂上依次选出「找到海绵」「拿起海绵」「拿给你」「完成」；项目页报告 101 条指令的规划成功率 84%、执行成功率 74%。",
+      "related": [
+        "任务规划",
+        "SayCan",
+        "代码即策略",
+        "规划领域定义语言",
+        "Gemini Robotics-ER",
+        "快慢双系统"
+      ],
+      "sources": [
+        {
+          "title": "SayCan 项目主页 (Do As I Can, Not As I Say)",
+          "url": "https://say-can.github.io/"
+        },
+        {
+          "title": "Do As I Can, Not As I Say: Grounding Language in Robotic Affordances (arXiv 2204.01691)",
+          "url": "https://arxiv.org/abs/2204.01691"
+        },
+        {
+          "title": "LLM+P: Empowering Large Language Models with Optimal Planning Proficiency (arXiv 2304.11477)",
+          "url": "https://arxiv.org/abs/2304.11477"
+        }
+      ],
+      "as_of": "2025-09"
+    },
+    {
+      "name_zh": "MIT 模式",
+      "name_en": "MIT Mode (MIT Cheetah-style Joint Motor Command)",
+      "abbr": "",
+      "aliases": [
+        "MIT 控制模式",
+        "力位混控模式（电机）",
+        "运控模式（小米 CyberGear）",
+        "MIT mode"
+      ],
+      "tier": 2,
+      "one_liner": "一帧指令给出目标位置、速度、Kp、Kd、前馈力矩，驱动器按 PD 公式算力矩。",
+      "explanation": "这种关节电机指令格式来自 MIT 仿生机器人实验室 Mini Cheetah 四足的电机控制器（Ben Katz 的开源固件），达妙等国产电机沿用并兼容，小米 CyberGear 称运控模式。上位机一帧 CAN 报文给出目标位置 p_des、目标速度 v_des、刚度 Kp、阻尼 Kd 和前馈力矩 τ_ff，驱动器内部循环计算 τ = Kp(p_des − p) + Kd(v_des − v) + τ_ff（p、v 为实测值）再交给电流环。改参数即可切换行为：Kp 大近似位置控制，Kp=0 为速度或阻尼控制，Kp=Kd=0 为纯力矩控制。足式和人形的强化学习策略输出关节目标位置，常经它配固定 Kp、Kd 执行。它是单关节 PD 加前馈，并非按方向拆分的力位混合控制。",
+      "example": "达妙 DM-J4310 手册写明：Kp=0、Kd≠0 时给定 v_des 可让电机匀速转动；Kp=Kd=0 时给定 τ_ff 即输出指定力矩；做位置控制时 Kd 不能设为 0，否则电机会振荡甚至失控。",
+      "related": [
+        "PD 控制",
+        "刚度与阻尼增益",
+        "MIT Cheetah 执行器",
+        "达妙 DM-J4310 关节电机",
+        "小米 CyberGear 微电机",
+        "力矩控制"
+      ],
+      "sources": [
+        {
+          "title": "bgkatz/motorcontrol 固件 foc.c（torque_control: kp·(p_des−θ) + kd·(v_des−ω) + t_ff）",
+          "url": "https://github.com/bgkatz/motorcontrol/blob/master/Core/Src/foc.c"
+        },
+        {
+          "title": "DAMIAO DM-J4310-2EC V1.1 手册（Operating modes: MIT mode）",
+          "url": "https://github.com/enactic/damiao/blob/main/website/i18n/en/docusaurus-plugin-content-docs/current/products/hardware/dm-j4310-2ec-v1.1.mdx"
+        },
+        {
+          "title": "Xiaomi CyberGear 说明书英译版（Operation control mode 五参数指令）",
+          "url": "https://github.com/belovictor/cybergear-docs/blob/main/instructionmanual/instructionmanual.md"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "基于模型的控制",
+      "name_en": "Model-Based Control",
+      "abbr": "",
+      "aliases": [
+        "传统模型控制",
+        "模型驱动控制",
+        "基于动力学模型的控制"
+      ],
+      "tier": 2,
+      "one_liner": "先写出机器人和环境的数学模型，再据此推导或优化出控制指令。",
+      "explanation": "指依赖显式数学模型设计控制器的一大类方法。模型包括运动学和动力学，如机械臂方程 M(q)q̈ + c(q, q̇) + g(q) = τ：M 为质量矩阵，c 为科氏力和离心力项，g 为重力项，τ 为关节力矩。常见做法有重力补偿、计算力矩控制（用模型抵消非线性）、操作空间控制、模型预测控制（MPC，每个周期用模型预测未来一小段并优化动作）和基于二次规划的全身控制。优点是可解释、无需训练数据、能做稳定性分析；缺点是模型要够准，接触、摩擦、柔性物体难建模，复杂任务需大量人工设计。它与基于学习的控制相对，现在常两者结合。注意它不同于基于模型的强化学习，后者的模型是学出来的。",
+      "example": "MIT Cheetah 3 把机身动力学简化后构造凸 MPC，以 20–30 Hz 求解足端地面反作用力、每次不到 1 毫秒，用同一套参数实现小跑、疾驰、跳跃（bound）等步态，前进速度最高 3 m/s。",
+      "related": [
+        "基于学习的控制",
+        "计算力矩控制",
+        "模型预测控制",
+        "全身控制",
+        "系统辨识",
+        "动力学"
+      ],
+      "sources": [
+        {
+          "title": "Modern Robotics 11.4: Motion Control with Torque or Force Inputs (Part 3 of 3)（计算力矩控制）",
+          "url": "https://modernrobotics.northwestern.edu/nu-gm-book-resource/11-4-motion-control-with-torque-or-force-inputs-part-3-of-3/"
+        },
+        {
+          "title": "Dynamic Locomotion in the MIT Cheetah 3 Through Convex Model-Predictive Control (IROS 2018, MIT DSpace)",
+          "url": "https://dspace.mit.edu/handle/1721.1/138000"
+        }
+      ],
+      "as_of": ""
+    }
+  ]
+}

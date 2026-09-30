@@ -1,0 +1,113 @@
+{
+  "batch": "mechanics-10",
+  "terms": [
+    {
+      "key": "mechanics-10#0",
+      "name_en": "Coriolis and Centrifugal Terms",
+      "aliases": ["Coriolis Matrix", "C(q, q̇)", "Nonlinear Velocity Terms"],
+      "one_liner": "The torque terms in a robot's equations of motion that depend on the square or product of joint velocities.",
+      "explanation": "Manipulator dynamics is commonly written as M(q)q̈ + C(q,q̇)q̇ + g(q) = τ: q is the joint angles, q̇ and q̈ are joint velocity and acceleration, M is the mass matrix, g is the gravity term, and τ is joint torque. The term C(q,q̇)q̇ is the Coriolis and centrifugal term. Modern Robotics calls the part that depends only on the square of a single joint velocity, q̇ᵢ², the centrifugal term, and the part depending on the product of two different joint velocities, q̇ᵢq̇ⱼ, the Coriolis term. It arises because joint coordinates aren't an inertial frame: even when every joint spins at constant velocity (q̈ = 0), the links are still moving in circles, which requires torque to sustain. At low speed this term is small and often ignored, but at high speed, failing to compensate for it produces visible tracking error. Inverse dynamics and computed-torque control both need to compute it, and the skew-symmetry property of Ṁ − 2C is a standard tool for proving controller stability.",
+      "example": "In a planar two-link arm with the second joint bent to 90°, if both joints rotate forward at constant angular velocity simultaneously, the end-effector mass is pulled closer to joint 1, and joint 1 actually needs to output a negative torque to hold its speed steady — this is the Coriolis term at work.",
+      "related": ["Lagrangian Dynamics", "Mass Matrix", "Rigid Body Dynamics", "Inverse Dynamics", "Computed Torque Control", "Recursive Newton-Euler Algorithm"]
+    },
+    {
+      "key": "mechanics-10#1",
+      "name_en": "Cost of Transport",
+      "aliases": ["CoT", "Specific Cost of Transport", "Specific Resistance"],
+      "one_liner": "The energy used to move a unit of weight a unit of distance — a measure of how efficient walking or running is.",
+      "explanation": "Cost of transport is a dimensionless measure of locomotion efficiency: CoT = E/(mgd) = P/(mgv), where E is energy consumed, m is mass, g is gravitational acceleration, d is distance traveled, P is power, and v is speed. Lower is more efficient, and because body weight and distance cancel out, the number can be compared across animals, vehicles, and robots on equal footing. Collins, Ruina, Tedrake, and Wisse reported in a 2005 Science paper that the Cornell biped, built around passive-dynamic walking, achieved a cost of transport of about 0.2 — comparable to human walking — while Honda's ASIMO was around 3.2. For legged and humanoid robots this number directly determines battery range. When comparing figures, it matters whether E is measured as motor mechanical work, total battery electrical energy, or human metabolic energy — these give very different numbers for the same task.",
+      "example": "A commonly cited example: a 70 kg person walking at 1 m/s has a metabolic power of about 231 W, giving CoT ≈ 231/(70×9.8×1) ≈ 0.34.",
+      "related": ["Passive Dynamic Walking", "Bipedal Walking", "Legged Locomotion", "Gait", "Battery Range"]
+    },
+    {
+      "key": "mechanics-10#2",
+      "name_en": "Damped Least Squares",
+      "aliases": ["DLS", "Levenberg-Marquardt Inverse", "Singularity-Robust Inverse"],
+      "one_liner": "Adds a damping term to the Jacobian inverse in numerical IK so the arm doesn't move wildly near singular poses.",
+      "explanation": "Damped least squares is an iterative method for solving inverse kinematics, also called the Levenberg-Marquardt method; Wampler, and separately Nakamura and Hanafusa, applied it to inverse kinematics in 1986. Each step computes the joint increment Δθ = Jᵀ(JJᵀ + λ²I)⁻¹e, where J is the Jacobian matrix (mapping joint velocity to end-effector velocity), e is the error between the end effector's current pose and the target, λ is a damping coefficient, and I is the identity matrix. This is equivalent to minimizing ‖JΔθ − e‖² + λ²‖Δθ‖² — reducing the error while also keeping the joint step from being too large. With the plain pseudoinverse, approaching a singular pose (where the end effector loses the ability to move in some direction) produces enormous joint velocities; adding λ keeps the denominator from going to zero, so the motion stays smooth. The tradeoff is that too large a λ slows convergence, so λ is often adjusted dynamically based on how close the arm is to a singularity.",
+      "example": "An arm fully extended is near a singularity, where the plain pseudoinverse might demand that some joint instantly spin through many revolutions; setting λ to around 0.05 makes convergence along that direction slower but keeps joint velocities within a normal range.",
+      "related": ["Inverse Kinematics", "Numerical Inverse Kinematics", "Jacobian Matrix", "Jacobian Pseudoinverse", "Singular Configuration", "Jacobian Transpose Method"]
+    },
+    {
+      "key": "mechanics-10#3",
+      "name_en": "Damping Ratio",
+      "aliases": ["ζ", "Critical Damping", "Underdamped / Overdamped"],
+      "one_liner": "A dimensionless number measuring how fast oscillation decays — it determines whether a system overshoots and rings before settling.",
+      "explanation": "The damping ratio ζ describes how heavily damped a second-order system is, such as a mass-spring-damper system: ζ = c / (2√(km)), where m is mass, k is spring stiffness, c is the damping coefficient, and the denominator 2√(km) is called the critical damping. The equation of motion can be written ẍ + 2ζωₙẋ + ωₙ²x = 0, where ωₙ = √(k/m) is the natural frequency. ζ < 1 is underdamped: the system overshoots the target and oscillates back and forth before settling; ζ = 1 is critically damped: no overshoot, and the fastest possible return to equilibrium; ζ > 1 is overdamped: no oscillation, but a slower return. Joint PD control can be viewed as a virtual spring (Kp) plus damping (Kd), so tuning the gains is really tuning stiffness and damping ratio. MuJoCo's contact parameter solref is likewise specified using a time constant and a damping ratio, which is usually set to 1 (critical damping).",
+      "example": "Treat a joint as a rotor with 0.1 kg·m² of inertia and Kp = 40 N·m/rad; critical damping then requires Kd = 2√(40×0.1) = 4 N·m·s/rad. Any smaller Kd and the joint will oscillate as it settles into position.",
+      "related": ["Damping", "Mass-Spring-Damper System", "Natural Frequency", "PD Control", "Stiffness and Damping Gains", "Step-Response Metrics (Overshoot / Settling Time / Steady-State Error)"]
+    },
+    {
+      "key": "mechanics-10#4",
+      "name_en": "Divergent Component of Motion",
+      "aliases": ["DCM", "Capture Point (equivalent)"],
+      "one_liner": "The part of a biped's center-of-mass motion that diverges exponentially; controlling it is enough to keep the robot balanced.",
+      "explanation": "The divergent component of motion is a state variable used in biped walking control: ξ = x + ẋ/ω, where x is the center-of-mass position, ẋ is its velocity, and ω = √(g/z₀), with g gravitational acceleration and z₀ the center-of-mass height. Honda's Takenaka and colleagues coined this name in their 2009 work on real-time gait generation. In the linear inverted pendulum model — which simplifies the robot to an inverted pendulum with constant center-of-mass height — the motion splits into two parts: the center of mass automatically converges toward ξ, while ξ itself moves exponentially away from the zero moment point (where the resultant force under the foot acts). So it's enough to plan and control ξ alone; the center of mass will naturally follow. It is the same point as the capture point introduced by Pratt and colleagues in 2006. Researchers at the German Aerospace Center (DLR), led by Englsberger, extended it to three dimensions between 2013 and 2015, introducing the two auxiliary points eCMP and VRP along the way.",
+      "example": "With the center of mass at a height of 0.8 m, ω = √(9.8/0.8) ≈ 3.5 s⁻¹; if the center of mass is directly above the support point and moving forward at 0.35 m/s, ξ sits 0.35/3.5 = 0.1 m ahead of it. If the front edge of the foot can't reach that far, the robot has to take a step.",
+      "related": ["Capture Point", "Linear Inverted Pendulum Model", "Zero Moment Point", "Centroidal Moment Pivot", "Bipedal Walking", "Balance Control"]
+    },
+    {
+      "key": "mechanics-10#5",
+      "name_en": "Dual Quaternion",
+      "aliases": ["Dual Quaternions", "Unit Dual Quaternion"],
+      "one_liner": "An 8-number algebraic tool that represents a 3D rotation and translation together in a single object.",
+      "explanation": "A dual quaternion is a quaternion whose coefficients are dual numbers, written q = r + εd, where r and d are ordinary quaternions and ε satisfies ε² = 0, for 8 real components in total. Study pointed out in 1891 that this algebra is well suited to describing rigid-body motion in 3D space, and Kotelnikov independently proposed it in 1895. Just as a unit quaternion represents a rotation, a unit dual quaternion can represent a complete rigid-body transformation, or pose: r encodes the rotation, and d = ½·t·r encodes the translation t. Composing two transformations is just multiplying their dual quaternions, which is more compact than a 4×4 homogeneous transformation matrix and also makes interpolating between two poses convenient. In robotics, open-source libraries such as DQ Robotics use dual quaternions for manipulator kinematic modeling and control; they're also used in computer graphics.",
+      "example": "To rotate 90° about the z-axis and then translate by (1, 0, 0): r = (cos45°, 0, 0, sin45°), the translation is written as the pure quaternion t = (0, 1, 0, 0), and d = ½·t·r is computed; r and d together give the 8 numbers representing this pose.",
+      "related": ["Quaternion", "Homogeneous Transformation Matrix", "Screw Theory", "Pose", "Lie Group", "Spherical Linear Interpolation (Slerp)"]
+    },
+    {
+      "key": "mechanics-10#6",
+      "name_en": "Dynamic Parameter Identification",
+      "aliases": ["Inertial Parameter Identification", "Payload Identification"],
+      "one_liner": "Moving the robot through specific trajectories and using the torque data to work out each link's mass and inertia.",
+      "explanation": "Dynamic parameter identification means estimating the parameters of a robot's dynamics model from measured data: each link's mass, first moment of mass (related to the center-of-mass location), and inertia tensor — 10 inertial parameters per link in total, often together with joint friction. Atkeson, An, and Hollerbach showed in 1986 that the Newton-Euler equations can be rewritten so joint torque is linear in these parameters, τ = Y(q,q̇,q̈)π, where Y is a regressor matrix depending only on joint position, velocity, and acceleration, and π is the parameter vector — making least squares sufficient to solve for them. To excite every parameter well enough in the data, the arm is often driven along an excitation trajectory optimized as a Fourier series (Swevers et al., 1997). CAD-supplied parameters are often inaccurate, and they change further once a payload is attached; accurate identification is what makes gravity compensation, computed-torque control, and sim-to-real alignment reliable. Wensing and colleagues added linear-matrix-inequality constraints in 2017 to guarantee the identified parameters remain physically consistent.",
+      "example": "After a new gripper with unknown parameters is mounted on an arm's end effector, the joints are driven through a periodic motion for a few dozen seconds while joint angles and torques (or currents) are logged; least squares then solves for the payload's mass and center of mass, which are fed back into the gravity-compensation model.",
+      "related": ["Inertial Parameters", "System Identification", "Rigid Body Dynamics", "Gravity Compensation", "Friction Compensation", "Payload"]
+    },
+    {
+      "key": "mechanics-10#7",
+      "name_en": "Exponential Map",
+      "aliases": ["Log Map", "Logarithmic Map", "Exp/Log"],
+      "one_liner": "Turns an axis-times-angle vector into a rotation or pose; the log map does the reverse.",
+      "explanation": "The exponential map comes from Lie group theory: it maps an element of a Lie algebra (the tangent space of the group at its identity element, which can be thought of as the linear space where 'velocities' live) onto the group itself; for matrix Lie groups, it's just the matrix exponential, exp(X) = I + X + X²/2! + …. The log map is its inverse near the identity. The most common use in robotics is with rotations: combine a unit rotation axis ω̂ and an angle θ into the 3D vector ω̂θ (exponential coordinates, also called the rotation vector), write it as the skew-symmetric matrix [ω̂]θ, and exponentiate to get the rotation matrix R — the closed-form result is Rodrigues' formula; taking the log of R recovers ω̂θ. Likewise, the exponential map from se(3) to SE(3) turns a twist into a homogeneous transformation, and underlies the product of exponentials formula. State estimation and optimization routines often perform addition and subtraction in this flat tangent space and then map back to a rotation with exp, avoiding the orthogonality-breaking errors of directly adding or subtracting rotation matrices.",
+      "example": "With ω̂ = (0, 0, 1) and θ = π/2, the exponential map gives the rotation matrix for a 90° rotation about the z-axis; taking the log of that matrix recovers the vector (0, 0, π/2).",
+      "related": ["Lie Group", "Rotation Matrix", "Axis-Angle", "Rodrigues' Rotation Formula", "Product of Exponentials Formula", "Skew-Symmetric Matrix"]
+    },
+    {
+      "key": "mechanics-10#8",
+      "name_en": "Finger Gaiting",
+      "aliases": ["Finger Gait", "Grasp Gait"],
+      "one_liner": "Fingers release and reposition one at a time while the rest keep a firm grip, rotating an object through a large angle.",
+      "explanation": "Finger gaiting is a form of in-hand manipulation: while a multi-fingered hand holds an object, one finger or a few fingers at a time break contact, move to a new position, and re-establish contact, while the rest of the fingers keep holding the object — much like legs taking turns stepping during walking. In-hand manipulation that never releases contact is limited by how far the finger joints can travel, so the object can only be rotated a small angle; finger gaiting continually breaks and re-forms contact instead, which in principle lets the object rotate through any angle. Model-based work in the 1990s by Leveroni and Salisbury, and by Han and Trinkle, among others, tackled this, but the instantaneous nature of making and breaking contact makes the model highly nonlinear and hard to apply on real hardware. More recent approaches mostly use reinforcement learning: OpenAI's Dactyl work learned finger gaiting, and Khandate and colleagues at Columbia University learned finger gaiting for precision fingertip grasps in 2021 using only proprioception and touch, with no external vision.",
+      "example": "A dexterous hand pinches a cube between its fingertips and rotates it continuously around a vertical axis for several full turns: while three fingers hold it steady, the fourth lifts off, moves to a new position, and lands again; then another finger takes its turn, and the cycle repeats so the object keeps rotating.",
+      "related": ["In-Hand Manipulation", "Dexterous Manipulation", "Dexterous Hand", "Force Closure", "Dactyl (OpenAI's Rubik's Cube Hand)", "Tactile Sensor"]
+    },
+    {
+      "key": "mechanics-10#9",
+      "name_en": "Flexible Joint",
+      "aliases": ["Elastic Joint", "Joint Flexibility"],
+      "one_liner": "A joint with noticeable elasticity between the motor and the link, so the motor's angle doesn't equal the link's actual angle.",
+      "explanation": "A flexible joint is one where non-negligible elasticity exists between the motor and the link it drives. The most common source is a harmonic drive: its flexspline achieves near-zero backlash by deforming under load, which also introduces torsional elasticity. Spong's classic 1987 model treats such a joint as a torsional spring connecting the motor side and the link side, τ = K(θ − q): θ is the motor's angle referred to the output side, q is the link's actual angle, K is the joint stiffness, and τ is the torque transmitted across the spring. This adds an extra set of states per joint and raises the order of the dynamics, causing two problems: the motor encoder no longer reads the link's true angle, leaving a position offset at the end effector, and the low-frequency vibration mode this creates makes high-gain control prone to oscillating. Some designs introduce flexibility on purpose, such as series elastic actuators, which use the spring's deflection to measure force and improve safety during collisions.",
+      "example": "When a lightweight robot arm carrying a payload stops suddenly, the end effector often sways back and forth briefly before settling — the flexibility introduced by the harmonic drive is one cause.",
+      "related": ["Harmonic Drive", "Series Elastic Actuator", "Stiffness", "Compliance", "Actuator Modeling", "Joint Torque Sensor"]
+    },
+    {
+      "key": "mechanics-10#10",
+      "name_en": "Flexion/Extension and Abduction/Adduction",
+      "aliases": ["Lateral Swing", "Flexion/Extension", "Abduction/Adduction"],
+      "one_liner": "Two basic joint motions: flexion/extension is bending and straightening, abduction/adduction is spreading apart and drawing together.",
+      "explanation": "These are anatomical terms for joint motion, carried over into dexterous hands, exoskeletons, and human motion capture. Flexion is the bending motion that decreases the angle between two adjacent segments, as in making a fist; extension is the opposite, straightening back out. Abduction moves a part away from the midline of the body or hand — for fingers, this means spreading apart; adduction moves it back toward the midline, i.e. bringing the fingers together. In the human hand, the metacarpophalangeal (MCP) joint at the base of each finger can both flex/extend and abduct/adduct, giving it two degrees of freedom, while the interphalangeal joints further out (PIP, DIP) can only flex and extend. Chinese-language dexterous-hand spec sheets commonly label abduction/adduction as 'lateral swing' and flexion/extension as 'curling' — for instance, the Linker Hand's specs list 'thumb lateral swing' and 'four-finger curling.' Some dexterous hands simplify their design by giving the four fingers flexion/extension only, while the LEAP Hand specifically designed MCP joints that can abduct/adduct across a range of poses, to make retargeting human hand motion easier.",
+      "example": "Spreading all five fingers apart into a fan shape is abduction; bringing them back together into a flat hand is adduction. Making a fist is flexion of each finger; flattening the palm out is extension.",
+      "related": ["Dexterous Hand", "MCP / PIP / DIP Joints", "Thumb Opposition", "Degrees of Freedom", "LEAP Hand", "Motion Retargeting"]
+    },
+    {
+      "key": "mechanics-10#11",
+      "name_en": "Form Closure",
+      "aliases": ["Geometric Closure", "Form-Closure Grasp"],
+      "one_liner": "Immobilizing an object purely through the geometry of contact points, with no reliance on friction at all.",
+      "explanation": "Form closure means a set of fixed constraints — fingers, jaws, locating pins, and so on — geometrically blocks every possible motion of an object: translating or rotating in any direction would push it directly into a constraint. When achieved with robot fingers, it's called a form-closure grasp. It doesn't depend on friction, which is what distinguishes it from force closure, where friction at the contact points is needed to resist forces in arbitrary directions. Lynch and Park's Modern Robotics gives the result that, under first-order analysis, a planar object needs at least 4 point contacts and a spatial object needs at least 7 (one more than the number of rigid-body degrees of freedom). Rotationally symmetric objects like disks and spheres can never achieve form closure no matter how many contact points are added, because they can always spin about their center. Form closure is common in fixture and jig design; robotic grasping usually can rely on friction and is more often analyzed in terms of force closure instead.",
+      "example": "A square part sitting inside a flat fixture surrounded by locating pins can't move in any direction, even if its surface is oiled — that's form closure. Gripping the same part with a parallel jaw gripper instead relies on friction, which is force closure.",
+      "related": ["Force Closure", "Grasping", "Friction Cone", "Grasp Quality Metric", "Grasp Matrix", "Contact Force"]
+    }
+  ]
+}

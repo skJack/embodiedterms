@@ -1,0 +1,113 @@
+{
+  "batch": "perception-23",
+  "terms": [
+    {
+      "key": "perception-23#0",
+      "name_en": "Single-Image 3D Reconstruction",
+      "aliases": ["Image-to-3D", "Single-View Reconstruction"],
+      "one_liner": "Given just one photo, having a model fill in an object’s complete 3D shape and texture.",
+      "explanation": "Single-image 3D reconstruction takes one RGB photo as input and outputs a 3D mesh, point cloud, or Gaussian representation of the object or scene. A single photo only shows the front; the back and any occluded parts have to be “guessed” using priors the model has learned from large amounts of 3D data, so the dominant recent approach is to use a diffusion model — a model that generates data by progressively removing noise — to first generate several new viewpoints and then reconstruct from them, or to generate the 3D representation directly. For embodied AI, this lets an object in a real photo be quickly turned into a simulation asset (a 3D model usable inside a simulator), useful for digital twins, real-to-sim, and synthetic data; it can also help a robot estimate the unseen back side of an object to assist grasp planning.",
+      "example": "A photo of a mug on a table is turned into a textured mesh with Hunyuan3D, then imported into Isaac Sim as an object for grasping training.",
+      "related": ["Hunyuan3D", "SAM 3D", "Simulation Asset", "Real-to-Sim", "Point Cloud Completion / Shape Completion", "Diffusion Model"]
+    },
+    {
+      "key": "perception-23#1",
+      "name_en": "Single-Photon Avalanche Diode",
+      "aliases": ["SPAD"],
+      "one_liner": "A photodetector sensitive enough to register a single photon, at the core of dToF lidar and ranging chips.",
+      "explanation": "A SPAD is a photodiode operated in Geiger mode (reverse-biased above its breakdown voltage), where a single incoming photon can trigger an avalanche of current, recording the precise moment the photon arrived. It is the key component behind direct time-of-flight (dToF) ranging, which fires a laser pulse and directly measures the round-trip time of its echo: paired with time-to-digital converter circuitry, building a histogram of when large numbers of photons arrive lets the system compute distance. SPAD arrays let lidar be built as chip-based, solid-state devices, lowering cost and size, which is why they show up in automotive lidar, phone ranging modules, and the small dToF sensors used in robotics.",
+      "example": "Many solid-state and hybrid solid-state lidars use a SPAD array chip on the receiving side, paired with a VCSEL emitter, to do dToF ranging.",
+      "related": ["Direct Time-of-Flight", "Solid-State LiDAR", "VCSEL (Vertical-Cavity Surface-Emitting Laser)", "LiDAR", "Lingming Photonics (灵明光子)"]
+    },
+    {
+      "key": "perception-23#2",
+      "name_en": "SLAM Front-end / Back-end",
+      "aliases": ["Front-end Odometry", "Back-end Optimization"],
+      "one_liner": "The two-part division of labor in a SLAM system: the front end estimates motion from sensor data, the back end globally corrects error.",
+      "explanation": "Simultaneous Localization and Mapping (SLAM) is usually split into two parts. The front end works directly on sensor data: it extracts and matches feature points, tracks adjacent frames, estimates the relative motion of the camera or robot, and performs data association (deciding which observations correspond to the same map point) plus loop-closure candidate detection. The back end takes the constraints the front end produces and performs a global estimate using factor graph optimization, bundle adjustment, or filtering methods such as the Kalman filter, spreading out accumulated drift and keeping the map consistent. This division was systematically laid out in a 2016 SLAM survey by Cadena and colleagues. When reading code for systems like ORB-SLAM3, VINS, or FAST-LIO, sorting out which part is the front end and which is the back end makes the rest much easier to follow.",
+      "example": "In ORB-SLAM3, extracting ORB features for frame-to-frame tracking belongs to the front end, while local and global bundle adjustment belong to the back end.",
+      "related": ["Simultaneous Localization and Mapping (SLAM)", "Visual Odometry", "Factor Graph Optimization", "Bundle Adjustment", "Loop Closure Detection", "ORB-SLAM3"]
+    },
+    {
+      "key": "perception-23#3",
+      "name_en": "Slip Detection",
+      "aliases": ["Slippage Detection"],
+      "one_liner": "Determining whether an object held in a hand is starting to slide, so the grip can be adjusted in time.",
+      "explanation": "Slip detection means judging, in real time during grasping and manipulation, whether an object is beginning to slide relative to the fingers — including incipient slip, the very early stage before full slippage. Common signals include a sudden change or vibration in shear (tangential) force on a tactile sensor, changes in the displacement field of surface markers on a vision-based tactile sensor such as GelSight, and the ratio of shear force to normal force on a force sensor approaching the friction coefficient. It addresses the problem that gripping too loosely drops the object while gripping too tightly can crush it: once slip is detected, the controller can increase grip force or adjust its pose. This capability matters for fragile, deformable, or unknown-weight objects, and for in-hand manipulation, and is one of the most direct uses of touch sensing in robotics.",
+      "example": "Watching marker displacement on a GelSight contact surface, the system flags the start of slipping once the markers’ overall displacement becomes uneven, and the gripper immediately increases its force.",
+      "related": ["Tactile Sensor", "Vision-Based Tactile Sensor", "Slip", "Friction Cone", "Marker Tracking (Tactile Markers)", "Contact Detection"]
+    },
+    {
+      "key": "perception-23#4",
+      "name_en": "Solid-State LiDAR",
+      "aliases": ["Hybrid Solid-State LiDAR", "Mechanical Spinning LiDAR (contrast)"],
+      "one_liner": "Lidar with no bulk rotating part, scanning instead with electronics or a small internal mechanism.",
+      "explanation": "A traditional mechanical spinning lidar scans by using a motor to spin an entire row of transmit/receive modules through a full rotation, giving a 360° field of view but at the cost of bulk, high cost, and a lifetime limited by the rotating parts. Solid-state lidar removes any large moving part; common approaches include Flash (illuminating the whole field of view at once) and OPA (optical phased array, which steers the beam electronically by controlling phase). Between the two is what’s called hybrid or semi-solid-state lidar, which keeps only a small moving part such as a rotating mirror, a MEMS micromirror, or a prism. Going solid-state gives a smaller size, easier mass production, and better vibration tolerance, but the field of view is usually narrower than a spinning design. Robots and cars today mostly use hybrid solid-state products, while fully solid-state units are mostly used for close-range blind-spot coverage.",
+      "example": "",
+      "related": ["LiDAR", "Single-Photon Avalanche Diode (SPAD)", "Direct Time-of-Flight", "LiDAR Channel Count", "Field of View", "FMCW LiDAR (Frequency-Modulated Continuous-Wave LiDAR)"]
+    },
+    {
+      "key": "perception-23#5",
+      "name_en": "Sparsh",
+      "aliases": ["Self-Supervised Touch Representations for Vision-Based Tactile Sensing"],
+      "one_liner": "A general-purpose vision-based-touch representation model from Meta, pretrained with self-supervision on a large set of tactile images.",
+      "explanation": "Sparsh is a family of tactile encoders from Meta FAIR and collaborators, published at CoRL 2024, built for vision-based tactile sensors — sensors that perceive contact by having a camera image the deformation of a soft gel surface. Previously, each sensor type and each task needed its own labeled training data; Sparsh instead uses self-supervised learning, pretraining on more than 460,000 unlabeled tactile images with methods such as MAE, DINO, and JEPA, to produce a representation that generalizes across sensors including DIGIT, GelSight 2017, and GelSight Mini. The authors also released the TacBench benchmark, covering six categories of tasks from recognizing tactile properties to force estimation, slip detection, and manipulation planning. The paper reports that self-supervised pretraining outperforms task- and sensor-specific end-to-end training by 95.1% on average on TacBench. Code and weights are open-sourced.",
+      "example": "A Sparsh encoder attached behind a DIGIT sensor lets a force-estimation or slip-detection head be trained with only a small amount of labeled data.",
+      "related": ["Tactile Representation Learning", "Vision-Based Tactile Sensor", "DIGIT Tactile Sensor", "Self-Supervised Learning", "Joint Embedding Predictive Architecture (JEPA)", "AnyTouch"]
+    },
+    {
+      "key": "perception-23#6",
+      "name_en": "SpatialLM",
+      "aliases": ["Manycore Research SpatialLM"],
+      "one_liner": "An open-source spatial large model from Manycore that turns a point cloud directly into structured layout: walls, doors, windows, and furniture boxes.",
+      "explanation": "SpatialLM was open-sourced by the research team at Manycore Tech (群核科技), which released Llama-1B and Qwen-0.5B versions on Hugging Face in March 2025; its technical report (arXiv 2506.07491) was accepted at NeurIPS 2025. Rather than designing a dedicated detection network, it reuses the standard multimodal large-model structure: a point cloud encoder turns the 3D point cloud into tokens, which a fine-tuned open-source language model then converts into text output describing walls, doors, windows, and oriented object boxes with categories. Training data consisted of synthetic point clouds and annotations for 12,328 indoor scenes (54,778 rooms). A follow-up, SpatialLM 1.1, added support for tasks such as structured reconstruction and layout estimation. It can be used to turn a scene reconstructed from a scan or video into an editable, structured layout, supporting indoor navigation and simulation-scene construction.",
+      "example": "A phone video is reconstructed into a point cloud with MASt3R-SLAM, which is then handed to SpatialLM to output the room’s wall layout plus 3D boxes for the sofa and table.",
+      "related": ["Manycore Research", "Point Cloud", "3D Object Detection", "Scene Understanding", "Multimodal Large Language Model", "3D-LLM"]
+    },
+    {
+      "key": "perception-23#7",
+      "name_en": "Speckle Structured Light",
+      "aliases": ["Laser Speckle Pattern", "Speckle Projection"],
+      "one_liner": "Projecting a random infrared speckle pattern onto a scene and computing depth from how it deforms or matches.",
+      "explanation": "Speckle structured light is a form of structured light: an infrared laser, passed through a diffractive element, projects a pseudo-random pattern of speckles; a camera photographs where the speckles land on the object’s surface, and comparing this against a pre-calibrated reference pattern gives the depth of every point via triangulation. Because each small patch of the speckle pattern is unique, matching can be done from a single frame, which makes it well suited to dynamic scenes. The original Kinect (using PrimeSense’s design) and many phone face-recognition modules use this approach. Active stereo cameras (such as the RealSense D400 series) also project a speckle pattern, but there it serves to “add texture” to an otherwise texture-less surface, with depth still computed through stereo matching. Its drawback is that the speckle pattern is easily washed out in strong outdoor sunlight, and accuracy drops at longer range.",
+      "example": "The original Microsoft Kinect outputs a depth map using infrared speckle projection combined with a single infrared camera.",
+      "related": ["Structured Light", "Active Stereo", "Depth Camera", "Triangulation", "Time-of-Flight"]
+    },
+    {
+      "key": "perception-23#8",
+      "name_en": "Stereo Baseline",
+      "aliases": ["Baseline"],
+      "one_liner": "The distance between a stereo camera’s two lens centers, which sets how far and how accurately it can measure depth.",
+      "explanation": "The baseline is the distance between the optical centers of a stereo camera’s left and right lenses. The stereo depth formula is depth = focal length × baseline / disparity, where disparity is the horizontal pixel difference between the same point as seen in the left and right images. A longer baseline gives more disparity at a given depth, so far-away measurements are more accurate, but the close-range blind zone grows and the overlap between the left and right images shrinks; a short baseline suits close range instead. So a camera should be chosen by baseline to match its working distance: wrist cameras usually use a short baseline, while mobile robots looking far ahead use a longer one. Depth error grows roughly with the square of distance and is inversely proportional to the baseline. In structured-light and active-stereo cameras, the distance between the projector and the camera plays a similar role.",
+      "example": "The ZED 2i has a baseline of about 12 cm, suited to scenes a few meters to over ten meters away; the wrist-mounted RealSense D405 has a very short baseline, suited to close range within tens of centimeters.",
+      "related": ["Stereo Camera", "Disparity", "Stereo Matching", "Triangulation", "Camera Extrinsics", "Depth Camera"]
+    },
+    {
+      "key": "perception-23#9",
+      "name_en": "Stereo Matching",
+      "aliases": ["Stereo Depth Estimation"],
+      "one_liner": "Finding the same point’s position in both the left and right images to compute disparity, then converting that into depth.",
+      "explanation": "Stereo matching is the core step of stereo depth sensing: the left and right images are first rectified onto the same horizontal lines (epipolar rectification), and then, for each pixel in the left image, the most similar point along the same row of the right image is found; the horizontal distance between them is the disparity, which is converted to depth via depth = focal length × baseline / disparity. Classic methods include block matching and semi-global matching (SGM); deep-learning methods build a cost volume with a neural network or refine it iteratively, as in RAFT-Stereo, and recent models such as FoundationStereo can generalize zero-shot to new scenes. The main difficulties are texture-less regions, reflective and transparent surfaces, and occlusion boundaries. Stereo matching determines the quality of a stereo camera’s depth map, and it’s often the part that gets replaced or improved when a robot needs to grasp transparent objects.",
+      "example": "Feeding the left and right infrared images from a ZED or RealSense camera into FoundationStereo produces a more complete depth map than the camera’s own built-in algorithm.",
+      "related": ["Disparity", "Stereo Baseline", "Stereo Camera", "Epipolar Geometry", "FoundationStereo", "Depth Estimation"]
+    },
+    {
+      "key": "perception-23#10",
+      "name_en": "Stereolabs ZED",
+      "aliases": ["ZED 2i", "ZED X", "ZED Mini"],
+      "one_liner": "A passive stereo depth camera line from the French company Stereolabs, common in mobile robots and data collection.",
+      "explanation": "ZED is Stereolabs’ stereo camera product line, which computes depth through stereo matching using two RGB lenses rather than projecting any active light, so it keeps working outdoors in sunlight and reaches farther range than a structured-light camera. The ZED 2i has a 12 cm baseline, connects over USB, and includes a built-in IMU, barometer, and magnetometer, with IP66 protection; the ZED X targets robotics, using a global shutter and a GMSL2 interface (an automotive-grade camera serial link well suited to connecting with a Jetson), with IP67 protection; the ZED Mini has a shorter baseline suited to close range. The companion ZED SDK provides depth maps, point clouds, visual-inertial positioning, and object detection, with a ROS 2 driver available. In embodied AI, it is commonly used as a head-mounted or third-person camera, and also for teleoperation and mobile-robot mapping.",
+      "example": "A wheeled humanoid robot carries a ZED X on its head, connected to a Jetson Orin, which outputs a point cloud to the navigation and grasping modules.",
+      "related": ["Stereo Camera", "Stereolabs", "Stereo Baseline", "Stereo Matching", "GMSL Camera Interface", "RealSense Depth Camera (D435i / D405)"]
+    },
+    {
+      "key": "perception-23#11",
+      "name_en": "Strain Gauge",
+      "aliases": ["Resistive Strain Gauge", "Strain-Gauge Force Sensing"],
+      "one_liner": "A small element bonded to metal whose electrical resistance changes as it deforms, the basic building block of force sensors.",
+      "explanation": "A strain gauge is a sensing element that converts a tiny deformation into a change in electrical resistance, typically a metal foil grid or semiconductor pattern printed on an insulating backing. Bonded to the surface of an elastic structure, it stretches or compresses slightly as the structure is loaded, changing its resistance, which is then read out with a Wheatstone bridge — a circuit that amplifies a small resistance change into a voltage signal. Six-axis force/torque sensors, joint torque sensors, foot-force sensors, and load cells are mostly built on strain gauges: several are bonded to a specially designed elastic structure, and the forces and torques along each axis are computed from their combined readings. Strain gauges are accurate and low-cost, but sensitive to temperature and subject to zero drift, requiring temperature compensation and periodic recalibration.",
+      "example": "Inside a six-axis force/torque sensor mounted on an arm’s wrist, several groups of strain gauges are bonded to a cross-beam elastic structure to measure force and torque along three axes each.",
+      "related": ["Six-Axis Force/Torque Sensor", "Joint Torque Sensor", "Foot-Force Sensor", "Sensor Drift (Zero Drift)", "Cross-Axis Coupling"]
+    }
+  ]
+}

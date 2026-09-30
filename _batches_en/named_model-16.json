@@ -1,0 +1,236 @@
+{
+  "batch": "named_model-16",
+  "terms": [
+    {
+      "key": "named_model-16#0",
+      "name_en": "InternVL",
+      "aliases": [
+        "OpenGVLab InternVL",
+        "InternVL-Chat"
+      ],
+      "one_liner": "Shanghai AI Lab's open-source vision-language model series, starting from a 6-billion-parameter vision encoder and scaling up from there.",
+      "explanation": "InternVL is an open-source vision-language model series from Shanghai AI Lab's OpenGVLab team, with the Chinese name “Shusheng Wanxiang.” The original paper was released in December 2023 and selected as an oral presentation at CVPR 2024; the idea was to scale up the vision encoder, InternViT, to 6 billion parameters, then progressively align it with a large language model, evaluated across 32 vision-language benchmarks. Later versions — 1.5, 2, 2.5, 3, and 3.5 — kept the same “vision encoder + MLP projection layer + large language model” structure, ranging in size from 1 billion to 241 billion total parameters, with code open-sourced under the MIT license; as of September 2026, the 3.5 series is the latest. In embodied AI, it's commonly used as the vision-language backbone for VLA (vision-language-action) models.",
+      "example": "AgiBot GO-1's latent planner uses InternVL2.5-2B as its backbone: it reads in multiple camera feeds and an instruction, first predicts latent action tokens, then hands them to an action expert to generate continuous actions.",
+      "related": [
+        "Vision-Language Model",
+        "Multimodal Large Language Model",
+        "Shanghai AI Lab",
+        "InternVL (Version Series)",
+        "InternVLA (Shanghai AI Laboratory)",
+        "AgiBot GO-1"
+      ]
+    },
+    {
+      "key": "named_model-16#1",
+      "name_en": "InternVL (Version Series)",
+      "aliases": [
+        "InternVL2.5",
+        "InternVL3",
+        "InternVL3.5"
+      ],
+      "one_liner": "The version line of Shusheng Wanxiang (InternVL); InternVL3 and 3.5, released in 2025, are its main open-source versions.",
+      "explanation": "This entry focuses on InternVL's version history — it refers to the same series as the “InternVL” entry above. InternVL2.5, from December 2024, comes in sizes ranging from 1B to 78B; InternVL3, from April 2025, switched to “native multimodal pretraining,” learning from pure text and image-text data together in the same stage, rather than training the language model first and adding vision afterward — InternVL3-78B scores 72.2 on MMMU, a college-level image-text reasoning benchmark. InternVL3.5, from August 2025, added cascaded reinforcement learning (offline, then online) to boost reasoning, and uses a visual-resolution router that trims visual tokens as needed, with its largest version being a mixture-of-experts model with 241 billion total parameters and about 28 billion active per forward pass. Weights are downloadable at every size, and the smaller sizes are commonly fine-tuned by embodied-AI teams.",
+      "example": "To have a robot arm answer “which cup on the table is closest to the gripper,” you can download InternVL3.5-2B weights directly and fine-tune them on your own scene image-text data, with no need to train a vision-language model from scratch.",
+      "related": [
+        "Vision-Language Model",
+        "InternVL",
+        "Native Multimodal",
+        "Qwen-VL",
+        "Mixture of Experts",
+        "RL Fine-Tuning"
+      ]
+    },
+    {
+      "key": "named_model-16#2",
+      "name_en": "InternVLA (Shanghai AI Laboratory)",
+      "aliases": [
+        "InternVLA-M1",
+        "InternVLA-A1",
+        "InternVLA-A1.5",
+        "InternVLA-N1"
+      ],
+      "one_liner": "A family of embodied models from Shanghai AI Lab: M1 and A1 for manipulation, N1 for navigation.",
+      "explanation": "InternVLA is a family of VLA (vision-language-action) models open-sourced by Shanghai AI Lab's embodied-AI team (GitHub organization InternRobotics). InternVLA-M1 (October 2025) is built on Qwen2.5-VL, first pretrained for spatial grounding on 2.3 million box, point, and trajectory annotations, then guided by spatial prompts to a diffusion-Transformer action expert that produces actions. InternVLA-A1 (January 2026, in 2B and 3B sizes) uses a Mixture-of-Transformers architecture that puts three experts — understanding, future-frame prediction, and action — into one model, pretrained on real-robot data, synthetic simulation data (such as InternData-A1), and human video, totaling 692 million frames. A1.5 (July 2026) switches to Qwen3.5-2B, and during training has a frozen Wan2.2 video model supervise “foresight tokens,” while inference generates no video at all. InternVLA-N1 is for navigation: a slow system marks waypoints on the image, and a fast system uses a diffusion policy to output trajectories at more than 30Hz.",
+      "example": "When InternVLA-A1 sorts items off a moving conveyor belt, it has to predict where an object will be an instant later before grasping it; the current version of the paper reports it beats π0.5 by 26.7% on this kind of dynamic task.",
+      "related": [
+        "Vision-Language-Action Model",
+        "Fast-Slow Dual System",
+        "InternData-A1 Dataset",
+        "Vision-and-Language Navigation",
+        "Shanghai AI Lab",
+        "World Action Model"
+      ]
+    },
+    {
+      "key": "named_model-16#3",
+      "name_en": "Isaac 0.5 (Perceptron)",
+      "aliases": [
+        "Perceptron Isaac",
+        "Isaac 0.1",
+        "Isaac 0.2"
+      ],
+      "one_liner": "A 36-billion-parameter open-weight robot foundation model from Perceptron, released in 2026, unifying seeing, thinking, and acting.",
+      "explanation": "Isaac 0.5 is a robot foundation model the US startup Perceptron released with open weights under the Apache 2.0 license in August 2026; the company was founded by a team that had worked on Meta's Chameleon multimodal model, and had previously released the 1B–2B-parameter perception-language models Isaac 0.1 and 0.2. It has no relation to NVIDIA's Isaac platform. The model has 36 billion parameters total, built on the Qwen family of vision-language models as its backbone with added sparse mixture-of-experts layers; it takes in images, video, instructions, robot state, and action history, and can output text, coordinates, task progress, or actions — continuous actions are generated by a flow-matching expert, and discrete actions use FAST action tokens. The company says its training data includes 100,000 hours of experience from more than 35 robot types plus 1 million hours of ordinary video.",
+      "example": "The company's own fitted data-mixing law: to reach the same action-prediction loss, with only 1,000 hours of ordinary video you need about 5,900 hours of teleoperation data, but once ordinary video reaches 1 million hours, only about 28 hours are needed.",
+      "related": [
+        "Vision-Language-Action Model",
+        "Embodied Foundation Model",
+        "Open Weights",
+        "Flow Matching",
+        "Scaling Laws",
+        "π0-FAST"
+      ]
+    },
+    {
+      "key": "named_model-16#4",
+      "name_en": "Kairos (ACE Robotics)",
+      "aliases": [
+        "A Native World Model Stack for Physical AI",
+        "A Regret-Aware Native World-Action Model Stack for Physical AI"
+      ],
+      "one_liner": "A 4-billion-parameter embodied world model from ACE Robotics that does understanding, video generation, and action prediction all at once.",
+      "explanation": "Kairos is the world model of Shanghai-based embodied-AI company ACE Robotics (Daxiao Robotics); its technical report lists Xiaogang Wang and Dacheng Tao among the authors, and the company is reportedly led by Xiaogang Wang, a co-founder of SenseTime. Kairos 3.0 was released in December 2025 with 4-billion-parameter pretrained weights open-sourced; a technical report followed in June 2026, and version 3.1 plus world-action-model inference code was open-sourced in July. Its central claim is that a world model doesn't need to render every pixel photorealistically — what matters is retaining the information useful for control, such as object state, contact, task progress, and the consequences of an action. Concretely, it orders training data in stages — ordinary video first, then human behavior, then robot interaction — uses a unified architecture for understanding, generation, and prediction all at once, and uses hybrid linear temporal attention to cut the cost of long-horizon inference.",
+      "example": "The open-sourced kairos-4B-robot-RoboTwin2.0 weights jointly predict future frames and actions across more than 50 bimanual tasks on RoboTwin 2.0, achieving what the company says is the best result yet on that benchmark.",
+      "related": [
+        "World Model",
+        "World Action Model",
+        "Embodied Foundation Model",
+        "Video Generation Model",
+        "ACE Robotics",
+        "RoboTwin"
+      ]
+    },
+    {
+      "key": "named_model-16#5",
+      "name_en": "KnowNo",
+      "aliases": [
+        "Robots That Ask For Help",
+        "Uncertainty Alignment for LLM Planners"
+      ],
+      "one_liner": "Has an LLM planner ask a person when uncertain, using conformal prediction to give a statistical success guarantee.",
+      "explanation": "KnowNo was released in July 2023 by Princeton University and Google DeepMind, and won the CoRL 2023 best student paper award. When a large language model plans robot tasks, an ambiguous instruction often leads it to confidently produce the wrong plan. KnowNo turns each planning step into a multiple-choice question: it first has the model list several candidate actions, then uses conformal prediction (a method that needs only a small amount of calibration data and gives a statistical coverage guarantee) to narrow those down to a candidate set, guaranteeing the correct option falls within that set with a probability the user sets, such as 80%. If only one option remains in the set, the robot executes it directly; if several remain, it stops and asks a person. It requires no fine-tuning of the model, and was validated on mobile manipulation, tabletop rearrangement, and bimanual manipulation, keeping the number of times it has to ask for help as low as possible while still guaranteeing success.",
+      "example": "In a mobile-manipulation setting, the user says “put the chips in the drawer,” but there's more than one bag of chips and more than one drawer present; multiple options remain in the candidate set, so the robot stops to ask for clarification before acting.",
+      "related": [
+        "Large Language Model",
+        "LLM-based Task Planning",
+        "Uncertainty Estimation",
+        "Hallucination",
+        "Human-in-the-Loop",
+        "SayCan"
+      ]
+    },
+    {
+      "key": "named_model-16#6",
+      "name_en": "KungfuBot",
+      "aliases": [
+        "PBHC",
+        "KungfuBot2",
+        "VMS"
+      ],
+      "one_liner": "A humanoid whole-body motion-imitation framework that teaches a Unitree G1 highly dynamic moves like kung fu and dance.",
+      "explanation": "KungfuBot was released in June 2025 by China Telecom's AI Research Institute (TeleAI) together with Shanghai Jiao Tong University, East China University of Science and Technology, Harbin Institute of Technology, and ShanghaiTech University, accepted to NeurIPS 2025, with the method itself named PBHC and its code open-sourced. Earlier humanoid motion-tracking work could mostly only imitate slow, gentle motions. PBHC first processes the data: it extracts SMPL human poses from video, uses physical metrics to filter out motions the robot can't achieve and correct foot contact, then retargets the result onto a Unitree G1; it then trains a tracking policy with reinforcement learning, turning the tolerance for tracking error into a bi-level optimization that adapts automatically to the error, effectively an automatic curriculum. A September 2025 follow-up, KungfuBot2, uses an orthogonal mixture of experts to let a single policy master multiple skills, and can stably track motions lasting up to several minutes.",
+      "example": "The G1 performs a jumping kick, a spinning kick, a horse-stance punch, and tai chi movements, all copied from human video; the project page showcases 15 such highly dynamic skills in total.",
+      "related": [
+        "Motion Tracking",
+        "Motion Retargeting",
+        "Unitree G1",
+        "SMPL",
+        "Asymmetric Actor-Critic",
+        "Learning-Based Whole-Body Control"
+      ]
+    },
+    {
+      "key": "named_model-16#7",
+      "name_en": "Language to Rewards",
+      "aliases": [
+        "L2R",
+        "Language to Rewards for Robotic Skill Synthesis"
+      ],
+      "one_liner": "Has a large language model translate plain instructions into a reward function, handed to a real-time optimizer to generate robot motion.",
+      "explanation": "Language to Rewards was released in June 2023 by Google DeepMind, an oral presentation at CoRL 2023. Having a large model output actions directly, or call preset skills, makes it hard to produce low-level motions like “stand up” or “moonwalk.” L2R instead has the large model write a reward function: a reward translator first expands the instruction into a description of the motion, then writes it as reward code (a set of objectives and weights); a motion controller, MuJoCo MPC (a real-time optimizer based on model predictive control), then solves for the action that satisfies that reward, replanning in real time as the user adds corrections. Across 17 tasks on a simulated quadruped and a dexterous robot hand, it completed 90%, versus 50% for a baseline built on preset skill primitives; it also demonstrated pushing an object on a real robot arm. It belongs to the same “have a large model write the reward” line of work as Eureka.",
+      "example": "The user tells a simulated quadruped to “walk backward like doing the moonwalk,” watches the result, then adds a few corrections; after a few rounds of this back-and-forth, the robot has learned to moonwalk.",
+      "related": [
+        "Reward Function",
+        "Model Predictive Control",
+        "Large Language Model",
+        "Code as Policies",
+        "Eureka",
+        "MuJoCo"
+      ]
+    },
+    {
+      "key": "named_model-16#8",
+      "name_en": "OP3 Soccer (DeepMind)",
+      "aliases": [
+        "Learning Agile Soccer Skills for a Bipedal Robot with Deep Reinforcement Learning"
+      ],
+      "one_liner": "DeepMind uses deep reinforcement learning to teach the small humanoid robot OP3 to play one-on-one soccer.",
+      "explanation": "This is work from Google DeepMind, posted to arXiv in April 2023 and published in Science Robotics in April 2024. The robot is Robotis's OP3, a low-cost small humanoid with 20 driven joints, and the task is simplified one-on-one soccer. Training happens entirely in MuJoCo simulation: skills like getting up and shooting are trained separately first, then distilled into a single policy, which keeps improving by playing against its own past versions (self-play). A relatively high control frequency, targeted dynamics randomization, and disturbances applied during training let the policy transfer to the real robot zero-shot. Compared to a scripted controller, it walks 181% faster, turns 302% faster, gets up 63% quicker, and kicks 34% faster. It's an early representative example of deep reinforcement learning producing agile, whole-body motion on a bipedal robot.",
+      "example": "During a match, the robot anticipates where the ball will go and turns sideways to block an opponent's shot; if knocked down, it gets back up quickly and keeps chasing the ball.",
+      "related": [
+        "Reinforcement Learning",
+        "Sim-to-Real Transfer",
+        "Domain Randomization",
+        "Self-Play",
+        "Policy Distillation",
+        "Google DeepMind"
+      ]
+    },
+    {
+      "key": "named_model-16#9",
+      "name_en": "Google Arm Farm",
+      "aliases": [
+        "Arm Farm",
+        "Learning Hand-Eye Coordination for Robotic Grasping with Deep Learning and Large-Scale Data Collection"
+      ],
+      "one_liner": "Google's 2016 project where more than a dozen robot arms attempted grasps over 800,000 times to learn grasping from the data.",
+      "explanation": "This is work from Google's Sergey Levine, Peter Pastor, Alex Krizhevsky, and Deirdre Quillen, released in March 2016 (an extended version of an ISER 2016 paper), nicknamed the “arm farm” for the sight of a whole row of robot arms working at once. Over about two months, 6 to 14 robot arms autonomously attempted more than 800,000 grasps, with success or failure judged automatically, with no manual labeling. This data was used to train a convolutional neural network: given a monocular camera image and a candidate gripper motion, it predicts whether that motion would lead to a successful grasp; at execution time, the system continuously picks the best motion and adjusts as it watches (visual servoing), with no camera calibration needed. Closed-loop grasping cut the failure rate from 34% under open-loop control down to 18%. This opened up the “large-scale real-robot data plus deep learning” approach that QT-Opt and MT-Opt later followed.",
+      "example": "If the gripper drifts off target mid-grasp, the robot corrects course in real time based on what it sees; faced with a pile of objects crowded together, it will even nudge one aside before grasping it.",
+      "related": [
+        "Arm Farm",
+        "Hand-Eye Coordination",
+        "Visual Servoing",
+        "Self-Supervised Learning",
+        "QT-Opt",
+        "MT-Opt"
+      ]
+    },
+    {
+      "key": "named_model-16#10",
+      "name_en": "LEO (BIGAI)",
+      "aliases": [
+        "An Embodied Generalist Agent in 3D World"
+      ],
+      "one_liner": "A 3D embodied generalist model from BIGAI that understands 3D scenes and can answer questions, navigate, and manipulate objects.",
+      "explanation": "LEO was proposed by the Beijing Institute for General Artificial Intelligence (BIGAI) together with Peking University, Carnegie Mellon University, and Tsinghua University, released in November 2023 and published at ICML 2024. At the time, most multimodal large models only handled 2D images, and struggled with tasks defined in a 3D scene. LEO concatenates first-person images, object-centric 3D tokens (each object's point cloud encoded by PointNet++, with a spatial Transformer then modeling relationships between objects), and a text instruction into a single sequence, fed into a Vicuna-7B fine-tuned with LoRA, with actions also output as discrete tokens. Training has two stages: first 3D vision-language alignment, then 3D vision-language-action instruction tuning, with the data generated with the help of a large model. It can do 3D captioning, question answering, embodied reasoning, navigation, and manipulation, and is an early representative example of a 3D VLA.",
+      "example": "Given a 3D scan of a room, and asked “what's on the table next to the sofa,” LEO answers in text; for object navigation, it looks at first-person images and outputs actions like moving forward or turning left, step by step, to find the target.",
+      "related": [
+        "3D VLA",
+        "3D-LLM",
+        "Beijing Institute for General Artificial Intelligence (BIGAI)",
+        "Embodied Agent",
+        "Object-Centric Representation",
+        "Low-Rank Adaptation (LoRA)"
+      ]
+    },
+    {
+      "key": "named_model-16#11",
+      "name_en": "LeVERB",
+      "aliases": [
+        "Latent Vision-Language-Encoded Robot Behavior",
+        "LeVERB-Bench"
+      ],
+      "one_liner": "A dual-system framework that links a vision-language model to a humanoid whole-body controller through a “latent verb.”",
+      "explanation": "LeVERB was released in June 2025, led by UC Berkeley, with collaborators including Xue Bin Peng, Trevor Darrell, and Koushil Sreenath. Existing VLA models mostly assume the low-level controller only accepts manually defined commands like end-effector pose or base velocity, limiting them to quasi-static tasks. LeVERB splits into two layers: the high-level LeVERB-VL (System 2, 10Hz) encodes first- and third-person images and the instruction with SigLIP, learning a “latent verb” space through a conditional variational autoencoder; the low-level LeVERB-A (System 1, 50Hz) is a whole-body controller, first trained with PPO as a teacher that tracks reference motions, then distilled with DAgger into a student conditioned on the latent verb. The authors used IsaacSim to render motion-capture playback and built LeVERB-Bench, covering more than 150 tasks. Deployed zero-shot on a Unitree G1, it reaches 80% success on simple visual navigation and 58.5% overall, 7.8 times that of a naive hierarchical baseline.",
+      "example": "Tell the robot “walk over to the red chair and sit down,” and the high-level model looks at the camera feed and outputs a latent verb, which the low-level controller uses to make the G1 walk over, turn, and sit.",
+      "related": [
+        "Learning-Based Whole-Body Control",
+        "Fast-Slow Dual System",
+        "Latent Action",
+        "Conditional Variational Autoencoder",
+        "Unitree G1",
+        "DAgger (Dataset Aggregation)"
+      ]
+    }
+  ]
+}

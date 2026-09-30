@@ -1,0 +1,201 @@
+{
+  "category": "named_model",
+  "batch": 20,
+  "terms": [
+    {
+      "name_zh": "OmniManip",
+      "name_en": "OmniManip: Towards General Robotic Manipulation via Object-Centric Interaction Primitives as Spatial Constraints",
+      "abbr": "",
+      "aliases": [],
+      "tier": 3,
+      "one_liner": "把 VLM 的推理落成物体坐标系里「点+方向」约束的零样本操作框架",
+      "explanation": "北京大学董豪团队与智元机器人（PKU-AgiBot 联合实验室）2025 年 1 月发布，CVPR 2025 Highlight。VLM 懂常识，却给不出精确的三维位置和朝向。OmniManip 先把物体摆进它的标准空间（canonical space，按功能对齐的物体自身坐标系），在里面取「交互点+交互方向」这类交互原语，当作空间约束交给 VLM 挑选和验证；执行时用 6D 位姿跟踪实时更新轨迹，于是规划和执行各有一个闭环。整个过程不微调 VLM，就能在多种操作任务上零样本泛化。它和 ReKep、VoxPoser、CoPa 同属「VLM + 中间表示」路线，作者也提到可用它自动生成仿真数据。",
+      "example": "以「把茶倒进杯子」为例：VLM 先认出茶壶和杯子，在茶壶的标准空间里取壶嘴点和倾倒方向、在杯子上取杯口点，据此求出末端位姿；执行中持续跟踪两者的 6D 位姿并修正轨迹。",
+      "related": ["ReKep", "VoxPoser", "CoPa", "可供性", "中间表示", "6D位姿估计"],
+      "sources": [
+        {"title": "arXiv 2501.03841: OmniManip", "url": "https://arxiv.org/abs/2501.03841"},
+        {"title": "OmniManip 项目主页", "url": "https://omnimanip.github.io/"}
+      ],
+      "as_of": "2025-06"
+    },
+    {
+      "name_zh": "Dactyl（OpenAI 魔方灵巧手）",
+      "name_en": "OpenAI Dactyl (Learning Dexterous In-Hand Manipulation / Solving Rubik's Cube with a Robot Hand)",
+      "abbr": "",
+      "aliases": ["Dactyl", "OpenAI 机械手玩魔方"],
+      "tier": 3,
+      "one_liner": "OpenAI 只在仿真里用强化学习训练、再迁到真实五指灵巧手的项目",
+      "explanation": "OpenAI 的灵巧操作项目，硬件是 Shadow Dexterous Hand 五指灵巧手。2018 年论文《Learning Dexterous In-Hand Manipulation》让机械手在掌中把方块转到指定朝向：策略完全在仿真中用强化学习训练，靠随机化摩擦系数、物体外观等参数（域随机化）直接迁到真机，没用任何人类示范，手指步态等人类常见动作自己学了出来。2019 年《Solving Rubik's Cube with a Robot Hand》提出自动域随机化（ADR），训练中自动把随机化范围越放越大。魔方的还原步骤由 Kociemba 求解器算出，神经网络只负责手上的操作；论文报告需要 15 次面转时成功率约 60%，最难的 26 次面转约 20%。它是仿真到现实迁移和灵巧操作的标志性工作。",
+      "example": "魔方实验里，魔方的位姿由 3 路摄像头画面经 CNN 估计，各面转角由内置传感器的 Giiker 魔方读出，指尖位置由动捕系统测量，一起喂给循环神经网络策略去控制手指。",
+      "related": ["自动域随机化", "域随机化", "仿真到现实迁移", "手内操作", "Shadow 灵巧手", "近端策略优化"],
+      "sources": [
+        {"title": "arXiv 1808.00177: Learning Dexterous In-Hand Manipulation", "url": "https://arxiv.org/abs/1808.00177"},
+        {"title": "arXiv 1910.07113: Solving Rubik's Cube with a Robot Hand", "url": "https://arxiv.org/abs/1910.07113"}
+      ],
+      "as_of": "2019-10"
+    },
+    {
+      "name_zh": "PaLI-X",
+      "name_en": "PaLI-X: On Scaling up a Multilingual Vision and Language Model",
+      "abbr": "",
+      "aliases": [],
+      "tier": 3,
+      "one_liner": "谷歌 2023 年约 550 亿参数的多语言视觉语言模型，RT-2 的骨干之一",
+      "explanation": "Google Research 2023 年 5 月发布的多语言视觉语言模型（VLM），是 PaLI 的放大版：视觉编码器用 220 亿参数的 ViT-22B，语言部分是 320 亿参数的 UL2 编码器-解码器，合计约 550 亿参数。论文的主要结论是视觉、语言两侧一起扩大都有收益，训练时混合了前缀补全和掩码补全两种目标；微调后在 15 个以上基准上刷新当时最好成绩，还出现了复杂计数、用非英语类别名做目标检测等没专门训练过的能力。对具身领域来说，它最出名的身份是 RT-2 的骨干之一：RT-2 分别在 PaLI-X（55B）和 PaLM-E（12B）上，把机器人动作当成文字 token 一起训练，得到最早的一批视觉-语言-动作模型。",
+      "example": "RT-2-PaLI-X-55B：把 PaLI-X 放在网页图文数据和机器人轨迹上协同微调，让它看图读指令后直接输出离散化的动作 token。",
+      "related": ["RT-2", "视觉语言模型", "PaLM-E", "视觉 Transformer", "视觉-语言-动作模型", "编码器-解码器"],
+      "sources": [
+        {"title": "arXiv 2305.18565: PaLI-X", "url": "https://arxiv.org/abs/2305.18565"},
+        {"title": "RT-2 项目主页", "url": "https://robotics-transformer2.github.io/"}
+      ],
+      "as_of": "2023-07"
+    },
+    {
+      "name_zh": "北京人形 Pelican-VL",
+      "name_en": "Pelican-VL: A Foundation Brain Model for Embodied Intelligence (X-Humanoid)",
+      "abbr": "",
+      "aliases": ["Pelican-VL 1.0", "Pelican1.0-VL"],
+      "tier": 3,
+      "one_liner": "北京人形机器人创新中心开源的具身「大脑」视觉语言模型",
+      "explanation": "北京人形机器人创新中心（X-Humanoid）2025 年 10 月底发布技术报告、11 月开源权重的具身大脑模型，基于 Qwen2.5-VL，首批开源 7B 和 72B 两个规格（Apache 2.0）。它不直接输出关节动作，而是负责空间理解、可供性推理、任务规划和函数调用，给下层控制器或 VLA 下指令。训练上提出 DPPO（刻意练习策略优化）：先用 GRPO 强化学习找出模型做不好的难例，再把难例整理成数据做监督微调，RL 与 SFT 循环交替。报告称相对基座平均提升 20.3%，在 Where2Place、RefSpatialBench 等具身基准上领先同量级开源模型。其 Hugging Face 主页后来又上传了 3B、235B-A22B 等规格。",
+      "example": "报告中的真机实验：模型根据画面预测并持续修正抓取力度，完成接触丰富的抓取；另一个实验里由它充当统一的「大脑」，调度多台不同机器人完成长程任务。",
+      "related": ["具身推理模型", "视觉语言模型", "通义千问 Qwen-VL", "组相对策略优化", "大脑-小脑架构（大小脑）", "北京人形机器人创新中心"],
+      "sources": [
+        {"title": "arXiv 2511.00108: Pelican-VL 1.0", "url": "https://arxiv.org/abs/2511.00108"},
+        {"title": "Hugging Face: X-Humanoid/Pelican1.0-VL-7B", "url": "https://huggingface.co/X-Humanoid/Pelican1.0-VL-7B"},
+        {"title": "Hugging Face: X-Humanoid 组织页", "url": "https://huggingface.co/X-Humanoid"}
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "PerAct",
+      "name_en": "Perceiver-Actor: A Multi-Task Transformer for Robotic Manipulation",
+      "abbr": "PerAct",
+      "aliases": ["Perceiver-Actor"],
+      "tier": 3,
+      "one_liner": "把场景体素化，用 Perceiver Transformer 预测下一个关键位姿的多任务操作策略",
+      "explanation": "华盛顿大学与英伟达的 Mohit Shridhar、Lucas Manuelli、Dieter Fox 在 CoRL 2022 提出。它把 RGB-D 观测转成 100×100×100 的体素网格（三维像素块），与语言指令一起送进 PerceiverIO Transformer；输出不是连续轨迹，而是「下一个最佳体素」：末端该到哪个格子、离散化的旋转、夹爪开合以及是否需要避碰，再由运动规划器把机械臂送到这个关键位姿。一个模型同时在 RLBench 18 个任务（249 种变体）和 7 个真实任务上训练，每个任务只要少量演示。它把「3D 表示 + 关键帧动作预测」这套做法立了起来，RVT、3D Diffuser Actor、BridgeVLA 等后续工作都拿它当基线。",
+      "example": "指令「打开中间的抽屉」：PerAct 先在体素网格里给出把手所在格子和抓取朝向，夹爪到位后闭合；下一步再预测把抽屉拉开后的末端位置。",
+      "related": ["RVT-2", "3D Diffuser Actor", "RLBench", "体素", "关键帧动作预测", "CLIPort"],
+      "sources": [
+        {"title": "arXiv 2209.05451: Perceiver-Actor", "url": "https://arxiv.org/abs/2209.05451"},
+        {"title": "PerAct 项目主页", "url": "https://peract.github.io/"}
+      ],
+      "as_of": "2022-11"
+    },
+    {
+      "name_zh": "PHC",
+      "name_en": "Perpetual Humanoid Control",
+      "abbr": "PHC",
+      "aliases": ["永续人形控制", "Perpetual Humanoid Control for Real-time Simulated Avatars"],
+      "tier": 3,
+      "one_liner": "在物理仿真里跟踪海量人体动作、摔倒后能自己爬起的人形控制器",
+      "explanation": "卡内基梅隆大学与 Meta Reality Labs 的罗正宜（Zhengyi Luo）等人在 ICCV 2023 提出的基于物理的人形动作模仿控制器，在 Isaac Gym 中用强化学习训练。它要让仿真人形实时跟踪来自视频姿态估计或文本生成的、带噪声的参考动作，而且不借助外加的稳定力。核心是渐进式乘法控制策略（PMCP）：遇到学不会的难动作就新增子网络来分担，从而学下 AMASS 动捕库约一万段动作，又不发生灾难性遗忘；论文报告训练集成功率 98.9%、测试集 96.4%。它还学会了摔倒后自然起身、接着跟踪。开源代码后来加入了宇树 H1、G1 等人形模型，后续的 PHC+、PULSE 等工作都建立在它之上。",
+      "example": "用单目视频估计出的人体姿态实时驱动仿真角色；角色中途被绊倒时，PHC 让它自己站起来、走回参考动作的位置继续跟。",
+      "related": ["运动跟踪", "DeepMimic", "MaskedMimic", "AMASS 人体动捕数据集", "H2O（人到人形）", "灾难性遗忘"],
+      "sources": [
+        {"title": "arXiv 2305.06456: Perpetual Humanoid Control for Real-time Simulated Avatars", "url": "https://arxiv.org/abs/2305.06456"},
+        {"title": "GitHub: ZhengyiLuo/PHC", "url": "https://github.com/ZhengyiLuo/PHC"}
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "Phantom（无机器人训练）",
+      "name_en": "Phantom: Training Robots Without Robots Using Only Human Videos",
+      "abbr": "",
+      "aliases": ["Phantom"],
+      "tier": 3,
+      "one_liner": "只用人类操作视频、把人手换成渲染机械臂来训练机器人策略的方法",
+      "explanation": "斯坦福大学 Jeannette Bohg 组（Marion Lepert 等）2025 年 3 月发布，CoRL 2025 论文。遥操作采数据太贵，人类视频便宜，但人手和机械臂长得不一样，视频里也没有机器人动作标签。Phantom 的做法：先估计每帧的手部姿态，换算成机器人末端动作；再用图像修复（inpainting）把人手从画面里抹掉，渲染一只虚拟机械臂叠上去，让训练图像看起来像机器人在干活。这样不用任何机器人数据就能训练策略，并零样本部署到 Franka 和 Kinova Gen3 上，完成抓放、叠杯、绑绳、扫物、插入等任务，报告最高成功率 92%。它属于「人类视频机器人化」路线。",
+      "example": "研究者用自己的手在桌上演示「把杯子叠起来」，Phantom 自动把视频里的手换成渲染的夹爪并生成动作标签，训出的策略直接在 Franka 机械臂上执行。",
+      "related": ["人类视频机器人化（人→机视频转换）", "人类视频数据", "无本体采集", "手部姿态估计", "EgoMimic", "本体差异"],
+      "sources": [
+        {"title": "arXiv 2503.00779: Phantom", "url": "https://arxiv.org/abs/2503.00779"},
+        {"title": "Phantom 项目主页", "url": "https://phantom-human-videos.github.io/"}
+      ],
+      "as_of": "2025-09"
+    },
+    {
+      "name_zh": "PIVOT（迭代视觉提示）",
+      "name_en": "PIVOT: Iterative Visual Prompting Elicits Actionable Knowledge for VLMs",
+      "abbr": "",
+      "aliases": ["PIVOT", "迭代视觉提示"],
+      "tier": 3,
+      "one_liner": "在图上画候选动作让 VLM 反复挑选、逐轮收窄，零样本控制机器人",
+      "explanation": "Google DeepMind 主导（Soroush Nasiriany、Fei Xia 等 23 位作者）的工作，2024 年 2 月发布，ICML 2024 论文。VLM 只会输出文字，而机器人需要连续的坐标和动作。PIVOT 把问题改成迭代的视觉问答：先采样一批候选（落点、移动方向或轨迹），在图像上画成带编号的箭头或点；让 VLM 选出最好的几个；再根据选中的候选拟合分布、重新采样，范围越缩越小，几轮后得到最终动作。整个过程不需要任何机器人训练数据，就能做真机导航、桌面操作、仿真指令跟随和图像定位，但作者也承认成功率离实用还远。它是视觉提示路线的代表，思路与 MOKA、Set-of-Mark 相近。",
+      "example": "让移动机器人去桌边拿可乐：第一轮在画面上画出若干编号箭头表示可走方向，VLM 选中 3 号和 5 号；下一轮只在这两个方向附近重新画箭头再选，直到方向足够精确。",
+      "related": ["视觉提示（Set-of-Mark 标记提示）", "MOKA（标记式视觉提示操作）", "视觉语言模型", "零样本", "交叉熵方法", "RoboPoint"],
+      "sources": [
+        {"title": "arXiv 2402.07872: PIVOT", "url": "https://arxiv.org/abs/2402.07872"},
+        {"title": "ICML 2024 论文页（PMLR v235）", "url": "https://proceedings.mlr.press/v235/nasiriany24a.html"},
+        {"title": "PIVOT 项目主页", "url": "https://pivot-prompt.github.io/"}
+      ],
+      "as_of": "2024-07"
+    },
+    {
+      "name_zh": "PlaNet",
+      "name_en": "PlaNet: Learning Latent Dynamics for Planning from Pixels",
+      "abbr": "",
+      "aliases": ["Deep Planning Network"],
+      "tier": 3,
+      "one_liner": "从像素学隐空间世界模型、在想象中规划动作的基于模型强化学习智能体",
+      "explanation": "谷歌（Google Brain 与 DeepMind 合作）的 Danijar Hafner 等人 2018 年 11 月发布，ICML 2019 论文。它只看图像，先学一个世界模型：把画面压缩成隐状态，学习隐状态在动作作用下怎么变、能拿多少奖励。模型核心是循环状态空间模型（RSSM），同时有确定性和随机性两条路径，多步预测更稳；论文还提出多步训练目标 latent overshooting。决策时不训练策略网络，而是在隐空间里想象大量候选动作序列、挑预测回报最高的一条，只执行第一步就重新规划（在线规划）。在 DeepMind Control 连续控制任务上，它所需交互回合远少于无模型方法，谷歌博客称平均数据效率约为后者的 50 倍。后来的 Dreamer 系列沿用 RSSM，改成在想象中学策略。",
+      "example": "在「猎豹奔跑」（cheetah run）任务里，PlaNet 只看摄像头画面，每一步都在隐空间里比较上万条想象出的动作序列，执行预测奖励最高那条的第一步。",
+      "related": ["循环状态空间模型", "DreamerV3", "世界模型", "基于模型的强化学习", "模型预测控制", "交叉熵方法"],
+      "sources": [
+        {"title": "arXiv 1811.04551: Learning Latent Dynamics for Planning from Pixels", "url": "https://arxiv.org/abs/1811.04551"},
+        {"title": "ICML 2019 论文页（PMLR v97）", "url": "https://proceedings.mlr.press/v97/hafner19a.html"},
+        {"title": "Google Research Blog: Introducing PlaNet", "url": "https://research.google/blog/introducing-planet-a-deep-planning-network-for-reinforcement-learning/"}
+      ],
+      "as_of": "2019-06"
+    },
+    {
+      "name_zh": "PoliFormer",
+      "name_en": "PoliFormer: Scaling On-Policy RL with Transformers Results in Masterful Navigators",
+      "abbr": "",
+      "aliases": [],
+      "tier": 3,
+      "one_liner": "用大规模同策略强化学习训练的 Transformer 导航策略，仿真训完直接上真机",
+      "explanation": "艾伦人工智能研究所（Ai2）2024 年 6 月发布，CoRL 2024 论文。它只用 RGB 图像：视觉 Transformer 编码器（代码中用 DINOv2）编码每一帧，再接一个因果 Transformer 解码器汇总较长的历史，输出导航动作。训练完全在仿真里：在 ProcTHOR 程序化生成的大量房屋中做同策略强化学习，多机并行推演，累计数亿次交互。它在 CHORES-S 物体目标导航基准上成功率 85.5%，比此前最好方法绝对提升 28.5 个百分点；不经额外调整就能部署到 LoCoBot 和 Stretch RE-1 两种真机，还能直接用于物体跟踪、开放词汇导航等下游任务。它说明强化学习配上 Transformer 和大规模仿真同样能靠规模涨性能。",
+      "example": "对 Stretch 机器人说「找到厨房里的苹果」，PoliFormer 只根据头部摄像头画面逐步决定前进或转向，看到苹果后停在旁边。",
+      "related": ["物体目标导航", "同策略", "ProcTHOR", "AI2-THOR", "艾伦人工智能研究所", "仿真到现实迁移"],
+      "sources": [
+        {"title": "arXiv 2406.20083: PoliFormer", "url": "https://arxiv.org/abs/2406.20083"},
+        {"title": "GitHub: allenai/poliformer", "url": "https://github.com/allenai/poliformer"}
+      ],
+      "as_of": "2024-11"
+    },
+    {
+      "name_zh": "ProgPrompt",
+      "name_en": "ProgPrompt: Generating Situated Robot Task Plans using Large Language Models",
+      "abbr": "",
+      "aliases": [],
+      "tier": 3,
+      "one_liner": "用类 Python 程序格式提示大模型，生成机器人能执行的任务计划",
+      "explanation": "南加州大学与英伟达的 Ishika Singh、Animesh Garg 等人 2022 年 9 月发布，ICRA 2023 论文（扩展版刊于 Autonomous Robots）。直接让大语言模型用自然语言写计划，常会冒出机器人不会的动作或环境里没有的物体。ProgPrompt 把提示写成代码：开头用 import 语句列出可用动作，接着给出场景物体列表和几个写成 Python 函数的示例任务（函数名是任务，函数体是步骤），再让 LLM 续写新任务的函数。计划里用注释给步骤分组（类似思维链），用 assert 检查前置条件、不满足时触发补救动作。它在 VirtualHome 家庭仿真中取得当时最好结果，也在真实机械臂的桌面任务上做了验证，和 SayCan、代码即策略同属「LLM 做任务规划」的早期代表。",
+      "example": "提示里先写 from actions import walk, grab, putin, open, close，列出 objects = ['salmon', 'microwave', ...]，再给一个示例函数 def throw_away_lime():；LLM 就接着写出 def microwave_salmon(): 的逐步动作。",
+      "related": ["大模型任务规划", "SayCan", "代码即策略", "Inner Monologue", "VirtualHome 家庭活动仿真", "提示词 / 提示工程"],
+      "sources": [
+        {"title": "arXiv 2209.11302: ProgPrompt", "url": "https://arxiv.org/abs/2209.11302"},
+        {"title": "ProgPrompt 项目主页", "url": "https://progprompt.github.io/"}
+      ],
+      "as_of": "2023-05"
+    },
+    {
+      "name_zh": "灵初 Psi-R2",
+      "name_en": "Psi-R2 (PsiBot)",
+      "abbr": "",
+      "aliases": ["Psi R2", "PsiR2"],
+      "tier": 3,
+      "one_liner": "灵初智能用十万小时量级人类操作数据预训练的世界动作模型",
+      "explanation": "灵初智能（PsiBot）2026 年 4 月 10 日发布的具身模型，官方称它是第一个用 10 万小时量级人类操作数据预训练的世界动作模型（同时预测未来画面和机器人动作的模型）：输入图像和语言，输出预测的未来视频和机器人动作。数据来自其自研外骨骼手套采集的人类操作，覆盖工业装配、生活操作、物体抓取等场景，并开源首批 1000 小时人手操作数据（含视觉、语言、关节角度、触觉）。官方称只需不到 100 条真机轨迹微调，就能完成装配手机、工业包装、叠纸盒等长程精细操作。同期发布的动作条件世界模型 Psi-W0 用于把人类数据转换成机器人可用的数据，并在模型里做强化学习来优化策略。2026 年 9 月 28 日发布的 Psi-R2.5 改为上层 VLM 拆任务、下层视频模型出动作的双层结构。",
+      "example": "官方演示：用不到 100 条真机轨迹微调后，机器人完成「装配手机」这类多步骤精细操作。",
+      "related": ["世界动作模型", "灵初智能", "人类视频数据", "数据手套", "世界模型", "DreamZero"],
+      "sources": [
+        {"title": "灵初智能：新一代具身模型发布，全球最大人类手部操作数据集开源", "url": "https://www.psibot.ai/%e7%81%b5%e5%88%9d%e6%99%ba%e8%83%bd%e6%96%b0%e4%b8%80%e4%bb%a3%e5%85%b7%e8%ba%ab%e6%a8%a1%e5%9e%8b%e5%8f%91%e5%b8%83%ef%bc%8c%e5%85%a8%e7%90%83%e6%9c%80%e5%a4%a7%e4%ba%ba%e7%b1%bb%e6%89%8b%e9%83%a8/"},
+        {"title": "灵初智能：Psi-R2.5 正式发布", "url": "https://www.psibot.ai/%e7%81%b5%e5%88%9d%e6%99%ba%e8%83%bdpsi-r2-5%e6%ad%a3%e5%bc%8f%e5%8f%91%e5%b8%83%ef%bc%81%e6%a8%a1%e5%9e%8b%e8%83%bd%e5%8a%9b%e6%8c%81%e7%bb%ad%e5%bc%ba%e5%8c%96%ef%bc%8c%e7%a0%b4%e8%a7%a3/"}
+      ],
+      "as_of": "2026-09"
+    }
+  ]
+}

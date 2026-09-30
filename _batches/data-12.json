@@ -1,0 +1,418 @@
+{
+ "category": "data",
+ "batch": 12,
+ "terms": [
+  {
+   "name_zh": "Nymeria 数据集",
+   "name_en": "Nymeria: A Massive Collection of Multimodal Egocentric Daily Motion in the Wild",
+   "abbr": "",
+   "aliases": [
+    "Nymeria",
+    "Nymeria Dataset",
+    "NymeriaPlus"
+   ],
+   "tier": 3,
+   "one_liner": "Meta 用 Aria 眼镜加动捕服录制的大规模第一人称日常动作数据集",
+   "explanation": "Nymeria 是 Meta Project Aria 团队发布的第一人称人体动作数据集（ECCV 2024）。264 人在 50 个真实地点做日常活动，共约 300 小时：头戴 Aria 眼镜录第一人称视频、眼动和 IMU，手腕戴 miniAria 腕带，身穿 XSens 惯性动捕服提供全身动作真值，另有观察者拍第三人称视角，并配分层语言描述。它补上了「只凭头戴设备还原整个人在做什么」的数据缺口，可用于全身姿态估计、动作生成和动作识别。协议为 CC BY-NC 4.0（非商用），后续推出增强版 NymeriaPlus。",
+   "example": "用 Aria 眼镜录下的第一人称视频和 IMU 信号训练模型估计佩戴者的全身姿态，再用同步的 XSens 动捕真值评测误差。",
+   "related": [
+    "第一人称视频",
+    "Project Aria 眼镜",
+    "惯性动捕",
+    "Ego-Exo4D 数据集",
+    "人类视频数据",
+    "动作捕捉"
+   ],
+   "sources": [
+    {
+     "title": "Nymeria: A Massive Collection of Multimodal Egocentric Daily Motion in the Wild (arXiv 2406.09905)",
+     "url": "https://arxiv.org/abs/2406.09905"
+    },
+    {
+     "title": "Project Aria - Nymeria Dataset",
+     "url": "https://www.projectaria.com/datasets/nymeria/"
+    },
+    {
+     "title": "facebookresearch/nymeria_dataset (GitHub)",
+     "url": "https://github.com/facebookresearch/nymeria_dataset"
+    }
+   ],
+   "as_of": "2026-06"
+  },
+  {
+   "name_zh": "OakInk 数据集",
+   "name_en": "OakInk",
+   "abbr": "",
+   "aliases": [
+    "OakInk2",
+    "OakInk Dataset"
+   ],
+   "tier": 3,
+   "one_liner": "上海交大发布的手-物交互数据集，标注物体用途和双手操作过程",
+   "explanation": "OakInk 是上海交通大学卢策吾团队的手-物交互数据集系列。第一代（CVPR 2022）中 Oak 为 1,800 个日常物体标注可供性（物体能被怎样用），Ink 记录人对其中 100 个物体的真实抓握并迁移到虚拟物体，共约 5 万条带使用意图的交互。第二代 OakInk2（CVPR 2024）转向双手完成复杂任务，含 627 段序列、401 万帧多视角图像，标注人体、双手和物体的 3D 位姿，并把任务分成可供性、原子任务、复杂任务三层。常用于手部姿态估计、抓取生成和双手动作合成。",
+   "example": "OakInk2 的一段序列把一个复杂任务拆成拿起、倾倒、放下等原子任务，每一帧都标了双手（MANO 参数）和物体的 3D 位姿。",
+   "related": [
+    "手物交互",
+    "MANO 手部模型",
+    "可供性",
+    "双臂操作",
+    "DexYCB 数据集",
+    "ARCTIC 数据集"
+   ],
+   "sources": [
+    {
+     "title": "OakInk: A Large-scale Knowledge Repository for Understanding Hand-Object Interaction (arXiv 2203.15709)",
+     "url": "https://arxiv.org/abs/2203.15709"
+    },
+    {
+     "title": "OAKINK2: A Dataset of Bimanual Hands-Object Manipulation in Complex Task Completion (arXiv 2403.19417)",
+     "url": "https://arxiv.org/abs/2403.19417"
+    },
+    {
+     "title": "OakInk2 项目主页",
+     "url": "https://oakink.net/v2/"
+    }
+   ],
+   "as_of": "2024-12"
+  },
+  {
+   "name_zh": "Objaverse 3D 资产库",
+   "name_en": "Objaverse",
+   "abbr": "",
+   "aliases": [
+    "Objaverse 1.0",
+    "Objaverse-XL"
+   ],
+   "tier": 3,
+   "one_liner": "艾伦人工智能研究所牵头的超大规模开放 3D 物体模型库",
+   "explanation": "Objaverse 是艾伦人工智能研究所（AI2）牵头发布的开放 3D 物体数据集。2022 年的 1.0 版有 80 多万个带标题和标签的模型；2023 年的 Objaverse-XL 联合多家机构扩到 1000 万个以上，来源包括人工建模、摄影测量和文物扫描。此前 3D 数据规模远小于图像和文本，限制了 3D 视觉与生成模型。在具身智能里它主要作为仿真资产来源，例如 Holodeck 用大语言模型规划房间布局，再从 Objaverse 检索物体填进场景。模型大多只有外形和贴图，放进仿真器前通常要补碰撞体和质量、摩擦等物理参数。",
+   "example": "Holodeck 根据「一间堆满书的书房」这样的文字描述，从 Objaverse 里检索书架、书桌、台灯等模型，摆进 AI2-THOR 场景供导航和操作训练。",
+   "related": [
+    "仿真资产",
+    "Holodeck 语言生成三维环境",
+    "ShapeNet 3D 模型库",
+    "单图生成3D",
+    "PartNet-Mobility 数据集",
+    "程序化生成"
+   ],
+   "sources": [
+    {
+     "title": "Objaverse: A Universe of Annotated 3D Objects (arXiv 2212.08051)",
+     "url": "https://arxiv.org/abs/2212.08051"
+    },
+    {
+     "title": "Objaverse-XL: A Universe of 10M+ 3D Objects (arXiv 2307.05663)",
+     "url": "https://arxiv.org/abs/2307.05663"
+    },
+    {
+     "title": "Holodeck: Language Guided Generation of 3D Embodied AI Environments (arXiv 2312.09067)",
+     "url": "https://arxiv.org/abs/2312.09067"
+    }
+   ],
+   "as_of": "2023-07"
+  },
+  {
+   "name_zh": "ObjectFolder 多感官物体数据集",
+   "name_en": "ObjectFolder (1.0 / 2.0 / Real) Multisensory Object Dataset",
+   "abbr": "",
+   "aliases": [
+    "ObjectFolder",
+    "ObjectFolder 2.0",
+    "ObjectFolder Real",
+    "ObjectFolder Benchmark"
+   ],
+   "tier": 3,
+   "one_liner": "同时提供物体外观、敲击声音和触觉读数的多感官物体数据集",
+   "explanation": "ObjectFolder 是斯坦福大学吴佳俊、李飞飞等人发布的多感官物体数据集系列。1.0 版（CoRL 2021）含 100 个虚拟物体，用隐式神经表示（用小网络存下某种感官数据、按查询输出）统一编码视觉、声音和触觉；2.0 版（CVPR 2022）扩到 1,000 个物体并提升渲染速度和质量；2023 年的 ObjectFolder Real 采集了 100 个真实家居物体的网格、视频、敲击声和触觉读数，并配 10 个任务的评测基准。它补上了物体数据集缺声音和触觉的短板，可用于跨感官检索、接触定位、形状重建和虚实迁移研究。",
+   "example": "给出一只杯子的渲染图，检索它被敲击时的声音或被视触觉传感器按压时的触觉图像（跨感官检索）。",
+   "related": [
+    "多模态感知",
+    "触觉数据",
+    "视触觉融合",
+    "触觉仿真",
+    "YCB 物体集",
+    "仿真到现实迁移"
+   ],
+   "sources": [
+    {
+     "title": "ObjectFolder: A Dataset of Objects with Implicit Visual, Auditory, and Tactile Representations (arXiv 2109.07991)",
+     "url": "https://arxiv.org/abs/2109.07991"
+    },
+    {
+     "title": "ObjectFolder 2.0: A Multisensory Object Dataset for Sim2Real Transfer (arXiv 2204.02389)",
+     "url": "https://arxiv.org/abs/2204.02389"
+    },
+    {
+     "title": "The ObjectFolder Benchmark: Multisensory Learning with Neural and Real Objects (arXiv 2306.00956)",
+     "url": "https://arxiv.org/abs/2306.00956"
+    }
+   ],
+   "as_of": "2023-06"
+  },
+  {
+   "name_zh": "OmniRetarget",
+   "name_en": "OmniRetarget: Interaction-Preserving Data Generation for Humanoid Whole-Body Loco-Manipulation and Scene Interaction",
+   "abbr": "",
+   "aliases": [],
+   "tier": 3,
+   "one_liner": "把人与物体、地形的交互关系一起重定向到人形机器人的数据生成方法",
+   "explanation": "OmniRetarget 是亚马逊 FAR（前沿 AI 与机器人团队）联合 MIT、伯克利、斯坦福、CMU 在 2025 年提出的动作重定向与数据生成方法。重定向就是把人的动作换算成机器人关节动作；只对齐关键点时，搬箱子、爬台子容易出现手没碰到箱子、脚穿进地面。它用「交互网格」同时建模人、物体、地形的空间和接触关系，在满足关节限位的前提下保持这些关系，还能换机器人、地形、物体做数据增强。用 OMOMO、LAFAN1 和自采动捕生成 8 小时以上轨迹后，只需 5 项奖励就能在宇树 G1 上训出最长约 30 秒的搬箱、攀爬等动作。项目主页称其获 ICRA 2026 最佳会议论文奖。",
+   "example": "把一段人搬箱子的动捕数据重定向到宇树 G1，保持双手贴住箱子、双脚踩实地面，再用这些轨迹训练能在真机上搬箱子的强化学习策略。",
+   "related": [
+    "动作重定向",
+    "GMR 通用动作重定向",
+    "OMOMO 人-物交互动作数据集",
+    "LAFAN1 动捕数据集",
+    "运动操作一体化",
+    "宇树 G1"
+   ],
+   "sources": [
+    {
+     "title": "OmniRetarget (arXiv 2509.26633)",
+     "url": "https://arxiv.org/abs/2509.26633"
+    },
+    {
+     "title": "OmniRetarget 项目主页",
+     "url": "https://omniretarget.github.io/"
+    }
+   ],
+   "as_of": "2026-06"
+  },
+  {
+   "name_zh": "OMOMO 人-物交互动作数据集",
+   "name_en": "OMOMO (Object Motion Guided Human Motion Synthesis) Dataset",
+   "abbr": "",
+   "aliases": [
+    "OMOMO",
+    "OMOMO Dataset"
+   ],
+   "tier": 3,
+   "one_liner": "斯坦福用光学动捕录制的约 10 小时全身搬动日常物体动作数据",
+   "explanation": "OMOMO 数据集出自斯坦福大学 Jiaman Li、吴佳俊、C. Karen Liu 的 SIGGRAPH Asia 2023 论文。作者用 12 台相机的 Vicon 光学动捕，记录 17 名受试者搬动、拖拽 15 种日常物体（拖把、落地灯、椅子、桌子、箱子等）的全身动作，共约 10 小时，提供物体 3D 几何、物体运动和 SMPL-X 人体动作。论文方法是只给物体怎么动，用条件扩散模型先预测手的位置、再生成全身姿态。这是少有的全身与大件物体交互数据，现在常作为人形机器人学搬运、推拉等全身操作的参考动作，例如 OmniRetarget 就用它重定向到宇树 G1。",
+   "example": "给定一把椅子被拖动的运动轨迹，OMOMO 方法生成一个人弯腰抓住椅背、边走边拖的全身动作。",
+   "related": [
+    "人-物交互",
+    "光学动捕",
+    "SMPL 人体模型",
+    "扩散模型",
+    "OmniRetarget",
+    "动作重定向"
+   ],
+   "sources": [
+    {
+     "title": "Object Motion Guided Human Motion Synthesis (arXiv 2309.16237)",
+     "url": "https://arxiv.org/abs/2309.16237"
+    },
+    {
+     "title": "Object Motion Guided Human Motion Synthesis (arXiv HTML 全文)",
+     "url": "https://arxiv.org/html/2309.16237"
+    }
+   ],
+   "as_of": "2023-09"
+  },
+  {
+   "name_zh": "Open-TeleVision",
+   "name_en": "Open-TeleVision: Teleoperation with Immersive Active Visual Feedback",
+   "abbr": "",
+   "aliases": [
+    "TeleVision",
+    "OpenTeleVision",
+    "OpenTV"
+   ],
+   "tier": 3,
+   "one_liner": "戴 VR 头显、以机器人视角立体观察来遥操作人形机器人的开源系统",
+   "explanation": "Open-TeleVision 是加州大学圣地亚哥分校王小龙团队与 MIT 提出的开源遥操作系统（CoRL 2024）。操作者戴 Apple Vision Pro（代码也支持 Meta Quest 3），转头时机器人的云台或颈部跟着转，头部 ZED Mini 双目相机把立体画面实时传回头显，操作者看到的就是机器人视角的 3D 画面；手臂和手指动作经 dex-retargeting 库映射到机器人上。它针对普通遥操作视角固定、缺深度感、精细操作难的问题。作者在宇树 H1 和傅利叶 GR-1 上采集演示，用改进的 ACT 训练策略完成罐子分拣、叠衣服等任务，还演示了相隔约 3000 英里的远程操作。",
+   "example": "操作者戴 Apple Vision Pro 转头看向桌面，宇树 H1 的头部云台随之转动；操作者伸手抓取，机器人灵巧手同步把罐子分拣进不同盒子，这些过程被录成模仿学习的演示数据。",
+   "related": [
+    "VR 遥操作",
+    "Apple Vision Pro",
+    "dex-retargeting",
+    "ACT",
+    "宇树 H1",
+    "PH2D 数据集（HAT）"
+   ],
+   "sources": [
+    {
+     "title": "Open-TeleVision: Teleoperation with Immersive Active Visual Feedback (arXiv 2407.01512)",
+     "url": "https://arxiv.org/abs/2407.01512"
+    },
+    {
+     "title": "Open-TeleVision 项目主页",
+     "url": "https://robot-tv.github.io/"
+    },
+    {
+     "title": "OpenTeleVision/TeleVision (GitHub)",
+     "url": "https://github.com/OpenTeleVision/TeleVision"
+    }
+   ],
+   "as_of": "2024-07"
+  },
+  {
+   "name_zh": "光学动捕",
+   "name_en": "Optical Motion Capture",
+   "abbr": "",
+   "aliases": [
+    "光学动作捕捉",
+    "标记点动捕",
+    "Optical MoCap"
+   ],
+   "tier": 3,
+   "one_liner": "用多台红外相机追踪身上的标记点，三角测量出三维动作",
+   "explanation": "光学动捕是动作捕捉的主流方式之一：在人或物体上贴反光标记点（被动式）或发光 LED（主动式），周围架多台标定好的红外相机，各自拍到标记点的二维位置后三角测量出三维坐标，再拟合成骨骼或人体模型的动作。代表厂商有 Vicon、OptiTrack。它精度高（主动式可达约 0.1 毫米），帧率常见 120 帧/秒以上，常被当作人体动作数据的「金标准」；缺点是设备贵、只能在专门场地用，标记点被遮挡会丢点。与之互补的是惯性动捕（靠 IMU，不怕遮挡但会漂移）和无标记动捕（直接从视频估计姿态）。AMASS、OMOMO 等数据都来自光学动捕。",
+   "example": "OMOMO 数据集用 12 台 Vicon 相机以 120 帧/秒记录受试者搬动物体，每个物体上贴 5 个标记点，同时追踪人和物体的运动。",
+   "related": [
+    "动作捕捉",
+    "惯性动捕",
+    "无标记动捕",
+    "Vicon",
+    "OptiTrack",
+    "AMASS 人体动捕数据集"
+   ],
+   "sources": [
+    {
+     "title": "Motion capture - Wikipedia（Optical systems 一节）",
+     "url": "https://en.wikipedia.org/wiki/Motion_capture"
+    },
+    {
+     "title": "Object Motion Guided Human Motion Synthesis（OMOMO 采集设置）",
+     "url": "https://arxiv.org/html/2309.16237"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "Magic Soup（OXE 数据配方）",
+   "name_en": "OXE Magic Soup (Octo / OpenVLA dataset mixture)",
+   "abbr": "",
+   "aliases": [
+    "oxe_magic_soup",
+    "Open-X Magic Soup",
+    "Magic Soup++",
+    "oxe_magic_soup_plus"
+   ],
+   "tier": 3,
+   "one_liner": "Octo、OpenVLA 预训练时从 OXE 挑选并加权混合子数据集的配方",
+   "explanation": "Magic Soup 是一份机器人数据混合配方的叫法，名字来自 Octo 代码库的配置 oxe_magic_soup。Open X-Embodiment（OXE，多机构汇集的跨本体机器人数据集）里各子数据集的规模、质量、机器人和相机差别很大，直接混在一起并不好用。Octo（2024）的训练混合取了其中 25 个数据集、约 80 万条轨迹，权重基本按样本数分配，再把场景和任务更丰富的翻倍、重复片段多的降权。OpenVLA 沿用这套权重，代码里另有加入 DROID 的扩展版 Magic Soup++，共约 97 万条演示。它不是新数据，而是「选哪些、各占多少」的经验配方，Octo 论文也承认还缺乏系统分析。",
+   "example": "OpenVLA 的训练混合里 Fractal（RT-1 数据）和 Kuka 各占约 12.7%，UCSD Kitchen 不到 0.1%；DROID 以 10% 的权重加入，因学得慢在最后三分之一训练中被移除。",
+   "related": [
+    "Open X-Embodiment 数据集",
+    "数据配比",
+    "Octo",
+    "OpenVLA",
+    "DROID 数据集",
+    "RLDS 格式"
+   ],
+   "sources": [
+    {
+     "title": "octo-models/octo: oxe_dataset_mixes.py (GitHub)",
+     "url": "https://github.com/octo-models/octo/blob/main/octo/data/oxe/oxe_dataset_mixes.py"
+    },
+    {
+     "title": "Octo: An Open-Source Generalist Robot Policy (arXiv 2405.12213)",
+     "url": "https://arxiv.org/html/2405.12213"
+    },
+    {
+     "title": "OpenVLA: An Open-Source Vision-Language-Action Model (arXiv 2406.09246)",
+     "url": "https://arxiv.org/html/2406.09246"
+    }
+   ],
+   "as_of": "2024-06"
+  },
+  {
+   "name_zh": "PartNet-Mobility 数据集",
+   "name_en": "PartNet-Mobility",
+   "abbr": "",
+   "aliases": [
+    "PartNet-Mobility Dataset"
+   ],
+   "tier": 3,
+   "one_liner": "带关节运动标注、可直接加载进仿真器的铰接物体 3D 模型库",
+   "explanation": "PartNet-Mobility 是加州大学圣地亚哥分校苏昊团队随 SAPIEN 仿真环境（CVPR 2020）发布的铰接物体数据集。铰接物体指柜门、抽屉、笔记本电脑这类由零件经关节相连、零件能相对运动的物体。数据集含 46 个类别、2,346 个物体、14,068 个可动部件；每个关节标注了类型（转动、滑动、螺旋）、运动范围和父子关系，并附贴图和 URDF 文件，可直接加载进物理仿真。此前的零件数据集大多只有静态几何，没法真的「拉开抽屉」。它是铰接物体操作研究最常用的资产来源，ManiSkill 等基准里的开门、开抽屉任务也基于它。",
+   "example": "在 SAPIEN 或 ManiSkill 里加载一个 PartNet-Mobility 柜子的 URDF，训练机械臂抓住把手、把抽屉拉开到指定距离。",
+   "related": [
+    "SAPIEN",
+    "铰接物体",
+    "铰接物体操作",
+    "统一机器人描述格式",
+    "ManiSkill",
+    "铰接结构估计"
+   ],
+   "sources": [
+    {
+     "title": "SAPIEN: A SimulAted Part-based Interactive ENvironment (arXiv 2003.08515)",
+     "url": "https://arxiv.org/abs/2003.08515"
+    },
+    {
+     "title": "SAPIEN 论文 HTML 全文（PartNet-Mobility 统计）",
+     "url": "https://arxiv.org/html/2003.08515"
+    }
+   ],
+   "as_of": "2020-03"
+  },
+  {
+   "name_zh": "PH2D 数据集（HAT）",
+   "name_en": "PH2D (Physical Human-Humanoid Data) / Humanoid Policy ~ Human Policy",
+   "abbr": "PH2D",
+   "aliases": [
+    "PH2D",
+    "HAT",
+    "Human Action Transformer",
+    "Humanoid Policy ~ Human Policy"
+   ],
+   "tier": 3,
+   "one_liner": "用 VR 头显采集的人类第一人称操作数据，和人形机器人数据一起训练策略",
+   "explanation": "PH2D（Physical Human-Humanoid Data）出自论文《Humanoid Policy ~ Human Policy》，由加州大学圣地亚哥分校牵头，联合 CMU、MIT、苹果等发表于 CoRL 2025。作者让人戴 Apple Vision Pro 或 Meta Quest 3 等消费级头显直接做操作任务，自动记录第一人称画面和头、手腕、指尖的 3D 位置，共约 2.7 万条带语言标注的演示。配套的 HAT（Human Action Transformer）把人和人形机器人放进同一个状态-动作空间，输出再重定向到机器人关节。思路是人自己采数据比遥操作机器人快得多，只要表示对齐，就能与少量机器人数据协同训练，提升泛化和鲁棒性。",
+   "example": "人戴 Vision Pro 快速录下大量抓取放置演示，再配少量宇树 H1 遥操作数据一起训练 HAT，得到的策略直接部署到 H1 上。",
+   "related": [
+    "第一人称视频",
+    "人类视频数据",
+    "协同训练",
+    "本体差异",
+    "Open-TeleVision",
+    "宇树 H1"
+   ],
+   "sources": [
+    {
+     "title": "Humanoid Policy ~ Human Policy (arXiv 2503.13441)",
+     "url": "https://arxiv.org/abs/2503.13441"
+    },
+    {
+     "title": "Humanoid Policy ~ Human Policy 项目主页",
+     "url": "https://human-as-robot.github.io/"
+    }
+   ],
+   "as_of": "2025-09"
+  },
+  {
+   "name_zh": "PHUMA 人形动作数据集",
+   "name_en": "PHUMA: Physically Reliable Humanoid Locomotion Dataset",
+   "abbr": "",
+   "aliases": [
+    "PHUMA"
+   ],
+   "tier": 3,
+   "one_liner": "经物理约束筛选和重定向的大规模人形机器人运动参考数据集",
+   "explanation": "PHUMA 是韩国科学技术院（KAIST）Jaegul Choo 团队 2025 年 10 月发布的人形机器人运动数据集。从网络视频提取再重定向的动作（如 Humanoid-X）常有漂浮、穿地、脚滑等物理上不可能的伪影。PHUMA 先做物理感知筛选，滤掉抖动过大、质心不稳、脚不着地的片段；再用 PhySINK（带物理约束的逆运动学重定向）在贴合原动作的同时满足关节限位、脚贴地、支撑脚不滑。数据合并 AMASS 等动捕与多个视频来源，共 76,010 段、约 73 小时，提供宇树 G1 和 H1-2 两个版本。用它训练的动作跟踪策略成功率高于 AMASS 和 Humanoid-X，并能零样本迁移到真实 G1。",
+   "example": "用 PHUMA 的 G1 版本训练一个通用动作跟踪策略，再让真实宇树 G1 复现视频里人的行走、转身等动作。",
+   "related": [
+    "脚滑 / 漂浮 / 穿地（动作数据伪影）",
+    "Humanoid-X 数据集",
+    "AMASS 人体动捕数据集",
+    "动作重定向",
+    "运动跟踪",
+    "宇树 G1"
+   ],
+   "sources": [
+    {
+     "title": "PHUMA: Physically Reliable Humanoid Locomotion Dataset (arXiv 2510.26236)",
+     "url": "https://arxiv.org/abs/2510.26236"
+    },
+    {
+     "title": "PHUMA 论文 HTML 全文",
+     "url": "https://arxiv.org/html/2510.26236"
+    }
+   ],
+   "as_of": "2026-06"
+  }
+ ]
+}

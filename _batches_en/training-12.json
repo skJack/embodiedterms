@@ -1,0 +1,113 @@
+{
+  "batch": "training-12",
+  "terms": [
+    {
+      "key": "training-12#0",
+      "name_en": "Generative Adversarial Imitation Learning",
+      "aliases": ["GAIL"],
+      "one_liner": "Using a discriminator to tell expert actions from policy actions, forcing the policy to act more and more like the expert.",
+      "explanation": "Introduced by Stanford's Jonathan Ho and Stefano Ermon in 2016. The traditional route was two separate steps: recover the expert's reward function with inverse reinforcement learning (working backward from demonstrations), then train a policy with reinforcement learning on that reward — slow and indirect. GAIL borrows the structure of a generative adversarial network instead: a discriminator learns to tell whether a state-action pair came from an expert demonstration or from the current policy, and the policy treats the discriminator's output as its reward, updating with TRPO (a policy-gradient algorithm that limits how much the policy can change per step) until the discriminator can no longer tell the difference. It requires repeated interaction with the environment, so it's mostly used in simulation, but it's less prone to compounding error (small mistakes snowballing) than behavior cloning. Adversarial motion priors (AMP), commonly used for humanoid robots and character animation, grew out of this same adversarial-imitation idea.",
+      "example": "The original paper, given only a handful of expert trajectories and no reward function, trains GAIL policies on MuJoCo-simulated tasks like humanoid walking that mostly reach over 70% of expert-level performance.",
+      "related": ["Inverse Reinforcement Learning", "Imitation Learning", "Behavior Cloning", "Generative Adversarial Network", "Adversarial Motion Priors", "Trust Region Policy Optimization"]
+    },
+    {
+      "key": "training-12#1",
+      "name_en": "Goal-Conditioned Behavior Cloning",
+      "aliases": ["GCBC", "Goal-Conditioned Imitation Learning"],
+      "one_liner": "Behavior cloning that feeds the policy both the current observation and the goal it's meant to reach.",
+      "explanation": "This builds on ordinary behavior cloning (copying demonstrated actions via supervised learning) by giving the policy one more input: a goal, usually a goal image or goal state, though it can also be language. Training data is often produced through hindsight relabeling: cut a segment out of a longer demonstration and treat its last frame as the goal, so the actions leading up to it automatically become a demonstration of reaching that goal — which means even task-unlabeled “play” data can be used. Google's Lynch and colleagues used it as the baseline Play-GCBC in their 2019 Learning from Play paper; GCSL, from the same year, has the agent collect its own data and repeatedly relabel it before running supervised learning. It's structurally simple and the starting point for many goal-conditioned and language-conditioned policies, but its weak point is that when a single goal has multiple valid routes to it (action multimodality), it tends to learn the average of them instead of any one of them.",
+      "example": "Randomly cutting a short segment out of teleoperated play data and using its last frame as the goal, a policy is trained to output an action given the current image and the goal image.",
+      "related": ["Behavior Cloning", "Goal-Conditioned Policy", "Hindsight Relabeling", "Play Data", "Goal-Conditioned Reinforcement Learning", "Action Multimodality"]
+    },
+    {
+      "key": "training-12#2",
+      "name_en": "Goal-Conditioned Reinforcement Learning",
+      "aliases": ["GCRL"],
+      "one_liner": "Reinforcement learning where both the policy and the value function take the goal as input, letting one model reach many goals.",
+      "explanation": "Ordinary reinforcement learning usually learns just one fixed task; goal-conditioned reinforcement learning writes the policy as π(a|s,g), so the same network carries out different tasks depending on the goal g, with the reward usually just “did it reach the goal or not.” A landmark example is DeepMind's 2015 Universal Value Function Approximators (UVFA), which extends the value function to V(s,g), able to generalize to goals never seen during training. Its biggest difficulty is sparse reward: most attempts never reach the goal, so there's no learning signal, which is why it's often paired with hindsight experience replay (relabeling a failed trajectory as having reached whatever state it actually ended up at). Goals can be coordinates, images, or language, and robot grasping, pushing, and navigation are all commonly framed this way; the low-level policy in hierarchical reinforcement learning is also often goal-conditioned.",
+      "example": "A robot arm pushing a block: the goal is any position on the table, and success means the block ends up near that goal; the same policy learns to push the block to many different positions.",
+      "related": ["Goal-Conditioned Policy", "Hindsight Experience Replay", "Sparse Reward", "Value Function", "Goal-Conditioned Behavior Cloning", "Hierarchical Reinforcement Learning"]
+    },
+    {
+      "key": "training-12#3",
+      "name_en": "Gradient Accumulation",
+      "aliases": [],
+      "one_liner": "Accumulating gradients over several small batches before applying one combined parameter update, simulating a larger batch size.",
+      "explanation": "This is the most common trick for when there isn't enough memory for the batch size you want. Each small batch runs its forward and backward pass as usual, but the optimizer isn't called yet — the gradients simply accumulate on the parameters; only after N small batches have been processed does one parameter update actually happen, after which the gradients are zeroed. The effective batch size becomes the per-GPU batch size times the number of accumulation steps times the number of GPUs, at the cost of fewer updates and more time per update. Two things need care: the loss must be divided by the number of accumulation steps (or normalized by total token count, when computing a token-level loss), or the gradient ends up scaled up too much; and layers like BatchNorm that depend on batch statistics still only ever see the small batch. Training libraries like Hugging Face Accelerate offer this as a ready-made setting, and it's used often when fine-tuning a VLA on a single GPU or just a few.",
+      "example": "If a single GPU only fits 8 samples but the target batch size is 64, set the accumulation steps to 8: run backward on 8 small batches in a row, then call optimizer.step() once.",
+      "related": ["Batch Size", "Gradient Checkpointing (Activation Recomputation)", "Mixed-Precision Training", "Distributed Training (Data/Model Parallelism)", "Optimizer", "GPU Memory"]
+    },
+    {
+      "key": "training-12#4",
+      "name_en": "Gradient Checkpointing (Activation Recomputation)",
+      "aliases": ["Activation Checkpointing"],
+      "one_liner": "Storing fewer intermediate activations during the forward pass and recomputing them during backward, trading compute for memory.",
+      "explanation": "During training, the intermediate results (activations) produced by the forward pass are normally kept in memory until backpropagation is done with them, which is one of the biggest consumers of GPU memory. Gradient checkpointing saves activations only at a handful of checkpoint locations and discards the rest, recomputing them with a fresh forward pass from the nearest checkpoint whenever backpropagation needs them. Tianqi Chen and colleagues' 2016 paper “Training Deep Nets with Sublinear Memory Cost” systematically introduced this: an n-layer network needs only about O(√n) memory for activations, at the cost of roughly one extra forward pass per small batch; in the paper, a 1,000-layer residual network's memory usage dropped from 48GB to 7GB, with about a 30% increase in running time. PyTorch's torch.utils.checkpoint implements this, and it's commonly turned on together with mixed precision and gradient accumulation when training large models and VLAs.",
+      "example": "Fine-tuning a Transformer policy by wrapping each Transformer layer in torch.utils.checkpoint noticeably lowers memory usage, at the cost of each training step running somewhat slower.",
+      "related": ["Backpropagation", "GPU Memory", "Gradient Accumulation", "Mixed-Precision Training", "Fully Sharded Data Parallel", "DeepSpeed"]
+    },
+    {
+      "key": "training-12#5",
+      "name_en": "Gradient Clipping",
+      "aliases": ["Gradient Norm Clipping"],
+      "one_liner": "Scaling down an overly large gradient to stay within a threshold, so one bad update can't wreck the model.",
+      "explanation": "Training occasionally hits exploding gradients: one step's gradient is unusually large, pushing the parameters much too far and sending the loss spiking or even to NaN. Gradient clipping checks the gradient's magnitude before the optimizer applies it, and shrinks it if it exceeds a threshold. The most common form is norm clipping: treat every parameter's gradient as one long vector, compute its total norm, and if that exceeds max_norm, multiply the whole vector by max_norm divided by the total norm, which keeps the direction the same and only shortens its length; an alternative, value clipping, clamps each individual component to a fixed range. Pascanu, Mikolov, and Bengio proposed gradient-norm clipping in 2013 while analyzing exploding gradients in recurrent neural networks. It's now essentially a default setting when training Transformers and diffusion policies, and common PPO implementations generally include it too.",
+      "example": "In PyTorch, calling torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0) after loss.backward() and before optimizer.step().",
+      "related": ["Vanishing / Exploding Gradients", "Learning Rate", "Optimizer", "Backpropagation", "Recurrent Neural Network", "Proximal Policy Optimization"]
+    },
+    {
+      "key": "training-12#6",
+      "name_en": "Hierarchical Reinforcement Learning",
+      "aliases": ["HRL"],
+      "one_liner": "Reinforcement learning split into layers: a high level sets sub-goals, and a low level executes the concrete actions to reach them.",
+      "explanation": "If a long task is learned directly at the level of low-level actions, reward only ever shows up after a very long delay, making credit assignment (figuring out which step actually caused the outcome) extremely hard. Hierarchical reinforcement learning has a high-level policy pick sub-goals or skills at a lower frequency, while a low-level policy outputs concrete actions at a higher frequency to carry them out. Classic frameworks include Sutton and colleagues' 1999 options framework and Dayan and Hinton's feudal reinforcement learning; in the deep-learning era there's DeepMind's 2017 FeUdal Networks (a manager sets goals, a worker outputs actions) and Nachum, Levine, and colleagues' 2018 HIRO (the high level hands the low level a goal, with an off-policy correction for reusing old data). Today's embodied-AI architectures that combine large-model planning with low-level skills, or fast-slow dual systems, follow a similar layered logic, though they aren't always trained with reinforcement learning.",
+      "example": "HIRO, on tasks like a simulated quadruped “ant” robot navigating a maze, has the high level issue a desired state as a sub-goal every fixed number of steps, while the low level controls each leg to reach it.",
+      "related": ["Hierarchical Architecture", "Fast-Slow Dual System", "Atomic Skill", "Long-Horizon Task", "Goal-Conditioned Reinforcement Learning", "Credit Assignment"]
+    },
+    {
+      "key": "training-12#7",
+      "name_en": "Hindsight Experience Replay",
+      "aliases": ["HER"],
+      "one_liner": "Relabeling a failed attempt as having succeeded at whatever goal it actually reached, so even sparse rewards can be learned from.",
+      "explanation": "Introduced by OpenAI's Andrychowicz and colleagues in 2017 (NIPS 2017). In goal-conditioned tasks with only a binary success/failure reward, a robot almost never succeeds early on, so the replay buffer fills up with nothing but failures and there's nothing to learn from. HER's fix is to store a second copy of every failed trajectory, with its goal swapped out for whatever state that trajectory actually reached (such as its final state, or a state at some later point) — which turns it into a successful example. It can be attached after any off-policy algorithm (one that can learn from old data, such as DDPG), and in effect works like an automatically generated curriculum. The original paper completed pushing, sliding, and pick-and-place tasks on a Fetch arm and deployed a policy trained in simulation to the real robot. This hindsight-relabeling idea was later widely borrowed by methods like goal-conditioned behavior cloning.",
+      "example": "A robot arm tries to push a block to a red dot but ends up pushing it 10 cm to the side instead; HER rewrites that trajectory's goal to be that 10-cm-off position, turning it into a successful experience.",
+      "related": ["Sparse Reward", "Goal-Conditioned Reinforcement Learning", "Experience Replay", "Hindsight Relabeling", "Deep Deterministic Policy Gradient", "Off-Policy"]
+    },
+    {
+      "key": "training-12#8",
+      "name_en": "Human-Gated DAgger",
+      "aliases": ["HG-DAgger"],
+      "one_liner": "A DAgger variant where a human takes over just before the robot is about to err, and only that takeover data gets used for retraining.",
+      "explanation": "Introduced by Stanford's Kelly and colleagues in 2018. The original DAgger (Dataset Aggregation) requires an expert to state, step by step, what action should be taken while the policy is actually driving the system — but it's hard for a person to give accurate labels, and unsafe, when they aren't the one actually in control of the car or robot. HG-DAgger instead lets a human decide when to intervene: the learned policy is normally in control, and the human takes over the moment they see it heading somewhere dangerous, steers the system back to a safe state, and then hands control back; only the observation-action pairs recorded during that takeover get added to the dataset, and the policy is retrained on the aggregated data. The paper also uses disagreement among an ensemble of networks to estimate the policy's uncertainty, and learns a risk threshold from the moments of human intervention. Experiments ran in both simulation and on a real self-driving car. This pattern of human takeover plus collecting correction data is now a common human-in-the-loop workflow in real-robot post-training.",
+      "example": "A self-driving policy is running on a test vehicle; just before it drifts over the lane line, the safety driver takes the wheel and pulls the car back to the center of the lane, and this correction data gets added to the training set.",
+      "related": ["DAgger (Dataset Aggregation)", "Human-in-the-Loop", "Compounding Error", "Intervention Data", "Recovery/Correction Data", "Interactive Imitation Learning"]
+    },
+    {
+      "key": "training-12#9",
+      "name_en": "Imitation from Observation",
+      "aliases": ["IfO", "Imitation Learning from Observation", "Learning from Video"],
+      "one_liner": "Learning to imitate from only the demonstrator's states or video, with no recorded action labels at all.",
+      "explanation": "Ordinary imitation learning needs observation-action pairs; imitation from observation gets only a sequence of the demonstrator's states — video of a person doing something, say — with no idea what control command produced each step. This opens the door to using internet video and other huge collections of human video, but it also has to deal with differing viewpoints and body structures. Notable examples: UC Berkeley's Liu and colleagues (2017) used context translation to convert human video into a robot's viewpoint before running reinforcement learning; UT Austin's Torabi and colleagues (2018) proposed BCO, which first lets the agent explore on its own to learn an inverse dynamics model (inferring the action from a pair of consecutive frames), then uses it to fill in action labels for expert video so behavior cloning can be applied; adversarial approaches exist too. Today's embodied-AI work that pretrains on human video, or uses latent actions or pseudo-action labels, is solving exactly this same problem.",
+      "example": "In Liu and colleagues' 2017 paper, a robot watches only video of a person sweeping, scooping almonds, and pushing objects — no joint recordings at all — and learns to perform the same actions with tools.",
+      "related": ["Action-Free Video", "Inverse Dynamics Model", "Human Video Data", "Latent Action", "Pseudo-Action Labels", "LAPA"]
+    },
+    {
+      "key": "training-12#10",
+      "name_en": "Implicit Q-Learning",
+      "aliases": ["IQL"],
+      "one_liner": "An offline reinforcement-learning algorithm that only ever values actions already in the dataset, never querying an action it hasn't seen.",
+      "explanation": "Introduced by UC Berkeley's Kostrikov, Nair, and Levine in 2021. Offline reinforcement learning trains only on a fixed dataset, and its central difficulty is that the Q-function (an action's estimated value) tends to wildly overestimate actions absent from the data (extrapolation error), and the policy collapses as soon as it chases them. IQL's solution is to never evaluate a new action at all: it first uses expectile regression (a form of regression that leans toward the upper quantiles) to fit a state value V, from the dataset's own actions, that approximates the value of a close-to-the-best action; it then uses that V to do a temporal-difference update of Q; and finally extracts the policy with advantage-weighted regression (weighting behavior cloning by the size of the advantage). It's simple to implement, performs strongly on the D4RL offline benchmark, suits pretraining offline and then fine-tuning online, and is commonly used as a baseline in robot offline-reinforcement-learning work.",
+      "example": "Given a batch of historical robot-arm data mixing good and bad manipulation attempts, with no further environment interaction, IQL trains a policy that ends up better than the average quality of the data itself.",
+      "related": ["Offline Reinforcement Learning", "Advantage-Weighted Regression", "Conservative Q-Learning", "Extrapolation Error", "Offline-to-Online Reinforcement Learning", "Q-Function"]
+    },
+    {
+      "key": "training-12#11",
+      "name_en": "Importance Sampling",
+      "aliases": ["Importance Weighting"],
+      "one_liner": "Estimating an expectation under one distribution using samples drawn from another, weighted by the ratio of the two probabilities.",
+      "explanation": "This is a Monte Carlo estimation technique. Wanting the expectation of some quantity under a distribution p, but having only samples drawn from a different distribution q, each sample is weighted by p(x)/q(x); the weighted average is still an unbiased estimate of the expectation under p (provided q can actually produce every value p can). In reinforcement learning, p and q are usually two policies: data collected under an old or behavior policy is used to evaluate or update a new policy, with the weight being the ratio of the new and old policies' probabilities for the same action. Both off-policy learning and off-policy evaluation depend on it; the probability ratio r(θ) in the TRPO and PPO objectives is exactly this, and PPO clips that ratio to keep any single update from being too large. Its main problem is that the further apart the two distributions are, the higher the weights' variance gets, so in practice the weights are often truncated or clipped.",
+      "example": "Each round, PPO collects a batch of data with the old policy and then updates on that same batch several times; every sample's loss is multiplied by the new-to-old policy probability ratio, which is clipped to the range [1−ε, 1+ε].",
+      "related": ["Off-Policy", "Proximal Policy Optimization", "Off-Policy Evaluation", "Policy Gradient", "Trust Region Policy Optimization", "Monte Carlo Methods (Monte Carlo Return)"]
+    }
+  ]
+}

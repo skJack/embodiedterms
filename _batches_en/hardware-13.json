@@ -1,0 +1,113 @@
+{
+  "batch": "hardware-13",
+  "terms": [
+    {
+      "key": "hardware-13#0",
+      "name_en": "Pneumatic Gripper",
+      "aliases": ["Pneumatic Finger Gripper"],
+      "one_liner": "A gripper whose fingers open and close via compressed air pushing a piston.",
+      "explanation": "A pneumatic gripper uses compressed air to push a piston inside a cylinder, which drives the fingers open or closed through a linkage or rack-and-pinion mechanism, with a solenoid valve switching the air path to control “open” and “close.” It's mechanically simple, cheap, fast-acting, strong-gripping, and durable, making it one of the most common end effectors on factory production lines. Its downside is that it usually only has two positions, fully open and fully closed, so grip force and opening width are hard to control precisely, and it also needs an air compressor, tubing, and solenoid valves. Embodied AI research more often uses electric grippers, because a policy needs to output a continuous opening width; but in high-throughput material handling and sorting, pneumatic grippers remain the mainstream choice.",
+      "example": "A two-finger pneumatic gripper picking parts off an assembly line: a PLC sends a signal to a solenoid valve, the air path switches, and the fingers close to grip the part.",
+      "related": ["Gripper", "Electric Gripper", "End Effector", "Pneumatic Actuation", "Vacuum Suction Cup", "Two-Finger Gripper"]
+    },
+    {
+      "key": "hardware-13#1",
+      "name_en": "Point Foot vs. Flat Foot",
+      "aliases": ["Point Foot", "Flat Foot", "Foot Morphology"],
+      "one_liner": "Two foot designs for legged robots: a small rounded point of contact, or a flat sole with real area.",
+      "explanation": "A point foot is a small ball or rounded tip at the end of a leg that makes roughly point contact with the ground; nearly all quadruped robots (such as MIT's Mini Cheetah and Unitree's Go2) use point feet. A flat foot has a sole with real surface area, which can generate ankle torque, letting the zero-moment point (the balance point within which the robot won't tip over) shift around within the sole, so a robot can stand still without stepping; most humanoid robots use flat feet. Point feet are light, keep the leg's rotational inertia low at the far end, and are mechanically simple, but they provide no ankle torque, so a biped with point feet can't stand still and must keep stepping to balance; flat feet have a larger stability margin, but are heavier, need an extra ankle degree of freedom, and require control that handles the sole tipping and heel-to-toe contact.",
+      "example": "LimX Dynamics' TRON 1 biped can be fitted with interchangeable point-foot, flat-foot, and wheeled-foot attachments, letting the same robot be compared across foot types.",
+      "related": ["Bipedal Walking", "Zero-Moment Point (ZMP)", "Support Polygon", "Legged Robot", "Parallel Ankle Joint", "Quadruped Robot"]
+    },
+    {
+      "key": "hardware-13#2",
+      "name_en": "Polyether Ether Ketone (PEEK)",
+      "aliases": ["PEEK Plastic"],
+      "one_liner": "A heat-resistant, high-strength engineering plastic gaining interest as a way to cut robot weight.",
+      "explanation": "PEEK, short for polyether ether ketone, is a semi-crystalline, high-performance engineering plastic with a melting point around 343°C, strong mechanical strength, wear resistance, and chemical resistance; its density is about 1.3 g/cm³, roughly a sixth that of steel, and it has long been used in aerospace, medical implants, and automotive parts. Because humanoid robots have many joints and need to stay light, the industry sees PEEK as a candidate material for “plastic-for-steel” substitution — used for gears, bearing cages, some reducer parts, and structural components, to cut weight and lower the inertia of moving parts. Its main obstacle is high raw-material and machining cost, so core transmission parts that carry heavy loads are still mostly metal today.",
+      "example": "",
+      "related": ["Plastic-for-Steel Substitution", "Lightweighting (Magnesium Alloy / Carbon Fiber)", "Reducer/Gearbox", "Harmonic Drive", "Core Components"]
+    },
+    {
+      "key": "hardware-13#3",
+      "name_en": "Power Density (W/kg)",
+      "aliases": ["Specific Power", "Power-to-Weight Ratio"],
+      "one_liner": "How much power a motor or joint delivers per kilogram, a measure of being light yet strong.",
+      "explanation": "Power density is the power a system can output per unit of mass (sometimes per unit of volume), usually expressed in W/kg. Power equals torque times rotational speed, so power density differs from torque density (N·m/kg, which only measures how much force something can produce) by also accounting for how fast it can spin. Legged robots need short bursts of high power for jumping, running, and getting up after a fall, while their legs must stay light, so joint motors are designed to maximize power density. Ways to raise it include high-performance neodymium-iron-boron magnets, better cooling (such as liquid-cooled joints), and a higher bus voltage. Power density is also used to evaluate batteries, where it should be kept distinct from energy density (Wh/kg), which determines battery life instead.",
+      "example": "",
+      "related": ["Torque Density", "Peak Torque", "Joint Module", "Liquid-Cooled Joint Actuators (Active Thermal Management)", "Rare-Earth Permanent Magnet (NdFeB)", "Torque-Speed Curve (T-N Curve)"]
+    },
+    {
+      "key": "hardware-13#4",
+      "name_en": "Programmable Logic Controller (PLC)",
+      "aliases": ["Programmable Controller"],
+      "one_liner": "A specialized industrial computer that controls equipment actions and production-line logic in a factory.",
+      "explanation": "A PLC is a specialized computer designed for industrial settings, running in a fixed, repeating scan cycle: it reads inputs (sensors, buttons, limit switches), executes the user's program, and updates outputs (relays, solenoid valves, motor drivers). It emerged in the late 1960s to replace the complex relay cabinets used in car factories; its programming languages are defined by the IEC 61131-3 standard, the most common being ladder logic. It's reliable, resistant to electrical noise, and can run continuously for years. When a robot is installed in a factory, the pace and interlocking of the whole production line are typically managed by a PLC, with the robot's controller “handshaking” with the PLC through I/O signals or an industrial bus — embodied AI robots deployed on a production line have to interface with the existing PLC in the same way.",
+      "example": "Once a PLC detects that a workpiece is in position, it sends a “start” signal to the robot arm; after the arm finishes grasping it, it sends back a “done” signal, and the PLC starts the next section of the conveyor.",
+      "related": ["Industrial Robot", "Robot Controller", "EtherCAT Bus", "Host Computer", "Lower-Level Controller", "Real-Time Control"]
+    },
+    {
+      "key": "hardware-13#5",
+      "name_en": "Proprioceptive Actuator",
+      "aliases": ["Proprioceptive Actuation"],
+      "one_liner": "An actuator that senses and controls joint force from motor current alone, with no dedicated force sensor.",
+      "explanation": "This is an actuator design philosophy proposed and systematically laid out by Sangbae Kim's group at MIT's Biomimetic Robotics Lab for the MIT Cheetah (Wensing et al., IEEE T-RO 2017). The approach pairs a large-diameter, high-torque motor with a single-stage, low-ratio planetary reducer, keeping transmission friction low and reflected inertia (the motor rotor's inertia as seen from the joint's output) low, so the joint can be backdriven by external force. This means motor current can fairly accurately reflect the force on the joint, enabling high-bandwidth force control without any extra force sensor, and letting the leg absorb landing impacts compliantly. Today's “quasi-direct-drive” joint modules, used across quadruped robots and many humanoid robots, trace back to this same idea.",
+      "example": "The joints of MIT's Mini Cheetah use a roughly 6:1 single-stage planetary reducer, estimating foot contact force from current alone to perform moves like backflips.",
+      "related": ["Quasi-Direct Drive", "Backdrivability", "Reflected Inertia", "MIT Mini Cheetah Actuator", "Torque Control", "Sensorless Force Estimation"]
+    },
+    {
+      "key": "hardware-13#6",
+      "name_en": "PSYONIC Ability Hand",
+      "aliases": ["Ability Hand"],
+      "one_liner": "A tactile bionic prosthetic hand from US company PSYONIC, also commonly used as a robotics dexterous hand.",
+      "explanation": "The Ability Hand is a bionic hand made by PSYONIC, a company headquartered in San Diego and founded by Aadeel Akhtar. It was designed first as a prosthesis for upper-limb amputees, and the company describes it as the first bionic hand with tactile feedback: pressure sensors in the fingertips relay the sensation of touch back to the user's residual limb through vibration when grasping something. All five fingers can flex and extend, the thumb can rotate electrically, giving 6 actuated degrees of freedom in total, and it weighs about 490 grams with an impact-resistant shell. Because it's light, fast, durable, and offers interfaces aimed at researchers, a number of robotics teams mount it on robot arms or humanoid robots and use it as a dexterous hand for dexterous-manipulation and teleoperation research.",
+      "example": "Researchers mount the Ability Hand at the end of a robot arm and use a data glove to teleoperate it, collecting grasping demonstrations to train an imitation-learning policy.",
+      "related": ["Dexterous Hand", "Tactile Sensor", "Dexterous Manipulation", "Teleoperation", "Degrees of Freedom", "Inspire RH56 Dexterous Hand"]
+    },
+    {
+      "key": "hardware-13#7",
+      "name_en": "Pulse Width Modulation (PWM)",
+      "aliases": ["Pulse-Width Modulation"],
+      "one_liner": "Controlling average voltage or power by rapidly switching a signal and adjusting how long it stays high.",
+      "explanation": "PWM is a way of controlling “how much power” using a digital switching signal: the frequency stays fixed, and only the fraction of each cycle spent high, the duty cycle, is adjusted. At a 50% duty cycle, the average voltage seen by the load is about half the supply voltage. Because the switching device is always either fully on or fully off, it wastes very little energy itself, which is why motor drivers, switching power supplies, and LED dimming all use it. In robots, a motor driver uses PWM in a three-phase inverter bridge to generate motor current, often paired with field-oriented control (FOC); a servo, meanwhile, encodes its target angle in the width of a PWM pulse. Both microcontrollers and the Raspberry Pi can output PWM directly.",
+      "example": "A typical analog servo receives one pulse every 20 ms, with a pulse width of roughly 1–2 ms corresponding to different target angles.",
+      "related": ["Motor Driver", "Field-Oriented Control (FOC)", "Servo (Smart Serial Bus Servo)", "Brushless DC Motor", "Microcontroller Unit (MCU)", "Raspberry Pi"]
+    },
+    {
+      "key": "hardware-13#8",
+      "name_en": "Qualcomm Dragonwing IQ10",
+      "aliases": ["Dragonwing IQ10", "IQ10"],
+      "one_liner": "Qualcomm's high-end onboard processor platform for industrial and humanoid robots.",
+      "explanation": "The IQ10 is a high-end processor in Qualcomm's Dragonwing industrial and embedded product line, aimed at robotics, and was reportedly announced at CES in January 2026, targeting industrial robots, autonomous mobile robots, and humanoid robots as an onboard “brain.” Qualcomm's official figures list up to about 700 TOPS of AI compute, integrating an 18-core Oryon CPU, an NPU, and a GPU, intended to let perception, planning, and model inference all run on the robot itself without a separate add-in accelerator card. In June 2026, Qualcomm introduced a robotics reference design built on it, the IQ10 RRD, at Computex, supporting up to 12 GMSL2 camera feeds plus lidar and IMU inputs, with global availability planned from September 2026; partners include NEURA Robotics, Booster Robotics, and VinMotion. It competes directly with NVIDIA's Jetson Thor.",
+      "example": "",
+      "related": ["Onboard Compute Platform", "Jetson Thor", "TOPS (Trillion Operations Per Second)", "On-Device Deployment", "Humanoid Robot", "GMSL Camera Interface"]
+    },
+    {
+      "key": "hardware-13#9",
+      "name_en": "Rare-Earth Permanent Magnet (NdFeB)",
+      "aliases": ["Neodymium Magnet", "Neodymium-Iron-Boron"],
+      "one_liner": "A strong magnetic material made mainly of neodymium, iron, and boron, core to robot joint motors.",
+      "explanation": "NdFeB (neodymium-iron-boron) is a permanent-magnet material made primarily of neodymium, iron, and boron, with a main phase of Nd2Fe14B, developed independently in the early 1980s by Japan's Sumitomo Special Metals and America's General Motors; it remains the strongest commercially available permanent magnet today. The permanent magnet synchronous motors, brushless motors, and coreless motors used in robot joints almost all use NdFeB magnets in their rotors, since they deliver more torque for the same size, which directly determines a joint's torque density and power density. Its weakness is that it demagnetizes at high temperature, so heavy rare earths like dysprosium and terbium are commonly added to improve heat tolerance. China holds the majority of the world's rare-earth mining and magnet-processing capacity, and starting in April 2025 imposed export controls on dysprosium, terbium, and some other medium and heavy rare earths and related products, affecting overseas motor supply chains.",
+      "example": "",
+      "related": ["Permanent Magnet Synchronous Motor (PMSM)", "Brushless DC Motor", "Torque Density", "Power Density", "Motor Thermal Rise and Overheat Protection", "Core Components"]
+    },
+    {
+      "key": "hardware-13#10",
+      "name_en": "Raspberry Pi",
+      "aliases": ["RPi"],
+      "one_liner": "A low-cost, credit-card-sized computer from the UK, a common onboard computer for beginner robotics.",
+      "explanation": "The Raspberry Pi is a credit-card-sized single-board computer from the UK's Raspberry Pi Foundation and its subsidiary, Raspberry Pi Ltd, first released in 2012. It's built on an ARM processor, can run Linux (the official Raspberry Pi OS, or Ubuntu), and has a row of GPIO pins that can connect directly to sensors, servos, and motor driver boards. It's cheap, well documented, and backed by a large community, making it a common “brain” for teaching robotics and for low-cost platforms, capable of running ROS 2, reading a camera, and controlling a robot car. Its compute isn't enough to run large models, so in VLA work it's typically only responsible for collecting data and executing actions, while inference runs on a remote policy server with a GPU.",
+      "example": "Hugging Face's LeKiwi mobile manipulator uses a Raspberry Pi 5 as its onboard computer to collect camera and motor data; the policy runs inference on a laptop or GPU elsewhere and sends actions back.",
+      "related": ["Microcontroller Unit (MCU)", "Arduino / ESP32 Microcontroller Boards", "Embedded System", "ROS 2", "LeKiwi Mobile Base and Arm", "Policy Server"]
+    },
+    {
+      "key": "hardware-13#11",
+      "name_en": "Reflected Inertia",
+      "aliases": ["Reflected Rotor Inertia", "Equivalent Inertia"],
+      "one_liner": "The effective inertia felt at a joint's output after the motor rotor's inertia is amplified by the reducer.",
+      "explanation": "Reflected inertia is the rotational inertia of the motor rotor (and any reducer parts on its input side) converted to an equivalent value at the joint's output, roughly equal to the rotor's inertia multiplied by the square of the gear ratio. The larger the gear ratio, the “heavier” the joint feels from the outside: an impact has to accelerate the rotor along with everything else, making the impact force larger, and it also becomes harder for an external force to push the joint back — backdrivability gets worse, and force-control bandwidth drops. This is one of the main reasons legged robots like the MIT Cheetah chose low-gear-ratio “proprioceptive actuators”: a leg needs to be able to yield on impact when it lands. Joint design often has to trade off torque density, which wants a large gear ratio, against low reflected inertia.",
+      "example": "The same motor with a 6:1 reducer has a reflected inertia about 36 times the rotor's own inertia; swap in a 100:1 harmonic drive instead, and it becomes about 10,000 times.",
+      "related": ["Proprioceptive Actuator", "Backdrivability", "Gear Ratio", "Rotational Inertia", "Quasi-Direct Drive", "Harmonic Drive"]
+    }
+  ]
+}

@@ -1,0 +1,432 @@
+{
+ "category": "mechanics",
+ "batch": 12,
+ "terms": [
+  {
+   "name_zh": "内旋与外旋",
+   "name_en": "Intrinsic vs. Extrinsic Rotations",
+   "abbr": "",
+   "aliases": [
+    "动轴旋转 / 定轴旋转",
+    "内在旋转 / 外在旋转",
+    "欧拉角旋转顺序约定"
+   ],
+   "tier": 3,
+   "one_liner": "连续旋转时每步绕跟着转的新轴（内旋），还是绕固定不动的原轴（外旋）。",
+   "explanation": "用三个角（欧拉角）描述姿态时，必须约定每一步绕哪根轴转。内旋绕物体自身坐标系的轴转，每转一步，后面要用的轴也跟着变；外旋始终绕固定的世界坐标系的轴转。两者可以互换：同样三个角，内旋按 Z→Y→X 的顺序做，等于外旋按 X→Y→Z 倒过来做，得到同一个旋转矩阵 R = Rz(α)Ry(β)Rx(γ)（Rz(α) 指绕 z 轴转 α 角的旋转矩阵，其余同理）。机器人里常说的 ZYX 欧拉角是内旋，横滚-俯仰-偏航角（RPY）多按外旋 XYZ 定义，所以两者数值相同。不同软件、数据集约定不一，读别人的姿态数据前要先确认是内旋还是外旋、轴顺序是什么。",
+   "example": "SciPy 的 Rotation.from_euler 用大写「ZYX」表示内旋、小写「zyx」表示外旋；同一组角度写成「XYZ」和「xyz」会得到不同姿态，一个大小写之差就能让机械臂末端转错方向。",
+   "related": [
+    "欧拉角",
+    "横滚-俯仰-偏航角",
+    "旋转矩阵",
+    "万向节死锁",
+    "坐标变换",
+    "四元数"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Davenport chained rotations（Intrinsic / Extrinsic rotations）",
+     "url": "https://en.wikipedia.org/wiki/Davenport_chained_rotations"
+    },
+    {
+     "title": "SciPy 文档：Rotation.from_euler（大写为内旋、小写为外旋）",
+     "url": "https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.transform.Rotation.from_euler.html"
+    },
+    {
+     "title": "Lynch & Park, Modern Robotics（2017）附录 B：ZYX 欧拉角与 roll-pitch-yaw 角",
+     "url": "https://hades.mech.northwestern.edu/images/7/7f/MR.pdf"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "雅可比伪逆",
+   "name_en": "Jacobian Pseudoinverse",
+   "abbr": "",
+   "aliases": [
+    "Moore-Penrose 伪逆",
+    "广义逆",
+    "J⁺",
+    "J†"
+   ],
+   "tier": 3,
+   "one_liner": "雅可比矩阵不可逆时用的「替代逆」，给出误差最小、关节动得最少的解。",
+   "explanation": "雅可比矩阵 J 把关节速度 θ̇ 映射成末端速度 ẋ：ẋ = Jθ̇。反求关节速度要用 J 的逆，但 J 常不是方阵（7 关节臂的 J 是 6×7），或在奇异位形（某些方向动不了的姿态）附近不可逆。这时改用 Moore-Penrose 伪逆 J⁺（Moore 1920 年、Bjerhammar 1951 年、Penrose 1955 年各自独立提出）：有精确解时，它给出所有解里关节动得最少（范数最小）的那个；没有精确解时，给出误差最小的最小二乘解。J 满秩且关节多于任务维度时 J⁺ = Jᵀ(JJᵀ)⁻¹。它是数值逆运动学的基本工具，但接近奇异时解会暴涨，实践中常改用阻尼最小二乘法。",
+   "example": "7 自由度机械臂按 θ̇ = J⁺ẋ + (I − J⁺J)φ 求关节速度：前一项让末端跟上期望速度 ẋ；后一项把任意向量 φ 投影到零空间，只改肘部等姿态、不影响末端，可用来避开关节限位（这种用法由 Liégeois 1977 年提出）。",
+   "related": [
+    "雅可比矩阵",
+    "数值逆解",
+    "阻尼最小二乘法",
+    "零空间",
+    "奇异位形",
+    "运动学冗余"
+   ],
+   "sources": [
+    {
+     "title": "Buss, Introduction to Inverse Kinematics with Jacobian Transpose, Pseudoinverse and Damped Least Squares methods",
+     "url": "https://mathweb.ucsd.edu/~sbuss/ResearchWeb/ikmethods/iksurvey.pdf"
+    },
+    {
+     "title": "Wikipedia: Moore–Penrose inverse",
+     "url": "https://en.wikipedia.org/wiki/Moore%E2%80%93Penrose_inverse"
+    },
+    {
+     "title": "Lynch & Park, Modern Robotics（2017）6.2 节：数值逆运动学",
+     "url": "https://hades.mech.northwestern.edu/images/7/7f/MR.pdf"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "雅可比转置法",
+   "name_en": "Jacobian Transpose Method",
+   "abbr": "",
+   "aliases": [
+    "Jᵀ 法",
+    "转置雅可比法"
+   ],
+   "tier": 3,
+   "one_liner": "用雅可比矩阵的转置代替逆来迭代求逆运动学，计算便宜但收敛较慢。",
+   "explanation": "雅可比转置法是一种数值逆运动学方法，1984 年由 Balestrino 等人和 Wolovich、Elliott 分别用于逆解。每步令 Δθ = αJᵀe：e 是末端到目标的位置误差，Jᵀ 是雅可比矩阵的转置，α 是小步长。依据来自静力学关系 τ = JᵀF：设想一根虚拟弹簧把末端拉向目标、产生力 F，折算到各关节的力矩就是 JᵀF，关节顺着它动，步长够小时误差一定下降（因为 ⟨JJᵀe, e⟩ = ‖Jᵀe‖² ≥ 0）。它不用求逆，每步计算极快，接近奇异也不会数值爆炸，代价是收敛慢、易振荡。同样的 Jᵀ 映射也是笛卡尔阻抗控制的核心：末端虚拟弹簧力经 Jᵀ 变成关节力矩。",
+   "example": "让动画角色或机械臂的手去够一个目标点：每次迭代算一次 Δθ = αJᵀe 更新关节角，几十步后手逐渐贴近目标。Buss 的对比测试里，它在单末端场景可用，在 Y 形分叉的多末端场景效果明显差于阻尼最小二乘法。",
+   "related": [
+    "雅可比矩阵",
+    "数值逆解",
+    "雅可比伪逆",
+    "阻尼最小二乘法",
+    "笛卡尔阻抗控制",
+    "虚功原理"
+   ],
+   "sources": [
+    {
+     "title": "Buss, Introduction to Inverse Kinematics with Jacobian Transpose, Pseudoinverse and Damped Least Squares methods",
+     "url": "https://mathweb.ucsd.edu/~sbuss/ResearchWeb/ikmethods/iksurvey.pdf"
+    },
+    {
+     "title": "Lynch & Park, Modern Robotics（2017）5.2 节：开链静力学 τ = JᵀF",
+     "url": "https://hades.mech.northwestern.edu/images/7/7f/MR.pdf"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "运动学标定",
+   "name_en": "Kinematic Calibration",
+   "abbr": "",
+   "aliases": [
+    "DH 参数标定",
+    "几何参数标定",
+    "机器人标定"
+   ],
+   "tier": 3,
+   "one_liner": "实测机器人末端位置，反推并修正模型里的连杆长度、关节零位等几何参数。",
+   "explanation": "控制器用一套名义运动学参数（如 DH 参数：连杆长度、扭角、偏距、关节零位）算末端位置，但加工装配公差和磨损会让真实参数偏离图纸，结果是重复定位精度（回到同一点）高、绝对定位精度（到达指定坐标）差。运动学标定就是修正这套参数：让机器人摆出多组姿态，用激光跟踪仪、相机等外部设备测出末端真实位置，与模型预测对比，用最小二乘等优化反解出参数误差，再写回控制器补偿。通常分三级：一级只标关节零位（编码器读数与真实角度的偏差），二级标全部几何参数，三级再加上关节柔性、摩擦等非几何误差。据维基百科，六轴工业机器人标定后绝对精度可提高约一个数量级，多数情况下误差降到 1 毫米以内。",
+   "example": "离线编程或多台同型号机械臂共用一套轨迹时，未标定的机器落点会各不相同。一种做法是在末端装标定板，用单目相机在几十个姿态下拍照，以像素重投影误差为目标优化出修正后的 DH 参数（arXiv:2005.08420）。",
+   "related": [
+    "DH参数",
+    "改进 DH 参数",
+    "零位标定（零点标定）",
+    "绝对定位精度",
+    "重复定位精度",
+    "手眼标定"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Robot calibration",
+     "url": "https://en.wikipedia.org/wiki/Robot_calibration"
+    },
+    {
+     "title": "A Visual Kinematics Calibration Method for Manipulator Based on Nonlinear Optimization (arXiv:2005.08420)",
+     "url": "https://arxiv.org/abs/2005.08420"
+    },
+    {
+     "title": "Bayesian Optimal Experimental Design for Robot Kinematic Calibration (arXiv:2409.10802)",
+     "url": "https://arxiv.org/abs/2409.10802"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "运动副（转动副 / 移动副 / 低副 / 高副）",
+   "name_en": "Kinematic Pair (Revolute / Prismatic Pair; Lower / Higher Pair)",
+   "abbr": "",
+   "aliases": [
+    "关节",
+    "R 副 / P 副",
+    "低副 / 高副"
+   ],
+   "tier": 3,
+   "one_liner": "两个构件直接接触又能相对运动的连接，如铰链、滑轨、齿轮啮合。",
+   "explanation": "运动副是机械原理的基本概念，由德国工程师 Reuleaux 提出，指两个构件之间既保持接触、又只允许特定相对运动的连接。按接触方式分两类：低副是面接触，常见的有转动副（R，铰链，1 个转动自由度）、移动副（P，滑块，1 个移动自由度）、螺旋副、圆柱副（2 自由度）、球面副（3 自由度）；高副是点或线接触，如凸轮与从动件、齿轮啮合、车轮在地面上滚动。机器人学里的「关节」就是运动副，转动关节对应转动副，移动关节对应移动副。计算机构自由度的 Grübler 公式，就是用构件的总自由度减去各运动副引入的约束。DH 参数的原始论文题目就叫「基于矩阵的低副机构运动学记法」。",
+   "example": "平面四连杆机构：连同机架共 4 个构件、4 个转动副，按平面 Grübler 公式，自由度 = 3×(4−1−4) + 4×1 = 1，所以只需一个电机就能驱动整个机构。",
+   "related": [
+    "转动关节",
+    "移动关节",
+    "球关节",
+    "自由度",
+    "Grübler 公式",
+    "四连杆机构"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Kinematic pair",
+     "url": "https://en.wikipedia.org/wiki/Kinematic_pair"
+    },
+    {
+     "title": "Lynch & Park, Modern Robotics（2017）2.2 节 Grübler 公式；参考文献 Denavit & Hartenberg 1955",
+     "url": "https://hades.mech.northwestern.edu/images/7/7f/MR.pdf"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "运动学树",
+   "name_en": "Kinematic Tree",
+   "abbr": "",
+   "aliases": [
+    "运动树",
+    "树形运动链",
+    "树形结构"
+   ],
+   "tier": 3,
+   "one_liner": "以连杆为节点、关节为边的树形结构，从根部一路分叉到各个末端。",
+   "explanation": "运动学树是描述多连杆机器人结构的方式：连杆是节点，关节是连接父连杆与子连杆的边；每个连杆只有一个父节点、没有闭合回路，从根节点（固定底座，或人形机器人的骨盆）一路分叉到各个末端。单条机械臂是只有一根枝的特例（串联链），人形、灵巧手、四足则是多分支的树。URDF（统一机器人描述格式）只能描述树形结构，无法直接表示 Stewart 平台这类闭链；MuJoCo 也把所有刚体组织成以 world 为根的树、不允许回路，四连杆、并联踝关节等闭环要用额外的等式约束补上。Pinocchio 等动力学库沿这棵树递推计算，并利用树结构带来的稀疏性加速。",
+   "example": "人形机器人的 URDF 里，骨盆是根，往下分出左右两条腿，往上经腰到躯干，再分出双臂和头部；每只灵巧手又分出五根手指，整体是一棵多级分叉的树。",
+   "related": [
+    "运动链",
+    "串联机构",
+    "并联机构",
+    "统一机器人描述格式",
+    "浮动基",
+    "铰接体算法"
+   ],
+   "sources": [
+    {
+     "title": "Lynch & Park, Modern Robotics（2017）4.2 节：URDF 可表示任何树形结构机器人",
+     "url": "https://hades.mech.northwestern.edu/images/7/7f/MR.pdf"
+    },
+    {
+     "title": "MuJoCo 文档 Overview：Kinematic tree（不允许运动学回路，用等式约束建模）",
+     "url": "https://mujoco.readthedocs.io/en/stable/overview.html"
+    },
+    {
+     "title": "Pinocchio（GitHub）：利用运动学树稀疏性的刚体动力学算法库",
+     "url": "https://github.com/stack-of-tasks/pinocchio"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "李群",
+   "name_en": "Lie Group",
+   "abbr": "",
+   "aliases": [
+    "矩阵李群",
+    "连续变换群"
+   ],
+   "tier": 3,
+   "one_liner": "既是群又是光滑流形的数学对象，机器人里的旋转和位姿都属于李群。",
+   "explanation": "李群以挪威数学家 Sophus Lie（1842–1899）命名，指一个同时也是光滑流形的群，而且乘法和求逆都是光滑运算。「群」保证元素能相乘（两次旋转合成一次）、能求逆；「流形」（局部看像平直空间的曲面）保证能求导、做优化。机器人最常用两个：SO(3)，全体三维旋转矩阵；SE(3)，旋转加平移的刚体位姿。它们在单位元处的切空间叫李代数，如 SO(3) 对应由反对称矩阵组成的 so(3)，两者用指数映射互相转换。好处是可以在三维向量上做加减和梯度下降，再映射回旋转，保证结果仍是合法旋转。SLAM、视觉里程计、状态估计、位姿优化和指数积公式都建立在它上面。",
+   "example": "视觉 SLAM 优化相机朝向时，不直接改旋转矩阵 R 的 9 个数，而是求一个三维小增量 δ，再用 R ← R·exp([δ]×) 更新（[δ]× 是 δ 对应的反对称矩阵，exp 是矩阵指数），更新后 R 仍是合法的旋转矩阵。",
+   "related": [
+    "特殊正交群 SO(3)",
+    "指数映射",
+    "反对称矩阵",
+    "伴随变换",
+    "指数积公式",
+    "旋量理论"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Lie group",
+     "url": "https://en.wikipedia.org/wiki/Lie_group"
+    },
+    {
+     "title": "Solà et al., A micro Lie theory for state estimation in robotics (arXiv:1812.01537)",
+     "url": "https://arxiv.org/abs/1812.01537"
+    },
+    {
+     "title": "Lynch & Park, Modern Robotics（2017）第 3 章：SO(3)、SE(3) 与李代数",
+     "url": "https://hades.mech.northwestern.edu/images/7/7f/MR.pdf"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "极限环",
+   "name_en": "Limit Cycle",
+   "abbr": "",
+   "aliases": [
+    "稳定周期轨道",
+    "吸引性周期轨道"
+   ],
+   "tier": 3,
+   "one_liner": "非线性系统里一条孤立的闭合周期轨迹，附近的状态会被吸引过去并绕它循环。",
+   "explanation": "极限环是非线性动力学的概念，系统研究始于庞加莱：在状态空间（如角度-角速度平面）里，它是一条闭合的周期轨迹，附近的轨迹随时间螺旋靠近它（稳定极限环）或远离它（不稳定极限环）。稳定极限环意味着系统会自发维持固定节奏的振荡，受扰后还会回到原节奏，经典例子是 Van der Pol 振荡器。步行机器人研究把一个稳定的周期步态看成稳定极限环：McGeer 的被动动力学行走机器人没有电机，靠重力就能沿斜坡稳定行走。分析时取每次脚落地时刻的状态构成庞加莱映射（回归映射），把「步态稳不稳」转化为这个离散映射的不动点稳不稳。",
+   "example": "无动力的「无辐轮」（只有一圈辐条、没有轮圈的轮子）放在斜坡上，在相当大范围的初速度下都会很快收敛到同一个稳定的滚动节奏，这就是一个稳定极限环（Tedrake《Underactuated Robotics》中的经典例子）。",
+   "related": [
+    "被动动力学行走",
+    "步态",
+    "中枢模式发生器",
+    "混合零动态",
+    "李雅普诺夫稳定性",
+    "步态相位（相位时钟）"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Limit cycle",
+     "url": "https://en.wikipedia.org/wiki/Limit_cycle"
+    },
+    {
+     "title": "Tedrake, Underactuated Robotics: Simple Models of Walking and Running",
+     "url": "https://underactuated.mit.edu/simple_legs.html"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "可操作度",
+   "name_en": "Manipulability",
+   "abbr": "",
+   "aliases": [
+    "可操作性",
+    "可操作度椭球",
+    "Manipulability Ellipsoid",
+    "Yoshikawa 可操作度"
+   ],
+   "tier": 3,
+   "one_liner": "衡量机械臂在当前姿态下末端往各方向动有多容易、离奇异有多远的指标。",
+   "explanation": "可操作度由 T. Yoshikawa 在 1985 年发表于 IJRR 的论文中首次定量提出。给定雅可比矩阵 J（把关节速度映射成末端速度），让关节速度取遍单位球 ‖θ̇‖ = 1，对应的末端速度会构成一个椭球，叫可操作度椭球：主轴方向是 JJᵀ 的特征向量，半轴长是对应特征值的平方根。椭球在某方向越长，末端越容易往那个方向动；某方向被压扁，说明正在靠近奇异位形（某方向失去运动能力的姿态），到奇异时椭球塌成线段或平面。常用标量指标 w = √det(JJᵀ)，与椭球体积成正比，奇异时为 0。它用于挑选作业姿态和设计结构，也常作为冗余机械臂零空间运动的优化目标，让手臂主动远离奇异。",
+   "example": "平面二连杆臂（连杆长 L1、L2）的可操作度 w = L1·L2·|sin θ2|，θ2 是肘关节角：手臂伸直（θ2 = 0）时 w = 0，末端沿手臂方向无法再伸；肘部弯成 90° 时 w 最大，末端往各方向都好动。",
+   "related": [
+    "雅可比矩阵",
+    "奇异位形",
+    "运动学冗余",
+    "零空间",
+    "雅可比伪逆"
+   ],
+   "sources": [
+    {
+     "title": "Lynch & Park, Modern Robotics（2017）5.4 节：Manipulability",
+     "url": "https://hades.mech.northwestern.edu/images/7/7f/MR.pdf"
+    },
+    {
+     "title": "Wikipedia: Manipulability ellipsoid",
+     "url": "https://en.wikipedia.org/wiki/Manipulability_ellipsoid"
+    },
+    {
+     "title": "Buss 逆运动学综述（参考文献列出 Yoshikawa, Manipulability of robotic mechanisms, IJRR 1985）",
+     "url": "https://mathweb.ucsd.edu/~sbuss/ResearchWeb/ikmethods/iksurvey.pdf"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "改进 DH 参数",
+   "name_en": "Modified Denavit-Hartenberg Parameters",
+   "abbr": "MDH",
+   "aliases": [
+    "修正 DH",
+    "Craig DH",
+    "Craig 约定",
+    "Modified DH"
+   ],
+   "tier": 3,
+   "one_liner": "DH 参数的一种变体：连杆坐标系放在连杆近端的关节轴上，变换顺序也不同。",
+   "explanation": "改进 DH 参数是 John J. Craig 在教材《Introduction to Robotics: Mechanics and Control》里采用的约定。它和 1955 年 Denavit、Hartenberg 提出的标准 DH 一样，每个关节用 4 个参数（连杆长度 a、扭角 α、偏距 d、关节角 θ）描述相邻两个坐标系的关系。区别在于：坐标系 i 放在关节 i 的轴上（连杆近端），标准 DH 放在关节 i+1 的轴上（远端）；变换顺序变为 Rot_x(α_{i−1})·Trans_x(a_{i−1})·Rot_z(θ_i)·Trans_z(d_i)，即先绕、沿上一个 x 轴，再绕、沿本关节 z 轴，所以表里 a、α 的下标比 θ、d 小 1。两套参数表不能混用，否则正运动学会算错。《Modern Robotics》附录 C 也用这种约定。",
+   "example": "Franka Research 3 官方文档的 DH 表注明「遵循 Craig 约定」，例如关节 1 为 a = 0、d = 0.333 m、α = 0，关节 4 为 a = 0.0825 m、d = 0、α = π/2。把这张表直接套进标准 DH 公式，算出的末端位姿会是错的。",
+   "related": [
+    "DH参数",
+    "齐次变换矩阵",
+    "正运动学",
+    "指数积公式",
+    "运动学标定",
+    "Franka 机械臂（Panda / FR3）"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Denavit–Hartenberg parameters（Modified DH parameters 一节）",
+     "url": "https://en.wikipedia.org/wiki/Denavit%E2%80%93Hartenberg_parameters"
+    },
+    {
+     "title": "Franka Robotics 文档：Robot and interface specifications（DH 参数，遵循 Craig 约定）",
+     "url": "https://frankarobotics.github.io/docs/robot_specifications.html"
+    },
+    {
+     "title": "Lynch & Park, Modern Robotics（2017）附录 C：Denavit–Hartenberg Parameters",
+     "url": "https://hades.mech.northwestern.edu/images/7/7f/MR.pdf"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "多体动力学",
+   "name_en": "Multibody Dynamics",
+   "abbr": "",
+   "aliases": [
+    "多体系统动力学",
+    "Multibody System Dynamics"
+   ],
+   "tier": 3,
+   "one_liner": "研究多个由关节相连的刚体或柔性体在受力下如何运动的学科。",
+   "explanation": "多体动力学研究多个由关节相连、可能大幅平移和转动的刚体或柔性体如何运动，用于航空航天、车辆、生物力学和机器人。空间中每个刚体有 6 个自由度（3 平移、3 转动），关节约束掉其中一部分。建模有两种思路：冗余坐标，每个物体用完整位姿描述，再加约束方程把它们连起来；最小坐标（广义坐标），直接用关节角等独立变量，约束自动满足。机器人动力学是它的一个分支，结果是 M(q)q̈ + C(q,q̇)q̇ + g(q) = τ 这类方程（q 为关节角，M 为质量矩阵，C 为科里奥利与离心项，g 为重力项，τ 为关节力矩）。MuJoCo、Pinocchio 都基于广义坐标计算。",
+   "example": "一台 12 个关节的四足机器人有 13 个刚体（机身加 12 段腿）。用广义坐标只需 6（机身浮动基）+ 12（关节角）= 18 个变量；用冗余坐标则是 13×6 = 78 个变量，再靠 12 个转动副各 5 个、共 60 个约束方程消掉多余部分。",
+   "related": [
+    "刚体动力学",
+    "广义坐标",
+    "递归牛顿-欧拉算法",
+    "铰接体算法",
+    "物理引擎",
+    "运动学树"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Multibody system",
+     "url": "https://en.wikipedia.org/wiki/Multibody_system"
+    },
+    {
+     "title": "Lynch & Park, Modern Robotics（2017）第 8 章：机器人动力学是多体系统动力学的子领域",
+     "url": "https://hades.mech.northwestern.edu/images/7/7f/MR.pdf"
+    },
+    {
+     "title": "MuJoCo 文档 Overview：广义坐标表示",
+     "url": "https://mujoco.readthedocs.io/en/stable/overview.html"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "固有频率",
+   "name_en": "Natural Frequency",
+   "abbr": "",
+   "aliases": [
+    "自然频率",
+    "本征频率",
+    "ωn"
+   ],
+   "tier": 3,
+   "one_liner": "系统不受持续外力时自由振动的频率，外力频率接近它就会共振。",
+   "explanation": "固有频率是振动系统在没有持续外部激励时自行振荡的频率。最简单的质量-弹簧系统里 ω₀ = √(k/m)：k 是弹簧刚度，m 是质量，单位是 rad/s，除以 2π 换成赫兹。刚度越大、质量越小，振得越快。外力频率接近固有频率时振幅会显著放大，这就是共振。它对机器人有两层意义：一是结构，谐波减速器、细长连杆、柔性关节都有弹性，整机存在固有频率，控制增益过高或轨迹加速度突变都可能激起振动；二是控制，关节做 PD 控制时误差满足二阶方程，其固有频率 ωn = √(Kp/M)（Kp 为比例增益，M 为转动惯量），和阻尼比一起决定响应快慢与超调。",
+   "example": "关节惯量 M = 0.1 kg·m²、比例增益 Kp = 10 N·m/rad 时，ωn = √(10/0.1) = 10 rad/s，约 1.6 Hz；把 Kp 调到 40，ωn 翻倍到 20 rad/s，响应更快，但也更容易激起未建模柔性带来的结构振动。",
+   "related": [
+    "阻尼比",
+    "质量-弹簧-阻尼系统",
+    "刚度",
+    "柔性关节",
+    "PD 控制",
+    "控制带宽"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Natural frequency",
+     "url": "https://en.wikipedia.org/wiki/Natural_frequency"
+    },
+    {
+     "title": "Lynch & Park, Modern Robotics（2017）11.2–11.4 节：二阶误差动力学与 PD 增益",
+     "url": "https://hades.mech.northwestern.edu/images/7/7f/MR.pdf"
+    }
+   ],
+   "as_of": ""
+  }
+ ]
+}

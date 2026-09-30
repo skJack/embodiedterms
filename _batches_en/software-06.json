@@ -1,0 +1,113 @@
+{
+  "batch": "software-06",
+  "terms": [
+    {
+      "key": "software-06#0",
+      "name_en": "ros2_control",
+      "aliases": ["ros_control"],
+      "one_liner": "The standard ROS 2 control framework that connects control algorithms to real motor hardware.",
+      "explanation": "ros2_control is the official control framework in the ROS 2 ecosystem, maintained by the ros-controls community as the successor to ROS 1's ros_control. It splits a system into three layers: the hardware interface (written once per robot, unifying a motor's position, velocity, and torque reads and writes into a standard interface), the controller manager (which runs a fixed-frequency control loop), and controllers themselves (such as a joint trajectory controller or a differential-drive controller). The benefit is that control algorithms are decoupled from specific hardware — switching to a new robot only requires rewriting the hardware interface, while controllers can be reused directly. Trajectories planned by MoveIt are typically handed off to it for execution, and the Gazebo simulator has a matching plugin.",
+      "example": "Write a hardware_interface plugin for a custom robot arm, declare its joint interfaces in the URDF, then load a joint_trajectory_controller so trajectories planned by MoveIt can drive the real motors.",
+      "related": ["ROS 2", "Hardware Abstraction Layer (HAL)", "MoveIt Motion Planning Framework", "Unified Robot Description Format (URDF)", "Real-Time Control", "PD Control"]
+    },
+    {
+      "key": "software-06#1",
+      "name_en": "RViz / RViz2",
+      "aliases": ["RViz2", "rviz"],
+      "one_liner": "ROS's built-in 3D visualization tool for viewing a robot model, coordinate frames, and sensor data.",
+      "explanation": "RViz is ROS's official 3D visualization tool; the ROS 2 version is called RViz2. It subscribes to ROS topics and draws the robot model (from a URDF), TF coordinate frames, lidar point clouds, camera images, planned paths, and custom markers all in the same 3D scene. It doesn't do any simulation itself — its only job is to show what the robot currently believes the world looks like — which makes it the standard tool for debugging sensor calibration, coordinate transforms, and navigation planning. Both MoveIt's and Nav2's interactive interfaces are provided as RViz plugins.",
+      "example": "Add a RobotModel and a PointCloud2 display in RViz2 to check whether the depth camera's point cloud lines up with the arm model, as a way of verifying hand-eye calibration.",
+      "related": ["ROS 2", "TF / tf2 Transform Tree", "Unified Robot Description Format (URDF)", "MoveIt Motion Planning Framework", "rqt", "Foxglove Studio"]
+    },
+    {
+      "key": "software-06#2",
+      "name_en": "safetensors",
+      "aliases": [".safetensors"],
+      "one_liner": "A safe, fast-loading file format from Hugging Face for storing model weights.",
+      "explanation": "safetensors is a tensor-storage format developed and open-sourced by Hugging Face. A file consists of a JSON header — recording each tensor's name, shape, data type, and byte offset — followed by contiguous raw data. It was designed to fix a security problem with PyTorch's usual .pt/.bin files, which are based on Python's pickle format and can execute arbitrary code when loaded; safetensors also supports memory-mapping and reading individual tensors on demand, making large models load faster. Most open weights on Hugging Face today, including many VLA model checkpoints, are released as .safetensors, and libraries such as transformers and LeRobot can read them directly.",
+      "example": "A VLA model's download includes a model.safetensors file; calling safetensors.torch.load_file reads out the parameter dictionary directly, with no risk of the file hiding malicious code.",
+      "related": ["Checkpoint", "PyTorch", "Hugging Face", "Hugging Face Transformers", "Open-weight Model"]
+    },
+    {
+      "key": "software-06#3",
+      "name_en": "Secondary Development (custom development on SDK)",
+      "aliases": ["open interface", "SDK development"],
+      "one_liner": "Writing your own programs against a vendor's SDK or interface to customize a robot, without touching its firmware.",
+      "explanation": "“Secondary development” (二次开发) is a common phrase in Chinese engineering circles for building custom functionality on top of a vendor's published SDK, API, or ROS interface, without modifying the vendor's underlying firmware. For embodied-AI research, whether a purchased robot supports secondary development matters a great deal: only if you can read joint states and camera data, and send joint or velocity commands, can you deploy a policy you trained yourself. Because of this, many manufacturers sell a standard version alongside an EDU (research/education) version with a more open low-level interface — the two differ in both how much access they give and in price.",
+      "example": "Buy the EDU edition of the Unitree G1, use the Unitree SDK to read joint angles and send torque commands, and deploy a reinforcement-learning walking policy trained in simulation onto the real robot.",
+      "related": ["Software Development Kit (SDK)", "Unitree SDK2", "EDU Edition (research/education version)", "Driver (device driver)", "ROS 2", "Hardware Abstraction Layer (HAL)"]
+    },
+    {
+      "key": "software-06#4",
+      "name_en": "Secure Shell (SSH)",
+      "aliases": ["ssh", "OpenSSH"],
+      "one_liner": "An encrypted network protocol for logging into and controlling another computer's command line remotely.",
+      "explanation": "SSH (Secure Shell) is an encrypted remote-login protocol, proposed in 1995 by Finland's Tatu Ylönen and later standardized by the IETF; the most widely used implementation is the open-source OpenSSH. It lets you securely log into another machine's terminal from your own and run commands there, as well as transfer files (via scp or rsync) and forward ports. It's used constantly in embodied-AI development: logging into a robot's onboard Jetson to edit code, logging into a cloud GPU server to run training, and remote development in VS Code or Cursor is also built on SSH. A common setup is key-based login combined with aliases in ~/.ssh/config.",
+      "example": "Once the robot and a laptop are on the same Wi-Fi network, running ssh unitree@192.168.123.164 logs into the onboard computer to start the policy-inference program.",
+      "related": ["Ubuntu Linux", "AutoDL (GPU compute rental platform)", "NVIDIA Jetson", "Docker", "Host Computer (Upper Computer)"]
+    },
+    {
+      "key": "software-06#5",
+      "name_en": "Service (ROS)",
+      "aliases": ["ROS service"],
+      "one_liner": "ROS's request-response communication pattern: a client sends a request and the server sends back a result.",
+      "explanation": "A service is one of ROS's three basic communication patterns, alongside topics and actions. One node acts as the server, offering a service; other nodes act as clients, sending a request and waiting for a response, with the request and response formats declared in a .srv file. The difference from a topic is that a topic is a continuous, one-way stream of data suited to sensor readings, while a service is a single call-and-response suited to quick operations like “reset,” “open the gripper,” or “query status.” A task that takes a long time, or needs feedback partway through or the ability to be cancelled, should use an action instead.",
+      "example": "Running ros2 service call /reset_world std_srvs/srv/Empty from the command line resets a simulation; or a /gripper/open service can be written so that calling it once opens the gripper.",
+      "related": ["Topic (ROS)", "Action (ROS)", "Node (ROS)", "Message (msg / srv / action interface)", "Publish-Subscribe", "ROS 2"]
+    },
+    {
+      "key": "software-06#6",
+      "name_en": "TensorBoard",
+      "aliases": ["tensorboard"],
+      "one_liner": "A local, browser-based tool for viewing training curves, images, and other logged data.",
+      "explanation": "TensorBoard is an open-source training-visualization tool released by Google alongside TensorFlow, though PyTorch can also write logs to it directly through torch.utils.tensorboard. During training, a program writes scalars like loss, reward, and learning rate, along with images and histograms, to a log directory; running tensorboard --logdir then shows live curves in a browser and lets you compare multiple runs. It runs entirely locally and needs no account, which is why many robot reinforcement-learning frameworks — such as rsl_rl and Isaac Lab's training scripts — log to it by default; teams that need cloud collaboration and experiment management often switch to Weights & Biases or SwanLab instead.",
+      "example": "While training a quadruped walking policy in Isaac Lab, open TensorBoard to watch whether the average reward and episode-length curves are trending up, as a sign that training is converging.",
+      "related": ["Weights & Biases (W&B)", "SwanLab (Chinese training experiment tracker)", "Loss Function", "rsl_rl", "TensorFlow", "PyTorch"]
+    },
+    {
+      "key": "software-06#7",
+      "name_en": "TF / tf2 Transform Tree",
+      "aliases": ["tf2", "TF tree", "transform tree"],
+      "one_liner": "ROS's tree structure for tracking and querying the live transform between every pair of coordinate frames.",
+      "explanation": "TF is ROS's coordinate-transform library; the current version is tf2, originally developed by Tully Foote and others at Willow Garage. A robot carries many coordinate frames — the map, the base, each link, cameras, grippers — and their relative poses change over time. TF organizes these frames into a tree, where every edge is a timestamped transform, published by the relevant node to the /tf (dynamic) and /tf_static (fixed) topics. Any program can then query the transform between any two frames at a given moment — for example, converting an object's coordinates as seen by a camera into the arm's base frame so it can be grasped.",
+      "example": "Running ros2 run tf2_ros tf2_echo base_link camera_link shows the camera's pose relative to the base; robot_state_publisher automatically publishes the whole arm's TF tree from the URDF and joint angles.",
+      "related": ["Coordinate Transform", "Coordinate Frame", "robot_state_publisher", "REP 105 Coordinate Frame Convention (map / odom / base_link)", "RViz / RViz2", "Homogeneous Transformation Matrix"]
+    },
+    {
+      "key": "software-06#8",
+      "name_en": "Ubuntu Linux",
+      "aliases": [],
+      "one_liner": "The Linux distribution maintained by Canonical that serves as the default operating system for robotics development.",
+      "explanation": "Ubuntu is an open-source Linux distribution maintained by the UK company Canonical, first released in 2004, with a new Long-Term Support (LTS) version every two years in April. It is the de facto standard operating system for robotics development: every ROS 2 distribution is tied to a specific Ubuntu LTS (Humble to 22.04, Jazzy to 24.04), NVIDIA Jetson's JetPack system is also Ubuntu-based, and Isaac Sim and most GPU training servers list it as their primary supported platform. The most common pitfall for newcomers setting up an environment is a mismatch between the installed Ubuntu version and the ROS version they're trying to use.",
+      "example": "To install ROS 2 Humble, first install Ubuntu 22.04; Windows users can practice by first setting up an Ubuntu installation through WSL2.",
+      "related": ["ROS Distribution", "ROS 2", "NVIDIA JetPack SDK", "WSL2 (Windows Subsystem for Linux)", "Docker", "PREEMPT_RT Real-Time Linux Patch"]
+    },
+    {
+      "key": "software-06#9",
+      "name_en": "Unitree SDK2",
+      "aliases": ["unitree_sdk2", "unitree_sdk2_python", "unitree_ros2"],
+      "one_liner": "Unitree's official open-source development kit for reading sensors and commanding joints and motion on its robots.",
+      "explanation": "Unitree SDK2 refers to unitree_sdk2 (C++) and its Python counterpart unitree_sdk2_python, open-sourced by Unitree Robotics on GitHub for the Go2, B2, H1, and G1 platforms. It's built on DDS communication and offers two levels of interface: a high-level motion interface that lets you send velocity and posture commands directly to make the robot walk, and a low-level interface that sends target position, velocity, stiffness, damping, and feedforward torque to individual joints while reading back IMU and joint state — this is the level used when deploying a reinforcement-learning policy. Because ROS 2 is also built on DDS, the companion unitree_ros2 package lets ROS 2 programs communicate with the robot directly.",
+      "example": "Using unitree_sdk2_python to read a G1's joint states in a loop at roughly 500 Hz, then sending the policy network's output joint-angle targets with kp and kd gains attached, completes a sim-to-real deployment.",
+      "related": ["Unitree Robotics", "Software Development Kit (SDK)", "Secondary Development (custom development on SDK)", "Eclipse Cyclone DDS", "ROS 2", "Unitree G1"]
+    },
+    {
+      "key": "software-06#10",
+      "name_en": "Universal Scene Description (OpenUSD)",
+      "aliases": ["OpenUSD", "USD"],
+      "one_liner": "Pixar's open-source 3D scene-description format, now the standard scene format for NVIDIA's simulation platforms.",
+      "explanation": "USD is a 3D scene-description framework originally developed by Pixar Animation Studios for film production and open-sourced in 2016, now referred to as OpenUSD. It stores not just model meshes but also materials, lighting, hierarchy, and physical properties, and supports layering multiple files on top of one another, which makes collaborative editing of a shared scene easier. In 2023, Pixar, Apple, Adobe, Autodesk, NVIDIA, and others formed the Alliance for OpenUSD (AOUSD) to push standardization forward. NVIDIA Omniverse and Isaac Sim both use USD as their core format; a robot's URDF gets converted to USD after import, and simulation assets and digital-twin scenes circulate largely as .usd files.",
+      "example": "Import a robot's URDF into Isaac Sim, save it as robot.usd, then combine it with a kitchen scene's USD file to build a simulation environment.",
+      "related": ["NVIDIA Isaac Sim", "NVIDIA Omniverse", "Unified Robot Description Format (URDF)", "MJCF (MuJoCo XML Format)", "SimReady Assets", "Simulation Assets"]
+    },
+    {
+      "key": "software-06#11",
+      "name_en": "Weights & Biases (W&B)",
+      "aliases": ["wandb"],
+      "one_liner": "A cloud platform for logging and comparing deep-learning training runs online.",
+      "explanation": "Weights & Biases is a machine-learning experiment-management platform built by the company of the same name, acquired by the cloud-compute company CoreWeave in 2025. Adding a few lines — wandb.init and wandb.log — to training code streams loss curves, hyperparameters, GPU utilization, and sample videos to a web dashboard in real time, viewable from a phone or browser, with tools for comparing dozens of runs side by side and sharing them with collaborators. Mainstream open-source embodied-AI frameworks such as LeRobot and openpi have built-in wandb logging. When Chinese network access to it is unreliable, people commonly substitute a local TensorBoard setup or the domestic tool SwanLab.",
+      "example": "Adding --wandb.enable=true when training a diffusion policy with LeRobot makes the loss curve and evaluation-episode videos viewable on the wandb website.",
+      "related": ["TensorBoard", "SwanLab (Chinese training experiment tracker)", "Hyperparameter", "Checkpoint", "LeRobot (Hugging Face)"]
+    }
+  ]
+}

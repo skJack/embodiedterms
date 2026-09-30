@@ -1,0 +1,417 @@
+{
+  "category": "sim",
+  "batch": 15,
+  "terms": [
+    {
+      "name_zh": "Physics-IQ 物理理解基准",
+      "name_en": "Physics-IQ (Do generative video models understand physical principles?)",
+      "abbr": "",
+      "aliases": [
+        "Physics-IQ Benchmark",
+        "Physics-IQ Verified（改进版）"
+      ],
+      "tier": 3,
+      "one_liner": "用真实拍摄的视频检验视频生成模型是否真懂物理规律的基准。",
+      "explanation": "由 INSAIT（保加利亚索非亚大学）与 Google DeepMind 的研究者 2025 年 1 月发布，论文收录于 WACV 2026。视频全部实拍：66 个物理场景，每个用 3 个机位各拍 2 遍，共 396 段 8 秒视频，涵盖固体力学、流体、光学、热学和磁学。测试时只给模型开头（图生视频模型给 1 帧，视频续写模型给 3 秒），让它续写后 5 秒，再用空间 IoU（交并比，看「动的位置」对不对）、时空 IoU、加权空间 IoU 和均方误差与真实视频比对，合成 Physics-IQ 分数；同一场景两次实拍之间的差异记为 100%。原论文中 Sora 只得 10%，结论是「画面逼真不等于懂物理」。它常被用来检验视频模型能否充当世界模型；2026 年又推出改进提示词和指标的 Physics-IQ Verified 版，排行榜持续更新。",
+      "example": "给模型看多米诺骨牌第一块刚被推倒、还没碰到第二块的画面，让它续写后面 5 秒，看骨牌是否按顺序依次倒下，并与实拍视频逐像素比对。",
+      "related": [
+        "直觉物理",
+        "视频生成模型",
+        "世界模型",
+        "VBench 视频生成评测基准",
+        "Sora（视频生成即世界模拟器）",
+        "WorldScore 世界生成评测"
+      ],
+      "sources": [
+        {
+          "title": "Do generative video models understand physical principles? (arXiv 2501.09038)",
+          "url": "https://arxiv.org/abs/2501.09038"
+        },
+        {
+          "title": "Physics-IQ benchmark GitHub（含 Original / Verified 排行榜）",
+          "url": "https://github.com/google-deepmind/physics-IQ-benchmark"
+        },
+        {
+          "title": "Physics-IQ 项目主页",
+          "url": "https://physics-iq.github.io/"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "基于位置的动力学",
+      "name_en": "Position-Based Dynamics",
+      "abbr": "PBD",
+      "aliases": [
+        "XPBD（扩展的基于位置的动力学，Extended PBD）",
+        "位置动力学"
+      ],
+      "tier": 3,
+      "one_liner": "直接修正物体位置来满足约束的仿真方法，稳定快速，常用于布料和软体。",
+      "explanation": "由 Matthias Müller 等人（当时在物理引擎公司 AGEIA）2006 年在 VRIPHYS 研讨会提出。常规仿真先算力、再由加速度积分出速度和位置，时间步一大就容易冲过头甚至发散。PBD 跳过力和速度这一层：先按惯性预测每个粒子的新位置，再逐个检查约束（如两点间距离不变、不能穿进地面），把违反约束的点直接「投影」回合法位置，迭代几轮后用位置变化反推速度。它稳定、可控、碰撞处理简单，最早用于游戏里的实时布料。缺点是材料软硬会随迭代次数和时间步变化；2016 年英伟达的 Macklin 等人提出 XPBD，引入柔度（刚度的倒数）和拉格朗日乘子，使刚度与这两者无关，还能估计约束力。英伟达 Newton 物理引擎内置了 XPBD 求解器，可仿真刚体和软体。",
+      "example": "仿真一块桌布：把布离散成粒子网格，相邻粒子之间加「距离不变」约束，每步把被拉长的边两端往回拉，几轮迭代后布料就会自然垂下而不会被无限拉长。",
+      "related": [
+        "布料仿真",
+        "软体仿真",
+        "约束求解器",
+        "物理引擎",
+        "Newton 物理引擎",
+        "投影高斯-赛德尔求解器"
+      ],
+      "sources": [
+        {
+          "title": "Position Based Dynamics (Müller et al., VRIPHYS 2006)",
+          "url": "https://matthias-research.github.io/pages/publications/posBasedDyn.pdf"
+        },
+        {
+          "title": "XPBD: Position-Based Simulation of Compliant Constrained Dynamics (Macklin et al., MIG 2016)",
+          "url": "https://matthias-research.github.io/pages/publications/XPBD.pdf"
+        },
+        {
+          "title": "Newton Physics 文档：Solvers（SolverXPBD）",
+          "url": "https://newton-physics.github.io/newton/latest/api/newton_solvers.html"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "ProcTHOR",
+      "name_en": "ProcTHOR (Large-Scale Embodied AI Using Procedural Generation)",
+      "abbr": "",
+      "aliases": [
+        "ProcTHOR-10K"
+      ],
+      "tier": 3,
+      "one_liner": "艾伦 AI 研究所推出的、程序化批量生成可交互 3D 房屋的具身仿真框架。",
+      "explanation": "艾伦人工智能研究所（Ai2）2022 年 6 月发布，获 NeurIPS 2022 杰出论文奖，建在 AI2-THOR 仿真器之上。此前具身智能体只能在几十到几百个人工搭建的场景里训练，容易「背地图」、换个房子就不会。ProcTHOR 用程序化生成（按规则加随机采样自动造内容）批量造房屋：先定房间类型和数量，再生成户型、摆放家具和小物件，并随机材质与光照；物体库有 108 类、1633 个可交互物体。官方开放了 1 万套房屋的 ProcTHOR-10K。只用 RGB 图像、在这些房子里预训练的智能体，在物体导航、物体重排、机械臂指点导航等 6 个基准上取得当时最好成绩，部分任务不经微调（零样本）也表现很强。后来的 PoliFormer 等导航模型也在它生成的房屋中用强化学习训练。",
+      "example": "指定「两间卧室加厨房和客厅」，ProcTHOR 自动生成户型、摆好床、沙发和冰箱并随机换地板材质与光照，得到一套可让智能体进去打开冰箱、寻找苹果的新房子。",
+      "related": [
+        "AI2-THOR",
+        "程序化生成",
+        "物体目标导航",
+        "物体重排",
+        "PoliFormer",
+        "Holodeck 语言生成三维环境"
+      ],
+      "sources": [
+        {
+          "title": "ProcTHOR: Large-Scale Embodied AI Using Procedural Generation (arXiv 2206.06994)",
+          "url": "https://arxiv.org/abs/2206.06994"
+        },
+        {
+          "title": "ProcTHOR 项目主页",
+          "url": "https://procthor.allenai.org/"
+        },
+        {
+          "title": "NeurIPS 2022 Awards",
+          "url": "https://neurips.cc/virtual/2022/awards_detail"
+        }
+      ],
+      "as_of": "2024-06"
+    },
+    {
+      "name_zh": "投影高斯-赛德尔求解器",
+      "name_en": "Projected Gauss-Seidel",
+      "abbr": "PGS",
+      "aliases": [
+        "Projective Gauss-Seidel",
+        "TGS（时间高斯-赛德尔，Temporal Gauss-Seidel）"
+      ],
+      "tier": 3,
+      "one_liner": "物理引擎中逐个约束迭代求解接触力、并截断到合法范围的经典方法。",
+      "explanation": "物理引擎每一步都要算出接触点和关节上的力（或冲量），保证物体不穿透、摩擦力不超限，这本质上是带不等式条件的方程组，常写成线性互补问题（LCP）。PGS 是求解它的经典迭代法：一次只处理一个约束，假定其他约束的力不变，算出它该给多大的力，再把结果「投影」（截断）到合法范围，如法向力不能为负、摩擦力不能超出摩擦锥；所有约束轮一遍算一次迭代，迭代越多越准也越慢。ODE 的 quick 求解器、PhysX 和 MuJoCo 都提供 PGS。PhysX 5.1 起加入 TGS（时间高斯-赛德尔），把时间步切成若干子步、每个子步求解一次约束并立即积分，对大质量比和关节驱动更准，官方推荐使用，Isaac Lab 也默认 TGS。仿真配置里的「位置/速度迭代次数」就是这类求解器的迭代轮数。",
+      "example": "在 Isaac Lab 里灵巧手握着的方块在指间抖动或慢慢滑落时，常见的排查方法是确认求解器用的是 TGS，并调高位置迭代次数。",
+      "related": [
+        "约束求解器",
+        "线性互补问题",
+        "求解器迭代次数",
+        "PhysX",
+        "MuJoCo",
+        "接触模型"
+      ],
+      "sources": [
+        {
+          "title": "PhysX 5 文档：Rigid Body Dynamics（Solver Type: PGS / TGS）",
+          "url": "https://nvidia-omniverse.github.io/PhysX/physx/5.4.1/docs/RigidBodyDynamics.html"
+        },
+        {
+          "title": "Gazebo Classic 教程：Physics Parameters（quick 求解器为 PGS）",
+          "url": "https://classic.gazebosim.org/tutorials?tut=physics_params"
+        },
+        {
+          "title": "Isaac Lab API：isaaclab.sim（PhysxCfg.solver_type 默认 TGS）",
+          "url": "https://isaac-sim.github.io/IsaacLab/main/source/api/lab/isaaclab.sim.html"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "ProtoMotions",
+      "name_en": "ProtoMotions (NVIDIA GPU-accelerated humanoid simulation & learning framework)",
+      "abbr": "",
+      "aliases": [
+        "ProtoMotions3"
+      ],
+      "tier": 3,
+      "one_liner": "英伟达开源的、用 GPU 仿真训练数字人和人形机器人运动技能的框架。",
+      "explanation": "英伟达研究院（NVlabs）开源的框架，GitHub 仓库 2024 年 9 月建立，现为第 3 版 ProtoMotions3，采用 Apache-2.0 许可，作者包括 Chen Tessler、Xue Bin Peng 等。它把「在物理仿真里训练会动的人形」这套流程模块化：后端可在 Isaac Gym、Isaac Lab、Newton、MuJoCo 之间切换，支持 SMPL 人体模型、宇树 H1_2 和 G1 等机器人；内置动作重定向（把人体动捕迁移到机器人骨架）、运动跟踪、MaskedMimic 生成式控制、地形行走等任务。README 称在 4 张 A100 上约 12 小时即可学会 AMASS 数据集（40 多小时人体动作）；用约 14.2 万条 BONES-SEED 动作训练的通用跟踪策略可零样本部署到 G1 真机，只需导出一个 ONNX 模型。它还支持一键换仿真器做 sim2sim 测试。",
+      "example": "把 AMASS 里的人类跑跳动作一键重定向到宇树 G1，在 Isaac Gym 里训练跟踪策略，切到 MuJoCo 里验证，再导出 ONNX 模型部署到真机。",
+      "related": [
+        "运动跟踪",
+        "MaskedMimic",
+        "PHC",
+        "AMASS 人体动捕数据集",
+        "动作重定向",
+        "Isaac Lab"
+      ],
+      "sources": [
+        {
+          "title": "NVlabs/ProtoMotions GitHub（ProtoMotions3）",
+          "url": "https://github.com/NVlabs/ProtoMotions"
+        },
+        {
+          "title": "ProtoMotions 文档",
+          "url": "https://protomotions.github.io/"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "RaiSim",
+      "name_en": "RaiSim",
+      "abbr": "",
+      "aliases": [
+        "RaiSim2",
+        "raisimLib"
+      ],
+      "tier": 3,
+      "one_liner": "面向机器人与强化学习的多体物理引擎，以快速精确的接触求解著称。",
+      "explanation": "由 Jemin Hwangbo 等人开发，现由 RaiSim Tech 维护。其核心来自 Hwangbo、Lee、Hutter 2018 年发表于 IEEE RA-L 的「逐接触迭代法」：按接触点逐个迭代、用二分法求接触力，论文称比两种已有方法快约一倍。ETH 苏黎世 2019 年用强化学习训练四足机器人 ANYmal 的论文，其自研仿真器就采用了这一接触求解器。RaiSim 主打在 CPU 上快速精确地仿真刚体和关节体，提供 C++ 接口、Python 绑定 raisimPy 和强化学习示例 raisimGymTorch，后来又加入软体、颗粒介质、腱绳和相机/深度传感器渲染。旧版 raisimLib 仓库已于 2026 年 4 月归档，改为以二进制包发布的 RaiSim2，2026 年 9 月发布 v2.7.0。它不开源：学术许可免费，商业许可每人每年 1500 美元。",
+      "example": "用 raisimGymTorch 在一台电脑上并行跑多个四足机器人环境，训练 ANYmal 在高度图地形上行走的强化学习策略。",
+      "related": [
+        "物理引擎",
+        "MuJoCo",
+        "Isaac Gym",
+        "强化学习运控",
+        "ANYmal 四足",
+        "苏黎世联邦理工机器人系统实验室"
+      ],
+      "sources": [
+        {
+          "title": "RaiSim 文档：License（v2.7.0）",
+          "url": "https://raisim.com/sections/License.html"
+        },
+        {
+          "title": "Per-Contact Iteration Method for Solving Contact Dynamics (IEEE RA-L 2018)",
+          "url": "https://ieeexplore.ieee.org/document/8255551"
+        },
+        {
+          "title": "raisimTech/raisim2Lib GitHub",
+          "url": "https://github.com/raisimTech/raisim2Lib"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "光栅化",
+      "name_en": "Rasterization",
+      "abbr": "",
+      "aliases": [
+        "光栅化渲染",
+        "Rasterisation"
+      ],
+      "tier": 3,
+      "one_liner": "把三维三角形投影到屏幕并逐像素上色的渲染方法，速度快，是实时图形主流。",
+      "explanation": "渲染（把三维场景变成二维图像）的两大基本方法之一，另一种是光线追踪。三维物体通常由大量三角形拼成，光栅化先把每个三角形的顶点投影到屏幕上，找出它覆盖的像素，再按纹理和光照给像素上色，并用深度缓冲（z-buffer，记录每个像素离相机最近的深度）决定谁挡住谁。GPU 为这套流程做了专门的硬件流水线，速度极快，游戏和大多数实时 3D 引擎都以它为主。代价是阴影、反射、折射、间接光照都要靠近似技巧，真实感不如光线追踪。在具身仿真里，MuJoCo 自带的 OpenGL 渲染器、ManiSkill 的非光追着色器都属于光栅化，适合给大量并行环境快速出图训练视觉策略；需要照片级真实感、缩小视觉上的虚实差距时才改用光线追踪。",
+      "example": "训练一个看图抓方块的视觉策略时，用光栅化给几百个并行仿真环境同时渲染腕部相机画面，速度够快，但玻璃杯的折射和金属反光会显得不真实。",
+      "related": [
+        "渲染",
+        "光线追踪",
+        "批量渲染",
+        "照片级真实感渲染",
+        "虚实差距",
+        "传感器仿真"
+      ],
+      "sources": [
+        {
+          "title": "NVIDIA Blog: What's the Difference Between Ray Tracing and Rasterization?",
+          "url": "https://blogs.nvidia.com/blog/whats-difference-between-ray-tracing-rasterization/"
+        },
+        {
+          "title": "Wikipedia: Rasterisation",
+          "url": "https://en.wikipedia.org/wiki/Rasterisation"
+        },
+        {
+          "title": "ManiSkill 文档：Sensors / Cameras（shader packs）",
+          "url": "https://maniskill.readthedocs.io/en/latest/user_guide/concepts/sensors.html"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "光线追踪",
+      "name_en": "Ray Tracing",
+      "abbr": "",
+      "aliases": [
+        "光追",
+        "光线跟踪",
+        "RTX 渲染"
+      ],
+      "tier": 3,
+      "one_liner": "从相机反向追踪光线的反射、折射来生成图像的渲染方法，真实感高但慢。",
+      "explanation": "渲染的两大基本方法之一。它从相机出发为每个像素发射光线，算出光线先碰到哪个物体，再继续追踪反射、折射和射向光源的阴影光线，因此能自然得到镜面反射、透明物体折射和柔和阴影。路径追踪是它的进阶形式，让光线随机多次弹射来近似全局光照，最逼真也最慢。光追计算量大，长期只用于电影等离线渲染；2018 年英伟达推出带 RT 核心（专门加速光线求交的硬件）的 GeForce RTX 显卡后，实时光追才普及，「RTX 渲染」的叫法即由此而来。Isaac Sim 所用的 Omniverse RTX 渲染器基于路径追踪，RTX 激光雷达等传感器仿真也依赖它。在具身智能中，光追用于生成照片级合成数据、仿真透明和反光物体，以缩小视觉上的虚实差距，代价是出图比光栅化慢得多。",
+      "example": "在 Isaac Sim 中用路径追踪模式渲染装了水的玻璃杯，得到接近真实相机的折射和高光图像，用来训练识别透明物体的抓取模型。",
+      "related": [
+        "渲染",
+        "光栅化",
+        "路径追踪",
+        "照片级真实感渲染",
+        "Isaac Sim",
+        "传感器仿真"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Ray tracing (graphics)",
+          "url": "https://en.wikipedia.org/wiki/Ray_tracing_(graphics)"
+        },
+        {
+          "title": "Omniverse 文档：RTX Renderer（Real-Time 2.0 / Interactive Path Tracing）",
+          "url": "https://docs.omniverse.nvidia.com/materials-and-rendering/latest/rtx-renderer.html"
+        },
+        {
+          "title": "NVIDIA Blog: What's the Difference Between Ray Tracing and Rasterization?",
+          "url": "https://blogs.nvidia.com/blog/whats-difference-between-ray-tracing-rasterization/"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "实时因子",
+      "name_en": "Real-Time Factor",
+      "abbr": "RTF",
+      "aliases": [
+        "仿真速度倍率",
+        "实时率"
+      ],
+      "tier": 3,
+      "one_liner": "仿真时间与现实流逝时间之比，衡量仿真比现实跑得快还是慢。",
+      "explanation": "实时因子 = 仿真中推进的时间 ÷ 现实中花掉的时间。RTF=1 表示仿真与现实同速；大于 1 比现实快，RTF=10 即现实 1 秒能仿真 10 秒；小于 1 则比现实慢，常见于场景复杂、传感器多或渲染开销大时。Gazebo 界面底部会实时显示 RTF；在 Gazebo Classic 中，单步时长 max_step_size 乘以每秒更新次数 real_time_update_rate 就是 RTF 的上限，把更新频率设为 0 则尽可能快地跑。它对强化学习很关键：训练要消耗海量交互，RTF 越高，同样时间能收集的经验越多；GPU 并行仿真通常改报所有环境加总的每秒步数（吞吐量）。反过来，软件在环、硬件在环测试要与真实控制器同步，需要把 RTF 锁在 1。注意语音识别里的 RTF 定义正好相反（处理耗时 ÷ 音频时长，越小越快）。",
+      "example": "ETH 2019 年训练 ANYmal 四足运控时，仿真器每秒能推进近 50 万个时间步，论文称约比实时快一千倍（RTF 约 1000），单台电脑十一小时内就能训完。",
+      "related": [
+        "仿真器",
+        "仿真步长",
+        "仿真吞吐量",
+        "GPU 并行仿真",
+        "硬件在环 / 软件在环仿真",
+        "Gazebo"
+      ],
+      "sources": [
+        {
+          "title": "Gazebo Classic 教程：Physics Parameters（real_time_factor）",
+          "url": "https://classic.gazebosim.org/tutorials?tut=physics_params"
+        },
+        {
+          "title": "Gazebo 文档：Understanding the GUI（RTF 显示）",
+          "url": "https://gazebosim.org/docs/latest/gui/"
+        },
+        {
+          "title": "Learning agile and dynamic motor skills for legged robots (arXiv 1901.08652)",
+          "url": "https://arxiv.org/abs/1901.08652"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "RoboCerebra",
+      "name_en": "RoboCerebra (A Large-scale Benchmark for Long-horizon Robotic Manipulation Evaluation)",
+      "abbr": "",
+      "aliases": [],
+      "tier": 3,
+      "one_liner": "评测机器人长程操作中规划、反思与记忆能力的大规模仿真基准。",
+      "explanation": "北京航空航天大学、新加坡国立大学、上海交通大学等的研究者 2025 年 6 月发布，入选 NeurIPS 2025。它关注「System 2」式的慢思考能力：先用 GPT 生成家务类长任务并拆成子任务序列，再由人在仿真中逐步执行，得到 100 个任务变体、1000 条人工轨迹，平均每条约 2972 个仿真步，论文称约为已有长程操作数据集的 6 倍，并附子任务时间段标注。测试任务分六类：理想、随机干扰、观测不一致、记忆探索、记忆执行和混合，场景会在执行中途变化。配套的分层框架用视觉语言模型（VLM）做高层规划并存入记忆，用 OpenVLA 做底层动作执行；论文借此比较 GPT-4o、Qwen2.5-VL 等 VLM 当规划器时在规划、反思（判断子任务是否完成）和记忆三方面的表现。",
+      "example": "指令是「准备一杯饮料再收拾桌面」，高层模型要先拆出拿杯子、倒饮料、放回原处等子步骤；执行途中物体被随机挪动时，还要判断当前子任务是否完成并重新规划。",
+      "related": [
+        "长程任务",
+        "快慢双系统",
+        "具身记忆",
+        "LIBERO",
+        "OpenVLA",
+        "基准测试"
+      ],
+      "sources": [
+        {
+          "title": "RoboCerebra: A Large-scale Benchmark for Long-horizon Robotic Manipulation Evaluation (arXiv 2506.06677)",
+          "url": "https://arxiv.org/abs/2506.06677"
+        }
+      ],
+      "as_of": "2025-10"
+    },
+    {
+      "name_zh": "RoboDojo",
+      "name_en": "RoboDojo (A Unified Sim-and-Real Benchmark for Comprehensive Evaluation of Generalist Robot Manipulation Policies)",
+      "abbr": "",
+      "aliases": [
+        "RoboDojo-RealEval"
+      ],
+      "tier": 3,
+      "one_liner": "统一仿真与真机的通用操作策略评测基准，含 42 个仿真和 18 个真机任务。",
+      "explanation": "香港大学 MMLab 联合伯克利、清华、北大、斯坦福、MIT 等 18 家机构 2026 年 7 月发布并开源，一作为 Tianxing Chen。它针对已有基准任务偏简单、成绩容易刷满又缺真机验证的问题。仿真部分基于 Isaac Sim / Isaac Lab，在 ARX X5 双臂平台上设 42 个任务，覆盖泛化、记忆、精度、长程执行和开放指令五个维度，不同任务可异构并行运行；真机部分在 ARX X5、松灵 Piper 和 Piper X 三种平台上各设 6 个任务，用标准化硬件和远程云端评测系统 RoboDojo-RealEval 保证可复现。各家策略统一经 XPolicyLab 接口接入，首批评测 30 个：仿真最好的 Hy-Embodied-0.5-VLA 平均成功率仅 8.80%，真机最好的 π0.5 为 12.8%，人类专家分别为 76.03% 和 100%。排行榜由非营利组织维护并持续更新。",
+      "example": "把自己训练的 VLA 按 XPolicyLab 接口接入后，一条命令在 Isaac Sim 里跑完 42 个任务，再汇总成与排行榜同格式的成绩表。",
+      "related": [
+        "RoboTwin",
+        "基准测试",
+        "仿真评测",
+        "真机评测",
+        "RoboChallenge",
+        "π0.5"
+      ],
+      "sources": [
+        {
+          "title": "RoboDojo: A Unified Sim-and-Real Benchmark for Comprehensive Evaluation of Generalist Robot Manipulation Policies (arXiv 2607.04434)",
+          "url": "https://arxiv.org/abs/2607.04434"
+        },
+        {
+          "title": "RoboDojo-Benchmark/RoboDojo GitHub",
+          "url": "https://github.com/RoboDojo-Benchmark/RoboDojo"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "光轮 RoboFinals 工业级仿真评测平台",
+      "name_en": "RoboFinals (Lightwheel industrial-grade simulation evaluation platform)",
+      "abbr": "",
+      "aliases": [
+        "RoboFinals",
+        "RoboFinals-100"
+      ],
+      "tier": 3,
+      "one_liner": "光轮智能推出、专门评测 VLA 等机器人基础模型的工业级仿真评测平台。",
+      "explanation": "仿真数据与评测公司光轮智能（Lightwheel）2025 年 12 月 4 日发布，定位是难度足够高的工业级仿真评测平台，专门测前沿 VLA（视觉-语言-动作模型）和机器人基础模型。核心基准 RoboFinals-100 含 100 个任务，覆盖家庭、工厂和零售三类场景，涉及刚体、柜门等铰接物体以及线缆、布料、液体等柔性物体，支持桌面机械臂、移动操作和全身运动操作机器人。它构建在光轮与英伟达共同开发的 Isaac Lab-Arena 评测框架上，物理后端可选 Newton、PhysX、MuJoCo 和 Genesis，以检验策略跨仿真器是否稳健，并用 Real2Sim 校准缩小与真机的差距。官方称阿里通义千问团队参与共建场景和评测标准，傅利叶等团队也在使用。2026 年 8 月，光轮又推出 RoboFinals 中试基地仿真评测基础设施。",
+      "example": "某团队把自家 VLA 接入 RoboFinals，在大量并行仿真环境里批量跑家庭收纳、工厂装配、超市补货等任务，再按场景类别对比成功率、找出薄弱环节。",
+      "related": [
+        "光轮智能",
+        "Isaac Lab-Arena",
+        "仿真评测",
+        "基准测试",
+        "SimReady 资产",
+        "视觉-语言-动作模型"
+      ],
+      "sources": [
+        {
+          "title": "Lightwheel Unveils RoboFinals（光轮官网，2025-12-04）",
+          "url": "https://lightwheel.ai/robofinals"
+        },
+        {
+          "title": "RoboFinals-100: An Industrial Benchmark for Embodied AI（光轮官网）",
+          "url": "https://lightwheel.ai/media/robofinals-industrial-benchmark"
+        },
+        {
+          "title": "新华网：光轮智能发布十万小时全模态人类行为开源数据集（2026-08-21）",
+          "url": "http://www.xinhuanet.com/sci-tech/20260821/57f5b57922604293a05e67b02510c9ec/c.html"
+        }
+      ],
+      "as_of": "2026-08"
+    }
+  ]
+}

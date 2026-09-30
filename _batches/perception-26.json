@@ -1,0 +1,185 @@
+{
+  "category": "perception",
+  "batch": 26,
+  "terms": [
+    {
+      "name_zh": "VINS-Mono / VINS-Fusion",
+      "name_en": "VINS-Mono / VINS-Fusion (Visual-Inertial Navigation System)",
+      "abbr": "",
+      "aliases": ["VINS"],
+      "tier": 3,
+      "one_liner": "港科大开源的视觉惯性定位系统，用相机加IMU实时估计位姿",
+      "explanation": "VINS-Mono 是香港科技大学沈劭劼团队（Aerial Robotics Group）开源的单目视觉惯性状态估计器，论文发表于 IEEE T-RO。它只用一个相机加一个 IMU（惯性测量单元，测加速度和角速度），就能实时算出设备的位置和姿态。做法是用非线性优化把预积分后的 IMU 数据和图像特征点紧耦合求解，并带自动初始化、相机与 IMU 外参在线标定、回环检测和 4 自由度位姿图优化。2019 年发布的 VINS-Fusion 是扩展版，支持单目+IMU、双目、双目+IMU，还演示了和 GPS 融合。两者基于 ROS、以 GPLv3 开源，常被当作无人机和移动机器人定位的基线方案。",
+      "example": "给四足机器狗装一个带 IMU 的双目相机，跑 VINS-Fusion，就能在没有 GPS 的室内实时输出机身轨迹。",
+      "related": ["视觉惯性里程计", "视觉SLAM", "惯性测量单元", "IMU 预积分", "回环检测", "相机-IMU联合标定"],
+      "sources": [
+        {"title": "VINS-Mono: A Robust and Versatile Monocular Visual-Inertial State Estimator (arXiv)", "url": "https://arxiv.org/abs/1708.03852"},
+        {"title": "HKUST-Aerial-Robotics/VINS-Mono (GitHub)", "url": "https://github.com/HKUST-Aerial-Robotics/VINS-Mono"},
+        {"title": "HKUST-Aerial-Robotics/VINS-Fusion (GitHub)", "url": "https://github.com/HKUST-Aerial-Robotics/VINS-Fusion"}
+      ],
+      "as_of": "2019-01"
+    },
+    {
+      "name_zh": "VGGT",
+      "name_en": "VGGT: Visual Geometry Grounded Transformer",
+      "abbr": "VGGT",
+      "aliases": ["VGGT-1B"],
+      "tier": 3,
+      "one_liner": "一次前向就从多张图算出相机参数、深度和点云的三维视觉模型",
+      "explanation": "VGGT 是牛津大学视觉几何组（VGG）和 Meta AI 提出的前馈式三维重建模型，约 10 亿参数，获 CVPR 2025 最佳论文。输入一张、几张到上百张图，它一次前向推理就输出每张图的相机参数、深度图、点图（每个像素对应的 3D 坐标）和 3D 点跟踪，通常不到一秒，不需要再做光束法平差（传统重建里反复优化相机和三维点的步骤）。过去要靠 COLMAP 等多阶段流程完成的重建，被压成一个网络。具身智能里常用它从多视角图像快速拿到场景几何。原始权重仅限非商用，2025 年 7 月另发了可商用权重并开放训练代码。",
+      "example": "用手机围着桌面拍 20 张照片输入 VGGT，约一秒得到每张照片的相机位姿和整张桌面的稠密点云。",
+      "related": ["前馈式三维重建", "DUSt3R", "π³（Pi3）", "运动恢复结构", "点图", "光束法平差"],
+      "sources": [
+        {"title": "VGGT: Visual Geometry Grounded Transformer (arXiv)", "url": "https://arxiv.org/abs/2503.11651"},
+        {"title": "facebookresearch/vggt (GitHub)", "url": "https://github.com/facebookresearch/vggt"}
+      ],
+      "as_of": "2025-07"
+    },
+    {
+      "name_zh": "视觉位置识别",
+      "name_en": "Visual Place Recognition",
+      "abbr": "VPR",
+      "aliases": ["视觉地点识别", "地点识别"],
+      "tier": 3,
+      "one_liner": "看一张图，判断这是哪个地方、之前是否来过",
+      "explanation": "视觉位置识别（VPR）指给定一张当前拍到的图像，从事先存好的、带位置信息的图像库里找出它拍的是哪个地方，本质上是一个图像检索问题。难点在于同一地点会因光照、季节、昼夜和拍摄视角不同而看起来差别很大。常见做法是把图像的局部特征聚合成一个全局描述向量再比对相似度，CVPR 2016 的 NetVLAD 用可训练的聚合层和谷歌街景不同年份的图像做弱监督训练，是常用基线。在机器人里，VPR 主要服务于 SLAM 的回环检测和跟丢后的重定位（重新确定自己在地图里的位置），也用于基于拓扑地图的导航。",
+      "example": "扫地机器人被人抱到另一个房间放下后，拿当前画面和建图时存下的关键帧逐一比对，找到最像的那一帧，从而知道自己在哪个房间。",
+      "related": ["回环检测", "重定位", "视觉SLAM", "拓扑地图", "特征匹配", "导航"],
+      "sources": [
+        {"title": "Where is your place, Visual Place Recognition? (Garg et al., IJCAI 2021)", "url": "https://arxiv.org/abs/2103.06443"},
+        {"title": "NetVLAD: CNN architecture for weakly supervised place recognition (CVPR 2016)", "url": "https://arxiv.org/abs/1511.07247"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "视觉提示",
+      "name_en": "Visual Prompting (e.g. Set-of-Mark)",
+      "abbr": "",
+      "aliases": ["Set-of-Mark", "SoM", "标记式视觉提示"],
+      "tier": 3,
+      "one_liner": "在图上画框、标编号，让多模态大模型按标记回答",
+      "explanation": "视觉提示指不改模型权重，直接在输入图像上叠加框、点、箭头、编号等标记，引导多模态大模型关注并指代特定区域。代表方法是微软团队 2023 年提出的 Set-of-Mark（SoM）：先用 SAM、SEEM 等分割模型把图切成若干区域，在每块上标数字、掩码或框，再让 GPT-4V 用编号作答；论文报告零样本下在 RefCOCOg 指代任务上超过全量微调的专用模型。它解决的是大模型能描述画面、却难以用文字精确说出像素位置的问题。机器人方向的 MOKA、PIVOT 等工作用这类标记让视觉语言模型挑出抓取点或移动方向，再交给底层控制执行。",
+      "example": "桌面照片上给每个物体标 1 到 8 号，问模型「哪个物体能用来舀汤」，模型回答「5 号」，程序再把 5 号区域换算成三维坐标交给机械臂。",
+      "related": ["视觉提示（Set-of-Mark 标记提示）", "MOKA（标记式视觉提示操作）", "PIVOT（迭代视觉提示）", "视觉定位（Grounding）", "分割一切模型", "视觉语言模型"],
+      "sources": [
+        {"title": "Set-of-Mark Prompting Unleashes Extraordinary Visual Grounding in GPT-4V (arXiv)", "url": "https://arxiv.org/abs/2310.11441"},
+        {"title": "MOKA: Open-World Robotic Manipulation through Mark-Based Visual Prompting (arXiv)", "url": "https://arxiv.org/abs/2403.03174"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "视觉惯性里程计",
+      "name_en": "Visual-Inertial Odometry",
+      "abbr": "VIO",
+      "aliases": ["VINS", "视觉惯性导航"],
+      "tier": 3,
+      "one_liner": "融合相机和IMU，连续推算设备自身的运动轨迹",
+      "explanation": "视觉惯性里程计（VIO）是把相机图像和 IMU（惯性测量单元）读数融合起来，连续估计设备自身位置和姿态的方法；只用相机的叫视觉里程计（VO）。两种传感器互补：IMU 频率高、剧烈运动时也能测，但积分后很快漂移；相机能约束漂移，却怕运动模糊和缺少纹理，单目相机还不知道真实尺度，IMU 测到的重力和加速度能把尺度补回来。实现上分滤波法和优化法（如 VINS-Mono），也分松耦合和紧耦合。VIO 只做局部估计，跑久了仍会累积误差，加上回环检测和全局优化就成了视觉惯性 SLAM。它常用于无人机、AR 设备和腿足机器人，在没有 GPS 的环境中定位。",
+      "example": "无人机在室内仓库飞行，收不到 GPS，靠机载相机和 IMU 跑 VIO 实时知道自己飞到了哪里。",
+      "related": ["视觉里程计", "惯性测量单元", "VINS-Mono / VINS-Fusion", "IMU 预积分", "紧耦合 / 松耦合融合", "视觉SLAM"],
+      "sources": [
+        {"title": "Visual odometry (Wikipedia)", "url": "https://en.wikipedia.org/wiki/Visual_odometry"},
+        {"title": "VINS-Mono: A Robust and Versatile Monocular Visual-Inertial State Estimator (arXiv)", "url": "https://arxiv.org/abs/1708.03852"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "视触觉融合",
+      "name_en": "Visuo-Tactile Fusion",
+      "abbr": "",
+      "aliases": ["视觉-触觉融合", "Visual-Tactile Fusion"],
+      "tier": 3,
+      "one_liner": "把相机看到的和触觉传感器摸到的信息合起来使用",
+      "explanation": "视触觉融合指在感知或策略里同时用视觉和触觉信号，并把两者合成一个统一表示。视觉擅长看全局、找目标，但手指一碰到物体常被遮挡，也看不出力的大小和是否打滑；触觉传感器正好补上接触位置、压力分布和滑移信息。常见做法有：两路分别编码后拼接特征、用注意力做跨模态融合，或把触觉读数投到三维点云里和视觉点云合并。斯坦福团队 ICRA 2019 用自监督学习融合视觉与力觉完成轴孔插入；CoRL 2024 的 3D-ViTac 把柔性触觉阵列并入点云、配合扩散策略处理易碎物体，明显好于只用视觉。注意别和「视触觉传感器」混淆，后者是一种用摄像头拍弹性膜的触觉传感器。",
+      "example": "机械手抓鸡蛋时，相机负责找到鸡蛋并引导手靠近，接触后由触觉阵列反馈压力分布，策略据此把握力控制在不捏碎的范围内。",
+      "related": ["多模态融合", "触觉传感器", "视触觉传感器", "3D-ViTac", "接触丰富操作", "视觉-触觉-语言-动作模型"],
+      "sources": [
+        {"title": "Making Sense of Vision and Touch: Self-Supervised Learning of Multimodal Representations for Contact-Rich Tasks (arXiv)", "url": "https://arxiv.org/abs/1810.10191"},
+        {"title": "3D-ViTac: Learning Fine-Grained Manipulation with Visuo-Tactile Sensing (arXiv)", "url": "https://arxiv.org/abs/2410.24091"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "VSI-Bench 空间智能基准",
+      "name_en": "VSI-Bench (Thinking in Space: Visual-Spatial Intelligence Benchmark)",
+      "abbr": "VSI-Bench",
+      "aliases": ["VSI-Bench 视觉空间智能基准", "Thinking in Space"],
+      "tier": 3,
+      "one_liner": "用室内视频考多模态大模型空间理解能力的评测基准",
+      "explanation": "VSI-Bench 出自论文 Thinking in Space，由纽约大学谢赛宁团队联合耶鲁、斯坦福（含李飞飞）于 2024 年 12 月发布，入选 CVPR 2025 口头报告。它从 ScanNet、ScanNet++、ARKitScenes 三个室内扫描数据集选了 288 段第一人称视频，构造 5000 多道问答，覆盖 8 类任务：物体计数、相对距离、相对方向、物体尺寸、绝对距离、房间大小、出现顺序和路线规划。作者测了 15 个支持视频输入的多模态大模型，普遍明显低于人类（人类平均约 79%），主要卡在空间推理；思维链这类语言提示反而会掉分，而先让模型画出「认知地图」能改善距离判断。",
+      "example": "给模型看一段绕客厅拍的视频，问「沙发和电视相距几米」「站在冰箱前面向水槽，炉灶在你左边还是右边」，按数值误差或选择题正确率打分。",
+      "related": ["空间智能", "空间推理", "多模态大语言模型", "基准测试", "ERQA 具身推理问答基准", "3D视觉"],
+      "sources": [
+        {"title": "Thinking in Space: How Multimodal Large Language Models See, Remember, and Recall Spaces (arXiv)", "url": "https://arxiv.org/abs/2412.14171"},
+        {"title": "Thinking in Space 项目主页", "url": "https://vision-x-nyu.github.io/thinking-in-space.github.io/"},
+        {"title": "vision-x-nyu/thinking-in-space (GitHub)", "url": "https://github.com/vision-x-nyu/thinking-in-space"}
+      ],
+      "as_of": "2025-06"
+    },
+    {
+      "name_zh": "WiLoR",
+      "name_en": "WiLoR: End-to-end 3D Hand Localization and Reconstruction in-the-wild",
+      "abbr": "",
+      "aliases": [],
+      "tier": 3,
+      "one_liner": "从图像中快速找出多只手，并重建成三维手部网格",
+      "explanation": "WiLoR 是帝国理工学院与上海交通大学团队提出的三维手部重建方法，发表于 CVPR 2025。它分两步：先用实时的全卷积网络在图里检测出所有手，再用基于 Vision Transformer 的重建网络，对每只手由粗到精地回归 MANO 参数（一种用少量参数描述手形和手势的参数化手模型）和相机参数，得到三维手部网格。作者还整理了超过 200 万张野外手部图像的数据集 WHIM。不加任何时序模块，它就能从单目视频逐帧得到较平滑的手部跟踪；代码、模型和数据均已开源。在具身智能里，可用它从人类视频中提取手的三维姿态，再重定向到灵巧手上作为模仿学习数据。",
+      "example": "把一段人类叠衣服的第一人称视频逐帧送入 WiLoR，得到每帧双手的 MANO 姿态和指尖三维位置，再重定向成灵巧手的关节目标。",
+      "related": ["MANO 手部模型", "手部姿态估计", "HaMeR", "动作重定向", "人类视频数据", "第一人称视频"],
+      "sources": [
+        {"title": "WiLoR: End-to-end 3D Hand Localization and Reconstruction in-the-wild (arXiv)", "url": "https://arxiv.org/abs/2409.12259"},
+        {"title": "WiLoR 项目主页", "url": "https://rolpotamias.github.io/WiLoR/"}
+      ],
+      "as_of": "2025-03"
+    },
+    {
+      "name_zh": "YOLO-World",
+      "name_en": "YOLO-World: Real-Time Open-Vocabulary Object Detection",
+      "abbr": "",
+      "aliases": [],
+      "tier": 3,
+      "one_liner": "输入文字类别名就能实时检测对应物体的开放词汇检测器",
+      "explanation": "YOLO-World 是腾讯 AI Lab、ARC Lab 与华中科技大学 2024 年提出的开放词汇目标检测器，发表于 CVPR 2024。传统 YOLO 只能检测训练时定死的类别；YOLO-World 给 YOLO 接上文本编码器，用 RepVL-PAN 网络让图像特征和文字特征互相交互，再用区域-文本对比损失做大规模预训练，用户输入任意类别名就能检测。它采用「先提示后检测」：把用户词表预先编码并重参数化进网络，推理时不再跑文本编码器，所以速度接近普通 YOLO。论文报告在 LVIS 零样本上 35.4 AP、V100 上 52 FPS。机器人里常用它按语言指令实时找目标，再交给抓取或导航模块。",
+      "example": "指令是「把红色马克杯拿过来」，程序把 red mug 设为 YOLO-World 的词表，从腕部相机画面实时框出马克杯，再交给抓取位姿检测模块。",
+      "related": ["开放词汇检测", "YOLO", "Grounding DINO", "OWL-ViT / OWLv2", "目标检测", "CLIP"],
+      "sources": [
+        {"title": "YOLO-World: Real-Time Open-Vocabulary Object Detection (arXiv)", "url": "https://arxiv.org/abs/2401.17270"},
+        {"title": "AILab-CVC/YOLO-World (GitHub)", "url": "https://github.com/AILab-CVC/YOLO-World"}
+      ],
+      "as_of": "2025-02"
+    },
+    {
+      "name_zh": "π³（Pi3）",
+      "name_en": "π³: Permutation-Equivariant Visual Geometry Learning",
+      "abbr": "",
+      "aliases": ["Pi3", "Pi3X"],
+      "tier": 3,
+      "one_liner": "不设参考视角、不受输入顺序影响的前馈式三维重建模型",
+      "explanation": "π³ 是上海人工智能实验室、浙江大学等机构 2025 年 7 月发布的前馈式三维重建模型，仓库标注为 ICLR 2026。此前的 DUSt3R、VGGT 等方法要指定一张图作参考视角，所有结果都放在它的坐标系下，参考图选得不好重建就会变差。π³ 改用完全置换等变的结构（打乱输入顺序，输出只跟着换顺序、内容不变），不需要参考帧，为每张图直接预测仿射不变的相机位姿和尺度不变的局部点图。论文报告在相机位姿估计、单目与视频深度估计、稠密点图重建上达到当时最好水平。2025 年 12 月发布升级版 Pi3X，可输入已知位姿、内参或深度，并给出近似真实尺度。代码为 BSD 协议，权重仅限非商用。",
+      "example": "把同一组 10 张室内照片按不同顺序输入 π³，得到的点云和相对相机位姿基本一致；以首帧为参考的方法，结果会随首帧的选择而变化。",
+      "related": ["VGGT", "DUSt3R", "前馈式三维重建", "点图", "相机外参", "上海人工智能实验室"],
+      "sources": [
+        {"title": "π³: Permutation-Equivariant Visual Geometry Learning (arXiv)", "url": "https://arxiv.org/abs/2507.13347"},
+        {"title": "yyfz/Pi3 (GitHub)", "url": "https://github.com/yyfz/Pi3"}
+      ],
+      "as_of": "2025-12"
+    },
+    {
+      "name_zh": "透明/反光物体感知（数据集基准）",
+      "name_en": "Transparent & Reflective Object Perception Datasets and Benchmarks",
+      "abbr": "",
+      "aliases": ["透明物体深度补全数据集", "ClearGrasp", "TransCG"],
+      "tier": 3,
+      "one_liner": "专为玻璃、金属等深度相机难测物体收集的深度与分割数据集",
+      "explanation": "这类数据集专门针对玻璃杯、塑料瓶、不锈钢餐具等透明或高反光物体。普通深度相机依赖光线正常反射回来，遇到它们会出现深度空洞，或把背后的桌面当成物体表面，导致抓取失败。代表工作有 2019 年发布的 ClearGrasp：提供 5 万多张合成 RGB-D 图和 286 张带真值的真实图，并通过预测表面法向、透明区域掩码和遮挡边界来修复深度；以及上海交大卢策吾团队的 TransCG（RA-L 2022）：用两台 RealSense 相机在 130 个场景采了 57715 张真实 RGB-D 图，覆盖 60 个透明物体，附真值深度、法向和掩码。它们主要用于训练和评测深度补全网络，补好的深度再交给抓取算法。",
+      "example": "腕部 RealSense 拍到的厨房画面里，玻璃杯区域深度几乎全是空洞；用在 TransCG 上训练的深度补全网络补齐后，抓取检测才能给出可用的抓取位姿。",
+      "related": ["透明/反光物体感知", "深度补全", "深度空洞", "深度相机", "抓取位姿检测", "RealSense 深度相机（D435i / D405）"],
+      "sources": [
+        {"title": "ClearGrasp: 3D Shape Estimation of Transparent Objects for Manipulation (arXiv)", "url": "https://arxiv.org/abs/1910.02550"},
+        {"title": "TransCG: A Large-Scale Real-World Dataset for Transparent Object Depth Completion and a Grasping Baseline (arXiv)", "url": "https://arxiv.org/abs/2202.08471"},
+        {"title": "TransCG 数据集主页 (GraspNet)", "url": "https://graspnet.net/transcg"}
+      ],
+      "as_of": "2022"
+    }
+  ]
+}

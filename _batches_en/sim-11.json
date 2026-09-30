@@ -1,0 +1,113 @@
+{
+  "batch": "sim-11",
+  "terms": [
+    {
+      "key": "sim-11#0",
+      "name_en": "EWMBench",
+      "aliases": ["Evaluating Scene, Motion, and Semantic Quality in Embodied World Models"],
+      "one_liner": "A benchmark from AgiBot and others that specifically evaluates whether robot-manipulation video generation models get the details right.",
+      "explanation": "EWMBench is an evaluation benchmark released in May 2025 by AgiBot together with Shanghai Jiao Tong University, CUHK MMLab, and the Harbin Institute of Technology. It targets embodied world models: models that generate a video of robot manipulation given a starting frame and a task instruction. The authors argue that metrics like FVD (Fréchet Video Distance) and VBench mainly assess visual quality and can't tell whether the robot arm's motion is actually plausible, so they score along three dimensions instead: scene consistency (comparing inter-frame features with a DINOv2 model fine-tuned on embodied data), motion correctness (Hausdorff distance and normalized dynamic time warping between the end-effector trajectory and ground truth, plus velocity and acceleration distributions), and semantic alignment (having a multimodal large model write a description of the generated video, checking for logical errors, and comparing it against ground truth). Test data is drawn from 10 tasks in the AgiBot World dataset, and both the dataset and evaluation code are open-sourced on GitHub.",
+      "example": "The paper used EWMBench to compare 7 models — OpenSora 2.0, LTX, COSMOS-7B, Kling-1.6, Hailuo, EnerVerse, and others — concluding that current video generation models still have clear shortcomings when applied to embodied tasks.",
+      "related": ["World Model", "Video Generation Model", "Fréchet Video Distance", "VBench", "WorldArena", "AgiBot World Dataset"]
+    },
+    {
+      "key": "sim-11#1",
+      "name_en": "Factory / IndustReal",
+      "aliases": ["Fast Contact for Robotic Assembly", "IndustRealKit", "IndustRealLib"],
+      "one_liner": "NVIDIA's contact-rich assembly simulation and transfer pipeline: simulate tasks like nut-threading fast, then transfer the policy to a real robot.",
+      "explanation": "Factory is a contact-rich simulation method and learning toolkit NVIDIA published at RSS 2022: it uses a signed distance field (SDF, which records how far every point is from an object's surface) for collision detection, combined with contact-point reduction and a Gauss-Seidel solver, to simulate 1,000 nut-and-bolt assemblies in real time on a single GPU, and ships 60 part models, 3 assembly environments, and 7 controllers, integrated into both PhysX and Isaac Gym. IndustReal (RSS 2023) builds on this, training reinforcement-learning policies for peg and gear assembly with techniques such as an SDF-based reward, a sampling-based curriculum, and a policy-level action integrator, reaching 83–99% success over 600 real-robot trials, and open-sourcing a 3D-printable parts kit along with deployment code. Together they show that high-precision assembly can also follow the “train in simulation, transfer to the real robot” path.",
+      "example": "The Isaac-Factory-PegInsert-Direct-v0 (peg insertion), GearMesh (gear meshing), and NutThread (nut threading) environments in Isaac Lab all come from Factory and can be trained directly with PPO.",
+      "related": ["Contact-rich Manipulation", "Peg-in-Hole Assembly", "Sim-to-Real Transfer", "Isaac Lab", "PhysX", "Signed Distance Field"]
+    },
+    {
+      "key": "sim-11#2",
+      "name_en": "Finite Element Method",
+      "aliases": ["FEM", "Finite Element Analysis", "FEA"],
+      "one_liner": "A numerical method that cuts an object into many small elements, solves each approximately, and assembles them into the whole.",
+      "explanation": "The finite element method is a general numerical technique for solving partial differential equations: a continuous object or region is divided into a large number of simple small pieces (elements, commonly triangles or tetrahedra), each approximated with a simple function, then assembled into an overall system of equations to solve. It originated in structural-mechanics research in the 1940s–50s, with foundational work by Courant and others, and later became the standard tool for engineering analysis of structural strength, heat transfer, fluids, and electromagnetics. In embodied AI, FEM is mainly used for soft-body simulation: rigid-body simulation treats an object as one undeformable whole, but tasks like grasping a sponge, squeezing a soft package, or designing a soft gripper require computing how the object deforms and how much internal force it experiences, which needs FEM. The cost is heavy computation — a finer mesh is more accurate but also slower, forcing a trade-off between accuracy and speed.",
+      "example": "PhysX 5 (the physics backend behind Isaac Sim) simulates soft bodies with FEM using two tetrahedral meshes: a coarser one for computing deformation and a surface-fitted one for collision, and it only runs on the GPU; Genesis also has a built-in FEM solver.",
+      "related": ["Soft-Body Simulation", "Material Point Method", "Position-Based Dynamics", "Deformable Object Manipulation", "Physics Engine", "Genesis"]
+    },
+    {
+      "key": "sim-11#3",
+      "name_en": "Fluid Simulation",
+      "aliases": ["Liquid Simulation"],
+      "one_liner": "Numerically simulating how fluids like water or smoke flow and experience force inside a computer.",
+      "explanation": "Fluid simulation means numerically approximating the equations that describe fluid motion (usually the Navier-Stokes equations) to compute how a liquid's or gas's velocity and pressure change over time. The branch chasing scientific precision is called computational fluid dynamics (CFD), used in engineering design for aircraft and piping; graphics and robot simulation instead prioritize speed and visual plausibility. Common approaches fall into three categories: grid-based methods (Eulerian, recording flow velocity on a fixed grid), particle-based methods (Lagrangian, such as smoothed-particle hydrodynamics, or SPH, which treats a fluid as a large swarm of particles), and hybrids of the two such as FLIP and the material point method. In embodied AI, tasks like pouring water, carrying a bowl of soup, or cleaning up a spill all need it; because of the large number of particles involved and the need to couple with the robot arm and container, the computational cost is far higher than rigid-body simulation, so a trade-off between accuracy and speed is usually necessary.",
+      "example": "The SoftGym benchmark's PourWater task (pouring all the water into a target cup) and TransportWater task (carrying a cup of water to a target location without spilling); Genesis simulates liquids with an SPH solver.",
+      "related": ["Smoothed-Particle Hydrodynamics", "Material Point Method", "Position-Based Dynamics", "Soft-Body Simulation", "SoftGym", "Genesis"]
+    },
+    {
+      "key": "sim-11#4",
+      "name_en": "Franka Kitchen",
+      "aliases": ["FrankaKitchen", "D4RL Kitchen"],
+      "one_liner": "A MuJoCo kitchen scene where a Franka arm completes sub-tasks in sequence, such as opening a microwave and moving a kettle.",
+      "explanation": "Franka Kitchen comes from the 2019 CoRL paper Relay Policy Learning (Gupta, Levine, Hausman, and colleagues), which built a kitchen in MuJoCo containing a 9-degree-of-freedom Franka arm (7 arm joints plus 2 fingers) that can operate a microwave door, a kettle, a light switch, a sliding cabinet door, a hinged cabinet door, and stove knobs. Each episode has to complete several specified sub-tasks, earning 1 point per completion, making it a sparse-reward, long-horizon, multi-task setting. It was later incorporated into the D4RL offline reinforcement-learning benchmark, providing complete, partial, and mixed demonstration data, and is now maintained by the Farama Foundation's Gymnasium-Robotics; it's commonly used to test whether offline reinforcement learning, imitation learning, and hierarchical policies can chain multiple skills together.",
+      "example": "In D4RL's kitchen-complete data, every demonstration completes the same 4 sub-tasks in order — opening the microwave, moving the kettle, flipping the light switch, and pushing open the sliding cabinet door; the mixed data instead completes these 4 sub-tasks out of order and incompletely, testing whether an algorithm can stitch fragments together.",
+      "related": ["D4RL", "MuJoCo", "Long-Horizon Task", "Offline Reinforcement Learning", "Sparse Reward", "Franka Arm (Panda / FR3)"]
+    },
+    {
+      "key": "sim-11#5",
+      "name_en": "Fréchet Video Distance",
+      "aliases": ["FVD"],
+      "one_liner": "A metric for how close a batch of generated videos is to real videos overall; lower is better.",
+      "explanation": "FVD was proposed in late 2018 by researchers at Johannes Kepler University, IDSIA, and Google Brain, as the video counterpart to the image metric FID (Fréchet Inception Distance). It works by feeding both real and generated videos through an I3D network (a 3D convolutional network that captures both spatial appearance and motion over time) pretrained on the Kinetics action-recognition dataset to extract features, fitting each set to a multivariate Gaussian distribution, and computing the Fréchet distance between the two distributions. A lower value means the generated videos are closer to the real ones in both image quality and temporal coherence; the authors' human evaluation showed it correlates reasonably well with subjective human judgment. It's one of the most commonly used metrics in video generation and world model papers, but because it compares overall distributions, it doesn't check whether the physics or robot actions in any individual video are correct, which is why embodied settings often pair it with dedicated benchmarks such as EWMBench.",
+      "example": "To evaluate a robot video world model, a batch of real manipulation videos and videos the model generates from the same starting frames are both run through I3D to extract features; a smaller resulting FVD means the generated videos look more like real ones overall.",
+      "related": ["Fréchet Inception Distance", "Video Generation Model", "World Model", "EWMBench", "VBench", "PSNR / SSIM / LPIPS Image Similarity Metrics"]
+    },
+    {
+      "key": "sim-11#6",
+      "name_en": "FurnitureBench",
+      "aliases": ["Reproducible Real-World Benchmark for Long-Horizon Complex Manipulation", "FurnitureSim"],
+      "one_liner": "A reproducible real-world furniture-assembly benchmark from KAIST and others, testing long-horizon, precise robot manipulation.",
+      "explanation": "FurnitureBench was published at RSS 2023 by KAIST's CLVR Lab in Korea and UC Berkeley, as a reproducible real-world furniture-assembly benchmark. It uses a Franka Panda arm and Intel RealSense cameras, with the task of assembling 8 kinds of furniture — a lamp, a square table, a desk, a drawer, a cabinet, a round table, a stool, and a chair — requiring multi-step coordination of grasping, insertion, and tightening, making it a long-horizon, contact-rich manipulation task. To let different labs set up a consistent environment, the parts are 3D-printed, the hardware uses common off-the-shelf products, and detailed build instructions are included; the authors also provide about 219.6 hours and 5,100 teleoperated demonstrations, plus FurnitureSim, a simulated version built on Isaac Gym and Factory. Evaluation of offline reinforcement-learning and imitation-learning algorithms shows there's still a lot of room for improvement on tasks like these.",
+      "example": "Screwing one table leg into a tabletop requires roughly 540 degrees of rotation; limited by wrist rotation range, the robot has to perform at least 5 “rotate 90 degrees, release, and re-grasp” cycles, which is exactly what makes this benchmark hard.",
+      "related": ["Assembly", "Long-Horizon Task", "Imitation Learning", "Offline Reinforcement Learning", "Factory / IndustReal", "Isaac Gym"]
+    },
+    {
+      "key": "sim-11#7",
+      "name_en": "Game Engine",
+      "aliases": ["Unity", "Unreal Engine"],
+      "one_liner": "Software framework for building video games, combining rendering, physics, and animation, and often repurposed for simulation.",
+      "explanation": "A game engine is a software framework built for developing video games, typically bundling modules for 3D rendering, a physics engine, animation, audio, scripting, and scene management; leading commercial products are Unity and Unreal Engine, with Godot as an open-source option. Because they can render realistic images in real time on consumer graphics cards and make scene editing easy, they're also used for architectural visualization, training simulations, and research. Many embodied-AI simulation platforms are built directly on game engines, gaining realistic visuals and a rich ecosystem of assets and tools; the downside is that game physics is tuned to look plausible rather than to be precise, commonly connecting joints with Cartesian coordinates plus numerical constraints, which can let joint constraints break down in complex structures. That's why fine-grained manipulation and motion-control research more often uses robotics-focused simulators such as MuJoCo and Isaac Sim.",
+      "example": "The self-driving simulator CARLA is built on Unreal Engine (upgraded to UE 5.5 starting with version 0.10.0), while the household embodied environment AI2-THOR is built on Unity.",
+      "related": ["Simulator", "Physics Engine", "Rendering", "Photorealistic Rendering", "CARLA", "AI2-THOR"]
+    },
+    {
+      "key": "sim-11#8",
+      "name_en": "GemBench",
+      "aliases": ["GEMBench"],
+      "one_liner": "An RLBench-based simulation benchmark that tests a language-conditioned manipulation policy's generalization across four difficulty levels.",
+      "explanation": "GemBench was proposed by Ricardo Garcia, Shizhe Chen, and Cordelia Schmid at Inria and ENS Paris, published at ICRA 2025. Built on the RLBench simulator, it defines 7 action primitives — press, grasp, push, turn, close, open, and place/stack — trains on 16 tasks (31 variants), and tests on 44 tasks (92 variants), with generalization difficulty split into four levels: new object placements, new rigid objects, new articulated objects, and new long-horizon tasks. The same paper also proposes 3D-LOTUS (a point-cloud-based language-conditioned policy) and 3D-LOTUS++ (which adds a large language model for task planning and a vision-language model for object localization). Results show that pure imitation-learning policies score near-perfectly on familiar tasks but drop off sharply when faced with unlearned combinations of skills.",
+      "example": "At level 1 (only object placement changes), 3D-LOTUS scores 94.3% success; at level 4, which requires combining learned actions into new long-horizon tasks, it scores only 0.3%, while 3D-LOTUS++ with added LLM planning reaches 17.4%.",
+      "related": ["RLBench", "Generalization", "Compositional Generalization", "Long-Horizon Task", "Language-Conditioned Policy", "Benchmark"]
+    },
+    {
+      "key": "sim-11#9",
+      "name_en": "Generalized (Reduced) Coordinates vs. Cartesian (Maximal) Coordinates",
+      "aliases": ["Reduced-coordinate Articulation", "Maximal Coordinates", "Generalized-coordinate Simulation"],
+      "one_liner": "Two ways a physics engine can represent a multi-link robot: by joint angles alone, or as separate rigid bodies tied together by constraints.",
+      "explanation": "There are two modeling approaches for simulating a robot made of multiple links and joints. Generalized (or reduced) coordinates describe the state using only each joint's angle or displacement; joint constraints hold automatically and can never be pulled apart, and the number of variables equals the number of degrees of freedom, which suits arms and legged robots well — the “articulation” feature in both MuJoCo and PhysX works this way. The cost is a more complex algorithm, which usually requires the link structure to be a tree, with closed loops needing extra constraints. Cartesian (or maximal) coordinates instead give every rigid body its full 6 degrees of freedom and connect them with constraints; this is simpler to implement and is what game physics engines commonly do, but because the constraints are enforced numerically, joints can drift or jitter when the structure is complex or link masses vary wildly. Knowing this distinction matters when choosing a simulator or debugging simulation instability.",
+      "example": "The same robot arm can be built in PhysX either as rigid bodies plus joint constraints (maximal coordinates) or as an articulation (reduced coordinates); the official documentation notes that the latter has joint error at zero by design and can tolerate a much larger ratio between link masses, which is why it's recommended for robots.",
+      "related": ["Generalized Coordinates", "Articulated-Body Simulation", "Multibody Dynamics", "Constraint Solver", "MuJoCo", "PhysX"]
+    },
+    {
+      "key": "sim-11#10",
+      "name_en": "GenManip",
+      "aliases": ["LLM-driven Simulation for Generalizable Instruction-Following Manipulation", "GenManip-Bench", "GenManip Suite"],
+      "one_liner": "A manipulation simulation and evaluation platform from Shanghai AI Lab, built on Isaac Sim, that uses a large model to auto-generate tasks.",
+      "explanation": "GenManip was proposed by Shanghai AI Lab together with Zhejiang University, Xi'an Jiaotong University, Nanjing University, and others, published at CVPR 2025. It's a tabletop-manipulation simulation platform built on NVIDIA Isaac Sim, focused on whether a policy can understand a wide range of language instructions. It uses a large language model to generate task-oriented scene graphs (describing which objects are in the scene and what the target relationships are), paired with 10,000 annotated 3D object assets, to automatically synthesize a large amount of diverse tasks and demonstration data. Its evaluation component, GenManip-Bench, contains 200 hand-refined scenes and tests four kinds of generalization: spatial relationships, appearance understanding, common-sense reasoning, and long-horizon tasks. The paper compares two approaches: a modular system that uses foundation models for perception and planning, and an end-to-end policy trained with behavioral cloning, finding that the former generalizes better zero-shot while the latter improves as more data is added. The code is open-sourced on GitHub.",
+      "example": "On GenManip-Bench, the best-performing modular system, CoPa (paired with GPT-4.5), reaches an overall success rate of 23.0%; on long-horizon tasks, the evaluated models average only 9.07%.",
+      "related": ["Isaac Sim", "Instruction Following", "Generative Simulation", "Synthetic Data", "CoPa", "Shanghai AI Lab"]
+    },
+    {
+      "key": "sim-11#11",
+      "name_en": "GS-Playground",
+      "aliases": ["A High-Throughput Photorealistic Simulator for Vision-Informed Robot Learning"],
+      "one_liner": "A high-throughput simulator from Tsinghua and others that uses batched 3D Gaussian Splatting to render photorealistic images quickly.",
+      "explanation": "GS-Playground was proposed by Tsinghua University together with Motphys, Dexmal, and more than a dozen other organizations; its paper was released in April 2026, its project page shows acceptance at RSS 2026, and its code is open-sourced on GitHub. It addresses a tension in vision-based robot learning: traditional simulators don't look realistic, while photorealistic rendering is too slow to run at the scale needed for visual reinforcement learning. Its approach combines a self-developed parallel physics engine, MotrixSim (compatible with the MJCF format), with batched 3D Gaussian Splatting (representing a scene with a large number of colored ellipsoids, which renders quickly), reaching a total rendering throughput of about 10,000 frames per second across 2,048 parallel environments at 640×480 resolution, and it can automatically generate a simulatable digital twin from a single RGB photo. The paper validates the approach on quadruped and humanoid locomotion, visual navigation, and robot-arm grasping, and deploys it to real robots including the Unitree Go2 and G1.",
+      "example": "The project page states that generating a scene asset ready to drop into simulation from one RGB photo takes under 5 minutes, and that humanoid physics simulation runs 32 times faster than MuJoCo.",
+      "related": ["Gaussian Splatting-based Simulation", "3D Gaussian Splatting", "Real-to-Sim", "Digital Twin", "Batched Rendering", "DISCOVERSE"]
+    }
+  ]
+}

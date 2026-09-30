@@ -1,0 +1,242 @@
+{
+ "batch": "perception-01",
+ "terms": [
+  {
+   "key": "perception-01#0",
+   "name_en": "Camera Extrinsics",
+   "aliases": [
+    "Extrinsic Parameters",
+    "Camera Pose",
+    "Extrinsic Matrix"
+   ],
+   "one_liner": "The rotation-plus-translation parameters describing where a camera sits in space and which way it points.",
+   "explanation": "Camera extrinsics consist of a 3×3 rotation matrix R and a translation vector t, often combined into a 4×4 homogeneous transformation matrix, describing where the camera sits and which way it points relative to a world frame or a robot's base frame. OpenCV's convention transforms a point in the world frame into the camera frame; many robotics codebases instead store the opposite direction — a ‘camera pose’ that goes from camera to world — so it's worth confirming the direction before reusing someone else's data. Extrinsics are typically found using a calibration board together with PnP, or through hand-eye calibration, and need to be redone if the camera gets bumped. Once known, they let point clouds from multiple cameras be merged into one common frame, or let an object's position as seen by the camera be converted into coordinates a robot arm can act on.",
+   "example": "The DROID dataset was collected with two external ZED 2 cameras plus one wrist-mounted ZED Mini, covering 1,417 camera viewpoints in total, and ships each viewpoint's intrinsic and extrinsic calibration alongside the data.",
+   "related": [
+    "Camera Intrinsics",
+    "Hand-Eye Calibration",
+    "Homogeneous Transformation Matrix",
+    "Coordinate Transformation",
+    "PnP (Perspective-n-Point)",
+    "Camera Calibration"
+   ]
+  },
+  {
+   "key": "perception-01#1",
+   "name_en": "Camera Intrinsics",
+   "aliases": [
+    "Intrinsic Parameters",
+    "Intrinsic Matrix",
+    "K Matrix",
+    "Focal Length and Principal Point"
+   ],
+   "one_liner": "The parameters describing how a camera itself forms an image, determining which pixel a 3D point lands on.",
+   "explanation": "Camera intrinsics are usually written as a 3×3 matrix K, containing the focal lengths fx and fy in pixels and the principal point cx, cy (where the optical axis meets the image plane, generally near the image center); lens distortion coefficients are typically listed separately. Intrinsics describe how a 3D point in the camera's own coordinate frame projects onto a pixel, and depend only on the camera and lens, not on what's being photographed — so they stay valid as long as the focal length doesn't change. They can be found by calibrating against a checkerboard (Zhang Zhengyou's method), and depth cameras such as the RealSense ship factory-calibrated, with intrinsics readable straight from the SDK. A common pitfall: if an image is resized or cropped before being fed to a model, the intrinsics must be adjusted by the same scale and offset, or any point cloud reprojected from it will come out misaligned.",
+   "example": "For a 640×480 image with fx = fy = 600, cx = 320, cy = 240: a pixel at (420, 240) with a measured depth of 1 meter corresponds to a camera-frame point of X = (420 − 320) × 1/600 ≈ 0.17 m, Y = 0, Z = 1 m.",
+   "related": [
+    "Camera Extrinsics",
+    "Pinhole Camera Model",
+    "Lens Distortion",
+    "Projection / Back-Projection",
+    "Camera Calibration",
+    "Calibration Board (Checkerboard / ChArUco)"
+   ]
+  },
+  {
+   "key": "perception-01#2",
+   "name_en": "Computer Vision",
+   "aliases": [
+    "CV"
+   ],
+   "one_liner": "The field of making computers extract useful information from images and video and understand what a scene contains.",
+   "explanation": "Computer vision studies how to make a computer automatically extract, analyze, and understand information from a single image or a video sequence, covering tasks such as classification, object detection, segmentation, tracking, pose estimation, and 3D reconstruction. The field got its start in AI labs in the late 1960s — in 1966, someone reportedly thought hooking a camera up to a computer and having it ‘describe what it sees’ would take an undergraduate just one summer project; the problem has instead occupied researchers for more than half a century since. Since deep learning took off, convolutional networks, vision transformers, and vision foundation models such as CLIP, DINOv2, and SAM have become the mainstream tools. In embodied AI, the camera is a robot's main channel for information about the outside world, and the vision encoders inside VLA models mostly reuse models pretrained by the computer vision community directly.",
+   "example": "Before a robot clears a table, it first uses object detection to locate a cup, segmentation to cut out the cup's outline, and then combines that with a depth map to compute the cup's 3D position — all of these steps belong to computer vision.",
+   "related": [
+    "Object Detection",
+    "Semantic Segmentation",
+    "3D Vision",
+    "Vision Foundation Model",
+    "Depth Estimation",
+    "Vision Encoder"
+   ]
+  },
+  {
+   "key": "perception-01#3",
+   "name_en": "Depth Camera",
+   "aliases": [
+    "RGB-D Camera",
+    "3D Camera",
+    "Range Camera"
+   ],
+   "one_liner": "A camera that outputs, for every pixel, both a color and the distance from that point to the camera.",
+   "explanation": "A depth camera, also called an RGB-D camera, outputs a depth map (D) alongside an ordinary color image (RGB). Three ranging principles dominate: stereo vision, where two lenses view the same point and triangulate distance from the disparity between them, often paired with an infrared projector casting a random texture onto the scene to help matching on textureless surfaces like white walls (called active stereo); structured light, which projects a known pattern and computes depth from how it deforms; and time-of-flight (ToF), which measures how long light takes to travel out and back. Depth cameras are cheaper and smaller than lidar and more precise at close range, but error grows with distance, and transparent or mirror-like objects are often measured incorrectly. They're commonly mounted on a robot's head or wrist to produce point clouds and support grasping and obstacle avoidance; common brands include RealSense, Orbbec, and ZED.",
+   "example": "The RealSense D435i is an active-stereo camera officially rated for an ideal working range of 0.3–3 meters, with error under 2% at 2 meters, and is widely used in tabletop manipulation and mobile-robot research.",
+   "related": [
+    "Depth Map",
+    "Active Stereo",
+    "Structured Light",
+    "Time-of-Flight (ToF)",
+    "Point Cloud",
+    "RealSense Depth Camera (D435i / D405)"
+   ]
+  },
+  {
+   "key": "perception-01#4",
+   "name_en": "Depth Map",
+   "aliases": [
+    "Depth Image",
+    "Range Image"
+   ],
+   "one_liner": "An image whose pixel values store distance to the camera instead of color.",
+   "explanation": "A depth map is a single-channel image where each pixel's value represents the distance from the corresponding scene point to the camera — generally measured along the camera's optical axis (the Z axis), not the straight-line distance to the lens. It can come directly from a depth camera's measurement, or be predicted from an ordinary color image by a monocular depth estimation model such as Depth Anything, which sometimes outputs only relative distance and sometimes metric depth in meters. Depth is commonly stored as a 16-bit integer that must be multiplied by a depth unit to get meters. A depth map combined with the camera's intrinsics can be back-projected, pixel by pixel, into a point cloud. Common problems include holes where nothing was measured (value 0), ‘flying pixels’ at object edges, and a mismatch between the depth map's and the color image's viewpoints, which needs to be corrected by alignment before the two are used together.",
+   "example": "If the depth unit is 1 millimeter, a pixel value of 850 in the depth map means that point is 0.85 meters from the camera along the optical axis; a value of 0 usually means nothing was measured there.",
+   "related": [
+    "Depth Camera (RGB-D Camera)",
+    "Point Cloud",
+    "Projection / Back-Projection",
+    "Depth Hole",
+    "Monocular Depth Estimation",
+    "Depth-Color Alignment"
+   ]
+  },
+  {
+   "key": "perception-01#5",
+   "name_en": "Hand-Eye Calibration",
+   "aliases": [
+    "AX=XB",
+    "Camera-to-Arm Calibration"
+   ],
+   "one_liner": "Finding the fixed coordinate transform that relates a camera to a robot arm.",
+   "explanation": "Hand-eye calibration solves for the fixed, unchanging transform between the ‘eye’ (camera) and the ‘hand’ (robot arm). There are two configurations: eye-in-hand, where the camera is mounted on the end-effector and the goal is the camera's pose relative to the end-effector flange; and eye-to-hand, where the camera is fixed nearby and the goal is the camera's pose relative to the robot's base. The method moves the arm through several poses, recording the end-effector's pose and the calibration board's pose as seen by the camera at each one; the problem is written as AX = XB, where X is the transform being solved for. Classic solutions such as Tsai-Lenz (1989) are already implemented in OpenCV's calibrateHandEye. At least two motions with non-parallel rotation axes are required — meaning at least 3 poses — though more are collected in practice. An inaccurate calibration means objects the camera sees get mapped to the wrong arm coordinates, and grasping simply fails.",
+   "example": "To calibrate a wrist camera, the arm carries it through a dozen or more angles photographing a fixed ChArUco calibration board. Forward kinematics gives the end-effector's pose at each shot, PnP gives the board's pose relative to the camera, and OpenCV's calibrateHandEye then solves for the transform from the camera to the flange.",
+   "related": [
+    "Eye-in-Hand",
+    "Eye-to-Hand",
+    "Camera Extrinsics",
+    "Calibration Board (Checkerboard / ChArUco)",
+    "Homogeneous Transformation Matrix",
+    "Wrist Camera"
+   ]
+  },
+  {
+   "key": "perception-01#6",
+   "name_en": "Inertial Measurement Unit",
+   "aliases": [
+    "IMU",
+    "Six-Axis IMU",
+    "Nine-Axis IMU",
+    "Inertial Sensor"
+   ],
+   "one_liner": "A sensor combining an accelerometer and gyroscope that measures an object's acceleration and rotation rate.",
+   "explanation": "An inertial measurement unit (IMU) combines an accelerometer and a gyroscope, which measure linear acceleration along three axes (at rest, this reads gravity, which is how the IMU can tell which way is down) and angular velocity around three axes — together called six-axis; adding a three-axis magnetometer makes it nine-axis. IMUs are found in phones, drones, and VR headsets. For a robot, an IMU provides the body's orientation (especially which way gravity points) and its rotation rate, which is basic input for balance in legged and humanoid robots. Its readings carry bias and noise, so integrating them to get angle or position accumulates drift over time, which is why IMUs are usually fused with a camera, lidar, or leg odometry. Colloquially, some people call an IMU an ‘inertial nav’ system, but strictly speaking an inertial navigation system is the larger system that further integrates the IMU's readings to solve for position and velocity.",
+   "example": "In Unitree's open-source unitree_rl_gym, the first 6 dimensions of the G1 walking policy's observation are the body angular velocity measured by the IMU's gyroscope, plus the projected gravity direction computed from the IMU's attitude quaternion.",
+   "related": [
+    "Sensor Drift (Bias Drift)",
+    "Projected Gravity",
+    "State Estimation",
+    "Visual-Inertial Odometry (VIO)",
+    "Proprioception",
+    "Camera-IMU Extrinsic Calibration"
+   ]
+  },
+  {
+   "key": "perception-01#7",
+   "name_en": "LiDAR",
+   "aliases": [
+    "Light Detection and Ranging",
+    "Laser Scanner",
+    "3D LiDAR"
+   ],
+   "one_liner": "A sensor that fires lasers and times their return to measure distance, scanning out a 3D point cloud of its surroundings.",
+   "explanation": "Lidar sends out laser pulses and measures how long the light takes to bounce off an object and return, computing distance from that time; rotating or scanning the beam then covers a wide field of view, producing a 3D point cloud of the surroundings. The first system of this kind was built by Hughes Aircraft Company in 1961, shortly after the laser was invented. Lidar comes in three basic designs: fully mechanical units that spin the whole sensor, semi-solid-state units that scan with a rotating mirror or a MEMS micro-mirror, and solid-state units with no moving parts at all; by beam count, it's either a 2D single-line unit that scans a single plane or a multi-line 3D unit. Compared with a depth camera, lidar measures farther, is more accurate at range, and is less affected by ambient light, so it keeps working reliably outdoors in direct sunlight, though its points are sparser, carry no color, and cost more. On robots it is used mainly for SLAM mapping and localization, navigation and obstacle avoidance, and terrain sensing, and is common on self-driving cars, quadrupeds, and humanoids.",
+   "example": "The Livox Mid-360 is a common 3D lidar on mobile robots, with a 360° horizontal and 59° vertical field of view; it can measure a target with 10% reflectivity out to 40 meters, with a minimum range of 0.1 meters.",
+   "related": [
+    "Point Cloud",
+    "LiDAR Channel Count",
+    "Solid-State LiDAR",
+    "LiDAR SLAM",
+    "Time-of-Flight (ToF)",
+    "Livox Mid-360"
+   ]
+  },
+  {
+   "key": "perception-01#8",
+   "name_en": "Object Detection",
+   "aliases": [
+    "Object Recognition and Localization"
+   ],
+   "one_liner": "Finding what objects appear in an image and where, marking each with a bounding box.",
+   "explanation": "Object detection is a foundational computer vision task: given an image, it outputs the category, bounding box (the rectangle enclosing the object), and confidence score for each object in it. An early representative was the Viola-Jones face detector, built on hand-crafted features; after deep learning took over, the R-CNN family of two-stage detectors emerged, followed by YOLO in 2015, which treats detection directly as a regression problem over boxes and class probabilities and can run in real time. Evaluation uses intersection over union (IoU, the overlap area between two boxes divided by their combined area) to judge whether a predicted box matches the ground truth, aggregated into mean average precision (mAP, the average of the average precision across all classes). Traditional detectors only recognize the classes they were trained on; open-vocabulary detectors such as Grounding DINO can find objects from an arbitrary text description instead. In robotics, detection is often the first step of a modular pipeline: find the box, then segment it, estimate its pose, and plan a grasp.",
+   "example": "A user says ‘hand me the red cup.’ The system feeds ‘red cup’ into Grounding DINO to get a bounding box, passes that to SAM to cut out a mask, combines the mask with the depth map to compute the cup's 3D position, and hands it off to the arm to grasp.",
+   "related": [
+    "Bounding Box (Detection)",
+    "Open-Vocabulary Object Detection",
+    "YOLO",
+    "Grounding DINO",
+    "Intersection over Union (IoU)",
+    "Instance Segmentation"
+   ]
+  },
+  {
+   "key": "perception-01#9",
+   "name_en": "Point Cloud",
+   "aliases": [
+    "3D Point Cloud",
+    "PCD"
+   ],
+   "one_liner": "Data made of many 3D coordinate points used to represent the shape of an object or scene.",
+   "explanation": "A point cloud is a set of discrete points in 3D space, each carrying X, Y, Z coordinates and optionally color, a surface normal, a timestamp, and so on. It typically comes from lidar, from a depth camera (a depth map back-projected using the camera's intrinsics), or from multi-view 3D reconstruction. Point clouds are unordered, sparse, and variable in size, so ordinary image convolutional networks don't directly apply to them, which is why specialized point cloud networks like PointNet exist. Common processing steps include voxel downsampling or farthest point sampling (both reduce the point count), aligning two clouds with ICP (Iterative Closest Point, a registration method), and segmenting out a target object; the open-source PCL library defines the widely used PCD file format. In embodied AI, 3D Diffusion Policy (DP3) uses a single-view point cloud as its policy input, and grasp-detection methods such as AnyGrasp predict grasp poses directly on point clouds.",
+   "example": "A 640×480 depth image can be back-projected into more than 300,000 points at most. For 3D policies, the region outside the tabletop is usually cropped out first, and farthest point sampling then reduces the cloud to a few hundred or a few thousand points before it's fed into the encoder.",
+   "related": [
+    "Depth Map",
+    "Point Cloud Encoder",
+    "Farthest Point Sampling (FPS)",
+    "Iterative Closest Point (ICP)",
+    "PointNet",
+    "3D Diffusion Policy (DP3)"
+   ]
+  },
+  {
+   "key": "perception-01#10",
+   "name_en": "Proprioception",
+   "aliases": [
+    "Proprioceptive State",
+    "Robot Self-State Sensing"
+   ],
+   "one_liner": "A robot's sense of its own joint positions, velocities, forces, and posture, as opposed to sensing the outside world.",
+   "explanation": "Proprioception was originally a physiology term for the sense of one's own limb position, movement, and effort; the British physiologist Charles Sherrington used the word in his writing in 1906, contrasting it with exteroception, the sensing of the outside world. In robotics it refers to measurement of the robot's own state: encoders give joint angle and velocity, motor current or torque sensors give force, an IMU gives body attitude and angular velocity, and gripper opening width is often counted too. This data is low-dimensional, low-noise, and high-frequency, so nearly every policy uses it — for example, π0's observation consists of multiple camera images, a language instruction, and a proprioceptive state made of joint angles, with the proprioceptive state projected through a linear layer and fed into the model alongside the other tokens. Legged locomotion that relies only on proprioception, with no camera at all, is called blind locomotion.",
+   "example": "In Unitree's open-source unitree_rl_gym, the G1 walking policy's observation includes IMU angular velocity, projected gravity, each joint's angle relative to its default pose, and joint velocity — all proprioception — concatenated with a velocity command, the previous action, and the gait phase. Body linear velocity is hard to measure accurately on the real robot, so it appears only in the privileged observation used for simulation training.",
+   "related": [
+    "Exteroception",
+    "Rotary Encoder",
+    "State Encoder",
+    "State Estimation",
+    "Blind Locomotion",
+    "Inertial Measurement Unit"
+   ]
+  },
+  {
+   "key": "perception-01#11",
+   "name_en": "RealSense Depth Camera (D435i / D405)",
+   "aliases": [
+    "Intel RealSense",
+    "D435",
+    "D435i",
+    "D455",
+    "D405",
+    "D555"
+   ],
+   "one_liner": "A widely used stereo depth camera series, formerly an Intel division, common in robotics research and products.",
+   "explanation": "RealSense grew out of an Intel 3D-camera project started in 2014; its D400 series uses stereo vision plus an onboard chip to compute depth directly. It spun off from Intel as an independent company on July 11, 2025, completing a $50 million Series A round, and on September 22, 2026, the machine-vision company Cognex announced it would acquire RealSense for roughly $500 million in cash, with the deal expected to close in the fourth quarter of that year. Two models are most common in embodied-AI circles: the D435i is an active-stereo camera with an IR projector and a built-in IMU, with an ideal range of 0.3–3 meters, often mounted on a robot's head or used as a third-person view; the D405 is designed specifically for close range, 7–50 cm, and is often wrist-mounted instead. The open-source RealSense SDK provides drivers, depth filtering, and a ROS 2 interface.",
+   "example": "The ALOHA 2 dual-arm platform replaced the consumer webcams used in its first generation with the RealSense D405, citing its wider field of view, depth sensing, global shutter, and smaller size.",
+   "related": [
+    "Depth Camera (RGB-D Camera)",
+    "Active Stereo",
+    "Inertial Measurement Unit",
+    "RealSense SDK",
+    "Orbbec Gemini 330 Series",
+    "Wrist Camera"
+   ]
+  }
+ ]
+}

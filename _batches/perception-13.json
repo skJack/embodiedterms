@@ -1,0 +1,403 @@
+{
+ "category": "perception",
+ "batch": 13,
+ "terms": [
+  {
+   "name_zh": "深度与彩色对齐",
+   "name_en": "Depth-to-Color Alignment (Depth Registration)",
+   "abbr": "",
+   "aliases": [
+    "RGB-D 对齐",
+    "深度配准",
+    "align_depth",
+    "深度图对齐到彩色图"
+   ],
+   "tier": 3,
+   "one_liner": "把深度图重投影到彩色相机的视角，让两张图的像素一一对应。",
+   "explanation": "RGB-D 相机里测深度的传感器和彩色镜头装在机身不同位置，内参和视角都不同，直接叠在一起时同一像素并不对应同一个点。对齐的做法是：用深度相机内参把每个深度像素反投影成三维点，用两颗传感器间的外参把点变换到彩色相机坐标系，再用彩色相机内参投影到彩色图平面。得到的深度图和彩色图分辨率、视角一致，在彩色图上检测出的框、分割出的掩码就能直接取深度、生成带颜色的点云。英特尔 RealSense SDK 的 rs2::align 和 ROS 2 驱动的 align_depth.enable 参数做的就是这件事。对齐结果是计算出的近似：换视角会引入重采样，被遮挡区域会出现空洞或错位，物体边缘尤其明显。",
+   "example": "在 ROS 2 里启动 RealSense 驱动并打开 align_depth.enable，会多发布 /camera/camera/aligned_depth_to_color/image_raw 话题；抓取程序在彩色图上框出杯子后，按同一像素坐标去这张深度图取值，再反投影得到杯子的三维位置。",
+   "related": [
+    "深度相机",
+    "相机内参",
+    "相机外参",
+    "投影与反投影",
+    "点云",
+    "RealSense 深度相机（D435i / D405）"
+   ],
+   "sources": [
+    {
+     "title": "librealsense rs-align example (IntelRealSense GitHub)",
+     "url": "https://github.com/IntelRealSense/librealsense/tree/master/examples/align"
+    },
+    {
+     "title": "realsense-ros README (align_depth.enable)",
+     "url": "https://github.com/IntelRealSense/realsense-ros"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "DETR",
+   "name_en": "DEtection TRansformer",
+   "abbr": "",
+   "aliases": [
+    "End-to-End Object Detection with Transformers"
+   ],
+   "tier": 3,
+   "one_liner": "用 Transformer 把目标检测直接当作「集合预测」来做的端到端检测器。",
+   "explanation": "DETR 是 Facebook AI（现 Meta）的 Nicolas Carion 等人提出的目标检测模型，发表于 ECCV 2020。此前的检测器如 Faster R-CNN 要先铺大量锚框（预设的候选框），最后用非极大值抑制删掉重复框。DETR 先用 CNN 提取图像特征，送进 Transformer 编码器-解码器，解码器用固定数量的可学习「物体查询」各自输出一个框和类别；训练时用二分图匹配把预测与真值一对一配对，因此不再需要锚框和 NMS。它在 COCO 上精度与调优过的 Faster R-CNN 相当，但训练收敛慢。后来的 Deformable DETR、Grounding DINO、DINO-X 都沿这条路线发展；具身领域的 ACT 用可学习查询解码动作，代码也改自 DETR。",
+   "example": "官方 DETR（ResNet-50 骨干）在 COCO 2017 验证集上训练 500 轮达到 42.0 AP，与同骨干的 Faster R-CNN 相当，计算量约为其一半。",
+   "related": [
+    "目标检测",
+    "Transformer",
+    "检测框（边界框）",
+    "非极大值抑制",
+    "Grounding DINO",
+    "可学习查询"
+   ],
+   "sources": [
+    {
+     "title": "arXiv 2005.12872: End-to-End Object Detection with Transformers",
+     "url": "https://arxiv.org/abs/2005.12872"
+    },
+    {
+     "title": "ECCV 2020 paper page: End-to-End Object Detection with Transformers",
+     "url": "https://www.ecva.net/papers/eccv_2020/papers_ECCV/html/832_ECCV_2020_paper.php"
+    },
+    {
+     "title": "facebookresearch/detr (GitHub)",
+     "url": "https://github.com/facebookresearch/detr"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "Dex-Net",
+   "name_en": "Dex-Net (Dexterity Network)",
+   "abbr": "",
+   "aliases": [
+    "Dexterity Network",
+    "GQ-CNN",
+    "抓取质量卷积网络"
+   ],
+   "tier": 3,
+   "one_liner": "伯克利用海量仿真合成抓取数据训练抓取质量网络的系列项目。",
+   "explanation": "Dex-Net 是加州大学伯克利分校 AUTOLAB 的 Jeff Mahler 和 Ken Goldberg 从 2016 年起做的一系列机器人抓取研究，包含代码、数据集和算法。思路是：用上万个三维物体模型在仿真里批量生成候选抓取，用物理和力学模型算出每个抓取在扰动下能否抓稳，得到大规模带标签的合成数据；再训练抓取质量卷积网络 GQ-CNN，输入深度图和候选抓取，输出成功概率。1.0（ICRA 2016）有 1 万多个模型、250 万个二指抓取；2.0（RSS 2017）有 670 万个点云样本；3.0 扩展到吸盘；4.0（Science Robotics 2019）用 500 万张合成深度图训练同时会用夹爪和吸盘的策略。它是「仿真合成数据 + 深度学习」做抓取的早期代表。",
+   "example": "Dex-Net 2.0 在已知物体上抓取成功率 93%；在没见过的家用物体上，网络判定能抓的抓取全部成功（精确率 100%），规划一次抓取约 0.8 秒。",
+   "related": [
+    "抓取位姿检测",
+    "抓取质量指标",
+    "合成数据",
+    "无序抓取",
+    "Dex-Net（GQ-CNN 抓取网络）",
+    "对跖抓取"
+   ],
+   "sources": [
+    {
+     "title": "Dex-Net project page (Berkeley AUTOLAB)",
+     "url": "https://berkeleyautomation.github.io/dex-net/"
+    }
+   ],
+   "as_of": "2019"
+  },
+  {
+   "name_zh": "Digit 360",
+   "name_en": "Digit 360",
+   "abbr": "",
+   "aliases": [
+    "Meta Digit 360"
+   ],
+   "tier": 3,
+   "one_liner": "Meta 发布的指尖形多模态触觉传感器，能感知力、振动、温度等。",
+   "explanation": "Digit 360 是 Meta FAIR 在 2024 年 10 月底发布的仿人指尖触觉传感器，由 GelSight 公司负责生产销售。它延续 DIGIT 这类视触觉传感器的原理（内部相机拍软胶表面的形变），但做成半球形指尖，能感受各个方向的接触。论文报告约 830 万个触元（触觉像素），可分辨 7 微米的表面细节，法向力和切向力分辨率约 1 mN，能感受最高 10 kHz 的振动，还能感知温度甚至气味；指尖内置 AI 加速芯片，可在本地做类似人类反射弧的快速处理。Meta 同时发布了触觉编码器 Sparsh 和把多种触觉传感器接到同一只手上的 Digit Plexus 平台。",
+   "example": "Meta 的 Digit Plexus 平台可以把 Digit 360、DIGIT、ReSkin 等触觉传感器装到同一只机械手上，只用一根线把数据传回主机，方便采集灵巧操作的触觉数据。",
+   "related": [
+    "视触觉传感器",
+    "DIGIT 视触觉传感器",
+    "GelSight",
+    "Sparsh",
+    "触觉单元（触元）",
+    "Meta FAIR"
+   ],
+   "sources": [
+    {
+     "title": "Meta AI blog: Advancing embodied AI through progress in touch perception, dexterity, and human-robot interaction",
+     "url": "https://ai.meta.com/blog/fair-robotics-open-source/"
+    },
+    {
+     "title": "arXiv 2411.02479: Digitizing Touch with an Artificial Multimodal Fingertip",
+     "url": "https://arxiv.org/abs/2411.02479"
+    }
+   ],
+   "as_of": "2024-11"
+  },
+  {
+   "name_zh": "DINO-X（开放世界检测）",
+   "name_en": "DINO-X: A Unified Vision Model for Open-World Object Detection and Understanding (IDEA)",
+   "abbr": "",
+   "aliases": [
+    "DINO-X",
+    "DINO-X Pro",
+    "DINO-X Edge"
+   ],
+   "tier": 3,
+   "one_liner": "IDEA 研究院的开放世界检测模型，可按文字、示例或无提示框出物体。",
+   "explanation": "DINO-X 是粤港澳大湾区数字经济研究院（IDEA）2024 年 11 月发布的以物体为中心的视觉模型，架构沿用 Grounding DINO 1.5 的 Transformer 编码器-解码器。它支持文字提示、视觉提示（给示例框）和定制提示，其中「通用物体提示」让模型不给提示也能把图中物体都框出来。训练用了团队整理的 1 亿多条定位样本 Grounding-100M。检测头之外还挂了分割、关键点和物体描述等头，可同时输出框、掩码、姿态和文字描述。论文报告 DINO-X Pro 在 COCO 零样本检测上达到 56.0 AP；另有面向边缘设备的 DINO-X Edge。它主要通过 API 提供，机器人里可用它按一句指令找到目标，再交给分割和抓取模块。",
+   "example": "把一张桌面照片和提示词「cup」发给 DINO-X API，返回每个杯子的检测框和置信度；再把框交给 SAM 2 得到像素级掩码，就能配合深度图算出杯子位置去抓取。",
+   "related": [
+    "Grounding DINO",
+    "开放词汇检测",
+    "DETR",
+    "目标检测",
+    "分割一切模型",
+    "Grounded-SAM"
+   ],
+   "sources": [
+    {
+     "title": "arXiv 2411.14347: DINO-X: A Unified Vision Model for Open-World Object Detection and Understanding",
+     "url": "https://arxiv.org/abs/2411.14347"
+    },
+    {
+     "title": "IDEA-Research/DINO-X-API (GitHub)",
+     "url": "https://github.com/IDEA-Research/DINO-X-API"
+    }
+   ],
+   "as_of": "2025-07"
+  },
+  {
+   "name_zh": "直接飞行时间",
+   "name_en": "Direct Time of Flight",
+   "abbr": "dToF",
+   "aliases": [
+    "dTOF",
+    "直接 ToF",
+    "脉冲式 ToF"
+   ],
+   "tier": 3,
+   "one_liner": "发出光脉冲并直接计时回波，用往返时间算距离的深度测量方式。",
+   "explanation": "直接飞行时间是飞行时间法（ToF）的一种：传感器发出极短的激光脉冲，直接测量光打到物体再反射回来的时间 t，距离等于光速乘 t 再除以 2。目标在 1 米外时光往返只需约 6.7 纳秒，因此需要能分辨极短时间的电路：现在常用单光子雪崩二极管（SPAD，单个光子就能触发信号）做像素，配合时间数字转换器对大量脉冲计时并统计成直方图，取峰值作为回波时间。和间接飞行时间（iToF，比较调制光的相位差来算距离）相比，dToF 测得更远、更抗环境光，室内外都能用，是很多激光雷达的测距原理；代价是像素电路更复杂，分辨率通常不如 iToF 高。",
+   "example": "苹果 2020 款 iPad Pro 的 LiDAR 扫描仪可测 5 米内的距离、室内外都能用，官方称其在光子级别、纳秒速度下工作；据报道它采用的就是 SPAD 接收的 dToF 方案。",
+   "related": [
+    "飞行时间法",
+    "间接飞行时间",
+    "SPAD（单光子雪崩二极管）",
+    "激光雷达",
+    "深度相机",
+    "VCSEL（垂直腔面发射激光器）"
+   ],
+   "sources": [
+    {
+     "title": "Sony Semiconductor Solutions: ToF image sensors (dToF vs iToF)",
+     "url": "https://www.sony-semicon.com/en/technology/industry/tof.html"
+    },
+    {
+     "title": "Wikipedia: Time-of-flight camera",
+     "url": "https://en.wikipedia.org/wiki/Time-of-flight_camera"
+    },
+    {
+     "title": "Apple Newsroom: Apple unveils new iPad Pro with LiDAR Scanner (2020-03)",
+     "url": "https://www.apple.com/newsroom/2020/03/apple-unveils-new-ipad-pro-with-lidar-scanner-and-trackpad-support-in-ipados/"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "视差",
+   "name_en": "Disparity",
+   "abbr": "",
+   "aliases": [
+    "视差图",
+    "Disparity Map",
+    "双目视差"
+   ],
+   "tier": 3,
+   "one_liner": "同一个点在左右两张图里的横向位置差，物体越近视差越大。",
+   "explanation": "视差是双目立体视觉的基本量：两台相机并排摆放，图像经过校正（让同一点落在同一行）后，空间中同一点在左图的横坐标 xL 与右图横坐标 xR 之差 d = xL − xR 就是视差。视差与深度成反比：深度 Z = f × B / d，f 是以像素计的焦距，B 是两相机之间的基线长度。逐像素算出视差就得到视差图，再按公式换算即为深度图。求视差的过程叫立体匹配，传统方法有 OpenCV 的 StereoBM、SGBM，近年有 RAFT-Stereo、FoundationStereo 等深度学习方法。由于反比关系，远处物体的视差只有几个甚至不到一个像素，匹配差一点深度就差很多，所以双目测距精度随距离迅速下降，加长基线能改善远处精度。",
+   "example": "设焦距 f = 640 像素、基线 B = 5 厘米，某点视差为 16 像素，则深度 Z = 640 × 0.05 / 16 = 2 米；若视差量错 1 个像素变成 15，算出的深度就成了约 2.13 米。",
+   "related": [
+    "双目相机",
+    "立体匹配",
+    "基线",
+    "深度图",
+    "对极几何",
+    "FoundationStereo"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Computer stereo vision",
+     "url": "https://en.wikipedia.org/wiki/Computer_stereo_vision"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "蒸馏特征场",
+   "name_en": "Distilled Feature Fields",
+   "abbr": "DFF",
+   "aliases": [
+    "特征场",
+    "Feature Fields",
+    "语言嵌入场",
+    "特征场蒸馏"
+   ],
+   "tier": 3,
+   "one_liner": "把 CLIP、DINO 等 2D 模型的特征蒸馏进 3D 场景，让每个空间点带语义。",
+   "explanation": "蒸馏特征场是在神经辐射场（NeRF，用多视角照片重建三维场景的神经表示）或高斯泼溅等 3D 表示里，除颜色和密度外再给空间每一点学一个特征向量，训练目标是让它渲染到各视角后与 CLIP、DINO 等 2D 基础模型提取的图像特征一致，相当于把 2D 模型的知识蒸馏进 3D。名称来自 Preferred Networks 与 MIT 的 Kobayashi、Sitzmann 等人 2022 年的 NeurIPS 论文，当时用来按文字或点击选中并编辑 NeRF 里的物体。它既有精确几何，又能用自然语言在三维空间里定位物体。机器人方面，MIT 的 F3RM 用 CLIP 蒸馏特征场做少样本、语言引导的 6 自由度抓取与放置，获 CoRL 2023 最佳论文；LERF 也属同类思路。",
+   "example": "F3RM 先对桌面拍一组多视角照片，重建出带 CLIP 特征的场景；抓杯口这类任务每个只示范两次，之后就能按文字指令去抓外形、类别都没见过的物体。",
+   "related": [
+    "F3RM",
+    "LERF",
+    "神经辐射场",
+    "CLIP",
+    "知识蒸馏",
+    "3D高斯泼溅"
+   ],
+   "sources": [
+    {
+     "title": "arXiv 2205.15585: Decomposing NeRF for Editing via Feature Field Distillation",
+     "url": "https://arxiv.org/abs/2205.15585"
+    },
+    {
+     "title": "arXiv 2308.07931: Distilled Feature Fields Enable Few-Shot Language-Guided Manipulation",
+     "url": "https://arxiv.org/abs/2308.07931"
+    },
+    {
+     "title": "F3RM project page",
+     "url": "https://f3rm.github.io/"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "DROID-SLAM",
+   "name_en": "DROID-SLAM: Deep Visual SLAM",
+   "abbr": "",
+   "aliases": [
+    "DROID-SLAM: Deep Visual SLAM for Monocular, Stereo, and RGB-D Cameras"
+   ],
+   "tier": 3,
+   "one_liner": "普林斯顿提出的深度学习视觉 SLAM，循环迭代估计相机位姿和稠密深度。",
+   "explanation": "DROID-SLAM 是普林斯顿大学 Zachary Teed 和 Jia Deng 发表在 NeurIPS 2021 的视觉 SLAM（同步定位与建图）系统。它借用同组 RAFT 光流的结构，在相关帧之间计算稠密像素对应，由循环网络反复更新相机位姿和每个像素的深度，中间嵌入一个可微的稠密光束法平差层（BA，联合优化相机位姿和三维结构），把几何约束直接放进网络。它只在合成数据集 TartanAir 上用单目视频训练，测试时也能用双目或 RGB-D 输入，在 TartanAir、EuRoC、TUM-RGBD、ETH3D 上精度明显超过以往方法，灾难性失败也少得多。代价是依赖 GPU，推理需要至少 11 GB 显存。后来 MASt3R-SLAM 等深度 SLAM 工作常拿它作对比基线。",
+   "example": "给一段手持相机绕房间拍摄的视频，DROID-SLAM 输出每一帧的相机位姿和稠密深度，可拼成房间的点云，也可为人类示范视频恢复相机运动轨迹。",
+   "related": [
+    "视觉SLAM",
+    "光束法平差",
+    "RAFT 光流",
+    "ORB-SLAM3",
+    "MASt3R-SLAM",
+    "视觉里程计"
+   ],
+   "sources": [
+    {
+     "title": "arXiv 2108.10869: DROID-SLAM: Deep Visual SLAM for Monocular, Stereo, and RGB-D Cameras",
+     "url": "https://arxiv.org/abs/2108.10869"
+    },
+    {
+     "title": "princeton-vl/DROID-SLAM (GitHub)",
+     "url": "https://github.com/princeton-vl/DROID-SLAM"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "DUSt3R",
+   "name_en": "DUSt3R: Geometric 3D Vision Made Easy",
+   "abbr": "",
+   "aliases": [
+    "Dense and Unconstrained Stereo 3D Reconstruction"
+   ],
+   "tier": 3,
+   "one_liner": "无需相机参数，直接从两张图回归逐像素三维点图的前馈式重建模型。",
+   "explanation": "DUSt3R 是 Naver Labs Europe 与阿尔托大学的 Shuzhe Wang 等人提出的三维重建模型，发表于 CVPR 2024。传统流程（运动恢复结构 SfM 加多视图立体 MVS）要先估计相机内外参，再三角化匹配点，步骤多且容易失败。DUSt3R 反过来：把两张图送进 Transformer 编码器-解码器，直接为每个像素回归一个三维坐标，称为点图（pointmap），两张图的点都表示在第一张图的相机坐标系里，并附带置信度；深度、像素匹配、相对位姿和焦距都能从点图里读出。多于两张图时，再用全局对齐把各对结果统一到同一坐标系。它是「前馈式三维重建」的代表工作，后续的 MASt3R、VGGT、π³ 等都在这条路线上。代码采用 CC BY-NC-SA 4.0 非商用许可。",
+   "example": "用手机随手拍两张桌面照片、不做相机标定，DUSt3R 就能输出两张图对应的三维点云和两台相机的相对位姿，可用来快速重建机器人工作台。",
+   "related": [
+    "点图",
+    "MASt3R",
+    "VGGT",
+    "前馈式三维重建",
+    "运动恢复结构",
+    "多视图立体"
+   ],
+   "sources": [
+    {
+     "title": "arXiv 2312.14132: DUSt3R: Geometric 3D Vision Made Easy",
+     "url": "https://arxiv.org/abs/2312.14132"
+    },
+    {
+     "title": "naver/dust3r (GitHub)",
+     "url": "https://github.com/naver/dust3r"
+    }
+   ],
+   "as_of": "2024-06"
+  },
+  {
+   "name_zh": "高程图",
+   "name_en": "Elevation Map",
+   "abbr": "",
+   "aliases": [
+    "2.5D 高程图",
+    "Elevation Mapping",
+    "高度图",
+    "Height Map"
+   ],
+   "tier": 3,
+   "one_liner": "把地面划成网格、每格记一个高度值的 2.5D 地形图，常用于足式机器人。",
+   "explanation": "高程图是一种 2.5D 地图：把机器人周围地面在水平面上划成规则网格，每格只存一个高度（通常还带方差表示不确定度），而不是完整的三维体素。数据来自深度相机、激光雷达等测距传感器，结合机器人位姿估计不断融合更新。ETH 苏黎世 Péter Fankhauser 等人 2014 年起开发的 elevation_mapping 是常用开源实现，以机器人为中心建图并显式考虑位姿漂移的不确定性，现已不再维护；2022 年的 elevation_mapping_cupy 把计算搬到 GPU，并加入可通行性、语义等图层。高程图比点云紧凑、查询快，四足和人形机器人的感知行走常从中读取脚下一圈的地形高度作为策略输入。局限是每格只有一个高度，表示不了桌子底下、桥洞这类悬空结构。",
+   "example": "在 Isaac Lab 里训练足式运控时，常在机器人周围取一圈网格点的地形高度（高度扫描）作为观测；部署到真机上，这些高度就从实时构建的高程图里查出来。",
+   "related": [
+    "高度扫描",
+    "可通行性估计",
+    "感知行走",
+    "占据栅格地图",
+    "复杂地形行走",
+    "ANYmal 四足"
+   ],
+   "sources": [
+    {
+     "title": "ANYbotics/elevation_mapping (GitHub)",
+     "url": "https://github.com/ANYbotics/elevation_mapping"
+    },
+    {
+     "title": "leggedrobotics/elevation_mapping_cupy (GitHub)",
+     "url": "https://github.com/leggedrobotics/elevation_mapping_cupy"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "对极几何",
+   "name_en": "Epipolar Geometry",
+   "abbr": "",
+   "aliases": [
+    "本质矩阵",
+    "基础矩阵",
+    "Essential Matrix",
+    "Fundamental Matrix",
+    "极线约束"
+   ],
+   "tier": 3,
+   "one_liner": "两台相机看同一场景时，对应点必须落在特定直线上的几何关系。",
+   "explanation": "对极几何描述两个视角之间的几何约束。空间点 X 与两个相机光心构成一个平面（对极平面），它与两张图像平面的交线叫极线；一个相机的光心在另一张图上的投影叫极点。核心结论是：左图某点的对应点一定落在右图的一条极线上，所以找匹配点只需沿这条线搜索，从二维搜索降为一维。数学上用 3×3 的基础矩阵 F 表达，对应点 x、x′ 满足 x′ᵀFx = 0；已知两相机内参 K、K′ 时可写成本质矩阵 E = K′ᵀFK，E 编码两相机间的旋转和只知方向、不知长度的平移，由 Longuet-Higgins 1981 年引入计算机视觉。通常用八点法等算法配合 RANSAC 从匹配点估计 F 或 E，再分解出相对位姿。它是双目校正、立体匹配、三角化、运动恢复结构和视觉 SLAM 初始化的基础。",
+   "example": "双目相机的立体校正，就是把两张图变换到极线全部水平且同行对齐的状态，这样立体匹配只需在同一行里左右搜索即可求出视差。",
+   "related": [
+    "三角化",
+    "立体匹配",
+    "单应性矩阵",
+    "相机标定",
+    "运动恢复结构",
+    "随机采样一致性"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Epipolar geometry",
+     "url": "https://en.wikipedia.org/wiki/Epipolar_geometry"
+    },
+    {
+     "title": "Wikipedia: Essential matrix",
+     "url": "https://en.wikipedia.org/wiki/Essential_matrix"
+    }
+   ],
+   "as_of": ""
+  }
+ ]
+}

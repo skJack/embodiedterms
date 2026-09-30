@@ -1,0 +1,113 @@
+{
+  "batch": "model-14",
+  "terms": [
+    {
+      "key": "model-14#0",
+      "name_en": "Post-Training Quantization",
+      "aliases": ["PTQ", "Offline Quantization"],
+      "one_liner": "Converting a trained model's weights and activations directly to low-bit numbers after training, with no retraining needed.",
+      "explanation": "Post-training quantization is a model compression method: after a model is trained at normal precision (FP32, BF16, etc.), its weights, and sometimes its activations too, are converted to a low-bit representation such as INT8 or INT4. It usually only needs a small batch of calibration data to measure the value ranges, requires no labeled data, and involves no retraining. Qualcomm AI Research's quantization white paper summarizes that most models keep accuracy close to floating point at 8 bits with PTQ; pushing lower tends to hurt accuracy and needs methods like GPTQ, which use second-order information, or a switch to quantization-aware training. For embodied AI, it mainly serves deployment: VLAs routinely have billions of parameters, while a robot's onboard memory and compute are limited, and quantization directly cuts memory use and speeds up inference. Deployment tools such as TensorRT and ONNX Runtime both support PTQ.",
+      "example": "The OpenVLA paper runs its 7B model at 4-bit quantized inference, reaching 71.9% success on BridgeData V2 tasks versus 71.3% at BF16, while GPU memory drops from 16.8GB to 7.0GB.",
+      "related": ["Quantization-Aware Training", "Pruning", "On-Device / Edge Deployment", "Inference Latency", "NVIDIA TensorRT", "Numerical Precision Formats"]
+    },
+    {
+      "key": "model-14#1",
+      "name_en": "Pre-trained Visual Representation",
+      "aliases": ["PVR", "PVRs"],
+      "one_liner": "A vision encoder pretrained on large-scale images or video, reused as the 'eyes' for a robot policy.",
+      "explanation": "A pre-trained visual representation is a vision encoder trained beforehand on large amounts of image or video data, which compresses a camera view into a feature vector for a robot policy or navigation agent to use, usually kept frozen or only lightly fine-tuned. It addresses the fact that robot data is scarce, making it inefficient to learn vision from scratch. In 2022, Parisi and colleagues found that representations pretrained only on generic vision data such as ImageNet let a control policy trained on top of them match or even beat one trained directly on ground-truth state, such as an object's exact position. Since then, PVRs built for embodied tasks have followed, including R3M (trained on Ego4D first-person human video), MVP (masked-autoencoder pretraining), and VC-1. The VC-1 paper compares these on CortexBench, a suite of 17 tasks, and finds no single PVR wins on all of them. VLAs today more often use vision foundation models like SigLIP or DINOv2 as the encoder directly instead.",
+      "example": "VC-1 trains a ViT with masked autoencoding on more than 4,000 hours of first-person video plus ImageNet, then freezes it and attaches a small policy network, evaluated on CortexBench's locomotion, navigation, dexterous manipulation, and mobile manipulation tasks.",
+      "related": ["Vision Encoder", "R3M", "VC-1", "MVP", "Vision Foundation Model", "Backbone Freezing"]
+    },
+    {
+      "key": "model-14#2",
+      "name_en": "Prediction Target Parameterization",
+      "aliases": ["ε-prediction", "v-prediction", "x0-prediction"],
+      "one_liner": "The choice of whether a diffusion model's network should output noise, velocity, or the clean data itself.",
+      "explanation": "When training a diffusion or flow-matching model, clean data x0 is first noised into x_t, and the network, seeing x_t, has to output some quantity to compute the loss against — there are several choices for what that quantity should be. ε-prediction has the network guess the noise that was added, which is what 2020's DDPM does; x0-prediction guesses the clean data directly; v-prediction, proposed by Salimans and Ho in 2022, predicts a weighted combination of noise and data, and is more stable with very few sampling steps; the velocity field predicted in flow matching and rectified flow also falls into this category. Given x_t and the timestep, the three are mathematically interconvertible, but they differ in how hard they are to train, how errors get weighted across noise levels, and how well they work with few sampling steps. A 2025 paper by Tianhong Li and Kaiming He, JiT, argues that predicting the clean data directly in high-dimensional pixel space is easier to learn than predicting noise or velocity. In robotics, Diffusion Policy defaults to ε-prediction, while flow-matching VLAs like π0 predict velocity.",
+      "example": "Diffusion Policy's noise-prediction network ε_θ takes a noised action sequence as input and outputs the estimated noise; π0's action expert instead outputs a velocity vector, and at deployment integrates 10 steps starting from pure noise to get an action chunk.",
+      "related": ["Diffusion Model", "Flow Matching", "Rectified Flow", "Denoising Diffusion Probabilistic Model", "Velocity Field", "Denoising Loss"]
+    },
+    {
+      "key": "model-14#3",
+      "name_en": "Prismatic VLMs",
+      "aliases": ["Prismatic-7B"],
+      "one_liner": "A Stanford/Toyota Research Institute study and open model that systematically compares VLM design choices; OpenVLA's base model.",
+      "explanation": "Prismatic VLM comes from a Stanford University and Toyota Research Institute (TRI) paper by Siddharth Karamcheti and colleagues, published at ICML 2024. The authors built a unified training and evaluation framework (12 benchmarks covering visual question answering, object localization, and challenge sets) to compare vision-language-model design choices one at a time: which vision encoder to use, whether to run a separate alignment-pretraining stage first, and whether the language model should be the base or the instruction-tuned version. The main findings: skipping the separate alignment stage and just doing single-stage training doesn't hurt performance and saves 20-25% of the compute; concatenating DINOv2 and SigLIP features gives a clear boost on localization tasks; and an instruction-tuned language model has no significant advantage. The resulting 7B-13B models beat the contemporary InstructBLIP and LLaVA v1.5, with code and dozens of checkpoints released open-source. Its connection to embodied AI is that OpenVLA is built directly on Prismatic-7B as its base, and the OpenVLA paper credits this fused vision encoder with helping spatial reasoning.",
+      "example": "OpenVLA's base model, Prismatic-7B, is made of a roughly 600-million-parameter fused DINOv2 + SigLIP vision encoder, a 2-layer MLP projector, and the Llama 2 7B language model.",
+      "related": ["OpenVLA", "Vision-Language Model", "DINOv2", "SigLIP", "Projector / Connector", "Llama"]
+    },
+    {
+      "key": "model-14#4",
+      "name_en": "Pruning",
+      "aliases": ["Network Pruning"],
+      "one_liner": "Deleting unimportant weights, channels, or layers from a model to make it smaller and faster.",
+      "explanation": "Pruning is a class of model compression methods: it identifies parts of a network that have little effect on the output and removes them. Deleting individual weights is called unstructured pruning; deleting whole channels, attention heads, or layers is called structured pruning. The idea traces back to LeCun and colleagues' 1989 Optimal Brain Damage; in 2015, Song Han and colleagues proposed a three-step 'train, prune small weights, retrain' recipe that cut AlexNet's parameters from 61 million to 6.7 million and compressed VGG-16 13x, with almost no drop in ImageNet accuracy. Unstructured pruning produces a sparse matrix, which needs specialized hardware or libraries to actually speed things up; structured pruning shrinks the matrix directly, making it easier to get a real speedup. In embodied AI, pruning is often combined with quantization and knowledge distillation to fit a large model onto a robot's onboard compute, and VLA-specific work has emerged that prunes redundant language layers or visual tokens.",
+      "example": "EfficientVLA, with no additional training, prunes functionally redundant layers from CogACT's language module, filters out unimportant visual tokens, and caches intermediate features in the diffusion action head, giving a 1.93x inference speedup on SIMPLER with only a 0.6-point drop in success rate.",
+      "related": ["Visual Token Pruning", "Post-Training Quantization", "Quantization-Aware Training", "Knowledge Distillation", "On-Device / Edge Deployment", "Early Exit"]
+    },
+    {
+      "key": "model-14#5",
+      "name_en": "Quantization-Aware Training",
+      "aliases": ["QAT", "Fake-Quantization Training"],
+      "one_liner": "Simulating low-bit error during training itself, so the model adapts in advance and loses less accuracy after quantization.",
+      "explanation": "Quantization-aware training inserts 'fake quantization' operations during training or fine-tuning: the forward pass rounds weights and activations to low-bit values (such as INT8 or INT4) before using them in computation, while backpropagation treats the rounding as an identity function (a straight-through estimator) to work around its non-differentiability, letting the model learn to work under quantization error. Google's Jacob and colleagues' 2018 paper on integer-only inference is a representative example of this approach. Compared with post-training quantization, QAT needs training data and extra compute, but keeps accuracy noticeably better at 4 bits and below; a common recipe is to train normally first, then do a short QAT fine-tuning pass. In embodied AI, BitVLA uses a 'quantize then distill' form of quantization-aware training, guided by a full-precision teacher model, to compress its vision encoder to 1.58 bits, and the paper reports 11x less memory than OpenVLA-OFT at comparable performance.",
+      "example": "Google's April 2025 QAT release of Gemma 3 runs about 5,000 steps of QAT before quantizing to int4, cutting the 27B model's memory from 54GB at BF16 down to 14.1GB, with Google reporting 54% less perplexity loss from quantization than quantizing directly.",
+      "related": ["Post-Training Quantization", "Pruning", "Knowledge Distillation", "On-Device / Edge Deployment", "Mixed-Precision Training", "Numerical Precision Formats"]
+    },
+    {
+      "key": "model-14#6",
+      "name_en": "Querying Transformer",
+      "aliases": ["Q-Former", "BLIP-2 Q-Former"],
+      "one_liner": "The small module in BLIP-2 that uses 32 learnable queries to distill image information before handing it to a large language model.",
+      "explanation": "Q-Former is a connector module Salesforce introduced in its 2023 BLIP-2 paper, used to bridge a frozen image encoder and a frozen large language model. It's a small Transformer of about 188 million parameters, initialized from BERT-base, that takes in 32 learnable query vectors (768 dimensions each), reads information out of the image features through cross-attention, and outputs a fixed-size 32×768 feature — far smaller than ViT-L/14's raw 257×1024 features, acting as an information bottleneck. Training has two stages: first learning image-text representations alongside the image encoder, then attaching the language model to learn generation. Because only Q-Former and a few other parameters are trained, BLIP-2 beats Flamingo-80B by 8.7% on zero-shot VQAv2 while using 54x fewer trainable parameters. InstructBLIP and others reuse it; LLaVA and Prismatic instead switch to a simpler MLP projector, and OpenVLA's base model uses an MLP too.",
+      "example": "BLIP-2 hands the image features extracted by ViT-g to Q-Former, which compresses them into 32 vectors; after a single linear projection, these serve as a 'soft visual prompt' prepended to the text input of the OPT or Flan-T5 language model.",
+      "related": ["Projector / Connector", "Perceiver Resampler", "Learnable Query", "Cross-Attention", "Vision-Language Model", "Vision Encoder"]
+    },
+    {
+      "key": "model-14#7",
+      "name_en": "Rectified Flow",
+      "aliases": ["RF"],
+      "one_liner": "A generative model that moves noise toward data along a straight line — the straighter the path, the fewer sampling steps needed.",
+      "explanation": "Rectified flow was proposed by Xingchao Liu, Chengyue Gong, and Qiang Liu in their 2022 paper 'Flow Straight and Fast.' It connects a noise sample and a data sample with a straight line and trains a network to predict the velocity along that line; generation starts from noise and solves an ordinary differential equation (ODE) that follows the predicted velocity to arrive at data. The training objective is a simple least-squares regression, and it's essentially equivalent to the flow matching Lipman and colleagues proposed around the same time when both use straight-line paths. Its other contribution is 'reflow': using a trained model to generate noise-data pairs, then retraining on those pairs, which makes the paths progressively straighter — straight enough that even a single Euler step can produce a decent result, which suits pairing with distillation for few-step or one-step generation. Stability AI's Stable Diffusion 3 trains with rectified flow; in robotics, π0's flow matching uses the same straight-line interpolation path to generate actions.",
+      "example": "π0 trains by linearly mixing a real action chunk with Gaussian noise according to a time τ, having the action expert predict the velocity between the two; at deployment, it starts from pure noise and integrates 10 Euler steps to get an executable action chunk.",
+      "related": ["Flow Matching", "Velocity Field", "Diffusion Model", "One-step Generation", "Consistency Model", "π0"]
+    },
+    {
+      "key": "model-14#8",
+      "name_en": "Recurrent State-Space Model",
+      "aliases": ["RSSM"],
+      "one_liner": "The core structure of the Dreamer world models, combining a deterministic recurrent state with a stochastic latent to predict the future.",
+      "explanation": "The Recurrent State-Space Model is a latent dynamics model Danijar Hafner and colleagues (at Google Brain, DeepMind, and others) proposed in the 2019 PlaNet paper, and it later became the core of the Dreamer through DreamerV3 world models. Its state has two parts: a deterministic recurrent hidden state h, updated by a recurrent network such as a GRU, responsible for remembering history; and a stochastic latent z, representing the uncertain information at the current moment. Given the previous state and an action, the model first updates h, then predicts the next z; during training, a separate encoder infers z from the real image as a target, and the model is also required to reconstruct the image and predict the reward. PlaNet's comparisons show that a purely deterministic or purely stochastic version underperforms the combination of both. With it, an agent can 'imagine' many steps into the future inside latent space to plan or train a policy, greatly reducing how much it needs to interact with the real environment. DreamerV3 changes z into a discrete categorical distribution; 2025's Dreamer 4 switches to a Transformer-based world model instead.",
+      "example": "DreamerV3 generates imagined trajectories with its RSSM world model and trains actor and critic networks on them, and the paper describes it as the first algorithm to mine diamonds from scratch in Minecraft with no human data.",
+      "related": ["World Model", "Latent World Model", "DreamerV3", "Dreamer 4", "Learning in Imagination", "Recurrent Neural Network"]
+    },
+    {
+      "key": "model-14#9",
+      "name_en": "Representation Collapse",
+      "aliases": ["Dimensional Collapse"],
+      "one_liner": "When a self-supervised encoder outputs the same or nearly the same vector for every input, so the representation carries no information.",
+      "explanation": "Representation collapse is a classic failure mode in self-supervised learning and joint-embedding predictive models. If the training objective only requires the representations of two views of the same sample (or of the current moment and the future) to be close to each other, the easiest solution for the encoder is to output the same constant vector for every input: the loss is tiny, but the representation carries no information at all. A milder form is called dimensional collapse, where the vector only makes use of a handful of dimensions. Anti-collapse methods fall roughly into three categories: contrastive learning uses negative samples to push different images' representations apart; VICReg (Bardes, Ponce, LeCun, 2021) explicitly constrains the variance of each dimension and the covariance between dimensions; and BYOL and the JEPA family use a stop-gradient plus an exponential-moving-average (EMA) target encoder. In embodied AI, training video representations or world models in a JEPA-style latent space, such as Meta's V-JEPA 2, has to deal with the same problem.",
+      "example": "When training V-JEPA 2, the target representation for a masked video segment is computed by an EMA copy of the encoder's weights and has stop-gradient applied to it, which the paper explains is specifically meant to prevent representation collapse.",
+      "related": ["Self-Supervised Learning", "Joint-Embedding Predictive Architecture", "Contrastive Learning", "Stop-Gradient", "Exponential Moving Average", "V-JEPA 2"]
+    },
+    {
+      "key": "model-14#10",
+      "name_en": "Residual Policy",
+      "aliases": ["Residual Policy Learning", "RPL"],
+      "one_liner": "Learning a correction on top of an existing controller or policy's output, and adding the two together as the final action.",
+      "explanation": "A residual policy doesn't learn an entire policy from scratch; instead, it keeps an existing base policy (a hand-designed controller, model predictive control, or an already-trained imitation-learning policy) and trains a separate network that only outputs a correction to it, with the final action equal to the base action plus the residual. MIT's Silver and colleagues proposed residual policy learning in 2018, and around the same time Johannink, Levine, and colleagues validated residual reinforcement learning on real-robot block assembly. The benefit is that the base policy can already do the task roughly right, so the residual only has to fill in the parts that are hard to model, such as friction, contact, and calibration error, which means a small exploration space, good sample efficiency, and more safety. A common recent pattern is to freeze a diffusion policy or VLA and train a lightweight, closed-loop, step-by-step residual with reinforcement learning to boost success rate on tasks like fine assembly.",
+      "example": "ResiP (Pulkit Agrawal's group, 2024) freezes a diffusion policy that uses action chunking, trains a step-by-step closed-loop residual policy with PPO to correct it, substantially raises success rate on simulated tasks like FurnitureBench furniture assembly, and then transfers it to the real robot via teacher-student distillation.",
+      "related": ["Residual Reinforcement Learning", "Diffusion Policy", "Reinforcement Fine-Tuning", "Action Chunking", "Model Predictive Control", "Teacher-Student Distillation"]
+    },
+    {
+      "key": "model-14#11",
+      "name_en": "Rotary Position Embedding",
+      "aliases": ["RoPE", "M-RoPE"],
+      "one_liner": "A positional encoding that writes position as a rotation angle applied to a vector, so attention naturally senses relative distance.",
+      "explanation": "Rotary Position Embedding was proposed by Jianlin Su and colleagues at Shenzhen's Zhuiyi Technology in the 2021 RoFormer paper. A Transformer has no inherent sense of token order, so it needs a positional encoding to supply one. RoPE treats every two dimensions of the query and key vectors as a 2D plane and rotates them by an angle set by the token's position, with different dimension-pairs rotating at different rates; as a result, when two tokens' vectors are dotted together, the result depends only on their relative distance. It adds no learnable parameters, attention naturally decays as distance grows, and context length can be extended by adjusting the rotation frequencies. After Meta's LLaMA adopted RoPE, it became the mainstream choice for large language models, and VLMs in the Qwen series, along with VLAs built on them, use it too. Qwen2-VL further introduces multimodal RoPE (M-RoPE), splitting position into three components — time, height, and width — for image and video tokens.",
+      "example": "Qwen2-VL's M-RoPE: a text token's three position indices are all the same, equivalent to ordinary RoPE; an image token's time index is fixed while its height and width indices vary with its position in the grid; each subsequent video frame increments the time index by one.",
+      "related": ["Positional Encoding", "Transformer", "Self-Attention", "Context Length", "Qwen-VL", "Llama"]
+    }
+  ]
+}

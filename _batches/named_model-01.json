@@ -1,0 +1,194 @@
+{"category": "named_model", "batch": 1, "terms": [
+{
+"name_zh": "ACT",
+"name_en": "Action Chunking with Transformers",
+"abbr": "ACT",
+"aliases": ["动作分块 Transformer", "Action Chunking Transformer"],
+"tier": 1,
+"one_liner": "斯坦福 2023 年提出的模仿学习策略，一次预测一段动作，让低成本双臂做精细活。",
+"explanation": "ACT 是斯坦福 Tony Zhao、Chelsea Finn 等人（合作方含 UC Berkeley、Meta）2023 年 4 月提出的模仿学习算法，与低成本双臂平台 ALOHA（硬件预算约 2 万美元）一起发表于 RSS 2023。行为克隆（照着人类演示学动作）每一步的小误差会越积越大，精细任务尤其容易失败。ACT 让 Transformer 一次输出未来一整段动作（动作分块），决策次数变少，误差累积也少；训练时套一层条件变分自编码器（CVAE，能表达同一场景多种做法的生成模型）来吸收人类演示的随机性；执行时用时序集成把重叠的动作块加权平均，让动作更平滑。它结构简单、数据需求小，后来成为 Mobile ALOHA、LeRobot 等项目的常用基线。",
+"example": "在 ALOHA 上，ACT 每个任务只用约 10 分钟的遥操作演示，就学会了打开半透明调料杯、把电池插进槽里等 6 个精细任务，成功率 80%–90%。",
+"related": ["动作分块", "时序集成", "条件变分自编码器", "ALOHA 双臂平台", "Mobile ALOHA", "行为克隆"],
+"sources": [
+{"title": "Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware (arXiv 2304.13705)", "url": "https://arxiv.org/abs/2304.13705"},
+{"title": "ALOHA / ACT 项目主页", "url": "https://tonyzhaozh.github.io/aloha/"}
+],
+"as_of": "2023-04"
+},
+{
+"name_zh": "扩散策略",
+"name_en": "Diffusion Policy: Visuomotor Policy Learning via Action Diffusion",
+"abbr": "DP",
+"aliases": ["Diffusion Policy", "DP"],
+"tier": 1,
+"one_liner": "用扩散模型从噪声中逐步「去噪」生成机器人动作序列的模仿学习策略。",
+"explanation": "扩散策略由哥伦比亚大学宋舒然组的 Cheng Chi 等人与丰田研究院、MIT 合作提出，2023 年 3 月上线 arXiv，发表于 RSS 2023，扩展版 2024 年刊于 IJRR。它把策略写成条件去噪扩散过程：以相机图像等观测为条件，从随机噪声出发逐步去噪，得到一段未来动作。好处是能表达动作多峰性——同一场景下有几种都对的做法时，不会像直接回归那样把它们平均成一个错误动作。论文还结合了滚动时域控制（预测一段、执行一部分、再重新预测），在 4 个基准的 12 个任务上比当时最好的方法平均提升 46.9%。它是后来 3D 扩散策略、π0 等模型里扩散/流匹配动作头的重要来源。",
+"example": "Push-T 是它的招牌任务：机器人用一根圆柱末端把桌上的 T 形块推到指定位置和朝向。从左侧或右侧绕过去推都可以，演示里两种做法都有，扩散策略两种都学会，但每次执行只坚持其中一种。",
+"related": ["扩散模型", "动作多峰性", "去噪扩散概率模型", "动作分块", "3D 扩散策略", "Push-T"],
+"sources": [
+{"title": "Diffusion Policy: Visuomotor Policy Learning via Action Diffusion (arXiv 2303.04137)", "url": "https://arxiv.org/abs/2303.04137"},
+{"title": "Diffusion Policy 项目主页", "url": "https://diffusion-policy.cs.columbia.edu/"}
+],
+"as_of": "2024-03"
+},
+{
+"name_zh": "Helix",
+"name_en": "Figure Helix (Vision-Language-Action model)",
+"abbr": "",
+"aliases": ["Figure Helix", "Helix VLA"],
+"tier": 1,
+"one_liner": "Figure AI 2025 年发布的人形机器人 VLA，用快慢双系统控制整个上半身。",
+"explanation": "Helix 是美国人形机器人公司 Figure AI 于 2025 年 2 月 20 日发布的视觉-语言-动作模型（VLA，看画面、听指令、直接输出动作的模型），用在自家 Figure 人形机器人上。它采用快慢双系统：System 2 是 70 亿参数的视觉语言模型，以 7–9Hz 理解场景和语言，把意图压成一个隐向量；System 1 是 8000 万参数的 Transformer，以 200Hz 把这个隐向量和实时感知转成动作。它一次控制 35 个自由度的整个上半身，包括手腕、每根手指、躯干和头部朝向。Figure 称训练只用了约 500 小时遥操作数据，一套权重覆盖多种任务、不做任务专门微调，两个系统分别跑在机载的两块低功耗嵌入式 GPU 上。后续有 Helix 02 等版本。",
+"example": "发布演示中，两台 Figure 机器人按语言指令协作收纳一袋从没见过的杂货，把物品分别放进冰箱和抽屉。",
+"related": ["快慢双系统", "视觉-语言-动作模型", "Figure AI", "Helix 02", "Figure 02"],
+"sources": [
+{"title": "Helix: A Vision-Language-Action Model for Generalist Humanoid Control (Figure AI)", "url": "https://www.figure.ai/news/helix"}
+],
+"as_of": "2025-02"
+},
+{
+"name_zh": "Gemini Robotics",
+"name_en": "Gemini Robotics (Google DeepMind VLA, 2025)",
+"abbr": "",
+"aliases": ["Gemini Robotics 1.0"],
+"tier": 1,
+"one_liner": "谷歌 DeepMind 2025 年基于 Gemini 2.0 推出的 VLA，能直接控制机器人做灵巧操作。",
+"explanation": "Gemini Robotics 是谷歌 DeepMind 于 2025 年 3 月 12 日发布的视觉-语言-动作模型，建立在多模态大模型 Gemini 2.0 之上；同时发布的 Gemini Robotics-ER 侧重空间理解和具身推理（如物体检测、轨迹和抓取预测）。它的目标是把大模型的通用理解带进物理世界，官方强调三点：泛化（新物体、新场景、新指令，在综合泛化基准上的表现是当时其他先进 VLA 的两倍多）、交互（听得懂口语化指令，环境或指令变化时实时调整）、灵巧（如折纸、把零食装进封口袋）。它主要在双臂平台 ALOHA 2 上训练，也能适配 Franka 机械臂和 Apptronik 的 Apollo 人形机器人；技术报告称新任务约 100 条演示即可微调。后续有 On-Device、1.5 等版本。",
+"example": "官方演示中，搭载它的 ALOHA 2 双臂按语言指令折纸、把零食装进封口袋；有人中途挪动目标物体时，机器人会跟着调整动作继续完成。",
+"related": ["Gemini Robotics-ER", "Gemini Robotics 1.5", "Gemini Robotics On-Device", "视觉-语言-动作模型", "ALOHA 2", "谷歌 DeepMind"],
+"sources": [
+{"title": "Gemini Robotics brings AI into the physical world (Google DeepMind blog)", "url": "https://deepmind.google/discover/blog/gemini-robotics-brings-ai-into-the-physical-world/"},
+{"title": "Gemini Robotics: Bringing AI into the Physical World (arXiv 2503.20020)", "url": "https://arxiv.org/abs/2503.20020"}
+],
+"as_of": "2025-03"
+},
+{
+"name_zh": "Mobile ALOHA",
+"name_en": "Mobile ALOHA: Learning Bimanual Mobile Manipulation with Low-Cost Whole-Body Teleoperation",
+"abbr": "",
+"aliases": ["移动 ALOHA"],
+"tier": 1,
+"one_liner": "斯坦福 2024 年把 ALOHA 双臂装上移动底盘，做低成本全身遥操作和模仿学习。",
+"explanation": "Mobile ALOHA 是斯坦福 Zipeng Fu、Tony Zhao 和 Chelsea Finn 于 2024 年 1 月发布的工作，发表于 CoRL 2024。它把原本固定在桌上的双臂平台 ALOHA 装到松灵 Tracer 移动底盘上，操作员腰部与底盘相连、走动时带着底盘移动，双手操纵主臂，同时遥控双臂和底盘；整套硬件预算约 3.2 万美元。动作是 16 维：双臂 14 个关节位置加底盘的线速度和角速度。它要解决的是移动操作（边移动边用双手干活）的数据采集和学习问题。论文另一个结论是协同训练：把新的移动数据和已有的静态 ALOHA 数据一起训练，成功率最多提升 90%，每个任务约 50 条演示即可。策略直接用 ACT、扩散策略等现成的模仿学习方法。",
+"example": "Mobile ALOHA 自主完成过炒虾并装盘、打开双开门壁柜放入重锅、呼叫并进入电梯、用水龙头冲洗用过的平底锅等任务。",
+"related": ["ALOHA 双臂平台", "ACT", "移动操作", "协同训练", "全身遥操作", "松灵机器人"],
+"sources": [
+{"title": "Mobile ALOHA (arXiv 2401.02117)", "url": "https://arxiv.org/abs/2401.02117"},
+{"title": "Mobile ALOHA 项目主页", "url": "https://mobile-aloha.github.io/"}
+],
+"as_of": "2024-01"
+},
+{
+"name_zh": "GR00T N1 系列",
+"name_en": "NVIDIA Isaac GR00T N1 / N1.5 / N1.6 / N1.7",
+"abbr": "GR00T",
+"aliases": ["GR00T N1", "GR00T N1.5", "GR00T N1.6", "GR00T N1.7", "Isaac GR00T", "Groot", "Isaac GR00T 代码库", "Isaac-GR00T Repository", "Isaac-GR00T"],
+"tier": 1,
+"one_liner": "英伟达开放的人形机器人基础模型系列，快慢双系统架构，2025 年起持续迭代。",
+"explanation": "GR00T N1 是英伟达 2025 年 3 月 18 日在 GTC 大会发布的开放人形机器人基础模型（约 22 亿参数），代码用 Apache 2.0、权重用英伟达开放模型许可，可商用。它采用快慢双系统：System 2 是视觉语言模型（N1 用 Eagle-2），负责看图理解指令；System 1 是用流匹配训练的扩散 Transformer，据此生成连续动作块，不同机器人用各自的状态/动作编解码器。数据按「数据金字塔」组织：底层是网络和人类视频，中层是仿真和视频模型生成的合成数据，顶层是真机数据。之后 N1.5（2025 年 6 月）冻结 VLM、加入能从人类视频学习的 FLARE 损失；N1.6（2025 年 12 月）换用 Cosmos 系 VLM、动作头加倍、改为预测相对动作；N1.7（2026 年 4 月起）约 30 亿参数，VLM 换成 Cosmos-Reason2-2B，并加入约 2 万小时 EgoScale 人类第一视角视频预训练。",
+"example": "官方在 Hugging Face 提供 GR00T-N1.7-3B 及其在 LIBERO、DROID、SimplerEnv 上微调好的版本；README 建议推理用 16GB 以上显存的 GPU，微调用 40GB 以上。",
+"related": ["快慢双系统", "数据金字塔", "流匹配", "扩散 Transformer", "英伟达 GEAR 实验室", "EgoScale"],
+"sources": [
+{"title": "GR00T N1: An Open Foundation Model for Generalist Humanoid Robots (arXiv 2503.14734)", "url": "https://arxiv.org/abs/2503.14734"},
+{"title": "NVIDIA/Isaac-GR00T GitHub 仓库", "url": "https://github.com/NVIDIA/Isaac-GR00T"},
+{"title": "GR00T N1.6 研究页（NVIDIA GEAR）", "url": "https://research.nvidia.com/labs/gear/gr00t-n1_6/"}
+],
+"as_of": "2026-04"
+},
+{
+"name_zh": "OpenVLA",
+"name_en": "OpenVLA: An Open-Source Vision-Language-Action Model",
+"abbr": "",
+"aliases": ["OpenVLA-7B"],
+"tier": 1,
+"one_liner": "斯坦福、伯克利等 2024 年开源的 70 亿参数视觉-语言-动作模型。",
+"explanation": "OpenVLA 由斯坦福、UC Berkeley、丰田研究院、谷歌 DeepMind、Physical Intelligence 和 MIT 的研究者于 2024 年 6 月发布，发表于 CoRL 2024。它以 Prismatic 视觉语言模型为底座：视觉编码器融合 SigLIP 和 DINOv2 两种特征，语言模型是 Llama 2 7B，总参数约 70 亿。动作沿用 RT-2 的做法，把每个动作维度离散成 256 个区间，当作 token 让语言模型逐个预测。它在 Open X-Embodiment 数据集的 97 万条机器人轨迹上训练，在 29 个任务上比 550 亿参数的闭源 RT-2-X 绝对成功率高 16.5%。更重要的是代码和权重完全开源，可以用 LoRA（低秩适配，只训练少量新增参数）在消费级显卡上微调，因而成为很多后续 VLA 研究的起点和对比基线，如 OpenVLA-OFT。",
+"example": "把 OpenVLA 适配到新的机械臂和任务时，用 LoRA 只训练约 1.4% 的参数，就能达到与全参数微调相当的效果。",
+"related": ["视觉-语言-动作模型", "RT-2", "Open X-Embodiment 数据集", "Prismatic VLM", "OpenVLA-OFT", "低秩适配"],
+"sources": [
+{"title": "OpenVLA: An Open-Source Vision-Language-Action Model (arXiv 2406.09246)", "url": "https://arxiv.org/abs/2406.09246"},
+{"title": "OpenVLA 项目主页", "url": "https://openvla.github.io/"}
+],
+"as_of": "2024-09"
+},
+{
+"name_zh": "RT-1",
+"name_en": "RT-1: Robotics Transformer for Real-World Control at Scale",
+"abbr": "RT-1",
+"aliases": ["Robotics Transformer 1"],
+"tier": 1,
+"one_liner": "谷歌 2022 年发布、用 13 万条真机轨迹训练的机器人 Transformer 策略。",
+"explanation": "RT-1 是谷歌机器人团队与 Everyday Robots 于 2022 年 12 月发布的机器人控制模型。当时机器人学习多是一个任务训一个小模型，RT-1 想验证语言和视觉领域的做法——大容量模型加大而杂的数据——能否用到机器人上。团队用 13 台移动机械臂花 17 个月采集了 13 万多条演示，覆盖 700 多个任务。模型输入图像和语言指令：图像经 EfficientNet 提特征，用 FiLM（让语言指令调制视觉特征的层）融入指令，再用 TokenLearner 压缩 token 数，交给 Transformer 输出离散化的动作，以 3Hz 闭环控制手臂和底盘。它在训练指令上成功率 97%，对新任务、干扰物和新背景的泛化好于当时的基线。其数据后来并入 Open X-Embodiment，架构和数据也是 RT-2 的基础。",
+"example": "在谷歌办公室厨房环境里，RT-1 按语言指令完成拾取放置、开关抽屉、把物品放进抽屉等操作。",
+"related": ["RT-2", "RT-X", "RT-1 数据集", "Transformer", "EfficientNet", "TokenLearner"],
+"sources": [
+{"title": "RT-1: Robotics Transformer for Real-World Control at Scale (arXiv 2212.06817)", "url": "https://arxiv.org/abs/2212.06817"},
+{"title": "RT-1 项目主页", "url": "https://robotics-transformer1.github.io/"}
+],
+"as_of": "2022-12"
+},
+{
+"name_zh": "RT-2",
+"name_en": "RT-2: Vision-Language-Action Models Transfer Web Knowledge to Robotic Control",
+"abbr": "RT-2",
+"aliases": ["Robotics Transformer 2"],
+"tier": 1,
+"one_liner": "谷歌 DeepMind 2023 年提出，把动作当文字 token 输出，首次提出 VLA 这一名称。",
+"explanation": "RT-2 是谷歌 DeepMind 于 2023 年 7 月发布的模型，论文首次提出「视觉-语言-动作模型（VLA）」这一名称。做法是：拿在互联网图文上预训练好的视觉语言模型（PaLI-X 和 PaLM-E），把机器人动作的每一维离散成 256 个区间、写成一串数字 token，和普通文字一样让模型输出；训练时把 RT-1 的机器人数据和网络视觉问答数据混在一起协同微调，以免丢掉原有知识。这样机器人能直接用上从网上学到的常识，出现了论文所说的涌现能力：认出机器人数据里没有的物体和符号，理解「最小的」「能临时当锤子用的」这类语义。模型有 120 亿（PaLM-E 版）和 550 亿参数（PaLI-X 版）两种。它开启了后来 OpenVLA、π0 等 VLA 模型的路线。",
+"example": "对机器人说「把香蕉移到二加一的和那里」，RT-2 能把香蕉放到写着 3 的位置上，而机器人训练数据里没有这类算术任务。",
+"related": ["视觉-语言-动作模型", "RT-1", "PaLM-E", "协同训练", "分箱离散化", "OpenVLA"],
+"sources": [
+{"title": "RT-2: Vision-Language-Action Models Transfer Web Knowledge to Robotic Control (arXiv 2307.15818)", "url": "https://arxiv.org/abs/2307.15818"},
+{"title": "RT-2 项目主页", "url": "https://robotics-transformer2.github.io/"}
+],
+"as_of": "2023-07"
+},
+{
+"name_zh": "π0",
+"name_en": "π0 (pi-zero): A Vision-Language-Action Flow Model for General Robot Control",
+"abbr": "π0",
+"aliases": ["pi0", "pi-zero", "π-zero"],
+"tier": 1,
+"one_liner": "Physical Intelligence 2024 年发布的 VLA，用流匹配生成连续动作，已开源。",
+"explanation": "π0 是美国具身智能公司 Physical Intelligence（PI）于 2024 年 10 月 31 日发布的通用机器人基础模型。它以谷歌 30 亿参数的视觉语言模型 PaliGemma 为底座，外加一个约 3 亿参数的「动作专家」，用流匹配（和扩散模型类似、从噪声逐步生成连续值的方法）一次生成未来 50 步动作，控制频率最高 50Hz。与 RT-2、OpenVLA 把动作离散成 token 不同，连续生成更适合叠衣服这类高频灵巧任务。它用 1 万多小时机器人数据预训练，覆盖 7 种机器人构型、68 个任务，并混入 OXE、DROID 等开源数据；预训练后可直接按语言指令做事，也能用少量数据微调学新技能。PI 后来在 openpi 仓库开源了代码和权重，单张 RTX 4090 即可推理和做 LoRA 微调。",
+"example": "论文演示中，π0 经微调后能把烘干机里的衣服取出、拿到桌边逐件叠好，还能组装纸箱、收拾餐桌。",
+"related": ["流匹配", "动作专家", "PaliGemma", "π0.5", "π0-FAST", "Physical Intelligence"],
+"sources": [
+{"title": "π0: A Vision-Language-Action Flow Model for General Robot Control (arXiv 2410.24164)", "url": "https://arxiv.org/abs/2410.24164"},
+{"title": "Physical-Intelligence/openpi GitHub 仓库", "url": "https://github.com/Physical-Intelligence/openpi"}
+],
+"as_of": "2025-09"
+},
+{
+"name_zh": "π0.5",
+"name_en": "π0.5: a Vision-Language-Action Model with Open-World Generalization",
+"abbr": "π0.5",
+"aliases": ["pi0.5", "pi05"],
+"tier": 1,
+"one_liner": "PI 2025 年发布的 VLA，能在没见过的真实家庭里完成收拾厨房等长程任务。",
+"explanation": "π0.5 是 Physical Intelligence 于 2025 年 4 月 22 日发布的 π0 升级版，重点是开放世界泛化：让机器人进到训练时从没去过的家里干活。做法是把多种来源的数据混在一起协同训练：约 100 个家庭里采集的约 400 小时移动机械臂数据只占预训练样本的约 2.4%，其余来自其他机器人、实验室数据、网络图文问答和高层语义标注。推理时模型先用文字预测下一步子任务（如「捡起盘子」），再据此生成底层动作，类似思维链。训练上，预训练阶段把动作压成离散的 FAST token 以提高效率，后训练再接上流匹配动作专家输出连续动作。论文在 3 个训练中未见过的真实家庭里测试，它能完成收拾厨房、整理卧室这类多步骤任务。2025 年 9 月权重已在 openpi 中开源。",
+"example": "在一个没去过的家里接到「收拾厨房」的指令，π0.5 先说出「把盘子放进水槽」这样的子任务，再执行对应动作，一步步做完。",
+"related": ["π0", "协同训练", "π0-FAST", "开放世界", "长程任务", "π*0.6"],
+"sources": [
+{"title": "π0.5: a Vision-Language-Action Model with Open-World Generalization (arXiv 2504.16054)", "url": "https://arxiv.org/abs/2504.16054"},
+{"title": "Physical-Intelligence/openpi GitHub 仓库", "url": "https://github.com/Physical-Intelligence/openpi"}
+],
+"as_of": "2025-09"
+},
+{
+"name_zh": "3D 扩散策略",
+"name_en": "3D Diffusion Policy: Generalizable Visuomotor Policy Learning via Simple 3D Representations",
+"abbr": "DP3",
+"aliases": ["DP3", "3D Diffusion Policy"],
+"tier": 2,
+"one_liner": "把稀疏点云作为输入的扩散策略，少量演示就能学会操作，发表于 RSS 2024。",
+"explanation": "3D 扩散策略（DP3）由上海期智研究院、清华大学交叉信息研究院许华哲组联合上海交大、上海 AI 实验室的研究者（第一作者 Yanjie Ze）于 2024 年 3 月提出，发表于 RSS 2024。它在扩散策略的基础上，把输入从 2D 图像换成深度相机得到的稀疏点云（一组带三维坐标的点），用一个轻量的点云编码器压成紧凑的 3D 特征，再以它为条件去噪生成动作。3D 表示直接包含物体的位置和几何，对视角、外观变化更不敏感，所以需要的演示更少。论文在 72 个仿真任务上每个任务只用 10 条演示，相对基线提升 24.2%；4 个真机任务每个 40 条演示，成功率 85%，而且很少出现违反安全要求的动作。后续的 iDP3 把它扩展到人形机器人。",
+"example": "真机实验包括用 Allegro 灵巧手或夹爪卷橡皮泥、包橡皮泥「饺子」、拿电钻触碰方块、倒肉松，每个任务 40 条演示。",
+"related": ["扩散策略", "点云", "点云编码器", "iDP3", "模仿学习", "上海期智研究院"],
+"sources": [
+{"title": "3D Diffusion Policy (arXiv 2403.03954)", "url": "https://arxiv.org/abs/2403.03954"},
+{"title": "3D Diffusion Policy 项目主页", "url": "https://3d-diffusion-policy.github.io/"}
+],
+"as_of": "2024-09"
+}
+]}

@@ -1,0 +1,218 @@
+{
+  "batch": "concept-04",
+  "terms": [
+    {
+      "key": "concept-04#0",
+      "name_en": "Bipedal Locomotion",
+      "aliases": [
+        "Humanoid Locomotion"
+      ],
+      "one_liner": "A robot's ability to walk, run, and balance using only two legs — a basic skill for humanoid robots.",
+      "explanation": "Bipedal locomotion means a robot walks, runs, climbs stairs, and recovers its balance after a push using only two legs. A two-legged support base is small and the center of mass is high, making it inherently unstable — the hardest category of legged locomotion. Early mainstream methods centered on the zero moment point (ZMP), the point where the ground reaction force produces zero horizontal moment: the robot plans its center of mass and footholds so the ZMP always stays within the foot's support region, the approach Honda's ASIMO used. In recent years the mainstream has shifted to reinforcement learning: training in simulation across large numbers of randomized environments, then transferring zero-shot to the real robot. A 2023 UC Berkeley project, for instance, used a causal Transformer to let an Agility Digit robot walk across plazas, grass, and other varied outdoor terrain. Bipedal locomotion is a prerequisite for humanoid robots to do mobile manipulation.",
+      "example": "The Berkeley team led by Ilija Radosavovic trained a walking controller entirely in simulation and deployed it directly to an Agility Digit humanoid with no fine-tuning; the robot walked stably on sidewalks, tracks, and grass, and could withstand being shoved.",
+      "related": [
+        "Legged Locomotion",
+        "Humanoid Robot",
+        "Zero Moment Point",
+        "RL-based Locomotion Control",
+        "Sim-to-Real Transfer",
+        "Balance Control"
+      ]
+    },
+    {
+      "key": "concept-04#1",
+      "name_en": "Contact-rich Manipulation",
+      "aliases": [
+        "Manipulation in Contact"
+      ],
+      "one_liner": "A manipulation task that needs sustained contact with an object or surface, with careful control of contact force.",
+      "explanation": "Contact-rich manipulation describes tasks where a robot maintains continuous or repeated contact with an object or environment, and must control contact force, explicitly or implicitly, to succeed — peg-in-hole assembly, tightening a nut, plugging in a cable, wiping a table, massage. A 2022 survey by Markku Suomalainen and colleagues in Robotics and Autonomous Systems splits this into two kinds: tasks that inherently require contact, and tasks that actively use contact to remove position uncertainty, such as sliding a part along a surface into a hole. The difficulty lies in tight tolerances, contact states that are hard to see visually, and friction and collisions that are hard to simulate accurately. Common approaches use impedance control or force control, making the arm behave like a spring that yields to external force, paired with force/torque sensors or tactile sensors; learning-based methods instead feed force or tactile signals into the policy as input.",
+      "example": "Threading a nut onto a bolt with a robot arm: once aligned, the robot must apply axial pressure while rotating — too much force jams it, too little and it slips. NVIDIA's Factory simulation framework (2022) uses nut-and-bolt assembly as one of its main scenarios.",
+      "related": [
+        "Peg-in-Hole Assembly",
+        "Force Control",
+        "Impedance Control",
+        "Tactile Sensor",
+        "Dexterous Manipulation",
+        "Assembly"
+      ]
+    },
+    {
+      "key": "concept-04#2",
+      "name_en": "Deformable Object Manipulation",
+      "aliases": [
+        "DOM"
+      ],
+      "one_liner": "Grasping and handling objects that bend, stretch, or change shape under force, such as clothes, cables, or food.",
+      "explanation": "Deformable object manipulation covers objects whose shape changes noticeably under force: cloth and clothing, ropes and cables, bags, dough, food, even human tissue. Traditional grasping research treats objects as rigid bodies, needing only position and orientation — 6 degrees of freedom — to describe. Deformable objects instead have an enormous number of shape degrees of freedom, can fold and self-occlude, and deform nonlinearly under force, which makes them hard to model and simulate. A 2021 survey by Jihong Zhu and colleagues identifies three main technical difficulties — deformation is hard to perceive, the degrees of freedom are high, and deformation is nonlinear to model — and, based on a survey of peer researchers, concludes that perception is the area most worth investing in. Applications include folding laundry, industrial cable-harness assembly, harvesting fruit and vegetables, surgical suturing, and dressing assistance for the elderly.",
+      "example": "Folding a shirt: the robot must first flatten a wrinkled T-shirt, then fold it along creases, and the shirt's shape changes after every step, so there is no fixed grasp point that can be marked in advance.",
+      "related": [
+        "Cloth Manipulation",
+        "Soft-body Simulation",
+        "Cloth Simulation",
+        "Contact-rich Manipulation",
+        "Tactile Sensor",
+        "SoftGym"
+      ]
+    },
+    {
+      "key": "concept-04#3",
+      "name_en": "Disembodied AI",
+      "aliases": [
+        "Non-embodied AI"
+      ],
+      "one_liner": "AI with no body, processing information purely in the digital world — chatbots, image classifiers, and so on.",
+      "explanation": "Disembodied AI is the counterpart to embodied AI: AI with no physical body that only perceives and decides within cyberspace. Its inputs are data such as text, images, and video, and its outputs are text, labels, or images — it never has to act to change the physical environment itself. Large language models like ChatGPT, facial recognition, and recommendation systems all fall into this category. A 2024 embodied-AI survey by Yang Liu and colleagues at Sun Yat-sen University uses a table to contrast the two: in disembodied AI, cognition is separate from any physical entity, while in embodied AI, cognition is fused into an entity such as a robot or a car. The distinction matters because disembodied models learn very strong knowledge from internet data but lack feedback from interacting with the real world; putting one into a robot still leaves problems to solve, such as language grounding, mapping words to real objects and actions, along with producing actual motor output and running in real time.",
+      "example": "ChatGPT can write out detailed steps for folding clothes, but it has no hands and cannot actually fold them; getting a robot to carry out those steps is exactly what embodied AI has to solve.",
+      "related": [
+        "Embodied AI",
+        "Embodied Cognition",
+        "Large Language Model",
+        "Moravec's Paradox",
+        "Language Grounding"
+      ]
+    },
+    {
+      "key": "concept-04#4",
+      "name_en": "Distractor Objects",
+      "aliases": [
+        "Distractors"
+      ],
+      "one_liner": "Extra objects in a scene that are irrelevant to the current task but can throw a policy off.",
+      "explanation": "Distractors are objects in a manipulation or navigation scene that are unrelated to the current instruction — for example, a bowl, a toy, and other cups sitting on the table when the robot is told to pick up the red cup. Evaluations often deliberately add or remove distractors to see whether a policy grasps the wrong target or gets thrown off by occlusion or visual changes, making this a standard way to measure visual generalization and robustness. The Colosseum benchmark (RSS 2024) tests manipulation policies along 14 kinds of perturbation and finds that a single perturbation alone can drop success rates by 30–50%, with the number of distractors, the target object's color, and lighting having the largest effects. Common countermeasures include training with cluttered scenes and data augmentation, or first using open-vocabulary detection to box in the actual target.",
+      "example": "The training data shows only a single apple on the table; at test time an orange and a small red ball are added next to it, and an imitation-learning policy may reach for the red ball instead.",
+      "related": [
+        "Visual Generalization",
+        "Robustness",
+        "Out-of-Distribution",
+        "The Colosseum",
+        "Generalization and Robustness Evaluation",
+        "Open-vocabulary Detection"
+      ]
+    },
+    {
+      "key": "concept-04#5",
+      "name_en": "Distribution Shift",
+      "aliases": [
+        "Covariate Shift",
+        "Dataset Shift"
+      ],
+      "one_liner": "When the data seen at deployment has a different distribution than the training data, hurting performance.",
+      "explanation": "Distribution shift broadly describes any mismatch between the distribution of training data and the distribution of data seen in actual use. Covariate shift is one specific kind: the distribution of inputs changes, but the true mapping from input to correct output stays the same; two other common kinds are label shift and concept shift. This is especially prominent in robot imitation learning: a policy only ever sees states the expert visited during training, so the moment it makes even a small error during execution, it drifts into states the demonstrations never covered, and that error compounds into a bigger deviation, a problem called compounding error. Stéphane Ross and colleagues, in a 2011 AISTATS paper, pointed out that this setting, where the agent's own actions determine its next input, violates the i.i.d. assumption, and proposed DAgger: let the policy run on its own, have an expert label the correct action for the new states it encounters, and gradually pull the training distribution toward the distribution the policy actually meets.",
+      "example": "A cup-grasping policy trained with behavior cloning always approaches the cup from directly above in the demonstrations. At deployment the arm is off by 2 cm, a position never seen in training, so the policy's output gets progressively worse until it knocks the cup over.",
+      "related": [
+        "Compounding Error",
+        "DAgger (Dataset Aggregation)",
+        "Behavior Cloning",
+        "Out-of-Distribution",
+        "Corrective Data",
+        "Domain Adaptation"
+      ]
+    },
+    {
+      "key": "concept-04#6",
+      "name_en": "Embodied Agent",
+      "aliases": [],
+      "one_liner": "An agent with a physical or virtual body that perceives and acts within an environment through that body.",
+      "explanation": "An agent is a system that can perceive its environment and take action to reach a goal. An embodied agent emphasizes that it has a body, and perceives and acts in the environment through that body. Wikipedia defines it as an agent that interacts with its environment through a physical body situated within that environment; more broadly, this also includes virtual bodies in a simulator or a game. It differs from a purely conversational agent that only outputs text, since it needs to chain together instruction understanding, active exploration, multimodal perception, and executed action into a working loop. The 2024 survey by Yang Liu and colleagues lists embodied agents as one of embodied AI's four main research goals, and argues that multimodal large models are currently its dominant “brain.” Real robots, self-driving cars, and navigation agents in simulators such as Habitat all count as embodied agents.",
+      "example": "In the Habitat home simulator, a virtual robot with a camera is told to go find a cup in the kitchen; it moves and looks around on its own and eventually stops in front of the cup — that makes it an embodied agent.",
+      "related": [
+        "Embodied AI",
+        "Agent–Environment Interaction",
+        "Perception-Action Loop",
+        "Disembodied AI",
+        "Policy"
+      ]
+    },
+    {
+      "key": "concept-04#7",
+      "name_en": "Embodied AGI",
+      "aliases": [
+        "General Embodied Intelligence"
+      ],
+      "one_liner": "Embodied intelligence able to perform diverse open-ended real-world tasks the way a human can — the field's long-term goal.",
+      "explanation": "Embodied AGI is a goal concept combining artificial general intelligence (AGI) with embodied AI; there is currently no single agreed-upon standard for it. A 2025 survey by Fan Wang and Hao Sun offers a working definition: embodied intelligence that shows human-like interaction ability and can perform diverse, open-ended, real-world tasks at a human level. The paper proposes an L1–L5 grading scale modeled on autonomous-driving levels: L1 completes a single task, L2 completes a combination of tasks, L3 conditionally completes general tasks, and L4–L5 progressively move toward open-ended tasks, human-like behavior, and no need for human intervention. It evaluates systems along four dimensions — omni-modality, human-like cognition, real-time responsiveness, and generalization — and judges that embodied AI today sits roughly between L1 and L2. Grading schemes like this are mainly used to describe direction and measure progress, not as a strict technical standard.",
+      "example": "Under this scale, a robot arm that can only pick up one type of part on a production line is L1; a robot that can break down “make a cup of coffee” into preset skills such as getting a cup, adding water, and pressing buttons, and complete them in order, is close to L2.",
+      "related": [
+        "Embodied AI",
+        "General-purpose Robot",
+        "Physical Turing Test",
+        "Levels of Autonomy",
+        "Humanoid Intelligence Grading"
+      ]
+    },
+    {
+      "key": "concept-04#8",
+      "name_en": "Embodied Reasoning",
+      "aliases": [
+        "ER"
+      ],
+      "one_liner": "Making a model understand the physical world: where things are, how to grasp them, and what to do next.",
+      "explanation": "Embodied reasoning means a model's spatial, temporal, and causal understanding and inference about the physical world, put to use for robot action: pointing to a graspable location in an image, predicting an object's 3D bounding box and motion trajectory, judging whether a task has been completed, or breaking a long instruction into steps. When Google DeepMind released Gemini Robotics in March 2025, it packaged this capability into a separate model, Gemini Robotics-ER, covering object detection, pointing, trajectory prediction, grasp prediction, multi-view correspondence, and 3D bounding-box prediction, and open-sourced the 400-question ERQA evaluation set alongside it. As of 2026 the series has been updated to Gemini Robotics-ER 2, accessible through the Gemini API. It often serves as the “slow” system in a fast-slow dual-system setup, thinking things through first, then handing off action execution to a VLA model or a low-level controller.",
+      "example": "Given a photo of a kitchen and the instruction “put the cup in the sink,” an embodied reasoning model first marks the cup handle's location and a path of waypoints to the sink in the image, then hands this off to an action model to execute.",
+      "related": [
+        "Embodied Reasoning Model",
+        "Gemini Robotics-ER",
+        "Spatial Reasoning",
+        "ERQA Benchmark",
+        "Cosmos Reason",
+        "Fast-Slow Dual System"
+      ]
+    },
+    {
+      "key": "concept-04#9",
+      "name_en": "Embodied Safety",
+      "aliases": [
+        "Embodied AI Safety"
+      ],
+      "one_liner": "Ensuring a robot acting in the real world does not injure people, damage property, or get hijacked by malicious commands.",
+      "explanation": "Embodied safety concerns the risks that come from an embodied agent acting in the physical world, and breaks down roughly into two layers. One is traditional physical safety: collision detection, force and speed limits, emergency stops, corresponding to standards for collaborative robots such as ISO/TS 15066. The other is a newer set of problems that arise once large models are put into robots, which Google DeepMind calls semantic safety: the model may produce a dangerous action because of hallucination, prompt injection, or a commonsense mistake. The BadRobot paper (ICLR 2025) demonstrated that a voice-based jailbreak could make a large-model-based robot carry out harmful actions; DeepMind's 2025 work proposed the ASIMOV benchmark and an automatically generated “robot constitution” to evaluate and constrain model behavior.",
+      "example": "A user tells a home robot, “pour this cleaning fluid into a cup and hand it to the guest.” Embodied safety requires the upper-level model to recognize this as a dangerous request and refuse it; the lower-level controller, in turn, must ensure that even if the arm makes a mistake, it never hits a person with excessive force.",
+      "related": [
+        "Functional Safety",
+        "Physical Human-Robot Interaction",
+        "Safe Reinforcement Learning",
+        "Control Barrier Function",
+        "The Three Laws of Robotics / Robot Constitution",
+        "ISO/TS 15066 (Collaborative Robot Safety Standard)"
+      ]
+    },
+    {
+      "key": "concept-04#10",
+      "name_en": "Embodiment Gap",
+      "aliases": [
+        "Cross-embodiment Gap"
+      ],
+      "one_liner": "The difference in shape, structure, and way of moving between different robots, or between humans and robots.",
+      "explanation": "Embodiment refers to an agent's body: its appearance, degrees of freedom, kinematic structure, the form of its hand or gripper, sensor placement, and control interface. The embodiment gap is the set of differences between two such bodies — swap to a different robot arm and the number of joints and the action space may both change; a human hand has five fingers, while many robots have only a two-finger gripper. This gap is the central obstacle to cross-embodiment learning and to using human videos as training data: data collected, or a policy trained, on body A often cannot be used directly on body B. Common countermeasures include a unified action space or a dedicated output head per embodiment; retargeting, which maps human hand motion onto robot joints; and visual substitution, such as Mirage, which erases the target robot and replaces it with the source robot in the image, or Phantom (CoRL 2025), which erases the human arm in a human video and overlays a rendered robot arm instead.",
+      "example": "Training a robot on first-person video of a human hand picking up a cup: the training footage shows a human hand, but at deployment the camera sees a metal gripper — a thin cup handle a human hand can pinch may not be graspable the same way by a two-finger gripper.",
+      "related": [
+        "Cross-Embodiment",
+        "Embodiment",
+        "Unified Action Space",
+        "Action Retargeting",
+        "Human Video Data",
+        "Cross-embodiment Image Substitution"
+      ]
+    },
+    {
+      "key": "concept-04#11",
+      "name_en": "Emergent Abilities",
+      "aliases": [
+        "Emergence",
+        "Emergent Capabilities"
+      ],
+      "one_liner": "Abilities absent in small models that only appear once model or data scale grows large enough.",
+      "explanation": "This idea was systematically laid out in a 2022 paper by Jason Wei and colleagues, “Emergent Abilities of Large Language Models,” which defines an emergent ability as one that is absent in smaller models, appears in larger models, and cannot be predicted by extrapolating from smaller models' performance — multi-step arithmetic and chain-of-thought reasoning are examples. In 2023, Rylan Schaeffer and colleagues pushed back, arguing that much of this apparent “sudden appearance” is an artifact of the evaluation metric: metrics that only score an all-or-nothing correct answer look like a sharp jump, but switching to a continuous metric shows the improvement is actually smooth. In embodied AI, “emergent” usually refers to a capability that was not in the training data but shows up at test time anyway — for example, RT-2 following instructions absent from any robot data, such as placing an object on a specific number or icon, or picking up a rock to use as an improvised hammer. Claims of emergence in marketing materials should be checked against the actual evaluation behind them.",
+      "example": "RT-2's robot demonstration data contains no task like “put the object on the numbered card,” but its vision-language-model backbone recognizes digits from web image-text data, so it can follow the instruction anyway.",
+      "related": [
+        "Scaling Laws",
+        "Large Language Model",
+        "Chain of Thought",
+        "RT-2",
+        "Zero-shot",
+        "Generalization"
+      ]
+    }
+  ]
+}

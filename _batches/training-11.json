@@ -1,0 +1,431 @@
+{
+  "category": "training",
+  "batch": 11,
+  "terms": [
+    {
+      "name_zh": "直接偏好优化",
+      "name_en": "Direct Preference Optimization",
+      "abbr": "DPO",
+      "aliases": [
+        "DPO 损失",
+        "偏好优化"
+      ],
+      "tier": 3,
+      "one_liner": "不训练奖励模型、不跑强化学习，直接用「好/坏」成对样本对齐模型的方法。",
+      "explanation": "DPO 由斯坦福 Rafailov、Finn 等人在 2023 年提出。传统 RLHF（基于人类反馈的强化学习）要先用偏好数据训练奖励模型，再用 PPO 等算法做强化学习，流程长、不稳定。DPO 证明带 KL 约束的奖励最大化问题的最优策略有闭式解，于是问题变成一个分类式损失：提高被偏好样本相对参考模型的概率，压低被拒绝样本的概率，训练中无需从模型采样。它最早用于大语言模型对齐，在具身领域被借来做 VLA 后训练：把成功轨迹和失败轨迹配成偏好对，直接优化策略。",
+      "example": "GRAPE（2024）在 OpenVLA 上把 DPO 从单步推广到整条轨迹（称为 TPO）：把成功与失败的操作轨迹配成偏好对来微调，并以逐步做 DPO 的 OpenVLA-DPO 作为对比基线。",
+      "related": [
+        "基于人类反馈的强化学习",
+        "奖励模型",
+        "KL 正则化",
+        "GRAPE",
+        "后训练",
+        "组相对策略优化"
+      ],
+      "sources": [
+        {
+          "title": "Direct Preference Optimization: Your Language Model is Secretly a Reward Model (arXiv:2305.18290)",
+          "url": "https://arxiv.org/abs/2305.18290"
+        },
+        {
+          "title": "GRAPE: Generalizing Robot Policy via Preference Alignment (arXiv:2411.19309)",
+          "url": "https://arxiv.org/abs/2411.19309"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "分布式价值函数",
+      "name_en": "Distributional Value Function",
+      "abbr": "",
+      "aliases": [
+        "分布式强化学习",
+        "Distributional RL",
+        "分布型价值函数",
+        "价值分布",
+        "Value Distribution"
+      ],
+      "tier": 3,
+      "one_liner": "不只预测平均回报，而是预测未来回报完整概率分布的价值函数。",
+      "explanation": "普通价值函数只输出未来回报（累计奖励）的期望值；分布式价值函数输出回报各种可能取值的完整分布。DeepMind 的 Bellemare、Dabney、Munos 在 2017 年 ICML 论文中系统提出这一视角，给出分布式贝尔曼方程和 C51 算法（用 51 个离散取值点表示回报分布），在 Atari 上取得当时最好成绩。常见实现是把回报切成若干区间，网络输出每个区间的概率，用交叉熵训练，比直接回归一个数更稳定，也能反映不确定性。近年的 VLA 强化学习方法常用它当评价器（critic）。",
+      "example": "Physical Intelligence 的 π*0.6（RECAP）训练了一个多任务分布式价值函数：把「距成功还剩多少步」的回报离散成若干区间、用交叉熵训练，再据此估计优势来筛选好动作；智元等团队的 LWD（2026）也用分布式隐式价值学习（DIVL）处理机群采回的稀疏奖励数据。",
+      "related": [
+        "价值函数",
+        "贝尔曼方程",
+        "回报",
+        "RECAP",
+        "π*0.6",
+        "交叉熵"
+      ],
+      "sources": [
+        {
+          "title": "A Distributional Perspective on Reinforcement Learning (arXiv:1707.06887)",
+          "url": "https://arxiv.org/abs/1707.06887"
+        },
+        {
+          "title": "π*0.6: a VLA That Learns From Experience (arXiv:2511.14759)",
+          "url": "https://arxiv.org/abs/2511.14759"
+        },
+        {
+          "title": "Learning While Deploying: Fleet-Scale Reinforcement Learning for Generalist Robot Policies (arXiv:2605.00416)",
+          "url": "https://arxiv.org/abs/2605.00416"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "领域自适应",
+      "name_en": "Domain Adaptation",
+      "abbr": "",
+      "aliases": [
+        "域适应",
+        "域自适应",
+        "无监督领域自适应",
+        "Unsupervised Domain Adaptation"
+      ],
+      "tier": 3,
+      "one_liner": "让在一种数据分布（源域）上训好的模型，到另一种分布（目标域）上也好用。",
+      "explanation": "领域自适应是迁移学习的一个分支：源域有大量带标注数据，目标域分布不同、标注很少甚至没有，目标是让模型在目标域上也能工作。经典做法有两类：特征层面，如 Ganin 与 Lempitsky 2014 年提出的梯度反转层，让「判断数据来自哪个域」的分类器分不出来，从而学到跨域不变的特征；像素层面，用 GAN（生成对抗网络）把源域图片转成目标域风格。具身智能里最典型的场景是仿真到真机：仿真数据便宜但与现实有差距，领域自适应和域随机化是缩小虚实差距的两条主要思路。",
+      "example": "谷歌 2017 年的 GraspGAN 用像素级领域自适应把仿真抓取图像变得更像真实相机画面；据论文报告，达到同等抓取性能所需的真实样本最多可减少 50 倍。",
+      "related": [
+        "迁移学习",
+        "仿真到现实迁移",
+        "虚实差距",
+        "域随机化",
+        "分布偏移（协变量偏移）",
+        "分布外"
+      ],
+      "sources": [
+        {
+          "title": "Unsupervised Domain Adaptation by Backpropagation (arXiv:1409.7495)",
+          "url": "https://arxiv.org/abs/1409.7495"
+        },
+        {
+          "title": "Using Simulation and Domain Adaptation to Improve Efficiency of Deep Robotic Grasping (arXiv:1709.07857)",
+          "url": "https://arxiv.org/abs/1709.07857"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "提前终止",
+      "name_en": "Early Termination",
+      "abbr": "",
+      "aliases": [
+        "ET",
+        "终止条件",
+        "提前结束回合"
+      ],
+      "tier": 3,
+      "one_liner": "训练中一旦出现摔倒等失败状态，就立刻结束本回合并重置环境。",
+      "explanation": "提前终止是强化学习训练的常用技巧：回合（episode）不必跑满固定时长，一旦触发预设条件，如躯干触地、机身倾角过大、跟踪误差过大，就立即结束并重置，剩余时间不再得奖励。Peng 等人 2018 年的 DeepMimic 专门评估了它，发现它和参考状态初始化一起，是仿真角色学会后空翻等高动态技能的关键。它一方面相当于隐式惩罚，策略会主动避开失败；另一方面不把样本浪费在摔倒后的无用状态上。实现时要区分失败终止和超时截断，后者不代表失败，算价值时通常仍要自举。",
+      "example": "legged_gym 的足式机器人环境里，只要机身等指定部位的接触力超过阈值就判定摔倒并重置该环境；超过最长回合时长则单独记为 time_out，不给终止惩罚。",
+      "related": [
+        "终止与截断",
+        "参考状态初始化",
+        "奖励塑形",
+        "回合",
+        "DeepMimic",
+        "大规模并行强化学习"
+      ],
+      "sources": [
+        {
+          "title": "DeepMimic: Example-Guided Deep Reinforcement Learning of Physics-Based Character Skills (arXiv:1804.02717)",
+          "url": "https://arxiv.org/abs/1804.02717"
+        },
+        {
+          "title": "legged_gym: legged_robot.py (check_termination)",
+          "url": "https://github.com/leggedrobotics/legged_gym/blob/master/legged_gym/envs/base/legged_robot.py"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "熵坍缩 / 模式坍缩",
+      "name_en": "Entropy Collapse / Mode Collapse",
+      "abbr": "",
+      "aliases": [
+        "策略熵坍缩",
+        "模式崩塌",
+        "模式崩溃",
+        "Policy Entropy Collapse",
+        "Helvetica Scenario"
+      ],
+      "tier": 3,
+      "one_liner": "模型输出的多样性塌缩，只会给出少数几种答案或动作。",
+      "explanation": "两个词说的是同一类现象。模式坍缩最早用于 GAN（生成对抗网络）：Goodfellow 在 2016 年教程中描述，生成器把不同输入噪声映射到同一类输出，只覆盖数据分布里的一两个「模式」。熵坍缩多用于强化学习：策略的熵（随机程度）在训练早期迅速下降，模型几乎只输出一种行为、不再探索，性能随之见顶；Cui 等人 2025 年在大模型推理强化学习中系统分析了它，并提出 Clip-Cov、KL-Cov 来维持熵。机器人动作本有多峰性，VLA 做强化学习微调时常用提高采样温度、放宽裁剪上界、加熵奖励等办法缓解坍缩。",
+      "example": "SimpleVLA-RL 在对 OpenVLA-OFT 做 GRPO 强化学习时，用动态采样、调高 PPO 式裁剪的上界（参考 DAPO 的 Clip-Higher）和提高推演采样温度三项改动来加强探索。",
+      "related": [
+        "熵正则化",
+        "探索与利用",
+        "生成对抗网络",
+        "动作多峰性",
+        "组相对策略优化",
+        "SimpleVLA-RL"
+      ],
+      "sources": [
+        {
+          "title": "NIPS 2016 Tutorial: Generative Adversarial Networks (arXiv:1701.00160)",
+          "url": "https://arxiv.org/abs/1701.00160"
+        },
+        {
+          "title": "The Entropy Mechanism of Reinforcement Learning for Reasoning Language Models (arXiv:2505.22617)",
+          "url": "https://arxiv.org/abs/2505.22617"
+        },
+        {
+          "title": "SimpleVLA-RL: Scaling VLA Training via Reinforcement Learning (arXiv:2509.09674)",
+          "url": "https://arxiv.org/abs/2509.09674"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "熵正则化",
+      "name_en": "Entropy Regularization",
+      "abbr": "",
+      "aliases": [
+        "最大熵强化学习",
+        "熵奖励",
+        "熵正则",
+        "Entropy Bonus",
+        "Maximum Entropy RL"
+      ],
+      "tier": 3,
+      "one_liner": "在训练目标里加一项策略熵的奖励，鼓励策略保持随机、多做探索。",
+      "explanation": "熵衡量一个概率分布有多随机：均匀分布熵高，几乎确定的分布熵低。熵正则化在强化学习目标里加上 α 乘以策略熵（α 是权重系数），让智能体在追求回报的同时保留一定随机性，避免过早收敛到次优行为。常见用法有两种：一是在 PPO 等策略梯度算法的损失里加一个小的熵奖励项；二是把熵直接写进优化目标，形成最大熵强化学习，代表是 Haarnoja 等人 2018 年提出的 SAC（软演员-评论家），它的 Q 值目标里也带熵项。α 太大，策略会一直乱动；太小，又容易熵坍缩、过早停止探索。",
+      "example": "legged_gym 默认的 PPO 配置里熵系数 entropy_coef 设为 0.01，即在损失中加入 0.01 倍的策略熵奖励。",
+      "related": [
+        "软演员-评论家",
+        "近端策略优化",
+        "探索与利用",
+        "熵坍缩 / 模式坍缩",
+        "KL 正则化",
+        "确定性策略 / 随机策略"
+      ],
+      "sources": [
+        {
+          "title": "OpenAI Spinning Up: Soft Actor-Critic (Entropy-Regularized RL)",
+          "url": "https://spinningup.openai.com/en/latest/algorithms/sac.html"
+        },
+        {
+          "title": "Soft Actor-Critic: Off-Policy Maximum Entropy Deep RL with a Stochastic Actor (arXiv:1801.01290)",
+          "url": "https://arxiv.org/abs/1801.01290"
+        },
+        {
+          "title": "legged_gym: legged_robot_config.py",
+          "url": "https://github.com/leggedrobotics/legged_gym/blob/master/legged_gym/envs/base/legged_robot_config.py"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "证据下界",
+      "name_en": "Evidence Lower Bound",
+      "abbr": "ELBO",
+      "aliases": [
+        "变分下界",
+        "Variational Lower Bound",
+        "VLB"
+      ],
+      "tier": 3,
+      "one_liner": "数据对数似然的一个可计算下界，VAE 和扩散模型都靠最大化它来训练。",
+      "explanation": "生成模型想最大化数据的对数似然 log p(x)（也叫「证据」），但含隐变量时通常算不出来。ELBO 引入近似后验 q(z|x)，得到 log p(x) ≥ E_q[log p(x|z)] − KL(q(z|x) ‖ p(z))：第一项衡量重建质量，第二项让编码分布贴近先验，两边差距正是 q 与真实后验的 KL 散度。Kingma 与 Welling 2013 年的 VAE 论文用重参数化技巧让 ELBO 能直接用梯度下降优化；Ho 等人 2020 年的 DDPM 也从变分下界出发，化简加权后得到常用的预测噪声损失。机器人里的 ACT 按条件 VAE 训练。",
+      "example": "ACT 的训练损失 = 动作块重建误差 + β × 编码分布与标准正态分布之间的 KL 散度，也就是带权重 β 的 ELBO 形式。",
+      "related": [
+        "变分自编码器",
+        "条件变分自编码器",
+        "KL 散度",
+        "去噪扩散概率模型",
+        "最大似然估计 / 负对数似然",
+        "ACT"
+      ],
+      "sources": [
+        {
+          "title": "Auto-Encoding Variational Bayes (arXiv:1312.6114)",
+          "url": "https://arxiv.org/abs/1312.6114"
+        },
+        {
+          "title": "Denoising Diffusion Probabilistic Models (arXiv:2006.11239)",
+          "url": "https://arxiv.org/abs/2006.11239"
+        },
+        {
+          "title": "Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware (ACT, arXiv:2304.13705)",
+          "url": "https://arxiv.org/abs/2304.13705"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "指数移动平均",
+      "name_en": "Exponential Moving Average",
+      "abbr": "EMA",
+      "aliases": [
+        "指数滑动平均",
+        "EMA 权重",
+        "Polyak 平均",
+        "Polyak Averaging"
+      ],
+      "tier": 3,
+      "one_liner": "对历史值按指数衰减加权求平均，常用来得到更平滑稳定的模型权重。",
+      "explanation": "EMA 是一种加权平均，每步按「平均值 ← β × 平均值 +（1 − β）× 当前值」更新，β 叫衰减率，越接近 1，平均的时间窗越长。深度学习里最常见的用法是维护一份模型权重的 EMA 副本：训练照常更新原权重，评测和部署时改用更平滑的 EMA 权重，通常更稳定；扩散模型尤其依赖它，DDPM 论文用的衰减率是 0.9999。强化学习里目标网络的软更新（Polyak 平均）也是 EMA，让 Q 值目标变化更平稳。Adam 优化器对梯度一阶、二阶矩的估计同样是 EMA。",
+      "example": "扩散策略（Diffusion Policy）官方代码默认开启 EMA，衰减率随训练从 0 逐步升到上限 0.9999，推演评测时使用 EMA 模型而不是原始权重。",
+      "related": [
+        "目标网络",
+        "扩散策略",
+        "检查点",
+        "优化器",
+        "去噪扩散概率模型",
+        "软演员-评论家"
+      ],
+      "sources": [
+        {
+          "title": "Denoising Diffusion Probabilistic Models (arXiv:2006.11239)",
+          "url": "https://arxiv.org/abs/2006.11239"
+        },
+        {
+          "title": "diffusion_policy: train_diffusion_unet_image_workspace.yaml",
+          "url": "https://github.com/real-stanford/diffusion_policy/blob/main/diffusion_policy/config/train_diffusion_unet_image_workspace.yaml"
+        },
+        {
+          "title": "OpenAI Spinning Up: Soft Actor-Critic",
+          "url": "https://spinningup.openai.com/en/latest/algorithms/sac.html"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "外推误差",
+      "name_en": "Extrapolation Error (OOD Actions in Offline RL)",
+      "abbr": "",
+      "aliases": [
+        "分布外动作问题",
+        "OOD 动作高估",
+        "Extrapolation Error"
+      ],
+      "tier": 3,
+      "one_liner": "离线强化学习中，Q 网络给数据里没出现过的动作乱估值而产生的误差。",
+      "explanation": "这一概念由 Fujimoto、Meger、Precup 在 2019 年提出 BCQ 算法的 ICML 论文中系统阐述。离线强化学习只能用固定数据集训练，不能再和环境交互。Q 学习更新时要对下一状态取 max_a Q(s′, a)，而网络对数据中没出现过的动作（分布外动作）的估值只是外推，可能严重偏高；策略偏偏去选这些动作，误差经贝尔曼备份不断累积，学出的策略很差。在线训练可以实际试一下来纠正，离线做不到。应对思路主要有：约束策略贴近数据行为（BCQ、策略约束）、压低分布外动作的 Q 值（CQL）、完全不查询分布外动作（IQL）。",
+      "example": "BCQ 论文中，一个离线的 DDPG 智能体与在线 DDPG 用完全相同的一批数据同时训练，结果在所有任务上都明显落后、价值估计不稳定甚至发散，作者把原因归为外推误差。",
+      "related": [
+        "离线强化学习",
+        "Q 值高估",
+        "保守 Q 学习",
+        "隐式 Q 学习",
+        "策略约束",
+        "分布外"
+      ],
+      "sources": [
+        {
+          "title": "Off-Policy Deep Reinforcement Learning without Exploration (BCQ, arXiv:1812.02900)",
+          "url": "https://arxiv.org/abs/1812.02900"
+        },
+        {
+          "title": "Offline Reinforcement Learning: Tutorial, Review, and Perspectives on Open Problems (arXiv:2005.01643)",
+          "url": "https://arxiv.org/abs/2005.01643"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "机群学习 / 部署中学习",
+      "name_en": "Fleet Learning (Learning While Deploying)",
+      "abbr": "",
+      "aliases": [
+        "机队学习",
+        "交互式机群学习",
+        "Interactive Fleet Learning",
+        "IFL",
+        "LWD"
+      ],
+      "tier": 3,
+      "one_liner": "让一批已部署的机器人边干活边采数据，共同持续改进同一个策略。",
+      "explanation": "机群学习指多台同时部署的机器人把自主执行记录、失败和人工接管数据汇集起来更新共享策略，再下发新策略，形成数据飞轮，让「部署」本身成为训练的一部分。伯克利 Goldberg 团队的 Fleet-DAgger（CoRL 2022）提出「交互式机群学习」设定：多台机器人没把握时向少数远程人员求助，人的纠正用于模仿学习。部署中学习更强调强化学习：2026 年智元（AGIBOT Finch）与上海创智学院等团队提出 LWD 框架，把机群采回的自主推演和人工干预数据用于离线到在线强化学习，持续后训练 VLA。",
+      "example": "LWD 在 16 台双臂机器人组成的机群上验证了 8 个真实操作任务（含语义理货上架和 3–5 分钟的长程任务），单个通用策略随机群经验积累，平均成功率达到 95%。",
+      "related": [
+        "数据飞轮",
+        "数据回流",
+        "人在回路",
+        "DAgger（数据集聚合）",
+        "离线到在线强化学习",
+        "真机强化学习"
+      ],
+      "sources": [
+        {
+          "title": "Fleet-DAgger: Interactive Robot Fleet Learning with Scalable Human Supervision (arXiv:2206.14349)",
+          "url": "https://arxiv.org/abs/2206.14349"
+        },
+        {
+          "title": "Learning While Deploying: Fleet-Scale Reinforcement Learning for Generalist Robot Policies (arXiv:2605.00416)",
+          "url": "https://arxiv.org/abs/2605.00416"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "流匹配损失",
+      "name_en": "Flow Matching Loss",
+      "abbr": "",
+      "aliases": [
+        "速度场回归损失",
+        "条件流匹配损失",
+        "Conditional Flow Matching Loss",
+        "CFM Loss"
+      ],
+      "tier": 3,
+      "one_liner": "让网络预测从噪声指向真实数据的速度方向，用均方误差来训练。",
+      "explanation": "流匹配由 Lipman 等人 2022 年提出，把「噪声逐渐变成数据」看成沿一条路径的连续流动，网络学习路径上每一点的速度场。训练时不用模拟整条轨迹：随机取一个时间 τ，把真实样本和高斯噪声线性插值得到中间点，再用均方误差让网络输出的速度去拟合这条直线路径的方向（真实样本减噪声），这就是流匹配损失。它和扩散模型的去噪损失形式很像，但路径更直，采样步数可以更少。推理时从纯噪声出发，用欧拉法沿预测的速度积分几步就得到样本。π0 系列 VLA 就用它训练动作专家，直接生成连续的动作块。",
+      "example": "π0 训练时从偏向高噪声端的 Beta 分布里采样 τ，构造带噪动作 τ·A + (1 − τ)·ε，让动作专家回归 A − ε；推理时从纯噪声出发，用 10 步欧拉积分生成动作块。",
+      "related": [
+        "流匹配",
+        "速度场",
+        "整流流",
+        "均方误差",
+        "去噪损失",
+        "π0"
+      ],
+      "sources": [
+        {
+          "title": "Flow Matching for Generative Modeling (arXiv:2210.02747)",
+          "url": "https://arxiv.org/abs/2210.02747"
+        },
+        {
+          "title": "π0: A Vision-Language-Action Flow Model for General Robot Control (arXiv:2410.24164)",
+          "url": "https://arxiv.org/abs/2410.24164"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "广义优势估计",
+      "name_en": "Generalized Advantage Estimation",
+      "abbr": "GAE",
+      "aliases": [
+        "GAE(λ)",
+        "广义优势函数估计"
+      ],
+      "tier": 3,
+      "one_liner": "把多步时序差分误差按 λ 指数加权相加，来估计优势函数。",
+      "explanation": "GAE 由 Schulman、Levine、Abbeel 等人在 2015 年提出。策略梯度需要知道某个动作比平均水平好多少，即优势函数。只用一步时序差分（TD）误差 δ = r + γV(s′) − V(s) 估计，方差小但偏差大；用整个回合的蒙特卡洛回报，偏差小但方差大。GAE 把未来各步 TD 误差按 (γλ)^k 衰减加权求和，λ 在 0 到 1 之间调节两者折中：λ = 0 即一步 TD，λ = 1 即蒙特卡洛，思路与 TD(λ) 相同。它是 PPO 的标准配置，足式和人形机器人的 PPO 运控训练普遍用它算优势。",
+      "example": "legged_gym 的 PPO 默认配置取折扣因子 γ = 0.99、GAE 参数 λ = 0.95。",
+      "related": [
+        "优势函数",
+        "近端策略优化",
+        "时序差分学习",
+        "折扣因子",
+        "价值函数",
+        "策略梯度"
+      ],
+      "sources": [
+        {
+          "title": "High-Dimensional Continuous Control Using Generalized Advantage Estimation (arXiv:1506.02438)",
+          "url": "https://arxiv.org/abs/1506.02438"
+        },
+        {
+          "title": "legged_gym: legged_robot_config.py",
+          "url": "https://github.com/leggedrobotics/legged_gym/blob/master/legged_gym/envs/base/legged_robot_config.py"
+        }
+      ],
+      "as_of": ""
+    }
+  ]
+}

@@ -1,0 +1,442 @@
+{
+ "category": "training",
+ "batch": 17,
+ "terms": [
+  {
+   "name_zh": "成功检测器",
+   "name_en": "Success Detector",
+   "abbr": "",
+   "aliases": [
+    "成功判别器",
+    "Success Classifier",
+    "奖励分类器",
+    "Reward Classifier"
+   ],
+   "tier": 3,
+   "one_liner": "判断机器人这一回合有没有把任务做成的模型，常用来给强化学习发奖励。",
+   "explanation": "成功检测器输入观测（通常是相机画面，有时加上任务指令），输出「成功 / 失败」或成功概率。强化学习、自动采数据和自动评测都要知道任务做没做完，真实世界没有仿真器那样现成的判定，只能靠人看或训模型来看。常见做法有两种：为单个任务训练二分类器，如 HIL-SERL 每个任务遥操作采约 200 个成功、1000 个失败样本；或直接用视觉语言模型问答，如 DeepMind 2023 年的 SuccessVQA 把判断改写成「任务完成了吗」的视觉问答，在 Flamingo 上微调。它给出的是稀疏奖励，误判会被策略钻空子，引发奖励黑客。",
+   "example": "HIL-SERL 给每个任务训练一个二分类器，看腕部和侧面相机画面判断是否成功，只有判定成功才给正奖励；据论文报告，分类器在评估集上的准确率一般超过 95%。",
+   "related": [
+    "奖励模型",
+    "VLM 作奖励模型",
+    "稀疏奖励",
+    "进度奖励模型",
+    "真机强化学习",
+    "HIL-SERL"
+   ],
+   "sources": [
+    {
+     "title": "Du et al. 2023: Vision-Language Models as Success Detectors",
+     "url": "https://arxiv.org/abs/2303.07280"
+    },
+    {
+     "title": "Luo et al. 2024: Precise and Dexterous Robotic Manipulation via Human-in-the-Loop Reinforcement Learning (HIL-SERL)",
+     "url": "https://arxiv.org/abs/2410.21845"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "对称性增强（镜像损失）",
+   "name_en": "Symmetry Augmentation (Mirror Loss)",
+   "abbr": "",
+   "aliases": [
+    "镜像对称增强",
+    "对称性数据增强",
+    "镜像损失",
+    "Mirror Loss",
+    "Symmetry Loss"
+   ],
+   "tier": 3,
+   "one_liner": "利用机器人左右对称，把数据镜像一份或加一项损失，让策略动作左右一致。",
+   "explanation": "足式和人形机器人大多左右对称，理想策略也应满足：状态左右镜像后，输出恰好是原动作的镜像。强化学习从零训练却常学出不对称步态，比如一条腿拖着走。常见两种办法：镜像损失由 Yu、Turk、Liu 在 SIGGRAPH 2018 提出，在损失函数里加一项，惩罚「镜像状态下的策略输出」与「原输出的镜像」之差；对称性数据增强则把采到的每条样本镜像一份一起训练。ETH 的 Mittal 等人在 ICRA 2024 对比两者，发现在 PPO 里数据增强收敛更快、回报更高。rsl_rl 已内置这两个选项。",
+   "example": "Mittal 等人用对称性数据增强训练 ANYmal 四足爬箱子，回报高于不加对称处理的 PPO 基线、不同随机种子间波动更小，并部署到了真机上。",
+   "related": [
+    "数据增强",
+    "强化学习运控",
+    "近端策略优化",
+    "rsl_rl",
+    "腿足运动",
+    "损失函数"
+   ],
+   "sources": [
+    {
+     "title": "Yu, Turk, Liu 2018: Learning Symmetric and Low-energy Locomotion (SIGGRAPH 2018)",
+     "url": "https://arxiv.org/abs/1801.08093"
+    },
+    {
+     "title": "Mittal et al. 2024: Symmetry Considerations for Learning Task Symmetric Robot Policies (ICRA 2024)",
+     "url": "https://arxiv.org/abs/2403.04359"
+    },
+    {
+     "title": "GitHub: leggedrobotics/rsl_rl ppo.py（symmetry_cfg / use_mirror_loss）",
+     "url": "https://github.com/leggedrobotics/rsl_rl/blob/main/rsl_rl/algorithms/ppo.py"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "触觉表征学习",
+   "name_en": "Tactile Representation Learning",
+   "abbr": "",
+   "aliases": [
+    "触觉表示学习",
+    "触觉预训练",
+    "Touch Representation Learning"
+   ],
+   "tier": 3,
+   "one_liner": "把触觉传感器读数编码成通用特征，供滑移检测、插拔等下游任务复用。",
+   "explanation": "触觉表征学习研究怎样把触觉传感器的原始信号（如 GelSight、DIGIT 这类视触觉传感器拍到的凝胶形变图像）编码成紧凑特征，供滑移检测、力估计、精密插装等下游任务直接使用。难点是触觉数据少、标注更少，不同传感器成像差异大，换一款常要重训。近年主流做法借用视觉里的自监督学习：Meta 的 Sparsh（CoRL 2024）用掩码和自蒸馏在 46 万多张触觉图像上预训练；MIT 的 T3 用共享 Transformer 加各传感器专属编码器；AnyTouch（ICLR 2025）跨四种传感器学统一表征。它是视触觉融合和触觉 VLA 的基础。",
+   "example": "Sparsh 在 46 万多张无标注视触觉图像上做自监督预训练，在作者提出的 TacBench 六项任务上，据论文报告平均比按任务、按传感器端到端训练的模型高出 95.1%。",
+   "related": [
+    "视触觉传感器",
+    "自监督学习",
+    "Sparsh",
+    "AnyTouch",
+    "视触觉融合",
+    "表征学习"
+   ],
+   "sources": [
+    {
+     "title": "Higuera et al. 2024: Sparsh: Self-supervised Touch Representations for Vision-based Tactile Sensing (CoRL 2024)",
+     "url": "https://arxiv.org/abs/2410.24090"
+    },
+    {
+     "title": "Zhao et al. 2024: Transferable Tactile Transformers for Representation Learning Across Diverse Sensors and Tasks (T3)",
+     "url": "https://arxiv.org/abs/2406.13640"
+    },
+    {
+     "title": "Feng et al. 2025: AnyTouch: Learning Unified Static-Dynamic Representation across Multiple Visuo-tactile Sensors (ICLR 2025)",
+     "url": "https://arxiv.org/abs/2502.12191"
+    }
+   ],
+   "as_of": "2025-04"
+  },
+  {
+   "name_zh": "目标网络",
+   "name_en": "Target Network",
+   "abbr": "",
+   "aliases": [
+    "目标 Q 网络",
+    "Target Q-Network"
+   ],
+   "tier": 3,
+   "one_liner": "主网络的一个慢更新副本，专门用来算训练目标，让 Q 学习更稳定。",
+   "explanation": "在 Q 学习这类时序差分方法里，训练目标是「即时奖励 + 折扣后的下一状态 Q 值」，而这个 Q 值由正在训练的同一个网络算出，相当于边追目标边挪目标，用神经网络时容易发散。DeepMind 2015 年发表在 Nature 上的 DQN 引入目标网络：复制一份主网络专门算目标，每隔固定步数才同步一次。DDPG、TD3、SAC 等连续控制算法改用软更新，每步让目标网络参数向主网络靠近一点（Polyak 平均，系数接近 1）。它和经验回放一起是离策略深度强化学习的标准组件；TD3 论文还分析了它与 Q 值高估的关系。",
+   "example": "OpenAI Spinning Up 的 DDPG 文档中，目标网络每次按 φ_targ ← ρ·φ_targ + (1−ρ)·φ 软更新，ρ 举例取 0.995；而 DQN 类算法是每隔固定步数把主网络整体复制过去。",
+   "related": [
+    "深度 Q 网络",
+    "Q 函数",
+    "时序差分学习",
+    "经验回放",
+    "Q 值高估",
+    "软演员-评论家"
+   ],
+   "sources": [
+    {
+     "title": "OpenAI Spinning Up: Deep Deterministic Policy Gradient（Target Networks 一节）",
+     "url": "https://spinningup.openai.com/en/latest/algorithms/ddpg.html"
+    },
+    {
+     "title": "Wikipedia: Q-learning（Deep Q-learning 一节）",
+     "url": "https://en.wikipedia.org/wiki/Q-learning"
+    },
+    {
+     "title": "Fujimoto et al. 2018: Addressing Function Approximation Error in Actor-Critic Methods (TD3)",
+     "url": "https://arxiv.org/abs/1802.09477"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "教师强制",
+   "name_en": "Teacher Forcing",
+   "abbr": "",
+   "aliases": [
+    "教师强迫"
+   ],
+   "tier": 3,
+   "one_liner": "训练序列模型时每一步都喂真实的上一步，而不是模型自己的预测。",
+   "explanation": "教师强制是训练自回归序列模型的标准做法，1989 年由 Williams 和 Zipser 命名：预测第 t 步时，输入用数据里真实的前 t−1 步，而不是模型自己生成的结果。这样各步能并行算损失，训练快且稳，大语言模型和 RT-2、OpenVLA 这类把动作离散成 token 的 VLA 都这样训练。代价是训练和推理不一致：推理时模型只能接着自己的输出往下写，早期小错会累积，这叫曝光偏差。计划采样（2015）在训练中逐步混入模型自己的预测；视频生成里的 Self Forcing（2025）则在训练时直接自回归展开。",
+   "example": "训练 OpenVLA 时，每步动作被离散成 7 个 token，第 k 个 token 以真实的前 k−1 个 token 为条件来预测；部署时则只能接在模型自己刚生成的 token 后面继续解码。",
+   "related": [
+    "下一个 token 预测",
+    "自回归解码",
+    "曝光偏差（自回归误差累积）",
+    "自强制",
+    "扩散强制",
+    "复合误差"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Teacher forcing",
+     "url": "https://en.wikipedia.org/wiki/Teacher_forcing"
+    },
+    {
+     "title": "Bengio et al. 2015: Scheduled Sampling for Sequence Prediction with Recurrent Neural Networks",
+     "url": "https://arxiv.org/abs/1506.03099"
+    },
+    {
+     "title": "Huang et al. 2025: Self Forcing: Bridging the Train-Test Gap in Autoregressive Video Diffusion",
+     "url": "https://arxiv.org/abs/2506.08009"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "地形课程",
+   "name_en": "Terrain Curriculum",
+   "abbr": "",
+   "aliases": [
+    "地形难度课程",
+    "游戏式课程",
+    "Game-inspired Curriculum"
+   ],
+   "tier": 3,
+   "one_liner": "腿足强化学习中，按机器人表现把它逐步送上更难地形的训练安排。",
+   "explanation": "地形课程是课程学习在腿足运控里的具体做法。一开始就在陡坡、楼梯上从零训练，机器人几乎一直摔倒，拿不到有用的学习信号；只在平地练又学不会复杂地形。ETH 的 Rudin 等人 2021 年在 legged_gym 中提出「游戏式」课程：把地形排成难度递增的网格，每回合结束看机器人走了多远，走过地块长度一半就升一级，连指令速度要求距离的一半都没走到就降一级，通关最难级的随机送回某一级，避免遗忘简单地形。几千个并行环境各自升降，整体难度自动跟上策略水平。Isaac Lab 的速度跟踪任务沿用了同样规则。",
+   "example": "legged_gym 默认把地形分成 10 个难度级、20 列，类型包括光滑坡、粗糙坡、上楼梯、下楼梯和离散障碍；机器人开局级别在第 0–5 级之间随机，之后按每回合行走距离升级或降级。",
+   "related": [
+    "课程学习",
+    "强化学习运控",
+    "legged_gym",
+    "大规模并行强化学习",
+    "复杂地形行走",
+    "高度场地形"
+   ],
+   "sources": [
+    {
+     "title": "Rudin et al. 2021: Learning to Walk in Minutes Using Massively Parallel Deep Reinforcement Learning (CoRL 2021)",
+     "url": "https://arxiv.org/abs/2109.11978"
+    },
+    {
+     "title": "GitHub: leggedrobotics/legged_gym legged_robot.py（_update_terrain_curriculum）",
+     "url": "https://github.com/leggedrobotics/legged_gym/blob/master/legged_gym/envs/base/legged_robot.py"
+    },
+    {
+     "title": "GitHub: isaac-sim/IsaacLab locomotion velocity curriculums.py（terrain_levels_vel）",
+     "url": "https://github.com/isaac-sim/IsaacLab/blob/main/source/isaaclab_tasks/isaaclab_tasks/manager_based/locomotion/velocity/mdp/curriculums.py"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "测试时训练",
+   "name_en": "Test-Time Training",
+   "abbr": "TTT",
+   "aliases": [
+    "测试时适应",
+    "Test-Time Adaptation",
+    "TTA"
+   ],
+   "tier": 3,
+   "one_liner": "部署时拿到新数据，先用它做几步自监督更新，再用更新后的模型输出。",
+   "explanation": "测试时训练由 Sun 等人在 ICML 2020 提出：模型训练时顺带学一个不需要标签的辅助任务（如预测图片被转了多少度），测试时拿到新样本，先用这个辅助任务对它更新几步参数，再做正式预测，用来应对训练和测试数据分布不一致。相近的测试时适应如 Tent（ICLR 2021）只在测试数据上最小化预测熵、调整归一化层参数。具身领域用它让策略在部署现场继续适应，EVOLVE-VLA 用自动估计的任务进度作反馈，让 VLA 在测试时继续学习；TTT-Parkour 先扫描重建陌生地形，再在重建出的地形上快速微调人形跑酷策略。",
+   "example": "TTT-Parkour（2026）用 RGB-D 相机扫描重建楔形块、窄梁等陌生障碍，再在重建地形上微调人形机器人的跑酷策略；据论文称，多数地形从采集、重建到测试时训练不到 10 分钟。",
+   "related": [
+    "分布外",
+    "领域自适应",
+    "自监督学习",
+    "推理时计算",
+    "持续学习",
+    "快速运动适应"
+   ],
+   "sources": [
+    {
+     "title": "Sun et al. 2020: Test-Time Training with Self-Supervision for Generalization under Distribution Shifts (ICML 2020)",
+     "url": "https://arxiv.org/abs/1909.13231"
+    },
+    {
+     "title": "Bai, Gao, Shou 2025: EVOLVE-VLA: Test-Time Training from Environment Feedback for Vision-Language-Action Models",
+     "url": "https://arxiv.org/abs/2512.14666"
+    },
+    {
+     "title": "Zhu et al. 2026: TTT-Parkour: Rapid Test-Time Training for Perceptive Robot Parkour",
+     "url": "https://arxiv.org/abs/2602.02331"
+    }
+   ],
+   "as_of": "2026-02"
+  },
+  {
+   "name_zh": "时间对比学习",
+   "name_en": "Time-Contrastive Networks",
+   "abbr": "TCN",
+   "aliases": [
+    "时间对比网络",
+    "时序对比学习",
+    "Time-Contrastive Learning"
+   ],
+   "tier": 3,
+   "one_liner": "从视频自监督学表征：同一时刻的多视角拉近，相邻不同时刻推远。",
+   "explanation": "时间对比网络由谷歌大脑的 Sermanet 等人 2017 年提出（ICRA 2018），是从无标注视频学视觉表征的早期代表。多视角版本用几台相机同时拍同一过程：同一时刻不同视角的画面在特征空间里拉近，同一视角里时间相邻、看着很像但任务进度不同的画面推远，用三元组损失训练。这样学到的特征对视角、光照不敏感，却能分辨杯子倾斜了多少这类与任务相关的状态。论文用它让机器人仅凭一段第三人称人类视频模仿倒水和人体姿势，并把与演示的特征距离当作强化学习奖励。后来 R3M 等机器人视觉预训练也把时间对比作为目标之一。",
+   "example": "机器人看一段人倒水的第三人称视频，把自己画面与演示画面在 TCN 特征空间里的距离当奖励，再用强化学习练出倒水动作。",
+   "related": [
+    "对比学习",
+    "自监督学习",
+    "R3M",
+    "表征学习",
+    "从观测中模仿学习",
+    "预训练视觉表征"
+   ],
+   "sources": [
+    {
+     "title": "Sermanet et al. 2017: Time-Contrastive Networks: Self-Supervised Learning from Video",
+     "url": "https://arxiv.org/abs/1704.06888"
+    },
+    {
+     "title": "项目页：Time-Contrastive Networks",
+     "url": "https://sermanet.github.io/imitate/"
+    },
+    {
+     "title": "Nair et al. 2022: R3M: A Universal Visual Representation for Robot Manipulation",
+     "url": "https://arxiv.org/abs/2203.12601"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "信赖域策略优化",
+   "name_en": "Trust Region Policy Optimization",
+   "abbr": "TRPO",
+   "aliases": [
+    "信任域策略优化",
+    "置信域策略优化"
+   ],
+   "tier": 3,
+   "one_liner": "每次更新都限制新旧策略差异（KL 散度）的策略梯度算法，PPO 的前身。",
+   "explanation": "信赖域策略优化由 Schulman、Levine、Abbeel 等人在 ICML 2015 提出。普通策略梯度沿梯度走一步，步子稍大就可能让性能骤降，而且参数上的小改动也可能让动作分布变很多。TRPO 把约束放在策略分布上：在新旧策略平均 KL 散度不超过阈值的「信赖域」内最大化替代目标，理论上可保证单调改进。实现上用共轭梯度求近似二阶的更新方向，再用回溯线搜索检查约束和改进。它是同策略算法，实现较繁琐；2017 年同一作者提出的 PPO 用更简单的方式近似这个约束，已成为机器人强化学习主流。",
+   "example": "OpenAI Spinning Up 的 TRPO 实现中，每轮先用共轭梯度算出更新方向，再按回溯系数不断缩短步长，直到新策略既不超过 KL 上限、又让替代目标变好。",
+   "related": [
+    "近端策略优化",
+    "策略梯度",
+    "KL 散度",
+    "同策略",
+    "广义优势估计",
+    "强化学习"
+   ],
+   "sources": [
+    {
+     "title": "Schulman et al. 2015: Trust Region Policy Optimization (ICML 2015)",
+     "url": "https://arxiv.org/abs/1502.05477"
+    },
+    {
+     "title": "OpenAI Spinning Up: Trust Region Policy Optimization",
+     "url": "https://spinningup.openai.com/en/latest/algorithms/trpo.html"
+    },
+    {
+     "title": "Schulman et al. 2017: Proximal Policy Optimization Algorithms",
+     "url": "https://arxiv.org/abs/1707.06347"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "无监督技能发现",
+   "name_en": "Unsupervised Skill Discovery",
+   "abbr": "",
+   "aliases": [
+    "DIAYN",
+    "无奖励技能学习",
+    "Unsupervised Skill Learning"
+   ],
+   "tier": 3,
+   "one_liner": "不给任务奖励，让智能体自己练出一组彼此可区分的技能，留给后续任务调用。",
+   "explanation": "无监督技能发现指在没有外部奖励时，让智能体自发学出多种不同行为。最有名的 DIAYN（Diversity is All You Need）由 Eysenbach、Levine 等人 2018 年提出：给策略输入一个技能编号，同时训练判别器从到达的状态猜是哪个技能，猜得越准内在奖励越高，再加最大熵项鼓励动作随机，本质是最大化技能与状态的互信息。模拟机器人因此自发学会了走、跳等动作。技能可作预训练初始化，或交给上层策略组合来解稀疏奖励任务。METRA（ICLR 2024）改在保留时间距离的隐空间里学技能，缓解了互信息方法探索不足的问题。",
+   "example": "Sharma 等人 2020 年把技能发现算法 DADS 改成离策略版本，在真实四足机器人上不给奖励和演示，学出了不同步态和朝向的行走技能，再用模型预测控制把它们串起来完成导航。",
+   "related": [
+    "内在奖励",
+    "分层强化学习",
+    "探索与利用",
+    "行为基础模型",
+    "BFM-Zero",
+    "熵正则化"
+   ],
+   "sources": [
+    {
+     "title": "Eysenbach et al. 2018: Diversity is All You Need: Learning Skills without a Reward Function",
+     "url": "https://arxiv.org/abs/1802.06070"
+    },
+    {
+     "title": "Sharma et al. 2020: Emergent Real-World Robotic Skills via Unsupervised Off-Policy Reinforcement Learning",
+     "url": "https://arxiv.org/abs/2004.12974"
+    },
+    {
+     "title": "Park, Rybkin, Levine 2023: METRA: Scalable Unsupervised RL with Metric-Aware Abstraction (ICLR 2024)",
+     "url": "https://arxiv.org/abs/2310.08887"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "更新-数据比",
+   "name_en": "Update-to-Data Ratio",
+   "abbr": "UTD",
+   "aliases": [
+    "UTD 比",
+    "UTD Ratio",
+    "重放比",
+    "Replay Ratio"
+   ],
+   "tier": 3,
+   "one_liner": "每采集一步环境数据做几次梯度更新；越高越省数据，也越费算力。",
+   "explanation": "更新-数据比指离策略强化学习里，每和环境交互一步、往经验回放里加一条数据后，网络做多少次梯度更新。标准 SAC 通常取 1。真机强化学习里采数据慢而贵，算力相对便宜，于是希望调高这个比值，把同一批数据多学几遍。但直接调高容易让 Q 函数过拟合和高估，训练变差。REDQ（ICLR 2021）用 Q 网络集成，首次让无模型算法在 UTD 远大于 1 时稳定工作；DroQ 改用 dropout 和层归一化，计算更省。SERL 等真机强化学习框架依赖高 UTD 提高样本效率，并把采集和训练拆成两个线程。",
+   "example": "「A Walk in the Park」（2022）在宇树 A1 四足上以 SAC 为基础，加层归一化并把 UTD 提到 20，即每采一步数据做 20 次评论家更新，约 20 分钟真机训练学会行走。",
+   "related": [
+    "样本效率",
+    "经验回放",
+    "异策略",
+    "真机强化学习",
+    "SERL",
+    "Q 值高估"
+   ],
+   "sources": [
+    {
+     "title": "Chen et al. 2021: Randomized Ensembled Double Q-Learning: Learning Fast Without a Model (REDQ, ICLR 2021)",
+     "url": "https://arxiv.org/abs/2101.05982"
+    },
+    {
+     "title": "Smith, Kostrikov, Levine 2022: A Walk in the Park: Learning to Walk in 20 Minutes With Model-Free Reinforcement Learning",
+     "url": "https://arxiv.org/abs/2208.07860"
+    },
+    {
+     "title": "Luo et al. 2024: SERL: A Software Suite for Sample-Efficient Robotic Reinforcement Learning",
+     "url": "https://arxiv.org/abs/2401.16013"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "价值引导采样",
+   "name_en": "Value-Guided Sampling",
+   "abbr": "",
+   "aliases": [
+    "价值引导策略重排序",
+    "价值重排序",
+    "Value-Guided Policy Steering"
+   ],
+   "tier": 3,
+   "one_liner": "先从策略采样多个候选动作，再用价值函数打分，挑最好的执行。",
+   "explanation": "价值引导采样在推理时提升策略：不改原策略权重，每步先从策略采样多个候选动作，再用单独训练的价值函数（Q 函数）打分，选最高分的，或按分数做 softmax 抽样。代表工作是 Levine 组的 V-GPS（CoRL 2024）：用 Cal-QL 等离线强化学习在 Bridge 和 RT-1 数据上训练语言条件 Q 函数，给 Octo、OpenVLA 等五种通用策略做重排序，12 个任务上都有提升。通用策略的训练数据质量参差，价值函数负责把「做得好」的动作挑出来。它和最优 N 采样、RoboMonkey 用 VLM 校验动作同属推理时计算。",
+   "example": "V-GPS 真机实验中，每一步从通用策略采样 50 个候选动作，用 Q 函数挑出得分最高的执行；据论文报告，WidowX 机械臂 6 个任务的平均成功率相对提升 82.8%。",
+   "related": [
+    "推理时计算",
+    "最优 N 采样",
+    "V-GPS",
+    "Q 函数",
+    "离线强化学习",
+    "RoboMonkey"
+   ],
+   "sources": [
+    {
+     "title": "Nakamoto et al. 2024: Steering Your Generalists: Improving Robotic Foundation Models via Value Guidance (V-GPS, CoRL 2024)",
+     "url": "https://arxiv.org/abs/2410.13816"
+    },
+    {
+     "title": "Kwok et al. 2025: RoboMonkey: Scaling Test-Time Sampling and Verification for Vision-Language-Action Models",
+     "url": "https://arxiv.org/abs/2506.17811"
+    }
+   ],
+   "as_of": "2025-07"
+  }
+ ]
+}

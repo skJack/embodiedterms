@@ -1,0 +1,225 @@
+{
+  "batch": "named_model-12",
+  "terms": [
+    {
+      "key": "named_model-12#0",
+      "name_en": "Extreme Parkour",
+      "aliases": [
+        "Extreme Parkour with Legged Robots"
+      ],
+      "one_liner": "A 2023 CMU project where a low-cost quadruped does parkour — jumping high and far — using just one depth camera and a single network.",
+      "explanation": "Extreme Parkour is work released in September 2023 by Xuxin Cheng, Deepak Pathak, and colleagues at Carnegie Mellon University, published at ICRA 2024. They used a low-cost Unitree A1 quadruped, whose motor control isn't especially precise, with just one Intel RealSense D435 depth camera on its head producing low-frequency, jittery, noisy footage. Where traditional approaches carefully design perception, mapping, planning, and control as separate modules, this work goes end-to-end: a neural network is trained with large-scale reinforcement learning in simulation to output joint actions directly from the depth image. Training happens in two stages — first using precise terrain information only available in simulation, then distilled into a policy that works from the depth image alone and can even decide which direction to jump; the reward is mostly unified into a single term, the dot product between the velocity direction and the goal direction, with no need to hand-design a reward for each type of obstacle. It pushed the difficulty ceiling for legged-robot parkour up substantially, and is often cited alongside the contemporaneous Robot Parkour Learning.",
+      "example": "The A1 robot dog can jump onto a 0.5-meter-tall box (about twice its own height), leap across a 0.8-meter-wide gap (about twice its body length), and even walk upside down on just its two front legs.",
+      "related": [
+        "Parkour",
+        "Robot Parkour Learning",
+        "Perceptive Locomotion",
+        "Teacher-Student Distillation",
+        "Unitree A1",
+        "Sim-to-Real Transfer"
+      ]
+    },
+    {
+      "key": "named_model-12#1",
+      "name_en": "FALCON",
+      "aliases": [
+        "Learning Force-Adaptive Humanoid Loco-Manipulation"
+      ],
+      "one_liner": "A 2025 CMU humanoid training framework that lets a robot push, pull, and carry heavy loads steadily while walking.",
+      "explanation": "FALCON is a whole-body control method for humanoid robots released in May 2025 by CMU's LeCAR Lab (Guanya Shi's group) together with Field AI and others, accepted as an oral presentation at L4DC 2026. When a humanoid walks and works at the same time (loco-manipulation), a large force on its hands — from pulling a cart, opening a door, or carrying something heavy — can easily throw the lower body off balance, while the upper body also struggles to reach its target accurately. FALCON uses dual-agent reinforcement learning: a lower-body policy keeps walking stable under force disturbances, and an upper-body policy sends the hand to its target while implicitly compensating for the external force, both trained jointly and sharing proprioception (joint angles, velocities, and other self-state); this is paired with a 3D force curriculum that gradually increases the force applied to the hands during training, while staying under each joint's torque limit. Upper-body tracking accuracy is about twice that of baselines, and the same pipeline, with no reward changes, works on both the Unitree G1 and the Booster Robotics T1.",
+      "example": "In real-robot experiments, the humanoid walked while pulling a cart under 0–100 N of force, opened a door with both arms against 0–40 N of resistance, and could carry a load while walking, squatting, and turning.",
+      "related": [
+        "Loco-Manipulation",
+        "Whole-Body Control",
+        "Curriculum Learning",
+        "Unitree G1",
+        "Booster Robotics T1",
+        "Field AI"
+      ]
+    },
+    {
+      "key": "named_model-12#2",
+      "name_en": "Fast-WAM",
+      "aliases": [
+        "Do World Action Models Need Test-time Future Imagination?"
+      ],
+      "one_liner": "A 2026 Tsinghua and Galaxea world action model that learns video prediction during training but skips imagining the future at inference, making it faster.",
+      "explanation": "Fast-WAM is a paper released in March 2026 by Tianyuan Yuan, Hang Zhao, and colleagues at Tsinghua University's Institute for Interdisciplinary Information Sciences together with Galaxea. Most world action models (WAMs, models that jointly predict future video and robot actions) follow an “imagine, then act” approach: a video diffusion model generates a few future frames, and actions are produced from those, with the repeated denoising making inference slow. The authors separated two questions to test independently: whether to jointly learn video prediction during training, and whether to actually generate future frames at inference. They found that dropping the imagination step at inference barely hurts performance, while dropping joint video training during training hurts it substantially — showing that video prediction's real value lies in training a better world representation, not in generating images at test time. The model uses the Wan2.2-5B video diffusion Transformer as its backbone plus a roughly 1-billion-parameter action expert, about 6 billion parameters in total; inference latency is 190 milliseconds, more than 4 times faster than comparable “imagine, then act” models.",
+      "example": "With no robot-data pretraining at all, Fast-WAM reaches a 91.8% success rate on RoboTwin 2.0 and an average of 97.6% on LIBERO, and completed a long-horizon real-robot towel-folding task on the Galaxea R1 Lite.",
+      "related": [
+        "World Action Model",
+        "Video Generation Model",
+        "Action Expert",
+        "Inference Latency",
+        "Robbyant LingBot-VA",
+        "Motus"
+      ]
+    },
+    {
+      "key": "named_model-12#3",
+      "name_en": "Field Foundation Models (Field AI)",
+      "aliases": [
+        "FFM"
+      ],
+      "one_liner": "Field AI's robot foundation model, built to operate autonomously in unmapped construction sites and industrial facilities.",
+      "explanation": "FFM (Field Foundation Models) is the core model line of Field AI, a US robot-software company headquartered in Irvine, California. Its founder and CEO is Ali Agha, and the team includes people from NASA's Jet Propulsion Laboratory and Google DeepMind, with experience on Mars exploration and DARPA programs. The company describes FFM as a “physics-first” embodied foundation model: it combines data-driven neural networks with physics-based reasoning and uncertainty estimation, built around a risk-assessing “belief world model” that lets a robot move and work autonomously in unstructured environments with no pre-built map, no GPS, and no preset path — running entirely on onboard compute. The same model can be installed on robots of different shapes from different manufacturers, which the company describes as “one brain for any machine.” According to its press releases, Field AI has raised more than $400 million in total funding, from investors including Bezos Expeditions, Khosla Ventures, and NVIDIA's venture arm NVentures.",
+      "example": "In March 2026, Field AI announced a partnership with Boston Dynamics to put FFM on the Spot quadruped, letting it move and work autonomously on construction sites that have no map and change day to day; that September, the company also announced a partnership with Caterpillar.",
+      "related": [
+        "Field AI",
+        "Foundation Model",
+        "World Model",
+        "Uncertainty Estimation",
+        "Boston Dynamics Spot",
+        "On-Device / Edge Deployment"
+      ]
+    },
+    {
+      "key": "named_model-12#4",
+      "name_en": "Helix 2.5",
+      "aliases": [
+        "Figure Helix 2.5"
+      ],
+      "one_liner": "A humanoid robot model Figure AI released in September 2026 that does household chores zero-shot in 30 unfamiliar homes.",
+      "explanation": "Helix 2.5 is a robot model released on September 17, 2026 by the US humanoid robot company Figure AI, running on the Figure 03 humanoid, and the successor to Helix and Helix 02. Unlike its predecessors, which started from a vision-language model, the company says Helix 2.5 is pretrained entirely on Index, Figure's self-built, global-scale dataset of human behavior, which it says gains about 35 minutes of new human experience every second. The release's headline result is zero-shot generalization: across 30 San Francisco Bay Area homes the robot had never visited, with no data collection or fine-tuning and a single fixed set of model weights per task, it performed three household chores that require moving and manipulating at the same time — tidying a living room, folding towels, and making a bed. In the company's own comparison, a policy trained from random initialization reached 9% success, while Helix 2.5 starting from Index pretraining reached 56%; and matching Helix 02's success rate required only half as much task-specific data.",
+      "example": "Figure 03 walks into an unfamiliar home and, using the same model weights, puts scattered items in the living room back in place, folds towels, and makes the bed — with no data ever collected in that home beforehand.",
+      "related": [
+        "Figure AI",
+        "Helix",
+        "Helix 02",
+        "Figure 03",
+        "Human Video Data",
+        "Zero-shot"
+      ]
+    },
+    {
+      "key": "named_model-12#5",
+      "name_en": "Flamingo",
+      "aliases": [
+        "DeepMind Flamingo",
+        "a Visual Language Model for Few-Shot Learning"
+      ],
+      "one_liner": "A 2022 DeepMind vision-language model that learns a new task from just a few image-text examples, an early landmark VLM.",
+      "explanation": "Flamingo is a vision-language model (VLM, a model that can look at images and read and write text at the same time) released by DeepMind in April 2022, published at NeurIPS 2022, with its largest version at 80 billion parameters. It freezes an already-trained vision encoder and language model (DeepMind's 70-billion-parameter Chinchilla) and adds two new kinds of module in between: a Perceiver Resampler that compresses any number of image features down to a fixed number of visual tokens, and gated cross-attention layers inserted into the language model so it can “look at” the image while generating text. It is trained on web data where images and text are interleaved, which lets it do few-shot learning the way large language models do: put a few image-text examples in the prompt, and it completes a new task with no parameter updates. Across 16 benchmarks, it beat prior few-shot methods using just 4 examples per task. The community's open-source reproduction, OpenFlamingo, was later used by RoboFlamingo as the backbone for a robot policy.",
+      "example": "Put two example animal photos with captions in the prompt, followed by a new photo, and Flamingo will write a caption for it in the same format — with no additional training required.",
+      "related": [
+        "Vision-Language Model",
+        "Perceiver Resampler",
+        "Cross-Attention",
+        "Few-shot",
+        "In-Context Learning",
+        "RoboFlamingo"
+      ]
+    },
+    {
+      "key": "named_model-12#6",
+      "name_en": "FLUX 3 Action",
+      "aliases": [
+        "Black Forest Labs open-weight world action model"
+      ],
+      "one_liner": "A 7B open-weight world action model from Germany's Black Forest Labs, released September 2026, predicting frames and actions together.",
+      "explanation": "FLUX 3 Action is a robot model released in September 2026 by Black Forest Labs, the German company known for its FLUX line of image-generation models, with 7 billion parameters and weights open on Hugging Face. It is a world action model (WAM, a model that jointly predicts future video frames and robot actions), adapted from the company's multimodal FLUX 3 backbone, which was pretrained on large amounts of video, image, and audio data, mostly video. The model takes in camera images, joint state, and a text instruction, and outputs both a robot action and a predicted future frame at the same time, aiming to carry the physical common sense learned from video pretraining over into control. The company says it supports multiple action spaces, including end-effector pose and joint angles, and demonstrated it on a Franka arm and the SO-101. It is an example of an image- and video-generation company moving into embodied AI.",
+      "example": "The company reports that a guidance-distilled version reaches a 42.2% success rate on the RoboLab-120 simulation leaderboard, ahead of NVIDIA Cosmos 3 Nano's 36.8%, and a 93.3% success rate across 10 real-robot DROID manipulation tasks.",
+      "related": [
+        "World Action Model",
+        "Open Weights",
+        "Cosmos 3",
+        "Fast-WAM",
+        "DROID Dataset",
+        "SO-100 / SO-101 Arm"
+      ]
+    },
+    {
+      "key": "named_model-12#7",
+      "name_en": "GAIA-2 (Wayve)",
+      "aliases": [
+        "A Controllable Multi-View Generative World Model for Autonomous Driving"
+      ],
+      "one_liner": "A 2025 driving world model from UK self-driving company Wayve that generates controllable, multi-camera driving video.",
+      "explanation": "GAIA-2 is a generative world model released by the UK self-driving company Wayve on March 26, 2025, the successor to GAIA-1. “World model” here means a video-generation model that can “imagine” future driving-scene footage conditioned on given inputs. GAIA-2 moves away from GAIA-1's autoregressive token generation to a video-tokenizer-plus-latent-diffusion architecture (compressing video into a latent space first, then denoising and generating within that latent space), natively supporting several cameras generated at once that stay consistent with each other in both time and space, with data covering the UK, the US, and Germany. Generation can be controlled along several axes: the ego vehicle's speed and steering, the behavior of other vehicles and pedestrians, weather and time of day, and road structure such as lanes and intersections. It is used to mass-produce synthetic data, create variations on real driving logs, and generate rare, dangerous scenarios to test driving models. It is one of the earlier examples of world models being put to practical use in physical AI.",
+      "example": "Take a real multi-camera driving log, change the weather to heavy rain, and add a car suddenly cutting in, to generate a new set of surround-view video used to check how a driving model reacts to this rare situation.",
+      "related": [
+        "World Model",
+        "Autonomous Driving",
+        "Latent Diffusion Model",
+        "Synthetic Data",
+        "Waymo World Model",
+        "NVIDIA Cosmos"
+      ]
+    },
+    {
+      "key": "named_model-12#8",
+      "name_en": "Galaxea G0 Dual-System VLA",
+      "aliases": [
+        "G0",
+        "G0-VLA",
+        "Galaxea G0"
+      ],
+      "one_liner": "Galaxea's 2025 open-source fast-slow dual-system robot model, where a VLM breaks down the task and a VLA executes the actions.",
+      "explanation": "G0 is a dual-system robot foundation model from the embodied-AI company Galaxea (Galaxea AI), released in late August 2025 and open-sourced in September, launched alongside the Galaxea Open-World Dataset. It splits into a fast-slow dual system: the slow system, G0-VLM, is fine-tuned from Qwen2.5-VL and handles understanding instructions and breaking a long task into sub-tasks; the fast system, G0-VLA, has a vision-language backbone initialized from PaliGemma and outputs actions based on the current view, the robot's own state, and the sub-task instruction. Training has three stages: cross-embodiment pretraining on data from multiple robots including OXE, then pretraining on the company's own single-embodiment data, and finally post-training on specific tasks. The paper found the second stage — pretraining on real data from the same type of robot — to be the most important. The dataset was collected with the Galaxea R1 Lite across 50 real-world scenes spanning homes, retail, dining, and offices, totaling about 500 hours and 100,000 trajectories. Galaxea later released G0Plus (January 2026) and G0.5 (June 2026).",
+      "example": "When the user says “help me make the bed,” G0-VLM breaks it into a sequence of sub-task instructions, and G0-VLA drives the R1 Lite's two arms and mobile base step by step according to those instructions, until the bed is made.",
+      "related": [
+        "Galaxea",
+        "Fast-Slow Dual System",
+        "Galaxea Open-World Dataset",
+        "Galaxea R1",
+        "PaliGemma",
+        "Vision-Language-Action Model"
+      ]
+    },
+    {
+      "key": "named_model-12#9",
+      "name_en": "GameNGen",
+      "aliases": [
+        "Neural Game Engine",
+        "Diffusion Models Are Real-Time Game Engines"
+      ],
+      "one_liner": "A 2024 Google project that uses a diffusion model to generate playable DOOM footage in real time, replacing the game engine.",
+      "explanation": "GameNGen is a paper released in August 2024 by researchers at Google Research and Google DeepMind, demonstrating that a neural network can simulate a complex game and be played in real time. The game chosen was the classic first-person shooter DOOM. The method has two steps: first, train a reinforcement-learning agent to play the game, recording footage and key presses; then adapt Stable Diffusion 1.4 into a diffusion model that predicts the next frame conditioned on a number of past frames and the player's actions. Autoregressive generation — using self-generated frames to generate the next ones — tends to get blurrier and blurrier over time, so the authors added Gaussian noise to history frames during training, teaching the model to correct itself, which lets it run stably for several minutes; they also separately fine-tuned the image decoder to reduce compression artifacts. It reaches about 20 frames per second on a single TPU. This work drew wide attention to interactive world models, and is often discussed alongside DIAMOND and Genie 2.",
+      "example": "The player presses keys to shoot, open doors, and pick up health packs, and the diffusion model generates the footage frame by frame, including the on-screen health and ammo counts; the generated frames reach a PSNR of 29.4, comparable to lossy JPEG compression, and human raters could barely do better than chance at telling short real and generated clips apart.",
+      "related": [
+        "Interactive World Model",
+        "Diffusion Model",
+        "Autoregressive Video Generation",
+        "DIAMOND (Diffusion World Model)",
+        "Genie 2",
+        "World Model"
+      ]
+    },
+    {
+      "key": "named_model-12#10",
+      "name_en": "Gato",
+      "aliases": [
+        "A Generalist Agent"
+      ],
+      "one_liner": "A 2022 DeepMind generalist agent whose single set of weights can play games, caption images, chat, and control a robot arm.",
+      "explanation": "Gato is a generalist agent DeepMind released in May 2022, in a paper titled A Generalist Agent. The mainstream approach at the time was one model per task; Gato instead used a single roughly 1.2-billion-parameter Transformer, with one set of weights, to cover 604 tasks: playing Atari games, captioning images, holding conversations, controlling various robots in simulation, and stacking blocks with a real robot arm. The key idea is converting every modality into tokens: text is split by a tokenizer, images are cut into patches, and discrete or continuous values like joint angles and button presses are also encoded as tokens, all concatenated into a single sequence and predicted one at a time like a language model, with the training loss computed only on the text and action tokens. At inference, the model autoregressively samples action tokens one at a time, with a context window of 1,024 tokens. It is an early representative of the “one large model controlling many embodiments” idea, and DeepMind's later RoboCat carried over Gato's architecture.",
+      "example": "The same Gato model presses controller buttons in an Atari game one moment, generates a caption for a photo the next, and then controls a real robot arm to stack colored blocks.",
+      "related": [
+        "Generalist Policy",
+        "Transformer",
+        "Token",
+        "RoboCat",
+        "Multi-Task Learning",
+        "Cross-Embodiment"
+      ]
+    },
+    {
+      "key": "named_model-12#11",
+      "name_en": "Gemini Robotics On-Device",
+      "aliases": [
+        "Gemini Robotics On-Device 2"
+      ],
+      "one_liner": "Google DeepMind's lightweight Gemini Robotics VLA that runs directly on the robot itself, with no internet connection required.",
+      "explanation": "Gemini Robotics On-Device is a vision-language-action model (VLA, a model that takes in images and spoken instructions and outputs robot actions directly) released by Google DeepMind on June 24, 2025, a stripped-down version of Gemini Robotics specifically optimized to run on a robot's own onboard compute with no cloud connection needed — suited to poor-connectivity or latency-sensitive settings. It targets bimanual manipulation mainly, capable of dexterous tasks like unzipping a zipper or folding clothes, and supports fine-tuning to a new task with just 50 to 100 demonstrations. The model was trained on the ALOHA bimanual platform, and official demos showed it transferred to a dual-arm Franka FR3 setup and to Apptronik's Apollo humanoid. It was made available, together with the Gemini Robotics SDK, through a trusted-tester program. DeepMind later released Gemini Robotics On-Device 2, which it says can adapt to a new robot embodiment with fewer than 200 examples, also currently available through the trusted-tester program.",
+      "example": "A developer collects 50–100 demonstrations for a new task, such as folding a new type of garment, and can fine-tune the On-Device model to that task; inference then runs entirely on the robot itself, so it keeps working even with no network connection.",
+      "related": [
+        "Gemini Robotics",
+        "Gemini Robotics 2",
+        "On-Device / Edge Deployment",
+        "Gemini Robotics SDK",
+        "ALOHA",
+        "Apptronik Apollo"
+      ]
+    }
+  ]
+}

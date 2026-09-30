@@ -1,0 +1,118 @@
+{
+  "batch": "named_model-21",
+  "terms": [
+    {
+      "key": "named_model-21#0",
+      "name_en": "Q-Transformer",
+      "aliases": ["Q-Transformer: Scalable Offline Reinforcement Learning via Autoregressive Q-Functions"],
+      "one_liner": "A large-scale offline reinforcement learning method that uses a Transformer to estimate Q-values one action dimension at a time.",
+      "explanation": "Q-Transformer was released by Yevgen Chebotar, Sergey Levine, and colleagues at Google DeepMind in September 2023 and published at CoRL 2023. The problem it targets: robots often have both human demonstrations and a much larger pool of autonomously collected data, including failures, and offline reinforcement learning (training only from existing data, without further interaction) offers a way to use both. The method represents the Q-function (a value function that scores a state-action pair) with a Transformer: each action dimension is discretized into a number of bins, and the Q-value for each dimension is predicted one at a time, similar to generating tokens. Training is stabilized with conservative regularization (pushing the value of unseen actions down to a minimum) and Monte Carlo return estimates. On RT-1's real-robot multi-task benchmark, Q-Transformer outperforms RT-1, IQL, and Decision Transformer, and is especially good at making use of failure data.",
+      "example": "On RT-1's real-robot multi-task data, Q-Transformer trains on both human demonstrations and failure episodes from the robot's own autonomous attempts, outperforming RT-1, which only imitates successful demonstrations.",
+      "related": ["QT-Opt", "Offline Reinforcement Learning", "Q-Function (Action-Value Function)", "RT-1", "Conservative Q-Learning", "Decision Transformer"]
+    },
+    {
+      "key": "named_model-21#1",
+      "name_en": "QT-Opt",
+      "abbr": "QT-Opt",
+      "aliases": ["QT-Opt: Scalable Deep Reinforcement Learning for Vision-Based Robotic Manipulation"],
+      "one_liner": "Google's large-scale reinforcement learning grasping system, trained on more than 580,000 real-robot grasp attempts to learn a visual Q-function.",
+      "explanation": "QT-Opt was released by Dmitry Kalashnikov, Sergey Levine, and colleagues at Google Brain and X in June 2018 and published at CoRL 2018. At the time, most grasping systems first chose a grasp point and then executed it open-loop. QT-Opt instead uses deep reinforcement learning to learn a Q-function directly from an overhead RGB camera image, re-deciding how the gripper should move at every step to achieve closed-loop grasping; because it is hard to directly maximize over a continuous action space, it uses the cross-entropy method (an iterative sampling-based optimization) to search for the best action. Training used more than 580,000 real grasp attempts, reaching a 96% success rate on objects never seen before, and the policy spontaneously learned behaviors like re-grasping and nudging an object before picking it up. QT-Opt is a landmark result for large-scale real-robot reinforcement learning, and both MT-Opt and Q-Transformer build on it.",
+      "example": "If an object is pushed away by a person mid-grasp, the QT-Opt policy adjusts the gripper's position based on the new camera image and re-attempts the grasp, rather than closing on empty space as originally planned.",
+      "related": ["Q-Transformer", "MT-Opt", "Real-World Reinforcement Learning", "Q-Function (Action-Value Function)", "Cross-Entropy Method", "Arm Farm (Google large-scale grasping data collection)"]
+    },
+    {
+      "key": "named_model-21#2",
+      "name_en": "R3M",
+      "abbr": "R3M",
+      "aliases": ["R3M: A Universal Visual Representation for Robot Manipulation"],
+      "one_liner": "A general-purpose visual representation for robot manipulation, pretrained on first-person human videos.",
+      "explanation": "R3M was released by Suraj Nair, Chelsea Finn, Abhinav Gupta, and colleagues at Stanford and Meta AI in March 2022, published at CoRL 2022. Robot demonstrations are scarce, which makes it hard to train a good visual encoder from scratch. R3M instead pretrains an image encoder on Ego4D, a large dataset of first-person human videos, with a combined objective: time-contrastive learning (frames close together in time should have similar representations), aligning video with its language description, and an L1 penalty that keeps the representation sparse and compact. The encoder is then frozen and used as a perception module, with only a policy trained on top for the downstream task. Across 12 simulated manipulation tasks, this raises success rates more than 20 points over training from scratch, and more than 10 points over CLIP or MoCo representations. R3M represents the 'pretrained visual representation' line of work and is often compared with VC-1, MVP, and VIP.",
+      "example": "In a cluttered real apartment, a Franka arm using a frozen R3M encoder as its visual module learned to manipulate objects with just 20 demonstrations per task.",
+      "related": ["Pre-trained Visual Representation", "VC-1", "MVP (Masked Visual Pre-training)", "VIP (Value-Implicit Pre-Training)", "Ego4D", "Time-Contrastive Networks"]
+    },
+    {
+      "key": "named_model-21#3",
+      "name_en": "RaC",
+      "abbr": "RaC",
+      "aliases": ["Recovery and Correction", "RaC: Robot Learning for Long-Horizon Tasks by Scaling Recovery and Correction"],
+      "one_liner": "A method that scales long-horizon task data by having a human take over right before failure, first recovering and then correcting.",
+      "explanation": "RaC was released by Zheyuan Hu, Zackory Erickson, Aviral Kumar, and colleagues at Carnegie Mellon University in September 2025. The authors found that on contact-rich, long-horizon tasks involving deformable objects, simply piling on more expert demonstrations makes imitation-learning success rates plateau, because expert data almost never shows what to do after something goes wrong. RaC adds a human-in-the-loop fine-tuning stage after imitation-learning pretraining: while the policy is running, an operator takes over just before it fails, first steering the robot back to a familiar, in-distribution state (recovery), then demonstrating how to complete the current sub-task (correction), and ending the episode there. Across three real-robot bimanual tasks — hanging a shirt, sealing a food-storage container lid, and packing a takeout box — plus one simulated assembly task, RaC beats the previous best methods using roughly a tenth of the collection time and samples, and success rate scales roughly linearly with the number of recovery interventions performed during rollouts.",
+      "example": "While hanging a shirt, the policy is about to hang it crookedly on the hanger; the operator takes over, first moves the arm back to a normal hanger-holding pose, then demonstrates hanging it correctly, and this intervention data is added to the fine-tuning set.",
+      "related": ["Recovery and Correction Data", "Human-in-the-Loop", "Human Intervention Data", "Long-horizon Task", "Compounding Error", "HIL-SERL"]
+    },
+    {
+      "key": "named_model-21#4",
+      "name_en": "RDT2",
+      "aliases": ["Robotics Diffusion Transformer 2", "RDT2-VQ", "RDT2-FM", "RDT2: Exploring the Scaling Limit of UMI Data Towards Zero-Shot Cross-Embodiment Generalization"],
+      "one_liner": "A VLA foundation model from Tsinghua, trained on tens of thousands of hours of UMI data, that deploys zero-shot on new robot arms.",
+      "explanation": "RDT2 comes from Jun Zhu's lab at Tsinghua University (the RDT team), open-sourced in September 2025 with the paper following in February 2026; it is the successor to RDT-1B. The problem it addresses: switching to a different robot arm usually forces a full recollection of data and re-fine-tuning. The team improved UMI (Universal Manipulation Interface), a handheld gripper data-collection device, and used it to gather more than 10,000 hours of demonstrations across about 100 locations, mostly real homes; because the same UMI gripper is used for both data collection and deployment, the embodiment gap stays small. The model backbone is a 7-billion-parameter Qwen2.5-VL, trained in three stages: first, residual vector quantization turns actions into discrete tokens (RDT2-VQ); then this is replaced with a roughly 400-million-parameter action expert that outputs continuous actions (RDT2-FM); finally, the model is distilled for speed. The team states it is the first foundation model that can perform simple tasks like pick-and-place zero-shot on an unseen robot embodiment, and it has also been demonstrated playing table tennis.",
+      "example": "RDT2-FM is connected directly to a robot arm it never saw during training, fitted with the same UMI-style gripper, and without any fine-tuning it can pick up and place objects following language instructions.",
+      "related": ["RDT-1B", "Universal Manipulation Interface", "Handheld Gripper Data Collection", "Cross-Embodiment", "Flow Matching", "Vector Quantization"]
+    },
+    {
+      "key": "named_model-21#5",
+      "name_en": "Real-World Humanoid Locomotion with Reinforcement Learning",
+      "aliases": ["Real-World Humanoid Locomotion with RL", "Radosavovic et al., Science Robotics 2024"],
+      "one_liner": "A Transformer walking controller trained purely with reinforcement learning in simulation, deployed zero-shot to make a humanoid walk outdoors.",
+      "explanation": "This work was released by Ilija Radosavovic, Jitendra Malik, and colleagues at UC Berkeley in March 2023 and published in Science Robotics in 2024. Humanoid walking had mostly relied on classical controllers, which struggle to adapt to new environments. This paper uses a causal Transformer as the controller: it takes in a window of past proprioceptive observations and actions and outputs the next action, adapting to terrain 'in context' from its history without updating any parameters. Training happens entirely in Isaac Gym simulation: a teacher policy is first trained with privileged information (state information unavailable on the real robot), then a student policy is trained by combining imitation of the teacher with reinforcement learning, together with domain randomization, before being deployed zero-shot to Agility Robotics' Digit humanoid. The resulting controller walks across a range of outdoor terrains and resists pushes, making this an early landmark for learning-based humanoid locomotion control.",
+      "example": "Digit walks on outdoor grass and rubberized running tracks it never saw during training, and stays stable even when pushed from the side by a person.",
+      "related": ["RL-based Locomotion Control", "Sim-to-Real Transfer", "Teacher-Student Distillation", "Domain Randomization", "Agility Robotics Digit (incl. Digit 5)", "Humanoid Locomotion as Next Token Prediction"]
+    },
+    {
+      "key": "named_model-21#6",
+      "name_en": "Redwood",
+      "aliases": ["Redwood AI", "1X Redwood"],
+      "one_liner": "1X's vision-language-action model for its home humanoid NEO, running entirely on the robot's onboard GPU.",
+      "explanation": "Redwood was released by humanoid robot company 1X Technologies in June 2025. It is a roughly 160-million-parameter vision-language-action (VLA) model — it looks at the camera feed, listens to instructions, and outputs actions directly — running entirely on the onboard embedded GPU of the NEO Gamma robot, producing actions at about 5 Hz, and continuing to work even with a poor network connection. It targets mobile manipulation around the home, such as picking things up while walking or opening doors, and can coordinate walking, arm movement, and pelvis posture commands at the same time, enabling behaviors like bending down to pick something up or bracing against a wall with the free hand while pulling open a heavy door. Training data comes from teleoperated and autonomous episodes recorded on 1X's two robot generations, EVE and NEO, in offices and employees' homes, with failure episodes included in training as well. Users can give instructions through voice conversation.",
+      "example": "A user tells NEO, 'bring me the cup on the kitchen counter,' and Redwood controls it to walk to the kitchen, pick up the cup, and bring it back.",
+      "related": ["1X World Model", "1X NEO", "Vision-Language-Action Model", "Mobile Manipulation", "On-Device / Edge Deployment", "Whole-Body Control"]
+    },
+    {
+      "key": "named_model-21#7",
+      "name_en": "ReinFlow",
+      "aliases": ["ReinFlow: Fine-tuning Flow Matching Policy with Online Reinforcement Learning"],
+      "one_liner": "A method that injects learnable noise into a flow-matching policy so it can be fine-tuned with online reinforcement learning.",
+      "explanation": "ReinFlow was released by Tonghe Zhang, Chao Yu, Yu Wang, and colleagues at Carnegie Mellon University, Tsinghua University, and others in May 2025, published at NeurIPS 2025. Flow-matching policies (generative policies that turn noise into actions step by step using a velocity field) hit an obstacle when researchers try to improve them further with reinforcement learning: the generation process is deterministic, so it has no well-defined action probability and little exploration. ReinFlow adds a learnable Gaussian noise term at each denoising step, turning generation into a discrete-time Markov process, which makes the likelihood exactly computable and lets the policy be fine-tuned with policy gradients; the noise network is used only during training and dropped at inference time. On legged-locomotion tasks, this raises the episode reward of rectified-flow policies by about 135% on average, with roughly 83% less compute than DPPO, a diffusion-policy fine-tuning method. ReinFlow belongs to the same line of work as DPPO and πRL: using reinforcement learning to fine-tune generative policies.",
+      "example": "A Shortcut flow policy that needs very few denoising steps is first trained on demonstrations, then fine-tuned with ReinFlow using online reinforcement learning on robomimic simulated manipulation tasks, producing a clear jump in success rate.",
+      "related": ["Flow Matching", "DPPO", "πRL", "Reinforcement Fine-Tuning (RL Fine-Tuning)", "Rectified Flow", "Policy Gradient"]
+    },
+    {
+      "key": "named_model-21#8",
+      "name_en": "Rho-alpha",
+      "abbr": "ρα",
+      "aliases": ["ρα", "Rho-Alpha", "Microsoft Research robotics model derived from Phi"],
+      "one_liner": "Microsoft's first robotics model, built from its Phi vision-language models and adding touch sensing.",
+      "explanation": "Rho-alpha (written ρα) was released by Microsoft Research on January 21, 2026, Microsoft's first robotics model, derived from its Phi family of vision-language models. Microsoft calls it 'VLA+': on top of the usual vision-language-action model setup — looking at the scene, listening to an instruction, and outputting actions directly — it adds touch to perception, with force sensing still under development, and is exploring how a robot can keep adapting during use based on a person's corrective feedback. It converts natural-language instructions into control signals for two-arm manipulation. Training data includes real-robot demonstrations, simulated tasks, and web-scale visual question-answering data. At launch it was evaluated on dual UR5e arms fitted with tactile sensors and on a humanoid robot, using the BusyBox benchmark. It launched as an early-access research program, with Microsoft saying it would later become available on Microsoft Foundry.",
+      "example": "An operator gives a single natural-language instruction, and a pair of UR5e arms fitted with tactile sensors carries out a two-handed manipulation task, using both vision and touch to judge whether the action has succeeded.",
+      "related": ["Vision-Language-Action Model", "Vision-Tactile-Language-Action Model", "Tactile Sensor", "Bimanual Manipulation", "Human-in-the-Loop", "Microsoft Research"]
+    },
+    {
+      "key": "named_model-21#9",
+      "name_en": "RIPT-VLA",
+      "aliases": ["Reinforcement Interactive Post-Training", "RIPT-VLA: Interactive Post-Training for Vision-Language-Action Models"],
+      "one_liner": "A method that post-trains a pretrained VLA with reinforcement learning using only a binary success/failure reward.",
+      "explanation": "RIPT-VLA was released by Shuhan Tan, Philipp Krähenbühl, and colleagues at UT Austin in May 2025. VLAs are normally pretrained and then supervised-fine-tuned on expert demonstrations, but this works poorly when demonstrations are scarce. RIPT-VLA adds a third stage, 'interactive post-training': the model repeatedly attempts the task in the environment and is trained with reinforcement learning using only a binary reward for task success or failure. It samples the same initial state multiple times and estimates the advantage using the average score of the other attempts in the same group as a baseline (a leave-one-out estimator), then updates the policy with PPO; groups where every attempt succeeds or every attempt fails carry no learning signal and are discarded and resampled. It improves the QueST model by 21.2% and pushes the 7B OpenVLA-OFT to 97.5% on LIBERO; given just a single demonstration, it can take a model with 4% success up to 97% within 15 iterations.",
+      "example": "A VLA fine-tuned on just one demonstration starts at only 4% success; letting it repeatedly attempt the task in simulation and scoring each attempt as success or failure raises its success rate to 97% after 15 iterations.",
+      "related": ["Reinforcement Fine-Tuning (RL Fine-Tuning)", "Post-training", "OpenVLA-OFT", "LIBERO", "Proximal Policy Optimization", "SimpleVLA-RL"]
+    },
+    {
+      "key": "named_model-21#10",
+      "name_en": "RL-100",
+      "aliases": ["RL-100: Performant Robotic Manipulation with Real-World Reinforcement Learning"],
+      "one_liner": "A diffusion-policy-based real-world reinforcement learning framework that reached 1,000-for-1,000 success across eight manipulation tasks.",
+      "explanation": "RL-100 was released in October 2025 by teams from Shanghai Jiao Tong University, Shanghai Qi Zhi Institute, and Tsinghua University (Huazhe Xu and colleagues), published in Science Robotics in 2026. It targets the near-expert-level reliability that home and factory deployment require. The framework is built on a diffusion visuomotor policy and proceeds in three stages — imitation learning from human demonstrations, offline reinforcement learning, and real-world online reinforcement learning — all three sharing a single clipped PPO objective applied over the denoising process, which keeps improvements conservative and stable; consistency distillation then compresses the multi-step denoising into a single step to meet the demands of high-frequency control. Across eight real-robot tasks — pushing objects, bowling, pouring water, folding cloth, screwing in a bolt, juicing, and folding paper boxes, among others — it achieved 1,000 successes out of 1,000 trials, with completion speed matching or exceeding expert teleoperators.",
+      "example": "A juicing robot deployed in a shopping mall served a continuous stream of random customers zero-shot for about seven hours without a single failure.",
+      "related": ["Real-World Reinforcement Learning", "Diffusion Policy", "Consistency Model", "Proximal Policy Optimization", "Offline-to-Online Reinforcement Learning", "HIL-SERL"]
+    },
+    {
+      "key": "named_model-21#11",
+      "name_en": "Robix",
+      "abbr": "Robix",
+      "aliases": ["Robix-7B", "Robix-32B", "Robix: A Unified Model for Robot Interaction, Reasoning and Planning"],
+      "one_liner": "ByteDance Seed's high-level robot 'brain' model that unifies conversation, reasoning, and task planning.",
+      "explanation": "Robix was released by the ByteDance Seed team in September 2025, in 7B and 32B parameter sizes. It serves as the high-level cognitive layer in a hierarchical robot system: given the camera feed and what the user says, a single vision-language model handles reasoning, long-horizon task planning, and natural-language interaction all at once, producing both atomic instructions for a lower-level controller and things to say back to the user; the lower level can be ByteDance's own GR-3 VLA model. Robix can proactively ask clarifying questions about ambiguous instructions, revise its plan in real time when interrupted mid-execution, and apply commonsense reasoning, such as filtering food choices by dietary restrictions. Training has three stages: continued pretraining to strengthen embodied-reasoning abilities such as spatial understanding, supervised fine-tuning that unifies interaction and planning into reasoning-action sequences, and reinforcement learning to improve consistency between reasoning and action. The authors report it outperforms commercial large-model baselines on real tasks such as clearing a dinner table and grocery shopping.",
+      "example": "A user asks the robot to clear the table, then mid-task adds, 'leave the cup for now' — Robix immediately revises its plan, confirms verbally, and sends the lower-level VLA a new atomic instruction.",
+      "related": ["GR-3 (ByteDance Seed)", "Hierarchical Architecture", "Dual-System Architecture (System 1 / System 2)", "Embodied Reasoning", "LLM-based Task Planning", "ByteDance Seed"]
+    }
+  ]
+}

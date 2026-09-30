@@ -1,0 +1,430 @@
+{
+ "category": "data",
+ "batch": 4,
+ "terms": [
+  {
+   "name_zh": "生成式数据增强",
+   "name_en": "Generative Data Augmentation",
+   "abbr": "",
+   "aliases": [
+    "生成式增强",
+    "语义数据增强",
+    "Semantic Data Augmentation"
+   ],
+   "tier": 2,
+   "one_liner": "用图像或视频生成模型改写已有机器人数据，多造出新场景的训练样本。",
+   "explanation": "生成式数据增强指用文生图、视频生成等生成模型，在已有机器人演示上改换物体、背景、干扰物或光照，得到新的训练样本，动作标签沿用原数据。代表工作有谷歌 2023 年的 ROSIE（用文本引导的扩散模型在图像里修补出新物体和背景）和华盛顿大学等的 GenAug。它要解决的是真机数据贵、场景单一：一条数据只覆盖一张桌面，增强后同一段动作可以配上许多种外观，从而提升视觉泛化和对干扰物的鲁棒性。局限是它主要改外观，改不了物理过程和动作本身。Cosmos Transfer 这类视频世界模型也常用来做这种增强。",
+   "example": "ROSIE 在谷歌已有的机器人数据上，用扩散模型把桌上的物体和背景修补成新样子，用这些图训练出的策略能处理原数据里没有的新物体和干扰物。",
+   "related": [
+    "数据增强",
+    "合成数据",
+    "扩散模型",
+    "Cosmos Transfer",
+    "视觉泛化",
+    "跨本体图像替换"
+   ],
+   "sources": [
+    {
+     "title": "ROSIE: Scaling Robot Learning with Semantically Imagined Experience (arXiv 2302.11550)",
+     "url": "https://arxiv.org/abs/2302.11550"
+    },
+    {
+     "title": "GenAug: Retargeting behaviors to unseen situations via Generative Augmentation (arXiv 2302.06671)",
+     "url": "https://arxiv.org/abs/2302.06671"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "手持夹爪采集",
+   "name_en": "Handheld Gripper Data Collection",
+   "abbr": "",
+   "aliases": [
+    "手持式采集",
+    "手持采集器",
+    "UMI 式采集"
+   ],
+   "tier": 2,
+   "one_liner": "人手拿着装了相机的夹爪直接干活，录下画面和夹爪轨迹当机器人训练数据。",
+   "explanation": "手持夹爪采集是一种不需要真机器人的采集方式：采集员手握一个和机器人末端同款的夹爪，夹爪上装相机，直接在真实环境里完成任务，事后从视频里恢复夹爪的位姿轨迹和开合宽度，作为动作标签。代表是斯坦福、哥伦比亚大学和丰田研究院在 RSS 2024 发表的 UMI：腕部 GoPro 配 155 度鱼眼镜头和两侧反光镜，用视觉-惯性 SLAM（同时定位与建图）追踪轨迹。它比遥操作便宜、便携，能带出实验室采集，UMI 报告采集速度是遥操作的 3 倍以上。前提是训练和部署时夹爪与相机视角保持一致。",
+   "example": "UMI 用手持夹爪采集洗碗、双臂叠衣服、扔物体等演示，训练出的策略直接部署到机械臂上，能在没见过的环境和物体上完成任务。",
+   "related": [
+    "通用操作接口",
+    "FastUMI",
+    "松灵 Pika 采集套件",
+    "无本体采集",
+    "采执同构",
+    "DexUMI"
+   ],
+   "sources": [
+    {
+     "title": "Universal Manipulation Interface (UMI) 项目主页",
+     "url": "https://umi-gripper.github.io/"
+    },
+    {
+     "title": "Universal Manipulation Interface: In-The-Wild Robot Teaching Without In-The-Wild Robots (arXiv 2402.10329)",
+     "url": "https://arxiv.org/abs/2402.10329"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "HDF5 格式",
+   "name_en": "Hierarchical Data Format version 5",
+   "abbr": "HDF5",
+   "aliases": [
+    "h5 文件",
+    ".hdf5 文件",
+    "HDF5 文件"
+   ],
+   "tier": 2,
+   "one_liner": "把多组大数组分层存进一个文件的通用格式，常用来存机器人演示数据。",
+   "explanation": "HDF5 是 HDF Group 维护的开源文件格式和函数库，后缀一般是 .h5 或 .hdf5。它像文件里的文件夹系统：用「组」分层，组里放多维数组（称为数据集），还能附带元数据，并可以只读取其中一部分。机器人的一条演示包含多路相机图像、关节状态、动作等时间序列，正适合装进 HDF5。robomimic 用它存整套数据集，每条轨迹是 data/demo_0 这样的组；ACT/ALOHA 的采集脚本每条 episode 存一个 hdf5 文件。图像原样存储时体积很大，新近的开源数据集也常改用 LeRobot 格式、RLDS 等。",
+   "example": "robomimic 数据集文件里，data/demo_0/actions 是一条轨迹的动作数组，形状为（步数, 动作维度）；data/demo_0/obs/agentview_image 是对应时刻的相机图像。",
+   "related": [
+    "LeRobot 数据集格式",
+    "RLDS 格式",
+    "Zarr 格式",
+    "Parquet 格式",
+    "RoboMimic",
+    "ACT"
+   ],
+   "sources": [
+    {
+     "title": "The HDF Group: HDF5",
+     "url": "https://www.hdfgroup.org/solutions/hdf5/"
+    },
+    {
+     "title": "robomimic Docs: Datasets Overview",
+     "url": "https://robomimic.github.io/docs/datasets/overview.html"
+    },
+    {
+     "title": "ACT (tonyzhaozh/act) GitHub",
+     "url": "https://github.com/tonyzhaozh/act"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "干预数据",
+   "name_en": "Human Intervention Data",
+   "abbr": "",
+   "aliases": [
+    "人工纠偏数据",
+    "接管数据",
+    "人工干预数据",
+    "Intervention Data"
+   ],
+   "tier": 2,
+   "one_liner": "机器人自主执行快出错时，人接管操控，把这段人工纠正记录下来的数据。",
+   "explanation": "干预数据指策略在真机上自主运行时，人看到要出错就用遥操作接管，把机器人引回正轨，接管期间的观测和人给的动作被记录下来。思路来自 DAgger 一类交互式模仿学习：纯行为克隆只见过专家的「标准路线」，一旦偏离就不知所措，误差越积越大；干预数据补上的正是「偏了之后怎么救回来」，且集中在策略最薄弱的状态。HG-DAgger（2018）让人在觉得不安全时接管；伯克利的 HIL-SERL 在真机强化学习中用人工干预引导探索；Physical Intelligence 的 π*0.6 也把专家干预和自主经验一起用于训练。",
+   "example": "HIL-SERL 训练初期，人频繁接管机器人，示范怎样从各种状态完成任务；策略成功率上去后，再逐步减少干预。",
+   "related": [
+    "人在回路",
+    "人工门控 DAgger",
+    "纠偏数据",
+    "HIL-SERL",
+    "RECAP",
+    "干预率"
+   ],
+   "sources": [
+    {
+     "title": "HG-DAgger: Interactive Imitation Learning with Human Experts (arXiv 1810.02890)",
+     "url": "https://arxiv.org/abs/1810.02890"
+    },
+    {
+     "title": "HIL-SERL 项目主页",
+     "url": "https://hil-serl.github.io/"
+    },
+    {
+     "title": "π*0.6: a VLA That Learns From Experience (arXiv 2511.14759)",
+     "url": "https://arxiv.org/abs/2511.14759"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "野外数据",
+   "name_en": "In-the-wild Data",
+   "abbr": "",
+   "aliases": [
+    "真实场景数据",
+    "in-the-wild 数据",
+    "开放环境数据"
+   ],
+   "tier": 2,
+   "one_liner": "在家庭、办公室、户外等非实验室环境采集的数据，场景多样且不受控制。",
+   "explanation": "野外数据这个说法沿用自计算机视觉，指在实验室外的真实场景里采集的数据：光照、背景、物体摆放都不受控，每个场景各不相同。过去机器人数据大多来自实验室里固定的几张桌面，模型换个房间就容易失败，所以研究者把采集搬进真实环境，以提高场景泛化能力。难点是真机器人不方便到处搬，于是出现了便携方案：DROID 把 Franka 机械臂装在可移动的升降桌上，在 564 个场景采了 7.6 万条轨迹；UMI 用手持夹爪、DexWild 用人手加手掌相机，都不需要把机器人带到现场。",
+   "example": "卡内基梅隆大学的 DexWild 在 93 个不同环境采集了 9290 条人手演示，与机器人数据协同训练后，策略在新环境中的成功率约为只用机器人数据的 4 倍。",
+   "related": [
+    "DROID 数据集",
+    "通用操作接口",
+    "DexWild",
+    "场景泛化",
+    "数据多样性",
+    "无本体采集"
+   ],
+   "sources": [
+    {
+     "title": "DROID: A Large-Scale In-the-Wild Robot Manipulation Dataset",
+     "url": "https://droid-dataset.github.io/"
+    },
+    {
+     "title": "DexWild 项目主页",
+     "url": "https://dexwild.github.io/"
+    },
+    {
+     "title": "Universal Manipulation Interface (UMI) 项目主页",
+     "url": "https://umi-gripper.github.io/"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "互联网视频数据",
+   "name_en": "Internet Video Data",
+   "abbr": "",
+   "aliases": [
+    "网络视频数据",
+    "网络视频",
+    "Web Video Data"
+   ],
+   "tier": 2,
+   "one_liner": "网上公开的海量视频，量大且便宜，但没有机器人能直接用的动作标签。",
+   "explanation": "互联网视频数据指视频平台和公开视频数据集里的视频，内容多是人做家务、做饭、用工具。和机器人数据相比，它规模大几个数量级，场景和物体极其多样，包含大量关于物体怎么动、任务怎么分步的知识。难点在于没有动作标签：画面里是人手而不是机械臂，也不知道每一帧对应什么关节指令。常见用法有三类：预训练视觉表征（如 R3M）；学习潜在动作，即从相邻帧的变化中自动归纳出类似动作的编码（如 LAPA）；训练视频生成或世界模型，再从预测画面中反推动作。Ego4D 这类第一人称视频集也常被这样使用。",
+   "example": "LAPA 先用 VQ-VAE 从无标签视频的相邻帧中学出离散的潜在动作，用它预训练 VLA，再用少量真机数据把潜在动作映射成机器人指令。",
+   "related": [
+    "人类视频数据",
+    "无动作标签视频",
+    "潜在动作",
+    "LAPA",
+    "第一人称视频",
+    "Ego4D 数据集"
+   ],
+   "sources": [
+    {
+     "title": "LAPA: Latent Action Pretraining from Videos (arXiv 2410.11758)",
+     "url": "https://arxiv.org/abs/2410.11758"
+    },
+    {
+     "title": "Ego4D 官网",
+     "url": "https://ego4d-data.org/"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "拖动示教",
+   "name_en": "Kinesthetic Teaching",
+   "abbr": "KT",
+   "aliases": [
+    "手把手示教",
+    "牵引示教",
+    "直接示教",
+    "手动引导示教"
+   ],
+   "tier": 2,
+   "one_liner": "人直接用手推着机械臂走一遍动作，机器人记下轨迹用来学习或回放。",
+   "explanation": "拖动示教是最直接的示教方式：机械臂切到重力补偿或零力拖动模式（电机只抵消自重，人能轻松推动），操作员扶着机械臂完成一遍任务，机器人用关节编码器记下整条轨迹。早期工业机器人的「示教再现」编程就是这样记住一串位置再回放；在机器人学习里，它为模仿学习提供演示数据。好处是动作直接发生在机器人自己的关节上，不需要人到机器人的动作映射，也不用额外遥操作设备。缺点是机械臂必须能被推动，人手和身体会进入相机画面干扰视觉策略，也很难同时带动双臂或多指灵巧手，而且比遥操作更费体力。",
+   "example": "让带关节力矩传感器的机械臂进入手动引导模式，人抓住末端把夹爪带到杯把、夹住再提起，记录下的关节角序列就是一条演示。",
+   "related": [
+    "零力拖动",
+    "重力补偿",
+    "示教再现",
+    "遥操作",
+    "演示数据",
+    "阻抗控制"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Programming by demonstration",
+     "url": "https://en.wikipedia.org/wiki/Programming_by_demonstration"
+    },
+    {
+     "title": "Kinesthetic Teaching in Robotics: a Mixed Reality Approach (arXiv 2409.02305)",
+     "url": "https://arxiv.org/abs/2409.02305"
+    },
+    {
+     "title": "DexDirect: Direct Kinesthetic Arm Guidance for Efficient Dexterous Demonstration Collection (arXiv 2607.27784)",
+     "url": "https://arxiv.org/abs/2607.27784"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "语言标注",
+   "name_en": "Language Annotation",
+   "abbr": "",
+   "aliases": [
+    "指令标注",
+    "语言指令标注",
+    "Language Labeling"
+   ],
+   "tier": 2,
+   "one_liner": "给机器人轨迹配上自然语言描述，如「把红杯子放进水槽」，让模型能听指令。",
+   "explanation": "语言标注是给机器人数据配上文字说明，最常见的是一条轨迹对应一句任务指令，也可以细到每个子任务一句话。有了它，才能训练按语言指令行动的语言条件策略和 VLA 模型。标注来源大致三种：采集前定好指令、由操作员照做；采完后由人看视频补写，即事后重标注；用视觉语言模型自动生成或改写描述。标注质量直接影响模型听懂指令的能力，同一动作只有一种说法时，模型容易只认固定句式。所以大规模数据集常给一条轨迹配多句不同说法，并把长任务切成带文字的子任务段，方便分层模型学习。",
+   "example": "谷歌的 Language-Table 用事后重标注得到近 60 万条带语言标签的桌面推物轨迹；DROID 在 2024 年 12 月的更新中为约 7.5 万条成功轨迹各配了 3 句语言描述。",
+   "related": [
+    "数据标注",
+    "事后重标注",
+    "子任务切分",
+    "自动标注",
+    "语言条件策略",
+    "指令增强"
+   ],
+   "sources": [
+    {
+     "title": "Interactive Language / Language-Table 项目主页",
+     "url": "https://interactive-language.github.io/"
+    },
+    {
+     "title": "DROID 数据集主页",
+     "url": "https://droid-dataset.github.io/"
+    }
+   ],
+   "as_of": "2024-12"
+  },
+  {
+   "name_zh": "LeRobot 数据集格式",
+   "name_en": "LeRobotDataset",
+   "abbr": "",
+   "aliases": [
+    "LeRobot 数据集",
+    "LeRobotDataset 格式",
+    "LeRobotDataset v3.0"
+   ],
+   "tier": 2,
+   "one_liner": "LeRobot 库的标准数据格式，用表格存状态和动作、用视频存相机画面。",
+   "explanation": "LeRobotDataset 是 Hugging Face 开源机器人库 LeRobot 的数据集格式，可直接在 Hub 上共享。它分三部分：状态、动作、时间戳等低维信号存成 Parquet 表格；相机画面编码成 MP4 视频；meta 目录记录字段定义、帧率、归一化统计量、任务文本和每条 episode 的起止位置。2025 年 9 月发布的 v3.0 把多条 episode 合进同一个文件（v2.1 是一条一个文件），靠元数据定位，以支撑更大规模，还能不下载、直接从 Hub 流式读取。LeRobot 里的 ACT、扩散策略、SmolVLA 等都直接读这种格式。",
+   "example": "用 lerobot-record 一边遥操作 SO-101 机械臂一边录制，数据按 v3.0 格式保存并推送到 Hub；训练时用 LeRobotDataset 加载，每个样本是含 observation.state、action 和相机图像的张量字典。",
+   "related": [
+    "LeRobot",
+    "Hugging Face",
+    "Parquet 格式",
+    "HDF5 格式",
+    "RLDS 格式",
+    "SO-100 / SO-101 机械臂"
+   ],
+   "sources": [
+    {
+     "title": "Hugging Face LeRobot Docs: LeRobotDataset v3.0",
+     "url": "https://huggingface.co/docs/lerobot/lerobot-dataset-v3"
+    },
+    {
+     "title": "Hugging Face Blog: LeRobotDataset v3.0",
+     "url": "https://huggingface.co/blog/lerobot-datasets-v3"
+    }
+   ],
+   "as_of": "2025-09"
+  },
+  {
+   "name_zh": "MimicGen",
+   "name_en": "MimicGen",
+   "abbr": "",
+   "aliases": [
+    "MimicGen 数据生成",
+    "Isaac Lab Mimic（英伟达同思路实现）"
+   ],
+   "tier": 2,
+   "one_liner": "把少量人类演示按物体切段、变换位姿再拼接，自动生成大量新演示的系统。",
+   "explanation": "MimicGen 是英伟达和德州大学奥斯汀分校在 CoRL 2023 提出的自动数据生成系统。它把人类演示按子任务切成以物体为中心的片段（如「抓杯子」「放进盘子」），换到物体位置不同的新场景时，让每段末端轨迹跟着对应物体的位姿做坐标变换，拼接后在仿真里执行，只保留成功的轨迹。论文用不到 200 条人类演示，在 18 个任务上生成了 5 万多条演示，缓解了模仿学习对人工演示的依赖。英伟达 Isaac Lab 里的 Isaac Lab Mimic 沿用同样思路：先标注子任务再自动生成，并支持人形机器人。",
+   "example": "在一个仿真操作任务上，只给 10 条人类演示，MimicGen 就能针对新的物体摆放范围生成 1000 条演示，再用它们训练策略。",
+   "related": [
+    "DexMimicGen",
+    "DemoGen",
+    "合成数据",
+    "演示数据",
+    "Isaac Lab",
+    "行为克隆"
+   ],
+   "sources": [
+    {
+     "title": "MimicGen 项目主页",
+     "url": "https://mimicgen.github.io/"
+    },
+    {
+     "title": "Isaac Lab Docs: Teleoperation and Imitation Learning with Isaac Lab Mimic",
+     "url": "https://isaac-sim.github.io/IsaacLab/main/source/overview/imitation-learning/teleop_imitation.html"
+    },
+    {
+     "title": "NVIDIA Technical Blog: Building a Synthetic Motion Generation Pipeline for Humanoid Robot Learning",
+     "url": "https://developer.nvidia.com/blog/building-a-synthetic-motion-generation-pipeline-for-humanoid-robot-learning/"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "动作重定向",
+   "name_en": "Motion Retargeting",
+   "abbr": "",
+   "aliases": [
+    "运动重定向",
+    "重定向",
+    "Retargeting",
+    "手部重定向",
+    "动作映射"
+   ],
+   "tier": 2,
+   "one_liner": "把人（或另一台机器人）的动作换算成目标机器人自己的关节动作。",
+   "explanation": "动作重定向原是动画领域的技术，指把一个角色的动作迁移到骨骼比例不同的另一个角色上。在具身智能里，它负责把人体或人手的动作（来自动作捕捉、视频姿态估计或 VR 设备）转换成机器人能执行的关节角。难点是人和机器人的肢体长度、关节数量和活动范围都不同，不能照抄关节角。常见做法是写成优化问题：让机器人的手腕、指尖等关键点位置或方向尽量贴近人的，同时满足关节限位，本质上是带约束的逆运动学。它是遥操作、从人类视频学习和人形机器人动作跟踪训练的前置步骤，常用开源工具有 GMR 和 dex-retargeting。",
+   "example": "GMR 能把 AMASS、LAFAN1 等人体动捕数据转成宇树 G1 等人形机器人的关节轨迹，在 CPU 上即可实时运行，也被 TWIST 用于全身遥操作。",
+   "related": [
+    "GMR 通用动作重定向",
+    "dex-retargeting",
+    "逆运动学",
+    "动作捕捉",
+    "运动跟踪",
+    "OmniRetarget"
+   ],
+   "sources": [
+    {
+     "title": "GMR: General Motion Retargeting (GitHub)",
+     "url": "https://github.com/YanjieZe/GMR"
+    },
+    {
+     "title": "dex-retargeting (GitHub)",
+     "url": "https://github.com/dexsuite/dex-retargeting"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "多传感器时间同步（时间戳对齐）",
+   "name_en": "Multi-sensor Time Synchronization / Timestamp Alignment",
+   "abbr": "",
+   "aliases": [
+    "时间戳对齐",
+    "时间同步",
+    "硬件同步",
+    "Time Sync"
+   ],
+   "tier": 2,
+   "one_liner": "让相机、编码器、IMU 等各路信号对齐到同一时间轴，保证同一时刻的数据配成对。",
+   "explanation": "机器人上的相机、关节编码器、力传感器、IMU 各自以不同频率工作，延迟也不同，相机因曝光、编码和传输，延迟通常比关节读数大。时间同步就是把这些数据放到同一条时间轴上：硬件上可以用同一触发信号让多台相机同时曝光，或用精确时间协议（PTP，IEEE 1588）把设备时钟对齐到亚微秒级；软件上按时间戳把最接近的消息配对，如 ROS 的 message_filters 提供精确匹配和近似匹配两种策略。对模仿学习来说，对不齐意味着模型学到的是错位的观测-动作对。",
+   "example": "UMI 先分别测出相机、夹爪宽度等各路数据流的延迟，把所有观测对齐到延迟最大的那一路（通常是相机）；部署时再把动作指令提前发出，抵消执行延迟。",
+   "related": [
+    "精确时间协议",
+    "多传感器融合",
+    "相机-IMU联合标定",
+    "观测-动作对",
+    "rosbag",
+    "控制延迟"
+   ],
+   "sources": [
+    {
+     "title": "Universal Manipulation Interface (arXiv 2402.10329, HTML)",
+     "url": "https://arxiv.org/html/2402.10329"
+    },
+    {
+     "title": "Wikipedia: Precision Time Protocol",
+     "url": "https://en.wikipedia.org/wiki/Precision_Time_Protocol"
+    },
+    {
+     "title": "ros2/message_filters 文档",
+     "url": "https://raw.githubusercontent.com/ros2/message_filters/rolling/doc/index.rst"
+    }
+   ],
+   "as_of": ""
+  }
+ ]
+}

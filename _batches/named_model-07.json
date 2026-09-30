@@ -1,0 +1,390 @@
+{
+ "category": "named_model",
+ "batch": 7,
+ "terms": [
+  {
+   "name_zh": "它石智航 AWE",
+   "name_en": "AWE (AI World Engine, TARS Robotics; AWE 3.0 / 3.5)",
+   "abbr": "AWE",
+   "aliases": [
+    "AWE 3.0",
+    "AWE 3.5",
+    "AI World Engine",
+    "它石 AWE"
+   ],
+   "tier": 3,
+   "one_liner": "它石智航的通用具身基座模型，主打用大规模人类操作数据训练。",
+   "explanation": "AWE 是上海具身智能公司它石智航（TARS Robotics，据报道 2025 年 2 月成立）的通用具身基座模型，官方称采用自研的 AI World Engine 架构。2026 年 3 月 14 日公司发布 AWE 3.0，宣传重点有三：用自家 WIYH 人类操作数据集训练（公司称超百万小时）；在「隐空间」（压缩后的潜在表示空间）里生成动作，称抖动降低超 45%；加入高密度触觉感知。2026 年 7 月 WAIC 上 AWE 获 SAIL 之星，展台由 AWE 3.5 驱动机器人做线束装配。它代表国内「以人类数据为主」的一条路线，但目前没有公开论文，上述数字都来自公司发布。",
+   "example": "据发布会演示，它石的机器人在 AWE 3.0 驱动下一小时完成百余次亚毫米级精度的线束装配。",
+   "related": [
+    "它石智航",
+    "它石 WIYH 数据集",
+    "人类视频数据",
+    "潜在动作",
+    "具身大模型",
+    "视触觉融合"
+   ],
+   "sources": [
+    {
+     "title": "丁文超博士发布通用具身大模型 AWE3.0（中国日报网，推广信息）",
+     "url": "https://cn.chinadaily.com.cn/a/202603/17/WS69b8fa3ba310942cc49a396b.html"
+    },
+    {
+     "title": "「能干活」的通用具身大模型 AWE3.0 亮相（新华网客户端）",
+     "url": "https://app.xinhuanet.com/news/article.html?articleId=3b05aef1a3ea11cbc6b2f7ab79e329ce"
+    },
+    {
+     "title": "它石智航@WAIC 2026：具身原生基座模型 AWE 摘得 SAIL 之星（知乎专栏）",
+     "url": "https://zhuanlan.zhihu.com/p/2063322866691657972"
+    }
+   ],
+   "as_of": "2026-07"
+  },
+  {
+   "name_zh": "BEAST",
+   "name_en": "BEAST: B-spline Encoded Action Sequence Tokenizer",
+   "abbr": "BEAST",
+   "aliases": [
+    "B 样条动作分词器",
+    "BEAST-F",
+    "BEAST-ACT"
+   ],
+   "tier": 3,
+   "one_liner": "用 B 样条控制点把一段动作压成固定个数 token 的动作分词器。",
+   "explanation": "BEAST 是德国卡尔斯鲁厄理工学院（KIT）团队 2025 年 6 月提出的动作分词器，发表于 NeurIPS 2025。做法是用 B 样条曲线（由少量「控制点」决定形状的平滑曲线）拟合一段动作序列，再把控制点当作 token：可量化成离散 token 给语言模型用，也可保留连续值。和 FAST 这类需要单独训练、长度不固定的分词器相比，BEAST 不用训练、每段 token 数固定，所以能一次前向并行解码；B 样条还保证相邻动作块首尾平滑衔接，减少抖动。论文把它接到 Florence-2 小模型（BEAST-F）、ACT 等架构上，在 CALVIN、LIBERO 上结果有竞争力，推理吞吐约为 π0 的 2 倍。",
+   "example": "BEAST-ACT 把 ACT 原本要逐步预测的 100 步动作，改成只预测 15 个控制点，再由 B 样条还原出平滑轨迹。",
+   "related": [
+    "动作分词器",
+    "动作分块",
+    "π0-FAST",
+    "并行解码",
+    "Florence-2",
+    "ACT"
+   ],
+   "sources": [
+    {
+     "title": "BEAST: Efficient Tokenization of B-Splines Encoded Action Sequences for Imitation Learning (arXiv 2506.06072)",
+     "url": "https://arxiv.org/abs/2506.06072"
+    }
+   ],
+   "as_of": "2025-10"
+  },
+  {
+   "name_zh": "Barkour",
+   "name_en": "Barkour: Benchmarking Animal-level Agility with Quadruped Robots",
+   "abbr": "",
+   "aliases": [
+    "Barkour 障碍赛",
+    "Barkour 基准"
+   ],
+   "tier": 3,
+   "one_liner": "谷歌仿照狗狗敏捷赛设计的四足机器人障碍赛评测基准。",
+   "explanation": "Barkour 是谷歌研究团队（后并入 Google DeepMind）2023 年 5 月发布的四足机器人敏捷性基准，名字由 bark（狗叫）和 parkour（跑酷）拼成。它仿照犬类敏捷赛，在 5 米×5 米场地里放绕杆、A 字爬坡板、0.5 米宽跳和终点桌，按是否通过障碍、用时是否接近小型犬（约 10 秒）打出 0–1 分。团队先用强化学习分别训练行走、爬坡、跳跃等专用技能，再用教师-学生蒸馏合成一个基于 Transformer 的通用运动策略，在自研四足机器人上约 20 秒跑完全程，约为小狗速度的一半。它的意义是给「动物级敏捷」提供了可量化、可复现的比较方式。",
+   "example": "自研四足机器人在 Barkour 赛道上的典型成绩约 20 秒，小型犬约 10 秒。",
+   "related": [
+    "四足机器人",
+    "腿足运动",
+    "跑酷",
+    "基准测试",
+    "教师-学生蒸馏",
+    "强化学习运控"
+   ],
+   "sources": [
+    {
+     "title": "Barkour: Benchmarking Animal-level Agility with Quadruped Robots (arXiv 2305.14654)",
+     "url": "https://arxiv.org/abs/2305.14654"
+    },
+    {
+     "title": "Barkour: Benchmarking animal-level agility with quadruped robots (Google Research Blog)",
+     "url": "https://research.google/blog/barkour-benchmarking-animal-level-agility-with-quadruped-robots/"
+    }
+   ],
+   "as_of": "2023-05"
+  },
+  {
+   "name_zh": "BeT / VQ-BeT",
+   "name_en": "Behavior Transformers (BeT) / VQ-BeT (Behavior Generation with Latent Actions)",
+   "abbr": "BeT",
+   "aliases": [
+    "Behavior Transformer",
+    "行为 Transformer",
+    "VQ-BeT",
+    "Vector-Quantized Behavior Transformer"
+   ],
+   "tier": 3,
+   "one_liner": "用 Transformer 从多峰演示数据里同时学会多种行为的模仿学习方法。",
+   "explanation": "BeT（Behavior Transformer）是纽约大学 Lerrel Pinto 组 2022 年提出的行为克隆方法。人类演示常有「动作多峰性」：同一场景下有好几种合理做法，直接回归会把它们平均成一个错误动作。BeT 先用 k-means 把连续动作聚成若干类，Transformer 预测该选哪一类，再预测一个连续偏移量修正成精确动作，从而保留多种行为模式。2024 年的 VQ-BeT（纽约大学与首尔大学，ICML 2024）把 k-means 换成残差向量量化，更适合高维动作和长动作序列，推理速度约为扩散策略的 5 倍。它们和扩散策略是同一时期解决多峰问题的两条代表路线。",
+   "example": "在 Franka Kitchen 仿真厨房里，演示者完成几个子任务的顺序各不相同，BeT 被用来检验能否学到并复现这些不同的行为模式。",
+   "related": [
+    "动作多峰性",
+    "行为克隆",
+    "向量量化",
+    "扩散策略",
+    "动作分词器",
+    "Franka Kitchen"
+   ],
+   "sources": [
+    {
+     "title": "Behavior Transformers: Cloning k modes with one stone (arXiv 2206.11251)",
+     "url": "https://arxiv.org/abs/2206.11251"
+    },
+    {
+     "title": "Behavior Generation with Latent Actions (VQ-BeT, arXiv 2403.03181)",
+     "url": "https://arxiv.org/abs/2403.03181"
+    },
+    {
+     "title": "VQ-BeT 项目主页",
+     "url": "https://sjlee.cc/vq-bet/"
+    }
+   ],
+   "as_of": "2024-07"
+  },
+  {
+   "name_zh": "智在无界 Being-H0",
+   "name_en": "Being-H0: Vision-Language-Action Pretraining from Large-Scale Human Videos (BeingBeyond)",
+   "abbr": "",
+   "aliases": [
+    "Being-H0.5",
+    "Being-H0.7",
+    "Being-H 系列"
+   ],
+   "tier": 3,
+   "one_liner": "智在无界用大规模人手操作视频预训练的灵巧操作 VLA 模型系列。",
+   "explanation": "Being-H0 是北京大学、中国人民大学与具身公司智在无界（BeingBeyond）2025 年 7 月发布的视觉-语言-动作模型，后被 ICML 2026 接收。思路是把人手当作通用操作器：先在人手操作数据上预训练，用分部位的动作分词器把手腕、手指动作压成 token，再做 3D 空间对齐，最后用少量机器人数据后训练，迁移到灵巧手上。配套数据集 UniHand 汇集动捕、VR 和普通视频，约 1100 小时、1.65 亿条指令样本。2026 年 1 月的 Being-H0.5 把数据扩到 3.5 万多小时、覆盖 30 种本体，主打跨本体；4 月的 Being-H0.7 改为隐空间世界-动作模型。",
+   "example": "真机实验中，研究者把 Being-H0 后训练到装有因时六自由度灵巧手的 Franka 机械臂上做灵巧操作任务。",
+   "related": [
+    "人类视频预训练",
+    "UniHand 数据集",
+    "视觉-语言-动作模型",
+    "灵巧操作",
+    "跨本体",
+    "智在无界"
+   ],
+   "sources": [
+    {
+     "title": "Being-H0: Vision-Language-Action Pretraining from Large-Scale Human Videos (arXiv 2507.15597)",
+     "url": "https://arxiv.org/abs/2507.15597"
+    },
+    {
+     "title": "Being-H0.5: Scaling Human-Centric Robot Learning for Cross-Embodiment Generalization (arXiv 2601.12993)",
+     "url": "https://arxiv.org/abs/2601.12993"
+    },
+    {
+     "title": "BeingBeyond/Being-H0 GitHub",
+     "url": "https://github.com/BeingBeyond/Being-H0"
+    }
+   ],
+   "as_of": "2026-05"
+  },
+  {
+   "name_zh": "BFM-Zero",
+   "name_en": "BFM-Zero: A Promptable Behavioral Foundation Model for Humanoid Control Using Unsupervised RL",
+   "abbr": "",
+   "aliases": [
+    "BFM Zero"
+   ],
+   "tier": 3,
+   "one_liner": "不用任务奖励训练、靠「提示」切换任务的人形全身控制基础模型。",
+   "explanation": "BFM-Zero 是卡内基梅隆大学石冠亚组与 Meta 等机构 2025 年 11 月发布的人形机器人行为基础模型。它用无监督强化学习训练：训练时不给具体任务奖励，而是借助前向-后向表示（Forward-Backward，把状态和任务映射进同一个隐空间的方法）学出共享隐空间，参考动作、目标姿态和奖励函数都能编码成这个空间里的向量。部署时给出对应向量（即「提示」），同一个策略就能零样本完成动作跟踪、到达目标姿态、按奖励优化等任务，也支持少样本适配。团队在宇树 G1 真机上演示了抗推扰和摔倒后恢复，称其为首个可在真实人形上用提示切换任务的行为基础模型。",
+   "example": "同一个部署在宇树 G1 上的 BFM-Zero 策略：输入一段参考动作就做动作跟踪，输入一个目标姿态就去摆出它，输入一个奖励函数就按奖励行动，中间不重新训练。",
+   "related": [
+    "行为基础模型",
+    "无监督技能发现",
+    "运动跟踪",
+    "宇树 G1",
+    "Meta Motivo（人形行为基础模型）",
+    "学习型全身控制"
+   ],
+   "sources": [
+    {
+     "title": "BFM-Zero (arXiv 2511.04131)",
+     "url": "https://arxiv.org/abs/2511.04131"
+    },
+    {
+     "title": "BFM-Zero 项目主页",
+     "url": "https://lecar-lab.github.io/BFM-Zero/"
+    }
+   ],
+   "as_of": "2025-11"
+  },
+  {
+   "name_zh": "BridgeVLA",
+   "name_en": "BridgeVLA: Input-Output Alignment for Efficient 3D Manipulation Learning with Vision-Language Models",
+   "abbr": "",
+   "aliases": [
+    "BridgeVLA++"
+   ],
+   "tier": 3,
+   "one_liner": "把 3D 点云投影成 2D 图、用热力图输出动作的 3D 操作 VLA。",
+   "explanation": "BridgeVLA 由中科院自动化所、字节跳动 Seed 等团队 2025 年 6 月提出，发表于 NeurIPS 2025。问题在于：VLM 是在 2D 图文上预训练的，而 3D 操作要处理点云、输出 3D 位姿，两边对不齐，知识难迁移。BridgeVLA 把点云渲染成几张多视角 2D 图送进 PaliGemma，让模型在同一张图上输出 2D 热力图（每个像素表示「在这里动作」的可能性），再综合多视角热力图确定末端要去的 3D 位置；正式训练前还先用目标检测数据练它输出热力图。它在 RLBench 上把成功率从 81.4% 提到 88.2%。2026 年 8 月团队又开源了 BridgeVLA++。",
+   "example": "真机上用 Franka Research 3 机械臂测试 10 多个任务，每个任务只给 3 条演示，平均成功率 96.8%。",
+   "related": [
+    "3D VLA",
+    "PaliGemma",
+    "RVT-2",
+    "RLBench",
+    "The Colosseum",
+    "关键帧动作预测"
+   ],
+   "sources": [
+    {
+     "title": "BridgeVLA (arXiv 2506.07961)",
+     "url": "https://arxiv.org/abs/2506.07961"
+    },
+    {
+     "title": "BridgeVLA GitHub",
+     "url": "https://github.com/BridgeVLA/BridgeVLA"
+    }
+   ],
+   "as_of": "2026-08"
+  },
+  {
+   "name_zh": "ChatVLA",
+   "name_en": "ChatVLA: Unified Multimodal Understanding and Robot Control with Vision-Language-Action Model",
+   "abbr": "",
+   "aliases": [],
+   "tier": 3,
+   "one_liner": "既能看图问答、又能控制机器人的统一 VLA 模型。",
+   "explanation": "ChatVLA 由美的集团、华东师范大学等团队 2025 年 2 月提出，入选 EMNLP 2025 主会口头报告。它针对 VLA 的一个常见毛病：在机器人数据上微调后，底座 VLM 原有的看图问答能力会被冲掉（论文称为虚假遗忘），而控制和理解两类数据一起训又会互相干扰。做法有二：一是分阶段对齐训练，先只用机器人数据练会控制，再按 1:3 混入图文数据恢复理解能力；二是混合专家结构，注意力层共享，前馈层分成理解专家和控制专家，按任务走不同路径。模型基于 Qwen2-VL-2B，在 MMStar 上得 47.2 分，多模态理解明显强于以往 VLA，在 25 个真机任务上也优于 OpenVLA 和 ECoT。",
+   "example": "同一个 ChatVLA 既能回答关于图片的问题，也能在浴室、厨房、桌面等场景执行抓取、放置、推、挂等操作指令。",
+   "related": [
+    "视觉-语言-动作模型",
+    "灾难性遗忘",
+    "混合专家模型",
+    "协同训练",
+    "DexVLA",
+    "知识隔离"
+   ],
+   "sources": [
+    {
+     "title": "ChatVLA (arXiv 2502.14420)",
+     "url": "https://arxiv.org/abs/2502.14420"
+    },
+    {
+     "title": "ChatVLA 项目主页",
+     "url": "https://chatvla.github.io/"
+    }
+   ],
+   "as_of": "2025-11"
+  },
+  {
+   "name_zh": "CLIPort",
+   "name_en": "CLIPort: What and Where Pathways for Robotic Manipulation",
+   "abbr": "",
+   "aliases": [],
+   "tier": 3,
+   "one_liner": "结合 CLIP 语义理解与 Transporter 空间精度的语言条件操作策略。",
+   "explanation": "CLIPort 是华盛顿大学和英伟达（Mohit Shridhar、Lucas Manuelli、Dieter Fox）2021 年发表于 CoRL 的工作。它借用神经科学里视觉的 what / where 双通路：语义通路用预训练的 CLIP（图文对比学习模型）理解「要操作什么」，如颜色、形状、物体类别；空间通路沿用 Transporter Networks 的全卷积网络处理 RGB-D 图像，决定「在哪里抓、放到哪里」，输出像素级的抓取和放置热力图。两路融合后，不需要物体位姿、分割掩码或符号状态，就能按语言指令完成装箱、叠布等桌面任务。它是较早把大规模预训练图文模型接进机器人操作的代表作，同一作者后来的 PerAct 把这类思路推广到 3D 体素。",
+   "example": "一个多任务策略只用 179 对真实图像-动作样本，就在 9 个真实桌面任务上学会按语言指令操作。",
+   "related": [
+    "CLIP",
+    "Transporter Networks",
+    "语言条件策略",
+    "桌面操作",
+    "PerAct",
+    "抓取放置"
+   ],
+   "sources": [
+    {
+     "title": "CLIPort: What and Where Pathways for Robotic Manipulation (arXiv 2109.12098)",
+     "url": "https://arxiv.org/abs/2109.12098"
+    },
+    {
+     "title": "CLIPort 项目主页",
+     "url": "https://cliport.github.io/"
+    }
+   ],
+   "as_of": "2021-09"
+  },
+  {
+   "name_zh": "CLONE",
+   "name_en": "CLONE: Closed-Loop Whole-Body Humanoid Teleoperation for Long-Horizon Tasks",
+   "abbr": "",
+   "aliases": [],
+   "tier": 3,
+   "one_liner": "只追踪头和双手、闭环纠偏的人形机器人全身遥操作系统。",
+   "explanation": "CLONE 由北京通用人工智能研究院（BIGAI）、北京大学、北京理工大学等团队 2025 年 6 月提出。以往人形遥操作常把上下半身分开控制来保稳定，动作不协调；而且机器人走得越久，实际位置和操作员的偏差越大（累积漂移）。CLONE 只用 Apple Vision Pro 头显采集操作员头部和双手位姿，由一个混合专家（MoE）结构的全身策略生成宇树 G1 全身关节动作，并把机器人的实际全局位置实时反馈给策略做闭环纠偏。论文报告在 8.9 米直线行走中平均位置误差约 5.1 厘米，能完成蹲下捡地上物体这类要全身配合的长程任务。这类全身遥操作系统也是给人形机器人采集演示数据的基础工具。",
+   "example": "操作员戴 Apple Vision Pro 在房间里走动、弯腰，G1 跟着走过去并蹲下从地面捡起物体。",
+   "related": [
+    "全身遥操作",
+    "混合专家模型",
+    "宇树 G1",
+    "Apple Vision Pro",
+    "运动跟踪",
+    "OmniH2O"
+   ],
+   "sources": [
+    {
+     "title": "CLONE (arXiv 2506.08931)",
+     "url": "https://arxiv.org/abs/2506.08931"
+    },
+    {
+     "title": "CLONE 论文 HTML 版 (arXiv 2506.08931v2)",
+     "url": "https://arxiv.org/html/2506.08931v2"
+    }
+   ],
+   "as_of": "2025-08"
+  },
+  {
+   "name_zh": "CogACT",
+   "name_en": "CogACT: A Foundational Vision-Language-Action Model for Synergizing Cognition and Action in Robotic Manipulation",
+   "abbr": "",
+   "aliases": [],
+   "tier": 3,
+   "one_liner": "在 VLM 后面接扩散 Transformer 动作模块的开源 VLA 模型。",
+   "explanation": "CogACT 是微软亚洲研究院联合清华大学、中国科学技术大学等 2024 年 11 月发布的视觉-语言-动作模型。当时 OpenVLA 等让 VLM 直接输出离散动作 token，精度和连续性受限。CogACT 把认知和动作拆开：用 Prismatic-7B 这类 VLM 理解图像和指令，输出一个认知特征；再用最多约 3 亿参数的扩散 Transformer（DiT）动作模块，以该特征为条件生成连续动作序列。推理时用自适应动作集成，只把相似的动作预测做平均，避免把不同模式混在一起。它在 Open X-Embodiment 的约 40 万条轨迹上训练，SIMPLER 仿真中比 OpenVLA 高 35% 以上、真机高 55%，仿真还超过 55B 参数的 RT-2-X。",
+   "example": "研究者在 Realman 和 Franka 两种真实机械臂上测试 CogACT，面对没见过的物体和背景仍能完成操作任务。",
+   "related": [
+    "视觉-语言-动作模型",
+    "扩散动作头",
+    "动作专家",
+    "OpenVLA",
+    "Prismatic VLM",
+    "时序集成"
+   ],
+   "sources": [
+    {
+     "title": "CogACT (arXiv 2411.19650)",
+     "url": "https://arxiv.org/abs/2411.19650"
+    },
+    {
+     "title": "CogACT 项目主页",
+     "url": "https://cogact.github.io/"
+    }
+   ],
+   "as_of": "2024-11"
+  },
+  {
+   "name_zh": "ConRFT",
+   "name_en": "ConRFT: A Reinforced Fine-tuning Method for VLA Models via Consistency Policy",
+   "abbr": "ConRFT",
+   "aliases": [
+    "Cal-ConRFT",
+    "HIL-ConRFT"
+   ],
+   "tier": 3,
+   "one_liner": "先离线、再真机在线，用一致性策略给 VLA 做强化学习微调的方法。",
+   "explanation": "ConRFT 由中科院自动化所赵冬斌团队 2025 年 2 月提出，发表于 RSS 2025。VLA 只在少量演示上做监督微调，在接触丰富的真机任务里成功率常常不够，而直接在真机上跑强化学习又慢又不安全。ConRFT 分两段：离线阶段（Cal-ConRFT）把行为克隆和 Q 学习结合，从少量演示里先学出较稳的策略和价值估计；在线阶段（HIL-ConRFT）在真机上继续用强化学习微调，允许人随时接管纠正，保证探索安全。动作头用一致性策略（一步或几步就能生成动作的扩散类模型），便于和强化学习结合。以 Octo-small 为底座，8 个真实任务经 45–90 分钟在线微调后平均成功率 96.3%，比纯监督微调高 144%。",
+   "example": "任务包括拿香蕉、开抽屉、把面包放进烤面包机、插车轮、挂中国结等，在线训练时操作员可在机器人快出错时接管。",
+   "related": [
+    "强化学习微调",
+    "Consistency Policy（一致性策略）",
+    "HIL-SERL",
+    "人在回路",
+    "Octo",
+    "真机强化学习"
+   ],
+   "sources": [
+    {
+     "title": "ConRFT (arXiv 2502.05450)",
+     "url": "https://arxiv.org/abs/2502.05450"
+    },
+    {
+     "title": "ConRFT 项目主页",
+     "url": "https://cccedric.github.io/conrft/"
+    }
+   ],
+   "as_of": "2025-04"
+  }
+ ]
+}

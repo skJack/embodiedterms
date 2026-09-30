@@ -1,0 +1,113 @@
+{
+  "batch": "hardware-10",
+  "terms": [
+    {
+      "key": "hardware-10#0",
+      "name_en": "Hall-Effect Sensor",
+      "aliases": ["Hall Sensor", "Hall Switch"],
+      "one_liner": "A sensor that uses the Hall effect to turn changes in a magnetic field into an electrical signal.",
+      "explanation": "A Hall-effect sensor works on the Hall effect: when current flows through a semiconductor strip, a magnetic field perpendicular to it produces a voltage across the strip's sides, with a stronger field producing a larger voltage. It's cheap, contactless, and small, making it one of the most common position sensors used in motors. In a brushless motor, three Hall-effect elements are typically mounted to sense the rotor magnets' approximate position, which the driver uses to decide which winding phase to energize (commutation); pairing a Hall chip with a radially magnetized ring magnet also makes a simple magnetic encoder for measuring a joint's angle. The Hall effect is also used for current sensing and proximity switches. Its resolution and noise immunity are lower than an optical encoder's, so in robot joints it's often used just for commutation or coarse position, paired with a more precise encoder.",
+      "example": "In sensored brushless motors common in RC models and self-balancing scooters, the thin bundle of wires coming out of the back of the motor is the signal lines from its three Hall-effect sensors.",
+      "related": ["Brushless DC Motor", "Magnetic Encoder", "Encoder", "Field-Oriented Control (FOC)", "Motor Driver"]
+    },
+    {
+      "key": "hardware-10#1",
+      "name_en": "Holding Brake",
+      "aliases": ["Brake", "Electromagnetic Brake"],
+      "one_liner": "A brake mounted on a motor or joint that automatically locks the shaft when power is cut.",
+      "explanation": "A holding brake is usually electromagnetic: when powered, an electromagnet pulls the friction plates apart so the motor can turn freely; when power is cut, a spring clamps the friction plates together and the shaft is locked, which is why it's sometimes called “fail-safe” or power-off braking. Its job is to hold a joint in place during a power loss, an emergency stop, or when the drive is disabled, so an arm doesn't fall under gravity and hurt someone or damage something; it's mainly for holding position, not for braking during high-speed motion. Most industrial and collaborative robot-arm joint modules include one. The trade-off is added weight, size, and cost, so some quadruped and humanoid robot joints skip the brake entirely and go limp when power is cut, which is why testing often uses a safety gantry. Whether a joint module has a brake, and how much torque that brake can hold, are common specs to check.",
+      "example": "When an emergency stop is pressed on a collaborative arm and it stays frozen in mid-air instead of dropping, that's the holding brakes in each joint at work.",
+      "related": ["Joint Module", "Emergency Stop", "Safe Torque Off (STO)", "Servo Enable (Enable / Disable)", "Safety Gantry (Suspended Start)"]
+    },
+    {
+      "key": "hardware-10#2",
+      "name_en": "Hollow-Shaft Cable Routing",
+      "aliases": ["Hollow-Shaft Wiring", "Internal Cable Routing"],
+      "one_liner": "Routing cables through the center bore of a joint's motor and reducer instead of along the outside.",
+      "explanation": "In hollow-shaft cable routing, a joint module's motor rotor, reducer, and encoder are all built with a hollow structure, leaving a through-hole in the center for power, data, and pneumatic lines to pass from inside one joint straight to the next, instead of hanging on the outside. The benefit is a cleaner look, cables that can't get tangled or snagged, and a lower risk of catching on a person's hand — important for collaborative arms and humanoid robots that work close to people. The trade-off is that the motor and reducer have to be built a size larger, and the bore diameter and cable bend life have to be designed together; the cable also twists as the joint rotates, which puts an upper limit on the joint's rotation angle. Applications that need unlimited rotation use a slip ring instead. The “hollow-shaft” variants commonly offered for harmonic drives exist for exactly this purpose.",
+      "example": "Many collaborative robot arms show no visible cables on the outside at all, because every cable is routed through the center bore of each joint.",
+      "related": ["Joint Module", "Wiring Harness", "Slip Ring", "Harmonic Drive", "Frameless Torque Motor"]
+    },
+    {
+      "key": "hardware-10#3",
+      "name_en": "Hub Motor (In-Wheel Motor)",
+      "aliases": ["In-Wheel Motor"],
+      "one_liner": "A drive motor built directly into a wheel's hub, turning the wheel itself.",
+      "explanation": "A hub motor packs the entire motor inside the wheel, usually as an outrunner design: the outer shell turns together with the tire, eliminating the need for a drive shaft, gearbox, or belt. It's compact, has low transmission losses, and lets each wheel be controlled independently, so it's common in e-bikes and self-balancing scooters, and also used in mobile-robot chassis and the foot-wheels of wheeled-legged robots. Its downsides are that it makes the wheel heavier (adding unsprung mass, which hurts suspension performance), demands more from motor cooling and waterproofing, and often still needs a reducer for low-speed, high-torque situations. For robots, it simplifies chassis design, since differential steering just means controlling the left and right wheel speeds independently.",
+      "example": "Many DIY mobile robots repurpose hub motors salvaged from self-balancing scooters as chassis drive wheels.",
+      "related": ["Mobile Base / Chassis", "Differential Drive Base", "Wheeled-Legged Robot", "Outrunner Motor", "Direct Drive"]
+    },
+    {
+      "key": "hardware-10#4",
+      "name_en": "Hybrid-Drive Dexterous Hand",
+      "aliases": ["Hybrid-Drive Hand"],
+      "one_liner": "A dexterous hand that combines more than one actuation and transmission method within a single hand.",
+      "explanation": "“Hybrid-drive dexterous hand” is common terminology in China's robotics industry for a hand that doesn't rely on a single actuation scheme, but splits the work across joints: for example, some joints are driven directly by tiny motors in the palm, or through a linkage, while others are pulled by tendons from motors in the forearm; some designs also combine motor actuation with passive elastic elements. The goal is to balance several conflicting demands at once: the hand must stay small and light, have many degrees of freedom, produce enough fingertip force, and remain easy to maintain. A purely tendon-driven hand is dexterous but hard to keep tensioned and prone to wear; a purely linkage-driven or fully direct-drive hand is mechanically reliable but struggles to fit motors inside the fingers. Hybrid drive is a compromise, and the exact mix differs by manufacturer, so it's worth asking exactly which transmission each joint uses when evaluating a product.",
+      "example": "Driving finger flexion via tendons pulled by a forearm motor, while driving finger abduction directly with a tiny motor in the palm, is one example of a hybrid-drive scheme.",
+      "related": ["Dexterous Hand", "Fully Direct-Drive Dexterous Hand", "Tendon-Driven Actuation", "Linkage Transmission", "Proximal vs. Distal Actuator Placement"]
+    },
+    {
+      "key": "hardware-10#5",
+      "name_en": "Hydraulically Amplified Self-Healing Electrostatic Actuator (HASEL)",
+      "aliases": ["HASEL Actuator"],
+      "one_liner": "A soft actuator that uses high-voltage electrostatics to squeeze a sealed liquid, mimicking muscle contraction.",
+      "explanation": "HASEL was developed by Keplinger's group at the University of Colorado Boulder and published in Science in 2018. It's a flexible pouch filled with a liquid insulating medium, with electrodes attached to the outside; applying a high voltage pulls the electrodes together, squeezing the liquid into another part of the pouch, which bulges or contracts to produce a muscle-like motion. Because the insulating layer is a liquid, if it briefly breaks down electrically at one spot, the liquid flows back in and heals the gap — hence the name “self-healing.” It combines the fast response of electrostatic actuation with the large deformation typical of hydraulics, making it suited to soft robots and biomimetic mechanisms. Its weaknesses are the need for kilovolt-level voltage, and output force and reliability that still fall short of a robot joint motor, so it remains mostly in research and small-scale applications.",
+      "example": "",
+      "related": ["Artificial Muscle", "Dielectric Elastomer Actuator (DEA)", "Soft Robot", "Pneumatic Artificial Muscle", "Actuator"]
+    },
+    {
+      "key": "hardware-10#6",
+      "name_en": "Incremental Encoder",
+      "aliases": ["Incremental-Type Encoder"],
+      "one_liner": "An encoder that outputs pulses for each increment of rotation, needing a count to know position.",
+      "explanation": "An incremental encoder outputs a stream of pulses as the shaft turns, typically two channels, A and B, 90 degrees out of phase (a quadrature signal), plus a third Z channel that pulses once per revolution as a zero marker. The controller counts pulses to know how far the shaft has turned, and checks whether A or B leads the other to determine direction. It's mechanically simple, cheap, and easy to build at high resolution, so it's very common in motors. Its downside is that it only knows how far it has moved since power-on — losing power also loses position — so it needs to be homed at every startup, or rely on the Z pulse or a limit switch to re-establish a reference. Robot joints that use only incremental encoders typically perform a homing move at startup; avoiding that requires an absolute encoder, or a dual-encoder setup.",
+      "example": "A 3D printer, and many desktop robot arms, bump each axis against a limit switch at startup, precisely because they rely on incremental position feedback and need to home first.",
+      "related": ["Encoder", "Absolute Encoder", "Dual Encoder", "Homing / Zero Calibration", "Optical Encoder"]
+    },
+    {
+      "key": "hardware-10#7",
+      "name_en": "Inductive Encoder",
+      "aliases": ["Induction-Type Encoder"],
+      "one_liner": "An encoder that measures angle or displacement using coils and electromagnetic induction.",
+      "explanation": "An inductive encoder is usually built from transmitter and receiver coils printed on a circuit board, plus a metal target disc that rotates with the shaft. The transmitter coil generates an alternating magnetic field, and as the target disc rotates to different positions, it changes the signal picked up by the receiver coil, from which the angle is computed. It works on a principle similar to a resolver, but packaged as a flat circuit board. Compared with an optical encoder, it isn't bothered by oil, dust, or condensation; compared with a magnet-based magnetic encoder, it's less sensitive to external magnetic interference, and it's easy to build with a large center bore in a ring shape, which suits hollow-shaft joints. The trade-off is somewhat more complex signal processing, with accuracy and cost that fall somewhere between a magnetic encoder and a high-end optical encoder, depending on the specific product.",
+      "example": "The thin, ring-shaped encoder wrapped around the output shaft in a hollow-shaft joint module may well be an inductive design.",
+      "related": ["Encoder", "Magnetic Encoder", "Optical Encoder", "Resolver", "Hollow-Shaft Cable Routing"]
+    },
+    {
+      "key": "hardware-10#8",
+      "name_en": "Ingress Protection (IP) Rating",
+      "aliases": ["IP67", "IP54", "IP Code"],
+      "one_liner": "The two-digit international standard rating for how well a device resists dust and water.",
+      "explanation": "The IP rating is defined by the international standard IEC 60529, written as “IP” followed by two digits. The first digit rates protection against solid objects, including dust, from 0 to 6, where 6 means fully dust-tight; the second rates protection against water, from 0 to 9, where a higher number withstands more — for example, 4 means splashing water, and 7 means brief submersion. If a category wasn't tested, it's replaced with an X, as in IPX7. On a robot's product page, IP54 roughly means dust-protected and splash-resistant, while IP67 means fully dust-tight and able to survive brief submersion. This rating determines whether a robot can be used outdoors, in the rain, in a greasy factory, or in an environment that needs to be hosed down, which is why it matters a great deal for quadruped robots, inspection robots, and robot arms used in the food industry.",
+      "example": "An outdoor inspection quadruped rated IP67 can generally handle being rained on or wading through a shallow puddle.",
+      "related": ["Quadruped Robot", "Inspection Robot", "Industrial Robot", "Joint Module", "Mean Time Between Failures (MTBF)"]
+    },
+    {
+      "key": "hardware-10#9",
+      "name_en": "Integrated Drive and Control",
+      "aliases": ["Drive-Control Integration"],
+      "one_liner": "Combining a motor's driver and its motion controller into a single hardware unit.",
+      "explanation": "In a traditional industrial robot, the motion controller (which computes trajectories and does planning) and each axis's servo drive (which energizes the motor) are separate boxes connected by a bus. Integrated drive and control means merging the two onto one board or into one cabinet: the control algorithm and the current loop run on the same processor or the same module, eliminating the communication step between them. The benefits are a smaller footprint, less wiring, lower cost, and shorter control latency, which helps with high-bandwidth force control. At the joint level, the term is also often used for integrating the driver directly into the joint module itself, so each joint carries its own “drive plus control” and the layer above only needs to send commands over EtherCAT or CAN. The integrated joints used in humanoid robots and collaborative arms are essentially built on this idea.",
+      "example": "",
+      "related": ["Motor Driver", "Joint Module", "Robot Controller", "EtherCAT Bus", "Compute-Control Integration"]
+    },
+    {
+      "key": "hardware-10#10",
+      "name_en": "Intrinsic vs. Extrinsic Actuation (Proximal Actuator Placement)",
+      "aliases": ["Intrinsic / Extrinsic Actuation", "Proximal Actuator Placement"],
+      "one_liner": "Whether a motor sits right at the joint, or is placed near the torso and drives the joint remotely.",
+      "explanation": "This pair of terms describes where the actuator (the motor) is placed. Intrinsic actuation means the motor is mounted right inside the part it drives — for example, motors packed into the palm and fingers of a dexterous hand. Extrinsic actuation means the motor sits somewhere closer to the torso, such as the forearm, and power is transmitted out to the fingers via tendons, linkages, or a timing belt, the same way most of the muscles that move a human hand actually sit in the forearm. Placing heavy motors closer to the body like this is called proximal placement, and it reduces the weight and rotational inertia at the far end, letting an arm or leg swing faster and more efficiently. The trade-off is a longer transmission chain, which brings friction, backlash, and tension-management problems. Both dexterous-hand design and humanoid leg and arm design have to weigh this trade-off.",
+      "example": "The Shadow Dexterous Hand keeps its motors in the forearm and pulls the fingers via tendons (extrinsic); the LEAP Hand mounts its servos directly at the finger joints (intrinsic).",
+      "related": ["Dexterous Hand", "Tendon-Driven Actuation", "Hybrid-Drive Dexterous Hand", "Reflected Inertia", "Linkage Transmission", "Timing Belt Drive"]
+    },
+    {
+      "key": "hardware-10#11",
+      "name_en": "Inverted Planetary Roller Screw",
+      "aliases": ["Inverted Roller Screw"],
+      "one_liner": "A planetary roller screw variant with the long thread cut inside the nut, so the rollers travel with the screw shaft.",
+      "explanation": "A planetary roller screw uses a ring of threaded rollers, instead of balls, to transmit force between the screw shaft and the nut, converting rotation into linear motion with higher load capacity and longer life than a ball screw. In the standard configuration, the screw shaft is long and the nut is short, with the nut traveling along the shaft; in the inverted configuration, this is reversed — the long thread is cut into the inside of the nut, and the rollers travel together with the shorter screw shaft along the nut, with output taken from the extending screw shaft. This lets the nut double as the motor's rotor, nesting the motor and the screw together into a very compact linear actuator. Humanoid robots, which need high push force from a small package at joints like the knee, ankle, and elbow, are a natural fit for this approach; Tesla's Optimus linear actuators are reported to use a planetary roller screw. It's difficult to machine, and its domestic manufacture is one focus of the robotics supply chain in China.",
+      "example": "",
+      "related": ["Planetary Roller Screw", "Ball Screw", "Linear Actuator (Electric Cylinder)", "Lead", "Tesla"]
+    }
+  ]
+}

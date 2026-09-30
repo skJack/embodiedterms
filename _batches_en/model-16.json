@@ -1,0 +1,77 @@
+{
+  "batch": "model-16",
+  "terms": [
+    {
+      "key": "model-16#0",
+      "name_en": "Velocity Field",
+      "aliases": ["Vector Field", "Velocity Vector Field"],
+      "one_liner": "The function a flow-matching model learns: it tells each sample which direction to move, and how fast, at every timestep.",
+      "explanation": "The velocity field is what flow matching and rectified flow — a family of generative models introduced in 2022 by Lipman et al. and, separately, Liu et al. — actually learn. It's a function v(x, t): given a sample x at time t (0 means pure noise, 1 means real data), it outputs the direction and speed x should move right now. During training, the network regresses the velocity along a predetermined “noise-to-data” path, usually a straight line, so the target velocity is simply data minus noise — there's no need to simulate the full generation process step by step. At inference time, the model starts from random noise and integrates along the velocity field with an ODE solver (such as the Euler method) for a handful of steps to produce a sample. Straighter paths need fewer steps, which is why this approach usually samples faster than traditional diffusion models. In robotics, the action expert in π0 predicts the velocity field for a chunk of future actions.",
+      "example": "At inference, π0 first samples a chunk of Gaussian noise to serve as the “action chunk.” The action expert predicts a velocity field conditioned on the current image, instruction, and robot state, then integrates it for 10 steps with the forward Euler method, turning the noise into a continuous 50-step action sequence.",
+      "related": ["Flow Matching", "Rectified Flow", "Flow Matching Loss", "Diffusion / Flow Sampler (ODE / SDE Solver)", "Action Expert", "π0"]
+    },
+    {
+      "key": "model-16#1",
+      "name_en": "Video Tokenizer",
+      "aliases": ["Video VAE", "3D Causal VAE", "Causal Video VAE"],
+      "one_liner": "A codec network that compresses video into a small number of tokens or latent vectors and can reconstruct the footage from them.",
+      "explanation": "A video tokenizer is a front-end module used by video generation models and world models. An encoder compresses a video clip across both time and space at once into either discrete tokens or continuous latent vectors, and a decoder reconstructs pixels from them. Models that output discrete tokens (such as Google's MAGVIT-v2) quantize vectors into “vocabulary indices” that plug neatly into an autoregressive Transformer; models that output continuous vectors are video VAEs (variational autoencoders), which a latent diffusion model then denoises inside. “Causal” means that along the time axis each frame only looks at earlier frames, with the first frame encoded on its own — this lets images and video share one tokenizer and lets arbitrarily long videos be processed in segments. The compression ratio determines how many tokens the downstream large model must process, while reconstruction quality caps how sharp the generated video can look. NVIDIA's Cosmos Tokenizer offers continuous and discrete versions at several compression ratios, including 4×8×8 and 8×16×16.",
+      "example": "Alibaba's Wan2.1 uses a 3D causal VAE called Wan-VAE that compresses time 4× and each spatial dimension 8×; with feature caching it can encode and decode 1080p video of any length. The diffusion Transformer only denoises inside this compressed latent space, and the decoder reconstructs the final footage.",
+      "related": ["Variational Autoencoder", "Latent Space", "Spatiotemporal Patch", "Vector Quantization", "Latent Diffusion Model", "Cosmos"]
+    },
+    {
+      "key": "model-16#2",
+      "name_en": "Vision-Language-Latent-Action",
+      "aliases": ["ViLLA", "Latent Planner + Action Expert"],
+      "one_liner": "The hierarchical architecture behind AgiBot's GO-1: it first predicts latent action tokens, then decodes them into real robot actions.",
+      "explanation": "ViLLA is the framework AgiBot introduced in March 2025 alongside GO-1 (Genie Operator-1), its general-purpose embodied foundation model. A standard VLA (vision-language-action model) maps images and instructions directly to actions; ViLLA inserts an intermediate “latent action” layer with three parts. A latent action model (LAM) trains on human videos (such as Ego4D) and robot trajectories, using inverse and forward dynamics to compress the change between two adjacent frames into discrete latent action tokens. A latent planner, built on an InternVL2.5-2B backbone, predicts these tokens from multi-view images and the instruction. An action expert then decodes them into continuous, low-level action chunks using a diffusion objective. The benefit is that human videos with no action labels can still be used for pretraining, improving data efficiency. GO-1 was open-sourced in September 2025, together with a lighter GO-1 Air variant that drops the latent planner.",
+      "example": "When GO-1 carries out a tabletop instruction, the latent planner first looks at three camera views plus the instruction and outputs a handful of latent action tokens — an abstract sketch of “what to do next.” The action expert then denoises conditioned on those tokens to generate the next 30 timesteps of continuous action.",
+      "related": ["AgiBot GO-1 (Genie Operator-1)", "Latent Action Model", "Latent Action", "Action Expert", "Hierarchical Architecture", "Latent Action Pretraining"]
+    },
+    {
+      "key": "model-16#3",
+      "name_en": "Vision-Tactile-Language-Action Model",
+      "aliases": ["VTLA", "Tactile VLA"],
+      "one_liner": "A robot model that adds touch sensing to VLA, built for contact-heavy tasks that need a physical feel for the world.",
+      "explanation": "VTLA refers to models that feed tactile-sensor signals into a robot policy alongside camera images and language instructions to produce actions — an extension of VLA (vision-language-action models). The name comes from a May 2025 paper by researchers at Samsung Research China, the Beijing Academy of Artificial Intelligence, and the Institute of Automation, Chinese Academy of Sciences. They built on a Qwen2-VL 7B backbone, converted readings from GelStereo visual-tactile sensors on the gripper fingertips into image-like inputs, trained on simulated peg-in-hole insertion data, and used direct preference optimization (DPO) to ease the mismatch between token-based classification and continuous control. Touch matters because in contact-rich tasks like inserting parts, twisting caps, or grasping fragile objects, the contact point is often hidden from the camera by the fingers themselves, so vision alone can't tell how much force is being applied or whether something is slipping. VTLA is now used as a general label for this class of model, and work in 2026 still explores turning off-the-shelf VLAs into VTLAs with little extra data.",
+      "example": "In the original VTLA paper's real-robot experiments, the model adjusted insertion position and angle step by step using camera images plus fingertip tactile images, reaching a 95% success rate inserting a square peg into a hole with 0.6mm clearance, and 95–100% on peg shapes it had never seen.",
+      "related": ["Vision-Language-Action Model", "Visuo-tactile Sensor", "Visuo-tactile Fusion", "Contact-rich Manipulation", "Peg-in-hole Assembly", "Force-aware VLA"]
+    },
+    {
+      "key": "model-16#4",
+      "name_en": "Visual Chain-of-Thought",
+      "aliases": ["Visual CoT", "Visual Reasoning Chain"],
+      "one_liner": "Having a model first produce visual intermediate steps, like generated images or marked regions, before giving its final answer or action.",
+      "explanation": "Chain-of-thought (CoT) originally meant having a large language model write out its reasoning steps before answering; visual chain-of-thought replaces those intermediate steps with visual ones. In multimodal models, the Visual CoT dataset released by Shao and colleagues in 2024 contains 438,000 question-answer pairs with intermediate bounding boxes, training models to first circle the key region of an image, look closer, and only then answer. In robotics, a more common pattern is to first “imagine” the goal image: CoT-VLA (CVPR 2025), from NVIDIA, Stanford, and others, first autoregressively generates an image of a future subgoal, then generates the action chunk to reach it, beating the previous best VLA by 17% on real robots and 6% in simulation. The benefit is that the target state is drawn out explicitly, which makes it easier to check and helps with long-horizon tasks; the cost is slower inference, since an extra image must be generated. It sits alongside other intermediate representations, such as embodied chain-of-thought, which writes out subtasks and object locations in text, and action chain-of-thought.",
+      "example": "After receiving a manipulation instruction, CoT-VLA first generates an image of what the scene should look like several steps ahead — say, the object already grasped and near its target — as a subgoal, then generates a sequence of actions conditioned on that image. After execution, it observes again and imagines the next subgoal image.",
+      "related": ["Chain-of-Thought", "Embodied Chain-of-Thought", "Action Chain-of-Thought", "CoT-VLA", "Vision-Language-Action Model", "Video Prediction Model"]
+    },
+    {
+      "key": "model-16#5",
+      "name_en": "Visual Prompting (Set-of-Mark)",
+      "aliases": ["SoM", "Set-of-Mark Prompting", "Mark-based Visual Prompting"],
+      "one_liner": "Drawing numbers, boxes, or dots on an image so a vision-language model can point at a location just by naming its label.",
+      "explanation": "Visual prompting means guiding a vision-language model (VLM) by marking up the input image itself, without changing any model weights. The flagship method is Set-of-Mark (SoM), introduced by Microsoft Research in October 2023: a segmentation model such as SAM or SEEM first cuts the image into regions, each region gets a number, mask, or box overlaid on it, and the marked-up image is then shown to a model like GPT-4V. It's hard for a VLM to output precise pixel coordinates directly, but answering “region 3” is much easier — SoM even beat specially fine-tuned models on zero-shot RefCOCOg referring segmentation. In robotics, this is often used to turn “where to grasp, where to place it” into a multiple-choice question: MOKA (2024, UC Berkeley) marks candidate keypoints and waypoints on the image and has the VLM pick the grasp point and motion path, which then gets converted into arm actions; PIVOT instead draws a batch of candidate actions on the image and has the VLM select and iteratively narrow them down.",
+      "example": "A tabletop photo is first segmented with SAM into individual objects labeled 1, 2, 3, and so on. Asking GPT-4V “which one is the red cup” gets back the answer “2,” and the program can then pull the precise mask for region 2 and hand it to the grasping module.",
+      "related": ["Vision-Language Model", "Visual Grounding", "Segment Anything Model", "MOKA (Mark-based Visual Prompting for Manipulation)", "PIVOT (Iterative Visual Prompting)", "Prompt / Prompt Engineering"]
+    },
+    {
+      "key": "model-16#6",
+      "name_en": "Visual Token Pruning",
+      "aliases": ["Token Pruning", "Visual Token Compression"],
+      "one_liner": "Dropping or merging unimportant image tokens at inference time so vision-language and VLA models run faster.",
+      "explanation": "VLMs and VLAs cut each image into hundreds of visual tokens — vectors representing small image patches — before feeding them into the language model, and the count multiplies with multiple cameras or multiple frames. Since attention computation scales roughly quadratically with the number of tokens, this is a major source of inference latency. Visual token pruning keeps only a small set of important tokens, ranked by some importance score (commonly how much attention text or action tokens pay to them), and drops or merges the rest; many methods need no retraining and can be applied directly. The landmark method FastV (ECCV 2024) found that a model's attention to image tokens becomes very sparse after the second layer, so it prunes half of them after the shallow layers, cutting LLaVA-1.5-13B's computation by about 45% with almost no drop in performance. In robotics this directly affects control frequency: EfficientVLA combines visual token selection, layer skipping, and caching to speed up CogACT by 1.93×, and 2025–2026 saw a wave of pruning methods designed specifically for VLAs.",
+      "example": "In FastV, the image first passes through the language model's first two layers as usual; after that, only the half of image tokens with the highest attention scores continue into later layers. No weights change and no retraining is needed, yet LLaVA-1.5's inference computation drops noticeably.",
+      "related": ["Visual Token", "Inference Latency", "Pruning", "Attention Mechanism", "KV Cache", "Edge Deployment"]
+    },
+    {
+      "key": "model-16#7",
+      "name_en": "Wan (Alibaba Video Generation Model)",
+      "aliases": ["Tongyi Wanxiang", "Wan2.1", "Wan2.2"],
+      "one_liner": "Alibaba's Tongyi-team video generation model; Wan2.1 and Wan2.2 are open-weight and widely used as a base for world models.",
+      "explanation": "Wan (Tongyi Wanxiang in Chinese) is the video generation model family from Alibaba's Tongyi team. Wan2.1, open-sourced in late February 2025, comes in 1.3B and 14B sizes under an Apache 2.0 license; it's a diffusion Transformer trained with flow matching, ships with its own 3D causal video VAE (Wan-VAE) and a umT5 text encoder, and supports text-to-video, image-to-video, and video editing. Wan2.2, released in July 2025, switched to a mixture-of-experts design with two roughly 14B experts — a high-noise expert that sets overall layout and a low-noise expert that fills in detail, with only one active per step — plus a 5B text-and-image-to-video model; audio-driven (S2V) and character-animation (Animate) variants followed. Because Wan has learned a great deal about how objects move from massive video data, and its weights are open, researchers often use it as a starting point for world models or world-action models. As of September 2026, Wan2.2 remains the main open-weight release.",
+      "example": "NVIDIA's DreamZero builds on the Wan2.1-I2V-14B-480P image-to-video model as its backbone, continuing training on robot data so the model generates both future images and the corresponding actions at once — functioning as a world-action model that directly controls the robot.",
+      "related": ["Video Generation Model", "Diffusion Transformer", "Video Tokenizer", "Flow Matching", "Mixture of Experts", "DreamZero"]
+    }
+  ]
+}

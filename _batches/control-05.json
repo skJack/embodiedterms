@@ -1,0 +1,199 @@
+{"category": "control", "batch": 5, "terms": [
+{
+"name_zh": "运动跟踪",
+"name_en": "Motion Tracking",
+"abbr": "",
+"aliases": ["动作跟踪", "动作追踪", "Motion Imitation (tracking)", "参考动作跟踪"],
+"tier": 2,
+"one_liner": "让机器人实时复现一段参考动作（如人类动捕）的全身控制任务。",
+"explanation": "在人形机器人领域，运动跟踪指给策略一段参考动作（通常是人类动捕数据，经动作重定向换算成机器人关节角），让机器人在不摔倒、满足物理约束的前提下逐帧复现。主流做法沿用 2018 年 DeepMimic 的思路：在仿真里用强化学习训练，奖励按机器人各身体部位与参考姿态的差距计算，训练好再迁移到真机。它是人形「学人类动作」的基础能力，遥操作、舞蹈、武术表演和不少通用全身控制器（如 GMT、BeyondMimic）都建在它上面。注意别和计算机视觉里的目标跟踪、动作捕捉混淆：那两者是「看」，运动跟踪是「做」。",
+"example": "BeyondMimic 用 LAFAN1 动捕数据训练跟踪策略，一套超参数就让人形机器人在实机上做出侧手翻、旋踢和冲刺。",
+"related": ["动作重定向", "DeepMimic", "BeyondMimic", "GMT", "全身控制", "动作捕捉"],
+"sources": [
+{"title": "DeepMimic: Example-Guided Deep Reinforcement Learning of Physics-Based Character Skills (arXiv:1804.02717)", "url": "https://arxiv.org/abs/1804.02717"},
+{"title": "BeyondMimic: From Motion Tracking to Versatile Humanoid Control via Guided Diffusion (arXiv:2508.08241)", "url": "https://arxiv.org/abs/2508.08241"},
+{"title": "GMT: General Motion Tracking for Humanoid Whole-Body Control (arXiv:2506.14770)", "url": "https://arxiv.org/abs/2506.14770"}
+],
+"as_of": "2025-11"
+},
+{
+"name_zh": "关节运动与直线运动（MoveJ / MoveL）",
+"name_en": "MoveJ / MoveL (Joint Move / Linear Move Commands)",
+"abbr": "",
+"aliases": ["MoveJ", "MoveL", "movej", "movel", "关节插补", "直线插补"],
+"tier": 2,
+"one_liner": "机械臂最常用的两条运动指令：按关节空间走，或让末端走直线。",
+"explanation": "MoveJ 和 MoveL 是工业/协作机械臂编程里的两条基础指令，优傲（UR）的 URScript 里写作 movej、movel，其他厂商也有类似指令。MoveJ 在关节空间插补：各关节从当前角度同步转到目标角度，末端走出的通常是一条曲线，但不用沿途解逆运动学，速度快，也不怕中途碰上奇异位形（某些方向动不了的姿态）。MoveL 在笛卡尔空间插补：让工具中心点沿直线走到目标位姿，控制器要沿途解逆运动学，路线可预测，适合靠近物体、插入、涂胶。两者的速度都按梯形速度曲线执行。常见用法是先 MoveJ 到预抓取位姿，再 MoveL 直线接近物体。",
+"example": "URScript 中 movej([0,1.57,-1.57,3.14,-1.57,1.57], a=1.4, v=1.05) 让六个关节以领头关节 1.05 rad/s 的速度转到这组角度；movel(pose, a=1.2, v=0.25) 让末端以 0.25 m/s 沿直线移到 pose。",
+"related": ["关节空间", "任务空间", "逆运动学", "工具中心点", "梯形速度曲线", "预抓取位姿"],
+"sources": [
+{"title": "The URScript Programming Language for e-Series, SW 5.11（movej / movel）", "url": "https://s3-eu-west-1.amazonaws.com/ur-support-site/115824/scriptManual_SW5.11.pdf"},
+{"title": "ur_rtde: rtde_control_interface.h（moveJ linear in joint-space / moveL linear in tool-space）", "url": "https://gitlab.com/sdurobotics/ur_rtde/-/raw/master/include/ur_rtde/rtde_control_interface.h"}
+],
+"as_of": ""
+},
+{
+"name_zh": "操作空间控制",
+"name_en": "Operational Space Control",
+"abbr": "OSC",
+"aliases": ["操作空间公式", "Operational Space Formulation", "OSC_POSE", "任务空间动力学控制"],
+"tier": 2,
+"one_liner": "直接在末端空间算期望加速度和力，再用动力学换成关节力矩的控制方法。",
+"explanation": "操作空间控制由斯坦福的 Oussama Khatib 于 1987 年提出。它把机械臂动力学改写到末端所在的「操作空间」：F = Λ(q)·ẍ + η，其中 ẍ 是末端加速度，Λ 是末端感受到的等效惯量矩阵，η 汇总科里奥利力、重力等项，F 是末端要施加的力和力矩。控制器先按位姿误差用 PD 算出期望 ẍ，代入得 F，再用 τ = Jᵀ·F（J 为雅可比矩阵）换成关节力矩。好处是能直接在末端空间设刚度和阻尼，同时补偿机械臂自身惯性。和「逆运动学 + 关节位置控制」不同，它直接输出力矩，因此需要较准的动力学模型。仿真框架 robosuite 的 OSC_POSE 控制器就是它的实现。",
+"example": "在 robosuite 里用 OSC_POSE 控制 Panda 机械臂，策略每步只输出末端的位移增量和轴角旋转增量，控制器内部换算成 7 个关节的力矩。",
+"related": ["任务空间控制", "阻抗控制", "雅可比矩阵", "零空间控制", "质量矩阵", "全身控制"],
+"sources": [
+{"title": "Lynch & Park, Modern Robotics（§8.6 Dynamics in the Task Space；引 Khatib 1987, IEEE J. Robotics and Automation 3(1):43–53）", "url": "http://hades.mech.northwestern.edu/images/7/7f/MR.pdf"},
+{"title": "robosuite Docs: Controllers（OSC_POSE）", "url": "https://robosuite.ai/docs/modules/controllers.html"}
+],
+"as_of": ""
+},
+{
+"name_zh": "最优控制",
+"name_en": "Optimal Control",
+"abbr": "",
+"aliases": ["最优控制问题", "OCP", "Optimal Control Problem"],
+"tier": 2,
+"one_liner": "在满足系统动力学的前提下，找一串控制输入让总代价最小。",
+"explanation": "最优控制是控制理论的一个分支，研究在一段时间里怎样选控制输入，使目标函数最优。标准写法是 min J = φ(x(T)) + ∫ L(x, u) dt，约束 ẋ = f(x, u)：x 是状态（如关节角和角速度），u 是控制输入（如力矩），L 是每一时刻的代价（偏离目标、耗能），φ 是终点代价，f 是动力学模型。理论基础是 20 世纪 50 年代的庞特里亚金极大值原理和贝尔曼动态规划。线性动力学加二次代价的特例就是 LQR，解出来是线性反馈 u = −Kx。机器人里的轨迹优化、iLQR/DDP、模型预测控制（每个周期重解一次有限时域最优控制）都属于这一类；强化学习可看作在模型未知时求解同类问题。",
+"example": "百度 Apollo 自动驾驶的横向控制用 LQR 算转向：把「偏离参考轨迹」和「转向幅度」按权重加成代价，求出使总代价最小的反馈增益。",
+"related": ["线性二次调节器", "模型预测控制", "轨迹优化", "迭代线性二次调节器", "微分动态规划", "强化学习"],
+"sources": [
+{"title": "Wikipedia: Optimal control", "url": "https://en.wikipedia.org/wiki/Optimal_control"},
+{"title": "Underactuated Robotics（Tedrake）: Linear Quadratic Regulators", "url": "https://underactuated.mit.edu/lqr.html"},
+{"title": "Apollo Control 模块说明（README_cn）", "url": "https://raw.githubusercontent.com/ApolloAuto/apollo/master/modules/control/control_component/README_cn.md"}
+],
+"as_of": ""
+},
+{
+"name_zh": "路径规划",
+"name_en": "Path Planning",
+"abbr": "",
+"aliases": ["路径搜索", "寻路（Pathfinding）", "钢琴搬运工问题"],
+"tier": 2,
+"one_liner": "在不碰撞的前提下，找出从起点到终点要经过的一串位置或姿态。",
+"explanation": "路径规划是给定环境、起点和终点，算出一条无碰撞几何路线的问题，常与「运动规划」混用，也被称为「钢琴搬运工问题」。严格说，路径只描述依次经过哪些位形（位置和姿态的组合），不含时间；给路径配上每一时刻的速度和加速度才是轨迹，这一步叫轨迹规划或时间参数化。常见算法分三类：栅格搜索（A*、Dijkstra），适合二维地图导航；基于采样的方法（PRM、RRT），适合机械臂这类高维构型空间；人工势场法，简单但容易困在局部极小值。移动机器人通常先做全局路径规划，再让局部规划器边走边避障。",
+"example": "移动机器人在栅格地图上用 A* 搜出一条从充电座到门口、绕开家具的折线路径，再交给轨迹规划和底盘控制去执行。",
+"related": ["运动规划", "轨迹规划", "A* 算法", "快速扩展随机树", "概率路线图", "构型空间"],
+"sources": [
+{"title": "Wikipedia: Motion planning", "url": "https://en.wikipedia.org/wiki/Motion_planning"},
+{"title": "Lynch & Park, Modern Robotics（§9.1 path 与 trajectory 的定义；第 10 章 Motion Planning）", "url": "http://hades.mech.northwestern.edu/images/7/7f/MR.pdf"}
+],
+"as_of": ""
+},
+{
+"name_zh": "规控（规划与控制）",
+"name_en": "Planning and Control (PnC)",
+"abbr": "PnC",
+"aliases": ["规划控制", "规划与控制", "决策规划与控制"],
+"tier": 2,
+"one_liner": "把「决定怎么走」和「让执行器照着走」合在一起的技术模块与岗位方向。",
+"explanation": "规控是中文工业界的常用简称，对应英文 Planning and Control（PnC），指感知之后、执行器之前的那一层。规划部分根据定位、感知结果和任务目标，生成路径和带速度的轨迹；控制部分根据当前状态算出电机或执行器指令，让机器人跟上这条轨迹。这个说法在自动驾驶行业很常见，百度 Apollo 就把系统拆成规划模块（输出轨迹）和控制模块（用 LQR、PID 或 MPC 算出转向、油门、刹车指令）。在机器人公司，规控方向通常负责运动规划、轨迹优化、MPC、全身控制等，大致对应「大脑-小脑架构」里的小脑。端到端模型把一部分规划交给了网络，但底层控制和安全约束多数仍靠规控。",
+"example": "Apollo 中规划模块输出一条带速度和加速度的行驶轨迹，控制模块用 LQR 算横向转向、用 PID 算纵向油门和刹车，让车跟上这条轨迹。",
+"related": ["运动规划", "轨迹规划", "模型预测控制", "全身控制", "大脑-小脑架构（大小脑）", "自动驾驶"],
+"sources": [
+{"title": "Apollo Planning 模块说明（README_cn）", "url": "https://raw.githubusercontent.com/ApolloAuto/apollo/master/modules/planning/planning_component/README_cn.md"},
+{"title": "Apollo Control 模块说明（README_cn）", "url": "https://raw.githubusercontent.com/ApolloAuto/apollo/master/modules/control/control_component/README_cn.md"}
+],
+"as_of": ""
+},
+{
+"name_zh": "策略推理频率",
+"name_en": "Policy Inference Frequency",
+"abbr": "",
+"aliases": ["推理频率", "策略频率", "模型调用频率"],
+"tier": 2,
+"one_liner": "学习型策略每秒被调用、算出新动作的次数，常低于底层控制频率。",
+"explanation": "策略推理频率指神经网络策略每秒做几次前向计算、给出新动作（或新动作块），单位 Hz。它和控制频率不是一回事：控制频率是执行器每秒收几次指令，关节控制环常在数百到上千 Hz。大模型算得慢，通常一次预测一整段动作（动作分块），两次推理之间把这段动作依次执行，所以推理频率远低于控制频率。以 π0 为例，它一次输出 50 步动作，在 50 Hz 的机器人上执行 25 步才重新推理，约合 2 Hz，单次推理在 RTX 4090 上约 73 毫秒。推理频率越低，对突发变化反应越慢，动作块衔接处也易卡顿，于是有了异步推理、实时动作分块和快慢双系统（如 Figure Helix 慢系统 7–9 Hz、快系统 200 Hz）。",
+"example": "π0 在 20 Hz 控制的 UR5e、Franka 上每执行 16 步（0.8 秒）推理一次，在 50 Hz 控制的机器人上每执行 25 步（0.5 秒）推理一次。",
+"related": ["控制频率", "推理延迟", "动作分块", "异步推理", "实时动作分块", "快慢双系统"],
+"sources": [
+{"title": "π0: A Vision-Language-Action Flow Model for General Robot Control (arXiv:2410.24164)", "url": "https://arxiv.org/html/2410.24164v1"},
+{"title": "Figure: Helix（System 2 7–9 Hz / System 1 200 Hz）", "url": "https://www.figure.ai/news/helix"},
+{"title": "Real-Time Execution of Action Chunking Flow Policies (arXiv:2506.07339)", "url": "https://arxiv.org/abs/2506.07339"}
+],
+"as_of": "2025-06"
+},
+{
+"name_zh": "预抓取位姿",
+"name_en": "Pre-grasp Pose",
+"abbr": "",
+"aliases": ["预抓取点", "接近位姿", "Approach Pose", "Pregrasp Pose"],
+"tier": 2,
+"one_liner": "真正抓取前，夹爪先停在物体附近、对准抓取方向的那个中间位姿。",
+"explanation": "机械臂抓取通常分几步：先移动到预抓取位姿，再沿接近方向直线靠近到抓取位姿，合上夹爪，最后抬起撤离。预抓取位姿一般由抓取位姿沿接近方向（多为夹爪朝向）往后退一小段得到，同时把夹爪提前张开到合适开度。这样做是把「大范围移动」和「贴近物体的精细动作」分开：前一段交给运动规划快速走，后一段短而直，不容易蹭倒物体或撞到周围。ROS 的 MoveIt 在 Grasp 消息里用 pre_grasp_approach（接近方向和距离）和 pre_grasp_posture（抓取前的手型）描述这一过程。灵巧手研究里，「预抓取」也常指合手前手指摆出的形态。",
+"example": "MoveIt 抓取教程中，Panda 先停在距抓取位姿约 11.5 厘米处（desired_distance 0.115 米）并张开夹爪，再沿 x 方向直线接近、抓取，之后沿 z 方向向上撤离约 25 厘米。",
+"related": ["抓取规划", "抓取位姿检测", "关节运动与直线运动（MoveJ / MoveL）", "MoveIt", "末端位姿", "抓取"],
+"sources": [
+{"title": "MoveIt Tutorials: Pick and Place", "url": "https://moveit.github.io/moveit_tutorials/doc/pick_place/pick_place_tutorial.html"},
+{"title": "moveit_msgs/Grasp.msg", "url": "https://raw.githubusercontent.com/moveit/moveit_msgs/master/msg/Grasp.msg"}
+],
+"as_of": ""
+},
+{
+"name_zh": "概率路线图",
+"name_en": "Probabilistic Roadmap",
+"abbr": "PRM",
+"aliases": ["概率路图法", "概率路线图法", "PRM 规划器"],
+"tier": 2,
+"one_liner": "先在空间里随机撒点连成路网，再在路网上查起点到终点路径的规划算法。",
+"explanation": "概率路线图是一种基于采样的运动规划算法，一般认为由 Lydia Kavraki 等人在 1996 年的论文中提出。它分两个阶段：构建阶段在构型空间（机器人所有可能姿态组成的空间）里随机采样无碰撞的点，把相互间能直线连通、不撞障碍的近邻点连起来，形成一张图，即「路线图」；查询阶段把起点和终点接入这张图，再用 Dijkstra 或 A* 搜出路径。它的优点是路线图建一次可反复查询（多查询），适合环境基本不变、要频繁规划的场合；弱点是狭窄通道里很难采到点。它具有概率完备性：采样足够多时，只要路径存在，找到的概率趋近 1。与之相对，RRT 每次从起点现长一棵树，更适合单次查询。",
+"example": "工位上固定的机械臂，事先在关节空间建好一张 PRM 路线图；之后每换一组取放目标，只需把新的起点和终点接入路网搜索，不必从头规划。",
+"related": ["快速扩展随机树", "基于采样的规划", "概率完备性", "构型空间", "路径规划", "A* 算法"],
+"sources": [
+{"title": "Wikipedia: Probabilistic roadmap", "url": "https://en.wikipedia.org/wiki/Probabilistic_roadmap"},
+{"title": "Lynch & Park, Modern Robotics（§10.5.2 The PRM Algorithm）", "url": "http://hades.mech.northwestern.edu/images/7/7f/MR.pdf"}
+],
+"as_of": ""
+},
+{
+"name_zh": "推恢复",
+"name_en": "Push Recovery",
+"abbr": "",
+"aliases": ["抗推", "抗扰动恢复", "推扰恢复"],
+"tier": 2,
+"one_liner": "机器人被推或被撞后调整姿态或迈步，重新站稳不摔倒的能力。",
+"explanation": "推恢复指足式机器人（尤其是双足和人形）受到外力推搡、碰撞后恢复平衡。经典思路按扰动大小分三级：小推靠踝关节力矩移动压力中心（踝策略），大一些靠弯髋、摆上身产生角动量（髋策略），再大就必须迈一步（跨步策略）。2006 年 Pratt 等人提出捕获点：根据质心位置和速度算出「一步踩到那里就能完全停住」的地面点，给出了往哪迈步的依据。如今的强化学习运控则在仿真训练中随机推机器人，让策略自己学会抗推，这也是域随机化的一种。它和跌倒恢复不同：后者是已经摔倒后再爬起来。",
+"example": "开源框架 legged_gym 训练时默认每 15 秒把机器人躯干的水平速度随机设为最多 1 m/s，模拟一次猛推，策略由此学会被推后迈步稳住。",
+"related": ["捕获点", "踝策略/髋策略/跨步策略", "平衡控制", "零力矩点", "域随机化", "跌倒恢复（摔倒起身）"],
+"sources": [
+{"title": "Pratt et al.: Capture Point: A Step toward Humanoid Push Recovery (Humanoids 2006)", "url": "https://doi.org/10.1109/ICHR.2006.321385"},
+{"title": "Stéphane Caron: Capture point", "url": "https://scaron.info/robotics/capture-point.html"},
+{"title": "legged_gym: legged_robot_config.py（push_robots / push_interval_s / max_push_vel_xy）", "url": "https://raw.githubusercontent.com/leggedrobotics/legged_gym/master/legged_gym/envs/base/legged_robot_config.py"}
+],
+"as_of": ""
+},
+{
+"name_zh": "二次规划",
+"name_en": "Quadratic Programming",
+"abbr": "QP",
+"aliases": ["QP 求解", "二次规划问题", "凸二次规划"],
+"tier": 2,
+"one_liner": "目标是二次函数、约束是线性等式或不等式的优化问题，控制里极常用。",
+"explanation": "二次规划是一类数学优化问题：min ½xᵀQx + cᵀx，约束 Ax ≤ b。x 是待求变量（如关节加速度、力矩、接触力），Q 和 c 描述目标（常是「与期望值的偏差平方」），A、b 表示线性约束（力矩上限、摩擦锥的线性近似等）。Q 半正定时问题是凸的，有全局最优解，可用内点法、有效集法等快速求解，OSQP、qpOASES 是机器人里常用的开源求解器；Q 不满足这一条件时一般是 NP 难。它在机器人控制里常见，是因为「跟踪误差平方最小 + 物理限制」天然就是这种形式：全身控制每个周期解一次 QP 来分配力矩和接触力，凸 MPC 也常写成 QP。",
+"example": "MIT Mini Cheetah 的控制器里，MPC 以 30 Hz 解 QP 规划足端反作用力，全身冲量控制再以 500 Hz 解一个小 QP 修正反作用力，最后得到关节力矩。",
+"related": ["凸优化", "全身控制", "模型预测控制", "分层二次规划", "OSQP", "摩擦锥"],
+"sources": [
+{"title": "Wikipedia: Quadratic programming", "url": "https://en.wikipedia.org/wiki/Quadratic_programming"},
+{"title": "OSQP Documentation", "url": "https://osqp.org/docs/"},
+{"title": "Highly Dynamic Quadruped Locomotion via Whole-Body Impulse Control and Model Predictive Control (arXiv:1909.06586)", "url": "https://arxiv.org/abs/1909.06586"}
+],
+"as_of": ""
+},
+{
+"name_zh": "快速扩展随机树",
+"name_en": "Rapidly-exploring Random Tree",
+"abbr": "RRT",
+"aliases": ["快速探索随机树", "快速搜索随机树", "RRT 算法"],
+"tier": 2,
+"one_liner": "从起点出发随机撒点、不断向新点长枝，直到树枝够到终点的规划算法。",
+"explanation": "快速扩展随机树由 Steven LaValle 于 1998 年提出，后与 James Kuffner 进一步发展，是最常用的基于采样的规划算法之一。每一轮做四件事：在构型空间里随机采一个点；找树上离它最近的节点；从该节点朝采样点走一小步；这一步不碰撞就把新点加进树。大片空白区域更容易被采中，所以树会自然地往未探索的方向快速伸展。它只需碰撞检测，不必显式算出整个无碰撞空间，适合六七个自由度的机械臂，也能处理带动力学约束的系统。基础 RRT 概率完备，但路径通常曲折、不是最优，常见改进有双向生长的 RRT-Connect 和渐近最优的 RRT*，结果一般还要再做路径平滑。",
+"example": "在二维迷宫里，RRT 从入口开始随机长枝，某根树枝进入出口附近后，沿树回溯到根就得到一条折线路径，再用捷径平滑把它拉直缩短。",
+"related": ["RRT*", "RRT-Connect", "概率路线图", "基于采样的规划", "路径平滑", "碰撞检查"],
+"sources": [
+{"title": "Wikipedia: Rapidly exploring random tree", "url": "https://en.wikipedia.org/wiki/Rapidly_exploring_random_tree"},
+{"title": "Lynch & Park, Modern Robotics（§10.5.1 The RRT Algorithm）", "url": "http://hades.mech.northwestern.edu/images/7/7f/MR.pdf"}
+],
+"as_of": ""
+}
+]}

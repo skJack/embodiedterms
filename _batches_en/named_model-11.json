@@ -1,0 +1,232 @@
+{
+  "batch": "named_model-11",
+  "terms": [
+    {
+      "key": "named_model-11#0",
+      "name_en": "DYNA-1",
+      "aliases": [
+        "Dyna-1",
+        "Dynamism v1",
+        "DYNA-1 Foundation Model"
+      ],
+      "one_liner": "Dyna Robotics' first-generation robot foundation model, released in 2025, best known for folding napkins autonomously for hours at a stretch.",
+      "explanation": "DYNA-1 is the first embodied foundation model from the US startup Dyna Robotics, released in June 2025, with the official full name Dynamism v1. It is built for continuous operation in commercial settings: on a restaurant napkin-folding task, the company reports 24 hours of unattended autonomous operation with a 99.4% success rate, folding more than 850 napkins at about 60% of human speed. Its core approach is to put a self-developed reward model — a model that scores the robot's own performance — inside the training loop, letting the robot explore and self-correct, and continuing to generate new data during deployment. In November 2025, the company also said its pretrained base model, without any further fine-tuning, could fold clothes and sort packages in environments it had never seen, and could learn a new task from about an hour of demonstration. Architecture details have not been disclosed.",
+      "example": "According to the company's blog, in week 1 the robot could only fold napkins continuously for 5 minutes; by week 6 it could run non-stop for a full 24 hours. DYNA-1 was then deployed folding napkins at a paying customer's site.",
+      "related": [
+        "Dyna Robotics",
+        "DYNA-2",
+        "Reward Model",
+        "Real-Robot Reinforcement Learning",
+        "Data Flywheel",
+        "Embodied Foundation Model"
+      ]
+    },
+    {
+      "key": "named_model-11#1",
+      "name_en": "DYNA-2",
+      "aliases": [
+        "Dyna-2"
+      ],
+      "one_liner": "Dyna Robotics' 2026 world action model, pretrained on a million hours of first-person human video.",
+      "explanation": "DYNA-2 is Dyna Robotics' second-generation model, released in August 2026, a world action model (one that jointly predicts future video frames and future actions). It uses a video diffusion model as its backbone, with a hybrid Transformer that processes the video stream and the action stream separately, trained with flow matching so it can denoise future video and actions either jointly or separately. Its pretraining data is more than a million hours of head-mounted, first-person human video, covering everyday activities like cooking, tidying up, folding clothes, and assembly. The company reports observing a scaling law from human data to robot performance: as human pretraining data increases in stages from 1,000 hours to 1 million hours, the average normalized performance (relative to the achievable ceiling) across 14 real-robot tasks rises in step, to 20%, 28%, 45%, and 53%. In the company's layered system, DYNA-2 serves as System 1, taking direction from DYNA-VLM, which handles reasoning.",
+      "example": "According to the company, when folding napkins, DYNA-1 manages about 35 per hour at a 75% acceptable-quality rate, while DYNA-2 reaches 95 per hour at 93%; customer Din Tai Fung is now expanding Dyna's robots from a pilot restaurant to more of its locations and central kitchens.",
+      "related": [
+        "DYNA-1",
+        "World Action Model",
+        "Egocentric Video",
+        "Pretraining on Human Videos",
+        "Scaling Laws",
+        "Dyna Robotics"
+      ]
+    },
+    {
+      "key": "named_model-11#2",
+      "name_en": "EgoScale",
+      "aliases": [
+        "Scaling Dexterous Manipulation with Diverse Egocentric Human Data"
+      ],
+      "one_liner": "An NVIDIA 2026 project that pretrains a dexterous-hand VLA on 20,000 hours of first-person human video.",
+      "explanation": "EgoScale is a paper released in February 2026 by NVIDIA's GEAR Lab together with UC Berkeley and the University of Maryland, aimed at answering whether human video can teach a robot to work with a multi-fingered dexterous hand at scale. The method has three steps: first, extract wrist motion from 20,854 hours of action-annotated, first-person human video, and retarget human hand poses into the joint space of a 22-degree-of-freedom Sharpa dexterous hand, to pretrain a flow-matching VLA structurally similar to GR00T N1; next, mid-train on a small amount of aligned data where a human and a robot perform the same action in the same scene; finally, post-train on specific tasks. The paper finds a log-linear scaling relationship between the amount of human data and validation loss, with average success rate improving 54% compared to skipping human pretraining.",
+      "example": "On a Galaxea R1 Pro fitted with the 22-DOF Sharpa dexterous hand, given just 1 robot demonstration, average success on a shirt-folding task reached as high as 88%; switching to a three-fingered Unitree G1 hand, human pretraining still delivered more than a 30-percentage-point absolute improvement.",
+      "related": [
+        "Egocentric Video",
+        "Pretraining on Human Videos",
+        "Dexterous Manipulation",
+        "Scaling Laws",
+        "Mid-training",
+        "GR00T N1 Series"
+      ]
+    },
+    {
+      "key": "named_model-11#3",
+      "name_en": "EgoVLA",
+      "aliases": [
+        "Learning Vision-Language-Action Models from Egocentric Human Videos"
+      ],
+      "one_liner": "A VLA pretrained on first-person human video that converts human hand motion into humanoid robot actions.",
+      "explanation": "EgoVLA is a paper released in July 2025 by UC San Diego together with UIUC, MIT, NVIDIA, and others. The motivation is that real-robot data is tied to specific robot hardware and limited in scale, while first-person human video is abundant and covers a much wider range of scenes. It uses the NVILA-2B vision-language model as its backbone, first learning to predict human wrist pose and MANO hand parameters (a parametric model of the human hand) from about 500,000 human-video image-action pairs; the robot hand is then converted into that same MANO action space, and the model is fine-tuned on a small number of robot demonstrations. At deployment, wrist pose is converted into arm joint angles through inverse kinematics, and finger motion is mapped to dexterous-hand joints by a small MLP.",
+      "example": "On the authors' Ego Humanoid Manipulation Benchmark, built on Isaac Lab (a simulated Unitree H1 fitted with an Inspire dexterous hand, across 12 tasks), EgoVLA pretrained on human video clearly outperforms baselines trained only on robot data, with especially large gains on long-horizon and fine-grained manipulation tasks.",
+      "related": [
+        "Egocentric Video",
+        "Pretraining on Human Videos",
+        "MANO Hand Model",
+        "Motion Retargeting",
+        "Vision-Language-Action Model",
+        "EgoScale"
+      ]
+    },
+    {
+      "key": "named_model-11#4",
+      "name_en": "Embodied-R1",
+      "aliases": [
+        "Embodied R1",
+        "Reinforced Embodied Reasoning for General Robotic Manipulation"
+      ],
+      "one_liner": "A 3B embodied-reasoning model from Tianjin University that uses “pointing” as an intermediate representation, trained with reinforcement fine-tuning.",
+      "explanation": "Embodied-R1 is work released in August 2025 by a team at Tianjin University, accepted to ICLR 2026. The authors call the gap between “understanding what to do” and “actually doing it” the seeing-to-doing gap, and propose using “pointing” — outputting a point, a region, or a sequence of trajectory points on an image — as an intermediate representation that is independent of any specific robot body, defining four abilities: referring-expression grounding, region grounding, functional-part grounding, and visual-trajectory generation. The model is built on Qwen2.5-VL-3B, and is trained with two-stage reinforcement fine-tuning on a self-built dataset, Embodied-Points-200K, using the GRPO algorithm with automatically scored, task-specific rewards. The points and trajectories the model outputs are then handed off to lower-level modules such as motion planning for execution. The weights and dataset are both open-source.",
+      "example": "Without any task-specific fine-tuning, Embodied-R1 reaches a 56.2% success rate in SimplerEnv simulation and 87.5% across 8 real-robot xArm tasks, which the paper reports as a 62% improvement over strong baselines.",
+      "related": [
+        "Embodied Reasoning Model",
+        "Pointing (Point Prediction)",
+        "RL Fine-Tuning",
+        "Group Relative Policy Optimization (GRPO)",
+        "Intermediate Representation",
+        "Affordance"
+      ]
+    },
+    {
+      "key": "named_model-11#5",
+      "name_en": "EmbodiedGPT",
+      "aliases": [
+        "Vision-Language Pre-Training via Embodied Chain of Thought"
+      ],
+      "one_liner": "A 2023 embodied multimodal model from HKU and Shanghai AI Lab that uses chain of thought to generate step-by-step plans.",
+      "explanation": "EmbodiedGPT was released in May 2023 by the University of Hong Kong, Shanghai AI Lab, and others, published at NeurIPS 2023, and is one of the early landmark works applying large models to embodied planning. The authors selected clips from Ego4D first-person video and annotated them, in chain-of-thought form, as step-by-step sub-goals, building a planning dataset called EgoCOT; they then used prefix tuning to adapt a 7B language model to this kind of data, so it outputs a step-by-step plan after seeing an image. The key design is treating the plan the language model generates as a query, used to extract task-relevant features from the image, which are handed to a low-level policy network — closing the loop between high-level planning and low-level control.",
+      "example": "On the Franka Kitchen and Meta-World simulated control tasks, EmbodiedGPT's success rate is 1.6 times and 1.3 times that of a BLIP-2 baseline fine-tuned on Ego4D, respectively.",
+      "related": [
+        "Embodied Chain-of-Thought",
+        "Chain of Thought",
+        "Egocentric Video",
+        "Ego4D Dataset",
+        "LLM-based Task Planning",
+        "Franka Kitchen"
+      ]
+    },
+    {
+      "key": "named_model-11#6",
+      "name_en": "End-to-End Training of Deep Visuomotor Policies",
+      "aliases": [
+        "Guided Policy Search",
+        "GPS",
+        "Levine et al. 2016"
+      ],
+      "one_liner": "A landmark 2015 Berkeley paper that used a convolutional network to output robot-arm joint torques directly from camera images.",
+      "explanation": "This paper was released in April 2015 by Sergey Levine, Chelsea Finn, Trevor Darrell, and Pieter Abbeel at UC Berkeley, and published in JMLR in 2016. At the time, most robots were designed with perception and control as separate components; the paper set out to test whether jointly training both inside a single network would work better. The policy is a convolutional network with about 92,000 parameters, taking a monocular image and joint state as input and outputting joint torques for a 7-DOF arm at 20Hz. Training uses guided policy search: with object positions known during training, trajectory optimization first finds good actions, and supervised learning then has an image-only policy imitate them — turning reinforcement learning into supervised learning. The spatial softmax layer introduced in this paper was later adopted by many subsequent visuomotor policies.",
+      "example": "The PR2 robot learned to hang a coat hanger on a rod, fit blocks into a shape-sorting cube, use the claw of a toy hammer to pull out a nail, and screw on a bottle cap, judging target positions entirely from the camera; each policy took 3 to 4 hours to train in total, of which only about 15 minutes was actual real-robot execution.",
+      "related": [
+        "Visuomotor Policy",
+        "End-to-End",
+        "Spatial Softmax",
+        "Trajectory Optimization",
+        "Reinforcement Learning",
+        "Imitation Learning"
+      ]
+    },
+    {
+      "key": "named_model-11#7",
+      "name_en": "EnerVerse",
+      "aliases": [
+        "EnerVerse-A",
+        "EnerVerse-D",
+        "Envisioning Embodied Future Space for Robotics Manipulation"
+      ],
+      "one_liner": "A generative robot model from AgiBot and others that first predicts future multi-view frames with video diffusion, then produces actions.",
+      "explanation": "EnerVerse was released in January 2025 by AgiBot, Shanghai AI Lab, and other teams, and was later accepted to NeurIPS 2025. Its approach is to predict the future first and decide on actions second: an autoregressive video diffusion model generates future “embodied space” frames segment by segment based on an instruction, using sparse context memory to support long-horizon tasks. To represent 3D scenes, the authors propose Free Anchor Views, a multi-view video representation whose viewpoints are chosen flexibly per task. EnerVerse-A is a policy head attached after the generative model that converts the predicted 4D representation into robot actions; EnerVerse-D is a data engine that combines the generative model with 4D Gaussian splatting, used to automatically synthesize data and narrow the gap between simulation and reality.",
+      "example": "Given a manipulation instruction, the model first generates future video clips, from several viewpoints, of the robot completing the task, and the policy head then outputs actions based on them; the paper reports producing an 8-step action chunk in about 280 milliseconds.",
+      "related": [
+        "Video Prediction Model",
+        "World Model",
+        "AgiBot Genie Envisioner",
+        "3D Gaussian Splatting",
+        "Multi-View",
+        "Video Prediction Policy (VPP)"
+      ]
+    },
+    {
+      "key": "named_model-11#8",
+      "name_en": "EO-1",
+      "aliases": [
+        "EmbodiedOneVision",
+        "EO1",
+        "EO-Robotics",
+        "An Open Unified Embodied Foundation Model for General Robot Control"
+      ],
+      "one_liner": "A 3B open-source unified embodied model from Shanghai AI Lab where a single network both reasons in language and outputs actions.",
+      "explanation": "EO-1 was released in August 2025, led by Shanghai AI Lab with real-robot support from AgiBot, with weights, training code, and data all open-source. It is built on Qwen2.5-VL-3B as a decoder-only Transformer: text is generated autoregressively, token by token, while actions are generated as continuous values by denoising through flow matching, with the two trained jointly inside the same model. Its companion dataset, EO-Data1.5M, contains 1.5 million interleaved “image-text-action” samples covering physical common sense, task reasoning, spatial understanding, and manipulation trajectories, letting the model reason and act within the same stretch of context. The company reports that it surpassed the then-current open-source models on ERQA, LIBERO, SimplerEnv, and its own EO-Bench.",
+      "example": "Real-robot testing covered four robots — Franka, WidowX 250, AgiBot G-1, and the LeRobot SO-100 — on tasks including long-horizon dexterous manipulation and tasks that require reasoning before acting.",
+      "related": [
+        "Vision-Language-Action Model",
+        "Autoregressive-Diffusion Hybrid Architecture",
+        "Flow Matching",
+        "Embodied Reasoning",
+        "Shanghai AI Lab",
+        "LeRobot"
+      ]
+    },
+    {
+      "key": "named_model-11#9",
+      "name_en": "ERA-42",
+      "aliases": [
+        "ERA42",
+        "RobotEra end-to-end native robot model"
+      ],
+      "one_liner": "RobotEra's end-to-end VLA embodied model, released in late 2024, driving the company's dexterous hands and humanoid robots.",
+      "explanation": "ERA-42 is the embodied large model from Beijing-based RobotEra, described on the company's website as an “end-to-end VLA embodied model.” RobotEra was founded in August 2023; its founder, Jianyu Chen, is an assistant professor at Tsinghua University's Institute for Interdisciplinary Information Sciences (IIIS), and Tsinghua holds a stake in the company. According to the company's own timeline, ERA-42 was released in December 2024, with the first version demonstrated on a single arm plus a five-fingered dexterous hand; it moved to dual arms in March 2025, and by July was driving the same model across all 55 degrees of freedom of the full-size humanoid robot L7. The technical work the company's website lists as groundwork includes papers on the video prediction policy VPP, UP-VLA, the online reinforcement-learning method iRe-VLA, and the controllable world model Ctrl-World. The company says it now has 100 dexterous manipulation skills deployed in logistics, manufacturing, and commercial services; the architecture and parameter count have not been fully disclosed.",
+      "example": "In RobotEra's warehousing solution, a robot running on ERA-42 completes the full order-outbound-picking-scanning-packing sequence, using the 12-DOF XHAND1 dexterous hand to grasp irregularly shaped medicine boxes and flip them to scan the barcode.",
+      "related": [
+        "RobotEra",
+        "Vision-Language-Action Model",
+        "Video Prediction Policy (VPP)",
+        "Ctrl-World",
+        "RobotEra XHAND1",
+        "RobotEra L7"
+      ]
+    },
+    {
+      "key": "named_model-11#10",
+      "name_en": "ExBody2",
+      "aliases": [
+        "Advanced Expressive Humanoid Whole-Body Control"
+      ],
+      "one_liner": "A humanoid whole-body motion-tracking method from UC San Diego and others that lets the Unitree G1 walk, squat, and dance.",
+      "explanation": "ExBody2 was released in December 2024 by Xiaolong Wang's group at UC San Diego together with UC Berkeley and MIT, an upgrade over the original ExBody. ExBody only had the upper body imitate a reference motion; ExBody2 switches to full-body tracking, mainly through three changes: first, automatic data filtering — a base policy is run over the CMU motion-capture data, and motions the robot can't achieve are filtered out by tracking error, balancing feasibility against diversity; second, teacher-student distillation, where a teacher policy uses privileged information (state unavailable on a real robot) in simulation, and is then distilled into a student policy that uses only onboard observations; and third, tracking keypoints in a local coordinate frame, decoupled from overall velocity tracking. The authors also found that training a general policy first and then fine-tuning it on a specific category of motion gives higher accuracy.",
+      "example": "On the Unitree G1, ExBody2 can dance the cha-cha following a reference motion; a specialized policy fine-tuned on dance data has noticeably lower joint-tracking error than either the general policy or one trained from scratch.",
+      "related": [
+        "ExBody",
+        "Motion Tracking",
+        "Whole-Body Control",
+        "Teacher-Student Distillation",
+        "Privileged Information",
+        "OmniH2O"
+      ]
+    },
+    {
+      "key": "named_model-11#11",
+      "name_en": "ExBody",
+      "aliases": [
+        "Expressive Whole-Body Control for Humanoid Robots"
+      ],
+      "one_liner": "A 2024 UC San Diego method where a humanoid's upper body imitates human motion while the legs just track velocity steadily.",
+      "explanation": "ExBody was released in February 2024 by Xiaolong Wang's group at UC San Diego, published at RSS 2024, and is one of the earlier works to apply large-scale human motion-capture data to whole-body control on a real humanoid robot. The difficulty is that humans and robots differ greatly in degrees of freedom and strength, so having the whole robot imitate a person frame by frame tends to make it fall over. ExBody's solution is to split the work: the upper body imitates the reference motion's joint angles and keypoints frame by frame, while the legs aren't required to match frame by frame at all, only to robustly follow the overall velocity and heading given by the reference motion. The data comes from about 780 clips in the CMU motion-capture database, retargeted onto the 19-degree-of-freedom Unitree H1, trained with massively parallel reinforcement learning in Isaac Gym, and then transferred to the real robot. Later work such as ExBody2 often uses it as a comparison baseline.",
+      "example": "On the real robot, the H1 can walk while performing motions in different styles at the same time — such as a zombie walk, high-fiving and shaking hands with a person, or even dancing together with someone.",
+      "related": [
+        "ExBody2",
+        "Motion Tracking",
+        "Whole-Body Control",
+        "Motion Retargeting",
+        "Unitree H1",
+        "Massively Parallel Reinforcement Learning"
+      ]
+    }
+  ]
+}

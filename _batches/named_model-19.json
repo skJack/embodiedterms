@@ -1,0 +1,397 @@
+{
+ "category": "named_model",
+ "batch": 19,
+ "terms": [
+  {
+   "name_zh": "NaVid",
+   "name_en": "NaVid: Video-based VLM Plans the Next Step for Vision-and-Language Navigation",
+   "abbr": "",
+   "aliases": [
+    "Uni-NaVid"
+   ],
+   "tier": 3,
+   "one_liner": "北大与智源等 2024 年提出的视频大模型导航方法，只看单目视频决定下一步。",
+   "explanation": "NaVid 由北京大学王鹤团队联合智源研究院、阿德莱德大学、银河通用等于 2024 年 2 月提出，发表于 RSS 2024，做的是视觉语言导航（按一句话指令走到目的地）。以往方法多依赖地图、里程计或深度图，NaVid 只用单目 RGB 视频：当前帧压成 64 个 token、每个历史帧压成 4 个，送进基于 Vicuna-7B 的视频大模型，直接用文字输出下一步，如前进多少厘米、转多少度或停止。它在 R2R-CE 上只用 RGB 达到 37.4% 成功率，并能迁移到真机。后续的 Uni-NaVid（RSS 2025）把指令导航、找物体、具身问答、跟人四类任务合进一个模型，用 360 万条样本训练。",
+   "example": "在 4 个真实室内场景、共 200 条指令的测试中，装在 Turtlebot4 小车上的 NaVid 对简单指令成功率约 66%，对多步复合指令约 48%。",
+   "related": [
+    "视觉语言导航",
+    "R2R / VLN-CE 视觉语言导航基准",
+    "视觉语言模型",
+    "NaVILA",
+    "银河通用 NavFoM",
+    "仿真到现实迁移"
+   ],
+   "sources": [
+    {
+     "title": "NaVid: Video-based VLM Plans the Next Step for Vision-and-Language Navigation (arXiv 2402.15852)",
+     "url": "https://arxiv.org/abs/2402.15852"
+    },
+    {
+     "title": "NaVid 项目页",
+     "url": "https://pku-epic.github.io/NaVid/"
+    },
+    {
+     "title": "Uni-NaVid: A Video-based Vision-Language-Action Model for Unifying Embodied Navigation Tasks (arXiv 2412.06224)",
+     "url": "https://arxiv.org/abs/2412.06224"
+    }
+   ],
+   "as_of": "2025-02"
+  },
+  {
+   "name_zh": "银河通用 NavFoM",
+   "name_en": "NavFoM: Embodied Navigation Foundation Model (Galbot)",
+   "abbr": "NavFoM",
+   "aliases": [
+    "导航基座大模型",
+    "Embodied Navigation Foundation Model"
+   ],
+   "tier": 3,
+   "one_liner": "银河通用与北大 2025 年推出的导航基座模型，一套权重适配多种本体和导航任务。",
+   "explanation": "NavFoM 由银河通用联合北京大学、阿德莱德大学、浙江大学等提出，论文 2025 年 9 月上 arXiv，11 月公司正式发布，宣传为「全球首个跨本体全域环视导航基座大模型」。以往导航模型多是一种机器人、一种任务单独训练；NavFoM 用 802 万条导航样本（四足、无人机、轮式机器人、汽车）加 476 万条图文和视频问答数据，同时学指令导航、找物体、目标跟踪和自动驾驶。它以 Qwen2-7B 为语言骨干，拼接 DINOv2 和 SigLIP 视觉特征，用特殊 token 标明每帧来自哪台相机、哪个时刻，可接 1 到 8 路相机，最后由 MLP 输出路径点，交给本体的局部规划器执行。",
+   "example": "同一套权重不做针对性微调，就在 VLN-CE 指令导航、HM3D-OVON 开放词汇找物、EVT-Bench 目标跟踪和 NAVSIM 自动驾驶等基准上评测；北大与银河通用后来的 UrbanVLA 也在它的基础上训练。",
+   "related": [
+    "跨本体",
+    "视觉语言导航",
+    "具身视觉跟踪（目标跟随）",
+    "银河通用 TrackVLA",
+    "NaVid",
+    "银河星脑 AstraBrain"
+   ],
+   "sources": [
+    {
+     "title": "Embodied Navigation Foundation Model (arXiv 2509.12129)",
+     "url": "https://arxiv.org/abs/2509.12129"
+    },
+    {
+     "title": "NavFoM 项目页",
+     "url": "https://pku-epic.github.io/NavFoM-Web/"
+    },
+    {
+     "title": "银河通用发布全球首个跨本体全域环视导航大模型NavFoM（网易，2025-11-05）",
+     "url": "https://c.m.163.com/news/a/KDJOHKOP0519D45U.html"
+    }
+   ],
+   "as_of": "2025-11"
+  },
+  {
+   "name_zh": "导航世界模型",
+   "name_en": "Navigation World Models (Meta)",
+   "abbr": "NWM",
+   "aliases": [],
+   "tier": 3,
+   "one_liner": "Meta 2024 年底提出的导航用视频世界模型，按动作想象走过去会看到什么。",
+   "explanation": "导航世界模型由 Meta FAIR 的 Amir Bar、Yann LeCun 等与纽约大学、伯克利合作提出，2024 年 12 月上 arXiv，获 CVPR 2025 最佳论文荣誉提名。它是一个可控的视频生成模型：给定过去的画面和一段导航动作（往哪走、转多少），预测接下来会看到的画面。模型是 10 亿参数的条件扩散 Transformer（CDiT），用人类和机器人的第一人称视频训练。有了它，机器人可以先在模型里模拟多条路线，挑能到达目标的那条；也能给 NoMaD 等现成策略采样的轨迹打分排序；还能只凭一张照片想象在陌生环境里行走。作者也指出，在陌生环境里生成久了，画面会逐渐偏向训练数据。",
+   "example": "给定起点照片和一张目标照片，NWM 对一批候选动作序列逐条生成沿途画面，选终点画面最接近目标照片的那条去执行。",
+   "related": [
+    "世界模型",
+    "视频预测模型",
+    "扩散 Transformer",
+    "NoMaD",
+    "图像目标导航",
+    "Meta FAIR"
+   ],
+   "sources": [
+    {
+     "title": "Navigation World Models (arXiv 2412.03572)",
+     "url": "https://arxiv.org/abs/2412.03572"
+    },
+    {
+     "title": "Navigation World Models 项目页",
+     "url": "https://www.amirbar.net/nwm/"
+    }
+   ],
+   "as_of": "2025-06"
+  },
+  {
+   "name_zh": "NaVILA",
+   "name_en": "NaVILA: Legged Robot Vision-Language-Action Model for Navigation",
+   "abbr": "",
+   "aliases": [],
+   "tier": 3,
+   "one_liner": "足式机器人导航 VLA：大模型用文字给出中层动作，强化学习运控负责走。",
+   "explanation": "NaVILA 由加州大学圣地亚哥分校王小龙团队与英伟达、南加州大学提出，2024 年 12 月上 arXiv，发表于 RSS 2025。视觉语言模型擅长理解画面和指令，但直接输出腿部关节指令很难，于是 NaVILA 分两层：上层是在英伟达 VILA（8B）上微调的 VLA，看相机画面和指令，用文字输出带距离、角度的中层动作，如「前进 75 厘米」；下层是强化学习训练的运动策略，读激光雷达生成的高度图，把中层动作变成四足 12 个关节的指令。训练数据除仿真导航数据外，还有约 2000 段 YouTube 第一人称游览视频。它在 R2R-CE 上成功率 54%，论文还发布了基于 Isaac Lab 的 VLN-CE-Isaac 基准。",
+   "example": "在办公区、家庭和户外共 25 条指令的真机测试中，装在宇树 Go2 四足上的 NaVILA 成功率 88%，多房间复杂指令为 75%；同一模型不重新训练也能用在 Booster T1 人形上。",
+   "related": [
+    "视觉语言导航",
+    "视觉-语言-动作模型",
+    "腿足运动",
+    "分层架构",
+    "强化学习运控",
+    "NaVid"
+   ],
+   "sources": [
+    {
+     "title": "NaVILA: Legged Robot Vision-Language-Action Model for Navigation (arXiv 2412.04453)",
+     "url": "https://arxiv.org/abs/2412.04453"
+    },
+    {
+     "title": "NaVILA 项目页",
+     "url": "https://navila-bot.github.io/"
+    }
+   ],
+   "as_of": "2025-06"
+  },
+  {
+   "name_zh": "神经描述子场",
+   "name_en": "Neural Descriptor Fields (SE(3)-Equivariant Object Representations for Manipulation)",
+   "abbr": "NDF",
+   "aliases": [],
+   "tier": 3,
+   "one_liner": "MIT 2021 年提出的物体表示，看几次示范就能把操作迁移到同类新物体、新姿态。",
+   "explanation": "神经描述子场由 MIT 的 Anthony Simeonov、Yilun Du、Pulkit Agrawal、Vincent Sitzmann 等提出，2021 年 12 月上 arXiv，发表于 ICRA 2022。它把物体表示成一个函数：输入物体附近任意 3D 点，输出一个描述子向量，同类物体上功能相当的位置（如不同杯子的把手）描述子相近。描述子取自一个用 3D 重建任务自监督训练的占据网络，不需要人工标关键点。网络满足 SE(3) 等变（物体怎么转、怎么移，描述子跟着同样变），所以正放、侧放、倒放都能处理。示范时记下夹爪附近一组点的描述子，测试时用优化找描述子最匹配的夹爪位姿。",
+   "example": "只给 10 次「抓住杯沿、把杯子挂到架子上」的示范，Franka 机械臂就能对没见过的杯子在任意朝向下完成挂杯，论文报告总体成功率超过 85%。",
+   "related": [
+    "以物体为中心的表示",
+    "等变策略 / 等变网络",
+    "少样本",
+    "抓取放置",
+    "位姿",
+    "模仿学习"
+   ],
+   "sources": [
+    {
+     "title": "Neural Descriptor Fields: SE(3)-Equivariant Object Representations for Manipulation (arXiv 2112.05124)",
+     "url": "https://arxiv.org/abs/2112.05124"
+    },
+    {
+     "title": "NDF 项目页",
+     "url": "https://yilundu.github.io/ndf/"
+    }
+   ],
+   "as_of": "2022-05"
+  },
+  {
+   "name_zh": "NoMaD",
+   "name_en": "NoMaD: Goal Masked Diffusion Policies for Navigation and Exploration",
+   "abbr": "NoMaD",
+   "aliases": [],
+   "tier": 3,
+   "one_liner": "伯克利 2023 年的导航扩散策略，一个模型既能自由探索，也能按目标图像走过去。",
+   "explanation": "NoMaD 由加州大学伯克利分校 Sergey Levine 团队（Ajay Sridhar、Dhruv Shah 等）2023 年 10 月提出，发表于 ICRA 2024，项目页称其获该届最佳论文奖。机器人导航常有两种需求：在陌生环境里无目标地探索，以及看到目标照片后走过去。以往要两套模型，NoMaD 用「目标掩码」合二为一：训练时一半样本遮掉目标图像，推理时遮住就是探索、放开就是去目标。它用 ViNT 式 Transformer 编码最近几帧画面和目标图，再用扩散模型生成未来一段路径点，能表达岔路口左右都可以的多种选择（动作多峰性）。模型约 1900 万参数，在 GNM、SACSoN 等 100 多小时多机器人真实数据上训练。",
+   "example": "在 LoCoBot 上做真实环境探索，NoMaD 成功率 98%、平均碰撞 0.2 次；对比的「先用扩散生成子目标图像再导航」基线为 77% 和 1.7 次，参数量还多约 15 倍。",
+   "related": [
+    "扩散策略",
+    "ViNT",
+    "GNM（通用导航模型）",
+    "图像目标导航",
+    "主动探索",
+    "动作多峰性"
+   ],
+   "sources": [
+    {
+     "title": "NoMaD: Goal Masked Diffusion Policies for Navigation and Exploration (arXiv 2310.07896)",
+     "url": "https://arxiv.org/abs/2310.07896"
+    },
+    {
+     "title": "NoMaD 项目页",
+     "url": "https://general-navigation-models.github.io/nomad/"
+    }
+   ],
+   "as_of": "2024-05"
+  },
+  {
+   "name_zh": "Cosmos Predict",
+   "name_en": "NVIDIA Cosmos Predict",
+   "abbr": "",
+   "aliases": [
+    "Cosmos-Predict1",
+    "Cosmos-Predict2",
+    "Cosmos-Predict2.5"
+   ],
+   "tier": 3,
+   "one_liner": "英伟达 Cosmos 家族的视频世界模型，根据文字、图像或视频生成接下来的画面。",
+   "explanation": "Cosmos Predict 是英伟达 Cosmos 世界基础模型家族中负责预测未来画面的分支。Predict1 于 2025 年 1 月随 Cosmos 平台发布，有 7B/14B 扩散模型和多档自回归模型；Predict2 于 2025 年 6 月开放，视频模型有 2B、14B；Predict2.5 于 2025 年 10 月发布，改用基于流（flow）的生成方式，以 Cosmos-Reason1 作文本编码器，把文生、图生和视频续写合进一个模型。它的定位是给机器人和自动驾驶做可微调的底座：用机器人数据后训练，可得到按动作预测画面的模拟器、多视角生成器，或直接当策略（如 Cosmos Policy）。2026 年起英伟达主推统一的 Cosmos 3，Predict 仓库不再活跃开发。",
+   "example": "官方提供在 Bridge 机器人数据上做动作条件后训练的 Cosmos-Predict2 版本：输入当前画面和一串机械臂动作，生成执行这些动作后的视频；GR00T Dreams 也用它的后训练版本生成机器人训练视频。",
+   "related": [
+    "Cosmos",
+    "世界基础模型",
+    "视频生成模型",
+    "Cosmos Policy",
+    "DreamGen（GR00T Dreams）",
+    "Cosmos 3"
+   ],
+   "sources": [
+    {
+     "title": "nvidia-cosmos/cosmos-predict2.5 GitHub 仓库",
+     "url": "https://github.com/nvidia-cosmos/cosmos-predict2.5"
+    },
+    {
+     "title": "nvidia-cosmos/cosmos-predict2 GitHub 仓库",
+     "url": "https://github.com/nvidia-cosmos/cosmos-predict2"
+    },
+    {
+     "title": "Cosmos World Foundation Model Platform for Physical AI (arXiv 2501.03575)",
+     "url": "https://arxiv.org/abs/2501.03575"
+    }
+   ],
+   "as_of": "2026-06"
+  },
+  {
+   "name_zh": "Cosmos Reason",
+   "name_en": "NVIDIA Cosmos Reason",
+   "abbr": "",
+   "aliases": [
+    "Cosmos-Reason1",
+    "Cosmos-Reason2"
+   ],
+   "tier": 3,
+   "one_liner": "英伟达面向物理 AI 的推理视觉语言模型，看视频后先推理再回答。",
+   "explanation": "Cosmos Reason 是英伟达 Cosmos 家族中负责理解和推理的视觉语言模型。Cosmos-Reason1 于 2025 年 3 月发布，训练分两步：先用物理 AI 数据监督微调，再做强化学习，让模型先写思维链再作答；论文有 7B、56B 两档，开源的是基于 Qwen2.5-VL 的 7B。它关注物理常识（空间、时间、基本物理）和具身推理（机器人下一步该做什么）。Cosmos-Reason2 于 2025 年 12 月发布，改用 Qwen3-VL，有 2B、8B，2026 年 4 月加入 32B。常见用法是给生成视频挑物理错误、筛选和标注训练数据、做机器人的规划模块；Cosmos-Predict2.5 用它当文本编码器，驾驶模型 Alpamayo 也以它为骨干。",
+   "example": "给它一段 AI 生成的机器人操作视频，问「画面是否符合物理规律」，它会先输出推理过程（如物体是否凭空移动、是否穿模），再给出判断，可用来自动筛掉不合格的合成数据。",
+   "related": [
+    "视觉语言模型",
+    "具身推理模型",
+    "思维链",
+    "Cosmos",
+    "通义千问 Qwen-VL",
+    "英伟达 Alpamayo（驾驶推理 VLA）"
+   ],
+   "sources": [
+    {
+     "title": "Cosmos-Reason1: From Physical Common Sense To Embodied Reasoning (arXiv 2503.15558)",
+     "url": "https://arxiv.org/abs/2503.15558"
+    },
+    {
+     "title": "nvidia-cosmos/cosmos-reason2 GitHub 仓库",
+     "url": "https://github.com/nvidia-cosmos/cosmos-reason2"
+    },
+    {
+     "title": "nvidia-cosmos/cosmos-reason1 GitHub 仓库",
+     "url": "https://github.com/nvidia-cosmos/cosmos-reason1"
+    }
+   ],
+   "as_of": "2026-04"
+  },
+  {
+   "name_zh": "Cosmos Transfer",
+   "name_en": "NVIDIA Cosmos Transfer",
+   "abbr": "",
+   "aliases": [
+    "Cosmos-Transfer1",
+    "Cosmos-Transfer2.5"
+   ],
+   "tier": 3,
+   "one_liner": "英伟达的可控视频生成模型，按深度、分割、边缘等结构图生成逼真视频。",
+   "explanation": "Cosmos Transfer 是英伟达 Cosmos 家族中做条件生成的分支，采用多路 ControlNet 结构（把额外的结构图作为生成条件）。输入分割图、深度图、边缘图、模糊画面、高精地图或激光雷达等空间控制信号，输出布局和运动不变、但光照、天气、材质可换的逼真视频。Cosmos-Transfer1 于 2025 年 3 月发布，可以在画面不同位置给不同控制信号分配不同权重；Cosmos-Transfer2.5 于 2025 年 10 月发布，2B 参数，基于 Predict2.5，2026 年 2 月又推出低延迟的蒸馏版。主要用途是数据增强：把仿真器渲染的机器人或驾驶画面变成照片级视频，缩小虚实差距；或把一段真实录像改成雨天、夜晚等版本，扩充训练数据。",
+   "example": "在 Isaac Sim 里渲染一段机械臂抓取视频，提取深度图和分割图交给 Cosmos Transfer，换不同文字提示，就能得到多种背景、光照的逼真版本，用来训练更抗视觉干扰的策略。",
+   "related": [
+    "Cosmos",
+    "仿真到现实迁移",
+    "虚实差距",
+    "生成式数据增强",
+    "合成数据",
+    "Cosmos Predict"
+   ],
+   "sources": [
+    {
+     "title": "Cosmos-Transfer1: Conditional World Generation with Adaptive Multimodal Control (arXiv 2503.14492)",
+     "url": "https://arxiv.org/abs/2503.14492"
+    },
+    {
+     "title": "nvidia-cosmos/cosmos-transfer2.5 GitHub 仓库",
+     "url": "https://github.com/nvidia-cosmos/cosmos-transfer2.5"
+    }
+   ],
+   "as_of": "2026-02"
+  },
+  {
+   "name_zh": "英伟达 Alpamayo（驾驶推理 VLA）",
+   "name_en": "NVIDIA DRIVE Alpamayo-R1 / Alpamayo 1 (open reasoning VLA for autonomous driving)",
+   "abbr": "AR1",
+   "aliases": [
+    "Alpamayo-R1",
+    "Alpamayo 1",
+    "Alpamayo-R1-10B"
+   ],
+   "tier": 3,
+   "one_liner": "英伟达开放的自动驾驶推理 VLA，先用文字讲清为什么这样开，再输出行驶轨迹。",
+   "explanation": "Alpamayo-R1 是英伟达的自动驾驶视觉-语言-动作模型，论文 2025 年 10 月底上 arXiv，12 月在 Hugging Face 开放权重，2026 年 1 月 CES 上改名 Alpamayo 1，与仿真框架 AlpaSim、1700 多小时的开放驾驶数据一起发布。它针对罕见的长尾路况：只模仿轨迹容易在没见过的场景出错，于是让模型先写出「因果链」推理（看到什么、所以怎么做），再生成轨迹。开放版以 Cosmos-Reason 视觉语言模型为骨干（8.2B），加 2.3B 的扩散式动作专家，输入 4 路相机画面和自车运动历史，输出未来 6.4 秒轨迹。论文报告难场景规划精度最多提升 12%，闭环仿真中近距离险情减少 35%，车上延迟约 99 毫秒。",
+   "example": "遇到前方车道被施工锥桶封住时，模型会先输出一段说明（如前方车道封闭、需减速并变道绕行），再给出与之对应的 6.4 秒行驶轨迹，工程师可对照文字检查它为什么这样开。",
+   "related": [
+    "视觉-语言-动作模型",
+    "自动驾驶",
+    "思维链",
+    "Cosmos Reason",
+    "动作专家",
+    "长尾问题"
+   ],
+   "sources": [
+    {
+     "title": "Alpamayo-R1: Bridging Reasoning and Action Prediction for Generalizable Autonomous Driving in the Long Tail (arXiv 2511.00088)",
+     "url": "https://arxiv.org/abs/2511.00088"
+    },
+    {
+     "title": "NVlabs/alpamayo GitHub 仓库（Alpamayo 1）",
+     "url": "https://github.com/NVlabs/alpamayo"
+    },
+    {
+     "title": "NVIDIA Announces Alpamayo Family of Open-Source AI Models（NVIDIA Newsroom，2026-01-05）",
+     "url": "https://nvidianews.nvidia.com/news/alpamayo-autonomous-vehicle-development"
+    }
+   ],
+   "as_of": "2026-01"
+  },
+  {
+   "name_zh": "OK-Robot",
+   "name_en": "OK-Robot: What Really Matters in Integrating Open-Knowledge Models for Robotics",
+   "abbr": "",
+   "aliases": [],
+   "tier": 3,
+   "one_liner": "纽约大学 2024 年的拾放系统，把现成视觉语言模型和导航、抓取模块拼起来。",
+   "explanation": "OK-Robot 由纽约大学 Lerrel Pinto 团队与 Meta 合作提出（Peiqi Liu、Mahi Shafiullah 等），2024 年 1 月上 arXiv，发表于 RSS 2024。OK 指 Open Knowledge，即用互联网数据预训练好的开放知识模型。它不训练新的端到端策略，而是组合现成模块：先用带激光雷达的 iPhone（Record3D 应用）扫一遍房间，建一个带 CLIP 等语义特征的体素地图；收到「把某物放到某处」的指令后，在地图里找物体、导航过去，用 AnyGrasp 算抓取位姿，再导航到目标处放下。整套系统跑在 Hello Robot Stretch 上，换新家不用重新训练。论文重点是总结拼装时哪些细节真正影响成败，并统计了失败原因。",
+   "example": "在纽约 10 个真实家庭中做了 171 次拾取-放置，整体成功率 58.5%，在较整洁的环境中为 82%；最常见的失败是语义地图找错物体（9.3%）、抓取姿态难（8.0%）和硬件问题（7.5%）。",
+   "related": [
+    "开放词汇",
+    "零样本",
+    "移动操作",
+    "AnyGrasp",
+    "Hello Robot Stretch",
+    "语义地图"
+   ],
+   "sources": [
+    {
+     "title": "OK-Robot: What Really Matters in Integrating Open-Knowledge Models for Robotics (arXiv 2401.12202)",
+     "url": "https://arxiv.org/abs/2401.12202"
+    },
+    {
+     "title": "OK-Robot 项目页",
+     "url": "https://ok-robot.github.io/"
+    },
+    {
+     "title": "ok-robot/ok-robot GitHub 仓库",
+     "url": "https://github.com/ok-robot/ok-robot"
+    }
+   ],
+   "as_of": "2024-07"
+  },
+  {
+   "name_zh": "OKAMI",
+   "name_en": "OKAMI: Teaching Humanoid Robots Manipulation Skills through Single Video Imitation",
+   "abbr": "OKAMI",
+   "aliases": [],
+   "tier": 3,
+   "one_liner": "德州大学与英伟达 2024 年的方法，让人形机器人看一段人类视频学会操作。",
+   "explanation": "OKAMI 由德州大学奥斯汀分校朱玉可团队与英伟达研究院提出，2024 年 10 月上 arXiv，是 CoRL 2024 口头报告论文。目标是让人形机器人只看一段人类示范的 RGB-D 视频就学会一个操作任务，不用遥操作采数据。第一步分析视频：用 GPT-4V 找出任务相关物体，用 Grounded-SAM 分割、Cutie 跟踪物体，再重建人的身体和手部动作（SMPL-H 模型），得到参考计划。第二步做物体感知的动作重定向：先定位当前场景里物体在哪，再把人的手臂轨迹按物体位置调整后映射到机器人身上，手指动作也一并迁移。实验平台是傅利叶 GR1 人形，配两只 6 自由度因时灵巧手。执行成功的轨迹还能当数据训练闭环视觉运动策略。",
+   "example": "在装袋、撒盐、把零食放到盘子上、合上笔记本电脑等 6 个任务上，OKAMI 平均成功率 71.7%，比基线 ORION 高 58.3 个百分点；用它产生的轨迹训练的视觉运动策略平均成功率 79.2%。",
+   "related": [
+    "从观测中模仿学习",
+    "动作重定向",
+    "人类视频数据",
+    "单样本模仿学习",
+    "人形机器人",
+    "傅利叶 GR-1"
+   ],
+   "sources": [
+    {
+     "title": "OKAMI: Teaching Humanoid Robots Manipulation Skills through Single Video Imitation (arXiv 2410.11792)",
+     "url": "https://arxiv.org/abs/2410.11792"
+    },
+    {
+     "title": "OKAMI 项目页",
+     "url": "https://ut-austin-rpl.github.io/OKAMI/"
+    }
+   ],
+   "as_of": "2024-11"
+  }
+ ]
+}

@@ -1,0 +1,423 @@
+{
+ "category": "data",
+ "batch": 14,
+ "terms": [
+  {
+   "name_zh": "RT-1 数据集",
+   "name_en": "RT-1 Robot Action Dataset (Fractal)",
+   "abbr": "",
+   "aliases": [
+    "Fractal",
+    "fractal20220817_data",
+    "Google Robot 数据集",
+    "RT-1 Robot Action"
+   ],
+   "tier": 3,
+   "one_liner": "谷歌用 13 台机器人历时 17 个月采集的真机操作数据集。",
+   "explanation": "RT-1 数据集是谷歌为训练 RT-1 模型采集的真机数据：13 台 Everyday Robots 单臂移动机器人在办公室厨房类场景里，历时 17 个月、由人遥操作录下 13 万多条 episode（一次完整的任务执行），覆盖 700 多条语言指令。它在 Open X-Embodiment 里名为 fractal20220817_data，TFDS 版本收录 87,212 条 episode，按 RLDS 格式存储，每步包含图像、语言指令和动作（末端位移、夹爪开合、底盘移动、结束信号）。它是早期规模最大的公开真机数据之一，也是 SimplerEnv「Google Robot」评测任务对应的训练数据。",
+   "example": "在 Open X-Embodiment 里加载 fractal20220817_data，可以拿到「pick coke can」等指令下机器人从桌面拿起可乐罐的逐帧图像和动作；SimplerEnv 的 Google Robot 拿可乐罐任务就是照这个场景复刻的。",
+   "related": [
+    "RT-1",
+    "Open X-Embodiment 数据集",
+    "SimplerEnv",
+    "Everyday Robots 移动机械臂",
+    "RLDS 格式",
+    "真机数据"
+   ],
+   "sources": [
+    {
+     "title": "RT-1: Robotics Transformer for Real-World Control at Scale（项目页）",
+     "url": "https://robotics-transformer1.github.io/"
+    },
+    {
+     "title": "TFDS Catalog: fractal20220817_data",
+     "url": "https://www.tensorflow.org/datasets/catalog/fractal20220817_data"
+    }
+   ],
+   "as_of": "2022-12"
+  },
+  {
+   "name_zh": "ScanNet 数据集",
+   "name_en": "ScanNet",
+   "abbr": "",
+   "aliases": [
+    "ScanNet++",
+    "ScanNet v2"
+   ],
+   "tier": 3,
+   "one_liner": "大规模室内 RGB-D 扫描数据集，带三维重建和语义标注。",
+   "explanation": "ScanNet 是 Angela Dai、Matthias Nießner 等人在 CVPR 2017 发布的室内场景数据集：用消费级 RGB-D 相机（同时拍彩色图和深度图）扫描了 1513 个室内场景、共 250 万帧，附带相机位姿、三维表面重建和众包语义分割标注，给 3D 语义分割、3D 检测提供了统一的训练和评测数据。具身智能里不少 3D 语言任务建在它上面，如 3D 视觉定位（按一句话在三维场景里找物体）和 3D 问答。后续的 ScanNet++ 改用激光扫描仪、单反和 iPhone 采集，精度更高，2024 年 12 月的 v2 扩展到 1000 多个场景。",
+   "example": "ScanRefer 在 800 个 ScanNet 场景上给 11,046 个物体写了 51,583 条自然语言描述，模型要根据描述在三维扫描中定位目标物体。",
+   "related": [
+    "3D视觉定位",
+    "深度相机",
+    "点云",
+    "3D场景图",
+    "HM3D 数据集",
+    "Matterport3D 数据集"
+   ],
+   "sources": [
+    {
+     "title": "ScanNet: Richly-annotated 3D Reconstructions of Indoor Scenes (arXiv 1702.04405)",
+     "url": "https://arxiv.org/abs/1702.04405"
+    },
+    {
+     "title": "ScanNet++ 官网",
+     "url": "https://scannetpp.mlsg.cit.tum.de/scannetpp/"
+    },
+    {
+     "title": "ScanRefer (arXiv 1912.08830)",
+     "url": "https://arxiv.org/abs/1912.08830"
+    }
+   ],
+   "as_of": "2024-12"
+  },
+  {
+   "name_zh": "脚本化演示",
+   "name_en": "Scripted Demonstrations",
+   "abbr": "",
+   "aliases": [
+    "脚本数据",
+    "程序化演示",
+    "脚本策略演示",
+    "Scripted Policy Demos"
+   ],
+   "tier": 3,
+   "one_liner": "用手写的规则程序而不是人来操控机器人，自动生成的示范数据。",
+   "explanation": "脚本化演示指用人写好的规则程序（scripted policy）自动控制机器人完成任务，把过程录下来当示范数据。脚本通常在仿真里直接读取物体真实位姿等特权信息（真实部署时拿不到的精确状态），再用预设路点或运动规划器算出轨迹。好处是成本低、能无限生成、动作干净一致；缺点是动作模式单一，和人类演示那种多样、带犹豫的风格差别很大，复杂任务难以写成脚本，真机上也很难拿到精确状态。它常用于仿真基准、算法调试和大规模合成数据。同样条数下，用脚本数据训出的策略成功率往往高于用人类遥操作数据，因为前者没有多峰和噪声，所以只在脚本数据上验证过的方法要谨慎看待。",
+   "example": "ACT 论文在 ALOHA 仿真的方块传递任务里各录了 50 条脚本演示和 50 条人类遥操作演示，ACT 用脚本数据的成功率为 97%，换成人类数据降到 82%。",
+   "related": [
+    "演示数据",
+    "仿真数据",
+    "特权信息",
+    "动作多峰性",
+    "MimicGen",
+    "ALOHA 仿真任务"
+   ],
+   "sources": [
+    {
+     "title": "Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware (ACT, arXiv 2304.13705)",
+     "url": "https://arxiv.org/html/2304.13705"
+    },
+    {
+     "title": "tonyzhaozh/act (GitHub)",
+     "url": "https://github.com/tonyzhaozh/act"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "技能采集手套",
+   "name_en": "Skill Capture Glove (Sunday Robotics)",
+   "abbr": "",
+   "aliases": [
+    "Skill Capture Glove",
+    "Sunday 采集手套"
+   ],
+   "tier": 3,
+   "one_liner": "Sunday Robotics 让人戴着做家务、直接产出机器人训练数据的手套。",
+   "explanation": "技能采集手套是美国家用机器人公司 Sunday Robotics 的数据采集装置，2025 年 11 月随家务机器人 Memo 公开；公司由 ACT/ALOHA 作者 Tony Zhao 和 Diffusion Policy/UMI 作者 Cheng Chi 创办。手套与 Memo 的机械手几何形状和传感器布局相同，人戴着它在家做家务，录下的动作和力数据几乎不用转换就能当机器人数据；剩余的本体差异由 Skill Transform 流程处理，官方称转换成功率约 90%。据报道每只手套成本约 200 美元，一套遥操作设备约 2 万美元。它是无本体采集、采执同构思路的代表。",
+   "example": "Sunday 称已向「Memory Developers」（在家戴手套录制家务的人）发出数千只手套，据报道数据来自约 500 个家庭，用于训练其基础模型 ACT-1，让 Memo 学洗碗、做咖啡、叠衣服等家务。",
+   "related": [
+    "Sunday Robotics",
+    "Sunday Memo",
+    "Sunday ACT-1",
+    "无本体采集",
+    "采执同构",
+    "通用操作接口"
+   ],
+   "sources": [
+    {
+     "title": "Sunday Robotics 官网",
+     "url": "https://www.sunday.ai/"
+    },
+    {
+     "title": "Sunday: ACT-1, a robot foundation model trained on zero robot data",
+     "url": "https://www.sunday.ai/journal/no-robot-data"
+    },
+    {
+     "title": "Humanoids Daily: Sunday Unveils Memo, a Wheeled Domestic Robot That Learns From $200 Gloves",
+     "url": "https://www.humanoidsdaily.com/news/sunday-unveils-memo-a-wheeled-domestic-robot-that-learns-from-200-gloves"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "Something-Something V2 数据集",
+   "name_en": "Something-Something V2",
+   "abbr": "SSv2",
+   "aliases": [
+    "20BN-something-something V2",
+    "Sth-Sth V2"
+   ],
+   "tier": 3,
+   "one_liner": "约 22 万段人手摆弄日常物品的短视频，按 174 种动作模板标注。",
+   "explanation": "Something-Something V2 是 TwentyBN（20BN）公司发布的动作识别视频数据集，现由高通（Qualcomm）提供下载。它含 220,847 段短视频，每段由众包人员按给定的动作模板自己拍摄，如「把某物放进某物」「把某物倒过来」，共 174 类。模板里的物体被抽象成「某物」，模型没法靠认出物体来猜答案，必须看懂手和物体之间的动作与先后顺序，所以常用来测试视频模型的时序理解。在具身智能里，它被当作人类操作视频的来源：视频没有机器人动作标签，但包含大量手-物交互，可用于视觉表征预训练和潜在动作预训练。",
+   "example": "LAPA 只用 SSv2 的约 22 万段人类视频做潜在动作预训练，再在机器人数据上微调，项目页称其平均表现超过在 Bridge 数据上训练的 OpenVLA。",
+   "related": [
+    "人类视频数据",
+    "无动作标签视频",
+    "潜在动作预训练",
+    "LAPA",
+    "Ego4D 数据集",
+    "EPIC-KITCHENS 数据集"
+   ],
+   "sources": [
+    {
+     "title": "The something something video database for learning and evaluating visual common sense (arXiv 1706.04261)",
+     "url": "https://arxiv.org/abs/1706.04261"
+    },
+    {
+     "title": "Hugging Face: something_something_v2 数据集卡片",
+     "url": "https://huggingface.co/datasets/HuggingFaceM4/something_something_v2"
+    },
+    {
+     "title": "LAPA: Latent Action Pretraining from Videos（项目页）",
+     "url": "https://latentactionpretraining.github.io/"
+    }
+   ],
+   "as_of": "2024-10"
+  },
+  {
+   "name_zh": "3D 鼠标遥操作",
+   "name_en": "SpaceMouse Teleoperation",
+   "abbr": "",
+   "aliases": [
+    "SpaceMouse",
+    "空间鼠标遥操作",
+    "3D 鼠标"
+   ],
+   "tier": 3,
+   "one_liner": "用 3D 鼠标的推、拉、扭、倾来控制机械臂末端的六自由度运动。",
+   "explanation": "SpaceMouse 是 3Dconnexion 公司的六自由度输入设备，原本给 CAD 软件平移、缩放、旋转三维模型用，手柄可以平推、上提下压、扭转和倾斜。拿来遥操作时，这 6 个量被映射成机械臂末端的平移和旋转增量，按键控制夹爪开合。它便宜、即插即用，不需要主从臂或 VR 头显，适合单臂桌面任务，robosuite 等仿真框架原生支持。缺点是只能控制末端位姿，不适合双臂和灵巧手，操作不够直观，采集速度和动作自然度不如主从臂。在人在回路强化学习里，它常被当作人随时接管、纠正机器人的工具。",
+   "example": "HIL-SERL 训练时，人握着 SpaceMouse 监督机器人，策略出错时直接用 SpaceMouse 接管控制并给出纠正动作，这些干预数据被存进回放缓冲区继续训练。",
+   "related": [
+    "遥操作",
+    "人在回路",
+    "HIL-SERL",
+    "干预数据",
+    "robosuite",
+    "主从臂遥操作"
+   ],
+   "sources": [
+    {
+     "title": "robosuite Docs: I/O Devices (3Dconnexion SpaceMouse)",
+     "url": "https://robosuite.ai/docs/modules/devices.html"
+    },
+    {
+     "title": "Precise and Dexterous Robotic Manipulation via Human-in-the-Loop RL (HIL-SERL, arXiv 2410.21845)",
+     "url": "https://arxiv.org/html/2410.21845"
+    },
+    {
+     "title": "Wikipedia: 3Dconnexion",
+     "url": "https://en.wikipedia.org/wiki/3Dconnexion"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "次优演示",
+   "name_en": "Suboptimal / Noisy Demonstrations",
+   "abbr": "",
+   "aliases": [
+    "噪声演示",
+    "非最优演示",
+    "混合质量演示",
+    "Imperfect Demonstrations",
+    "Mixed-quality Demonstrations"
+   ],
+   "tier": 3,
+   "one_liner": "带多余动作、犹豫、失误，或质量参差不齐的人类示范数据。",
+   "explanation": "次优演示指不够好的示范：动作慢、有停顿和来回试探、中途失误再补救，或多个操作员水平不一、做法各异。真实采集的数据几乎都带这些问题。行为克隆（直接模仿示范动作）会把好坏动作一起学进去，数据越混杂，学出的策略越犹豫、越不稳定。常见应对办法有：采集后做数据筛选和质检；按奖励或优势（某个动作比平均水平好多少）给样本加权，如优势加权回归；用离线强化学习从混合质量数据里挑出更好的行为；或把质量信息作为条件输入，推理时只要「好」的那部分行为，如 RECAP 的优势条件化。",
+   "example": "robomimic 的 Multi-Human 数据集由 6 名熟练度不同的操作员（「较差」「一般」「较好」各 2 人）各录 50 条成功轨迹，共 300 条，专门用来研究混合质量数据对模仿学习的影响。",
+   "related": [
+    "行为克隆",
+    "数据筛选",
+    "数据质检",
+    "优势加权回归",
+    "离线强化学习",
+    "RECAP"
+   ],
+   "sources": [
+    {
+     "title": "robomimic v0.1 Datasets (PH / MH / MG)",
+     "url": "https://robomimic.github.io/docs/datasets/robomimic_v0.1.html"
+    },
+    {
+     "title": "What Matters in Learning from Offline Human Demonstrations for Robot Manipulation (arXiv 2108.03298)",
+     "url": "https://arxiv.org/abs/2108.03298"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "子任务切分",
+   "name_en": "Subtask Segmentation",
+   "abbr": "",
+   "aliases": [
+    "子任务分割",
+    "动作分段",
+    "技能切分",
+    "轨迹分段",
+    "Trajectory Segmentation"
+   ],
+   "tier": 3,
+   "one_liner": "把一条长演示按步骤切成若干段，标出每段起止帧和说明。",
+   "explanation": "子任务切分是数据标注的一步：把一条完整的长程演示（如「收拾餐桌」）按语义切成若干子任务片段（「拿起盘子」「放进水槽」），记下每段的起止帧，通常再配一句语言描述和技能类型。它让长任务数据能按步骤使用：训练分层策略时，高层模型学预测下一步该做哪个子任务，低层模型学执行单个子任务；也可以用来统计各技能的成功率、构造进度奖励、剔除失败片段。切分方法有人工标注，按规则自动切（如夹爪开合、速度接近零处），以及借助视觉表征或 VLM 自动找分界点，例如 UVD 通过检测预训练视觉表征里的阶段突变来发现子目标。",
+   "example": "AgiBot World 2026 数据集给每条轨迹提供步骤级标注 instruction_segments，每段记录技能类型（如 Pick）、一句指令和起止帧，例如「左臂从购物车里拿起红盖饮料」对应第 284–493 帧。",
+   "related": [
+    "长程任务",
+    "语言标注",
+    "自动标注",
+    "原子技能",
+    "分层架构",
+    "AgiBot World 数据集"
+   ],
+   "sources": [
+    {
+     "title": "Hugging Face: agibot-world/AgiBotWorld2026 数据集卡片",
+     "url": "https://huggingface.co/datasets/agibot-world/AgiBotWorld2026"
+    },
+    {
+     "title": "Universal Visual Decomposer (arXiv 2310.08581)",
+     "url": "https://arxiv.org/abs/2310.08581"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "SynGrasp-1B 数据集",
+   "name_en": "SynGrasp-1B",
+   "abbr": "",
+   "aliases": [
+    "SynGrasp"
+   ],
+   "tier": 3,
+   "one_liner": "银河通用等构建的十亿帧仿真合成抓取数据集，用于预训练 GraspVLA。",
+   "explanation": "SynGrasp-1B 是银河通用（Galbot）联合北京大学、香港大学、北京智源人工智能研究院构建的合成抓取数据集，约 10 亿帧，全部在仿真中生成：从 Objaverse 选出 240 类、1 万多个物体模型随机摆在桌上，用 BoDex 生成稳定抓取位姿，用 cuRobo 规划抓取轨迹，再对材质、光照、相机视角、背景和初始位姿做域随机化后渲染。它用来预训练抓取 VLA 模型 GraspVLA（CoRL 2025），检验只靠合成动作数据能否零样本迁移到真实抓取。数据集于 2026 年 8 月在 Hugging Face 公开。",
+   "example": "在 SynGrasp-1B 上预训练的 GraspVLA 不用真机数据微调，就能在真实桌面上按语言指令抓取训练中没见过的物体。",
+   "related": [
+    "银河通用 GraspVLA",
+    "合成数据",
+    "域随机化",
+    "Objaverse 3D 资产库",
+    "cuRobo",
+    "仿真到现实迁移"
+   ],
+   "sources": [
+    {
+     "title": "GraspVLA: a Grasping Foundation Model Pre-trained on Billion-scale Synthetic Action Data (arXiv 2505.03233)",
+     "url": "https://arxiv.org/abs/2505.03233"
+    },
+    {
+     "title": "GraspVLA 项目页",
+     "url": "https://pku-epic.github.io/GraspVLA-web/"
+    },
+    {
+     "title": "PKU-EPIC/GraspVLA (GitHub)",
+     "url": "https://github.com/PKU-EPIC/GraspVLA"
+    }
+   ],
+   "as_of": "2026-08"
+  },
+  {
+   "name_zh": "触觉手套",
+   "name_en": "Tactile Glove",
+   "abbr": "",
+   "aliases": [
+    "压力感知手套",
+    "Tactile Sensing Glove"
+   ],
+   "tier": 3,
+   "one_liner": "手指和掌心布满压力或触觉传感器，记录人手接触力的手套。",
+   "explanation": "触觉手套是在手套上布置压力或触觉传感器，记录人手抓握、操作物体时各处接触力分布的设备。它和数据手套（主要测手指关节角度）、力反馈手套（给佩戴者施加反作用力）侧重点不同，三者也常组合在一起。视觉很难看出「捏得多紧」「有没有打滑」，而这些信息对擦拭、插拔、拿易碎品等接触丰富的任务很关键，所以触觉手套被用来采集带力信息的人类演示、研究人类抓握规律，或在遥操作中同步记录触觉。难点在于传感器的耐用性和标定，以及人手与机器人手在触觉上的差异。",
+   "example": "MIT 2019 年发表在《Nature》上的 STAG 手套有约 550 个传感器、成本约 10 美元，录下人与 26 种物体交互的约 13.5 万帧数据；2025 年 12 月开源的 OSMO 手套在指尖和掌心布置 12 个三轴触觉传感器，人和机器人戴同款手套，只用人类演示训练的擦拭策略成功率为 72%。",
+   "related": [
+    "触觉数据",
+    "数据手套",
+    "力反馈手套",
+    "触觉传感器",
+    "触觉表征学习",
+    "接触丰富操作"
+   ],
+   "sources": [
+    {
+     "title": "MIT News: Sensor-packed glove learns signatures of the human grasp (2019)",
+     "url": "https://news.mit.edu/2019/sensor-glove-human-grasp-robotics-0529"
+    },
+    {
+     "title": "OSMO: Open-Source Tactile Glove for Human-to-Robot Skill Transfer (arXiv 2512.08920)",
+     "url": "https://arxiv.org/abs/2512.08920"
+    }
+   ],
+   "as_of": "2025-12"
+  },
+  {
+   "name_zh": "TFDS（TensorFlow Datasets）",
+   "name_en": "TensorFlow Datasets (TFDS)",
+   "abbr": "TFDS",
+   "aliases": [
+    "tensorflow_datasets",
+    "tfds"
+   ],
+   "tier": 3,
+   "one_liner": "谷歌的开源数据集库，一行代码下载并加载成可训练的数据管道。",
+   "explanation": "TFDS 是谷歌维护的开源数据集库，收录上千个现成数据集，涵盖图像、文本、音频、机器人等。每个数据集有一个构建器（builder），负责下载原始数据、按固定流程转换并存成 TFRecord 或 ArrayRecord 分片；调用 tfds.load 就得到 tf.data.Dataset，也能转成 NumPy 给 JAX、PyTorch 用，并附带版本号和元数据。它是包在 tf.data 外面的一层，不是 tf.data 本身。具身领域的 RLDS 格式和 Open X-Embodiment 数据集都按 TFDS 规范发布，Octo、OpenVLA 的训练代码也通过它读数据。",
+   "example": "用 tfds.builder_from_directory 指向 Open X-Embodiment 在谷歌云存储上的 fractal20220817_data 目录，就能按 episode 遍历 RT-1 数据集的图像、语言指令和动作。",
+   "related": [
+    "RLDS 格式",
+    "TFRecord 格式",
+    "Open X-Embodiment 数据集",
+    "TensorFlow",
+    "LeRobot 数据集格式"
+   ],
+   "sources": [
+    {
+     "title": "TensorFlow Datasets Overview",
+     "url": "https://www.tensorflow.org/datasets/overview"
+    },
+    {
+     "title": "google-deepmind/open_x_embodiment (GitHub)",
+     "url": "https://github.com/google-deepmind/open_x_embodiment"
+    },
+    {
+     "title": "google-research/rlds (GitHub)",
+     "url": "https://github.com/google-research/rlds"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "TFRecord 格式",
+   "name_en": "TFRecord",
+   "abbr": "",
+   "aliases": [
+    ".tfrecord",
+    "tf.train.Example"
+   ],
+   "tier": 3,
+   "one_liner": "TensorFlow 的二进制文件格式，把一条条序列化记录顺序拼接存放。",
+   "explanation": "TFRecord 是 TensorFlow 的数据存储格式：一个文件由一条条二进制记录首尾相连组成，每条带长度和 CRC 校验，内容通常是用 protobuf（谷歌的序列化协议）编码的 tf.train.Example，即「字段名 → 数值列表」的字典。它适合大批量顺序读取，官方建议切成多个分片、每个最好 100MB 以上，便于并行读取。缺点是只能顺序扫描，不便按下标随机取某一条，解析也依赖 TensorFlow。TFDS 默认用它存数据，所以 RLDS 和 Open X-Embodiment 数据集下载下来是一批 TFRecord 分片；PyTorch 生态的新数据集多改用 Parquet 加视频、HDF5 或 Zarr。",
+   "example": "一个 RLDS 数据集目录里通常是 dataset_info.json、features.json，加上形如 xxx-train.tfrecord-00000-of-01024 的分片文件，其中每条记录存一个完整 episode。",
+   "related": [
+    "TFDS（TensorFlow Datasets）",
+    "RLDS 格式",
+    "Protobuf",
+    "Parquet 格式",
+    "HDF5 格式",
+    "WebDataset 格式"
+   ],
+   "sources": [
+    {
+     "title": "TensorFlow Tutorial: TFRecord and tf.train.Example",
+     "url": "https://www.tensorflow.org/tutorials/load_data/tfrecord"
+    },
+    {
+     "title": "TensorFlow Datasets Overview",
+     "url": "https://www.tensorflow.org/datasets/overview"
+    }
+   ],
+   "as_of": ""
+  }
+ ]
+}

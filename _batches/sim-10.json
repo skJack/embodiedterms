@@ -1,0 +1,199 @@
+{
+  "category": "sim",
+  "batch": 10,
+  "terms": [
+    {
+      "name_zh": "凸分解",
+      "name_en": "Convex Decomposition (Approximate Convex Decomposition)",
+      "abbr": "",
+      "aliases": ["近似凸分解", "Approximate Convex Decomposition", "ACD", "CoACD", "V-HACD"],
+      "tier": 3,
+      "one_liner": "把凹形网格切成若干近似凸块，给仿真当碰撞体用",
+      "explanation": "物理引擎做碰撞检测时，凸形状（任意两点连线都在形状内部）算得快又稳定，所以 MuJoCo 等引擎会把网格碰撞体自动换成它的凸包（能包住它的最小凸形状）。杯子、碗、抽屉这类凹形物体直接取凸包，开口会被「封死」，东西放不进去。凸分解就是把凹网格切成若干近似凸的小块，每块各取凸包，拼起来逼近原形状。常用工具有两个：V-HACD（Karim Mammou 写的体素化分层近似凸分解，现已停止维护）和 CoACD（UC San Diego Hao Su 团队 SIGGRAPH 2022 的工作，用「碰撞感知凹度」加树搜索选切割平面，细节保留得更好，可 pip 安装）。准备仿真资产时，物体网格进仿真器前通常先跑一遍凸分解。",
+      "example": "一个马克杯网格若只用一个凸包，杯口被填平，仿真里的勺子放不进去；用 CoACD 分解成若干凸块后，杯壁和把手各自成块，杯内空间得以保留。",
+      "related": ["碰撞体", "碰撞检测（物理引擎）", "CoACD / V-HACD 凸分解工具", "仿真资产", "MuJoCo", "穿模"],
+      "sources": [
+        {"title": "Approximate Convex Decomposition for 3D Meshes with Collision-Aware Concavity and Tree Search (CoACD, SIGGRAPH 2022)", "url": "https://arxiv.org/abs/2205.02961"},
+        {"title": "V-HACD GitHub 仓库（已归档，指向 CoACD）", "url": "https://github.com/kmammou/v-hacd"},
+        {"title": "MuJoCo 文档 Modeling（mesh geom 碰撞时被凸化）", "url": "https://mujoco.readthedocs.io/en/stable/modeling.html"}
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "CoppeliaSim",
+      "name_en": "CoppeliaSim",
+      "abbr": "",
+      "aliases": ["V-REP", "Virtual Robot Experimentation Platform"],
+      "tier": 3,
+      "one_liner": "瑞士 Coppelia Robotics 的通用机器人仿真器，前身是 V-REP",
+      "explanation": "CoppeliaSim 是瑞士苏黎世 Coppelia Robotics 公司维护的机器人仿真软件，前身叫 V-REP，最早在东芝研发部门开发，改名后与 V-REP 完全兼容。它的特点是功能齐全：可在 MuJoCo、Bullet、ODE、Newton、Vortex 五种物理引擎间切换，内置正/逆运动学、碰撞与距离计算、基于 OMPL 的路径规划，可用 Python、Lua、C/C++ 等语言通过嵌入脚本、插件或远程 API 控制。它有教育版（限学生和教师，不可商用）和商业版。具身学习里最常见的是通过 PyRep 接口间接用它，经典操作基准 RLBench 就搭在 CoppeliaSim 上。它以单机 CPU 仿真为主，需要成千上万并行环境的强化学习训练一般改用 Isaac Lab 等 GPU 仿真器。",
+      "example": "RLBench 的桌面操作任务（如开抽屉、叠积木）都跑在 CoppeliaSim 4.1 里，研究者用 PyRep 的 Python 接口控制仿真中的 Franka 机械臂采数据、测策略。",
+      "related": ["仿真器", "物理引擎", "RLBench", "MuJoCo", "Gazebo", "Webots"],
+      "sources": [
+        {"title": "Coppelia Robotics 官网", "url": "https://www.coppeliarobotics.com/"},
+        {"title": "CoppeliaSim - Wikipedia", "url": "https://en.wikipedia.org/wiki/CoppeliaSim"},
+        {"title": "RLBench GitHub（基于 CoppeliaSim 与 PyRep）", "url": "https://github.com/stepjam/RLBench"}
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "D4RL 离线强化学习基准",
+      "name_en": "D4RL: Datasets for Deep Data-Driven Reinforcement Learning",
+      "abbr": "D4RL",
+      "aliases": ["D4RL"],
+      "tier": 3,
+      "one_liner": "离线强化学习领域最常用的标准数据集和评测基准",
+      "explanation": "D4RL 由 UC Berkeley 与 Google Brain 的 Justin Fu、Aviral Kumar、Ofir Nachum、George Tucker、Sergey Levine 于 2020 年发布。离线强化学习（只用事先收集好的数据训练策略，训练中不再和环境交互）当时缺少专门的测试数据，各家结果难以比较。D4RL 按「数据怎么来的」设计数据集：人工控制器轨迹、人类示范、多任务数据、多种策略混合的数据，覆盖 Maze2D 与 AntMaze 迷宫导航、Gym-MuJoCo 运动控制、Adroit 灵巧手、Franka Kitchen 厨房操作，以及 Flow 交通和 CARLA 驾驶。它提供归一化分数，方便跨任务比较。CQL、IQL 等离线 RL 算法论文普遍报告 D4RL 分数。原仓库已停止维护：环境迁到 Gymnasium-Robotics，数据迁到 Minari。",
+      "example": "halfcheetah-medium-v2：用一个训练到中等水平的策略采集的猎豹奔跑数据，离线算法只能从这批数据里学，最后用 get_normalized_score 报告归一化分数。",
+      "related": ["离线强化学习", "基准测试", "Gym MuJoCo 连续控制任务", "Adroit 灵巧手任务", "Franka Kitchen", "保守 Q 学习"],
+      "sources": [
+        {"title": "D4RL: Datasets for Deep Data-Driven Reinforcement Learning (arXiv 2004.07219)", "url": "https://arxiv.org/abs/2004.07219"},
+        {"title": "Farama-Foundation/D4RL GitHub（已弃用，迁往 Minari）", "url": "https://github.com/Farama-Foundation/D4RL"}
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "DeepMind 控制套件",
+      "name_en": "DeepMind Control Suite",
+      "abbr": "DMC",
+      "aliases": ["dm_control", "DM Control"],
+      "tier": 3,
+      "one_liner": "DeepMind 基于 MuJoCo 的连续控制强化学习标准任务集",
+      "explanation": "DeepMind Control Suite 由 DeepMind 的 Yuval Tassa 等人于 2018 年发布，是开源库 dm_control 的一部分。它用 MuJoCo 物理引擎搭了一组连续控制任务，领域包括倒立摆小车（cartpole）、猎豹（cheetah）、平面双足步行者（walker）、人形（humanoid）、四足（quadruped）、机械手指（finger）等，每个领域下有难度不同的任务。所有任务结构统一、奖励可解释：每步奖励在 0 到 1 之间，一回合固定 1000 步，所以满分是 1000。输入既可以是关节状态，也可以只给相机像素，因此它成了测样本效率和「从像素学控制」的常用基准，Dreamer、DrQ、TD-MPC 等算法都在上面报结果。dm_control 还附带 MJCF 模型编辑、组件化搭环境和多智能体足球等工具。",
+      "example": "walker-walk 任务：让平面双足模型学会向前走，只给相机图像作输入，比较不同算法在相同交互步数下能拿到多高的回报（上限 1000）。",
+      "related": ["强化学习", "MuJoCo", "基准测试", "DreamerV3", "TD-MPC2", "样本效率"],
+      "sources": [
+        {"title": "DeepMind Control Suite (arXiv 1801.00690)", "url": "https://arxiv.org/abs/1801.00690"},
+        {"title": "google-deepmind/dm_control GitHub", "url": "https://github.com/google-deepmind/dm_control"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "数字表亲",
+      "name_en": "Digital Cousin",
+      "abbr": "",
+      "aliases": ["ACDC", "Automated Creation of Digital Cousins"],
+      "tier": 3,
+      "one_liner": "不求一比一复刻、只求几何和语义相似的仿真场景",
+      "explanation": "数字表亲由斯坦福李飞飞、吴佳俊团队在 CoRL 2024 论文「Automated Creation of Digital Cousins for Robust Policy Learning」中提出，是相对「数字孪生」（对真实场景一比一精确复刻的虚拟副本）的概念。数字表亲不复刻某个真实场景，只要求几何和语义上相似：比如同样是厨房柜子，形状、尺寸、开合方式相近即可，直接从现有资产库里挑相似物体来搭。这样成本比精确建模低，而且一次生成多个表亲场景相当于自带多样性，训出的策略不容易过拟合某个具体场景。论文的 ACDC 流程从单张真实 RGB 照片出发，经过提取物体信息、匹配相似资产、生成可交互场景三步自动搭建仿真环境；报告的零样本仿真到真机迁移中，数字表亲训练的策略成功率约 90%，数字孪生约 25%。",
+      "example": "拍一张家里厨房柜子的照片，ACDC 自动从资产库挑出几种外形和开门方式相近的柜子，生成几个表亲场景，在仿真里训练开柜门策略后直接部署到真实柜子上。",
+      "related": ["数字孪生", "真-仿-真闭环", "仿真到现实迁移", "域随机化", "仿真资产", "OmniGibson"],
+      "sources": [
+        {"title": "Automated Creation of Digital Cousins for Robust Policy Learning (arXiv 2410.07408)", "url": "https://arxiv.org/abs/2410.07408"},
+        {"title": "Digital Cousins 项目主页", "url": "https://digital-cousins.github.io/"}
+      ],
+      "as_of": "2024-10"
+    },
+    {
+      "name_zh": "DISCOVERSE",
+      "name_en": "DISCOVERSE: Efficient Robot Simulation in Complex High-Fidelity Environments",
+      "abbr": "",
+      "aliases": ["Discoverse"],
+      "tier": 3,
+      "one_liner": "用 3D 高斯泼溅渲染加 MuJoCo 物理的开源真-仿-真仿真框架",
+      "explanation": "DISCOVERSE 是清华大学、浙江大学等多所高校与 DISCOVER Robotics、地瓜机器人联合开源的机器人仿真框架，论文被 IROS 2025 接收，代码为 MIT 许可。它用 3D 高斯泼溅（3DGS，用大量带颜色的三维高斯点重建并快速渲染真实场景的方法）负责画面，用 MuJoCo 负责物理：先把真实场景重建出照片级外观，再配上碰撞和物理模型，得到「看起来像真实世界」的仿真环境，以缩小视觉上的虚实差距。它支持多相机、多传感器并行仿真，兼容已有 3D 资产、机器人模型和 ROS 插件，已适配 Airbot Play、松灵 PiPER、UR5e、Franka Panda、LEAP Hand 等本体。项目主页称 5 路 640×480 RGB-D 相机渲染可达 650 FPS（笔记本约 240 FPS）；论文的模仿学习实验显示其零样本仿真到真机迁移效果优于其他仿真器。",
+      "example": "把实验室桌面扫描重建成 3DGS 场景放进 DISCOVERSE，在仿真里采演示训练抓取策略，不经真机微调直接部署到同一张真实桌面上。",
+      "related": ["高斯泼溅仿真", "3D高斯泼溅", "MuJoCo", "真-仿-真闭环", "虚实差距", "照片级真实感渲染"],
+      "sources": [
+        {"title": "DISCOVERSE: Efficient Robot Simulation in Complex High-Fidelity Environments (arXiv 2507.21981)", "url": "https://arxiv.org/abs/2507.21981"},
+        {"title": "DISCOVERSE 项目主页", "url": "https://air-discoverse.github.io/"},
+        {"title": "DISCOVERSE GitHub", "url": "https://github.com/TATP-233/DISCOVERSE"}
+      ],
+      "as_of": "2025-07"
+    },
+    {
+      "name_zh": "离散元法",
+      "name_en": "Discrete Element Method",
+      "abbr": "DEM",
+      "aliases": ["离散单元法", "Distinct Element Method"],
+      "tier": 3,
+      "one_liner": "把材料当成大量独立颗粒、逐个算受力和运动的仿真方法",
+      "explanation": "离散元法是一类把材料看成大量独立小颗粒、逐个计算每颗粒运动的数值仿真方法，Peter Cundall 在 1971 年提出雏形，1979 年与 Strack 正式发表。每个时间步先找出哪些颗粒相互接触，按接触模型算出碰撞力、摩擦力，再加上重力，用数值积分更新每颗粒的位置、速度和转动。和有限元法那种把材料当连续体的方法不同，DEM 天然适合沙子、碎石、谷物、粉末这类颗粒物料，在采矿、制药、农业中应用广泛。缺点是计算量大，颗粒越多越慢，现在多靠 GPU 并行来算百万量级颗粒。在具身智能里，它可用于仿真机器人在沙地、碎石上行走，或者挖掘、舀取颗粒物料；这类问题也可以用物质点法（MPM）处理。",
+      "example": "用 DEM 模拟一片沙地，让四足机器人的足端踩进去，计算每颗沙粒被推开时的受力，研究机器人在沙滩上下陷和打滑的情况。",
+      "related": ["物质点法", "有限元法", "软体仿真", "物理引擎", "光滑粒子流体动力学", "接触模型"],
+      "sources": [
+        {"title": "Discrete element method - Wikipedia", "url": "https://en.wikipedia.org/wiki/Discrete_element_method"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "双盲成对比较",
+      "name_en": "Double-blind Pairwise Comparison",
+      "abbr": "",
+      "aliases": ["A/B 对比评测", "双盲 A/B 评测", "Pairwise Preference Evaluation"],
+      "tier": 3,
+      "one_liner": "评测者不知道谁是谁，只判断两个策略哪个更好的评测方式",
+      "explanation": "双盲成对比较是一种评测方法：每次拿两个模型或策略在同样条件下各跑一次，评测者事先不知道哪个是哪个，只判断谁做得更好，最后把大量「谁赢」的记录汇总成排名。大模型领域的 Chatbot Arena 就用匿名两两对比来排榜。具身智能里的代表是 2025 年的 RoboArena：7 所高校在 DROID 平台上做了 600 多次真机成对评测，比较 7 个通用策略；评测者可以自己选任务和场景，但必须双盲对比两个策略。这样做不必事先统一场景和成功标准，也能减少评测者偏向自家模型；多个评测点的胜负记录再用 Elo 或 Bradley-Terry 模型（根据胜负估计每个选手实力分的统计模型）换算成分数。论文称这种分布式评测比集中式评测排序更准、更易扩展。",
+      "example": "评测者在自己的实验室给出指令「把毛巾叠起来」，系统依次派出两个匿名策略 A、B 执行，评测者判定 B 更好，这条偏好记录计入排行榜。",
+      "related": ["Elo 评分", "RoboArena", "真机评测", "评测协议", "DROID 数据集", "基准测试"],
+      "sources": [
+        {"title": "RoboArena: Distributed Real-World Evaluation of Generalist Robot Policies (arXiv 2506.18123)", "url": "https://arxiv.org/abs/2506.18123"}
+      ],
+      "as_of": "2025-06"
+    },
+    {
+      "name_zh": "Embodied Arena 具身评测竞技场",
+      "name_en": "Embodied Arena: A Comprehensive, Unified, and Evolving Evaluation Platform for Embodied AI",
+      "abbr": "",
+      "aliases": ["Embodied Arena"],
+      "tier": 3,
+      "one_liner": "统一接入具身问答、导航、任务规划基准并实时排榜的评测平台",
+      "explanation": "Embodied Arena 是天津大学、华为诺亚方舟实验室等国内外十余家机构联合推出的具身智能评测平台，论文 2025 年 9 月发布在 arXiv。它针对的问题是：具身领域基准很多但各自为政，模型之间难以横向比较，也说不清具身智能到底需要哪些能力。平台先定义一套能力分类：感知、推理、任务执行三层，7 项核心能力、25 个细分维度；再用统一的评测底座接入 22 个已有基准，覆盖 2D/3D 具身问答（如 OpenEQA、VSI-Bench、ERQA）、导航（如 R2R-CE、HM3D）和任务规划（如 EB-ALFRED、EB-Habitat），评测 20 多家机构的 30 多个模型；还用大语言模型驱动的流水线自动生成新评测数据，让题库持续更新。结果发布成三个实时排行榜，可按基准看，也可按能力维度看。",
+      "example": "想了解某个多模态大模型的空间推理水平，可以直接看 Embodied Arena 能力视图里该维度的综合得分，不用自己分别跑 VSI-Bench、ERQA 等多个基准。",
+      "related": ["基准测试", "EmbodiedBench", "ERQA 具身推理问答基准", "OpenEQA 开放词汇具身问答基准", "VSI-Bench 视觉空间智能基准", "具身问答"],
+      "sources": [
+        {"title": "Embodied Arena (arXiv 2509.15273)", "url": "https://arxiv.org/abs/2509.15273"},
+        {"title": "Embodied Arena 论文 HTML 版（作者单位与基准列表）", "url": "https://arxiv.org/html/2509.15273v1"}
+      ],
+      "as_of": "2025-09"
+    },
+    {
+      "name_zh": "EmbodiedBench",
+      "name_en": "EmbodiedBench: Comprehensive Benchmarking Multi-modal Large Language Models for Vision-Driven Embodied Agents",
+      "abbr": "",
+      "aliases": ["EB-ALFRED", "EB-Habitat", "EB-Navigation", "EB-Manipulation"],
+      "tier": 3,
+      "one_liner": "评测多模态大模型当具身智能体大脑能力的基准，含 4 个环境",
+      "explanation": "EmbodiedBench 由 UIUC 等机构的 Rui Yang、Tong Zhang 等人提出，发表于 ICML 2025，专门评测多模态大语言模型（MLLM，能同时看图和读文字的大模型）充当具身智能体「大脑」时的能力。它有 4 个环境共 1128 个测试任务，分两层：EB-ALFRED 和 EB-Habitat 考高层任务分解与规划（如「把书放到桌上」，模型输出一串高层技能）；EB-Navigation 和 EB-Manipulation 考底层动作规划（直接输出平移、旋转等控制量），要求精确的感知和空间推理。任务还按 6 种能力分组：基础任务、常识推理、复杂指令理解、空间感知、视觉感知、长程规划。作者测了 24 个闭源和开源模型，发现模型擅长高层任务、难以做好底层操作，论文摘要称最好的 GPT-4o 平均只有 28.9%。",
+      "example": "在 EB-Manipulation 里，模型看到桌面图像和指令「把红色方块叠到蓝色方块上」，要直接给出机械臂末端的位置、姿态和夹爪开合，而不是调用现成的「抓取」技能。",
+      "related": ["基准测试", "多模态大语言模型", "ALFRED", "Habitat", "大模型任务规划", "Embodied Arena 具身评测竞技场"],
+      "sources": [
+        {"title": "EmbodiedBench (arXiv 2502.09560)", "url": "https://arxiv.org/abs/2502.09560"},
+        {"title": "EmbodiedBench 项目主页", "url": "https://embodiedbench.github.io/"}
+      ],
+      "as_of": "2025-02"
+    },
+    {
+      "name_zh": "ERQA 具身推理问答基准",
+      "name_en": "ERQA (Embodied Reasoning Question Answer Benchmark)",
+      "abbr": "ERQA",
+      "aliases": ["Embodied Reasoning QA"],
+      "tier": 3,
+      "one_liner": "谷歌 DeepMind 发布的 400 道具身推理图文选择题基准",
+      "explanation": "ERQA 是 Google DeepMind 在 2025 年 3 月随 Gemini Robotics 一起开源的基准，用来衡量多模态大模型的具身推理能力，也就是看懂真实物理场景、为机器人行动做判断的能力。它有 400 道图文混排的单选题（选项 A–D），场景多来自机器人相关的真实环境，题型包括空间推理、轨迹推理、动作推理、状态估计、指向、多视角推理和任务推理，其中 28% 的题要看多张图。因为只考选择题，不需要机器人或仿真器，任何视觉语言模型都能直接跑。Gemini Robotics 技术报告中，Gemini 2.0 Pro Experimental 得 48.3%，GPT-4o 得 47.0%，Claude 3.5 Sonnet 得 35.5%，说明当时模型离可靠的具身推理还有距离。Embodied Arena 等评测平台也收录了它。",
+      "example": "类似这样的题：给出机械臂夹着水杯的照片，问「要把水倒进旁边的碗里，夹爪下一步应该往哪个方向转」，从 A–D 四个选项中选一个。",
+      "related": ["具身推理", "Gemini Robotics-ER", "视觉问答", "多模态大语言模型", "Embodied Arena 具身评测竞技场", "VSI-Bench 视觉空间智能基准"],
+      "sources": [
+        {"title": "embodiedreasoning/ERQA GitHub", "url": "https://github.com/embodiedreasoning/ERQA"},
+        {"title": "Gemini Robotics: Bringing AI into the Physical World (arXiv 2503.20020)", "url": "https://arxiv.org/abs/2503.20020"}
+      ],
+      "as_of": "2025-03"
+    },
+    {
+      "name_zh": "评测协议",
+      "name_en": "Evaluation Protocol",
+      "abbr": "",
+      "aliases": ["评估协议", "测试协议"],
+      "tier": 3,
+      "one_liner": "规定策略在什么条件下测、测几次、怎样算成功的一套规则",
+      "explanation": "评测协议是一套写清楚「策略怎么测」的规则：在哪些场景和物体上测，初始状态怎么摆，每个条件测多少次，一次试验最长多久，什么算成功，中途能否人工干预，最后用什么指标汇总。机器人评测结果对这些细节很敏感，同一个策略换一种摆放或放宽成功标准，成功率可能差很多；论文不交代协议，读者就无法判断结果能否复现、不同方法能否比较。2024 年 Kress-Gazit 等人的论文「Robot Learning as an Empirical Science」建议：明确报告实验条件和成功标准，成功率之外补充其他指标，做统计分析，并定性描述失败模式。仿真基准（如 LIBERO、CALVIN）一般自带固定协议；真机评测则常用固定初始位置表、多个方法交替测试、双盲成对比较等做法来保证公平。",
+      "example": "一份协议可以这样写：每个任务测 20 次，物体初始位置依次取自事先标好的 20 个点位，单次最长 60 秒，物体完全放进盒子且夹爪松开才算成功，中途不允许人工重置。",
+      "related": ["基准测试", "真机评测", "仿真评测", "成功率", "评测统计显著性（置信区间 / 序贯检验 / 多随机种子）", "双盲成对比较"],
+      "sources": [
+        {"title": "Robot Learning as an Empirical Science: Best Practices for Policy Evaluation (arXiv 2409.09491)", "url": "https://arxiv.org/abs/2409.09491"},
+        {"title": "RoboArena: Distributed Real-World Evaluation of Generalist Robot Policies (arXiv 2506.18123)", "url": "https://arxiv.org/abs/2506.18123"}
+      ],
+      "as_of": ""
+    }
+  ]
+}

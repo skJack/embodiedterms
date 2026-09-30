@@ -1,0 +1,193 @@
+{
+  "category": "concept",
+  "batch": 2,
+  "terms": [
+    {
+      "name_zh": "抓取",
+      "name_en": "Grasping",
+      "abbr": "",
+      "aliases": ["机器人抓取", "Robotic Grasping"],
+      "tier": 1,
+      "one_liner": "机器人用夹爪、吸盘或灵巧手把物体稳稳拿起来。",
+      "explanation": "抓取指机器人用末端执行器（夹爪、吸盘或灵巧手）稳定地握住物体并拿起。核心问题是「从哪儿抓、用什么姿态抓」：算法根据相机图像或点云算出抓取位姿（夹爪的位置和朝向），再由运动规划把手移过去。早期方法靠几何和力学分析，例如判断是否满足力封闭（手指接触力能抵抗来自任意方向的外力和力矩）；Bohg 等人 2013 年的综述把数据驱动方法按已知物体、相似物体、未知物体三类梳理。现在常见做法是用深度网络在点云上直接预测抓取位姿，或由 VLA 模型端到端输出抓取动作。抓取是抓取放置、移动操作等许多操作任务的第一步。",
+      "example": "深度相机拍下杂乱的桌面，网络在点云上给出几十个候选夹爪位姿并打分，机器人选分最高的那个去夹起马克杯。",
+      "related": ["抓取放置", "抓取位姿检测", "力封闭", "夹爪", "灵巧手", "无序抓取"],
+      "sources": [
+        {"title": "Data-Driven Grasp Synthesis - A Survey (Bohg et al., arXiv:1309.2660)", "url": "https://arxiv.org/abs/1309.2660"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "推理（前向计算）",
+      "name_en": "Inference",
+      "abbr": "",
+      "aliases": ["模型推理", "前向推理", "推断"],
+      "tier": 1,
+      "one_liner": "用训练好的模型对新输入算出输出，只做前向计算、不更新参数。",
+      "explanation": "Inference 指使用训练好的模型：输入新数据，跑一遍前向计算得到输出，不算梯度、不更新参数，与「训练」相对。中文「推理」同时对应 Inference 和 Reasoning（模型分步思考），读论文要看上下文区分。对机器人来说，推理速度决定控制跟不跟得上：π0 论文报告，在一块 RTX 4090 上处理 3 路相机图像、生成一段动作约需 73 毫秒。推理太慢，机器人会在两段动作之间停顿，所以才有动作分块、异步推理、量化和 TensorRT 加速等手段。推理可以在机器人本体上跑，也可以放在远程服务器上再经网络回传，后者要多算网络延迟。",
+      "example": "π0 控制 50Hz 的机器人时，每 0.5 秒推理一次、输出一段动作，执行完 25 步后再推理下一段。",
+      "related": ["推理（思考）", "推理延迟", "动作分块", "异步推理", "推理部署", "训练后量化"],
+      "sources": [
+        {"title": "What is AI inference? (IBM)", "url": "https://www.ibm.com/think/topics/ai-inference"},
+        {"title": "π0: A Vision-Language-Action Flow Model for General Robot Control (arXiv:2410.24164)", "url": "https://arxiv.org/abs/2410.24164"}
+      ],
+      "as_of": "2024-10"
+    },
+    {
+      "name_zh": "运动（移动）",
+      "name_en": "Locomotion",
+      "abbr": "",
+      "aliases": ["移动", "行走", "运动能力", "机器人运动"],
+      "tier": 1,
+      "one_liner": "机器人靠腿、轮子等方式把自己从一处移动到另一处的能力。",
+      "explanation": "Locomotion 泛指机器人让自身移动的方式，包括轮式滚动、腿足行走、跳跃、飞行等；它和改变外部物体状态的「操作」（Manipulation）是机器人能力的两大分支。具身智能里多指四足、双足和人形机器人的腿足运动：要协调十几到几十个关节，保持平衡，应对台阶、碎石等地形。传统方法靠动力学模型和模型预测控制；近年主流是在 GPU 并行仿真里用强化学习训策略再迁移到真机，2021 年苏黎世联邦理工（ETH）与英伟达的工作在单块 GPU 上同时仿真数千台 ANYmal 四足，平地行走不到 4 分钟、崎岖地形约 20 分钟就能训出策略。中文「运动」也常对应 Motion，Locomotion 专指移动本体。",
+      "example": "用 legged_gym 在 Isaac Gym 里同时仿真 4096 台 ANYmal 四足，在台阶、斜坡、障碍等地形上训练约 20 分钟，得到的策略直接部署到真机上，能上下楼梯、越过障碍。",
+      "related": ["腿足运动", "双足行走", "强化学习运控", "仿真到现实迁移", "运动操作一体化", "操作"],
+      "sources": [
+        {"title": "Robot locomotion (Wikipedia)", "url": "https://en.wikipedia.org/wiki/Robot_locomotion"},
+        {"title": "Learning to Walk in Minutes Using Massively Parallel Deep Reinforcement Learning (arXiv:2109.11978)", "url": "https://arxiv.org/abs/2109.11978"}
+      ],
+      "as_of": "2021-09"
+    },
+    {
+      "name_zh": "长程任务",
+      "name_en": "Long-horizon Task",
+      "abbr": "",
+      "aliases": ["长时序任务", "长视野任务", "长周期任务", "多阶段任务"],
+      "tier": 1,
+      "one_liner": "要连续完成多个子步骤、持续较长时间才能达成目标的任务。",
+      "explanation": "长程任务指要连续执行很多步、跨越多个子目标的任务，比如「收拾餐桌」要依次收盘子、倒残渣、放进水槽。难点主要有三个：一是误差累积，前一步的小偏差让后面的状态越来越偏离训练数据；二是成功信号往往到最后才出现，很难判断中间哪步做错；三是要记住做过什么、决定下一步做什么。基准 CALVIN（2021）把 34 种子任务串成每条 5 个指令的序列来评测，论文中的模仿学习基线在同环境训练测试时，连做 1 个的成功率约 49%，连做 5 个只有 0.08%。常见对策有分层架构（上层大模型拆任务、下层策略执行原子技能）、记忆模块和失败恢复。",
+      "example": "「收拾餐桌」：依次把盘子、杯子放进收纳箱，把纸巾扔进垃圾桶，最后擦桌面，任何一步失败整体都算没完成。",
+      "related": ["原子技能", "分层架构", "复合误差", "失败恢复", "具身记忆", "CALVIN"],
+      "sources": [
+        {"title": "CALVIN: A Benchmark for Language-Conditioned Policy Learning for Long-Horizon Robot Manipulation Tasks (arXiv:2112.03227)", "url": "https://arxiv.org/abs/2112.03227"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "移动操作",
+      "name_en": "Mobile Manipulation",
+      "abbr": "",
+      "aliases": ["移动抓取", "移动操控"],
+      "tier": 1,
+      "one_liner": "把机械臂装在可移动底盘上，边走边干活，把导航和操作结合起来。",
+      "explanation": "移动操作指装在移动底盘（轮式或足式）上的机械臂一边移动一边完成操作任务，这类机器人叫移动操作机器人或复合机器人。固定机械臂只能在臂展范围内工作，装上底盘后可以在整个房间、仓库甚至楼层间作业。代价是自由度更多、环境更不规整：要同时决定底盘去哪、手臂怎么动，还要处理底盘定位误差对抓取精度的影响。2024 年斯坦福的 Mobile ALOHA 用低成本全身遥操作采数据，每个任务只用 20–50 条演示，就能自主完成煎虾装碗、开双门壁柜放锅、呼叫并进入电梯等任务，并发现与静态 ALOHA 的双臂数据协同训练可把成功率最多提高 90%。它是家务和仓储机器人的核心能力。",
+      "example": "Mobile ALOHA 在灶台前倒油、下虾，一只手把锅斜着端起、另一只手用锅铲给虾翻面，再靠底盘转身，把虾倒进身后桌上的碗里。",
+      "related": ["复合机器人", "导航", "操作", "运动操作一体化", "Mobile ALOHA", "移动底盘"],
+      "sources": [
+        {"title": "Mobile manipulator (Wikipedia)", "url": "https://en.wikipedia.org/wiki/Mobile_manipulator"},
+        {"title": "Mobile ALOHA: Learning Bimanual Mobile Manipulation with Low-Cost Whole-Body Teleoperation (arXiv:2401.02117)", "url": "https://arxiv.org/abs/2401.02117"}
+      ],
+      "as_of": "2024-01"
+    },
+    {
+      "name_zh": "莫拉维克悖论",
+      "name_en": "Moravec's Paradox",
+      "abbr": "",
+      "aliases": ["莫拉维克佯谬", "Moravec 悖论"],
+      "tier": 1,
+      "one_liner": "对机器来说，高级推理容易，人类习以为常的感知和运动反而最难。",
+      "explanation": "1988 年，机器人学家汉斯·莫拉维克在《Mind Children》一书中指出：让计算机在智力测验或下跳棋上达到成人水平相对容易，让它拥有一岁小孩的感知和行动能力却很难甚至做不到。罗德尼·布鲁克斯、马文·明斯基等人在 1980 年代也表达过类似看法，平克后来概括为「难的问题容易，容易的问题难」。常见解释是：感知和运动技能经过漫长进化打磨，人做起来毫不费力，因而低估了它们的难度；抽象推理在进化上出现得晚，人脑并不擅长，所以显得难，对计算机来说其实没那么难。这条悖论常被用来解释为什么大模型能写代码、解数学题，机器人叠衣服却还远不如人又快又稳，也是具身智能被视为 AI 下一道难关的理由之一。",
+      "example": "大语言模型已经能解竞赛数学题，但叠衣服、系鞋带这类小孩都会的事，机器人做起来仍远不如人快、不如人稳。",
+      "related": ["具身智能", "感觉运动技能", "具身认知", "苦涩的教训", "物理图灵测试"],
+      "sources": [
+        {"title": "Moravec's paradox (Wikipedia)", "url": "https://en.wikipedia.org/wiki/Moravec%27s_paradox"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "导航",
+      "name_en": "Navigation",
+      "abbr": "",
+      "aliases": ["具身导航", "Embodied Navigation", "视觉导航"],
+      "tier": 1,
+      "one_liner": "机器人根据传感器观测，自主移动到指定位置或目标物体旁。",
+      "explanation": "导航指智能体决定「去哪、怎么走」并移动到目标。传统机器人导航由建图定位（SLAM）、路径规划和避障控制组成；具身智能里的导航更强调在没见过的环境中，仅凭第一人称相机等传感器完成任务。2018 年 Anderson 等十余位研究者发布的共识报告把目标分为三类：点目标（走到给定坐标）、物体目标（找到某类物体，如冰箱）、区域目标（到达某类区域，如厨房），并提出 SPL 指标，同时考虑是否成功和路线是否绕远。目标也可以换种方式给出，比如用自然语言描述路线的视觉语言导航（VLN）、用一张图片指定目标的图像目标导航。导航和操作结合就是移动操作。",
+      "example": "机器人收到「找到冰箱」的目标，在没去过的公寓里边走边看，最后停下时与冰箱的距离小于阈值（报告建议取机身宽度的 2 倍）才算成功。",
+      "related": ["视觉语言导航", "物体目标导航", "点目标导航", "路径长度加权成功率", "同步定位与建图", "移动操作"],
+      "sources": [
+        {"title": "On Evaluation of Embodied Navigation Agents (Anderson et al., arXiv:1807.06757)", "url": "https://arxiv.org/abs/1807.06757"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "观测",
+      "name_en": "Observation",
+      "abbr": "",
+      "aliases": ["观测空间", "Observation Space", "观察"],
+      "tier": 1,
+      "one_liner": "智能体每个时刻从环境拿到的信息，是策略做决策的输入。",
+      "explanation": "观测是智能体每一步从环境得到的输入。在强化学习的「观测—动作—奖励」循环里，环境重置时和每执行一个动作后都会返回新观测；观测空间规定这些输入的格式和取值范围，比如 Gymnasium 里 CartPole 的观测就是小车位置、速度、杆角度等几个数。真实机器人的观测通常包括多路相机图像、深度或点云、关节角度和夹爪开合等本体感知信息，以及语言指令。观测不等于状态：状态是环境的完整描述，观测常只看到一部分（有遮挡、有噪声），这种情形用部分可观测马尔可夫决策过程（POMDP）建模。很多策略会输入最近几帧观测，Diffusion Policy 把这个帧数叫观测视界。",
+      "example": "一个 VLA 策略每一步的观测：头部相机和腕部相机各一张 RGB 图、7 个关节角、夹爪开度，加上指令「把杯子放到盘子上」。",
+      "related": ["状态空间", "动作空间", "本体感知", "部分可观测马尔可夫决策过程", "策略", "观测-动作对"],
+      "sources": [
+        {"title": "Basic Usage (Gymnasium Documentation)", "url": "https://gymnasium.farama.org/introduction/basic_usage/"},
+        {"title": "Diffusion Policy: Visuomotor Policy Learning via Action Diffusion (arXiv:2303.04137)", "url": "https://arxiv.org/abs/2303.04137"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "开环",
+      "name_en": "Open-loop",
+      "abbr": "",
+      "aliases": ["开环执行", "开环控制", "Open-loop Control"],
+      "tier": 1,
+      "one_liner": "执行过程中不看反馈，按事先算好的指令一口气做完。",
+      "explanation": "开环原是控制理论术语：控制动作不依赖系统输出，执行时不检查结果是否达标，比如只按定时运转的烘干机；闭环则持续测量结果并修正。在机器人学习里，它常指一段动作执行期间不读新观测。以动作分块为例，模型一次预测未来若干步动作，π0 论文写明动作块按开环执行：在 50Hz 的机器人上每 0.5 秒推理一次，其间执行的 25 步动作不看新画面。开环执行动作连贯、推理次数少，但对突发变化反应慢，物体被碰歪也要等下一次推理才能纠正。常见折中是只执行预测的一部分就重新规划（Diffusion Policy 的滚动时域做法），或用实时动作分块在执行当前段时并行计算下一段。",
+      "example": "开环回放：机械臂按录好的轨迹去夹杯子，杯子被人挪开几厘米也照样合上夹爪；闭环策略会根据新画面调整手的位置。",
+      "related": ["闭环", "动作分块", "动作视界", "实时动作分块", "时序集成", "开环评测"],
+      "sources": [
+        {"title": "Open-loop controller (Wikipedia)", "url": "https://en.wikipedia.org/wiki/Open-loop_controller"},
+        {"title": "π0: A Vision-Language-Action Flow Model for General Robot Control (arXiv:2410.24164)", "url": "https://arxiv.org/abs/2410.24164"},
+        {"title": "Real-Time Execution of Action Chunking Flow Policies (arXiv:2506.07339)", "url": "https://arxiv.org/abs/2506.07339"}
+      ],
+      "as_of": "2025-06"
+    },
+    {
+      "name_zh": "分布外",
+      "name_en": "Out-of-distribution",
+      "abbr": "OOD",
+      "aliases": ["分布外泛化", "OOD 泛化", "Out-of-Distribution Generalization"],
+      "tier": 1,
+      "one_liner": "测试时遇到的数据和训练数据分布不同，比如新物体、新场景。",
+      "explanation": "机器学习通常默认训练数据和测试数据来自同一分布（独立同分布假设）。分布外指测试输入落在训练分布之外，比如换了没见过的物体、光照、桌布、相机角度或指令说法；落在训练分布之内的叫分布内（ID）。模型在分布外输入上性能往往明显下降，研究如何让模型此时仍然可用就是 OOD 泛化，清华大学崔鹏团队 2021 年的综述对此做了系统梳理。机器人尤其容易遇到这个问题：真实环境变化无穷，演示数据只覆盖有限场景；执行中一步走偏，后续观测也会偏离训练数据（分布偏移）。论文评测「泛化」时，通常就是在刻意构造的分布外条件下测成功率。",
+      "example": "策略只在白色桌面上用红杯子训练过，测试时换成木纹桌面和蓝色碗，这就是一次分布外测试。",
+      "related": ["分布内", "泛化", "分布偏移（协变量偏移）", "长尾问题", "鲁棒性", "零样本"],
+      "sources": [
+        {"title": "Towards Out-Of-Distribution Generalization: A Survey (arXiv:2108.13624)", "url": "https://arxiv.org/abs/2108.13624"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "物理AI",
+      "name_en": "Physical AI",
+      "abbr": "",
+      "aliases": ["物理人工智能", "物理智能", "生成式物理 AI"],
+      "tier": 1,
+      "one_liner": "能感知、理解物理世界并在其中行动的 AI，如机器人和自动驾驶。",
+      "explanation": "物理 AI 是英伟达大力推广的说法，官方定义为能在物理世界中感知、理解、推理，并执行或协调复杂动作的系统，覆盖机器人、自动驾驶汽车，以及用固定摄像头优化工厂和仓库的「智能空间」。它关注的问题和学术界常说的「具身智能」基本重合，但范围更宽，连只靠固定摄像头、没有身体的「智能空间」也算在内。英伟达给出的开发流程分三步：在数据中心训练模型；在仿真平台 Omniverse 和世界基础模型 Cosmos 里做仿真、生成合成数据；再部署到 Jetson、DRIVE 等端侧计算平台。2025 年 1 月 CES 上发布 Cosmos 时，黄仁勋说「机器人的 ChatGPT 时刻即将到来」。",
+      "example": "自动驾驶汽车实时处理传感器数据决定转向和刹车，仓库里的自主移动机器人避开障碍搬运货物，都属于英伟达所说的物理 AI。",
+      "related": ["具身智能", "世界基础模型", "Cosmos", "英伟达三台计算机", "仿真到现实迁移", "ChatGPT 时刻"],
+      "sources": [
+        {"title": "What is Physical AI? (NVIDIA Glossary)", "url": "https://www.nvidia.com/en-us/glossary/generative-physical-ai/"},
+        {"title": "NVIDIA Launches Cosmos World Foundation Model Platform to Accelerate Physical AI Development (NVIDIA Newsroom, 2025-01-06)", "url": "https://nvidianews.nvidia.com/news/nvidia-launches-cosmos-world-foundation-model-platform-to-accelerate-physical-ai-development"}
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "抓取放置",
+      "name_en": "Pick-and-Place",
+      "abbr": "",
+      "aliases": ["拾取放置", "抓放", "Pick and Place"],
+      "tier": 1,
+      "one_liner": "把物体从一处拿起、移动并放到指定位置的基础操作任务。",
+      "explanation": "抓取放置是最基础也最常见的操作任务：先抓起目标物体，再移到目标位置放下。工业上它早已用于分拣、上下料、码垛等环节，通常靠固定程序加视觉定位完成；在机器人学习里，它是 VLA 和模仿学习论文的常规测试任务，指令多为「把 A 放到 B 里/上」。它看似简单，却串起识别目标、选抓取点、规划避障轨迹、确定放置位姿几个环节，也常作为原子技能组合进长程任务。2020 年谷歌的 Transporter Networks 把抓取放置建模为「从哪里拿、移到哪里」的空间位移，学会了堆积木、装配套件等任务，样本效率比当时的对比方法高出几个数量级。",
+      "example": "指令「把红色方块放进碗里」：机器人先夹起方块，移到碗上方，再松开夹爪。",
+      "related": ["抓取", "物体重排", "原子技能", "分拣", "码垛 / 拆垛", "Transporter Networks"],
+      "sources": [
+        {"title": "Transporter Networks: Rearranging the Visual World for Robotic Manipulation (arXiv:2010.14406)", "url": "https://arxiv.org/abs/2010.14406"}
+      ],
+      "as_of": ""
+    }
+  ]
+}

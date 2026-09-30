@@ -1,0 +1,403 @@
+{
+  "category": "perception",
+  "batch": 20,
+  "terms": [
+    {
+      "name_zh": "八叉树地图",
+      "name_en": "Octree Map (OctoMap)",
+      "abbr": "",
+      "aliases": [
+        "OctoMap",
+        "八叉树占据地图"
+      ],
+      "tier": 3,
+      "one_liner": "用八叉树分层存储的三维概率占据地图，常用于机器人避障和规划。",
+      "explanation": "OctoMap 是德国弗莱堡大学 Armin Hornung、Kai M. Wurm 等人开发的开源 C++ 库，论文 2013 年发表于 Autonomous Robots。它把空间递归切成八个小立方体（八叉树），每个格子记录「被占据」的概率，能区分占据、空闲和未知三种状态，传感器噪声和环境变化靠概率更新逐步修正。和把整个空间切成等大体素相比，它只在有东西的地方细分，内存省得多，还能按需取粗或细的分辨率。深度相机或激光雷达的点云写进去后可直接做碰撞检查，MoveIt 的感知管线就用它表示机器人周围的障碍物。",
+      "example": "机械臂旁装一台深度相机，MoveIt 把点云持续写进 OctoMap，规划轨迹时自动绕开桌上新放的杂物。",
+      "related": [
+        "占据栅格地图",
+        "体素",
+        "点云",
+        "截断符号距离函数",
+        "MoveIt",
+        "碰撞检查"
+      ],
+      "sources": [
+        {
+          "title": "OctoMap 官方主页",
+          "url": "https://octomap.github.io/"
+        },
+        {
+          "title": "MoveIt Perception Pipeline Tutorial",
+          "url": "https://moveit.picknik.ai/main/doc/examples/perception_pipeline/perception_pipeline_tutorial.html"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "开放词汇分割",
+      "name_en": "Open-Vocabulary Segmentation",
+      "abbr": "",
+      "aliases": [
+        "开集分割",
+        "开放词汇语义分割"
+      ],
+      "tier": 3,
+      "one_liner": "用任意文字描述类别，模型就能把对应的像素分割出来。",
+      "explanation": "传统分割模型只能分出训练时定好的那几十上百个类别；开放词汇分割允许测试时用任意文字指定类别，比如「蓝色的洗碗海绵」，模型输出对应的像素掩码。它的底子是 CLIP 这类图文对比预训练模型：把图像每个像素或区域的特征和文字特征放进同一个空间，按相似度决定归属。代表工作有 ICLR 2022 的 LSeg，后来有把开放词汇检测器和 SAM 拼起来的 Grounded-SAM，以及直接接受名词短语提示的 SAM 3。对机器人来说，它让「把桌上某样东西找出来」不必为每个新物体重新标数据、重新训练。",
+      "example": "用户说「把充电线收起来」，机器人把「充电线」作为文本输入分割模型，拿到线的像素掩码，再结合深度图算抓取点。",
+      "related": [
+        "开放词汇检测",
+        "语义分割",
+        "CLIP",
+        "Grounded-SAM",
+        "SAM 3（可提示概念分割）",
+        "开放词汇"
+      ],
+      "sources": [
+        {
+          "title": "Language-driven Semantic Segmentation (LSeg, arXiv 2201.03546)",
+          "url": "https://arxiv.org/abs/2201.03546"
+        },
+        {
+          "title": "Towards Open Vocabulary Learning: A Survey (arXiv 2306.15880)",
+          "url": "https://arxiv.org/abs/2306.15880"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "奥比中光 Femto Bolt",
+      "name_en": "Orbbec Femto Bolt (iToF RGB-D Camera)",
+      "abbr": "",
+      "aliases": [
+        "Femto Bolt"
+      ],
+      "tier": 3,
+      "one_liner": "奥比中光的间接飞行时间 RGB-D 相机，可接替微软 Azure Kinect。",
+      "explanation": "Femto Bolt 是奥比中光（Orbbec）的 RGB-D 深度相机，采用微软的间接飞行时间（iToF，靠发射红外光与回波的相位差算距离）技术。官网称其深度工作模式和性能与微软 Azure Kinect DK 一致，并提供 K4A 兼容封装 SDK，为 Azure Kinect 写的程序基本不用改。深度有窄视场 640×576@30fps、宽视场最高 1024×1024@15fps 等模式，量程约 0.25–5.46 米；彩色最高 4K，内置六轴 IMU，USB-C 供电传数据，仅限室内使用。实验室常把它当固定的第三视角相机采点云。",
+      "example": "实验室把旧的 Azure Kinect 换成 Femto Bolt，装上官方 K4A Wrapper 后，原来的点云采集脚本照常运行。",
+      "related": [
+        "Azure Kinect 深度相机",
+        "间接飞行时间",
+        "深度相机",
+        "奥比中光",
+        "奥比中光 Gemini 330 系列",
+        "第三视角相机"
+      ],
+      "sources": [
+        {
+          "title": "Orbbec Femto Bolt 产品页",
+          "url": "https://www.orbbec.com/products/tof-camera/femto-bolt/"
+        },
+        {
+          "title": "orbbec/OrbbecSDK-K4A-Wrapper (GitHub)",
+          "url": "https://github.com/orbbec/OrbbecSDK-K4A-Wrapper"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "OWL-ViT / OWLv2",
+      "name_en": "OWL-ViT / OWLv2 (Open-World Localization Vision Transformer)",
+      "abbr": "",
+      "aliases": [
+        "OWL-ViT",
+        "OWLv2",
+        "OWL-ST"
+      ],
+      "tier": 3,
+      "one_liner": "谷歌提出的开放词汇目标检测模型，可用文字或示例图查找物体。",
+      "explanation": "OWL-ViT 由 Google 的 Matthias Minderer 等人提出，发表于 ECCV 2022。做法是先用 CLIP 式图文对比学习预训练视觉 Transformer，再端到端微调成检测器：图像每个小块输出一个框和一个特征，与文字特征比相似度，就能检测没见过的类别；也支持给一张示例图做单样本检测。2023 年的 OWLv2 用自训练扩数据：拿现有检测器给网上图文对自动生成伪框标注，规模超过 10 亿例，LVIS 稀有类 AP 从 31.2% 升到 44.6%。两者已进入 Hugging Face Transformers，常被机器人系统用来按语言指令定位物体。",
+      "example": "输入一张桌面图像和文字「a red mug」，OWLv2 返回杯子的检测框和置信度，机器人再用框内的深度估计抓取位置。",
+      "related": [
+        "开放词汇检测",
+        "CLIP",
+        "Grounding DINO",
+        "YOLO-World",
+        "视觉 Transformer",
+        "OK-Robot"
+      ],
+      "sources": [
+        {
+          "title": "Simple Open-Vocabulary Object Detection with Vision Transformers (arXiv 2205.06230)",
+          "url": "https://arxiv.org/abs/2205.06230"
+        },
+        {
+          "title": "Scaling Open-Vocabulary Object Detection (arXiv 2306.09683)",
+          "url": "https://arxiv.org/abs/2306.09683"
+        },
+        {
+          "title": "Hugging Face Transformers: OWLv2",
+          "url": "https://huggingface.co/docs/transformers/model_doc/owlv2"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "手掌相机",
+      "name_en": "Palm Camera",
+      "abbr": "",
+      "aliases": [
+        "掌心相机",
+        "掌部相机"
+      ],
+      "tier": 3,
+      "one_liner": "装在机器人手掌上的相机，抓取时近距离看清手和物体。",
+      "explanation": "手掌相机指嵌在机器人手掌、或手持采集设备掌心位置的小型相机，比腕部相机更靠近接触点。头部相机在手伸进柜子、被物体或手臂挡住时常看不到接触部位，手掌相机在抓取的最后几厘米仍能拍到物体。Figure AI 2025 年 10 月发布的 Figure 03 每只手都带一个广角、低延迟的掌心相机，官方说用于在主相机被挡时提供冗余的近距离视觉反馈。卡内基梅隆大学的 DexWild（RSS 2025）在人手采集设备和机器人手上装同样的手掌相机：这个视角主要拍任务和环境、很少拍到手本身，人和机器人的数据更容易放在一起训练。",
+      "example": "Figure 03 伸手进橱柜取杯子时，头部相机被柜门挡住，靠掌心相机的画面继续调整手指位置。",
+      "related": [
+        "腕部相机",
+        "头部相机",
+        "遮挡",
+        "DexWild",
+        "Figure 03",
+        "跨本体数据"
+      ],
+      "sources": [
+        {
+          "title": "Introducing Figure 03 (Figure AI, 2025-10-09)",
+          "url": "https://www.figure.ai/news/introducing-figure-03"
+        },
+        {
+          "title": "DexWild 项目主页",
+          "url": "https://dexwild.github.io/"
+        }
+      ],
+      "as_of": "2025-10"
+    },
+    {
+      "name_zh": "全景分割",
+      "name_en": "Panoptic Segmentation",
+      "abbr": "",
+      "aliases": [],
+      "tier": 3,
+      "one_liner": "给每个像素标类别，同时把每个物体个体区分开的分割任务。",
+      "explanation": "全景分割由 Alexander Kirillov、何恺明等人在 2018 年提出（CVPR 2019）。它把两类任务合在一起：语义分割给每个像素一个类别，但不区分同类的不同个体；实例分割区分每个物体个体，却不管天空、地面这类没有明确形状的背景类（论文称 stuff）。全景分割要求每个像素都有类别，属于可数物体（things）的还要有实例编号，输出一张完整、互不重叠的场景解析图，并用新提出的全景质量 PQ 统一评测。对机器人来说，它同时回答「哪里是地面、台面」和「这是第几个杯子」，常用于场景理解和语义建图。",
+      "example": "一张厨房图像里，地板、墙、台面按类别整块标出，三个碗则分别标成碗 1、碗 2、碗 3。",
+      "related": [
+        "语义分割",
+        "实例分割",
+        "掩码",
+        "场景理解",
+        "语义地图",
+        "Mask R-CNN"
+      ],
+      "sources": [
+        {
+          "title": "Panoptic Segmentation (arXiv 1801.00868)",
+          "url": "https://arxiv.org/abs/1801.00868"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "粒子滤波",
+      "name_en": "Particle Filter",
+      "abbr": "PF",
+      "aliases": [
+        "序贯蒙特卡洛方法",
+        "Sequential Monte Carlo"
+      ],
+      "tier": 3,
+      "one_liner": "用一大群带权重的随机样本近似状态分布的递推估计方法。",
+      "explanation": "粒子滤波又叫序贯蒙特卡洛方法，1993 年 Gordon 等人提出的 bootstrap 滤波是其经典起点。它用许多「粒子」（每个代表一种可能的状态，比如机器人位姿）和各自的权重表示不确定性，每一步做三件事：按运动模型推动粒子并加噪声（预测），按传感器观测给粒子重新打分（更新），丢掉低权重粒子、复制高权重粒子（重采样）。卡尔曼滤波只能表示单峰高斯，粒子滤波能处理非线性、非高斯和多峰情况，比如机器人不确定自己在两条相似走廊中的哪一条。机器人上最典型的应用是 1999 年提出的蒙特卡洛定位及其自适应版本 AMCL。",
+      "example": "移动机器人开机时把粒子撒满整张地图，走几步后与激光扫描吻合的粒子被保留，粒子云逐渐收缩到它的真实位置。",
+      "related": [
+        "卡尔曼滤波",
+        "扩展卡尔曼滤波",
+        "自适应蒙特卡洛定位",
+        "状态估计",
+        "同步定位与建图",
+        "重要性采样"
+      ],
+      "sources": [
+        {
+          "title": "Particle filter - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Particle_filter"
+        },
+        {
+          "title": "Monte Carlo localization - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Monte_Carlo_localization"
+        },
+        {
+          "title": "Nav2 nav2_amcl README",
+          "url": "https://github.com/ros-navigation/navigation2/blob/main/nav2_amcl/README.md"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "帕西尼 PX-6AX 多维触觉传感器",
+      "name_en": "PaXini PX-6AX Multi-dimensional Tactile Sensor",
+      "abbr": "",
+      "aliases": [
+        "PX6AX",
+        "PX6AX GEN3",
+        "PX6AX GEN4"
+      ],
+      "tier": 3,
+      "one_liner": "帕西尼感知的多维触觉传感器，能输出分布力、合力和力矩。",
+      "explanation": "PX-6AX 是帕西尼感知（PaXini）的触觉传感器系列，官网称为 ITPU 多维触觉传感单元，已出到第四代 GEN4，换能原理未详细公开。它输出三维阵列分布力、三维合力和三维力矩，官方称可解析 15 种以上触觉参数。据官网参数：法向量程 0–25 N、切向 ±10 N，空间分辨率 0.1 mm，最大输出频率 1000 Hz，IP68 防护，并强调芯片级抗磁；最小可识别力 GEN3 为 0.01 N、GEN4 为 0.005 N。有指尖到手掌垫片多种尺寸，用于灵巧手指尖、夹爪和机器人皮肤，帕西尼自家的 DexH13 灵巧手和 TORA-ONE 人形机器人都主打这类触觉。",
+      "example": "把 PX-6AX 装在灵巧手指尖，捏取鸡蛋时同时读出法向压力和切向力，切向力突然变大就提示将要打滑。",
+      "related": [
+        "触觉传感器",
+        "帕西尼感知",
+        "帕西尼 TORA-ONE",
+        "灵巧手",
+        "法向力与切向力（剪切力）",
+        "滑移检测"
+      ],
+      "sources": [
+        {
+          "title": "帕西尼 PX6AX GEN4 产品页",
+          "url": "https://www.paxini.com/cn/ax/gen4"
+        },
+        {
+          "title": "帕西尼 PX6AX GEN3 产品页",
+          "url": "https://www.paxini.com/cn/ax/gen3"
+        },
+        {
+          "title": "帕西尼感知官网",
+          "url": "https://www.paxini.com/cn"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "PnP（透视n点）",
+      "name_en": "Perspective-n-Point",
+      "abbr": "PnP",
+      "aliases": [
+        "PnP 问题",
+        "透视 n 点问题",
+        "solvePnP"
+      ],
+      "tier": 3,
+      "one_liner": "已知若干三维点和它们在图像中的位置，反求相机位姿。",
+      "explanation": "PnP 是计算机视觉的经典问题：相机内参已知时，给定 n 个三维点的坐标和它们在图像上的二维投影，求相机相对这些点的旋转和平移，共 6 个自由度。最少需要 3 对点（P3P），但 3 点最多有 4 个解，通常要第 4 个点消歧；Lepetit 等 2009 年提出的 EPnP 借 4 个虚拟控制点求解，计算量随点数线性增长。实际匹配常有错点，所以一般配合随机采样一致性（RANSAC）剔除外点，OpenCV 的 solvePnP、solvePnPRansac 是最常用的实现。机器人里常用它从标定板或 ArUco 码角点求位姿。",
+      "example": "相机拍到一个边长已知的 ArUco 码，把 4 个角点的三维坐标和检测到的像素坐标交给 solvePnP，就得到这个码相对相机的位置和朝向。",
+      "related": [
+        "相机内参",
+        "6D位姿估计",
+        "随机采样一致性",
+        "ArUco码",
+        "手眼标定",
+        "OpenCV"
+      ],
+      "sources": [
+        {
+          "title": "Perspective-n-Point - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Perspective-n-Point"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "光度立体",
+      "name_en": "Photometric Stereo",
+      "abbr": "",
+      "aliases": [
+        "光度立体法",
+        "光度立体视觉"
+      ],
+      "tier": 3,
+      "one_liner": "相机不动、从多个方向打光拍照，由明暗反推表面朝向和形状。",
+      "explanation": "光度立体由 Woodham 于 1980 年提出。相机位置固定，从至少三个已知方向照亮物体；在朗伯反射（表面向各方向均匀漫反射）假设下，每个像素的亮度只取决于表面法向和光照方向，解一个小线性方程就得到该点法向，再把法向积分成深度图。它能恢复很细的表面起伏，但对金属、玻璃这类高光或透明表面效果差。在具身智能里，它最重要的用途是视触觉传感器：GelSight 用红、绿、蓝三色 LED 从不同方向照亮弹性胶面，相机拍一张图，就能靠标定好的查找表把颜色映射成法向，重建出接触面的三维形状。",
+      "example": "GelSight 指尖按在一枚硬币上，光度立体重建出的高度图能看出硬币表面的浮雕纹路。",
+      "related": [
+        "视触觉传感器",
+        "GelSight",
+        "触觉图像",
+        "法向量估计",
+        "DIGIT 视触觉传感器",
+        "Taxim"
+      ],
+      "sources": [
+        {
+          "title": "Photometric stereo - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Photometric_stereo"
+        },
+        {
+          "title": "GelSight: High-Resolution Robot Tactile Sensors for Estimating Geometry and Force (Sensors 2017, PMC)",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5751610/"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "压电式触觉传感",
+      "name_en": "Piezoelectric Tactile Sensing",
+      "abbr": "",
+      "aliases": [
+        "压电传感器",
+        "压电触觉传感器",
+        "PVDF 触觉"
+      ],
+      "tier": 3,
+      "one_liner": "利用材料受力产生电荷的压电效应，感知接触和振动。",
+      "explanation": "压电式触觉传感利用压电效应：石英、锆钛酸铅（PZT）陶瓷或聚偏氟乙烯（PVDF）薄膜受力变形时表面会产生电荷，读出电信号就能感知力的变化。它响应快、频带宽，对滑动、碰撞、摩擦纹理产生的高频振动很敏感；但电荷会慢慢泄漏，测不了恒定的静态压力，所以常和压阻式或电容式单元搭配使用。它与压阻式、电容式、磁性式、光学式并列为主要触觉原理。近年不少机器人工作把压电麦克风当触觉用，例如 2026 年的 A-SLIP 在夹爪硅胶垫后放多个压电麦克风，用神经网络估计是否打滑以及滑移方向和大小。",
+      "example": "A-SLIP 在平行夹爪的纹理硅胶垫后装 4 个压电麦克风，物体开始下滑时的振动被识别出来，控制器随即加大夹持力。",
+      "related": [
+        "触觉传感器",
+        "压阻式触觉传感",
+        "电容式触觉传感",
+        "滑移检测",
+        "接触式麦克风（音频触觉）",
+        "电子皮肤"
+      ],
+      "sources": [
+        {
+          "title": "Piezoelectric sensor - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Piezoelectric_sensor"
+        },
+        {
+          "title": "Tactile Robotics: An Outlook (arXiv 2508.11261)",
+          "url": "https://arxiv.org/abs/2508.11261"
+        },
+        {
+          "title": "A-SLIP: Acoustic Sensing for Continuous In-hand Slip Estimation (arXiv 2604.08528)",
+          "url": "https://arxiv.org/abs/2604.08528"
+        }
+      ],
+      "as_of": "2026-04"
+    },
+    {
+      "name_zh": "压阻式触觉传感",
+      "name_en": "Piezoresistive Tactile Sensing",
+      "abbr": "",
+      "aliases": [
+        "压阻式传感器",
+        "压阻式触觉阵列",
+        "力敏电阻（FSR）"
+      ],
+      "tier": 3,
+      "one_liner": "靠材料受压后电阻变化来测压力，便宜、易做成大面积阵列。",
+      "explanation": "压阻效应指材料受力变形后电阻率改变，1856 年开尔文勋爵最早在金属中观察到，1954 年 Smith 发现硅、锗中的效应要大得多。压阻式触觉传感器把这一效应用在导电橡胶、导电聚合物薄膜或硅应变元件上：受压时电阻变化，测电阻就得压力；许多单元用行列电极交叉排成阵列，就能输出一张压力分布图。它结构简单、便宜、薄而柔软，能测静态力，是最常见的触觉方案之一，力敏电阻（FSR）即属此类；缺点是迟滞和漂移较大，精度偏低。3D-ViTac（2024）就把 Velostat 压阻膜夹在导电纱线之间，做成 16×16 的触觉垫。",
+      "example": "3D-ViTac 在夹爪手指上贴压阻触觉垫，单片连读取板成本约 20 美元，给策略提供每个触点的压力值。",
+      "related": [
+        "触觉传感器",
+        "触觉阵列",
+        "压电式触觉传感",
+        "电容式触觉传感",
+        "应变片",
+        "3D-ViTac"
+      ],
+      "sources": [
+        {
+          "title": "Piezoresistive effect - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Piezoresistive_effect"
+        },
+        {
+          "title": "Force-sensing resistor - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Force-sensing_resistor"
+        },
+        {
+          "title": "3D-ViTac: Learning Fine-Grained Manipulation with Visuo-Tactile Sensing (arXiv 2410.24091)",
+          "url": "https://arxiv.org/abs/2410.24091"
+        }
+      ],
+      "as_of": ""
+    }
+  ]
+}

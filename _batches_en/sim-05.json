@@ -1,0 +1,113 @@
+{
+  "batch": "sim-05",
+  "terms": [
+    {
+      "key": "sim-05#0",
+      "name_en": "legged_gym",
+      "aliases": ["Isaac Gym Environments for Legged Robots", "Legged Gym"],
+      "one_liner": "ETH Zürich's open-source reinforcement-learning training environment for legged robots, built on Isaac Gym.",
+      "explanation": "legged_gym is an open-source reinforcement-learning codebase for legged robots from ETH Zürich's Robotic Systems Lab (RSL, Nikita Rudin and colleagues), accompanying their CoRL 2021 paper “Learning to Walk in Minutes…”. It runs thousands of simulated robots on a single GPU via Isaac Gym and trains locomotion with PPO (Proximal Policy Optimization); in the paper, an ANYmal robot learned to walk on flat ground in under 4 minutes and on rough terrain in about 20 minutes. The codebase includes the pieces needed for a policy to survive the transfer to a real robot: actuator networks, friction and mass randomization, observation noise, random pushes, and a terrain curriculum that automatically raises difficulty as the policy improves; it ships with the ANYmal B/C, A1, and Cassie robots built in. In January 2024 the authors announced a move to Isaac Lab and said the original repository would only get limited maintenance, but many projects, including Unitree's unitree_rl_gym, still use it as their backbone.",
+      "example": "Unitree's open-source unitree_rl_gym follows the same structure as legged_gym: running python legged_gym/scripts/train.py --task=g1 trains a G1 humanoid to walk inside Isaac Gym, after which the policy is validated with sim-to-sim testing in MuJoCo before being deployed to the real robot.",
+      "related": ["Isaac Gym", "rsl_rl", "Terrain Curriculum", "Massively Parallel Reinforcement Learning", "unitree_rl_gym", "Isaac Lab"]
+    },
+    {
+      "key": "sim-05#1",
+      "name_en": "ManiSkill",
+      "aliases": ["ManiSkill3", "ManiSkill2", "ManiSkill 1"],
+      "one_liner": "An open-source robot manipulation simulation framework and benchmark from a UC San Diego team, built for GPU parallelism.",
+      "explanation": "ManiSkill is a robot manipulation simulation framework and benchmark developed by Hao Su's group at UC San Diego together with Hillbot and others, built on the same team's SAPIEN engine and now in its third generation. The latest version, ManiSkill3 (RSS 2025), runs both physics simulation and camera rendering in parallel on the GPU; its paper claims 10 to 1000 times the speed of other platforms and 2 to 3 times less GPU memory use, generating over 30,000 segmented RGB-D frames per second on a single RTX 4090. It covers 12 task categories, including tabletop manipulation, mobile manipulation, humanoids, dexterous hands, and soft bodies (soft-body tasks don't support batched parallelism), plus digital-twin environments built to match real-world setups for quickly evaluating real-robot policies in simulation. Its interface follows Gymnasium, and it exited beta with version 3.0.1 in April 2026.",
+      "example": "ManiSkill3's built-in PickCube-v1 task, where an arm has to pick up a cube, can be run as a thousand parallel environments at once to train a camera-conditioned grasping policy with PPO.",
+      "related": ["SAPIEN", "GPU-Accelerated Parallel Simulation", "Simulation Benchmark", "SimplerEnv", "Digital Twin", "Benchmark"]
+    },
+    {
+      "key": "sim-05#2",
+      "name_en": "Meta-World",
+      "aliases": ["MetaWorld", "Meta-World+", "MT10", "MT50", "ML10", "ML45"],
+      "one_liner": "A simulation benchmark of 50 robot-arm manipulation tasks, used to test multi-task and meta-reinforcement learning.",
+      "explanation": "Meta-World is an open-source simulation benchmark proposed by Tianhe Yu, Chelsea Finn, Sergey Levine, and colleagues at CoRL 2019: a Sawyer robot arm performs 50 distinct manipulation tasks in MuJoCo, such as opening a drawer, pressing a button, pushing a block, or opening a window. It supports two evaluation setups: multi-task learning (MT1/MT10/MT50, learning 1, 10, or 50 tasks at once) and meta-learning (ML1/ML10/ML45, training on one set of tasks and then testing how fast the model adapts to new ones; ML45 uses 45 training tasks plus 5 held-out test tasks). The original paper found that existing algorithms already struggled to learn just 10 tasks at once. The project is now maintained by the Farama Foundation, has switched to the Gymnasium interface, and released Meta-World+ (NeurIPS 2025), which standardized version details; it remains a common benchmark for multi-task learning, meta-reinforcement learning, and imitation learning.",
+      "example": "In the ML45 setup, an agent is meta-trained on 45 tasks and then faces 5 tasks it has never practiced, such as a novel way of opening a door; it is scored on how quickly it can learn the new task from a small amount of interaction, measured by success rate.",
+      "related": ["Meta-Reinforcement Learning", "Multi-Task Learning", "MuJoCo", "Benchmark", "Success Rate", "Gymnasium"]
+    },
+    {
+      "key": "sim-05#3",
+      "name_en": "MuJoCo Playground",
+      "aliases": ["Playground"],
+      "one_liner": "A collection of GPU-accelerated robot learning environments led by DeepMind, built for fast single-GPU training and zero-shot transfer to real robots.",
+      "explanation": "MuJoCo Playground is a collection of robot learning environments open-sourced in February 2025 under the Apache 2.0 license, led by Google DeepMind together with UC Berkeley and other teams. Physics runs on MJX, can now also be switched to the MuJoCo Warp backend, and it ships with a batched renderer for training policies that take images as input. It bundles together the classic tasks from the DeepMind Control Suite along with legged-locomotion and manipulation tasks, covering robots such as Unitree's Go1, G1, and H1, the Booster T1, the Berkeley Humanoid, Spot, Franka, ALOHA, and the LEAP dexterous hand. The paper reports training policies in minutes on a single GPU and demonstrates zero-shot transfer to real robots from both state and pixel inputs, cutting out a large amount of the usual repetitive work of building environments and tuning rewards. It installs with pip install playground.",
+      "example": "After installing it, a user can load the G1 or Go1 walking environment, train thousands of simulated robots in parallel on one GPU with PPO, and then deploy the trained policy straight to the real robot for testing.",
+      "related": ["MJX", "MuJoCo Warp", "MuJoCo", "DeepMind Control Suite", "Sim-to-Real Transfer", "mjlab"]
+    },
+    {
+      "key": "sim-05#4",
+      "name_en": "MuJoCo Warp",
+      "aliases": ["MJWarp", "mujoco-warp", "MJX-Warp"],
+      "one_liner": "A GPU rewrite of MuJoCo built by DeepMind and NVIDIA on the Warp framework, aimed at massive batched parallelism.",
+      "explanation": "MuJoCo Warp is a GPU version of MuJoCo developed jointly by Google DeepMind and NVIDIA, reimplemented using NVIDIA Warp (a framework for writing GPU kernels in Python), and it also serves as the core solver of the Newton physics engine. It is built for throughput, advancing hundreds or thousands of simulated “worlds” at once; its developers say it scales better than MJX on scenes with many geometries, high degrees of freedom, and complex contact, and that it integrates more easily with PyTorch. The trade-off is that its per-step latency can be slower than plain MuJoCo, so real-time control still uses the original; it also doesn't support automatic differentiation, so differentiable simulation still requires MJX's JAX implementation. It additionally supports batched ray-traced rendering. Since January 2026 it has shipped on PyPI as mujoco-warp, with version numbers kept in sync with MuJoCo, and it can be called from mjlab, MJX, MuJoCo Playground, and Newton.",
+      "example": "A typical workflow uses mjw.put_model to load a model onto the GPU, mjw.make_data(mjm, nworld=100) to create 100 worlds, and a single mjw.step call to advance all 100 simulations one step at once, with a CUDA Graph capturing the loop for further speedup.",
+      "related": ["MuJoCo", "MJX", "Newton Physics Engine", "Warp", "mjlab", "GPU-Accelerated Parallel Simulation"]
+    },
+    {
+      "key": "sim-05#5",
+      "name_en": "MuJoCo XLA",
+      "aliases": ["MJX", "MuJoCo MJX", "mujoco-mjx", "MJX-JAX"],
+      "one_liner": "A JAX implementation of MuJoCo for batched, parallel simulation on GPU/TPU that also supports differentiation.",
+      "explanation": "MJX (MuJoCo XLA) is a JAX interface to MuJoCo that Google DeepMind released alongside MuJoCo 3.0 in October 2023: MuJoCo's physics are reimplemented in JAX and, once compiled through the XLA compiler, can run on NVIDIA and AMD GPUs, Apple silicon, and Google TPUs. Combined with JAX's vmap, thousands of scenes can be batched together in one computation, which suits large-scale reinforcement learning, though running a single scene alone can be roughly 10 times slower than plain MuJoCo. The pure-JAX version supports automatic differentiation, enabling differentiable simulation. MJX now has two backends: MJX-JAX, and MJX-Warp, which calls into MuJoCo Warp; the latter is faster on NVIDIA GPUs and contact-heavy scenes but cannot be differentiated. Both the Brax training library and MuJoCo Playground are built on top of it.",
+      "example": "A typical three-step workflow: mjx.put_model loads a model onto the accelerator, mjx.make_data creates the state, and jax.vmap(mjx.step) advances thousands of robots one step at once, feeding into Brax's PPO implementation to train a walking policy.",
+      "related": ["MuJoCo", "JAX", "MuJoCo Warp", "Brax", "MuJoCo Playground", "Differentiable Simulation"]
+    },
+    {
+      "key": "sim-05#6",
+      "name_en": "Neural Simulator",
+      "aliases": ["Learned Simulator", "Neural Simulation", "World-Model Simulator"],
+      "one_liner": "A simulator learned from data with a neural network, predicting what happens next instead of relying on hand-written physics equations.",
+      "explanation": "A neural simulator is a simulator that learns from data, rather than from hand-written physics equations, how a scene changes given the current state and an action. One line of work learns physical quantities directly, such as DeepMind's Graph Network Simulator (GNS, ICML 2020), which represents fluids, rigid bodies, and deformable materials as particles and predicts their motion. A second line learns directly on pixels, which is essentially an action-conditioned video world model: UniSim (2023) learned an interactive simulator from internet and robot data, and policies trained inside it transferred zero-shot to a real robot; in September 2024, 1X trained a world model on thousands of hours of EVE robot data to evaluate policies. Neural simulators can absorb real-world complexity that is hard to hand-model, such as cloth, but objects can deform or vanish inconsistently, physics isn't guaranteed to be conserved, and errors accumulate over long rollouts. They are commonly used for policy evaluation, data generation, and learning in imagination.",
+      "example": "1X's world model takes a robot's starting frame plus a sequence of actions and generates the resulting video, which is then used to compare different policy versions on how likely each is to complete tasks like folding laundry or opening a door.",
+      "related": ["World Model", "UniSim", "1X World Model", "World Model Evaluation", "Physics Engine", "Learning in Imagination"]
+    },
+    {
+      "key": "sim-05#7",
+      "name_en": "Newton Physics Engine",
+      "aliases": ["Newton", "newton-physics"],
+      "one_liner": "An open-source GPU physics engine for robotics jointly launched by NVIDIA, DeepMind, and Disney.",
+      "explanation": "Newton is an open-source physics engine jointly launched by NVIDIA, Google DeepMind, and Disney Research, built on NVIDIA Warp and OpenUSD (Universal Scene Description) and released under the Apache 2.0 license; the Linux Foundation announced it would take over stewardship on September 29, 2025, to keep it vendor-neutral. Its design is one framework with multiple solvers: MuJoCo Warp is the primary rigid-body solver, alongside Featherstone, XPBD, VBD (for cloth and particles), implicit MPM (for granular materials like sand), Style3D cloth, and Kamino for handling closed-loop mechanisms. It supports massive GPU parallelism and differentiability, is compatible with Isaac Sim and Isaac Lab, and NVIDIA positions it as the next-generation robot simulation engine succeeding PhysX. Version 1.0 shipped in 2026, and it had reached 1.6 by September.",
+      "example": "Within a single Newton setup, a humanoid robot's walking might use SolverMuJoCo, a towel's cloth might use SolverVBD or SolverStyle3D, and sand particles might use SolverImplicitMPM.",
+      "related": ["MuJoCo Warp", "Warp", "Isaac Lab", "PhysX", "Universal Scene Description", "Differentiable Simulation"]
+    },
+    {
+      "key": "sim-05#8",
+      "name_en": "Isaac Gym",
+      "aliases": ["NVIDIA Isaac Gym", "IsaacGym", "IsaacGymEnvs", "Isaac Gym Preview 4"],
+      "one_liner": "NVIDIA's GPU reinforcement-learning simulator launched in 2021; now discontinued.",
+      "explanation": "Isaac Gym is a robot reinforcement-learning simulation platform NVIDIA released in 2021 (its technical report appeared in the NeurIPS 2021 Datasets and Benchmarks track), with physics computed by PhysX on the GPU. Its key feature is a tensor interface: physics results are handed to the neural network directly as PyTorch tensors without passing through the CPU, letting a single GPU run thousands of environments at once; NVIDIA claimed speedups of two to three orders of magnitude over a traditional “CPU simulation plus GPU training” pipeline. A wave of legged-locomotion and dexterous-hand work, including legged_gym, was built on it, and its companion repository IsaacGymEnvs shipped example environments such as Ant and ShadowHand. It was only ever released as a Preview build, with Preview 4 the final version; it is now discontinued, and NVIDIA recommends migrating to Isaac Lab, though many open-source projects still depend on it.",
+      "example": "Unitree's unitree_rl_gym and ETH's legged_gym still require downloading and installing Isaac Gym Preview 3 or 4 before they can train walking policies for quadruped or humanoid robots.",
+      "related": ["Isaac Lab", "PhysX", "legged_gym", "Massively Parallel Reinforcement Learning", "Isaac Sim", "Orbit / IsaacGymEnvs (predecessor to Isaac Lab)"]
+    },
+    {
+      "key": "sim-05#9",
+      "name_en": "PhysX",
+      "aliases": ["NVIDIA PhysX", "PhysX 5", "PhysX SDK", "NovodeX"],
+      "one_liner": "NVIDIA's open-source real-time physics engine, and the physics core behind Isaac Sim and Isaac Lab.",
+      "explanation": "PhysX is NVIDIA's real-time physics engine SDK. It traces back to NovodeX, founded by ETH researchers and commercialized in 2002; Ageia acquired and renamed it in 2004; and after NVIDIA acquired Ageia in 2008, it was rebuilt to use CUDA GPU acceleration, becoming dominant physics middleware in the game industry for years afterward. It was open-sourced under the BSD-3 license in December 2018, and the open-source version was upgraded to PhysX 5 in November 2022. PhysX 5 supports GPU rigid bodies, reduced-coordinate articulations (describing a robot by its root pose plus joint angles, so joints never “fall apart” — well suited to arms and legged robots), finite-element soft bodies, position-based-dynamics fluids and cloth, and signed-distance-field collision. It is the physics core behind Omniverse, Isaac Sim, Isaac Lab, and the earlier Isaac Gym; tuning solver iteration counts, friction, and similar parameters on those platforms is really tuning PhysX itself.",
+      "example": "When training a robot arm to perform peg insertion in Isaac Lab, joint torques, contact forces, and friction are all computed by PhysX on the GPU; when interpenetration shows up, a common fix is to increase PhysX's solver position-iteration count.",
+      "related": ["Isaac Sim", "Isaac Lab", "Isaac Gym", "Omniverse", "Articulated-Body Simulation", "Newton Physics Engine"]
+    },
+    {
+      "key": "sim-05#10",
+      "name_en": "OmniGibson",
+      "aliases": ["BEHAVIOR-1K Simulator"],
+      "one_liner": "Stanford's Omniverse-based household simulator, the underlying engine behind the BEHAVIOR-1K benchmark.",
+      "explanation": "OmniGibson is a household-environment simulation platform developed by Stanford's Vision and Learning Lab (SVL, including Fei-Fei Li), built on NVIDIA Omniverse and PhysX 5. It is the underlying simulator for the BEHAVIOR-1K household-task benchmark, replacing the earlier iGibson 2.0. Its physics coverage is broad: rigid bodies, deformable objects, cloth, fluids, and granular materials, plus thermal effects such as fire, steam, and smoke, and it tracks extended object states such as temperature, being cooked or burnt, being soaked, on/off, being cut, and being dirty. The paper notes that more than half of BEHAVIOR-1K's activities cannot be simulated at all without fluids, soft bodies, and cloth. Scenes are rendered with ray tracing or path tracing. BEHAVIOR-1K contains 1,000 everyday activities, 50 interactive scenes, and over 10,000 objects, and it is the platform behind the annual BEHAVIOR Challenge.",
+      "example": "In a cooking task where the robot has to put ingredients in a pot and heat them, OmniGibson continuously tracks the ingredients' temperature, marks their state as “cooked” once it crosses a threshold, and judges task completion based on states like this.",
+      "related": ["BEHAVIOR-1K", "iGibson", "Isaac Sim", "Omniverse", "Household Tasks", "Long-Horizon Tasks"]
+    },
+    {
+      "key": "sim-05#11",
+      "name_en": "Open-loop Evaluation",
+      "aliases": ["Offline Metric Evaluation", "Offline Evaluation"],
+      "one_liner": "Comparing a model's predicted actions against recorded demonstration actions on offline data, without letting the policy actually control anything.",
+      "explanation": "Open-loop evaluation does not let a policy actually drive a robot. Instead, recorded observations from an offline dataset are fed in frame by frame, and the model's predicted actions are compared against the demonstrated actions, typically using mean squared error (MSE) or L2 error. It is cheap, fast, reproducible, and needs neither a robot nor a simulator. The problem is that the policy's output never affects the next frame, so it cannot capture error accumulation or how well the policy recovers from a mistake; and because the same situation often has more than one correct way to act (action multimodality), a valid but different action still gets penalized simply for not matching the one recorded demonstration. The SIMPLER paper (2024) compared 6 checkpoints and found the Pearson correlation between validation-set MSE and real-robot success rate was only 0.308, versus 0.924 for closed-loop simulated evaluation. Self-driving research has reached a similar conclusion: a CVPR 2024 paper found that on nuScenes' open-loop planning metric, using nothing but the ego vehicle's own state, such as its speed, already scores competitively. As a result, open-loop metrics are mostly used for early debugging and screening.",
+      "example": "On a validation set from DROID or self-collected data, each frame's image and instruction is fed into a VLA model, and the mean squared error between its output action and the demonstrated action is computed as a rough check for whether training has gone off track.",
+      "related": ["Closed-loop Evaluation", "Open-loop", "Simulation Evaluation", "Real-robot Evaluation", "SimplerEnv", "Sim-to-Real Correlation"]
+    }
+  ]
+}

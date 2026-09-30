@@ -1,0 +1,206 @@
+{
+  "category": "model",
+  "batch": 6,
+  "terms": [
+    {
+      "name_zh": "潜在空间",
+      "name_en": "Latent Space",
+      "abbr": "",
+      "aliases": ["隐空间", "潜空间", "隐变量空间", "Latent Feature Space"],
+      "tier": 2,
+      "one_liner": "模型把原始数据压缩后得到的内部表示空间，相似的东西在里面挨得近。",
+      "explanation": "潜在空间是神经网络内部用来表示数据的向量空间。编码器把图像、声音、动作这类高维原始数据压成维数低得多的向量，这些向量所在的空间就叫潜在空间；训练得当时，意思相近的样本在里面距离也近。它的价值在于省算力、抓要点：在潜在空间里做生成、预测或规划，比直接处理像素便宜得多，也不容易被无关细节干扰。自编码器、变分自编码器（VAE，能采样生成新数据的自编码器）都靠它工作。具身智能里的常见用法有：潜在扩散模型在潜在空间里去噪生成图像和视频，隐空间世界模型在潜在状态上预测未来，潜在动作模型从无动作标签的视频里学出抽象的「动作编码」。",
+      "example": "潜在扩散模型（Stable Diffusion 的基础）先用预训练自编码器把图片压成小得多的潜在表示，在这个空间里做扩散去噪，最后再解码回像素，训练和推理开销比直接在像素上做扩散小得多。",
+      "related": ["嵌入向量", "变分自编码器", "潜在扩散模型", "隐空间世界模型", "潜在动作", "表征学习"],
+      "sources": [
+        {"title": "Wikipedia: Latent space", "url": "https://en.wikipedia.org/wiki/Latent_space"},
+        {"title": "High-Resolution Image Synthesis with Latent Diffusion Models (arXiv:2112.10752)", "url": "https://arxiv.org/abs/2112.10752"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "Llama",
+      "name_en": "Llama (Meta large language model family)",
+      "abbr": "",
+      "aliases": ["LLaMA", "Llama 2", "Llama 3", "Llama 4", "羊驼"],
+      "tier": 2,
+      "one_liner": "Meta 发布的开放权重大语言模型系列，常被拿来当各类模型的语言底座。",
+      "explanation": "Llama 是 Meta 推出的大语言模型系列。初代 LLaMA 于 2023 年 2 月发布，之后有 Llama 2（2023 年 7 月，开始允许商用）、Llama 3 / 3.1（2024 年，最大 405B 参数）、Llama 3.2（2024 年 9 月，加入 11B / 90B 视觉版和 1B / 3B 小模型）和 Llama 4（2025 年 4 月，改用混合专家架构并原生多模态）。权重可以下载，但许可证附带使用限制，所以更准确的说法是「开放权重」而非严格意义的开源。学术界大量视觉语言模型和 VLA 拿 Llama 当语言骨干，比如 OpenVLA 基于 Llama 2 7B。据报道，2026 年 4 月起 Meta 自家的 Meta AI 助手改由其超级智能实验室的闭源 Muse 系列模型驱动。",
+      "example": "OpenVLA 把 Llama 2 语言模型和融合了 DINOv2、SigLIP 特征的视觉编码器拼在一起，在约 97 万条真机演示上训练，得到 7B 参数的开源 VLA。",
+      "related": ["大语言模型", "开放权重", "混合专家模型", "OpenVLA", "Prismatic VLM", "骨干网络"],
+      "sources": [
+        {"title": "Wikipedia: Llama (language model)", "url": "https://en.wikipedia.org/wiki/Llama_(language_model)"},
+        {"title": "Meta AI Blog: The Llama 4 herd", "url": "https://ai.meta.com/blog/llama-4-multimodal-intelligence/"},
+        {"title": "OpenVLA: An Open-Source Vision-Language-Action Model (arXiv:2406.09246)", "url": "https://arxiv.org/abs/2406.09246"}
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "长短期记忆网络 / 门控循环单元",
+      "name_en": "Long Short-Term Memory / Gated Recurrent Unit",
+      "abbr": "LSTM / GRU",
+      "aliases": ["LSTM", "GRU", "门控循环神经网络"],
+      "tier": 2,
+      "one_liner": "带「门」的循环神经网络，能记住较长的历史信息，常用来处理时间序列。",
+      "explanation": "LSTM 由 Hochreiter 和 Schmidhuber 于 1997 年提出，是循环神经网络（RNN，按时间一步步读入序列、把信息存在隐状态里的网络）的改进版。普通 RNN 训练时梯度会随时间步指数衰减，记不住很久以前的事；LSTM 用遗忘门、输入门、输出门控制哪些信息丢弃、写入、输出，缓解了这个问题。GRU 由 Cho 等人在 2014 年提出，只有更新门和重置门，没有输出门，参数更少、算得更快，效果常与 LSTM 相当。Transformer 普及后它们在语言任务里退居次要，但在机器人中仍常见：腿足运控策略常用它们从历史本体感知中推断地形和自身状态，模仿学习里也有带 RNN 的行为克隆基线。",
+      "example": "OpenAI 的 Dactyl 用策略梯度训练了一个 LSTM 策略来控制五指灵巧手，让它在手里翻转方块、还原魔方。",
+      "related": ["循环神经网络", "Transformer", "状态空间模型", "历史编码器", "梯度消失 / 梯度爆炸", "Dactyl（OpenAI 魔方灵巧手）"],
+      "sources": [
+        {"title": "Wikipedia: Long short-term memory", "url": "https://en.wikipedia.org/wiki/Long_short-term_memory"},
+        {"title": "Wikipedia: Gated recurrent unit", "url": "https://en.wikipedia.org/wiki/Gated_recurrent_unit"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "混合专家模型",
+      "name_en": "Mixture of Experts",
+      "abbr": "MoE",
+      "aliases": ["专家混合模型", "稀疏混合专家", "Sparse MoE"],
+      "tier": 2,
+      "one_liner": "模型里放多个「专家」子网络，每次只激活其中几个，用少量计算换大容量。",
+      "explanation": "混合专家的思想最早由 Jacobs、Jordan、Nowlan 和 Hinton 在 1991 年提出：多个专家网络加一个门控网络（也叫路由器），由门控决定每个输入交给哪几个专家处理。2017 年 Shazeer 等人把它做成稀疏门控的 MoE 层放进大规模语言模型，参数上千亿，但每个输入只算其中一小部分。它解决的问题是：想让模型更大、装下更多知识，又不想每次推理都付出全部参数的计算量。Mixtral 8x7B、DeepSeek-V3、Llama 4 等大语言模型都用了 MoE。要注意，π0 论文把自己的结构比作「只有两个专家的 MoE」：图像和文字走 VLM 权重，状态和动作走动作专家权重，按 token 类型固定分工，不是由门控网络学出来的路由。",
+      "example": "Mixtral 8x7B 每层有 8 个专家，每个 token 只选其中 2 个，总参数约 46.7B，但每个 token 实际只用到约 12.9B 参数。",
+      "related": ["混合 Transformer 架构", "动作专家", "大语言模型", "参数量", "Transformer", "多层感知机"],
+      "sources": [
+        {"title": "Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer (arXiv:1701.06538)", "url": "https://arxiv.org/abs/1701.06538"},
+        {"title": "Wikipedia: Mixture of experts", "url": "https://en.wikipedia.org/wiki/Mixture_of_experts"},
+        {"title": "π0: A Vision-Language-Action Flow Model for General Robot Control (arXiv:2410.24164)", "url": "https://arxiv.org/html/2410.24164v1"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "多层感知机",
+      "name_en": "Multilayer Perceptron",
+      "abbr": "MLP",
+      "aliases": ["全连接网络", "前馈神经网络", "Feedforward Neural Network"],
+      "tier": 2,
+      "one_liner": "由多层全连接层加非线性激活堆起来的最基础的神经网络。",
+      "explanation": "多层感知机是最基础的前馈神经网络：输入层、若干隐藏层、输出层，相邻两层的神经元全部相连，每层先做一次线性变换，再过一个非线性激活函数（如 ReLU）。它源自 1958 年 Rosenblatt 的感知机，1986 年反向传播算法推广后，多层结构才能有效训练。单层感知机只能区分线性可分的数据，加了隐藏层和非线性后就能拟合复杂函数。MLP 在今天的模型里到处都是：Transformer 每层里的前馈网络就是一个两层 MLP；LLaVA-1.5 等视觉语言模型用 MLP 把视觉特征投影到语言模型的输入空间；机器人里，输入维度不高的强化学习运控策略、动作头、状态编码器也常直接用 MLP。",
+      "example": "legged_gym 腿足强化学习框架默认的策略网络就是一个 MLP，三层隐藏层宽度为 512、256、128，激活函数用 ELU，输入本体感知和速度指令，输出各关节的目标位置。",
+      "related": ["神经网络", "激活函数", "Transformer", "投影层", "动作头", "反向传播"],
+      "sources": [
+        {"title": "Wikipedia: Multilayer perceptron", "url": "https://en.wikipedia.org/wiki/Multilayer_perceptron"},
+        {"title": "legged_gym: legged_robot_config.py", "url": "https://github.com/leggedrobotics/legged_gym/blob/master/legged_gym/envs/base/legged_robot_config.py"},
+        {"title": "Improved Baselines with Visual Instruction Tuning (LLaVA-1.5, arXiv:2310.03744)", "url": "https://arxiv.org/abs/2310.03744"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "多模态融合",
+      "name_en": "Multimodal Fusion",
+      "abbr": "",
+      "aliases": ["模态融合", "早期融合 / 中间融合 / 晚期融合", "Early / Late Fusion"],
+      "tier": 2,
+      "one_liner": "把图像、语言、本体状态等不同来源的信息合到一起，让模型联合使用。",
+      "explanation": "多模态融合指把不同模态（图像、文字、深度、触觉、关节状态等）的信息整合成模型能共同使用的表示。Baltrušaitis 等人 2017 年的综述把它列为多模态机器学习的五大核心挑战之一，另外四个是表征、翻译、对齐和协同学习。按融合发生的位置，常分为早期融合（一开始就把各模态特征或 token 拼在一起处理）、中间融合（各模态先分别编码，再在网络中间用交叉注意力等方式合并）和晚期融合（各模态各自出结果，最后合并决策）。具身智能天然是多模态的，VLA 要同时看相机画面、读语言指令、感知自身状态，融合方式直接影响模型能否把「拿红色杯子」这样的指令对应到正确的物体和动作上。",
+      "example": "RT-1 用 FiLM 层把语言指令的嵌入注入 EfficientNet-B3 图像编码器，让视觉特征从网络前段就带上任务信息；π0 则把图像、语言、状态和动作 token 放进同一个 Transformer，靠注意力完成融合。",
+      "related": ["多模态大语言模型", "交叉注意力", "FiLM 特征调制", "投影层", "视触觉融合", "多传感器融合"],
+      "sources": [
+        {"title": "Multimodal Machine Learning: A Survey and Taxonomy (arXiv:1705.09406)", "url": "https://arxiv.org/abs/1705.09406"},
+        {"title": "Wikipedia: Multimodal learning", "url": "https://en.wikipedia.org/wiki/Multimodal_learning"},
+        {"title": "RT-1: Robotics Transformer for Real-World Control at Scale (arXiv:2212.06817)", "url": "https://arxiv.org/html/2212.06817"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "多模态大语言模型",
+      "name_en": "Multimodal Large Language Model",
+      "abbr": "MLLM",
+      "aliases": ["多模态大模型", "Multimodal LLM"],
+      "tier": 2,
+      "one_liner": "以大语言模型为核心、能同时理解图像、视频、音频等输入的大模型。",
+      "explanation": "多模态大语言模型指以大语言模型（LLM）为「大脑」、还能接收图像、视频、音频等非文本输入的模型，2023 年 GPT-4V 让这一方向广受关注。Yin 等人的综述把典型结构拆成三块：预训练的模态编码器（如 CLIP、SigLIP 视觉编码器）、预训练的 LLM，以及连接两者的模态接口（MLP 投影层、Q-Former 或插入 LLM 的交叉注意力）。训练通常先做模态对齐预训练，再做指令微调。只处理图像和文字的 MLLM 也常叫视觉语言模型（VLM）。它对具身智能的意义在于带来互联网规模的常识和视觉理解：多数 VLA 就是在 MLLM / VLM 上加动作输出训练出来的，具身推理模型、任务规划器也多由 MLLM 微调而来。",
+      "example": "LLaVA-1.5 用 CLIP-ViT-L-336px 视觉编码器，通过一个 MLP 投影层接到语言模型上，再用视觉指令数据微调；GPT-4o、Gemini、Qwen2.5-VL 也都属于多模态大语言模型。",
+      "related": ["视觉语言模型", "大语言模型", "原生多模态", "投影层", "视觉-语言-动作模型", "模态对齐"],
+      "sources": [
+        {"title": "A Survey on Multimodal Large Language Models (arXiv:2306.13549)", "url": "https://arxiv.org/html/2306.13549v4"},
+        {"title": "Improved Baselines with Visual Instruction Tuning (LLaVA-1.5, arXiv:2310.03744)", "url": "https://arxiv.org/abs/2310.03744"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "原生多模态",
+      "name_en": "Native Multimodal (Model)",
+      "abbr": "",
+      "aliases": ["原生多模态模型", "Natively Multimodal"],
+      "tier": 2,
+      "one_liner": "从预训练一开始就同时学多种模态，而不是给语言模型后接视觉模块。",
+      "explanation": "原生多模态指模型从预训练阶段起就用文本、图像、音频、视频等数据一起训练，各模态在同一个骨干网络里处理。它对应的是「拼接式」做法：先分别训好视觉编码器和语言模型，再用投影层把两者接起来补训。谷歌 2023 年 12 月发布 Gemini 时强调它是原生多模态；Meta 2024 年的 Chameleon 把图像也离散成 token，与文字从头混合训练（早期融合）；2025 年 4 月的 Llama 4 同样宣称原生多模态、采用早期融合。支持者认为这样各模态结合得更深，也更容易同时做到理解和生成；代价是训练成本高、各模态数据配比难调。具身领域的统一多模态模型、把视频和动作放进同一序列训练的世界动作模型，也在沿这个思路走。",
+      "example": "Gemini 从一开始就用文本、图像、音频、视频等数据联合预训练；而 LLaVA 是在训好的语言模型前面接一个视觉编码器再补训，属于拼接式。",
+      "related": ["多模态大语言模型", "统一多模态模型", "多模态融合", "视觉 token", "BAGEL", "世界动作模型"],
+      "sources": [
+        {"title": "Google Blog: Introducing Gemini", "url": "https://blog.google/technology/ai/google-gemini-ai/"},
+        {"title": "Chameleon: Mixed-Modal Early-Fusion Foundation Models (arXiv:2405.09818)", "url": "https://arxiv.org/abs/2405.09818"},
+        {"title": "Meta AI Blog: The Llama 4 herd", "url": "https://ai.meta.com/blog/llama-4-multimodal-intelligence/"}
+      ],
+      "as_of": "2025-04"
+    },
+    {
+      "name_zh": "数值精度格式（FP32 / BF16 / FP16 / FP8 / INT8）",
+      "name_en": "Numerical Precision Formats (FP32 / BF16 / FP16 / FP8 / INT8)",
+      "abbr": "",
+      "aliases": ["数值精度", "浮点精度", "单精度 / 半精度", "bfloat16"],
+      "tier": 2,
+      "one_liner": "规定每个数用几位二进制、位数怎么分配的格式，决定显存占用和计算速度。",
+      "explanation": "模型的权重和中间结果都要以某种数值格式存储和计算。FP32（单精度）占 32 位：1 位符号、8 位指数、23 位尾数。FP16（半精度）占 16 位，只有 5 位指数，最大只能表示约 65504，训练时容易溢出。BF16 由谷歌大脑为 TPU 设计，也是 16 位，但保留 8 位指数，数值范围与 FP32 相同、精度较低，是当今大模型训练的主流格式。FP8 由英伟达、Arm、英特尔等在 2022 年提出，分 E4M3 和 E5M2 两种。INT8 用 8 位整数，多用于推理量化。位数越少，占显存越少、算得越快，误差也越大。训练 VLA 和做端侧部署时，选哪种格式直接决定模型能否装进显卡、推理延迟够不够低。",
+      "example": "一个 7B 参数的 VLA，权重用 FP32 存约需 28 GB，用 BF16 约 14 GB，量化到 INT8 约 7 GB，这往往决定它能不能塞进一块机载计算板。",
+      "related": ["混合精度训练", "训练后量化", "量化感知训练", "端侧部署", "GPU 显存", "推理延迟"],
+      "sources": [
+        {"title": "Wikipedia: bfloat16 floating-point format", "url": "https://en.wikipedia.org/wiki/Bfloat16_floating-point_format"},
+        {"title": "Wikipedia: Half-precision floating-point format", "url": "https://en.wikipedia.org/wiki/Half-precision_floating-point_format"},
+        {"title": "FP8 Formats for Deep Learning (arXiv:2209.05433)", "url": "https://arxiv.org/abs/2209.05433"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "端侧模型",
+      "name_en": "On-device Model",
+      "abbr": "",
+      "aliases": ["边缘模型", "端侧大模型", "Edge Model", "On-device AI"],
+      "tier": 2,
+      "one_liner": "直接跑在机器人、手机等设备本地芯片上、不依赖云端的模型。",
+      "explanation": "端侧模型指部署在终端设备上本地运行的模型，比如装在机器人机载计算机（如英伟达 Jetson）、手机或汽车芯片上，与放在云端数据中心推理的模型相对。设备的算力、内存和功耗都有限，所以端侧模型通常参数更少，并借助量化、剪枝、蒸馏等手段压缩，例如苹果 2025 年的端侧基础模型约 3B 参数，权重用量化感知训练压到每个 2 位。对机器人来说，本地运行的好处很实际：断网也能用，没有网络往返延迟，数据不出设备。代价是能力通常不如云端大模型，所以常见做法是云端大模型负责慢速的规划推理，端侧小模型负责高频出动作，也就是云边端协同。",
+      "example": "谷歌 DeepMind 2025 年 6 月发布 Gemini Robotics On-Device，这个 VLA 可以脱离数据网络在机器人本地运行，用 50 到 100 条演示就能适配新任务，已在双臂 Franka FR3 和 Apptronik Apollo 人形机器人上验证。",
+      "related": ["端侧部署", "云边端协同", "训练后量化", "英伟达 Jetson", "Gemini Robotics On-Device", "推理延迟"],
+      "sources": [
+        {"title": "Google DeepMind: Gemini Robotics On-Device brings AI to local robotic devices", "url": "https://deepmind.google/discover/blog/gemini-robotics-on-device-brings-ai-to-local-robotic-devices/"},
+        {"title": "Apple Machine Learning Research: Updates to Apple's On-Device and Server Foundation Language Models", "url": "https://machinelearning.apple.com/research/apple-foundation-models-2025-updates"}
+      ],
+      "as_of": "2025-07"
+    },
+    {
+      "name_zh": "PaliGemma",
+      "name_en": "PaliGemma (Google open VLM)",
+      "abbr": "",
+      "aliases": ["PaliGemma 2"],
+      "tier": 2,
+      "one_liner": "谷歌开放权重的视觉语言模型，由 SigLIP 视觉编码器加 Gemma 语言模型组成。",
+      "explanation": "PaliGemma 是谷歌 2024 年 5 月发布的开放权重视觉语言模型（VLM），由 SigLIP-So400m 视觉编码器和 Gemma-2B 语言模型组成，总参数约 3B。它的定位不是开箱即用的聊天模型，而是便于迁移微调的基座，论文在约 40 个任务上验证了迁移效果。2024 年 12 月发布的 PaliGemma 2 换成 Gemma 2 语言模型，提供 3B、10B、28B 三种尺寸和 224、448、896 像素三种输入分辨率。它在具身领域出名，是因为 Physical Intelligence 的 π0 拿它当 VLM 骨干：体积小、推理快，又带着互联网规模的视觉语言知识，适合在后面接动作专家做成 VLA。",
+      "example": "π0 以 3B 参数的 PaliGemma 为骨干，再加一个从零初始化、约 300M 参数的动作专家，总参数 3.3B，用流匹配生成连续动作。",
+      "related": ["视觉语言模型", "SigLIP", "π0", "动作专家", "视觉-语言-动作模型", "开放权重"],
+      "sources": [
+        {"title": "PaliGemma: A versatile 3B VLM for transfer (arXiv:2407.07726)", "url": "https://arxiv.org/abs/2407.07726"},
+        {"title": "Google Developers Blog: Introducing PaliGemma 2", "url": "https://developers.googleblog.com/en/introducing-paligemma-2-powerful-vision-language-models-simple-fine-tuning/"},
+        {"title": "π0: A Vision-Language-Action Flow Model for General Robot Control (arXiv:2410.24164)", "url": "https://arxiv.org/html/2410.24164v1"}
+      ],
+      "as_of": "2024-12"
+    },
+    {
+      "name_zh": "位置编码",
+      "name_en": "Positional Encoding",
+      "abbr": "PE",
+      "aliases": ["位置嵌入", "Position Embedding"],
+      "tier": 2,
+      "one_liner": "给 Transformer 里每个 token 加上「我在第几个位置」的信息。",
+      "explanation": "Transformer 的自注意力本身不管顺序，把输入 token 打乱，输出只是跟着换位置。为了让模型知道谁先谁后，2017 年的论文《Attention Is All You Need》在输入嵌入上加了一组不同频率的正弦、余弦值，这就是位置编码；作者也试过可学习的位置嵌入，效果几乎一样。之后出现了多种变体：2021 年苏剑林等人提出的旋转位置编码（RoPE）用旋转矩阵编码位置，让注意力分数自然体现相对距离，被 Llama 等主流大模型采用；Qwen2-VL 进一步提出 M-RoPE，把文字顺序、图像的行列和视频的时间一起编码。具身模型要处理多帧图像、多路相机和动作序列，位置编码决定了模型能否分清哪一帧在前、哪块图像在哪。",
+      "example": "ViT 把 224×224 的图像切成 16×16 像素的小块，共 196 块，每块加上一个可学习的位置嵌入，模型才知道哪块在左上角、哪块在右下角。",
+      "related": ["旋转位置编码", "Transformer", "自注意力", "视觉 Transformer", "上下文长度", "token（词元）"],
+      "sources": [
+        {"title": "Attention Is All You Need (arXiv:1706.03762)", "url": "https://arxiv.org/html/1706.03762v7"},
+        {"title": "RoFormer: Enhanced Transformer with Rotary Position Embedding (arXiv:2104.09864)", "url": "https://arxiv.org/abs/2104.09864"},
+        {"title": "Qwen2-VL (arXiv:2409.12191)", "url": "https://arxiv.org/abs/2409.12191"}
+      ],
+      "as_of": ""
+    }
+  ]
+}

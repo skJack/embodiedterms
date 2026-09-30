@@ -1,0 +1,428 @@
+{
+  "category": "mechanics",
+  "batch": 8,
+  "terms": [
+    {
+      "name_zh": "静态稳定",
+      "name_en": "Static Stability",
+      "abbr": "",
+      "aliases": [
+        "静态平衡",
+        "静稳定",
+        "静态稳定性",
+        "Statically Stable"
+      ],
+      "tier": 2,
+      "one_liner": "质心的竖直投影落在支撑多边形内，机器人停在当前姿态也不会倒。",
+      "explanation": "静态稳定指机器人在速度、加速度都接近零时靠自身支撑就能保持平衡。判据很简单：把质心（整体重心）竖直投影到地面，这个点要落在支撑多边形（所有触地点围成的凸区域）里面。投影离边界越远越稳，这段最短距离常叫稳定裕度。它的好处是随时能停下，不依赖控制器实时纠正，所以早期多足机器人和慢速步行的人形都按它设计，比如四足慢走时每次只抬一条腿，始终留三条腿撑成三角形。代价是走不快：要快走或奔跑，就得允许质心暂时越出支撑区域，改用零力矩点、捕获点这类动态稳定判据。",
+      "example": "六足机器人走三角步态时，每次抬起三条腿，另外三条腿撑成一个三角形，只要质心投影一直落在这个三角形里，任何时刻让它停住都不会倒。",
+      "related": [
+        "支撑多边形",
+        "动态稳定",
+        "质心",
+        "零力矩点",
+        "准静态假设",
+        "四足机器人"
+      ],
+      "sources": [
+        {
+          "title": "Legged robot - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Legged_robot"
+        },
+        {
+          "title": "Support polygon - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Support_polygon"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "静力学",
+      "name_en": "Statics",
+      "abbr": "",
+      "aliases": [
+        "机器人静力学",
+        "静力分析"
+      ],
+      "tier": 2,
+      "one_liner": "研究物体静止或匀速时，各个力和力矩如何相互平衡的力学分支。",
+      "explanation": "静力学是经典力学里研究「没有加速度」的系统受力的分支，平衡条件是合力为零、合力矩为零：ΣF = 0，ΣM = 0。放到机器人上，最常用的结论是 τ = Jᵀ(θ)F：τ 是各关节力矩，J 是雅可比矩阵（把关节速度映射成末端速度），θ 是当前关节角，F 是末端对外施加的力旋量（三维力加三维力矩）。这个式子由功率守恒推出，回答的是「末端要推出这么大的力，每个电机该出多少力矩」；机器人还要撑住自身重量时，再叠加抵消重力的力矩。力控、重力补偿、抓取受力分析都建立在静力学上，一旦运动变快、惯性力不能忽略，就要改用动力学。",
+      "example": "机械臂末端静止压在桌面上、要向下施加 10 N 的力：先算出当前姿态的雅可比矩阵 J，再用 τ = Jᵀ F 得到每个关节该输出的力矩，最后叠加抵消手臂自重的重力补偿力矩。",
+      "related": [
+        "力旋量",
+        "雅可比矩阵",
+        "重力补偿",
+        "虚功原理",
+        "准静态假设",
+        "动力学"
+      ],
+      "sources": [
+        {
+          "title": "Statics - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Statics"
+        },
+        {
+          "title": "Modern Robotics 5.2: Statics of Open Chains",
+          "url": "https://modernrobotics.northwestern.edu/nu-gm-book-resource/5-2-statics-of-open-chains/"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "刚度",
+      "name_en": "Stiffness",
+      "abbr": "",
+      "aliases": [
+        "劲度",
+        "刚性",
+        "劲度系数",
+        "Rigidity"
+      ],
+      "tier": 2,
+      "one_liner": "物体或关节抵抗变形的能力：受同样的力，变形越小刚度越大。",
+      "explanation": "刚度定义为力与所产生位移之比，k = F/δ（F 是力，δ 是沿力方向的位移），单位 N/m；转动方向用力矩除以转角，单位 N·m/rad。它的倒数叫柔度。机器人里这个词有两层意思：一是结构刚度，连杆、减速器、皮带受力都会弯、会扭，直接影响末端精度；二是控制刚度，即控制器「装」出来的虚拟弹簧，比如 PD 控制的比例增益、阻抗控制里的刚度矩阵 K。刚度高，跟踪准、抗干扰强，但碰到东西冲击大；刚度低更柔顺安全，适合接触任务。强化学习运控配置里的 stiffness / damping，指的就是关节 PD 的刚度和阻尼增益。",
+      "example": "legged_gym 给 ANYmal C 每个关节设 stiffness = 80 N·m/rad：策略给出的目标角和实际关节角差 0.1 rad 时，关节会产生约 8 N·m 的回复力矩，再减去阻尼项。",
+      "related": [
+        "柔顺性",
+        "阻尼",
+        "阻抗控制",
+        "刚度与阻尼增益",
+        "PD 控制",
+        "质量-弹簧-阻尼系统"
+      ],
+      "sources": [
+        {
+          "title": "Stiffness - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Stiffness"
+        },
+        {
+          "title": "legged_gym: anymal_c_rough_config.py",
+          "url": "https://raw.githubusercontent.com/leggedrobotics/legged_gym/master/legged_gym/envs/anymal_c/mixed_terrains/anymal_c_rough_config.py"
+        },
+        {
+          "title": "Modern Robotics: Mechanics, Planning, and Control (Lynch & Park, free preprint)",
+          "url": "https://hades.mech.northwestern.edu/index.php/Modern_Robotics"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "支撑多边形",
+      "name_en": "Support Polygon",
+      "abbr": "",
+      "aliases": [
+        "支撑域",
+        "支撑区域",
+        "支撑三角形",
+        "Support Region",
+        "Base of Support"
+      ],
+      "tier": 2,
+      "one_liner": "机器人所有触地点在地面上围成的凸区域，各种平衡判据都以它为边界。",
+      "explanation": "支撑多边形是机器人与地面所有接触点在水平面上围成的凸区域：人形单脚站立时约等于一只脚掌，双脚着地时是两只脚连起来的外轮廓，四足三条腿着地时是一个三角形，所以也叫支撑三角形。它是平衡判据的边界：静态稳定要求质心投影落在其内；动态行走要求压力中心（地面反力合力的作用点）即零力矩点落在其内，因为压力中心在几何上不可能跑出接触区域。支撑多边形越大，允许的质心加速度范围越大，这也是四足慢走要保持三足着地、人形要做足够大脚掌的原因。",
+      "example": "四足机器人小跑（trot）时只有对角两条腿着地，支撑多边形退化成一条线段，质心投影几乎不可能恰好落在线上，所以小跑不是静态稳定的，要靠不停调整步伐来维持平衡。",
+      "related": [
+        "静态稳定",
+        "零力矩点",
+        "压力中心",
+        "质心",
+        "双支撑期",
+        "对角小跑步态"
+      ],
+      "sources": [
+        {
+          "title": "Support polygon - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Support_polygon"
+        },
+        {
+          "title": "Underactuated Robotics (Tedrake), Ch. Simple Models of Walking: CoP and ZMP",
+          "url": "https://underactuated.mit.edu/humanoids.html"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "工具中心点",
+      "name_en": "Tool Center Point",
+      "abbr": "TCP",
+      "aliases": [
+        "工具坐标系",
+        "Tool Frame",
+        "末端坐标系",
+        "TCP 点"
+      ],
+      "tier": 2,
+      "one_liner": "末端工具上真正干活的那个参考点，机器人按它而不是法兰去对准目标。",
+      "explanation": "工具中心点是定义在末端工具上的参考点，同时带一个坐标系，比如夹爪两指中间、焊枪尖端、吸盘中心。机械臂本身只知道法兰（末端安装面）在哪，装上工具后要设置一个从法兰到 TCP 的固定变换（位置 xyz 加姿态），控制器才能让工具尖去到目标位姿、走直线或绕某点旋转。TCP 设错了，末端会整体偏移，绕点旋转时最明显，所以换工具后通常要重新标定 TCP。具身智能里，数据集和策略输出的「末端位姿」指的是法兰还是 TCP，各家约定不同，跨本体训练时要统一；Franka 的 libfranka 就把法兰坐标系和末端（EE）坐标系分开给出。",
+      "example": "给机械臂装上平行夹爪后，把 TCP 设在两指指尖中点：让机器人「绕 TCP 旋转」时，指尖位置不动、只改变夹爪朝向；如果 TCP 还停在法兰上，指尖会甩出一段圆弧。",
+      "related": [
+        "末端执行器",
+        "工具法兰",
+        "末端位姿",
+        "齐次变换矩阵",
+        "手眼标定",
+        "绝对定位精度"
+      ],
+      "sources": [
+        {
+          "title": "RoboDK Documentation: General Tips (Tool Center Point)",
+          "url": "https://robodk.com/doc/en/General.html"
+        },
+        {
+          "title": "libfranka robot_state.h (F_T_EE, O_T_EE)",
+          "url": "https://raw.githubusercontent.com/frankaemika/libfranka/master/include/franka/robot_state.h"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "运动旋量（速度旋量）",
+      "name_en": "Twist (Spatial Velocity)",
+      "abbr": "",
+      "aliases": [
+        "Twist",
+        "速度旋量",
+        "空间速度",
+        "六维速度"
+      ],
+      "tier": 2,
+      "one_liner": "把刚体的角速度和线速度拼成一个 6 维向量，统一描述它怎么动。",
+      "explanation": "运动旋量是描述刚体瞬时速度的 6 维向量 V = (ω, v)：ω 是 3 维角速度，v 是 3 维线速度，在同一坐标系下表示。它来自旋量理论：任何刚体运动都可看成绕某根螺旋轴的转动加沿轴平移，运动旋量就是这根轴乘以转速。在世界系下表示叫空间旋量，在刚体自身坐标系下表示叫物体旋量，两者可用伴随变换互转。机械臂的雅可比矩阵做的事，就是把关节速度映射成末端的运动旋量。注意顺序约定：Lynch 和 Park 的《现代机器人学》写成（角速度，线速度），ROS 的 geometry_msgs/Twist 则先 linear 后 angular。",
+      "example": "ROS 里给移动底盘发 cmd_vel 指令就是发一条 Twist 消息：linear.x = 0.5 表示以 0.5 m/s 向前开，angular.z = 0.3 表示同时以 0.3 rad/s 绕竖直轴向左转，其余 4 个分量为 0。",
+      "related": [
+        "力旋量",
+        "旋量理论",
+        "雅可比矩阵",
+        "伴随变换",
+        "指数积公式",
+        "cmd_vel 速度指令话题（Twist 消息）"
+      ],
+      "sources": [
+        {
+          "title": "Modern Robotics 3.3.2: Twists",
+          "url": "https://modernrobotics.northwestern.edu/nu-gm-book-resource/3-3-2-twists-part-1-of-2/"
+        },
+        {
+          "title": "ROS 2 geometry_msgs/Twist.msg",
+          "url": "https://raw.githubusercontent.com/ros2/common_interfaces/rolling/geometry_msgs/msg/Twist.msg"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "欠驱动",
+      "name_en": "Underactuation",
+      "abbr": "",
+      "aliases": [
+        "欠驱动系统",
+        "Underactuated System",
+        "欠驱动机器人"
+      ],
+      "tier": 2,
+      "one_liner": "电机没法直接产生任意方向的加速度，典型情况是驱动器比自由度少。",
+      "explanation": "欠驱动指机械系统不能被直接命令去跟踪任意轨迹。MIT 的 Russ Tedrake 在《Underactuated Robotics》中这样定义：把动力学写成 q̈ = f₁(q, q̇) + f₂(q, q̇)u（q 是广义坐标，u 是控制输入），若 f₂ 的秩小于 q 的维数就是欠驱动，即某些方向的加速度电机直接给不出来。最常见的是驱动器比自由度少，如倒立摆小车、四旋翼。足式和人形也是欠驱动：N 个电机只管 N 个关节，机身在空间中的 6 个自由度没有电机，只能借脚与地面的接触力间接控制，这是行走难的根源。欠驱动手爪则反过来利用这一点，用少量电机带动更多关节去自适应包裹物体。",
+      "example": "Acrobot 是只在肘关节装电机的两节摆臂：肩关节完全没有驱动，要把它从下垂甩到倒立，只能靠肘部电机来回摆，把能量一点点「泵」进整个系统。",
+      "related": [
+        "浮动基",
+        "自由度",
+        "主动自由度 / 被动自由度",
+        "倒立摆模型",
+        "自适应夹爪",
+        "非完整约束"
+      ],
+      "sources": [
+        {
+          "title": "Underactuated Robotics (Russ Tedrake, MIT): Fully-actuated vs Underactuated Systems",
+          "url": "https://underactuated.mit.edu/intro.html"
+        },
+        {
+          "title": "Underactuation - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Underactuation"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "力旋量",
+      "name_en": "Wrench",
+      "abbr": "",
+      "aliases": [
+        "力螺旋",
+        "六维力/力矩",
+        "力/力矩旋量",
+        "Force-Torque"
+      ],
+      "tier": 2,
+      "one_liner": "把三维力和三维力矩打包成一个 6 维向量，描述刚体受到的完整载荷。",
+      "explanation": "力旋量是 6 维向量 F = (m, f)：f 是 3 维力，m 是 3 维力矩，在同一坐标系下表示。它和运动旋量是一对，两者点乘 Vᵀ F 等于功率，功率与坐标系无关，由此能推出力旋量换坐标系的规则。机器人里凡是问「受了多大力」都会用到它：腕部六维力传感器读出的就是力旋量；静力学公式 τ = Jᵀ F 把末端力旋量换算成关节力矩；抓取分析把各指尖接触力合成物体受到的总力旋量。顺序约定不统一：Lynch 和 Park 的教材写成（力矩，力），ROS 的 geometry_msgs/Wrench 和 libfranka 则是先力后力矩。",
+      "example": "《现代机器人学》里的例子（取 g = 10 m/s²）：0.5 kg 的机械手握着 0.1 kg 的苹果，腕部六维力传感器读到的不只是 6 N 的重力，还有 0.75 N·m 的力矩，因为手和苹果的重心都伸出在传感器之外。",
+      "related": [
+        "运动旋量（速度旋量）",
+        "六维力传感器",
+        "静力学",
+        "力矩",
+        "抓取矩阵",
+        "伴随变换"
+      ],
+      "sources": [
+        {
+          "title": "Modern Robotics 3.4: Wrenches",
+          "url": "https://modernrobotics.northwestern.edu/nu-gm-book-resource/3-4-wrenches/"
+        },
+        {
+          "title": "ROS 2 geometry_msgs/Wrench.msg",
+          "url": "https://raw.githubusercontent.com/ros2/common_interfaces/rolling/geometry_msgs/msg/Wrench.msg"
+        },
+        {
+          "title": "Modern Robotics: Mechanics, Planning, and Control (Lynch & Park, free preprint)",
+          "url": "https://hades.mech.northwestern.edu/index.php/Modern_Robotics"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "零力矩点",
+      "name_en": "Zero Moment Point",
+      "abbr": "ZMP",
+      "aliases": [
+        "零力矩点判据",
+        "ZMP 判据",
+        "零矩点"
+      ],
+      "tier": 2,
+      "one_liner": "地面反力在水平方向不产生力矩的那个点，双足行走最经典的平衡判据。",
+      "explanation": "零力矩点由 Miomir Vukobratović 和 Davor Juričić 于 1968 年提出，指地面反力在该点不产生水平方向力矩的位置，在平地上就是压力中心（地面反力合力的作用点）。压力中心只能落在支撑多边形内，所以 ZMP 判据要求规划出的 ZMP 始终留在脚底支撑区域里，否则机器人会绕脚掌边缘翻倒。质心高度不变时有 p = x − (z/g)ẍ：p 是 ZMP 水平位置，x、z 是质心水平位置和高度，ẍ 是质心水平加速度，g 是重力加速度。据此可以先定落脚点和 ZMP 轨迹，再反推质心轨迹，本田 ASIMO 等上一代人形就是这样走路的；如今的强化学习运控一般不显式计算 ZMP。",
+      "example": "机器人静止站立时 ẍ = 0，ZMP 就在质心的竖直投影上；想向前加速时，ZMP 会移向脚后跟，加速越猛移得越远，一旦越过脚后跟边缘，脚尖就会翘起、整个机器人向后翻。",
+      "related": [
+        "压力中心",
+        "支撑多边形",
+        "线性倒立摆模型",
+        "ZMP 预观控制",
+        "捕获点",
+        "双足行走"
+      ],
+      "sources": [
+        {
+          "title": "Zero moment point - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Zero_moment_point"
+        },
+        {
+          "title": "Underactuated Robotics (Tedrake), Ch. Simple Models of Walking: CoP and ZMP",
+          "url": "https://underactuated.mit.edu/humanoids.html"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "9D 旋转表示",
+      "name_en": "9D Rotation Representation (SVD Orthogonalization)",
+      "abbr": "",
+      "aliases": [
+        "SVD 正交化",
+        "9D rotation",
+        "对称正交化",
+        "Symmetric Orthogonalization"
+      ],
+      "tier": 3,
+      "one_liner": "让网络直接输出 3×3 共 9 个数，再用 SVD 投影成最近的合法旋转矩阵。",
+      "explanation": "9D 旋转表示是神经网络预测三维旋转的一种输出方式：网络输出 9 个无约束实数排成 3×3 矩阵 M，做奇异值分解 M = UΣVᵀ，取 R = U·diag(1, 1, det(UVᵀ))·Vᵀ，就得到离 M 最近的旋转矩阵（det 项保证它不是镜像）。Levinson 等人在 NeurIPS 2020 论文 An Analysis of SVD for Deep Rotation Estimation 中系统论证了它：几乎处处光滑，不像四元数、欧拉角会跳变；输入带噪声时，重建误差的期望约为 6D 表示所用 Gram-Schmidt 正交化的一半；在点云对齐、物体位姿、逆运动学等多个任务上达到当时最好水平。需要网络直接回归物体或末端姿态时，它和 6D 表示是替代四元数、欧拉角的常见选择。",
+      "example": "论文官方仓库给的实现只有十来行：把形状为 [batch, 9] 的网络输出重排成 3×3，做 SVD，按 det(UVᵀ) 修正最后一列的符号，得到 [batch, 3, 3] 的旋转矩阵，可以直接接在任何回归网络末尾端到端训练。",
+      "related": [
+        "6D 旋转表示",
+        "旋转矩阵",
+        "四元数",
+        "特殊正交群 SO(3)",
+        "旋转测地距离",
+        "欧拉角"
+      ],
+      "sources": [
+        {
+          "title": "An Analysis of SVD for Deep Rotation Estimation (arXiv 2006.14616, NeurIPS 2020)",
+          "url": "https://arxiv.org/abs/2006.14616"
+        },
+        {
+          "title": "google-research/special_orthogonalization README",
+          "url": "https://github.com/google-research/google-research/tree/master/special_orthogonalization"
+        },
+        {
+          "title": "On the Continuity of Rotation Representations in Neural Networks (arXiv 1812.07035)",
+          "url": "https://arxiv.org/abs/1812.07035"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "绝对定位精度",
+      "name_en": "Absolute Positioning Accuracy",
+      "abbr": "",
+      "aliases": [
+        "绝对精度",
+        "位姿准确度",
+        "Pose Accuracy",
+        "Absolute Accuracy"
+      ],
+      "tier": 3,
+      "one_liner": "让机器人去一个算出来的坐标，它实际到达的位置和目标差多少。",
+      "explanation": "绝对定位精度衡量末端实际到达的位置与指令给出的理论位置有多接近，ISO 9283 标准里对应位姿准确度（AP）。它和重复定位精度（RP，多次回到同一点的离散程度）是两回事：工业机械臂通常「重复性很好、绝对精度不高」，因为连杆长度、关节零位的制造误差，以及受载变形、温度等，会让控制器里的运动学模型和真机对不上。用示教器手动示教点位时，重复性好就够用；而离线编程、从仿真或相机算出坐标直接下发时，绝对精度就成了瓶颈。常用办法是运动学标定：用激光跟踪仪等测出真实位姿，辨识模型误差，六轴工业机器人的绝对精度通常能提高数倍到十倍，多数情况可降到 1 毫米以内。",
+      "example": "在仿真里离线规划好一串抓取点，直接发给真机：机械臂每次都能稳定回到同一个位置（重复性好），但这个位置和仿真里的目标点整体偏开一截，这个偏差就是绝对定位误差；做视觉引导抓取时，它还会和手眼标定误差叠加。",
+      "related": [
+        "重复定位精度",
+        "运动学标定",
+        "离线编程",
+        "工具中心点",
+        "手眼标定",
+        "数字孪生"
+      ],
+      "sources": [
+        {
+          "title": "Robot calibration - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Robot_calibration"
+        },
+        {
+          "title": "RoboDK Documentation: Robot Calibration (Laser Tracker)",
+          "url": "https://robodk.com/doc/en/Robot-Calibration-LaserTracker.html"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "主动自由度 / 被动自由度",
+      "name_en": "Active DoF / Passive DoF",
+      "abbr": "",
+      "aliases": [
+        "主动关节",
+        "被动关节",
+        "驱动关节",
+        "从动关节",
+        "Actuated / Passive Joint"
+      ],
+      "tier": 3,
+      "one_liner": "有电机独立驱动的自由度叫主动，没有独立驱动、靠联动或外力跟着动的叫被动。",
+      "explanation": "主动自由度指由执行器（电机、液压缸等）直接、独立驱动的关节自由度；被动自由度指没有独立驱动，运动由机构约束、联动或外力决定的关节。被动关节常见两类：一是并联机构里的球铰、万向节，比如 Stewart 平台由 6 个直线缸驱动，球铰完全被动，位置由整个闭链决定；二是灵巧手、欠驱动夹爪里用连杆或腱绳与主动关节耦合的指节。所以看灵巧手参数要分清「自由度」和「关节数」：前者一般指主动自由度，决定策略能独立控制几个维度，也就是动作空间多大；后者还包括跟着联动的被动关节。被动关节在仿真建模（URDF 的 mimic 关节、闭链约束）和遥操作重定向时都要单独处理。",
+      "example": "因时 RH56DFX 灵巧手标称 6 个主动自由度、12 个关节：6 个电机各管一个维度，其余关节靠连杆跟着联动；Shadow 灵巧手则是 20 个主动自由度加 4 个欠驱动耦合关节，共 24 个关节。",
+      "related": [
+        "自由度",
+        "欠驱动",
+        "并联机构",
+        "灵巧手",
+        "自适应夹爪",
+        "连杆传动"
+      ],
+      "sources": [
+        {
+          "title": "Parallel manipulator - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Parallel_manipulator"
+        },
+        {
+          "title": "Inspire RH56DFX Dexterous Hand (product page)",
+          "url": "https://en.inspire-robots.com/product/rh56dfx"
+        },
+        {
+          "title": "Shadow Dexterous Hand Series (Shadow Robot)",
+          "url": "https://www.shadowrobot.com/dexterous-hand-series/"
+        }
+      ],
+      "as_of": "2026-09"
+    }
+  ]
+}

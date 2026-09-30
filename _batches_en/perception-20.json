@@ -1,0 +1,113 @@
+{
+  "batch": "perception-20",
+  "terms": [
+    {
+      "key": "perception-20#0",
+      "name_en": "OctoMap",
+      "aliases": ["Octree Map", "Octree Occupancy Map"],
+      "one_liner": "A 3D probabilistic occupancy map stored hierarchically as an octree, commonly used for robot obstacle avoidance and planning.",
+      "explanation": "OctoMap is an open-source C++ library developed by Armin Hornung, Kai M. Wurm, and colleagues at the University of Freiburg, described in a 2013 paper in Autonomous Robots. It recursively splits space into eight sub-cubes (an octree), and each cell stores a probability of being occupied, distinguishing three states — occupied, free, and unknown — with sensor noise and environment changes corrected gradually through probabilistic updates. Compared with dividing all of space into equal-sized voxels, it subdivides only where there is something to represent, which saves a great deal of memory, and it can be queried at a coarse or fine resolution as needed. Point clouds from a depth camera or lidar can be written directly into it for collision checking; MoveIt’s perception pipeline uses OctoMap to represent obstacles around the robot.",
+      "example": "A depth camera mounted beside a robot arm continuously feeds its point cloud into OctoMap through MoveIt, so the arm automatically plans around clutter newly placed on the table.",
+      "related": ["Occupancy Grid Map", "Voxel", "Point Cloud", "Truncated Signed Distance Function (TSDF)", "MoveIt", "Collision Checking"]
+    },
+    {
+      "key": "perception-20#1",
+      "name_en": "Open-Vocabulary Segmentation",
+      "aliases": ["Open-Set Segmentation", "Open-Vocabulary Semantic Segmentation"],
+      "one_liner": "Segmenting exactly the pixels that match any text description of a category, even one the model never saw during training.",
+      "explanation": "Traditional segmentation models can only separate out the few dozen to few hundred categories fixed at training time. Open-vocabulary segmentation instead lets a category be specified at test time with arbitrary text — for example, “the blue dish sponge” — and the model outputs a pixel mask for it. It is built on CLIP-style image-text contrastive pretraining: features for each pixel or region of the image and features for the text are placed in the same embedding space, and similarity determines the match. Representative work includes LSeg (ICLR 2022); later work combined open-vocabulary detectors with SAM in Grounded-SAM, and SAM 3 accepts noun-phrase prompts directly. For robots, this means finding a particular item on a table no longer requires labeling new data and retraining for every new object.",
+      "example": "A user says “put the charging cable away”; the robot feeds the words “charging cable” into a segmentation model as text, gets back a pixel mask for the cable, and combines it with a depth map to compute a grasp point.",
+      "related": ["Open-Vocabulary Detection", "Semantic Segmentation", "CLIP", "Grounded-SAM", "SAM 3 (Promptable Concept Segmentation)", "Open Vocabulary"]
+    },
+    {
+      "key": "perception-20#2",
+      "name_en": "Orbbec Femto Bolt",
+      "aliases": ["Femto Bolt"],
+      "one_liner": "An indirect time-of-flight RGB-D camera from Orbbec, positioned as a drop-in replacement for Microsoft’s discontinued Azure Kinect.",
+      "explanation": "Femto Bolt is an RGB-D depth camera from Orbbec that uses Microsoft’s indirect time-of-flight (iToF) technology, which computes distance from the phase difference between emitted infrared light and its reflection. Orbbec states that Femto Bolt’s depth modes and performance match the Microsoft Azure Kinect DK, and it ships with a K4A-compatible wrapper SDK, so code written for Azure Kinect needs little to no change. Depth modes include a narrow field of view at 640×576 @ 30fps and a wide field of view up to 1024×1024 @ 15fps, with a range of about 0.25–5.46 meters; color goes up to 4K, and it has a built-in 6-axis IMU. It is powered and connected over USB-C and is intended for indoor use only. Labs commonly mount it as a fixed third-person camera for collecting point clouds.",
+      "example": "A lab replaces its old Azure Kinect with a Femto Bolt; after installing the official K4A wrapper, the existing point-cloud capture scripts keep running unchanged.",
+      "related": ["Azure Kinect DK", "Indirect Time-of-Flight (iToF)", "Depth Camera", "Orbbec", "Orbbec Gemini 330 Series", "Third-Person Camera"]
+    },
+    {
+      "key": "perception-20#3",
+      "name_en": "OWL-ViT / OWLv2",
+      "aliases": ["Open-World Localization Vision Transformer", "OWL-ST"],
+      "one_liner": "A Google open-vocabulary object detection model that can find objects from a text description or an example image.",
+      "explanation": "OWL-ViT was proposed by Matthias Minderer and colleagues at Google, published at ECCV 2022. The approach first pretrains a vision transformer with CLIP-style image-text contrastive learning, then fine-tunes it end to end into a detector: each image patch outputs a box and a feature vector, which is compared against text features by similarity, allowing detection of categories never seen during training; it also supports one-shot detection from a single example image. OWLv2, from 2023, scales up the training data through self-training: an existing detector automatically generates pseudo-box labels on web image-text pairs, producing over 1 billion examples, which raised average precision on LVIS rare categories from 31.2% to 44.6%. Both models are available in Hugging Face Transformers and are commonly used in robotic systems to locate objects from language instructions.",
+      "example": "Given a desktop image and the text “a red mug”, OWLv2 returns a detection box and confidence score for the mug, and the robot estimates a grasp position from the depth inside that box.",
+      "related": ["Open-Vocabulary Detection", "CLIP", "Grounding DINO", "YOLO-World", "Vision Transformer", "OK-Robot"]
+    },
+    {
+      "key": "perception-20#4",
+      "name_en": "Palm Camera",
+      "aliases": ["Palm-Mounted Camera", "In-Hand Palm Camera"],
+      "one_liner": "A camera mounted in a robot’s palm that gives a close-up view of the hand and object during grasping.",
+      "explanation": "A palm camera is a small camera embedded in a robot’s palm, or in the palm of a handheld data-collection device, positioned closer to the contact point than a wrist camera is. A head-mounted camera often loses sight of the contact area once the hand reaches into a cabinet or is blocked by the object or the arm itself; a palm camera keeps the object in view through the final few centimeters of a grasp. Figure AI’s Figure 03, released in October 2025, includes a wide-angle, low-latency palm camera in each hand, which the company says provides redundant close-range visual feedback when the main cameras are blocked. Carnegie Mellon’s DexWild (RSS 2025) mounts the same kind of palm camera on both its handheld human data-collection device and the robot hand; because this viewpoint mostly frames the task and environment rather than the hand itself, human and robot data are easier to train on together.",
+      "example": "As Figure 03 reaches into a cabinet for a cup, its head camera is blocked by the cabinet door, so it keeps adjusting its finger positions using the palm camera’s view instead.",
+      "related": ["Wrist Camera", "Head Camera", "Occlusion", "DexWild", "Figure 03", "Cross-Embodiment Data"]
+    },
+    {
+      "key": "perception-20#5",
+      "name_en": "Panoptic Segmentation",
+      "aliases": [],
+      "one_liner": "A segmentation task that labels every pixel with a category while also telling individual object instances apart.",
+      "explanation": "Panoptic segmentation was proposed by Alexander Kirillov, Kaiming He, and colleagues in 2018 (published at CVPR 2019). It merges two separate tasks: semantic segmentation, which labels every pixel with a category but does not distinguish separate instances of the same category, and instance segmentation, which distinguishes individual object instances but ignores amorphous background categories such as sky or ground (which the paper calls “stuff”). Panoptic segmentation requires every pixel to get a category label, with an additional instance number for anything belonging to a countable object category (“things”), producing one complete, non-overlapping parse of the scene, evaluated with a newly proposed Panoptic Quality (PQ) metric. For robots, this simultaneously answers “where is the floor, where is the countertop” and “which cup is this, the first or the second,” and it is commonly used for scene understanding and semantic mapping.",
+      "example": "In a kitchen image, the floor, walls, and countertop are each labeled as one solid region by category, while three bowls on the counter are separately labeled bowl 1, bowl 2, and bowl 3.",
+      "related": ["Semantic Segmentation", "Instance Segmentation", "Mask", "Scene Understanding", "Semantic Map", "Mask R-CNN"]
+    },
+    {
+      "key": "perception-20#6",
+      "name_en": "Particle Filter",
+      "aliases": ["PF", "Sequential Monte Carlo"],
+      "one_liner": "A recursive estimation method that approximates a probability distribution over states using a large set of weighted random samples.",
+      "explanation": "The particle filter is also called Sequential Monte Carlo; its classic starting point is the 1993 bootstrap filter proposed by Gordon and colleagues. It represents uncertainty using many “particles” — each one a hypothesis about the state, such as a robot’s pose — together with a weight for each particle, and repeats three steps at every timestep: move the particles forward using a motion model and add noise (prediction), re-score the particles against a sensor observation (update), and discard low-weight particles while duplicating high-weight ones (resampling). A Kalman filter can only represent a single-peaked Gaussian distribution, but a particle filter can handle nonlinear, non-Gaussian, and multi-modal situations — for instance, a robot that is unsure which of two similar-looking corridors it is in. The most well-known robotics application is Monte Carlo Localization, proposed in 1999, and its adaptive version, AMCL.",
+      "example": "When a mobile robot starts up, it scatters particles across the whole map; after a few steps, particles that agree with the lidar scan survive, and the particle cloud gradually shrinks around the robot’s true location.",
+      "related": ["Kalman Filter", "Extended Kalman Filter", "Adaptive Monte Carlo Localization (AMCL)", "State Estimation", "Simultaneous Localization and Mapping (SLAM)", "Importance Sampling"]
+    },
+    {
+      "key": "perception-20#7",
+      "name_en": "PaXini PX-6AX",
+      "aliases": ["PX6AX", "PX6AX GEN3", "PX6AX GEN4", "PaXini PX-6AX Multi-Dimensional Tactile Sensor"],
+      "one_liner": "A multi-dimensional tactile sensor from PaXini that outputs distributed force, net force, and torque at the point of contact.",
+      "explanation": "The PX-6AX is a tactile sensor series from PaXini (帕西尼感知), described by the company as an ITPU multi-dimensional tactile sensing unit, now in its fourth generation (GEN4); the transduction principle it uses has not been disclosed in detail. It outputs a 3D array of distributed force, a 3D net force, and 3D torque, and the company states it can resolve more than 15 tactile parameters. Per the published specs: normal-force range 0–25 N, shear (tangential) force ±10 N, spatial resolution 0.1 mm, maximum output rate 1000 Hz, IP68 rated, with chip-level magnetic shielding highlighted; the smallest detectable force is 0.01 N for GEN3 and 0.005 N for GEN4. It comes in sizes ranging from fingertip pads to palm pads, and is used on dexterous-hand fingertips, grippers, and robot skin — PaXini’s own DexH13 dexterous hand and TORA-ONE humanoid both feature this kind of tactile sensing.",
+      "example": "A PX-6AX mounted on a dexterous-hand fingertip reads out normal pressure and shear force at the same time while pinching an egg; a sudden jump in shear force signals an incipient slip.",
+      "related": ["Tactile Sensor", "PaXini", "PaXini TORA-ONE", "Dexterous Hand", "Normal Force vs. Shear Force", "Slip Detection"]
+    },
+    {
+      "key": "perception-20#8",
+      "name_en": "Perspective-n-Point",
+      "aliases": ["PnP", "PnP Problem", "solvePnP"],
+      "one_liner": "Recovering a camera’s pose from a set of known 3D points and where each one lands in the image.",
+      "explanation": "PnP is a classic computer vision problem: given the camera’s intrinsic parameters, n 3D points, and their 2D projections in the image, find the camera’s rotation and translation relative to those points — 6 degrees of freedom in total. At minimum, 3 point pairs are needed (P3P), but 3 points can yield up to 4 solutions, so a 4th point is usually needed to disambiguate. EPnP, proposed by Lepetit and colleagues in 2009, solves the problem using 4 virtual control points, with computation that scales linearly in the number of points. Real matches often include errors, so PnP is typically paired with Random Sample Consensus (RANSAC) to reject outliers; OpenCV’s solvePnP and solvePnPRansac are the most commonly used implementations. In robotics, it is often used to recover a pose from the corners of a calibration board or an ArUco marker.",
+      "example": "A camera sees an ArUco marker of known side length; feeding the 3D coordinates of its 4 corners and their detected pixel positions into solvePnP gives the marker’s position and orientation relative to the camera.",
+      "related": ["Camera Intrinsics", "6D Pose Estimation", "Random Sample Consensus (RANSAC)", "ArUco Marker", "Hand-Eye Calibration", "OpenCV"]
+    },
+    {
+      "key": "perception-20#9",
+      "name_en": "Photometric Stereo",
+      "aliases": [],
+      "one_liner": "Keeping the camera fixed and lighting a surface from several directions, then recovering its shape from how the shading changes.",
+      "explanation": "Photometric stereo was proposed by Woodham in 1980. The camera stays in a fixed position while the object is lit from at least three known directions; under the assumption of Lambertian reflectance (a surface that scatters light evenly in every direction), each pixel’s brightness depends only on the surface normal and the lighting direction, so solving a small linear equation recovers the normal at that point, and integrating the normals yields a depth map. It can recover very fine surface texture, but performs poorly on metallic, glossy, or transparent surfaces. In embodied AI, its most important use is inside vision-based tactile sensors: GelSight illuminates a soft elastic gel surface with red, green, and blue LEDs from different directions, and a camera behind the gel takes a single image; a calibrated lookup table then converts the colors into surface normals, reconstructing the 3D shape of whatever is touching the gel.",
+      "example": "A GelSight fingertip is pressed onto a coin; the height map reconstructed by photometric stereo shows the coin’s embossed relief pattern.",
+      "related": ["Vision-Based Tactile Sensor", "GelSight", "Tactile Image", "Surface Normal Estimation", "DIGIT Tactile Sensor", "Taxim"]
+    },
+    {
+      "key": "perception-20#10",
+      "name_en": "Piezoelectric Tactile Sensing",
+      "aliases": ["Piezoelectric Sensor", "Piezoelectric Tactile Sensor", "PVDF Tactile Sensing"],
+      "one_liner": "Sensing contact and vibration using the piezoelectric effect, where a material generates an electric charge when it is deformed by force.",
+      "explanation": "Piezoelectric tactile sensing relies on the piezoelectric effect: materials such as quartz, lead zirconate titanate (PZT) ceramic, or polyvinylidene fluoride (PVDF) film generate a surface charge when deformed by force, and reading out that electrical signal senses changes in force. It responds quickly and has a wide frequency bandwidth, making it very sensitive to the high-frequency vibration produced by sliding, impact, or rubbing against a textured surface; however, the charge gradually leaks away, so it cannot measure a constant static pressure, and is therefore often paired with a piezoresistive or capacitive sensing element. It is one of the main tactile-sensing principles, alongside piezoresistive, capacitive, magnetic, and optical sensing. Recently, several robotics projects have repurposed piezoelectric microphones as tactile sensors — for example, A-SLIP (2026) places several piezoelectric microphones behind a gripper’s silicone pad and uses a neural network to estimate whether an object is slipping, and in which direction and by how much.",
+      "example": "A-SLIP mounts 4 piezoelectric microphones behind the textured silicone pad of a parallel gripper; the vibration from an object beginning to slip is detected, and the controller immediately increases the grip force.",
+      "related": ["Tactile Sensor", "Piezoresistive Tactile Sensing", "Capacitive Tactile Sensing", "Slip Detection", "Contact Microphone (Audio-Based Tactile Sensing)", "Electronic Skin"]
+    },
+    {
+      "key": "perception-20#11",
+      "name_en": "Piezoresistive Tactile Sensing",
+      "aliases": ["Piezoresistive Sensor", "Piezoresistive Tactile Array", "Force-Sensing Resistor (FSR)"],
+      "one_liner": "Measuring pressure from a material’s change in electrical resistance under load; cheap and easy to build into large sensor arrays.",
+      "explanation": "The piezoresistive effect is a change in a material’s electrical resistivity when it is deformed by force; Lord Kelvin first observed it in metals in 1856, and in 1954 Smith found the effect to be far larger in silicon and germanium. Piezoresistive tactile sensors apply this effect to conductive rubber, conductive polymer film, or silicon strain elements: resistance changes under pressure, so measuring resistance gives pressure, and many such elements arranged in a row-and-column electrode grid can output a full pressure-distribution map. The technology is structurally simple, cheap, thin, and flexible, and can measure static force, making it one of the most common tactile approaches; the force-sensing resistor (FSR) belongs to this family. Its drawbacks are relatively high hysteresis and drift, and lower precision. 3D-ViTac (2024) sandwiches a Velostat piezoresistive film between conductive yarn electrodes to build a 16×16 tactile pad.",
+      "example": "3D-ViTac attaches piezoresistive tactile pads to gripper fingers, at a cost of about US$20 per pad including the readout board, giving the policy a pressure value at every contact point.",
+      "related": ["Tactile Sensor", "Tactile Array", "Piezoelectric Tactile Sensing", "Capacitive Tactile Sensing", "Strain Gauge", "3D-ViTac"]
+    }
+  ]
+}

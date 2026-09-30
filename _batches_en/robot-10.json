@@ -1,0 +1,113 @@
+{
+  "batch": "robot-10",
+  "terms": [
+    {
+      "key": "robot-10#0",
+      "name_en": "Hyper-Realistic Humanoid Robot",
+      "aliases": ["Android", "Bionic Humanoid Robot"],
+      "one_liner": "A humanoid robot engineered to look and move as much like a real human as possible.",
+      "explanation": "A hyper-realistic humanoid robot — often called an android in robotics research — aims purely to look human: silicone skin and lifelike facial features, with dozens of small motors or artificial muscles hidden in the face to blink, smile, and shape mouth movements for speech. Well-known examples include Hiroshi Ishiguro's Geminoid series, Hanson Robotics' Sophia, Engineered Arts' Ameca, and, in China, AheadForm (首形科技), founded in 2024. They're used mainly for human-robot interaction research, social-psychology studies, museum or exhibition greeting, and companionship; most have very limited walking or manipulation ability, and some rely on teleoperation just to move at all. This is a different design goal from task-oriented humanoids like Optimus, and when the realism falls short it tends to fall into the “uncanny valley,” the sense of unease people feel toward faces that look almost, but not quite, human.",
+      "example": "Ameca can shift its expression in real time during conversation — frowning, looking surprised — and often chats with visitors at tech expos, but its lower body barely moves at all.",
+      "related": ["Humanoid Robot", "Uncanny Valley", "Engineered Arts Ameca", "Sophia (Hanson Robotics)", "AheadForm", "Human-Robot Interaction"]
+    },
+    {
+      "key": "robot-10#1",
+      "name_en": "I2RT YAM Arm",
+      "aliases": ["YAM", "YAM Arm"],
+      "one_liner": "A low-cost 6-DOF research robot arm from I2RT, commonly paired up for bimanual data collection.",
+      "explanation": "YAM is a 6-degree-of-freedom robot arm from the U.S. startup I2RT Robotics, built around a CAN bus and aimed at embodied-AI research and data collection. It comes in Standard, Pro, and Ultra tiers plus a higher-payload BIG YAM variant; the Pro, for example, has a rated payload of about 3 kg, a working range of about 750 mm, and a parallel-jaw gripper with roughly 95 mm of opening width. Pricing runs in the low thousands of dollars (I2RT lists about $3,000–5,000, with the Pro at $3,499) — roughly an order of magnitude cheaper than a traditional research arm like Franka's, while being sturdier than servo-driven arms like the SO-101. It's often paired up two at a time into bimanual platforms, with one arm teleoperated as a leader and the other following, to record demonstration data. The BimanualYAM dataset that Ai2 released was collected this way.",
+      "example": "Ai2 builds a bimanual platform out of two YAM arms and uses it to collect the MolmoAct2-BimanualYAM dataset.",
+      "related": ["Robotic Arm (Manipulator)", "Dual-arm (Bimanual) Robot", "Leader-Follower Teleoperation", "MolmoAct2-BimanualYAM Dataset", "Desktop Robot Arm"]
+    },
+    {
+      "key": "robot-10#2",
+      "name_en": "iCub",
+      "aliases": ["iCub3", "IIT iCub"],
+      "one_liner": "A child-sized open-source humanoid robot from Italy's IIT, built for embodied-cognition research.",
+      "explanation": "iCub grew out of the EU-funded RobotCub project, which began in 2004 and was led by the Italian Institute of Technology (IIT). Its research goal is embodied cognition — the idea that intelligence may only develop through a body interacting with its environment. iCub is about 104 cm tall and 22 kg, roughly the size of a small child, with 53 degrees of freedom across its body; a large share of them are concentrated in the hands, eyes, and head and neck, which makes it well suited to studying grasping and visual attention. Both the hardware design and the software (built on the YARP middleware) are released under open licenses such as the GPL, and more than 50 research institutions worldwide use it. IIT later built a taller version, iCub3, designed for remote-avatar teleoperation.",
+      "example": "Researchers let iCub handle a toy repeatedly, the way an infant would, to see whether it can learn the concept of an object purely through its own actions.",
+      "related": ["Humanoid Robot", "Embodied Cognition", "Small-size Humanoid Robot", "Open-source Hardware", "SoftBank Robotics NAO"]
+    },
+    {
+      "key": "robot-10#3",
+      "name_en": "Inspection Robot",
+      "aliases": ["Intelligent Inspection Robot", "Patrol Robot"],
+      "one_liner": "A robot that patrols places like substations, tunnels, or equipment rooms to check on equipment instead of a person.",
+      "explanation": "Inspection robots are a category of special-purpose robots that move to a series of checkpoints — either along a preset route or by navigating autonomously — and use a visible-light camera to read gauges and meters, an infrared thermal camera to check temperatures, and gas or acoustic sensors to detect leaks or abnormal sounds, raising an alert if something looks off. By how they move, they fall into wheeled, tracked, rail-mounted (running on a track fixed to the ceiling of an equipment room), quadruped, and drone types; wheeled designs are the most mature, while quadrupeds handle rubble, stairs, and other rough terrain better. The power industry adopted them earliest and most widely; Chinese vendors in the space include Yijiahe, State Grid Intelligence, and Shenhao Technology. Inspection is one of the earlier embodied-robotics use cases with a clear, calculable return on investment, and in recent years these robots have started using vision-language models for defect recognition.",
+      "example": "A wheeled inspection robot at a substation circles the site on a set schedule every day, reading oil-level gauges and switch states, and uses an infrared thermal camera to spot overheating connectors.",
+      "related": ["Special-purpose Robot", "Quadruped Robot", "Autonomous Mobile Robot", "Real-world Deployment (Application Scenario)", "Thermal (Infrared) Camera", "DEEP Robotics"]
+    },
+    {
+      "key": "robot-10#4",
+      "name_en": "Kepler Forerunner K2",
+      "aliases": ["K2 Bumblebee", "Bumblebee"],
+      "one_liner": "Kepler Robotics' full-size bipedal humanoid, built for industrial use with a hybrid actuator design and long runtime.",
+      "explanation": "Forerunner K2 is a humanoid robot from Shanghai-based Kepler Exploration Robot (Kepler Robotics), which launched the commercial K2 “Bumblebee” version in 2025. Published specs: about 175 cm tall, about 75 kg, 52 degrees of freedom across the body, tendon-driven hands with 11 degrees of freedom each, and a roughly 2.33 kWh battery. Its distinguishing feature is a hybrid joint design: planetary-roller-screw linear actuators in the legs and similar joints, with rotary actuators elsewhere. At WAIC (the World Artificial Intelligence Conference) 2025, it ran an 8-hour continuous livestream demo to show off its runtime. Reported production pre-order tiers include a basic bipedal version, a bipedal developer version, and a wheeled developer version, starting at RMB 248,000 (roughly $30,000 overseas), aimed at industrial tasks such as logistics sorting and factory material handling.",
+      "example": "At the WAIC 2025 booth, K2 Bumblebee runs continuous sorting and grasping demos from 9 a.m. to 5 p.m. to prove out its 8-hour runtime.",
+      "related": ["Humanoid Robot", "Full-size Humanoid Robot", "Kepler Robotics", "Planetary Roller Screw", "Linear Actuator (Electric Cylinder)", "Battery Endurance / Runtime"]
+    },
+    {
+      "key": "robot-10#5",
+      "name_en": "Kinova Gen3",
+      "aliases": ["Gen3"],
+      "one_liner": "An ultra-lightweight 7-DOF research robot arm from Canada's Kinova, popular in academic manipulation labs.",
+      "explanation": "Kinova Gen3 is a lightweight robot arm from the Canadian company Kinova, available in 7-DOF and 6-DOF versions. The 7-DOF version weighs about 8.2 kg, has a maximum reach of about 902 mm, and a continuous payload of about 4 kg; it draws very little power, every joint can rotate without limit, torque sensors are built into each joint, the low-level control loop runs at 1 kHz, and an optional 2D/3D vision module can be mounted on the wrist. Kinova originally built assistive arms for wheelchairs, and Gen3 keeps that same lightweight design that's easy to mount on a mobile platform; its interfaces are open (it supports ROS and low-level torque control), which makes it a common choice in university labs for manipulation, human-robot interaction, and reinforcement-learning research, where it's often compared with the Franka and UR5e arms.",
+      "example": "Researchers mount a Kinova Gen3 on a mobile base to run mobile-manipulation experiments like opening doors and picking up objects.",
+      "related": ["Robotic Arm (Manipulator)", "7-DoF Robot Arm", "Collaborative Robot", "Joint Torque Sensor", "Franka Emika Panda / Franka Research 3", "Universal Robots UR5e"]
+    },
+    {
+      "key": "robot-10#6",
+      "name_en": "Koch v1.1 Arm",
+      "aliases": ["Koch Arm", "Koch v1.1"],
+      "one_liner": "An open-source, low-cost leader-follower robot arm built from Dynamixel servos and 3D-printed parts.",
+      "explanation": "The Koch arm was originally designed by Alexander Koch of Tau Robotics, and Hugging Face engineers later reworked it into the easier-to-build v1.1 version. It has 6 degrees of freedom (5 joints plus a gripper), 3D-printed structural parts, ROBOTIS Dynamixel XL430 and XL330 servos at the joints, and communicates over a USB serial connection. A set consists of a leader arm and a follower arm: a person moves the leader by hand, the follower mirrors it in real time, and the resulting motion is recorded as demonstration data, which is then used to train an imitation-learning policy with an algorithm such as ACT. According to distributors, a single arm can be built for around $400. It was the hardware featured in LeRobot's early tutorials, though the cheaper SO-100/SO-101 arms later became the more common choice.",
+      "example": "Following the LeRobot tutorial, someone builds a pair of Koch arms, records 50 demonstrations of “put the block in the box,” and trains an ACT policy on the data.",
+      "related": ["LeRobot (Hugging Face)", "SO-100 / SO-101 Arm (LeRobot)", "Leader-Follower Teleoperation", "ROBOTIS DYNAMIXEL Servo", "Action Chunking with Transformers", "Desktop Robot Arm"]
+    },
+    {
+      "key": "robot-10#7",
+      "name_en": "KUKA LBR iiwa",
+      "aliases": ["iiwa", "LBR iiwa 7 R800", "LBR iiwa 14 R820"],
+      "one_liner": "KUKA's sensitive 7-axis collaborative robot arm, with a torque sensor built into every joint.",
+      "explanation": "The LBR iiwa is a collaborative robot arm from Germany's KUKA. LBR stands for “lightweight robot,” and iiwa is short for “intelligent industrial work assistant”; the underlying technology traces back to lightweight-robot research at the German Aerospace Center (DLR). It has 7 axes, each fitted with a joint torque sensor, which lets it sense external forces and immediately cut power and slow down if it contacts a person; it also supports impedance control and hand-guided teaching, where an operator physically moves the arm to program a motion. It comes in two models: the iiwa 7 R800, with a 7 kg payload and 800 mm reach, and the iiwa 14 R820, with a 14 kg payload and 820 mm reach. It's widely used in research on contact-rich manipulation, force control, and human-robot collaboration, and is considered a classic platform for that kind of work.",
+      "example": "Researchers use the iiwa's Cartesian impedance mode to perform peg-in-hole assembly, letting the arm automatically nudge its position based on contact force as it inserts the peg.",
+      "related": ["Collaborative Robot", "7-DoF Robot Arm", "Joint Torque Sensor", "Impedance Control", "KUKA", "Contact-rich Manipulation"]
+    },
+    {
+      "key": "robot-10#8",
+      "name_en": "Legged Mobile Manipulator (Quadruped with Arm)",
+      "aliases": ["Quadruped with Arm", "Arm-Equipped Quadruped", "Robot Dog with Arm"],
+      "one_liner": "A quadruped robot with a robot arm mounted on its back, combining rough-terrain walking with manipulation.",
+      "explanation": "This category mounts a robot arm on top of a quadruped robot, so it can open doors, press buttons, or pick things up wherever it walks. Well-known examples include Boston Dynamics' Spot fitted with the Spot Arm, ANYbotics' ANYmal with an arm attached, and Unitree quadrupeds paired with a Z1 arm. Compared with a wheeled mobile manipulator, this design can climb stairs and cross rubble; the difficulty is that as soon as the arm moves, it shifts the robot's center of mass and the forces on its body, so the arm and all four legs have to be controlled together, or the robot can become unstable or miss its target. For that reason, research in this area often uses whole-body control or reinforcement learning to treat the legs and arm as one coordinated system — work like UMI on Legs was done on exactly this kind of platform.",
+      "example": "A Spot with an arm attached walks into a factory, opens a valve and a door by itself, and continues on its inspection route.",
+      "related": ["Quadruped Robot", "Mobile Manipulation", "Loco-manipulation", "Whole-Body Control", "UMI on Legs: Making Manipulation Policies Mobile with Manipulation-Centric Whole-body Controllers", "Boston Dynamics Spot"]
+    },
+    {
+      "key": "robot-10#9",
+      "name_en": "Leju Kuavo",
+      "aliases": ["Kuavo", "KUAVO"],
+      "one_liner": "Leju Robotics' full-size bipedal humanoid, running an open-source HarmonyOS build.",
+      "explanation": "Kuavo (KUAVO) is a full-size bipedal humanoid robot from Shenzhen-based Leju Robotics, released in December 2023; the company describes it as China's first humanoid to run an open-source build of HarmonyOS and to be capable of jumping and walking across multiple types of terrain. A research edition aimed at being ready to use out of the box followed in October 2024. Published specs for the fourth generation and 4 Pro models: up to about 1.66 m tall, about 45 kg, roughly 30 degrees of freedom across the body, a stereo depth camera with optional lidar, a top walking speed of about 4.6 km/h, and the ability to jump continuously over 20 cm. It has reportedly been connected to Huawei's Pangu embodied foundation model for multi-step task planning, and Leju has also worked with China Mobile and Huawei on a 5G-Advanced humanoid robot.",
+      "example": "A university lab buys the Kuavo research edition and uses it to develop and test bipedal walking and grasping algorithms.",
+      "related": ["Leju Robotics", "Humanoid Robot", "Full-size Humanoid Robot", "Huawei", "Research & Education Market"]
+    },
+    {
+      "key": "robot-10#10",
+      "name_en": "LeKiwi",
+      "aliases": [],
+      "one_liner": "An open-source low-cost mobile manipulator combining a three-omni-wheel base with an SO-101 arm.",
+      "explanation": "LeKiwi was open-sourced in early 2025 by SIGRobotics, a student club at the University of Illinois Urbana-Champaign, and is now officially supported by Hugging Face's LeRobot. Its base uses three omnidirectional wheels arranged 120° apart — a so-called Kiwi drive — which lets it translate and rotate in any direction on the spot; an SO-101 (or SO-100) robot arm sits on top of the base. Both the base and the arm use Feetech STS3215 servos, a Raspberry Pi 5 serves as the onboard computer, and there's one camera on the base and another on the wrist. The whole platform is built from 3D-printed parts and off-the-shelf components, which lets individuals and students do mobile-manipulation teleoperation data collection and imitation learning at very low cost.",
+      "example": "Someone teleoperates LeKiwi with an SO-101 leader arm and a keyboard to drive it to a table and pick up a sock, then trains a policy on the recorded data with LeRobot.",
+      "related": ["LeRobot (Hugging Face)", "SO-100 / SO-101 Arm (LeRobot)", "Mobile Manipulation", "Omni Wheel", "XLeRobot", "Feetech STS3215 Servo"]
+    },
+    {
+      "key": "robot-10#11",
+      "name_en": "LG CLOiD",
+      "aliases": ["CLOiD"],
+      "one_liner": "LG's wheeled home humanoid robot unveiled at CES 2026, demoed cooking and folding laundry.",
+      "explanation": "CLOiD is a home robot that LG Electronics showed at CES in January 2026, built around LG's idea of a “zero-labor home.” It has a wheeled base with a humanoid upper body: torso height adjusts across roughly 105–143 cm, each arm has 7 degrees of freedom with about 87 cm of reach, and each hand has five independently driven fingers. The head houses its chip, a display, cameras, and speakers. LG says it runs a vision-language model and a vision-language-action (VLA) model trained on tens of thousands of hours of household data, and can coordinate with LG appliances through the ThinQ platform. At the demo it took milk out of a refrigerator, put a croissant in the oven, and started a washing machine cycle and folded laundry. LG did not announce a price or release date.",
+      "example": "At the CES 2026 booth, CLOiD takes milk out of the fridge and puts a croissant in the oven to prepare breakfast.",
+      "related": ["Wheeled Humanoid Robot", "Household Tasks", "Vision-Language-Action Model", "Garment Manipulation", "Consumer Electronics Show", "Consumer-Grade Robot"]
+    }
+  ]
+}

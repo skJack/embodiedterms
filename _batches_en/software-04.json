@@ -1,0 +1,113 @@
+{
+  "batch": "software-04",
+  "terms": [
+    {
+      "key": "software-04#0",
+      "name_en": "NVIDIA Isaac Platform",
+      "aliases": ["Isaac Platform"],
+      "one_liner": "NVIDIA's umbrella brand for its full stack of robotics software, models, and tools.",
+      "explanation": "NVIDIA Isaac is NVIDIA's platform brand for robotics development — not a single piece of software but a family of products: Isaac Sim (a simulator), Isaac Lab (a robot learning framework built on Isaac Sim), Isaac ROS (GPU-accelerated perception and planning packages that run on ROS 2), and Isaac GR00T (foundation models and tools for humanoid robots), among others. It ties together the pipeline of training in simulation, generating synthetic data, and deploying to Jetson boards using NVIDIA's own hardware and software, forming the software layer of NVIDIA's “three computers” narrative. When newcomers see a name with the Isaac prefix, the first thing to figure out is whether it's a simulator, a training framework, a ROS package, or a model.",
+      "example": "Train a quadruped locomotion policy in parallel on GPUs with Isaac Lab, then deploy it on a Jetson Orin using Isaac ROS's perception packages.",
+      "related": ["NVIDIA Isaac Sim", "NVIDIA Isaac Lab", "NVIDIA Isaac ROS", "NVIDIA GR00T N1 series", "NVIDIA Omniverse", "NVIDIA's “Three Computers” (strategy narrative)"]
+    },
+    {
+      "key": "software-04#1",
+      "name_en": "NVIDIA JetPack SDK",
+      "aliases": ["JetPack SDK"],
+      "one_liner": "NVIDIA's official operating system and development kit for its Jetson embedded boards.",
+      "explanation": "JetPack is NVIDIA's software development kit for the Jetson family of embedded computing boards, bundling Jetson Linux (an Ubuntu-based OS and drivers, also called L4T) along with acceleration libraries such as CUDA, cuDNN, and TensorRT. Flashing a Jetson essentially means installing a particular version of JetPack, and that version determines which CUDA and TensorRT releases are available on the board, which in turn determines whether — and how fast — a given model can run. Different hardware generations map to different major versions: Orin boards commonly run JetPack 6, while Jetson Thor pairs with JetPack 7. Checking JetPack version compatibility against a target framework or model is usually the first step before on-device deployment.",
+      "example": "Before deploying a VLA on a Jetson Orin, flash it with JetPack 6 using SDK Manager, then install matching versions of PyTorch and TensorRT.",
+      "related": ["NVIDIA Jetson", "NVIDIA Jetson Orin", "NVIDIA Jetson Thor", "NVIDIA TensorRT", "CUDA", "On-Device / Edge Deployment"]
+    },
+    {
+      "key": "software-04#2",
+      "name_en": "NVIDIA Omniverse",
+      "aliases": [],
+      "one_liner": "NVIDIA's 3D simulation and collaborative development platform, built around OpenUSD.",
+      "explanation": "Omniverse is NVIDIA's platform for building 3D applications: it represents scenes using OpenUSD (Universal Scene Description), renders them with real-time ray tracing via RTX, and plugs in the PhysX physics engine. It isn't built specifically for robotics — factory digital twins, film, and autonomous-driving simulation all use it too — but the piece embodied-AI practitioners run into most is what's built on top of it: Isaac Sim is constructed on Omniverse, and its Replicator tool is used to generate large volumes of annotated synthetic data. Understanding Omniverse mainly means understanding why Isaac Sim's scene files are USD, and why its rendering depends on an RTX-capable GPU.",
+      "example": "Use Omniverse Replicator to randomize lighting and object placement in a warehouse scene, generating large batches of training images with segmentation labels.",
+      "related": ["NVIDIA Isaac Sim", "Universal Scene Description (OpenUSD)", "PhysX", "Digital Twin", "Omniverse Replicator (synthetic data generation)", "NVIDIA Isaac Platform"]
+    },
+    {
+      "key": "software-04#3",
+      "name_en": "NVIDIA TensorRT",
+      "aliases": ["TRT"],
+      "one_liner": "NVIDIA's inference-acceleration library that compiles a trained model into a faster GPU runtime engine.",
+      "explanation": "TensorRT is NVIDIA's deep-learning inference optimizer and runtime. It reads in a model in a format such as ONNX, performs layer fusion, picks the fastest available GPU kernels, and lowers numerical precision (FP16, INT8, FP8, and so on) to produce an inference “engine” file compiled for a specific GPU. A robot policy has to produce an action within tens of milliseconds, and running it directly in PyTorch is often too slow, so compiling with TensorRT typically cuts latency noticeably — making it a standard step for both Jetson and server-side deployment. Note that an engine is tied to a specific GPU model and TensorRT version, so switching hardware requires recompiling; large language models have their own dedicated variant, TensorRT-LLM.",
+      "example": "Export a trained diffusion policy to ONNX, then compile it into an FP16 engine with trtexec to cut per-step inference latency on a Jetson Orin.",
+      "related": ["Open Neural Network Exchange (ONNX)", "TensorRT-LLM", "Inference Latency", "Post-Training Quantization (PTQ)", "NVIDIA JetPack SDK", "Inference Deployment"]
+    },
+    {
+      "key": "software-04#4",
+      "name_en": "On-Device / Edge Deployment",
+      "aliases": ["edge deployment", "local deployment", "onboard deployment"],
+      "one_liner": "Running model inference directly on a robot's own onboard computer, instead of calling a remote server.",
+      "explanation": "On-device deployment means model inference runs on the robot itself or on a device right next to it, typically an embedded board such as Jetson or RK3588. The alternative is streaming images to a cloud or lab GPU server and streaming actions back. Running on-device keeps latency low, works without a network connection, and keeps data from leaving the device — at the cost of limited compute, memory, and power, which often means large models need to be quantized, pruned, or distilled and then compiled with tools like TensorRT or RKNN before they can hit an adequate frame rate. Real systems often combine both approaches: low-level locomotion control on-device, large-model inference in the cloud or on an edge server, an arrangement known as cloud-edge-device collaboration.",
+      "example": "Gemini Robotics On-Device is a version of the VLA specifically optimized to run locally on a robot.",
+      "related": ["On-Device Model", "Inference Latency", "Cloud-Edge-Device Collaboration", "Policy Server (Remote Inference)", "Post-Training Quantization (PTQ)", "NVIDIA Jetson"]
+    },
+    {
+      "key": "software-04#5",
+      "name_en": "Open Motion Planning Library (OMPL)",
+      "aliases": ["OMPL"],
+      "one_liner": "An open-source motion planning library from Rice University that bundles dozens of sampling-based planning algorithms.",
+      "explanation": "OMPL is an open-source C++ motion planning library, with Python bindings, developed by the Kavraki Lab at Rice University. It implements dozens of sampling-based planning algorithms, including RRT, RRT-Connect, RRT*, PRM, and BIT*. Its only job is to find a collision-free path through configuration space — it doesn't handle collision checking or robot modeling itself, relying instead on an externally supplied function that answers whether a given state is valid. That decoupling is exactly why MoveIt uses it as its default planning backend, so a lot of collision-avoidance planning for robot arms ultimately runs on OMPL underneath. It's also a convenient way to compare different planning algorithms when learning about motion planning.",
+      "example": "When MoveIt plans a path for a UR5e to avoid a cup on a table, it calls OMPL's RRTConnect by default.",
+      "related": ["MoveIt Motion Planning Framework", "Motion Planning", "Sampling-Based Planning", "Rapidly-exploring Random Tree (RRT)", "Probabilistic Roadmap (PRM)", "Flexible Collision Library (FCL)"]
+    },
+    {
+      "key": "software-04#6",
+      "name_en": "Open Neural Network Exchange (ONNX)",
+      "aliases": ["ONNX"],
+      "one_liner": "An open, general-purpose file format for neural networks that makes it easy to move models between frameworks and inference engines.",
+      "explanation": "ONNX is an open model-representation format launched in 2017 by Microsoft and Facebook, now hosted by LF AI & Data under the Linux Foundation. It stores a network's architecture and weights as a unified computation graph, and often serves as the bridge when a model is trained in PyTorch but deployed with TensorRT, ONNX Runtime, OpenVINO, or RKNN. The most common headache during deployment is an unsupported operator or a mismatched export version (opset), which usually requires rewriting part of the model or swapping operators. For newcomers, it's enough to think of it as the “universal file format” of the model world.",
+      "example": "Use torch.onnx.export to export a trained walking policy as policy.onnx, then hand it to ONNX Runtime for inference on the robot.",
+      "related": ["ONNX Runtime", "NVIDIA TensorRT", "Intel OpenVINO", "RKNN-Toolkit (Rockchip)", "Inference Deployment", "PyTorch"]
+    },
+    {
+      "key": "software-04#7",
+      "name_en": "OpenCV (Open Source Computer Vision Library)",
+      "aliases": ["cv2"],
+      "one_liner": "The most widely used open-source computer vision library, for image, camera, and geometry processing.",
+      "explanation": "OpenCV is an open-source computer vision library originally started by Intel, with its core written in C++ and bindings for Python and other languages; in Python it's used via import cv2. It covers image reading and resizing, color-space conversion, filtering, feature-point extraction and matching, camera calibration, distortion correction, PnP pose estimation, and ArUco marker detection, among other classic vision tasks. Deep learning has taken over most recognition tasks, but OpenCV still gets used constantly in robotics: reading camera frames, preprocessing, calibrating camera intrinsics and extrinsics, and visualizing results — it's hard to avoid.",
+      "example": "Use cv2.calibrateCamera with a checkerboard pattern to calibrate a wrist camera's intrinsics, then cv2.undistort to remove lens distortion.",
+      "related": ["Camera Calibration", "ArUco Markers", "Perspective-n-Point (PnP)", "Feature Points (Keypoints)", "Point Cloud Library (PCL)", "Open3D"]
+    },
+    {
+      "key": "software-04#8",
+      "name_en": "Open-Source License (Apache 2.0 / MIT / Non-commercial)",
+      "aliases": ["open-source license", "License"],
+      "one_liner": "The legal terms attached to public code or models that spell out who can use, modify, or sell them, and how.",
+      "explanation": "An open-source license is the set of terms attached to code or a model that determines what users are allowed to do and what obligations they take on. MIT is the most permissive — keep the copyright notice and you can use and sell it freely; Apache 2.0 also permits commercial use, adds an explicit patent grant, and requires noting any modifications; GPL requires derivative works to also be open-sourced; and CC BY-NC or various vendors' own “non-commercial” licenses restrict use to research only. In embodied AI, a lot of model code is released under Apache 2.0, but the weights or datasets that go with it may carry separate restrictions — before building a product on top of something, check the licenses for code, weights, and data separately.",
+      "example": "The openpi repository's code is released under Apache 2.0, while some of the datasets it uses are restricted to non-commercial research.",
+      "related": ["Open-weight Model", "GitHub (code hosting platform)", "openpi (Physical Intelligence)", "LeRobot (Hugging Face)", "Open-Source Hardware"]
+    },
+    {
+      "key": "software-04#9",
+      "name_en": "Open-weight Model",
+      "aliases": ["open weights"],
+      "one_liner": "A model whose trained parameters are published for download, even if its training data and code aren't.",
+      "explanation": "An open-weight model is one whose developer publishes the trained parameter files publicly, so anyone can download them, run inference locally, and fine-tune them. This differs from open source in the strict sense: the Open Source Initiative's (OSI) definition of open-source AI also requires information about training data and complete training code, whereas many open-weight models only provide the weights and inference code, and their licenses may restrict commercial use or cap the number of users. For embodied-AI researchers, open weights mean an existing VLA can be fine-tuned on their own robot data instead of pretraining from scratch — this is a big part of why the open-source ecosystem has grown so quickly over the past couple of years.",
+      "example": "Physical Intelligence released π0's weights through openpi, letting researchers download them and fine-tune on their own robot arm data.",
+      "related": ["Open-Source License (Apache 2.0 / MIT / Non-commercial)", "openpi (Physical Intelligence)", "Pretraining", "Fine-tuning", "Llama", "OpenVLA"]
+    },
+    {
+      "key": "software-04#10",
+      "name_en": "Open3D",
+      "aliases": [],
+      "one_liner": "An open-source library for processing point clouds, meshes, and 3D reconstruction.",
+      "explanation": "Open3D is an open-source 3D data-processing library initiated by researchers at Intel Labs, with a C++ core and an easy-to-use Python interface. It supports reading and writing point clouds and meshes, voxel downsampling, normal estimation, ICP point-cloud registration, RGB-D fusion reconstruction (TSDF), and interactive visualization. Compared with PCL (Point Cloud Library), which is more full-featured but heavier, Open3D is quicker to pick up in Python, so it's commonly used in robotics research: turning depth-camera data into point clouds, cropping out a tabletop region, preparing input for a 3D policy, or sanity-checking a calibration result.",
+      "example": "Use Open3D to fuse a RealSense camera's color and depth images into a point cloud, voxel-downsample it, and feed it as input to a 3D diffusion policy.",
+      "related": ["Point Cloud", "Point Cloud Library (PCL)", "Iterative Closest Point (ICP)", "Truncated Signed Distance Function (TSDF)", "OpenCV (Open Source Computer Vision Library)", "3D Diffusion Policy (DP3)"]
+    },
+    {
+      "key": "software-04#11",
+      "name_en": "openpi (Physical Intelligence)",
+      "aliases": [],
+      "one_liner": "Physical Intelligence's open-source code and weights repository for its π-series VLA models.",
+      "explanation": "openpi is the open-source code repository Physical Intelligence released on GitHub in 2025, providing pretrained weights along with inference and fine-tuning code for π0, π0-FAST, and the later π0.5, released under the Apache 2.0 license. The repository also includes fine-tuning examples on platforms such as DROID, ALOHA, and LIBERO, plus an inference server that lets a policy be called as a remote service. It lets teams without large-scale robot data of their own fine-tune an existing, capable VLA on their own data instead of starting from scratch, making it one of the most common starting points for VLA work today in both academia and startups.",
+      "example": "Plug your own LeRobot-format data into openpi, fine-tune the π0.5 base model, and use its policy server to drive a real robot.",
+      "related": ["π0", "π0-FAST", "π0.5", "Physical Intelligence", "LeRobot (Hugging Face)", "Open-weight Model"]
+    }
+  ]
+}

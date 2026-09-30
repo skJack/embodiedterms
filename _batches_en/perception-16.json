@@ -1,0 +1,113 @@
+{
+  "batch": "perception-16",
+  "terms": [
+    {
+      "key": "perception-16#0",
+      "name_en": "GVHMR",
+      "aliases": ["GVHMR: World-Grounded Human Motion Recovery via Gravity-View Coordinates"],
+      "one_liner": "A method that recovers a person’s 3D motion in world coordinates from monocular video.",
+      "explanation": "GVHMR is a method from Zhejiang University’s ZJU3DV team, published at SIGGRAPH Asia 2024: given a monocular video, it outputs SMPL-X human body parameters (a parametric human body model) and the person’s motion trajectory in world coordinates. The difficulty is that the camera itself is also moving — estimating pose only in the camera’s coordinate frame can’t tell which way the person is walking or whether their body is upright. GVHMR defines a “gravity-view” coordinate frame for every frame: one axis aligned with gravity, another referencing the camera’s line of sight, predicts body orientation within this frame, and then converts back to world coordinates using the camera’s relative rotation from visual odometry or a gyroscope. It predicts frame by frame in parallel, avoiding the error accumulation that autoregressive methods like WHAM suffer on long videos. In embodied AI, it is commonly used to extract human motion from internet videos, which is then retargeted onto a humanoid robot.",
+      "example": "The GMR general-purpose motion retargeting tool supports first extracting human motion from a monocular video with GVHMR, then retargeting it onto a humanoid robot.",
+      "related": ["Human Mesh Recovery", "SMPL", "Markerless Motion Capture (Video Mocap)", "GMR (General Motion Retargeting)", "Motion Retargeting", "Visual Odometry"]
+    },
+    {
+      "key": "perception-16#1",
+      "name_en": "HaMeR",
+      "aliases": ["Hand Mesh Recovery", "Reconstructing Hands in 3D with Transformers"],
+      "one_liner": "A Transformer model that reconstructs a 3D hand mesh from a single RGB image.",
+      "explanation": "HaMeR was proposed by researchers at UC Berkeley, the University of Michigan, and NYU, published at CVPR 2024. It uses a ViT-H vision Transformer as its backbone, regressing MANO hand model parameters (MANO describes a hand’s 3D mesh with a small number of pose and shape parameters) plus camera parameters from the hand region of an image. The authors combined 10 datasets with 2D or 3D hand annotations into about 2.7 million training samples, and also annotated the HInt evaluation set from videos like Ego4D, specifically to test hands in real-world footage. It is a single-frame method, but its results are reasonably smooth when applied to video too. In embodied AI, it is a commonly used tool for extracting finger poses from human video, with results retargeted to a dexterous hand or gripper as an action source for imitation learning.",
+      "example": "When OKAMI teaches a humanoid robot to manipulate objects from a human demonstration video, it reconstructs body motion with SLAHMR while estimating each hand’s pose separately with HaMeR.",
+      "related": ["MANO", "Hand Pose Estimation", "WiLoR", "Human Mesh Recovery", "OKAMI", "Human Video Data"]
+    },
+    {
+      "key": "perception-16#2",
+      "name_en": "Height Scan",
+      "aliases": ["height_scan", "Terrain Height Map", "Height Samples"],
+      "one_liner": "Samples ground height around a robot in a fixed pattern, used as terrain input for a locomotion policy.",
+      "explanation": "A height scan is a commonly used terrain observation in reinforcement-learning locomotion for legged robots: centered on the body, or around each foot, it samples ground height at a number of points in a fixed pattern, then stacks these into a vector fed to the policy network. In simulation, this is usually done by casting rays straight down from above the robot and reading off ground-truth height directly; a real robot has no such bird’s-eye view, so it first has to build an elevation map (a 2.5D grid of ground height) with a depth camera or lidar, then sample from that map. A real elevation map has noise and occlusion, so a common approach trains a teacher policy on noise-free height first, then distills it into a student policy that reads the real, noisy elevation map. A policy that relies only on proprioception, with no height scan, is called blind locomotion.",
+      "example": "Isaac Lab’s velocity-tracking task mounts a ray-casting sensor on the body, measuring ground height on a 1.6 m × 1.0 m grid at 0.1 m spacing; Miki and colleagues’ 2022 ANYmal work instead samples 52 points in 5 concentric rings around each foot, for 208 dimensions across all four legs.",
+      "related": ["Elevation Map", "Perceptive Locomotion", "Blind Locomotion", "Teacher-Student Distillation", "Isaac Lab", "legged_gym"]
+    },
+    {
+      "key": "perception-16#3",
+      "name_en": "Hesai JT128",
+      "aliases": ["Hesai JT Series", "JT64P"],
+      "one_liner": "A compact, ultra-wide-field-of-view 128-channel 3D lidar from Hesai Technology aimed at robots.",
+      "explanation": "The JT128 is the 128-channel model in Hesai Technology’s JT series of lidars, which also includes the JT64P and JT16. “Channel count” refers to the number of laser channels in the vertical direction — more channels means a denser point cloud. According to Hesai’s official specs, the JT128 has a 360°×189° field of view, covering more than a full hemisphere; it ranges to 40 m at 10% reflectivity, with a maximum of 60 m; it produces about 1.152 million points per second in single-return mode; and it measures 62.5 mm in diameter and 73 mm tall, weighs 265 g, and is rated IPX7. Traditional spinning lidars usually have a vertical field of view of only a few tens of degrees, which tends to leave blind spots when mounted on a robot; the JT series uses an ultra-wide vertical field of view to reduce these blind spots. Hesai’s website lists embodied AI robots, delivery robots, AGVs/AMRs, and cleaning robots among its applications, for mapping, localization, obstacle avoidance, and terrain sensing.",
+      "example": "",
+      "related": ["Lidar", "Lidar Channel Count", "Field of View", "Hesai Technology", "Livox Mid-360", "RoboSense Airy"]
+    },
+    {
+      "key": "perception-16#4",
+      "name_en": "Homography",
+      "aliases": ["Homography Matrix", "H Matrix", "Homographic Transform"],
+      "one_liner": "A 3×3 matrix describing how pixels on the same plane correspond between two images.",
+      "explanation": "A homography H is a 3×3 matrix; because uniform scaling doesn’t change the mapping, it has only 8 degrees of freedom. Under the pinhole camera model, when the same physical plane is photographed from two viewpoints, corresponding pixels in the two images satisfy x′ ∝ Hx (with x in homogeneous coordinates); when a camera only rotates about its optical center with no translation, any two images of an arbitrary scene also satisfy a homography relationship. Solving for H needs at least 4 point correspondences, commonly using the direct linear transform (DLT), with RANSAC used to reject mismatches. Homographies are used for image stitching, perspective correction, and turning an image of the ground or a tabletop into a top-down view; they are also used in camera calibration — Zhang Zhengyou’s calibration method first solves for the homography from a checkerboard plane to each image, then decomposes the camera intrinsics from those. When photographing a general 3D scene with a camera that also translates, the fundamental or essential matrix from epipolar geometry is needed instead.",
+      "example": "In a tabletop manipulation experiment, sticking markers at the table’s four corners and measuring their coordinates on the table lets you solve for the homography from image to tabletop plane, converting a detected object’s pixel position directly into x, y coordinates on the table.",
+      "related": ["Pinhole Camera Model", "Camera Calibration", "Epipolar Geometry", "Feature Matching", "Random Sample Consensus", "Bird’s-Eye View"]
+    },
+    {
+      "key": "perception-16#5",
+      "name_en": "Human Mesh Recovery",
+      "aliases": ["HMR", "3D Human Pose and Shape Estimation", "Human Mesh Reconstruction"],
+      "one_liner": "The task of estimating a person’s complete 3D body mesh — pose plus body shape — from an image or video.",
+      "explanation": "Human mesh recovery estimates a person’s complete 3D body surface from an RGB image or video, rather than just a dozen or so joint points. The common approach regresses the parameters of a parametric body model like SMPL: pose parameters describe each joint’s rotation, shape parameters describe height and build, and plugging these into the model produces a human mesh. The name comes from Kanazawa, Black, Malik, and colleagues’ CVPR 2018 paper HMR, which regresses SMPL parameters directly from image pixels and uses an adversarial discriminator to constrain the result to look like a real human body. Later work, HMR 2.0 / 4D-Humans, switched to a ViT backbone and added cross-frame tracking, and methods like GVHMR further recover the person’s motion trajectory in world coordinates; HaMeR is the corresponding method for hands. In embodied AI, this is a key step for capturing full-body motion from human video and retargeting it onto a humanoid robot.",
+      "example": "4D-Humans can reconstruct every person’s SMPL mesh frame by frame from a multi-person video and track each person’s identity across frames, with the result handed to a motion-retargeting tool to convert into joint trajectories for a humanoid robot.",
+      "related": ["SMPL", "GVHMR", "HaMeR", "Human Pose Estimation", "Markerless Motion Capture", "Motion Retargeting"]
+    },
+    {
+      "key": "perception-16#6",
+      "name_en": "Hunyuan3D",
+      "aliases": ["Hunyuan3D 2.0", "Hunyuan3D-2.1", "Hunyuan3D 2.5", "Tencent Hunyuan3D"],
+      "one_liner": "Tencent’s open-source image-to-3D asset model series, generating a textured 3D mesh from a picture.",
+      "explanation": "Hunyuan3D is a series of 3D-asset generation models from Tencent’s Hunyuan team. Version 2.0 was open-sourced in January 2025, working in two steps: a flow-matching-based diffusion Transformer (Hunyuan3D-DiT) generates geometry from an input image, then Hunyuan3D-Paint generates a texture for the mesh. Version 2.1, open-sourced in June 2025, upgraded the texture to PBR materials (physically based rendering materials, including metalness and roughness); the shape model has 3.3B parameters and the texture model has 2B parameters, and the training code was released too. A technical report for version 2.5, published the same month, scaled the shape model up to as much as 10B parameters. In embodied AI, models like this can quickly turn a single photo into an object mesh to expand a simulation asset library — though the generated result still needs mass, friction, and other physical properties added, and a collision shape worked out, before it can go into physics simulation.",
+      "example": "Feeding a photo of a mug to Hunyuan3D-2.1 produces a GLB mesh with a PBR texture; after converting the format, generating a collision shape with convex decomposition, and setting the mass, it can be imported into Isaac Sim as a graspable object.",
+      "related": ["Single-Image 3D Generation", "Simulation Assets", "Triangle Mesh", "Physically Based Rendering", "Convex Decomposition", "Tencent Hunyuan World Model"]
+    },
+    {
+      "key": "perception-16#7",
+      "name_en": "Image Signal Processor",
+      "aliases": ["ISP", "Image Processor"],
+      "one_liner": "The processing unit that turns an image sensor’s raw output into a normal color image.",
+      "explanation": "An ISP is a dedicated processor in a camera’s imaging pipeline — sometimes a standalone chip, but more often integrated into a system-on-chip (SoC) like a phone’s or a Jetson’s. A CMOS image sensor outputs raw Bayer-pattern data, where each pixel records only red, green, or blue; the ISP performs demosaicing (interpolating to recover a full-color image), noise reduction, white balance, auto-exposure, gamma and color correction, sharpening, and more, in sequence, outputting an RGB or YUV image. When a robot connects a bare sensor over a MIPI interface, it needs the host chip’s ISP to process and tune the image; USB cameras and some camera modules with a built-in ISP output an already-processed image directly. Auto-exposure and auto-white-balance make the brightness and color of the same scene drift over time, which affects training-data consistency, so they are often locked manually while collecting data.",
+      "example": "NVIDIA Jetson developer kits’ OV5693 camera module has no ISP of its own — reading it directly over V4L2 gives raw Bayer data; going through libargus (nvarguscamerasrc) routes it through the Jetson’s built-in ISP, producing a normal color image.",
+      "related": ["CMOS Image Sensor", "MIPI CSI-2 Camera Interface", "RGB Camera", "NVIDIA Jetson", "Global Shutter / Rolling Shutter"]
+    },
+    {
+      "key": "perception-16#8",
+      "name_en": "Implicit vs. Explicit 3D Representation",
+      "aliases": ["Implicit Representation", "Explicit Representation", "Neural Implicit Representation"],
+      "one_liner": "Whether a 3D scene is stored directly as geometric elements, or as a function you query by coordinate.",
+      "explanation": "An explicit representation stores geometric elements directly: a point cloud stores points, a mesh stores vertices and triangular faces, a voxel grid stores a value per cell, and 3D Gaussian splatting (3DGS) stores a large number of colored, translucent 3D Gaussian ellipsoids. An implicit representation instead writes the scene as a function: input a spatial coordinate, output that point’s property, with the surface hidden inside some level set of the function. A signed distance function (SDF) outputs the signed distance to the surface, with the surface located where the value is 0; DeepSDF and neural radiance fields (NeRF) use a neural network to fit this kind of function. Implicit representations are continuous and compact, with resolution not limited by a grid, but extracting a surface or rendering requires repeatedly querying the network, which is slow; explicit representations render and edit fast, with accuracy limited by discretization. Robot planning and physics simulation still usually need a mesh or voxels, so an implicit reconstruction is often extracted into a mesh afterward.",
+      "example": "NeRF uses a fully connected network to map a 5D coordinate (3D position plus viewing direction) to density and color — a typical implicit representation; 3DGS directly stores a batch of 3D Gaussians and renders them by rasterization — an explicit representation, which is why it can render in real time.",
+      "related": ["Neural Radiance Field", "3D Gaussian Splatting", "Signed Distance Field", "Truncated Signed Distance Function", "Point Cloud", "Voxel"]
+    },
+    {
+      "key": "perception-16#9",
+      "name_en": "IMU Preintegration",
+      "aliases": ["IMU Preintegration Factor", "Inertial Preintegration"],
+      "one_liner": "A technique that pre-integrates a large batch of IMU readings between two frames into a single relative-motion constraint.",
+      "explanation": "An IMU (inertial measurement unit) outputs angular velocity and acceleration at several hundred hertz, while camera or lidar keyframes come at only ten to a few tens of hertz. An optimization-based visual-inertial odometry system needs to add an IMU constraint between neighboring keyframes, but directly integrating depends on the pose and velocity at the starting point — every time optimization changes that starting point, the integration would need to be redone, which is slow. Preintegration instead integrates this stretch of IMU data, expressed in the body frame at the starting point, into relative rotation, velocity, and position increments that don’t depend on the global pose, so it only needs to be computed once; when the estimated bias (the IMU’s systematic offset) changes, a first-order approximation corrects it without recomputing from scratch. Forster and colleagues gave a complete derivation on the rotation manifold SO(3) in IEEE T-RO in 2016, and this approach has become a standard component in visual/lidar-inertial odometry systems like VINS-Mono and LIO-SAM, and in factor-graph libraries like GTSAM.",
+      "example": "VINS-Mono, in its tightly coupled nonlinear optimization, preintegrates the IMU data between neighboring keyframes into a single constraint, solved jointly with visual feature observations to get the camera trajectory.",
+      "related": ["Inertial Measurement Unit", "Visual-Inertial Odometry", "Factor Graph Optimization", "VINS-Mono / VINS-Fusion", "Tightly Coupled / Loosely Coupled Fusion", "Lidar-Inertial Odometry"]
+    },
+    {
+      "key": "perception-16#10",
+      "name_en": "Indirect Time of Flight",
+      "aliases": ["iToF", "Phase-Based ToF", "Continuous-Wave ToF", "AMCW ToF"],
+      "one_liner": "A depth-sensing method that emits modulated light and computes distance from the phase shift of its echo.",
+      "explanation": "Indirect time of flight (iToF) is one variant of time-of-flight sensing: the light source emits continuous infrared light modulated at a set frequency, and each pixel in the sensor measures the phase difference between the echo and the emitted signal, converting that phase into a round-trip time and then a distance. Compared with dToF, which times a light pulse’s round trip directly, iToF has a simpler pixel structure, making it easier to achieve a high-resolution depth map with good close-range accuracy, so it is commonly used in depth cameras and phones. It has several limitations: the phase repeats every 2π, so an object beyond the unambiguous range (c/2f, where f is the modulation frequency) gets computed as if it were closer, requiring multiple modulation frequencies combined to resolve the ambiguity; strong sunlight can swamp the modulated signal, so outdoor performance is poor; and multipath interference, where light bounces between multiple surfaces, plus flying pixels where foreground and background mix in the same pixel at an object’s edge, both introduce error.",
+      "example": "Both the Microsoft Azure Kinect and the Orbbec Femto Bolt use Microsoft’s iToF depth solution: a 1-megapixel depth sensor, up to 1024×1024 at 15 fps in wide-field-of-view mode, with a working range of roughly 0.25–5.46 m depending on the mode.",
+      "related": ["Time of Flight", "Direct Time of Flight", "Depth Camera", "Flying Pixels", "Orbbec Femto Bolt", "Azure Kinect Depth Camera"]
+    },
+    {
+      "key": "perception-16#11",
+      "name_en": "Interactive Perception",
+      "aliases": [],
+      "one_liner": "A robot actively pushes, pokes, or pulls objects, using the resulting changes to understand its environment.",
+      "explanation": "Interactive perception means a robot changes the scene through physical contact — pushing, poking, pulling, picking something up to look at it — and uses the sensory changes caused by that action to understand the environment. A 2017 survey by Bohg, Hausman, Brock, Kragic, and colleagues in IEEE T-RO systematically laid out this direction, with two core ideas: interaction produces signals that passive observation can’t get, and knowing what action you just took lets you better predict and interpret the signal that follows. It differs from active perception, which usually just moves the camera or changes viewpoint without changing the environment; interactive perception actually changes the environment by acting on it. Typical uses include segmenting objects that are pressed together, estimating the joint axis of a drawer or cabinet door, and judging physical properties like an object’s mass and friction.",
+      "example": "Several blocks sit pressed together, and looking at the image alone can’t tell their boundaries apart; the robot gives them a push, and the pixels that move together belong to the same block, letting it segment them. Tracking a handle’s motion while pulling open a drawer can likewise estimate the drawer’s sliding direction.",
+      "related": ["Active Perception", "Articulation Estimation", "Affordance", "Perception-Action Loop", "Non-Prehensile Manipulation", "Embodied Perception"]
+    }
+  ]
+}

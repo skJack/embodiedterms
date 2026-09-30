@@ -1,0 +1,430 @@
+{
+ "category": "model",
+ "batch": 14,
+ "terms": [
+  {
+   "name_zh": "训练后量化",
+   "name_en": "Post-Training Quantization",
+   "abbr": "PTQ",
+   "aliases": [
+    "后训练量化",
+    "离线量化"
+   ],
+   "tier": 3,
+   "one_liner": "模型训练完后，直接把权重和激活换成低比特数值，不用重新训练。",
+   "explanation": "训练后量化是一种模型压缩方法：模型按正常精度（FP32、BF16 等）训练完后，把权重、有时连同激活值，换成 INT8、INT4 等低比特表示。它通常只需一小批校准数据来统计数值范围，不需要标注数据，也不重新训练。高通 AI 研究院的量化白皮书总结，多数模型用 PTQ 做到 8 比特时精度接近浮点；再往下压就容易掉点，需要 GPTQ 这类利用二阶信息的方法，或者改用量化感知训练。对具身智能来说，它主要服务于部署：VLA 动辄几十亿参数，机器人上的显存和算力有限，量化能直接降低显存占用、加快推理。TensorRT、ONNX Runtime 等部署工具都支持 PTQ。",
+   "example": "OpenVLA 论文把 7B 模型做 4 比特量化推理，在 BridgeData V2 任务上成功率 71.9%，和 BF16 的 71.3% 持平，显存从 16.8GB 降到 7.0GB。",
+   "related": [
+    "量化感知训练",
+    "剪枝",
+    "端侧部署",
+    "推理延迟",
+    "TensorRT",
+    "数值精度格式（FP32 / BF16 / FP16 / FP8 / INT8）"
+   ],
+   "sources": [
+    {
+     "title": "A White Paper on Neural Network Quantization (Nagel et al., arXiv 2106.08295)",
+     "url": "https://arxiv.org/abs/2106.08295"
+    },
+    {
+     "title": "OpenVLA: An Open-Source Vision-Language-Action Model (arXiv 2406.09246)",
+     "url": "https://arxiv.org/html/2406.09246"
+    },
+    {
+     "title": "GPTQ: Accurate Post-Training Quantization for Generative Pre-trained Transformers (arXiv 2210.17323)",
+     "url": "https://arxiv.org/abs/2210.17323"
+    }
+   ],
+   "as_of": "2024-06"
+  },
+  {
+   "name_zh": "预训练视觉表征",
+   "name_en": "Pre-trained Visual Representation",
+   "abbr": "PVR",
+   "aliases": [
+    "视觉预训练表征",
+    "PVRs",
+    "预训练视觉编码器"
+   ],
+   "tier": 3,
+   "one_liner": "在大规模图像或视频上预先训练好的视觉编码器，拿来给机器人策略当「眼睛」。",
+   "explanation": "预训练视觉表征指先在大量图像或视频上训练好的视觉编码器，它把相机画面压成特征向量，再交给机器人策略或导航智能体使用，编码器通常冻结或只轻微微调。它要解决的是机器人数据少、从零学视觉效率低的问题。2022 年 Parisi 等人发现，只用 ImageNet 等通用视觉数据预训练的表征，训出的控制策略能追平甚至超过直接用真值状态（物体精确位置等）训练的策略。之后出现了 R3M（用 Ego4D 人类第一视角视频训练）、MVP（掩码自编码预训练）、VC-1 等面向具身任务的 PVR。VC-1 论文在含 17 个任务的 CortexBench 上比较后发现，没有哪种 PVR 在所有任务上都最好。现在的 VLA 更多直接用 SigLIP、DINOv2 这类视觉基础模型当编码器。",
+   "example": "VC-1 用 4000 多小时第一视角视频加 ImageNet、以掩码自编码方式训练 ViT，冻结后接一个小策略网络，在 CortexBench 的行走、导航、灵巧操作、移动操作等任务上评测。",
+   "related": [
+    "视觉编码器",
+    "R3M",
+    "VC-1",
+    "MVP（掩码视觉预训练）",
+    "视觉基础模型",
+    "冻结骨干网络"
+   ],
+   "sources": [
+    {
+     "title": "The Unsurprising Effectiveness of Pre-Trained Vision Models for Control (arXiv 2203.03580)",
+     "url": "https://arxiv.org/abs/2203.03580"
+    },
+    {
+     "title": "Where are we in the search for an Artificial Visual Cortex for Embodied Intelligence? (VC-1, arXiv 2303.18240)",
+     "url": "https://arxiv.org/abs/2303.18240"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "预测目标参数化（ε / v / x₀ 预测）",
+   "name_en": "Prediction Target Parameterization (ε-prediction / v-prediction / x₀-prediction)",
+   "abbr": "",
+   "aliases": [
+    "ε 预测",
+    "噪声预测",
+    "v 预测",
+    "x₀ 预测",
+    "x 预测",
+    "epsilon-prediction"
+   ],
+   "tier": 3,
+   "one_liner": "扩散模型的网络该输出噪声、速度还是干净数据，这个选择叫预测目标。",
+   "explanation": "扩散模型和流匹配训练时，先给干净数据 x₀ 加噪得到 x_t，网络看到 x_t 后要输出某个量来算损失，这个量有几种选法。ε 预测让网络猜加进去的噪声，是 2020 年 DDPM 的做法；x₀ 预测直接猜干净数据；v 预测由 Salimans 和 Ho 在 2022 年提出，预测噪声和数据的加权组合，在采样步数很少时更稳定；流匹配、整流流里网络预测的速度场也属于这一类。给定 x_t 和时间步，三者可以互相换算，但训练难度、不同噪声水平下的误差权重、少步采样效果并不相同。2025 年 Tianhong Li 与何恺明的 JiT 论文指出，在高维像素空间里直接预测干净数据，比预测噪声或速度更容易学好。机器人里，扩散策略默认用 ε 预测，π0 等流匹配 VLA 预测速度。",
+   "example": "扩散策略（Diffusion Policy）的噪声预测网络 ε_θ 输入加噪的动作序列，输出估计的噪声；π0 的动作专家则输出速度向量，部署时从纯噪声出发积分 10 步得到动作块。",
+   "related": [
+    "扩散模型",
+    "流匹配",
+    "整流流",
+    "去噪扩散概率模型",
+    "速度场",
+    "去噪损失"
+   ],
+   "sources": [
+    {
+     "title": "Denoising Diffusion Probabilistic Models (DDPM, arXiv 2006.11239)",
+     "url": "https://arxiv.org/abs/2006.11239"
+    },
+    {
+     "title": "Progressive Distillation for Fast Sampling of Diffusion Models (v-prediction, arXiv 2202.00512)",
+     "url": "https://arxiv.org/abs/2202.00512"
+    },
+    {
+     "title": "Back to Basics: Let Denoising Generative Models Denoise (JiT, arXiv 2511.13720)",
+     "url": "https://arxiv.org/abs/2511.13720"
+    }
+   ],
+   "as_of": "2025-11"
+  },
+  {
+   "name_zh": "Prismatic VLM",
+   "name_en": "Prismatic VLMs: Investigating the Design Space of Visually-Conditioned Language Models",
+   "abbr": "",
+   "aliases": [
+    "Prismatic VLMs",
+    "Prismatic-7B"
+   ],
+   "tier": 3,
+   "one_liner": "斯坦福与丰田研究院系统比较 VLM 设计的研究和开源模型，OpenVLA 的底座。",
+   "explanation": "Prismatic VLM 出自斯坦福大学和丰田研究院（TRI）的论文，Siddharth Karamcheti 等人发表于 ICML 2024。作者搭了统一的训练与评测框架（12 个基准，覆盖视觉问答、物体定位和挑战集），逐项比较视觉语言模型的设计选择：用哪个视觉编码器、要不要先单独做对齐预训练、语言模型用基座版还是指令微调版等。主要结论：跳过单独的对齐阶段、只做单阶段训练，效果不差还省 20%–25% 算力；把 DINOv2 和 SigLIP 的特征拼起来，定位类任务提升明显；指令微调版语言模型没有显著优势。据此训出的 7B–13B 模型超过同期的 InstructBLIP 和 LLaVA v1.5，代码和几十个检查点都已开源。它和具身智能的关系在于 OpenVLA 直接以 Prismatic-7B 为底座，OpenVLA 论文认为这种融合视觉编码器有助于空间推理。",
+   "example": "OpenVLA 的底座 Prismatic-7B 由约 6 亿参数的 DINOv2 + SigLIP 融合视觉编码器、2 层 MLP 投影层和 Llama 2 7B 语言模型组成。",
+   "related": [
+    "OpenVLA",
+    "视觉语言模型",
+    "DINOv2",
+    "SigLIP",
+    "投影层",
+    "Llama"
+   ],
+   "sources": [
+    {
+     "title": "Prismatic VLMs: Investigating the Design Space of Visually-Conditioned Language Models (arXiv 2402.07865)",
+     "url": "https://arxiv.org/html/2402.07865"
+    },
+    {
+     "title": "TRI-ML/prismatic-vlms (GitHub)",
+     "url": "https://github.com/TRI-ML/prismatic-vlms"
+    },
+    {
+     "title": "OpenVLA: An Open-Source Vision-Language-Action Model (arXiv 2406.09246)",
+     "url": "https://arxiv.org/html/2406.09246"
+    }
+   ],
+   "as_of": "2024-07"
+  },
+  {
+   "name_zh": "剪枝",
+   "name_en": "Pruning",
+   "abbr": "",
+   "aliases": [
+    "模型剪枝",
+    "网络剪枝",
+    "Network Pruning"
+   ],
+   "tier": 3,
+   "one_liner": "删掉模型里不重要的权重、通道或层，让模型变小变快。",
+   "explanation": "剪枝是一类模型压缩方法：找出网络中对输出影响小的部分并删掉。删单个权重叫非结构化剪枝，删整个通道、注意力头或层叫结构化剪枝。这一思路可追溯到 LeCun 等人 1989 年的 Optimal Brain Damage；2015 年 Song Han 等人提出「先训练、剪掉小权重、再重新训练」的三步法，把 AlexNet 参数从 6100 万减到 670 万、VGG-16 压缩 13 倍，ImageNet 精度基本不降。非结构化剪枝得到的是稀疏矩阵，要专门的硬件或库才能真正提速；结构化剪枝直接让矩阵变小，更容易提速。在具身智能里，剪枝常和量化、知识蒸馏一起用来把大模型塞进机器人的端侧算力，针对 VLA 还出现了剪冗余语言层、剪视觉 token 的做法。",
+   "example": "EfficientVLA 不额外训练，剪掉 CogACT 语言模块里功能冗余的层、筛掉不重要的视觉 token，并缓存扩散动作头的中间特征，在 SIMPLER 上推理提速 1.93 倍，成功率只降 0.6%。",
+   "related": [
+    "视觉 token 剪枝",
+    "训练后量化",
+    "量化感知训练",
+    "知识蒸馏",
+    "端侧部署",
+    "早退机制"
+   ],
+   "sources": [
+    {
+     "title": "Learning both Weights and Connections for Efficient Neural Networks (Han et al., arXiv 1506.02626)",
+     "url": "https://arxiv.org/abs/1506.02626"
+    },
+    {
+     "title": "EfficientVLA: Training-Free Acceleration and Compression for Vision-Language-Action Models (arXiv 2506.10100)",
+     "url": "https://arxiv.org/abs/2506.10100"
+    }
+   ],
+   "as_of": "2025-06"
+  },
+  {
+   "name_zh": "量化感知训练",
+   "name_en": "Quantization-Aware Training",
+   "abbr": "QAT",
+   "aliases": [
+    "量化训练",
+    "伪量化训练"
+   ],
+   "tier": 3,
+   "one_liner": "训练时就模拟低比特带来的误差，让模型提前适应，量化后精度掉得更少。",
+   "explanation": "量化感知训练是在训练或微调时插入「伪量化」操作：前向计算中先把权重和激活取整到低比特（如 INT8、INT4）再参与运算，反向传播时把取整当作恒等函数（直通估计器）绕过不可导的步骤，让模型学会在量化误差下工作。谷歌 Jacob 等人 2018 年面向纯整数推理的论文是这一做法的代表。和训练后量化相比，QAT 需要训练数据和额外算力，但在 4 比特及更低位宽时精度保持得明显更好，常见流程是先正常训练，再做一小段 QAT 微调。具身方向上，BitVLA 用「先量化再蒸馏」的量化感知训练，由全精度教师模型引导，把视觉编码器压到 1.58 比特，论文报告显存比 OpenVLA-OFT 少 11 倍而性能相当。",
+   "example": "谷歌 2025 年 4 月发布 Gemma 3 的 QAT 版本：做约 5000 步 QAT 后再量化到 int4，27B 模型显存从 BF16 的 54GB 降到 14.1GB，谷歌称量化造成的困惑度损失比直接量化少 54%。",
+   "related": [
+    "训练后量化",
+    "剪枝",
+    "知识蒸馏",
+    "端侧部署",
+    "混合精度训练",
+    "数值精度格式（FP32 / BF16 / FP16 / FP8 / INT8）"
+   ],
+   "sources": [
+    {
+     "title": "Quantization and Training of Neural Networks for Efficient Integer-Arithmetic-Only Inference (arXiv 1712.05877)",
+     "url": "https://arxiv.org/abs/1712.05877"
+    },
+    {
+     "title": "Gemma 3 QAT Models: Bringing state-of-the-Art AI to consumer GPUs (Google Developers Blog)",
+     "url": "https://developers.googleblog.com/en/gemma-3-quantized-aware-trained-state-of-the-art-ai-to-consumer-gpus/"
+    },
+    {
+     "title": "BitVLA: 1-bit Vision-Language-Action Models for Robotics Manipulation (arXiv 2506.07530)",
+     "url": "https://arxiv.org/abs/2506.07530"
+    }
+   ],
+   "as_of": "2025-06"
+  },
+  {
+   "name_zh": "Q-Former",
+   "name_en": "Querying Transformer",
+   "abbr": "Q-Former",
+   "aliases": [
+    "查询 Transformer",
+    "BLIP-2 Q-Former"
+   ],
+   "tier": 3,
+   "one_liner": "BLIP-2 中用 32 个可学习查询提炼图像信息、再交给大语言模型的小模块。",
+   "explanation": "Q-Former 是 Salesforce 在 2023 年 BLIP-2 论文里提出的连接模块，用来把冻结的图像编码器和冻结的大语言模型接起来。它是一个约 1.88 亿参数、用 BERT-base 初始化的小 Transformer，输入 32 个可学习的查询向量（每个 768 维），通过交叉注意力从图像特征里读信息，输出固定大小的 32×768 特征，远小于 ViT-L/14 原始的 257×1024 特征，相当于一个信息瓶颈。训练分两阶段：先配合图像编码器学图文表征，再接上语言模型学生成。因为只训练 Q-Former 等少量参数，BLIP-2 在零样本 VQAv2 上比 Flamingo-80B 高 8.7%，可训练参数少 54 倍。InstructBLIP 等沿用了它；LLaVA、Prismatic 等则改用更简单的 MLP 投影层，OpenVLA 的底座用的也是 MLP。",
+   "example": "BLIP-2 把 ViT-g 提取的图像特征交给 Q-Former 压成 32 个向量，经一层线性投影后作为「软视觉提示」拼在 OPT 或 Flan-T5 语言模型的文本输入前面。",
+   "related": [
+    "投影层",
+    "Perceiver 重采样器",
+    "可学习查询",
+    "交叉注意力",
+    "视觉语言模型",
+    "视觉编码器"
+   ],
+   "sources": [
+    {
+     "title": "BLIP-2: Bootstrapping Language-Image Pre-training with Frozen Image Encoders and Large Language Models (arXiv 2301.12597)",
+     "url": "https://arxiv.org/abs/2301.12597"
+    },
+    {
+     "title": "BLIP-2 full text (HTML, Section 3.1 Model Architecture)",
+     "url": "https://arxiv.org/html/2301.12597"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "整流流",
+   "name_en": "Rectified Flow",
+   "abbr": "RF",
+   "aliases": [
+    "修正流",
+    "矫正流"
+   ],
+   "tier": 3,
+   "one_liner": "让噪声沿直线走向数据的生成模型，路径越直，采样需要的步数越少。",
+   "explanation": "整流流由 Xingchao Liu、Chengyue Gong 和 Qiang Liu 在 2022 年论文「Flow Straight and Fast」中提出。它把噪声样本和数据样本用直线连起来，训练网络预测沿这条直线的速度，生成时从噪声出发解一个常微分方程（ODE）走到数据。训练目标只是简单的最小二乘回归，和同期 Lipman 等人提出的流匹配在取直线路径时基本等价。它的另一个贡献是 reflow：用训练好的模型生成「噪声—数据」配对，再用这些配对重新训练，路径会越来越直，甚至一步欧拉积分就能生成不错的结果，适合配合蒸馏做少步或单步生成。Stability AI 的 Stable Diffusion 3 采用整流流训练；机器人里 π0 的流匹配也用同样的直线插值路径生成动作。",
+   "example": "π0 训练时把真实动作块和高斯噪声按时间 τ 线性混合，让动作专家预测两者之间的速度；部署时从纯噪声出发，用 10 步欧拉积分得到可执行的动作块。",
+   "related": [
+    "流匹配",
+    "速度场",
+    "扩散模型",
+    "单步生成",
+    "一致性模型",
+    "π0"
+   ],
+   "sources": [
+    {
+     "title": "Flow Straight and Fast: Learning to Generate and Transfer Data with Rectified Flow (arXiv 2209.03003)",
+     "url": "https://arxiv.org/abs/2209.03003"
+    },
+    {
+     "title": "Scaling Rectified Flow Transformers for High-Resolution Image Synthesis (SD3, arXiv 2403.03206)",
+     "url": "https://arxiv.org/abs/2403.03206"
+    },
+    {
+     "title": "π0: A Vision-Language-Action Flow Model for General Robot Control (arXiv 2410.24164)",
+     "url": "https://arxiv.org/html/2410.24164"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "循环状态空间模型",
+   "name_en": "Recurrent State-Space Model",
+   "abbr": "RSSM",
+   "aliases": [
+    "递归状态空间模型"
+   ],
+   "tier": 3,
+   "one_liner": "Dreamer 系列世界模型的核心结构，用确定性循环状态加随机隐变量预测未来。",
+   "explanation": "循环状态空间模型是 Danijar Hafner 等人（Google Brain、DeepMind 等）2019 年在 PlaNet 论文中提出的隐空间动力学模型，后来成为 Dreamer 到 DreamerV3 世界模型的核心。它的状态分两部分：一个确定性的循环隐状态 h，由 GRU 这类循环网络更新，负责记住历史；一个随机隐变量 z，表示当前时刻的不确定信息。给定上一步状态和动作，模型先更新 h，再预测下一步的 z；训练时另用编码器从真实图像推出 z 作对照，并要求能重建图像、预测奖励。PlaNet 的对比实验显示，纯确定性或纯随机的版本都不如两者结合。有了它，智能体可以在隐空间里「想象」多步未来来规划或训练策略，大幅减少和真实环境的交互。DreamerV3 把 z 改成离散类别分布；2025 年的 Dreamer 4 则改用 Transformer 架构的世界模型。",
+   "example": "DreamerV3 用 RSSM 世界模型生成想象轨迹，在上面训练行动者和评论家网络，论文称它是首个不借助人类数据、从零在 Minecraft 里挖到钻石的算法。",
+   "related": [
+    "世界模型",
+    "隐空间世界模型",
+    "DreamerV3",
+    "Dreamer 4",
+    "想象中学习",
+    "循环神经网络"
+   ],
+   "sources": [
+    {
+     "title": "Learning Latent Dynamics for Planning from Pixels (PlaNet, arXiv 1811.04551)",
+     "url": "https://arxiv.org/abs/1811.04551"
+    },
+    {
+     "title": "Mastering Diverse Domains through World Models (DreamerV3, arXiv 2301.04104)",
+     "url": "https://arxiv.org/html/2301.04104"
+    },
+    {
+     "title": "Training Agents Inside of Scalable World Models (Dreamer 4, arXiv 2509.24527)",
+     "url": "https://arxiv.org/abs/2509.24527"
+    }
+   ],
+   "as_of": "2025-09"
+  },
+  {
+   "name_zh": "表征坍缩",
+   "name_en": "Representation Collapse",
+   "abbr": "",
+   "aliases": [
+    "表示坍缩",
+    "表征崩溃",
+    "维度坍缩"
+   ],
+   "tier": 3,
+   "one_liner": "自监督训练时编码器对所有输入都输出相同或相近的向量，表征失去信息。",
+   "explanation": "表征坍缩是自监督学习和联合嵌入预测类模型里的典型失败。如果训练目标只要求同一样本两个视角（或当前与未来）的表征彼此接近，编码器最省事的解就是对任何输入都输出同一个常向量：损失很小，表征却不含任何信息。较轻的形式叫维度坍缩，向量只用上了少数几个维度。防坍缩的办法大致三类：对比学习用负样本把不同图片的表征推开；VICReg（Bardes、Ponce、LeCun，2021）显式约束每一维的方差和维度间的协方差；BYOL、JEPA 系列用停止梯度加指数移动平均（EMA）目标编码器。具身智能里，用 JEPA 式隐空间训练视频表征或世界模型时，例如 Meta 的 V-JEPA 2，同样要处理这个问题。",
+   "example": "V-JEPA 2 训练时，被遮挡视频片段的目标表征由编码器权重的 EMA 副本计算并施加停止梯度，论文说明这样做正是为了防止表征坍缩。",
+   "related": [
+    "自监督学习",
+    "联合嵌入预测架构",
+    "对比学习",
+    "梯度阻断",
+    "指数移动平均",
+    "V-JEPA 2"
+   ],
+   "sources": [
+    {
+     "title": "VICReg: Variance-Invariance-Covariance Regularization for Self-Supervised Learning (arXiv 2105.04906)",
+     "url": "https://arxiv.org/abs/2105.04906"
+    },
+    {
+     "title": "V-JEPA 2: Self-Supervised Video Models Enable Understanding, Prediction and Planning (arXiv 2506.09985)",
+     "url": "https://arxiv.org/html/2506.09985"
+    }
+   ],
+   "as_of": "2025-06"
+  },
+  {
+   "name_zh": "残差策略",
+   "name_en": "Residual Policy",
+   "abbr": "",
+   "aliases": [
+    "残差策略学习",
+    "Residual Policy Learning",
+    "RPL"
+   ],
+   "tier": 3,
+   "one_liner": "在已有控制器或策略的输出上再学一个修正量，两者相加作为最终动作。",
+   "explanation": "残差策略指不从零学整个策略，而是保留一个现成的基础策略（手工控制器、模型预测控制，或模仿学习训好的策略），另训练一个网络只输出对它的修正量，最终动作等于基础动作加残差。2018 年 MIT 的 Silver 等人提出残差策略学习，几乎同时 Johannink、Levine 等人在真实机器人的积木装配上验证了残差强化学习。好处是基础策略已经能把任务做个大概，残差只需补上难以建模的部分，比如摩擦、接触和标定误差，探索空间小、样本效率高，也更安全。近年常见的用法是冻结一个扩散策略或 VLA，再用强化学习训练一个轻量的逐步闭环残差，提升精细装配等任务的成功率。",
+   "example": "ResiP（Pulkit Agrawal 组，2024）冻结一个带动作分块的扩散策略，用 PPO 训练逐步闭环的残差策略做修正，在 FurnitureBench 家具装配等仿真任务上大幅提高成功率，再通过教师-学生蒸馏迁移到真机。",
+   "related": [
+    "残差强化学习",
+    "扩散策略",
+    "强化学习微调",
+    "动作分块",
+    "模型预测控制",
+    "教师-学生蒸馏"
+   ],
+   "sources": [
+    {
+     "title": "Residual Policy Learning (Silver et al., arXiv 1812.06298)",
+     "url": "https://arxiv.org/abs/1812.06298"
+    },
+    {
+     "title": "Residual Reinforcement Learning for Robot Control (Johannink et al., arXiv 1812.03201)",
+     "url": "https://arxiv.org/abs/1812.03201"
+    },
+    {
+     "title": "From Imitation to Refinement -- Residual RL for Precise Assembly (ResiP, arXiv 2407.16677)",
+     "url": "https://arxiv.org/html/2407.16677"
+    }
+   ],
+   "as_of": "2024-07"
+  },
+  {
+   "name_zh": "旋转位置编码",
+   "name_en": "Rotary Position Embedding",
+   "abbr": "RoPE",
+   "aliases": [
+    "旋转式位置编码",
+    "Rotary Embedding",
+    "M-RoPE"
+   ],
+   "tier": 3,
+   "one_liner": "把位置信息写成向量旋转角度的位置编码，让注意力天然感知相对距离。",
+   "explanation": "旋转位置编码由深圳追一科技的苏剑林等人在 2021 年 RoFormer 论文中提出。Transformer 本身分不清 token 的先后顺序，需要位置编码补上。RoPE 把查询和键向量的每两维看作一个平面坐标，按 token 所在位置旋转一个角度，不同维度对的转速不同；这样两个 token 做内积时，结果只取决于它们的相对距离。它不增加可学习参数，注意力依赖随距离增大自然衰减，也方便通过调整旋转频率来扩展上下文长度。Meta 的 LLaMA 采用 RoPE 后，它成了大语言模型的主流做法，Qwen 系列等 VLM 以及基于它们的 VLA 也都沿用。Qwen2-VL 进一步提出多模态 RoPE（M-RoPE），把位置拆成时间、高度、宽度三个分量，用于图像和视频 token。",
+   "example": "Qwen2-VL 的 M-RoPE：文本 token 的三个位置编号相同，等同普通 RoPE；图像 token 的时间编号固定、高宽编号随所在网格位置变化；视频每往后一帧，时间编号加一。",
+   "related": [
+    "位置编码",
+    "Transformer",
+    "自注意力",
+    "上下文长度",
+    "通义千问 Qwen-VL",
+    "Llama"
+   ],
+   "sources": [
+    {
+     "title": "RoFormer: Enhanced Transformer with Rotary Position Embedding (arXiv 2104.09864)",
+     "url": "https://arxiv.org/abs/2104.09864"
+    },
+    {
+     "title": "Qwen2-VL: Enhancing Vision-Language Model's Perception of the World at Any Resolution (arXiv 2409.12191)",
+     "url": "https://arxiv.org/html/2409.12191"
+    },
+    {
+     "title": "LLaMA: Open and Efficient Foundation Language Models (arXiv 2302.13971)",
+     "url": "https://arxiv.org/abs/2302.13971"
+    }
+   ],
+   "as_of": ""
+  }
+ ]
+}

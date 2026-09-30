@@ -1,0 +1,217 @@
+{
+  "batch": "concept-05",
+  "terms": [
+    {
+      "key": "concept-05#0",
+      "name_en": "Failure Recovery",
+      "aliases": [
+        "Error Recovery"
+      ],
+      "one_liner": "A robot noticing it made a mistake or is about to fail, and adjusting on its own to still finish the task.",
+      "explanation": "Failure recovery means a robot detects something has gone wrong during execution — a missed grasp, a dropped object, getting stuck — and continues the task anyway by retrying, changing approach, or backing off to a safe state. An imitation-learning policy trained only on successful demonstrations tends to drift into states it has never seen the moment it deviates even slightly from the demonstrated trajectory, and small errors compound (compounding error), so recovery ability often determines whether a long-horizon task can be completed at all. There are two common approaches. One detects and explains the failure, then replans: REFLECT (CoRL 2023) uses a large language model to summarize the robot's experience and explain what went wrong, and AHA (2024) trains a vision-language model specifically to judge failures. The other teaches recovery actions to the policy directly: RaC (2025) has a human step in right before a failure, guide the robot back to a familiar state, then demonstrate the correction, and trains the policy on that kind of data.",
+      "example": "When RaC's bimanual robot is hanging a shirt or packing a box, a human takes over right before a failure, guides the robot back to a familiar state, and demonstrates the corrective action; the policy learns to recover on its own from data like this.",
+      "related": [
+        "Corrective Data",
+        "Intervention Data",
+        "Compounding Error",
+        "Human-in-the-loop",
+        "RaC",
+        "Long-horizon Task"
+      ]
+    },
+    {
+      "key": "concept-05#1",
+      "name_en": "Fall Recovery",
+      "aliases": [
+        "Getting Up",
+        "Standing-up Control"
+      ],
+      "one_liner": "A humanoid or legged robot's ability to stand back up on its own from lying or sprawled positions after falling.",
+      "explanation": "Fall recovery means a legged robot, after falling, gets back up from lying on its back, lying face-down, lying on its side, or leaning against a wall, returning to a state where it can keep walking. Humanoid robots have a high center of mass and a small foot support area, so falling in the real world is hard to avoid entirely; if a person has to help it up every time, the robot cannot really be deployed autonomously. Getting up is harder to learn than walking: the torso and limbs touch the ground at multiple points at once, the order of contact is not fixed, and the reward signal is sparse. In the past, robots typically relied on hand-choreographed, fixed getting-up motions, which tend to fail when the posture or terrain changes. In 2025, methods emerged that train with reinforcement learning in simulation and transfer directly to a real Unitree G1 robot, such as HoST and HumanUP, both published at RSS 2025. A related concept is fall protection, minimizing impact and protecting the hardware during the fall itself.",
+      "example": "Tested on a Unitree G1, HumanUP lets the robot stand up on its own starting from either lying on its back or lying face-down, on grass, snow, and slopes.",
+      "related": [
+        "HoST (Humanoid Standing-up)",
+        "Fall Protection and Recovery",
+        "Push Recovery",
+        "Balance Control",
+        "RL-based Locomotion Control",
+        "Humanoid Robot"
+      ]
+    },
+    {
+      "key": "concept-05#2",
+      "name_en": "Few-shot",
+      "aliases": [
+        "Few-shot Learning"
+      ],
+      "one_liner": "Learning or performing a new task correctly from just a handful to a few dozen examples.",
+      "explanation": "Few-shot describes handling a new task with very few examples. In large language models, it usually means writing a handful of examples directly into the prompt and getting the model to follow them without updating any parameters; the 2020 GPT-3 paper, “Language Models are Few-Shot Learners,” made this usage widely known, and the capability is also called in-context learning. In robotics, few-shot more often means collecting just a handful to a few dozen demonstrations — recordings of a human teleoperating the robot through a task — and fine-tuning a pretrained model to learn the new task from them. Real-robot data collection is slow and expensive, so how many demonstrations a method needs to learn a new task is an important measure of how practical it is. It contrasts with zero-shot, where no examples at all are given.",
+      "example": "RVT-2 learns manipulation tasks that require high precision using only 10 demonstrations on a real robot.",
+      "related": [
+        "Zero-shot",
+        "In-context Learning",
+        "Fine-tuning",
+        "Demonstration Data",
+        "Sample Efficiency",
+        "One-shot Imitation Learning"
+      ]
+    },
+    {
+      "key": "concept-05#3",
+      "name_en": "Fine-grained Manipulation",
+      "aliases": [
+        "Precise Manipulation",
+        "Fine Manipulation"
+      ],
+      "one_liner": "Manipulation with tight tolerances for position and force, such as inserting a battery, threading a wire, or turning a tiny screw.",
+      "explanation": "Fine-grained manipulation refers to tasks with very little room for error, requiring millimeter-level positioning or careful force control — inserting a battery into a slot, peeling the lid off a small translucent cup, threading a wire through a small hole. There are two main difficulties: visually, the target is small and often hidden by the hand or gripper, so even a slight misalignment causes failure; on contact, applying even slightly too much force crushes the object or jams the mechanism. Early approaches relied on precise modeling plus force control; end-to-end imitation learning is now the dominant approach. Tony Zhao and colleagues' 2023 ALOHA paper used a low-cost bimanual setup with the ACT algorithm to reach 80–90% success on six fine-grained tasks with only about 10 minutes of demonstrations each. Other work brings in touch, such as 3D-ViTac, which fuses vision and touch to handle fragile objects. This term often appears alongside dexterous manipulation, but dexterous manipulation puts more emphasis on multi-fingered hands specifically.",
+      "example": "ALOHA's two arms peel the lid off a small translucent sauce cup, or insert a battery precisely into its slot.",
+      "related": [
+        "Dexterous Manipulation",
+        "Contact-rich Manipulation",
+        "ACT",
+        "3D-ViTac",
+        "Visuo-tactile Fusion",
+        "Bimanual Manipulation"
+      ]
+    },
+    {
+      "key": "concept-05#4",
+      "name_en": "Garment Manipulation",
+      "aliases": [
+        "Cloth Folding",
+        "Laundry Folding",
+        "Cloth Manipulation"
+      ],
+      "one_liner": "Getting a robot to flatten, fold, hang, and tidy clothing — the most iconic category of deformable object manipulation.",
+      "explanation": "Garment manipulation covers a robot's handling of clothes, towels, and other fabric items: flattening, folding, hanging, sorting a pile of laundry, even helping a person get dressed. It falls under deformable object manipulation: cloth can deform in essentially unlimited ways and cannot be described by a single pose the way a rigid body can; when balled up, it self-occludes over large areas, making it hard to tell the collar from the sleeves, and physical simulation is also difficult to get right. Because of this, folding clothes has long served as a flagship task for testing a robot's manipulation ability. Physical Intelligence's 2024 π0 paper lists laundry folding as one of its representative tasks; the same year's GarmentLab (NeurIPS 2024) provides a simulation benchmark spanning many garment types and robots, and finds that existing methods still generalize poorly to unseen garments.",
+      "example": "Facing a pile of crumpled T-shirts, the robot picks one up, shakes it out flat, folds it in a fixed sequence of steps, sets it aside, and moves on to the next one.",
+      "related": [
+        "Deformable Object Manipulation",
+        "Cloth Simulation",
+        "Bimanual Manipulation",
+        "π0",
+        "Long-horizon Task",
+        "Household Tasks"
+      ]
+    },
+    {
+      "key": "concept-05#5",
+      "name_en": "Goal-conditioned Policy",
+      "aliases": [],
+      "one_liner": "A policy that decides its action based on the goal to reach, not just the current observation.",
+      "explanation": "A goal-conditioned policy also takes a goal as input, usually written π(a | s, g): s is the current state or observation, and g is the goal, which can be a target position, a target image, or a target state. An ordinary policy learns only one fixed task, while a goal-conditioned policy uses a single network to handle a whole family of “reach different goals” tasks, so switching goals requires no retraining. In reinforcement learning this is called goal-conditioned RL, often paired with hindsight experience replay (HER), which relabels a trajectory that failed to reach its original goal as a success toward whatever state it actually reached, easing the sparse-reward problem. In imitation learning, Corey Lynch and colleagues' Play-LMP (2019) trains on unlabeled “play” data with no task labels, and at test time can carry out the corresponding action once given a goal. When the goal is described in a sentence instead, the result is called a language-conditioned policy.",
+      "example": "Given a robot arm a photo showing “the block in the upper-left corner of the table” as the goal, the policy pushes the block there; given a different photo, the same policy pursues the new goal instead.",
+      "related": [
+        "Goal-conditioned Reinforcement Learning",
+        "Hindsight Experience Replay",
+        "Language-conditioned Policy",
+        "Goal-conditioned Imitation Learning",
+        "Hindsight Relabeling",
+        "Policy"
+      ]
+    },
+    {
+      "key": "concept-05#6",
+      "name_en": "Language Grounding",
+      "aliases": [
+        "Grounding"
+      ],
+      "one_liner": "Connecting the words in language and instructions to actual objects, locations, and actions in the real world.",
+      "explanation": "Language grounding means making sure the language a model understands actually corresponds to the physical world: which object on the table is “the red cup,” which region is “the left side,” which actions “open the drawer” requires. It traces back to the symbol grounding problem Stevan Harnad proposed in 1990: if a symbol is only ever defined in terms of other symbols, it never actually touches real meaning. Large language models have read enormous amounts of text but have never acted in a specific environment, so they can propose plans the robot in front of them actually cannot carry out. SayCan (Google and others, 2022) scores a language model's suggestions using each skill's value function, which estimates whether that skill can succeed in the current scene, grounding the plan in what the robot can actually do. Note that in Chinese, 落地 also commonly means commercial deployment, so context matters; the separate vision task of matching text to a location in an image is called visual grounding.",
+      "example": "A user says, “I spilled my drink, help me.” SayCan has the language model list candidate steps, then uses the value function to pick the one that can actually succeed in the current scene, such as going to get a sponge first.",
+      "related": [
+        "Symbol Grounding Problem",
+        "SayCan",
+        "Visual Grounding",
+        "Affordance",
+        "Instruction Following",
+        "Large Language Model"
+      ]
+    },
+    {
+      "key": "concept-05#7",
+      "name_en": "Hallucination",
+      "aliases": [],
+      "one_liner": "A model confidently producing output that does not match the facts or the scene in front of it.",
+      "explanation": "Hallucination refers to a large model generating content that sounds plausible but does not match the facts or the actual input — first widely discussed in large language models, such as inventing a paper that does not exist; vision models can likewise “see” objects that are not actually in the image. In embodied settings, hallucination turns from “saying the wrong thing” into “doing the wrong thing”: a planner might send a robot to fetch something that is not actually in the room, or plow ahead trying to execute an instruction that cannot be completed. The 2025 HEAL study (EMNLP 2025 Findings) specifically tests large-language-model-driven embodied agents, evaluating 12 models across two simulated environments, and finds that models generally fail to notice when an instruction does not match the scene; on a test set built specifically to probe this, hallucination rates reached up to 40 times those seen with ordinary prompts. Common countermeasures include checking plans against perception results, having the model ask a person when uncertain, and uncertainty estimation.",
+      "example": "There is no apple in the kitchen, but the user says, “put the apple in the fridge,” and a large-language-model-based planner still generates steps such as “walk to the apple, pick up the apple.”",
+      "related": [
+        "Large Language Model",
+        "Vision-Language Model",
+        "Language Grounding",
+        "Uncertainty Estimation",
+        "KnowNo (Robots That Ask for Help)",
+        "Embodied Safety"
+      ]
+    },
+    {
+      "key": "concept-05#8",
+      "name_en": "Hand-Eye Coordination",
+      "aliases": [],
+      "one_liner": "Using what a camera sees to guide an arm and gripper's motion in real time, adjusting as it goes.",
+      "explanation": "Hand-eye coordination originally describes a capability of humans and animals: the eyes see a target and the hand reaches out to grasp it accurately, correcting itself as it watches. Applied to robots, it means closing the loop between camera images and arm motion. The traditional approach first performs hand-eye calibration, computing the coordinate transform between the camera and the arm, then converts a detected target position into arm coordinates and executes the motion in one shot — any small calibration error causes a missed grasp. In 2016, Sergey Levine and colleagues at Google used 6 to 14 robot arms over two months to collect more than 800,000 grasp attempts, training a convolutional network to judge directly from a single monocular image whether a given gripper motion would succeed, with no camera calibration needed and with continuous adjustment during the grasp itself — a landmark example of learning hand-eye coordination end to end. Note this is a distinct concept from hand-eye calibration.",
+      "example": "An object gets bumped out of place mid-grasp; the robot keeps correcting the gripper's position based on the camera feed, rather than reaching to a single coordinate computed in advance.",
+      "related": [
+        "Hand-Eye Calibration",
+        "Visual Servoing",
+        "Visuomotor Policy",
+        "Closed-loop",
+        "Google's Robot Arm Farm (Large-scale Self-supervised Grasping)",
+        "Grasping"
+      ]
+    },
+    {
+      "key": "concept-05#9",
+      "name_en": "Household Tasks",
+      "aliases": [],
+      "one_liner": "Everyday activities like tidying, cleaning, laundry, and cooking in a real home — the main target setting for general-purpose robots.",
+      "explanation": "Household tasks broadly cover the everyday activities carried out in a home: clearing a table, loading dishes into a dishwasher, wiping a counter, folding laundry, making a bed. A home is a classic unstructured environment: every household has a different layout, different objects, and different lighting, items get left in all kinds of places, tasks are often made up of many steps, and they frequently involve deformable objects such as clothing and articulated objects such as drawers and cabinet doors. Because of this, whether a robot can do housework in a home it has never seen is often treated as a litmus test for a general-purpose robot's generalization ability. The BEHAVIOR-1K benchmark, from Stanford and others, defines 1,000 everyday activities based on a survey of what people wanted robots to do for them, and evaluates them in the OmniGibson simulator; in April 2025, Physical Intelligence's π0.5 demonstrated cleaning a kitchen or bedroom in entirely new houses.",
+      "example": "In a house the robot has never entered before, it puts scattered clothes into a laundry basket, loads dishes into the sink, and then wipes down the counter.",
+      "related": [
+        "Long-horizon Task",
+        "Mobile Manipulation",
+        "Structured / Unstructured Environment",
+        "BEHAVIOR-1K",
+        "π0.5",
+        "Garment Manipulation"
+      ]
+    },
+    {
+      "key": "concept-05#10",
+      "name_en": "Human-Object Interaction",
+      "aliases": [
+        "HOI"
+      ],
+      "one_liner": "Studying how people grasp, push, open, and use objects — an important source for robots to learn actions from.",
+      "explanation": "Human-object interaction (HOI) studies what actions take place between a person and an object. In computer vision, the classic task is HOI detection: draw boxes around the person and the object in an image and determine the relationship between them, outputting a triple of “human, action, object,” such as “person, ride, bicycle”; a representative dataset is HICO-DET (WACV 2018). Research has since expanded to video, 3D, and 4D, focusing on how the hand contacts the object and how the object moves as a result; HOI4D (CVPR 2022), for example, contains 2.4 million frames of first-person RGB-D video across 800 object instances. For embodied AI, human interaction videos are far more abundant and far cheaper than robot data, so extracting contact locations, hand trajectories, and affordances (how an object can be used) from them is an important way to expand a robot's training data. The abbreviation HOI is sometimes also used specifically for hand-object interaction.",
+      "example": "From a large collection of videos of people opening refrigerators, a system identifies the interaction “person, pull open, fridge door” and where the hand grips the handle, then uses this to teach a robot to open doors.",
+      "related": [
+        "Hand-Object Interaction",
+        "Affordance",
+        "Human Video Data",
+        "HOI4D Dataset",
+        "Egocentric Video",
+        "OMOMO (Human-Object Interaction Motion Dataset)"
+      ]
+    },
+    {
+      "key": "concept-05#11",
+      "name_en": "Human-Robot Collaboration",
+      "aliases": [
+        "HRC"
+      ],
+      "one_liner": "People and robots dividing up work and coordinating in the same space to complete a task together.",
+      "explanation": "Human-robot collaboration means people and a robot share a workspace and work on the same task together, rather than the robot being fenced off to work alone; it is a branch of human-robot interaction. It is most common in industry: in 1996, J. Edward Colgate and Michael Peshkin of Northwestern University invented the collaborative robot (cobot), which later grew into a category of lightweight arms that can work right next to people. The International Federation of Robotics divides collaboration into four levels — coexistence, sequential collaboration, simultaneous collaboration, and responsive collaboration — and most factory applications today still sit at the first two levels. Safety is the central concern: ISO 10218 and ISO/TS 15066 set requirements for collaborative applications, including power-and-force limiting and speed-and-separation monitoring. For embodied AI, as robots move into factories and homes, they also need to read human intent and coordinate with human motion — lifting a table together, or handing a tool back and forth.",
+      "example": "On an assembly line, a worker aligns a part while a nearby collaborative arm supports the heavier component; the arm automatically slows down when the worker gets close and speeds back up once they step away.",
+      "related": [
+        "Collaborative Robot (Cobot)",
+        "Human-Robot Interaction",
+        "Physical Human-Robot Interaction",
+        "ISO/TS 15066 (Collaborative Robot Safety Standard)",
+        "Power and Force Limiting",
+        "Human-Robot Object Handover"
+      ]
+    }
+  ]
+}

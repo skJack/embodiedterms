@@ -1,0 +1,113 @@
+{
+  "batch": "software-07",
+  "terms": [
+    {
+      "key": "software-07#0",
+      "name_en": "Xacro (XML Macros)",
+      "aliases": [".xacro file"],
+      "one_liner": "An XML macro language that adds variables, macros, and includes to URDF, cutting down on repetitive robot descriptions.",
+      "explanation": "Xacro is an XML macro language and companion tool package in the ROS ecosystem, built specifically for writing URDF (the Unified Robot Description Format, which uses XML to describe a robot's links, joints, mass, and shape). Plain URDF has no variables or functions, so a symmetric dual-arm robot ends up needing nearly identical links and joints copied twice, and changing one dimension means editing many places. Xacro adds properties (constants), macros (parameterized templates), basic math, conditional expansion, and an include mechanism for combining multiple files. A finished .xacro file is expanded into plain URDF at launch time by the xacro command, then handed off to robot_state_publisher, RViz, Gazebo, or MoveIt. Most vendor-provided ROS robot description packages ship in .xacro form.",
+      "example": "Write an arm macro parameterized by prefix and mounting position for a dual-arm robot, then call it twice with left_ and right_ to generate all the links and joints for both arms.",
+      "related": ["Unified Robot Description Format (URDF)", "Semantic Robot Description Format (SRDF)", "MJCF (MuJoCo XML Format)", "robot_state_publisher", "ROS 2", "Mesh File (STL / OBJ / DAE / glTF)"]
+    },
+    {
+      "key": "software-07#1",
+      "name_en": "acados (fast embedded optimal control solver)",
+      "aliases": [],
+      "one_liner": "An open-source solver for real-time optimal control and MPC that can generate embeddable C code.",
+      "explanation": "acados is an open-source suite of software for optimal control and model predictive control (MPC — solving an optimization problem over a short future horizon at every control step), developed mainly by Moritz Diehl's group at the University of Freiburg and collaborators, and can be seen as a successor to the earlier ACADO toolkit. Its core is written in C and relies on BLASFEO (a small-matrix linear-algebra library) and HPIPM (a structured quadratic-programming solver) underneath, offering algorithms such as SQP (sequential quadratic programming) and real-time iteration (RTI), aimed at solving nonlinear MPC within a millisecond-scale control period. Users typically write system dynamics and cost functions in Python or MATLAB using CasADi, have acados generate C code from them, and then deploy that code to an industrial PC or embedded board. It's common in MPC research for legged robots, drones, and robot arms.",
+      "example": "Write a quadrotor's dynamics in CasADi in Python, generate a solver with acados, and run nonlinear MPC for trajectory tracking on an onboard computer at roughly 100 Hz.",
+      "related": ["Model Predictive Control (MPC)", "Nonlinear Model Predictive Control", "CasADi", "Sequential Quadratic Programming", "OCS2 (Optimal Control for Switched Systems)", "Crocoddyl (Contact RObot COntrol by Differential DYnamic programming Library)"]
+    },
+    {
+      "key": "software-07#2",
+      "name_en": "AgiBot Genie Studio",
+      "aliases": ["AgiBot Genie Studio"],
+      "one_liner": "AgiBot's one-stop embodied-AI development platform, covering data collection, training, evaluation, and deployment.",
+      "explanation": "Genie Studio is a developer-facing embodied-AI platform from AgiBot (智元机器人). According to the company's own description, its goal is to string together, on one platform, the several steps needed to build a robot skill: teleoperation-based data collection and management, data annotation, training and fine-tuning on top of AgiBot's own foundation models (such as GO-1), simulation-based evaluation, and deploying the trained model onto AgiBot's hardware. It addresses the problem that the embodied-AI development pipeline is long and its tooling scattered — getting from collected data to a working real robot often means stitching together a lot of custom scripts. For a newcomer, it can be understood as a vendor-supplied “embodied-AI IDE plus cloud training service,” aimed mainly at customers and developers using AgiBot hardware. Its exact feature set and how open it is are best confirmed against AgiBot's own announcements.",
+      "example": "",
+      "related": ["AgiBot", "AgiBot GO-1 (Genie Operator-1)", "AgiBot Genie Sim", "AimRT (AgiBot robot runtime framework)", "Software Development Kit (SDK)", "Inference Deployment"]
+    },
+    {
+      "key": "software-07#3",
+      "name_en": "AimRT (AgiBot robot runtime framework)",
+      "aliases": ["AgiBot AimRT"],
+      "one_liner": "AgiBot's open-source, modern C++ robot runtime framework, interoperable with ROS 2 and other communication backends.",
+      "explanation": "AimRT is a robot runtime framework open-sourced by AgiBot (智元机器人) in 2024, written in modern C++, occupying a similar niche to ROS 2: it splits robot software into modules and handles loading, scheduling, inter-module communication, and logging configuration for them. Its distinguishing feature is a lightweight core, with communication backends and other capabilities plugged in as modules — it can use ROS 2, HTTP, or gRPC as its transport, so it can run standalone or interoperate with existing ROS 2 nodes, and it supports deployment all the way from the edge to the cloud. It aims to address some of the performance, resource-usage, and engineering-deployment pain points found in ROS 2. It's a useful reference point for developers using AgiBot hardware, or anyone curious about Chinese-built robot middleware.",
+      "example": "",
+      "related": ["ROS 2", "Middleware", "dora-rs", "AgiBot", "gRPC Remote Procedure Calls", "Data Distribution Service (DDS)"]
+    },
+    {
+      "key": "software-07#4",
+      "name_en": "ament",
+      "aliases": ["ament_cmake", "ament_python"],
+      "one_liner": "ROS 2's package build system, with ament_cmake for C++ packages and ament_python for Python packages.",
+      "explanation": "ament is the build system ROS 2 adopted, succeeding catkin from ROS 1. It specifies how a ROS 2 package declares dependencies, gets compiled, gets installed, and gets found by other packages. The two most common build types are ament_cmake (CMake-based, for C++ packages, though it can also install Python scripts) and ament_python (based on Python's setuptools, for pure-Python packages), specified via build_type in package.xml. Day to day, developers don't call ament directly; instead they use the colcon build tool to compile an entire workspace at once, and colcon invokes the matching ament process for each package based on its type. Newcomers creating a package in ROS 2 just pick ament_cmake or ament_python with ros2 pkg create.",
+      "example": "Running ros2 pkg create my_controller --build-type ament_python generates a Python package with a setup.py, and colcon build then compiles the whole workspace.",
+      "related": ["ROS 2", "colcon", "catkin", "Package (ROS)", "ROS Workspace", "CMake"]
+    },
+    {
+      "key": "software-07#5",
+      "name_en": "Autoware (open-source autonomous driving stack on ROS 2)",
+      "aliases": ["Autoware Universe", "Autoware Core"],
+      "one_liner": "A full open-source autonomous-driving software stack built on ROS 2, maintained by the Autoware Foundation.",
+      "explanation": "Autoware is a full open-source autonomous-driving software stack, originally started around 2015 on ROS 1 by Shinpei Kato's team at Nagoya University in Japan (later driven primarily by the company Tier IV), now maintained by the Autoware Foundation, with the current version built on ROS 2. It splits self-driving into modules — localization, perception, planning, control, mapping, and the vehicle interface — with each module made up of a set of ROS 2 nodes that developers can swap out individually. Its significance is in providing a complete, runnable reference implementation that universities and companies can build research on, or use as a base for campus shuttles and small vehicles. For embodied AI more broadly, it's a good example to study for how a large ROS 2 system is organized, how sensors get fused, and how planning connects to control.",
+      "example": "",
+      "related": ["ROS 2", "Autonomous Driving", "ROS 2 Navigation Stack (Nav2)", "Simultaneous Localization and Mapping (SLAM)", "CARLA", "Model Predictive Control (MPC)"]
+    },
+    {
+      "key": "software-07#6",
+      "name_en": "BehaviorTree.CPP",
+      "aliases": ["BT.CPP", "Groot behavior-tree editor"],
+      "one_liner": "The most widely used C++ behavior-tree library in robotics, describing task logic in XML.",
+      "explanation": "BehaviorTree.CPP is an open-source C++ behavior-tree library, primarily authored by Davide Faconti. A behavior tree is a tree structure for organizing a robot's task logic: leaf nodes execute actions or check conditions, while internal control nodes — sequence, selector, parallel, and so on — decide what to try next and what to fall back on after a failure. Compared with a finite state machine, a behavior tree is easier to break apart, reuse, and extend. BT.CPP lets developers write each action node in C++ and then assemble them into a tree using an XML file, loaded and run without recompiling — so the task flow can be adjusted without touching code — and its companion graphical editor, Groot / Groot2, lets you build the tree by dragging nodes and monitor its execution state live. ROS 2's navigation framework, Nav2, uses it to orchestrate navigation behavior.",
+      "example": "Nav2's default navigation behavior tree: compute a path, then follow it; if that fails partway through, it tries recovery actions in sequence — clearing the costmap, rotating in place, backing up.",
+      "related": ["Behavior Tree", "Finite State Machine", "ROS 2 Navigation Stack (Nav2)", "Groot2 (BehaviorTree.CPP IDE)", "Task Planning", "ROS 2"]
+    },
+    {
+      "key": "software-07#7",
+      "name_en": "Blender",
+      "aliases": [],
+      "one_liner": "Free, open-source 3D modeling and rendering software, often used to process robot models and generate synthetic data.",
+      "explanation": "Blender is a free, open-source 3D creation suite maintained by the Blender Foundation, covering modeling, materials, animation, and rendering (with the built-in Cycles path tracer and the real-time EEVEE renderer), plus a full Python API for scripting batch operations. It isn't robotics software per se, but it gets heavy use in embodied AI: cleaning up and simplifying mesh files for a robot or object before exporting them as STL, OBJ, or glTF for a URDF or simulator; building simulation scenes and assets; and scripting batch rendering of annotated images for synthetic data — the German Aerospace Center's open-source BlenderProc, for example, is built on Blender. Plugins also exist for editing and exporting URDF from inside Blender.",
+      "example": "Open a high-poly gripper mesh exported from CAD in Blender, reduce its polygon count, and export it as OBJ for use as the visual model in a URDF.",
+      "related": ["Mesh File (STL / OBJ / DAE / glTF)", "Simulation Assets", "Synthetic Data", "Unified Robot Description Format (URDF)", "Photorealistic Rendering", "Path Tracing"]
+    },
+    {
+      "key": "software-07#8",
+      "name_en": "CasADi",
+      "aliases": [],
+      "one_liner": "An open-source symbolic toolkit for numerical optimization and automatic differentiation, widely used for MPC and trajectory-optimization modeling.",
+      "explanation": "CasADi is an open-source tool for nonlinear optimization and algorithmic differentiation (automatic differentiation), developed by Joel Andersson, Joris Gillis, Moritz Diehl, and others at KU Leuven in Belgium, with support for Python, MATLAB, and C++. Users first write out system dynamics, cost functions, and constraints as symbolic expressions; CasADi then automatically computes gradients, Jacobians, and Hessians, and calls a solver such as IPOPT, qpOASES, or OSQP to solve the resulting problem — it can also generate C code for the whole problem. It solves the pain of deriving derivatives by hand when formulating optimal-control problems, which is slow and error-prone, and has become a standard modeling layer for building model predictive control, trajectory optimization, and parameter identification; acados also uses it to describe models.",
+      "example": "Use CasADi's Opti interface to write a cart-pole swing-up problem — with state and control as decision variables discretized via direct multiple shooting — and call IPOPT to solve for the optimal control sequence.",
+      "related": ["acados (fast embedded optimal control solver)", "Interior Point OPTimizer (Ipopt)", "Trajectory Optimization", "Model Predictive Control (MPC)", "Direct Collocation", "Multiple Shooting"]
+    },
+    {
+      "key": "software-07#9",
+      "name_en": "catkin",
+      "aliases": ["catkin_make", "catkin build"],
+      "one_liner": "ROS 1's official build system, using CMake to compile and manage packages in a workspace.",
+      "explanation": "catkin is ROS 1's official build system, extended from CMake; it compiles the packages under a workspace's src directory in dependency order and produces the build and devel directories along with environment scripts (source devel/setup.bash) that let the system find those packages. Two commands are commonly used: catkin_make, which comes with ROS and compiles all packages as a single CMake project, and catkin build, from catkin_tools, which builds each package in isolation and makes errors easier to trace back to their source. By ROS 2, catkin had been replaced by ament and colcon. Noetic, ROS 1's final distribution, reached end of maintenance in 2025, but a large amount of legacy code and tutorial material still uses catkin, so it's still something you run into when reading older projects.",
+      "example": "Run mkdir -p ~/catkin_ws/src, put packages into src, run catkin_make from within catkin_ws, then source devel/setup.bash.",
+      "related": ["Robot Operating System", "ament", "colcon", "ROS Workspace", "Package (ROS)", "CMake"]
+    },
+    {
+      "key": "software-07#10",
+      "name_en": "Ceres Solver",
+      "aliases": ["Ceres"],
+      "one_liner": "Google's open-source C++ library for nonlinear least-squares optimization, a common backend for SLAM and calibration.",
+      "explanation": "Ceres Solver is an open-source C++ optimization library from Google, mainly used to solve nonlinear least-squares problems (minimizing the sum of squares of a set of error terms), and it can also handle general unconstrained optimization. Users only need to specify how each error term (residual) is computed; Ceres can differentiate automatically, and it provides algorithms such as Levenberg-Marquardt and Dogleg along with sparse linear solvers that handle problems with thousands of variables. Many problems in robotics and 3D vision can be cast in this form — bundle adjustment, SLAM pose-graph optimization, camera-IMU calibration, and hand-eye calibration among them. Open-source systems such as VINS-Mono and Google's Cartographer use it as their optimization backend. It occupies roughly the same niche as g2o and GTSAM, and the three are often treated as interchangeable tools.",
+      "example": "During camera calibration, write the reprojection error of each detected corner as a residual block, and let Ceres jointly optimize the intrinsics and each image's extrinsics.",
+      "related": ["Bundle Adjustment", "Simultaneous Localization and Mapping (SLAM)", "g2o (General Graph Optimization)", "GTSAM (Georgia Tech Smoothing and Mapping)", "Factor Graph Optimization", "Camera Calibration"]
+    },
+    {
+      "key": "software-07#11",
+      "name_en": "CleanRL",
+      "aliases": [],
+      "one_liner": "An open-source deep reinforcement-learning library that implements each algorithm as a single, readable file.",
+      "explanation": "CleanRL is an open-source deep reinforcement-learning library, primarily authored by Shengyi Huang and others, with an accompanying paper published in JMLR in 2022. Its distinguishing feature is “single-file implementation”: algorithms such as PPO, DQN, SAC, TD3, and DDPG are each written in one standalone Python file, with everything from environment creation to the network and training loop on the same page, with none of the layered abstraction found in more modular libraries. The benefit is that newcomers can read every detail of an algorithm start to finish, and researchers can copy and modify a file directly to run an experiment; it also has built-in logging to Weights & Biases and TensorBoard. Compared with a modular library like Stable-Baselines3, it's better suited to learning and research prototyping than to being called as a general-purpose toolkit.",
+      "example": "Running python cleanrl/ppo_continuous_action.py --env-id HalfCheetah-v4 trains PPO on a MuJoCo environment, with the curves viewable in TensorBoard.",
+      "related": ["Reinforcement Learning", "Proximal Policy Optimization (PPO)", "Stable-Baselines3", "Gymnasium (formerly OpenAI Gym)", "rsl_rl", "Weights & Biases (W&B)"]
+    }
+  ]
+}

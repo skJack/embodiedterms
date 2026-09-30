@@ -1,0 +1,430 @@
+{
+  "category": "control",
+  "batch": 3,
+  "terms": [
+    {
+      "name_zh": "控制延迟",
+      "name_en": "Control Latency",
+      "abbr": "",
+      "aliases": [
+        "端到端延迟",
+        "执行延迟",
+        "感知-动作延迟",
+        "End-to-end Latency"
+      ],
+      "tier": 2,
+      "one_liner": "从传感器拿到数据，到电机真正执行对应动作之间的时间差。",
+      "explanation": "控制延迟指一次「感知→计算→执行」走完所需的时间：相机曝光与传输、模型推理、网络与总线通信、电机驱动响应都算在内，端到端就是从拿到观测到对应动作落到关节上的间隔。反馈控制靠「看到误差再纠正」，延迟越大，控制器用的信息越旧，轻则动作迟钝、超调，重则来回振荡失稳；1957 年 O. J. M. Smith 提出的 Smith 预估器就是对付纯延迟的经典办法。VLA 推理一次常要几十到上百毫秒，远长于底层控制周期，于是有了动作分块、异步推理和实时动作分块（RTC）等做法。它比推理延迟范围更大，后者只算模型前向计算那一段。",
+      "example": "Physical Intelligence 的实时动作分块论文里，π0.5 在 RTX 4090 上推理一次约 76 ms，而机器人按 50 Hz 执行（每步 20 ms），等新动作算出来，机器人已经又走了约 3 步；不做处理，块与块交接处就会出现停顿或跳变。",
+      "related": [
+        "推理延迟",
+        "控制频率",
+        "实时动作分块",
+        "异步推理",
+        "动作分块",
+        "时间抖动"
+      ],
+      "sources": [
+        {
+          "title": "Real-Time Execution of Action Chunking Flow Policies (Black, Galliker, Levine, arXiv 2506.07339)",
+          "url": "https://arxiv.org/abs/2506.07339"
+        },
+        {
+          "title": "Wikipedia: Smith predictor",
+          "url": "https://en.wikipedia.org/wiki/Smith_predictor"
+        }
+      ],
+      "as_of": "2025-12"
+    },
+    {
+      "name_zh": "凸优化",
+      "name_en": "Convex Optimization",
+      "abbr": "",
+      "aliases": [
+        "凸规划",
+        "Convex Programming"
+      ],
+      "tier": 2,
+      "one_liner": "目标是凸函数、可行域是凸集的优化问题，找到的局部最优就是全局最优。",
+      "explanation": "凸优化研究在凸集上最小化凸函数：min f(x)，约束 x∈C。f 是凸函数（图像像一只碗，任意两点的连线都在曲线上方），C 是凸集（集合里任意两点的连线仍在集合内）。它最重要的性质是局部最优即全局最优；线性规划、二次规划、二阶锥规划、半定规划等类型都有多项式时间算法（如内点法），求解快且稳定。机器人实时控制大量依赖它：凸 MPC、全身控制里的二次规划、接触力分配，都是有意把问题写成凸的，好在毫秒级可靠求解。非凸问题（如一般的轨迹优化）常用序列二次规划拆成一串凸子问题来近似。",
+      "example": "MIT Cheetah 3（2018）把四足机器人简化成单个刚体，把未来最长 0.5 s 的地面反作用力规划写成凸的二次规划，每次求解不到 1 ms，以 20–30 Hz 反复重算，跑出了小跑、疾驰、四足齐跳等步态。",
+      "related": [
+        "二次规划",
+        "凸 MPC",
+        "模型预测控制",
+        "轨迹优化",
+        "序列二次规划",
+        "OSQP"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Convex optimization",
+          "url": "https://en.wikipedia.org/wiki/Convex_optimization"
+        },
+        {
+          "title": "Boyd & Vandenberghe: Convex Optimization（官方免费电子版页面）",
+          "url": "https://web.stanford.edu/~boyd/cvxbook/"
+        },
+        {
+          "title": "Dynamic Locomotion in the MIT Cheetah 3 Through Convex Model-Predictive Control (IROS 2018)",
+          "url": "https://dspace.mit.edu/handle/1721.1/138000"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "代价地图",
+      "name_en": "Costmap",
+      "abbr": "",
+      "aliases": [
+        "代价栅格地图",
+        "costmap_2d",
+        "Cost Map"
+      ],
+      "tier": 2,
+      "one_liner": "把地面切成栅格、每格标上通行代价的二维地图，供导航规划和避障使用。",
+      "explanation": "代价地图是移动机器人导航最常用的环境表示，ROS 的 costmap_2d 和 Nav2 都以它为核心。它把地面划成规则的二维栅格，每格存一个 0–255 的代价：Nav2 里 0 是空闲，254 是致命障碍，253 表示机器人中心进到这格就必然碰撞（内切膨胀），255 是未知。地图由多个图层叠加而成：静态层来自事先建好的地图，障碍物层和体素层实时写入传感器看到的障碍，膨胀层在障碍周围按指数衰减加上代价，让路径自动和障碍保持距离。全局规划在覆盖全图的全局代价地图上找路，局部控制器在跟着机器人走的小范围局部代价地图上避障。",
+      "example": "Nav2 示例配置里的局部代价地图以机器人为中心，是 3 m×3 m、分辨率 0.05 m 的滚动窗口，也就是 60×60 个格子，随机器人移动不断刷新。",
+      "related": [
+        "占据栅格地图",
+        "全局规划与局部规划",
+        "Nav2",
+        "路径规划",
+        "避障",
+        "动态窗口法"
+      ],
+      "sources": [
+        {
+          "title": "Nav2 Docs: Environmental Representation",
+          "url": "https://docs.nav2.org/rolling/getting_started/navigation_concepts/environmental_representation/"
+        },
+        {
+          "title": "Nav2 Docs: Costmap 2D 配置（含 local_costmap 示例）",
+          "url": "https://docs.nav2.org/rolling/configuration_and_development/configuration_guide/core_servers/costmap_2d/"
+        },
+        {
+          "title": "navigation2 源码 cost_values.hpp（代价取值定义）",
+          "url": "https://github.com/ros-navigation/navigation2/blob/main/nav2_costmap_2d/include/nav2_costmap_2d/cost_values.hpp"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "阻尼模式",
+      "name_en": "Damping Mode",
+      "abbr": "",
+      "aliases": [
+        "阻尼保护模式",
+        "阻尼状态",
+        "Damp 模式"
+      ],
+      "tier": 2,
+      "one_liner": "关节不再追目标位置，只产生与转速相反的阻力，让机器人缓慢卸力的保护状态。",
+      "explanation": "阻尼模式是关节电机的一种保护状态，宇树的 SDK 和遥控器都直接提供。关节电机常按 τ = kp(q目标−q) + kd(q̇目标−q̇) + τff 计算输出力矩，q 是关节角，q̇ 是角速度，kp、kd 是刚度和阻尼增益，τff 是前馈力矩。阻尼模式把 kp、τff 和目标速度都设为 0，只保留 kd，于是 τ = −kd·q̇：关节静止时不出力，一转动就被反向拖住。和零力矩模式（kd 也为 0，关节完全松软）相比，它让机器人慢慢瘫下而不是突然砸落，所以常作为程序退出或出现异常时的安全兜底状态。",
+      "example": "宇树 unitree_rl_gym 的真机部署流程里，运动控制时按遥控器 select 键，机器人进入阻尼模式倒下、程序退出；代码里的阻尼指令就是每个电机 kp=0、kd=8、前馈力矩 0，即 τ = −8·q̇。",
+      "related": [
+        "阻尼",
+        "刚度与阻尼增益",
+        "MIT 模式",
+        "急停",
+        "保护性停止",
+        "宇树 SDK"
+      ],
+      "sources": [
+        {
+          "title": "unitree_rl_gym 真机部署说明（中文 README）",
+          "url": "https://github.com/unitreerobotics/unitree_rl_gym/blob/main/deploy/deploy_real/README.zh.md"
+        },
+        {
+          "title": "unitree_rl_gym command_helper.py（create_damping_cmd）",
+          "url": "https://github.com/unitreerobotics/unitree_rl_gym/blob/main/deploy/deploy_real/common/command_helper.py"
+        },
+        {
+          "title": "unitree_sdk2 g1_loco_client.hpp（Damp / ZeroTorque 接口）",
+          "url": "https://github.com/unitreerobotics/unitree_sdk2/blob/main/include/unitree/robot/g1/loco/g1_loco_client.hpp"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "Dijkstra 算法",
+      "name_en": "Dijkstra's Algorithm",
+      "abbr": "",
+      "aliases": [
+        "迪杰斯特拉算法",
+        "狄克斯特拉算法"
+      ],
+      "tier": 2,
+      "one_liner": "在边权非负的图上，求起点到其余各点最短路径的经典算法。",
+      "explanation": "Dijkstra 算法由荷兰学者 Edsger Dijkstra 于 1956 年构想、1959 年发表，用来在边权（通行代价）非负的图上求单源最短路。做法是记下每个节点当前已知的最短距离，每次取出距离最小、还没确定的节点，用它更新邻居。它保证找到最优解，用二叉堆实现时复杂度约为 O((V+E)logV)，V、E 分别是节点数和边数。A* 是它的推广：多加一个「离终点还有多远」的估计（启发函数），优先朝目标方向搜，展开的节点更少。机器人导航里，栅格地图的每个格子是节点，代价地图的值是边权，Nav2 默认的 NavFn 规划器可选 Dijkstra 或 A* 扩展。",
+      "example": "三个点 A、B、C：A→B 代价 1，B→C 代价 2，A→C 直连代价 4。算法先确定 B（距离 1），再经 B 把 C 的距离从 4 更新为 3，最终最短路是 A→B→C。",
+      "related": [
+        "A* 算法",
+        "路径规划",
+        "代价地图",
+        "全局规划与局部规划",
+        "混合 A*"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Dijkstra's algorithm",
+          "url": "https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm"
+        },
+        {
+          "title": "Nav2 Docs: NavFn Planner（wavefront Dijkstra or A*）",
+          "url": "https://docs.nav2.org/rolling/configuration_and_development/configuration_guide/planners_plugins/configuring_navfn/"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "扩展卡尔曼滤波",
+      "name_en": "Extended Kalman Filter",
+      "abbr": "EKF",
+      "aliases": [
+        "扩展卡尔曼滤波器"
+      ],
+      "tier": 2,
+      "one_liner": "把非线性系统在当前估计点线性化，再套用卡尔曼滤波做状态估计的方法。",
+      "explanation": "扩展卡尔曼滤波是卡尔曼滤波在非线性系统上的推广，20 世纪 60 年代主要在 NASA 艾姆斯研究中心为导航问题发展起来。标准卡尔曼滤波只适用于线性模型；EKF 每一步用雅可比矩阵（各输出对各状态的偏导数）把非线性的运动模型和观测模型在当前估计点做一阶泰勒展开，再照常执行「预测—更新」：先用运动模型推算新状态和不确定度，再用传感器读数修正。它计算量小、实现成熟，是导航领域的事实标准；但它只是近似，非线性很强时可能发散，这时可换无迹卡尔曼滤波或误差状态卡尔曼滤波。足式机器人常用它融合 IMU 和腿部运动学，估计机身位姿和速度。",
+      "example": "ROS 的 robot_localization 包提供 ekf_localization_node，可把轮式里程计、IMU、GPS 等任意多路数据融合，输出 15 维状态：三维位置、姿态（横滚/俯仰/偏航）、线速度、角速度和线加速度。",
+      "related": [
+        "卡尔曼滤波",
+        "无迹卡尔曼滤波",
+        "误差状态卡尔曼滤波",
+        "状态估计",
+        "腿式里程计",
+        "多传感器融合"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Extended Kalman filter",
+          "url": "https://en.wikipedia.org/wiki/Extended_Kalman_filter"
+        },
+        {
+          "title": "robot_localization 文档首页（ekf_localization_node，15 维状态）",
+          "url": "https://github.com/cra-ros-pkg/robot_localization/blob/ros2/doc/index.rst"
+        },
+        {
+          "title": "State Estimation for Legged Robots - Consistent Fusion of Leg Kinematics and IMU (Bloesch et al., RSS 2012)",
+          "url": "https://www.roboticsproceedings.org/rss08/p03.pdf"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "跌倒保护与摔倒恢复",
+      "name_en": "Fall Mitigation / Fall Recovery (Humanoid Fall Safety)",
+      "abbr": "",
+      "aliases": [
+        "摔倒保护",
+        "跌倒保护",
+        "跌倒恢复",
+        "摔倒起身",
+        "Humanoid Fall Safety",
+        "Fall Protection"
+      ],
+      "tier": 2,
+      "one_liner": "人形机器人摔倒时尽量减小损伤、倒地后自己爬起来的两类能力。",
+      "explanation": "人形机器人质心高、支撑面小，被推、踩空、打滑都可能摔倒，一次重摔就可能损坏关节、相机和外壳。跌倒安全一般分三段：能不倒就先靠平衡控制和跨步化解（推恢复）；倒下已不可避免时做跌倒保护，比如屈膝降低重心、伸手或迈步提前接触地面、调整姿态，把冲击分散到耐撞的部位；倒地后做摔倒恢复，即从各种姿势重新站起来。早期多靠手工设计的动作序列和轨迹优化，例如 2018 年 Wang 与 Hauser 用接触序列树搜索规划跨步、手撑等多接触保护动作；近两年的主流是在仿真里用强化学习训练策略再迁移到真机，并开始把三段合进同一个策略。",
+      "example": "HoST（RSS 2025）用强化学习在仿真里训练宇树 G1 从多种倒地姿势起身，不依赖预设动作轨迹，直接部署到真机的室内外场景；2025 年 11 月的另一项工作在 G1 上用少量人类示范加强化学习，把防摔、减冲击和起身统一到一个策略里。",
+      "related": [
+        "跌倒恢复（摔倒起身）",
+        "HoST（人形起身）",
+        "推恢复",
+        "平衡控制",
+        "阻尼模式",
+        "人形机器人"
+      ],
+      "sources": [
+        {
+          "title": "Unified Humanoid Fall-Safety Policy from a Few Demonstrations (arXiv 2511.07407)",
+          "url": "https://arxiv.org/abs/2511.07407"
+        },
+        {
+          "title": "Learning Humanoid Standing-up Control across Diverse Postures (HoST, arXiv 2502.08378)",
+          "url": "https://arxiv.org/abs/2502.08378"
+        },
+        {
+          "title": "Unified Multi-Contact Fall Mitigation Planning for Humanoids via Contact Transition Tree Optimization (arXiv 1807.08667)",
+          "url": "https://arxiv.org/abs/1807.08667"
+        }
+      ],
+      "as_of": "2025-11"
+    },
+    {
+      "name_zh": "前馈控制",
+      "name_en": "Feedforward Control",
+      "abbr": "",
+      "aliases": [
+        "前馈力矩",
+        "前馈补偿",
+        "Feedforward torque",
+        "τff"
+      ],
+      "tier": 2,
+      "one_liner": "不等误差出现，按模型提前算出所需控制量直接加上去的控制方式。",
+      "explanation": "前馈控制根据已知的目标轨迹或可测扰动，用系统模型事先算出需要的控制量，直接叠加到输出上；反馈控制则是测到实际误差后再纠正。纯前馈是开环的，模型不准或有测不到的扰动时误差没人管，所以实际多用「前馈＋反馈」：前馈扛大头，反馈只修剩下的小误差，这样跟得快，反馈增益也可以调小，关节更柔顺。机器人里典型的前馈项有重力补偿、摩擦补偿，以及用逆动力学按期望加速度算出的力矩（计算力矩控制就建立在这上面）。关节电机常用指令 τ = τff + kp(q目标−q) + kd(q̇目标−q̇) 中，τff 就是前馈力矩，后两项是 PD 反馈。",
+      "example": "机械臂水平伸出，距肩关节 0.5 m 处挂 1 kg 负载，仅负载产生的重力力矩约 9.8×0.5≈4.9 N·m。把它预先算好填进 τff，PD 反馈就不用靠拉大位置误差去撑住负载，跟踪误差会明显变小。",
+      "related": [
+        "重力补偿",
+        "摩擦补偿",
+        "计算力矩控制",
+        "PD 控制",
+        "MIT 模式",
+        "逆动力学"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Feed forward (control)",
+          "url": "https://en.wikipedia.org/wiki/Feed_forward_(control)"
+        },
+        {
+          "title": "unitree_sdk2 G1 底层示例 g1_ankle_swing_example.cpp（tau_ff / kp / kd 字段）",
+          "url": "https://github.com/unitreerobotics/unitree_sdk2/blob/main/example/g1/low_level/g1_ankle_swing_example.cpp"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "有限状态机",
+      "name_en": "Finite State Machine",
+      "abbr": "FSM",
+      "aliases": [
+        "状态机",
+        "有限自动机",
+        "State Machine"
+      ],
+      "tier": 2,
+      "one_liner": "系统任一时刻处于有限个状态之一，收到事件就按规则切换状态的模型。",
+      "explanation": "有限状态机是一种计算模型：系统在任意时刻只处于有限个状态中的一个，收到某个输入或事件后按事先定好的规则跳到另一个状态，每个状态对应一套固定行为。经典例子是地铁闸机：「锁定」时投币变「解锁」，人推过去后又变回「锁定」。机器人里它常用来管运行模式和任务流程，比如上电后零力矩→站立→行走→阻尼的切换，或抓取流程里「接近→抓取→抬起→放置」的顺序，好处是逻辑清楚、容易检查。缺点是状态和跳转一多就难维护，所以复杂任务越来越多改用行为树，后者更模块化，也更容易随时响应新情况。",
+      "example": "宇树 G1 的高层运动接口直接用状态机编号管理模式：0 是零力矩，1 是阻尼，2 是蹲下，3 是坐下，4 是起立，500 是开始运动；SDK 里调用 Damp() 实际就是把状态机切到 1 号状态。",
+      "related": [
+        "行为树",
+        "阻尼模式",
+        "任务规划",
+        "分层控制",
+        "BehaviorTree.CPP",
+        "宇树 SDK"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Finite-state machine",
+          "url": "https://en.wikipedia.org/wiki/Finite-state_machine"
+        },
+        {
+          "title": "unitree_sdk2 g1_loco_client.hpp（SetFsmId / Damp / ZeroTorque）",
+          "url": "https://github.com/unitreerobotics/unitree_sdk2/blob/main/include/unitree/robot/g1/loco/g1_loco_client.hpp"
+        },
+        {
+          "title": "Behavior Trees in Robotics and AI: An Introduction (arXiv 1709.00084)",
+          "url": "https://arxiv.org/abs/1709.00084"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "落足点规划",
+      "name_en": "Footstep Planning",
+      "abbr": "",
+      "aliases": [
+        "足步规划",
+        "落脚点规划",
+        "脚步规划",
+        "Foothold Planning"
+      ],
+      "tier": 2,
+      "one_liner": "为腿足机器人算出接下来每一步踩在哪、脚朝哪个方向。",
+      "explanation": "落足点规划要为双足或四足机器人找出一串能安全踩踏的脚位（位置和朝向），让它从当前位置走到目标，同时满足相邻两步的间距在腿够得着的范围内、不踩障碍和悬空处等约束。它是接触运动规划的简化版：全身动力学先粗略处理，只决定脚放哪，身体具体怎么动交给后面的控制器。方法大致两类：一类是离散搜索，把可能的步子做成动作集合，用 A* 等方法在树上搜；另一类是连续优化，例如 MIT 的 Deits 与 Tedrake 2014 年把可落脚区域分解成若干凸区域，用混合整数凸优化求出全局最优的脚步序列。强化学习运控策略则通常隐式决定落脚点。",
+      "example": "Deits 与 Tedrake 的规划器让 Atlas 人形机器人走过一排踏脚石；拿掉其中一块后，它会自动改走更长的绕行路线。几步的短序列不到 1 秒可解，10–30 步的序列在笔记本电脑上要几十秒到几分钟。",
+      "related": [
+        "步态规划",
+        "足端轨迹规划",
+        "Raibert 启发式",
+        "感知行走",
+        "高程图",
+        "多接触规划"
+      ],
+      "sources": [
+        {
+          "title": "Footstep Planning on Uneven Terrain with Mixed-Integer Convex Optimization (Deits & Tedrake, 2014)",
+          "url": "https://groups.csail.mit.edu/robotics-center/public_papers/Deits14a.pdf"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "步态规划",
+      "name_en": "Gait Planning",
+      "abbr": "",
+      "aliases": [
+        "步态调度",
+        "步态生成",
+        "Gait scheduler",
+        "接触时序规划"
+      ],
+      "tier": 2,
+      "one_liner": "决定腿足机器人每条腿何时着地、何时抬起以及迈步节奏的规划。",
+      "explanation": "步态规划决定腿足机器人各条腿的接触时序：一个步态周期里每条腿何时着地（支撑相）、何时抬起（摆动相），着地时间占周期的比例（占空比），各腿之间的相位差和步频。不同组合对应不同步态：四足对角两腿同步是小跑，同侧两腿同步是踱步，前后腿成对是跳跃步态，四腿同时起落是齐跳。模型化控制里，步态调度器先给出这张接触时间表，MPC 再据此给支撑腿分配地面反作用力，落足点规划决定摆动腿落在哪。强化学习运控常用相位时钟信号或奖励项引导步态，也可以让步态自己涌现。它和落足点规划互补：一个管什么时候踩，一个管踩在哪。",
+      "example": "MIT Cheetah 开源代码把一个步态周期分成 10 段，小跑写成四条腿相位偏移 (0,5,5,0)、各支撑 5 段，即对角腿同步、每条腿一半时间着地；齐跳则四条腿偏移全为 0。Walk These Ways（2022）把这类相位偏移做成策略的输入指令，(0.5,0,0) 对应小跑，(0,0.5,0) 对应跳跃步态。",
+      "related": [
+        "步态",
+        "接触时序（步态调度器）",
+        "步态周期与占空比",
+        "落足点规划",
+        "凸 MPC",
+        "中枢模式发生器"
+      ],
+      "sources": [
+        {
+          "title": "MIT Cheetah-Software ConvexMPCLocomotion.cpp（步态偏移与时长定义）",
+          "url": "https://github.com/mit-biomimetics/Cheetah-Software/blob/master/user/MIT_Controller/Controllers/convexMPC/ConvexMPCLocomotion.cpp"
+        },
+        {
+          "title": "Walk These Ways: Tuning Robot Control for Generalization with Multiplicity of Behavior (arXiv 2212.03238)",
+          "url": "https://arxiv.org/abs/2212.03238"
+        },
+        {
+          "title": "Dynamic Locomotion in the MIT Cheetah 3 Through Convex Model-Predictive Control (IROS 2018)",
+          "url": "https://dspace.mit.edu/handle/1721.1/138000"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "全局规划与局部规划",
+      "name_en": "Global Planning and Local Planning",
+      "abbr": "",
+      "aliases": [
+        "全局规划器",
+        "局部规划器",
+        "局部控制器",
+        "Global Planner",
+        "Local Planner"
+      ],
+      "tier": 2,
+      "one_liner": "导航分两层：全局规划在整张地图上找路，局部规划实时跟路并避开眼前障碍。",
+      "explanation": "移动机器人导航通常把规划拆成两层。全局规划器（Nav2 里叫 planner）在覆盖整张地图的全局代价地图上，用 Dijkstra、A*、Hybrid-A* 等算法算出从当前位置到目标的完整路径，更新频率较低。局部规划器（Nav2 里叫 controller）只看机器人周围几米、跟着机器人移动的局部代价地图，以较高频率（Nav2 默认 20 Hz）算出速度指令去跟随全局路径，同时避开行人、推车等临时障碍，常见算法有动态窗口法、时间弹性带、MPPI 和纯追踪。这样分工是因为全图搜索太慢，做不到实时；只看局部又容易陷进死胡同。",
+      "example": "仓库里的 AMR 送货：全局规划器先在全局地图上沿货架通道规划出去 3 号库位的路线；途中有人推着推车横穿过道，局部控制器在局部代价地图里看到新障碍，减速绕开后再回到原路线。",
+      "related": [
+        "代价地图",
+        "Nav2",
+        "A* 算法",
+        "动态窗口法",
+        "时间弹性带",
+        "路径规划"
+      ],
+      "sources": [
+        {
+          "title": "Nav2 Docs: Navigation Servers（planner 与 controller）",
+          "url": "https://docs.nav2.org/rolling/getting_started/navigation_concepts/navigation_servers/"
+        },
+        {
+          "title": "Nav2 Docs: Controller Server 配置（controller_frequency 默认 20 Hz）",
+          "url": "https://docs.nav2.org/rolling/configuration_and_development/configuration_guide/core_servers/controller_server/"
+        }
+      ],
+      "as_of": "2026-09"
+    }
+  ]
+}

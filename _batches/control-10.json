@@ -1,0 +1,199 @@
+{
+  "category": "control",
+  "batch": 10,
+  "terms": [
+    {
+      "name_zh": "D* / D* Lite",
+      "name_en": "D* / D* Lite (Incremental Replanning)",
+      "abbr": "",
+      "aliases": ["D*", "D* Lite", "Dynamic A*", "Focused D*", "增量式重规划算法"],
+      "tier": 3,
+      "one_liner": "地图边走边变时，只修补受影响的部分、快速重算最短路径的图搜索算法。",
+      "explanation": "D* 是 Anthony Stentz 在 1994 年提出的增量式路径搜索算法，名字来自 Dynamic A*；2002 年 Sven Koenig 和 Maxim Likhachev 在 LPA* 的基础上提出更简洁的 D* Lite，如今用得更多。它解决「地图不完全已知」的导航：机器人先按已知信息规划一条路（未知区域通常先当作可通行），边走边用传感器发现新障碍。普通 A* 每次都要从头搜索；D* 系列从终点往起点反向搜索，并保留上一轮算出的代价值，某些边的代价一变，只修补受影响的节点，所以重规划很快。据维基百科，基于它的导航系统曾在火星车 Spirit 和 Opportunity 上做过原型测试，也用在 CMU 赢得 DARPA 城市挑战赛的无人车上。它属于全局规划，常和 DWA 等局部规划器搭配。",
+      "example": "仓库里的移动机器人按旧地图规划了一条穿过某条通道的路线，走到一半激光雷达发现通道被托盘堵住。D* Lite 只更新被堵格子附近节点的代价，就能给出绕行路线，不必对整张地图重跑一遍 A*。",
+      "related": ["A* 算法", "Dijkstra 算法", "重规划", "路径规划", "全局规划与局部规划", "代价地图"],
+      "sources": [
+        {"title": "Wikipedia: D*", "url": "https://en.wikipedia.org/wiki/D*"},
+        {"title": "Koenig & Likhachev, D* Lite (AAAI 2002)", "url": "https://idm-lab.org/bib/abstracts/Koen02e.html"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "解耦全身控制",
+      "name_en": "Decoupled Whole-Body Control",
+      "abbr": "Decoupled WBC",
+      "aliases": ["上下肢分开控制", "上下肢解耦控制", "上身 IK + 下身 RL", "上下身解耦控制"],
+      "tier": 3,
+      "one_liner": "人形机器人下半身用强化学习管走路和平衡，上半身用逆运动学管手臂。",
+      "explanation": "这是人形机器人全身控制的一种工程化做法：把上下半身拆成两个控制器。下半身是在仿真里用强化学习训练的行走策略，接收前进速度、转向、身体高度等指令，负责走路、蹲起和保持平衡，训练时通常会随机采样上半身姿态，让它学会把手臂动作当作扰动来适应；上半身用逆运动学（IK，由手的目标位姿反算关节角）或遥操作设备的关节映射直接控制手臂。好处是分工清楚、手臂定位准，方便遥操作采数据和接 VLA；代价是上下身不协同，弯腰够地面、身体前倾扩大够取范围、全身发力搬重物这类动作做不好。英伟达 GR00T N1.5 和 N1.6 在宇树 G1 上用的就是这种控制器（下身 RL、上身 IK），2026 年起其官方 VLA 流程改为配合统一的全身控制器 SONIC。",
+      "example": "HOMIE（上海人工智能实验室等，2025）：操作员脚踩踏板给下半身 RL 策略发走、转、蹲的指令，双臂由同构外骨骼按关节一一映射控制，手部用动作手套，于是一个人就能遥操作人形机器人边走边做操作，并积累训练数据。",
+      "related": ["全身控制", "学习型全身控制", "逆运动学", "强化学习运控", "运动操作一体化", "SONIC"],
+      "sources": [
+        {"title": "NVlabs/GR00T-WholeBodyControl（Decoupled WBC: RL for lower body, IK for upper body）", "url": "https://github.com/NVlabs/GR00T-WholeBodyControl"},
+        {"title": "HOMIE: Humanoid Loco-Manipulation with Isomorphic Exoskeleton Cockpit (arXiv:2502.13013)", "url": "https://arxiv.org/abs/2502.13013"}
+      ],
+      "as_of": "2026-05"
+    },
+    {
+      "name_zh": "微分动态规划",
+      "name_en": "Differential Dynamic Programming",
+      "abbr": "DDP",
+      "aliases": ["DDP 算法"],
+      "tier": 3,
+      "one_liner": "沿当前轨迹做二阶近似、反复前后扫描，逐步改进控制序列的轨迹优化方法。",
+      "explanation": "DDP 是求解非线性最优控制的迭代算法，由 David Mayne 在 1966 年提出，后经 Jacobson 与 Mayne 的同名专著系统化。给定一条初始控制序列，它反复做两步：反向扫描时，在当前轨迹附近把动力学和代价做二阶展开，从终点往回算出每一步的修正量 k = −Q_uu⁻¹Q_u 和反馈增益 K = −Q_uu⁻¹Q_ux，其中 Q 是「这一步选控制 u、之后都按最优走」的总代价，下标表示对 u 或状态 x 求导；正向扫描时按 u = ū + αk + K(x − x̄) 重新仿真出新轨迹（ū、x̄ 是旧轨迹，α 是线搜索步长）。它在最优解附近二次收敛，还顺带给出反馈增益，适合做 MPC。把动力学的二阶导项丢掉，就是更常用的 iLQR。它属于打靶类方法，状态靠仿真得到，处理状态约束不如配点法方便。",
+      "example": "开源库 Crocoddyl 以 DDP 及其变体 FDDP 为核心求解器，借助 Pinocchio 的解析导数，为足式机器人等计算带接触序列的最优轨迹和对应的反馈增益。",
+      "related": ["迭代线性二次调节器", "线性二次调节器", "轨迹优化", "模型预测控制", "最优控制", "Crocoddyl"],
+      "sources": [
+        {"title": "Wikipedia: Differential dynamic programming", "url": "https://en.wikipedia.org/wiki/Differential_dynamic_programming"},
+        {"title": "loco-3d/crocoddyl（solvers based on DDP algorithms）", "url": "https://github.com/loco-3d/crocoddyl"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "直接配点法",
+      "name_en": "Direct Collocation",
+      "abbr": "",
+      "aliases": ["配点法", "直接配置法", "Collocation method"],
+      "tier": 3,
+      "one_liner": "把轨迹切成节点，把动力学写成节点间的约束，转成一个大优化问题来求解。",
+      "explanation": "直接配点法是轨迹优化里最常用的「转写」方法之一，由 Hargraves 和 Paris 在 1987 年提出，作用是把连续时间的最优控制问题变成有限维的非线性规划（NLP）。做法是把时间切成 N 段，每个节点上的状态 x_k 和控制 u_k 都当优化变量，节点之间用多项式连起来（常见是控制分段线性、状态用三次样条），再要求多项式在配点（如区间中点）处的导数等于动力学 ẋ = f(x, u)，用这些等式约束保证轨迹符合物理。打靶法只优化控制、状态靠仿真积分得到，时域一长就对初值很敏感；配点法把状态也当变量，初值可以随手画一条，状态约束好加，问题稀疏，适合交给 IPOPT、SNOPT 等求解器。缺点是变量多，迭代中途的轨迹不一定满足动力学。多重打靶法介于两者之间。",
+      "example": "小车倒立摆摆起：把整段时间切成若干节点，以每个节点的小车位置、摆角、速度和推力为变量，约束相邻节点满足动力学、终点摆杆竖直，目标是推力平方和最小，求解后得到一条摆起轨迹。Matthew Kelly 发表在 SIAM Review 的入门教程专讲这一方法，Drake 里也有现成的 DirectCollocation 类。",
+      "related": ["轨迹优化", "多重打靶法", "序列二次规划", "接触隐式轨迹优化", "Drake", "Ipopt"],
+      "sources": [
+        {"title": "Underactuated Robotics (Tedrake), Ch. Trajectory Optimization", "url": "https://underactuated.mit.edu/trajopt.html"},
+        {"title": "Drake: DirectCollocation Class Reference", "url": "https://drake.mit.edu/doxygen_cxx/classdrake_1_1planning_1_1trajectory__optimization_1_1_direct_collocation.html"},
+        {"title": "Matthew Kelly: Trajectory Optimization tutorials", "url": "https://www.matthewpeterkelly.com/tutorials/trajectoryOptimization/index.html"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "扰动观测器",
+      "name_en": "Disturbance Observer",
+      "abbr": "DOB",
+      "aliases": ["干扰观测器", "DOb", "DOBC", "基于扰动观测器的控制"],
+      "tier": 3,
+      "one_liner": "用名义模型反推出摩擦、负载等未知扰动，再在控制输入里把它抵消掉。",
+      "explanation": "扰动观测器是运动控制里最常用的鲁棒控制工具之一，由大西公平（Kouhei Ohnishi）等人在 1983 年提出。思路是把摩擦、负载变化、模型参数误差和外力统统合成一个「集总扰动」，用简单的名义模型反推出来。以电机为例，名义上 J·θ̈ = K_t·i（J 是转动惯量，θ̈ 是角加速度，K_t 是力矩常数，i 是电流），实测的加速度和电流对不上，差出来的就是扰动力矩；再过一个低通滤波器得到估计值（截止频率决定估计带宽，太高会放大噪声），加回电流指令里抵消掉。这样被控对象表现得接近名义模型：外环 PD 只管跟踪性能，鲁棒性交给 DOB，两者可分开调。机器人碰撞检测用的动量观测器、自抗扰控制里的扩张状态观测器，思路都与它相近。",
+      "example": "给关节电机加 DOB、外面套 PD 位置环：机械臂末端从空载变成挂上重物时，DOB 很快估计出多出来的负载力矩并补进电流指令，位置误差基本不受影响。把估计值里已知的重力、摩擦项扣掉，剩下的部分还能当作外力估计，这是不装力传感器做力控和碰撞检测的常见做法。",
+      "related": ["状态观测器", "动量观测器", "自抗扰控制", "无传感器力估计", "鲁棒控制", "摩擦补偿"],
+      "sources": [
+        {"title": "Sariyildiz, Oboe, Ohnishi: Disturbance Observer-based Robust Control and Its Applications: 35th Anniversary Overview (arXiv:1902.09032)", "url": "https://arxiv.org/abs/1902.09032"},
+        {"title": "Hyungbo Shim: Disturbance Observer (arXiv:2101.02859)", "url": "https://arxiv.org/abs/2101.02859"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "双支撑期",
+      "name_en": "Double Support Phase",
+      "abbr": "DSP",
+      "aliases": ["双足支撑相", "双腿支撑期", "双支撑相", "Double Stance", "Double Limb Support"],
+      "tier": 3,
+      "one_liner": "步行中两只脚同时着地的那一段，身体的支撑在这段从后脚移到前脚。",
+      "explanation": "双支撑期是双足步行中两只脚同时着地的阶段，出现在前脚刚落地、后脚还没离地之间，每个步态周期有两次，其余时间是只有一只脚着地的单支撑期。按维基百科给出的人类步行「站立相约占 60%、摆动相约占 40%」推算，两次双支撑合计约占周期的 20%；走得越快这段越短，跑步时则没有双支撑，换成双脚都离地的腾空相。对人形机器人来说，这段时间支撑多边形覆盖两只脚，最稳；零力矩点（ZMP）要在这段从后脚移到前脚；两腿和地面构成闭链，驱动多于自由度，需要决定两只脚各出多少力；落地冲击和接触切换也发生在它的前后。不少简化模型把双支撑期当成瞬间完成，更精细的步态规划会显式优化它的时长。",
+      "example": "首尔大学团队 2025 年提出的相位式非线性 MPC，把 ZMP 调节、落脚点、单支撑时长和双支撑时长放进同一个优化问题联合求解，并在双支撑期内禁止更新落脚点，在外力推搡下提升了人形机器人的行走平衡。",
+      "related": ["步态", "支撑多边形", "零力矩点", "支撑相 / 摆动相", "腾空相", "步态周期与占空比"],
+      "sources": [
+        {"title": "Wikipedia: Gait (human)", "url": "https://en.wikipedia.org/wiki/Gait_(human)"},
+        {"title": "Phase-based NMPC for Humanoid Walking Stabilization with Single and Double Support Time Adjustments (arXiv:2506.03856)", "url": "https://arxiv.org/abs/2506.03856"},
+        {"title": "Hybrid Zero Dynamics Control for Bipedal Walking with a Non-Instantaneous Double Support Phase (arXiv:2303.05165)", "url": "https://arxiv.org/abs/2303.05165"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "动态运动基元",
+      "name_en": "Dynamic Movement Primitives (Dynamical Movement Primitives)",
+      "abbr": "DMP",
+      "aliases": ["动态运动原语", "动态运动基元", "Dynamical Movement Primitives", "DMPs"],
+      "tier": 3,
+      "one_liner": "把一条示教轨迹编码成「弹簧阻尼 + 可学习力项」的动力系统，可改终点和速度复现。",
+      "explanation": "DMP 是 Ijspeert、Nakanishi 和 Schaal 在 2001–2002 年提出的轨迹表示方法，2013 年发表了系统总结。核心是一个二阶「弹簧-阻尼」系统加一个可学习的力项：τ·ż = α(β(g − y) − z) + f(x)，τ·ẏ = z。其中 y 是位置，z 是缩放后的速度，g 是目标点，τ 控制快慢，α、β 是固定增益；f(x) 是若干高斯基函数的加权和，权重可以用线性回归从一次示教里直接拟合出来；x 来自一个随时间衰减到 0 的「相位」系统 τ·ẋ = −αₓx，保证力项最后消失、系统稳定收敛到 g。因此改 g 就能换终点，改 τ 就能变速，中途被推一下也会自己回到轨迹上。它长期是模仿学习新手的入门工具。局限是只表示一条确定的轨迹，描述不了同一任务有多种做法的情况，概率运动基元（ProMP）等方法在此基础上加入了分布建模。",
+      "example": "用拖动示教录一次「把杯子从 A 点端到 B 点」的机械臂轨迹，拟合出 DMP 权重；要改放到 C 点时只需把 g 换成 C 的坐标，想放慢就调大 τ，机械臂会生成形状相似的新轨迹，不必重新示教。",
+      "related": ["运动基元", "概率运动基元", "模仿学习", "拖动示教", "高斯混合回归 / 任务参数化 GMM"],
+      "sources": [
+        {"title": "Saveriano et al.: Dynamic Movement Primitives in Robotics: A Tutorial Survey (arXiv:2102.03861)", "url": "https://arxiv.org/abs/2102.03861"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "动态窗口法",
+      "name_en": "Dynamic Window Approach",
+      "abbr": "DWA",
+      "aliases": ["动态窗口算法", "动态窗口避障", "dwa_local_planner"],
+      "tier": 3,
+      "one_liner": "在机器人下一刻能达到的速度里采样、模拟、打分，选出最优速度的局部避障法。",
+      "explanation": "动态窗口法由 Dieter Fox、Wolfram Burgard 和 Sebastian Thrun 在 1997 年提出，是移动机器人最经典的局部避障算法之一。它直接在速度空间里找控制指令，对差速底盘来说，候选就是线速度 v 和角速度 ω 的组合。「动态窗口」指按最大加减速度，下一个控制周期内实际能达到的那一小块速度范围；再剔掉刹车来不及、会撞上障碍的速度。对剩下的每组 (v, ω) 前向模拟一小段圆弧轨迹，用 G = α·朝向目标程度 + β·离障碍物距离 + γ·速度大小 打分，执行得分最高的一组。它考虑了机器人的加速度限制，计算量小；但只看眼前一小段，遇到 U 形障碍容易卡住，所以通常需要 A*、D* 等全局规划器先给出大致路线。ROS 1 的 dwa_local_planner 和 Nav2 的 DWB 控制器都源自这一思路。",
+      "example": "一台差速底盘机器人在 ROS 导航栈里运行：全局规划器给出一条路线，每个控制周期局部规划器采样一批 (v, ω)，模拟未来一小段时间的轨迹，丢掉会碰到代价地图障碍的，再从剩下的里面选既贴近路线又走得快的一组发给底盘。",
+      "related": ["全局规划与局部规划", "时间弹性带", "人工势场法", "代价地图", "Nav2", "避障"],
+      "sources": [
+        {"title": "Wikipedia: Dynamic window approach", "url": "https://en.wikipedia.org/wiki/Dynamic_window_approach"},
+        {"title": "Nav2 DWB Controller README（successor to DWA in ROS 1）", "url": "https://github.com/ros-navigation/navigation2/tree/main/nav2_dwb_controller"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "欧氏符号距离场",
+      "name_en": "Euclidean Signed Distance Field",
+      "abbr": "ESDF",
+      "aliases": ["欧几里得符号距离场", "欧式符号距离场", "ESDF 地图"],
+      "tier": 3,
+      "one_liner": "三维栅格里每一格都存着到最近障碍物的真实距离，外正内负，还能求梯度。",
+      "explanation": "欧氏符号距离场是一种三维地图表示：把空间切成体素（小立方格），每个体素存它到最近障碍物表面的欧氏距离，在障碍外为正、在障碍内为负。它和 TSDF（截断符号距离函数）不同：TSDF 只在物体表面附近有值，且距离沿相机视线估算；ESDF 在整张地图上给出真实的最近距离，并且可以求梯度，梯度方向就是「离障碍更远」的方向。这让它很适合基于梯度的轨迹优化，比如 CHOMP 和许多无人机局部规划器：把机器人近似成一串小球，只要各球心处的距离大于球半径就不碰撞，碰撞代价的梯度会直接把轨迹推离障碍。ETH 的 Voxblox（2016）提出从 TSDF 增量构建 ESDF，英伟达 nvblox 把这类建图放到 GPU 上。缺点是维护整张距离场很耗算力，所以 EGO-Planner 等工作干脆不用 ESDF。",
+      "example": "Voxblox 的实验：无人机边飞边用机载传感器建 TSDF，再增量转成 ESDF，局部轨迹优化器读取距离和梯度，在机载单个 CPU 核上实时完成建图和重规划。",
+      "related": ["符号距离场", "截断符号距离函数", "nvblox", "CHOMP", "碰撞检查", "占据栅格地图"],
+      "sources": [
+        {"title": "Voxblox: Incremental 3D Euclidean Signed Distance Fields for On-Board MAV Planning (arXiv:1611.03631)", "url": "https://arxiv.org/abs/1611.03631"},
+        {"title": "EGO-Planner: An ESDF-free Gradient-based Local Planner for Quadrotors (arXiv:2008.08835)", "url": "https://arxiv.org/abs/2008.08835"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "反馈线性化",
+      "name_en": "Feedback Linearization",
+      "abbr": "",
+      "aliases": ["反馈线性化控制", "精确线性化", "输入-输出线性化", "Exact Linearization"],
+      "tier": 3,
+      "one_liner": "用状态反馈把非线性项精确抵消，让系统变成线性系统后再设计控制器。",
+      "explanation": "反馈线性化是非线性控制的基本方法：设计控制律 u = a(x) + b(x)·v，其中 a、b 由系统模型算出，用来把非线性项精确抵消，再配合坐标变换，使新输入 v 到输出之间变成简单的线性关系（常见是几个积分器串联），然后就能用 PD、极点配置等线性方法来设计 v。它和常见的「在工作点附近做泰勒展开（雅可比线性化）」不同：后者只是近似，只在工作点附近有效；反馈线性化是精确变换，适用范围大得多，但前提是模型准确，模型有误差时抵消不干净，鲁棒性差。机械臂的计算力矩控制就是它的特例。只让输出变线性时，剩下看不见的内部动态叫零动态，必须是稳定的；双足行走的混合零动态（HZD）控制就建立在这种输入-输出线性化之上。",
+      "example": "机械臂动力学 M(q)q̈ + C(q, q̇)q̇ + g(q) = τ（M 是质量矩阵，C 项是科里奥利力和离心力，g 是重力，τ 是关节力矩）。取 τ = M(q)v + C(q, q̇)q̇ + g(q) 代入，得到 q̈ = v，每个关节变成独立的双积分器；再令 v = q̈_d + K_d(q̇_d − q̇) + K_p(q_d − q)，跟踪误差就按线性二阶系统收敛。",
+      "related": ["计算力矩控制", "逆动力学", "混合零动态", "操作空间控制", "质量矩阵", "李雅普诺夫稳定性"],
+      "sources": [
+        {"title": "Wikipedia: Feedback linearization", "url": "https://en.wikipedia.org/wiki/Feedback_linearization"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "磁场定向控制",
+      "name_en": "Field-Oriented Control",
+      "abbr": "FOC",
+      "aliases": ["矢量控制", "Vector control", "磁场导向控制", "场定向控制"],
+      "tier": 3,
+      "one_liner": "把三相电流换到随转子旋转的坐标系里，分别控制产生磁通和产生力矩的电流。",
+      "explanation": "磁场定向控制又叫矢量控制，由达姆施塔特工业大学的 K. Hasse 和西门子的 F. Blaschke 在 1968 年到 70 年代初提出，现在是永磁同步电机、无刷电机的主流驱动方法，机器人关节模组的驱动器普遍采用。电机的三相电流是交流量，直接调节很难。FOC 先用 Clarke 变换把三相换成两相静止坐标（α、β），再用 Park 变换按转子电角度旋转到随转子转动的 d-q 坐标：d 轴电流 i_d 产生与永磁体同向的磁通，q 轴电流 i_q 产生力矩，两者都变成直流量，各用一个 PI 控制器调节。对永磁电机通常令 i_d = 0，力矩约等于力矩常数 K_t 乘以 i_q。因此 FOC 需要实时知道转子角度，一般靠编码器，也可用无感观测器估算。与方波六步换相相比，它的力矩更平稳；与 V/f 标量控制相比，动态性能更好。",
+      "example": "足式机器人常用的准直驱关节：上位机按 MIT 模式发来目标位置、速度、刚度、阻尼和前馈力矩，驱动器算出期望力矩 τ，除以 K_t 得到 i_q 指令并令 i_d = 0，然后在高频电流环里完成 Clarke/Park 变换、PI 调节、反变换和 PWM 输出三相电压。开源的 SimpleFOC 库实现的也是这套流程。",
+      "related": ["永磁同步电机", "无刷直流电机", "电机驱动器", "MIT 模式", "磁编码器", "力矩常数（Kt）"],
+      "sources": [
+        {"title": "Wikipedia: Vector control (motor)", "url": "https://en.wikipedia.org/wiki/Vector_control_(motor)"},
+        {"title": "SimpleFOC docs: FOC theory", "url": "https://docs.simplefoc.com/foc_theory"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "力感知策略 / 柔顺策略学习",
+      "name_en": "Force-aware / Compliant Policy Learning",
+      "abbr": "",
+      "aliases": ["力觉策略", "力感知操作策略", "柔顺策略", "Force-aware Policy", "Compliance Policy"],
+      "tier": 3,
+      "one_liner": "让学出来的操作策略感知接触力或输出刚度，接触时既贴得住又不用力过猛。",
+      "explanation": "这是让学习型操作策略处理接触力的一类方法的统称。常见的视觉运动策略（如扩散策略）只输出目标位置，交给刚性的位置控制器执行，一接触就容易用力过猛或贴不住。改进主要有两条路。一是「力感知」：把六维力/力矩传感器、触觉等信号作为输入，与图像融合后再出动作，例如上海交通大学卢策吾团队的 FoAR（2024）按预测的接触状态调节力信号的权重，同组的 RDP（2025）用低频扩散策略加高频触觉反馈回路，ForceVLA（2025）在 VLA 里加入力感知的混合专家模块。二是「柔顺」：让策略同时输出刚度等参数，交给阻抗或导纳类柔顺控制器执行，例如斯坦福与丰田研究院的自适应柔顺策略 ACP（2024）输出参考位姿、虚拟目标位姿和刚度。难点是多数遥操作系统没有力反馈，示教数据里很难得到合适的力和刚度标签。",
+      "example": "ACP 的擦花瓶任务：策略根据图像和力信号实时给出参考位姿、虚拟目标位姿和柔顺方向上的刚度，交给柔顺控制器执行，让机器人持续贴住弧形瓶面擦拭又不至于用力过大；论文报告在接触丰富任务上比只输出位置的视觉运动策略提升 50% 以上。",
+      "related": ["力控", "阻抗控制", "变阻抗控制", "接触丰富操作", "六维力传感器", "力觉 VLA"],
+      "sources": [
+        {"title": "Adaptive Compliance Policy: Learning Approximate Compliance for Diffusion Guided Control (arXiv:2410.09309)", "url": "https://arxiv.org/abs/2410.09309"},
+        {"title": "FoAR: Force-Aware Reactive Policy for Contact-Rich Robotic Manipulation (arXiv:2411.15753)", "url": "https://arxiv.org/abs/2411.15753"},
+        {"title": "Reactive Diffusion Policy: Slow-Fast Visual-Tactile Policy Learning for Contact-Rich Manipulation (arXiv:2503.02881)", "url": "https://arxiv.org/abs/2503.02881"}
+      ],
+      "as_of": "2025-05"
+    }
+  ]
+}

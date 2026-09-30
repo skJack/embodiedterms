@@ -1,0 +1,359 @@
+{
+ "category": "named_model",
+ "batch": 21,
+ "terms": [
+  {
+   "name_zh": "Q-Transformer",
+   "name_en": "Q-Transformer: Scalable Offline Reinforcement Learning via Autoregressive Q-Functions",
+   "abbr": "",
+   "aliases": [],
+   "tier": 3,
+   "one_liner": "用 Transformer 逐个动作维度估计 Q 值的大规模离线强化学习方法",
+   "explanation": "Google DeepMind 的 Yevgen Chebotar、Sergey Levine 等人 2023 年 9 月发布，发表于 CoRL 2023。它要解决的是：机器人既有人类演示、又有大量自主采集（含失败）的数据，怎样用离线强化学习（只用已有数据训练）把两者都用上。做法是用 Transformer 表示 Q 函数（给「状态+动作」打分的价值函数）：把每个动作维度离散成若干档，像生成 token 一样逐维预测 Q 值；再用保守正则（把没见过的动作压到最低值）和蒙特卡洛回报稳定训练。在 RT-1 的真机多任务上，它优于 RT-1、IQL 和决策 Transformer，尤其善于利用失败数据。",
+   "example": "在 RT-1 的真机多任务数据上，Q-Transformer 把人类演示和机器人自主尝试得到的失败片段一起用于训练，比只模仿成功演示的 RT-1 表现更好。",
+   "related": [
+    "QT-Opt",
+    "离线强化学习",
+    "Q 函数",
+    "RT-1",
+    "保守 Q 学习",
+    "决策 Transformer"
+   ],
+   "sources": [
+    {
+     "title": "Q-Transformer (arXiv 2309.10150)",
+     "url": "https://arxiv.org/abs/2309.10150"
+    },
+    {
+     "title": "Q-Transformer project page",
+     "url": "https://qtransformer.github.io/"
+    }
+   ],
+   "as_of": "2023-09"
+  },
+  {
+   "name_zh": "QT-Opt",
+   "name_en": "QT-Opt: Scalable Deep Reinforcement Learning for Vision-Based Robotic Manipulation",
+   "abbr": "QT-Opt",
+   "aliases": [],
+   "tier": 3,
+   "one_liner": "谷歌用 58 万多次真机抓取训练视觉 Q 函数的大规模强化学习抓取系统",
+   "explanation": "Google Brain 与 X 的 Dmitry Kalashnikov、Sergey Levine 等人 2018 年 6 月发布，发表于 CoRL 2018。当时抓取多是先选抓取点再开环执行。QT-Opt 用深度强化学习直接从头顶 RGB 相机图像学一个 Q 函数，每一步都按当前画面重新决定夹爪怎么动，实现闭环抓取；连续动作难以直接求最大值，就用交叉熵方法（迭代采样优化）搜索最优动作。训练用了 58 万多次真实抓取尝试，在没见过的物体上抓取成功率达 96%，还自发学会重新抓取、先拨动物体再抓等行为。它是大规模真机强化学习的代表作，MT-Opt、Q-Transformer 都沿此发展。",
+   "example": "物体在抓取过程中被人推开时，QT-Opt 策略会根据新的相机画面调整夹爪位置重新抓，而不是按原计划在空处合拢。",
+   "related": [
+    "Q-Transformer",
+    "MT-Opt",
+    "真机强化学习",
+    "Q 函数",
+    "交叉熵方法",
+    "机械臂农场"
+   ],
+   "sources": [
+    {
+     "title": "QT-Opt (arXiv 1806.10293)",
+     "url": "https://arxiv.org/abs/1806.10293"
+    }
+   ],
+   "as_of": "2018-06"
+  },
+  {
+   "name_zh": "R3M",
+   "name_en": "R3M: A Universal Visual Representation for Robot Manipulation",
+   "abbr": "R3M",
+   "aliases": [],
+   "tier": 3,
+   "one_liner": "用人类第一人称视频预训练、专供机器人操作使用的通用视觉表征",
+   "explanation": "斯坦福与 Meta AI 的 Suraj Nair、Chelsea Finn、Abhinav Gupta 等人 2022 年 3 月发布，发表于 CoRL 2022。机器人演示少，从零训练视觉编码器难学好；R3M 先在 Ego4D 人类第一人称视频上预训练图像编码器，目标组合了时间对比学习（时间上接近的帧表征更接近）、视频与语言描述对齐，以及让表征稀疏紧凑的 L1 惩罚。之后把它冻结当感知模块，下游只训练策略。在 12 个仿真操作任务上，成功率比从零训练高 20% 以上，比 CLIP、MoCo 表征高 10% 以上。它是「预训练视觉表征」路线的代表，常与 VC-1、MVP、VIP 对比。",
+   "example": "在杂乱的真实公寓里，Franka 机械臂以冻结的 R3M 编码器作视觉模块，每个任务只用 20 条演示就学会了操作。",
+   "related": [
+    "预训练视觉表征",
+    "VC-1",
+    "MVP（掩码视觉预训练）",
+    "VIP（价值隐式预训练）",
+    "Ego4D 数据集",
+    "时间对比学习"
+   ],
+   "sources": [
+    {
+     "title": "R3M (arXiv 2203.12601)",
+     "url": "https://arxiv.org/abs/2203.12601"
+    }
+   ],
+   "as_of": "2022-03"
+  },
+  {
+   "name_zh": "RaC",
+   "name_en": "RaC: Robot Learning for Long-Horizon Tasks by Scaling Recovery and Correction",
+   "abbr": "RaC",
+   "aliases": [
+    "Recovery and Correction"
+   ],
+   "tier": 3,
+   "one_liner": "让人类在失败前接管、先恢复再纠正，以此扩展长程任务数据的方法",
+   "explanation": "卡内基梅隆大学 Zheyuan Hu、Zackory Erickson、Aviral Kumar 等人 2025 年 9 月发布。作者发现，在接触丰富、柔性物体和长程任务上，只堆专家演示，模仿学习成功率会卡住，因为专家数据里几乎没有「出错后怎么办」。RaC 在模仿学习预训练后加一个人在回路微调阶段：策略执行时，操作员在即将失败时接管，先把机器人退回熟悉的分布内状态（恢复），再示范完成当前子任务（纠正），随即结束该回合。在挂衬衫、密封保鲜盒盖、打包外卖盒三个真机双臂任务和一个仿真装配任务上，它用约十分之一的采集时间和样本超过此前最好方法，成功率还随策略执行的恢复动作次数线性提升。",
+   "example": "比如挂衬衫时策略快要把衣架挂歪，操作员接管，先把手臂退回正常拿衣架的姿态，再示范一次挂好，这段干预数据加入微调。",
+   "related": [
+    "纠偏数据",
+    "人在回路",
+    "干预数据",
+    "长程任务",
+    "复合误差",
+    "HIL-SERL"
+   ],
+   "sources": [
+    {
+     "title": "RaC (arXiv 2509.07953)",
+     "url": "https://arxiv.org/abs/2509.07953"
+    },
+    {
+     "title": "RaC project page",
+     "url": "https://rac-scaling-robot.github.io/"
+    }
+   ],
+   "as_of": "2025-09"
+  },
+  {
+   "name_zh": "RDT2",
+   "name_en": "RDT2 (Robotics Diffusion Transformer 2): Exploring the Scaling Limit of UMI Data Towards Zero-Shot Cross-Embodiment Generalization",
+   "abbr": "",
+   "aliases": [
+    "RDT2-VQ",
+    "RDT2-FM",
+    "Robotics Diffusion Transformer 2"
+   ],
+   "tier": 3,
+   "one_liner": "清华用上万小时 UMI 数据训练、可零样本换机械臂部署的 VLA 基础模型",
+   "explanation": "清华大学朱军团队（RDT 团队）2025 年 9 月开源，论文 2026 年 2 月发布，是 RDT-1B 的后续。它想解决换一台机械臂就得重新采数据微调的问题：团队改进了手持夹爪采集设备 UMI（通用操作接口），在约 100 个地点（多为真实家庭）采了一万多小时演示；采集和部署用统一的 UMI 夹爪，本体差异很小。模型以 70 亿参数的 Qwen2.5-VL 为骨干，三阶段训练：先用残差向量量化把动作变成离散 token（RDT2-VQ），再换成约 4 亿参数的动作专家输出连续动作（RDT2-FM），最后蒸馏加速。官方称它是首个能在没见过的本体上零样本完成抓取放置等简单任务的基础模型，还演示了打乒乓球。",
+   "example": "把 RDT2-FM 直接接到一台训练时没用过的机械臂上，装上 UMI 同款夹爪，不经微调就能按语言指令抓取放置物体。",
+   "related": [
+    "RDT-1B",
+    "通用操作接口",
+    "手持夹爪采集",
+    "跨本体",
+    "流匹配",
+    "向量量化"
+   ],
+   "sources": [
+    {
+     "title": "RDT2 project page",
+     "url": "https://rdt-robotics.github.io/rdt2/"
+    },
+    {
+     "title": "RDT2 (arXiv 2602.03310)",
+     "url": "https://arxiv.org/abs/2602.03310"
+    }
+   ],
+   "as_of": "2026-02"
+  },
+  {
+   "name_zh": "真实世界人形强化学习行走",
+   "name_en": "Real-World Humanoid Locomotion with Reinforcement Learning (Radosavovic et al., Science Robotics 2024)",
+   "abbr": "",
+   "aliases": [
+    "Real-World Humanoid Locomotion with RL"
+   ],
+   "tier": 3,
+   "one_liner": "仿真中强化学习训练 Transformer 控制器，零样本让人形机器人户外行走",
+   "explanation": "UC Berkeley 的 Ilija Radosavovic、Jitendra Malik 等人 2023 年 3 月发布，2024 年发表于 Science Robotics。以往人形行走多靠经典控制器，难适应新环境。这项工作用因果 Transformer 做控制器，输入过去一段本体感知观测和动作，输出下一步动作，靠历史信息「在上下文中」适应地形，无需更新参数。训练全在 Isaac Gym 仿真中：先用特权信息训练教师策略，再结合模仿教师与强化学习训练学生策略，配合域随机化，再零样本部署到 Agility 的 Digit 人形机器人上。它能在多种户外地形行走并抗推扰，是学习型人形运控的早期代表作。",
+   "example": "Digit 在训练中从没见过的户外草地和塑胶跑道上行走，被人从侧面推一把也能稳住。",
+   "related": [
+    "强化学习运控",
+    "仿真到现实迁移",
+    "教师-学生蒸馏",
+    "域随机化",
+    "Agility Digit 人形机器人",
+    "人形行走即下一个 token 预测"
+   ],
+   "sources": [
+    {
+     "title": "Real-World Humanoid Locomotion with Reinforcement Learning (arXiv 2303.03381)",
+     "url": "https://arxiv.org/abs/2303.03381"
+    },
+    {
+     "title": "Project page",
+     "url": "https://learning-humanoid-locomotion.github.io/"
+    }
+   ],
+   "as_of": "2024"
+  },
+  {
+   "name_zh": "1X Redwood",
+   "name_en": "Redwood AI (1X)",
+   "abbr": "",
+   "aliases": [
+    "Redwood",
+    "Redwood AI"
+   ],
+   "tier": 3,
+   "one_liner": "1X 为家用人形机器人 NEO 打造、在机载 GPU 上运行的 VLA 模型",
+   "explanation": "人形机器人公司 1X Technologies 2025 年 6 月发布，是一个约 1.6 亿参数的视觉-语言-动作模型（VLA，看画面、听指令直接输出动作），完全跑在 NEO Gamma 的机载嵌入式 GPU 上，约 5 Hz 出动作，网络不好也能工作。它主打家庭里的移动操作，如边走边取物、开门，并能同时协调行走、手臂和骨盆姿态指令，完成弯腰捡东西、拉重门时用另一只手撑墙这类动作。训练数据来自 EVE 和 NEO 两代机器人在办公室和员工家中的遥操作与自主运行片段，失败片段也用于训练。用户可用语音对话下达指令。",
+   "example": "比如用户对 NEO 说「帮我把厨房台面上的杯子拿过来」，Redwood 控制它走到厨房、拿起杯子再送回来。",
+   "related": [
+    "1X 世界模型",
+    "1X NEO",
+    "视觉-语言-动作模型",
+    "移动操作",
+    "端侧部署",
+    "全身控制"
+   ],
+   "sources": [
+    {
+     "title": "1X: Redwood AI",
+     "url": "https://www.1x.tech/discover/redwood-ai"
+    }
+   ],
+   "as_of": "2025-06"
+  },
+  {
+   "name_zh": "ReinFlow",
+   "name_en": "ReinFlow: Fine-tuning Flow Matching Policy with Online Reinforcement Learning",
+   "abbr": "",
+   "aliases": [],
+   "tier": 3,
+   "one_liner": "给流匹配策略注入可学习噪声，再用在线强化学习微调的方法",
+   "explanation": "卡内基梅隆大学、清华大学等的 Tonghe Zhang、Chao Yu、Yu Wang 等人 2025 年 5 月发布，发表于 NeurIPS 2025。流匹配策略（用速度场把噪声逐步变成动作的生成式策略）想再用强化学习提升时有个障碍：生成过程是确定性的，算不出动作概率，也缺少探索。ReinFlow 在每个去噪步加一个可学习的高斯噪声，把生成过程变成离散时间马尔可夫过程，就能精确算似然、用策略梯度微调；噪声网络只在训练时用，推理时丢掉。在腿足运动任务上，整流流策略的回合奖励平均提升约 135%，计算开销比扩散策略微调方法 DPPO 少约 83%。它与 DPPO、πRL 同属用强化学习微调生成式策略的方向。",
+   "example": "先用演示训练一个只需很少去噪步数的 Shortcut 流策略，再用 ReinFlow 在 robomimic 仿真操作任务上在线强化学习，成功率明显提升。",
+   "related": [
+    "流匹配",
+    "DPPO",
+    "πRL",
+    "强化学习微调",
+    "整流流",
+    "策略梯度"
+   ],
+   "sources": [
+    {
+     "title": "ReinFlow (arXiv 2505.22094)",
+     "url": "https://arxiv.org/abs/2505.22094"
+    },
+    {
+     "title": "ReinFlow project page",
+     "url": "https://reinflow.github.io/"
+    }
+   ],
+   "as_of": "2025-05"
+  },
+  {
+   "name_zh": "微软 Rho-alpha",
+   "name_en": "Rho-alpha (ρα, Microsoft Research robotics model derived from Phi)",
+   "abbr": "ρα",
+   "aliases": [
+    "Rho-alpha",
+    "Rho-Alpha",
+    "ρα"
+   ],
+   "tier": 3,
+   "one_liner": "微软研究院基于 Phi 视觉语言模型打造、加入触觉感知的首个机器人模型",
+   "explanation": "微软研究院 2026 年 1 月 21 日发布，是微软首个机器人模型，由其 Phi 系列视觉语言模型衍生而来。微软称它为「VLA+」：在视觉-语言-动作模型（看画面、听指令直接输出动作）的基础上，感知上加入触觉，力觉还在开发中；学习上在研究让机器人在使用中根据人的纠正反馈继续适应。它把自然语言指令转成双臂操作的控制信号，训练数据包括真机演示、仿真任务和网络规模的视觉问答数据。发布时在配有触觉传感器的双 UR5e 机械臂和人形机器人上评测，并使用 BusyBox 基准。发布时以研究早期访问计划开放申请，并称之后会上线 Microsoft Foundry。",
+   "example": "操作者用一句自然语言指令，让配有触觉传感器的双 UR5e 机械臂完成双手配合的操作任务，机器人结合视觉和触觉判断动作是否到位。",
+   "related": [
+    "视觉-语言-动作模型",
+    "视觉-触觉-语言-动作模型",
+    "触觉传感器",
+    "双臂操作",
+    "人在回路",
+    "微软（微软研究院）"
+   ],
+   "sources": [
+    {
+     "title": "Microsoft Research: Advancing AI for the physical world",
+     "url": "https://www.microsoft.com/en-us/research/story/advancing-ai-for-the-physical-world/"
+    }
+   ],
+   "as_of": "2026-01"
+  },
+  {
+   "name_zh": "RIPT-VLA（交互式后训练）",
+   "name_en": "RIPT-VLA: Interactive Post-Training for Vision-Language-Action Models",
+   "abbr": "",
+   "aliases": [
+    "RIPT",
+    "Reinforcement Interactive Post-Training"
+   ],
+   "tier": 3,
+   "one_liner": "只用成功/失败二值奖励，对预训练 VLA 做强化学习后训练的方法",
+   "explanation": "UT Austin 的 Shuhan Tan、Philipp Krähenbühl 等人 2025 年 5 月发布。VLA 通常先预训练、再用专家演示监督微调，但演示少时效果差。RIPT-VLA 加了第三步「交互式后训练」：让模型在环境里反复尝试，只用任务成败的二值奖励做强化学习。它对同一初始状态采样多次，以同组其他尝试的平均成绩为基线估计优势（留一法），再用 PPO 更新；全成或全败的组没有学习信号，就丢弃重采。它把 QueST 模型提升 21.2%，把 7B 的 OpenVLA-OFT 在 LIBERO 上推到 97.5%；只给 1 条演示时，能把 4% 成功率的模型在 15 轮迭代内提到 97%。",
+   "example": "只用 1 条演示微调出的 VLA 成功率仅 4%，接着让它在仿真里自己反复尝试、按成败打分，15 轮迭代后成功率升到 97%。",
+   "related": [
+    "强化学习微调",
+    "后训练",
+    "OpenVLA-OFT",
+    "LIBERO",
+    "近端策略优化",
+    "SimpleVLA-RL"
+   ],
+   "sources": [
+    {
+     "title": "Interactive Post-Training for Vision-Language-Action Models (arXiv 2505.17016)",
+     "url": "https://arxiv.org/abs/2505.17016"
+    }
+   ],
+   "as_of": "2025-05"
+  },
+  {
+   "name_zh": "RL-100",
+   "name_en": "RL-100: Performant Robotic Manipulation with Real-World Reinforcement Learning",
+   "abbr": "",
+   "aliases": [],
+   "tier": 3,
+   "one_liner": "基于扩散策略的真机强化学习框架，8 个任务 1000 次试验全部成功",
+   "explanation": "上海交通大学、上海期智研究院、清华大学等团队（许华哲等）2025 年 10 月发布，2026 年发表于 Science Robotics。它瞄准家庭和工厂部署需要的、接近熟练操作员的可靠性。框架建立在扩散视觉运动策略上，分三阶段：模仿学习人类演示、离线强化学习、真机在线强化学习，三阶段共用一个作用在去噪过程上的裁剪 PPO 目标，让改进保守稳定；再用一致性蒸馏把多步去噪压成一步，满足高频控制。在推物、保龄球、倒水、叠布、拧螺丝、榨汁、折纸盒等 8 个真机任务上取得 1000/1000 次成功，完成速度达到或超过专家遥操作员。",
+   "example": "部署在商场的榨汁机器人零样本连续为随机顾客服务约 7 小时，没有出现失败。",
+   "related": [
+    "真机强化学习",
+    "扩散策略",
+    "一致性模型",
+    "近端策略优化",
+    "离线到在线强化学习",
+    "HIL-SERL"
+   ],
+   "sources": [
+    {
+     "title": "RL-100 (arXiv 2510.14830)",
+     "url": "https://arxiv.org/abs/2510.14830"
+    },
+    {
+     "title": "RL-100 project page",
+     "url": "https://lei-kun.github.io/RL-100/"
+    },
+    {
+     "title": "Tech Xplore: RL-100 framework helps robots refine learned tasks",
+     "url": "https://techxplore.com/news/2026-08-rl-framework-robots-refine-tasks.html"
+    }
+   ],
+   "as_of": "2026-08"
+  },
+  {
+   "name_zh": "字节 Robix",
+   "name_en": "Robix: A Unified Model for Robot Interaction, Reasoning and Planning (ByteDance Seed)",
+   "abbr": "Robix",
+   "aliases": [
+    "Robix-7B",
+    "Robix-32B"
+   ],
+   "tier": 3,
+   "one_liner": "字节 Seed 的机器人高层「大脑」模型，统一对话、推理和任务规划",
+   "explanation": "字节跳动 Seed 团队 2025 年 9 月发布，有 7B 和 32B 两个规模。它是分层机器人系统里的高层认知层：输入画面和用户的话，由一个视觉语言模型同时完成推理、长程任务规划和自然语言交互，输出给底层控制器的原子指令和对用户说的话；底层可以是字节自研的 GR-3 VLA 模型。它能主动发问澄清模糊指令、执行中被打断时实时改计划、结合常识推理（如按饮食要求筛选食物）。训练分三阶段：继续预训练增强空间理解等具身推理能力，监督微调把交互与规划统一成推理-动作序列，再用强化学习提升推理与行动的一致性。作者报告其在收拾餐桌、超市购物等真实任务上优于商用大模型基线。",
+   "example": "比如用户让机器人收拾餐桌，中途又说「杯子先别收」，Robix 会立即改计划、口头确认，再给底层 VLA 下发新的原子指令。",
+   "related": [
+    "字节 GR-3",
+    "分层架构",
+    "快慢双系统",
+    "具身推理",
+    "大模型任务规划",
+    "字节跳动 Seed"
+   ],
+   "sources": [
+    {
+     "title": "Robix (arXiv 2509.01106)",
+     "url": "https://arxiv.org/abs/2509.01106"
+    },
+    {
+     "title": "Robix project page",
+     "url": "https://robix-seed.github.io/robix/"
+    }
+   ],
+   "as_of": "2025-09"
+  }
+ ]
+}

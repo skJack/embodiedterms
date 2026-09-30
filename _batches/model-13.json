@@ -1,0 +1,205 @@
+{
+  "category": "model",
+  "batch": 13,
+  "terms": [
+    {
+      "name_zh": "平均流",
+      "name_en": "MeanFlow (Mean Flows for One-step Generative Modeling)",
+      "abbr": "",
+      "aliases": ["Mean Flows", "MeanFlow"],
+      "tier": 3,
+      "one_liner": "学习一段时间内的「平均速度」，一步就能从噪声生成样本的生成方法。",
+      "explanation": "平均流（MeanFlow）是 Zhengyang Geng、J. Zico Kolter、何恺明等人在 2025 年 5 月提出的单步生成方法。流匹配训练网络预测某一时刻的「瞬时速度」，生成时要沿速度场积分很多小步，推理慢。MeanFlow 改为预测一段时间区间内的「平均速度」，即这段区间的总位移除以时长，并推导出平均速度与瞬时速度之间的恒等式当训练目标，不需要预训练教师模型或蒸馏，从零训练就能一步采样。论文报告在 ImageNet 256×256 上一步生成的 FID（衡量生成图与真实图差距的指标，越低越好）为 3.43。机器人领域已有 MP1 等工作把它用作动作生成头，以降低策略推理延迟。",
+      "example": "MP1 把 MeanFlow 用在以点云为输入的机械臂策略上，一次网络前向就生成整段动作，论文报告推理约 6.8 毫秒，比 3D 扩散策略 DP3 快约 19 倍，平均成功率还高出 10.2%。",
+      "related": ["流匹配", "速度场", "单步生成", "一致性模型", "整流流", "去噪步数"],
+      "sources": [
+        {"title": "Mean Flows for One-step Generative Modeling (arXiv:2505.13447)", "url": "https://arxiv.org/abs/2505.13447"},
+        {"title": "MP1: MeanFlow Tames Policy Learning in 1-step for Robotic Manipulation (arXiv:2507.10543)", "url": "https://arxiv.org/abs/2507.10543"}
+      ],
+      "as_of": "2025-07"
+    },
+    {
+      "name_zh": "记忆增强 VLA",
+      "name_en": "Memory-Augmented VLA (Memory-Augmented Vision-Language-Action Model)",
+      "abbr": "",
+      "aliases": ["带记忆的 VLA", "Memory VLA"],
+      "tier": 3,
+      "one_liner": "给 VLA 加上历史记忆模块，让它依据过去发生的事而不只是当前画面来决策。",
+      "explanation": "记忆增强 VLA 是一类研究方向的统称，不特指某个模型。主流 VLA（视觉-语言-动作模型）大多只看当前一帧或最近几帧来出动作，默认当前画面包含决策所需的全部信息。但很多操作任务依赖历史：按钮按下后外观不变，看不出按过没有；物体被盖住后画面里也看不到。把长历史帧全塞进模型又会让 token 数和推理时间暴涨。这类方法额外维护一个记忆：把过去的观测压缩成特征存入记忆库，决策时检索相关条目、与当前特征融合后交给动作头。代表工作有清华与原力灵机等 2025 年提出的 MemoryVLA；MIKASA-Robo 基准专门用 32 个桌面操作任务测试这种记忆能力。",
+      "example": "MemoryVLA 的真机任务「按指定颜色顺序按下三个按钮」里，按过和没按过的按钮看起来一样，只看当前画面无法判断进度；MemoryVLA 靠记忆库保存的历史信息完成任务，论文报告其在长程时序任务上比最强基线高出 26 分。",
+      "related": ["MemoryVLA", "视觉-语言-动作模型", "具身记忆", "长程任务", "部分可观测马尔可夫决策过程", "历史编码器"],
+      "sources": [
+        {"title": "MemoryVLA: Perceptual-Cognitive Memory in Vision-Language-Action Models for Robotic Manipulation (arXiv:2508.19236)", "url": "https://arxiv.org/abs/2508.19236"},
+        {"title": "Memory, Benchmark & Robots: A Benchmark for Solving Complex Tasks with Reinforcement Learning (MIKASA, arXiv:2502.10550)", "url": "https://arxiv.org/abs/2502.10550"}
+      ],
+      "as_of": "2026-03"
+    },
+    {
+      "name_zh": "混合密度网络",
+      "name_en": "Mixture Density Network",
+      "abbr": "MDN",
+      "aliases": ["GMM 策略头", "高斯混合输出头"],
+      "tier": 3,
+      "one_liner": "神经网络不直接输出一个值，而是输出一个高斯混合分布的参数。",
+      "explanation": "混合密度网络由 Christopher Bishop 在 1994 年的技术报告中提出。普通回归网络用均方误差训练，学到的是给定输入时输出的平均值；同一输入对应多个正确答案时，平均值往往哪个都不对。MDN 让网络输出若干个高斯分布的权重、均值和方差，拼成一个高斯混合模型，从而表示多峰的条件分布。Bishop 当时的演示之一就是机械臂逆运动学：同一个末端位置可对应多组关节角。机器人模仿学习中，它常作策略输出头来处理动作多峰性，如 robomimic 中的 GMM 策略；后来扩散策略等生成式动作头在很多任务上效果更好，但 MDN 训练和推理都便宜，仍常被拿来当基线。",
+      "example": "绕开桌上的障碍物，演示里有人从左绕、有人从右绕。用均方误差训练的策略会把两类动作平均成「直直撞上去」；MDN 输出两个高斯分量，分别对应左绕和右绕，执行时从中选一个即可。",
+      "related": ["高斯混合模型", "动作多峰性", "高斯策略", "连续动作回归", "扩散策略", "逆运动学"],
+      "sources": [
+        {"title": "Bishop, Mixture Density Networks (Aston University technical report, 1994)", "url": "https://publications.aston.ac.uk/id/eprint/373/"},
+        {"title": "What Matters in Learning from Offline Human Demonstrations for Robot Manipulation (robomimic, arXiv:2108.03298)", "url": "https://arxiv.org/abs/2108.03298"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "混合 Transformer 架构",
+      "name_en": "Mixture-of-Transformers",
+      "abbr": "MoT",
+      "aliases": ["Transformer 混合架构", "Mixture-of-Transformer-Experts"],
+      "tier": 3,
+      "one_liner": "不同模态各用一套 Transformer 参数，但每层通过全局自注意力互相看见。",
+      "explanation": "混合 Transformer 架构由斯坦福的 Weixin Liang 与 Meta 研究者在 2024 年 11 月提出。它把前馈网络、注意力投影矩阵、层归一化等参数按模态分开：文本 token 用文本那套权重，图像 token 用图像那套，但每层的自注意力仍在整条序列上计算，各模态照常交互。与混合专家模型（MoE，由路由器给每个 token 挑专家）不同，MoT 按模态固定分工，不用学路由。论文报告在 7B 规模的文本加图像生成设置中，它只用约 55.8% 的计算量就追平稠密模型。具身领域 π0 的「VLM 主干 + 动作专家」是类似做法（论文称其类似两个成员的混合专家），字节 BAGEL 则直接采用 MoT 结构。",
+      "example": "π0 的约 30 亿参数主干来自 PaliGemma，另加约 3 亿参数的动作专家：图像和文字 token 走主干权重，机器人状态和带噪动作 token 走动作专家权重，两部分在每层注意力里互相可见。",
+      "related": ["混合专家模型", "动作专家", "π0", "BAGEL", "统一多模态模型", "自注意力"],
+      "sources": [
+        {"title": "Mixture-of-Transformers: A Sparse and Scalable Architecture for Multi-Modal Foundation Models (arXiv:2411.04996)", "url": "https://arxiv.org/abs/2411.04996"},
+        {"title": "π0: A Vision-Language-Action Flow Model for General Robot Control (arXiv:2410.24164)", "url": "https://arxiv.org/abs/2410.24164"},
+        {"title": "Emerging Properties in Unified Multimodal Pretraining (BAGEL, arXiv:2505.14683)", "url": "https://arxiv.org/abs/2505.14683"}
+      ],
+      "as_of": "2025-05"
+    },
+    {
+      "name_zh": "噪声调度",
+      "name_en": "Noise Schedule",
+      "abbr": "",
+      "aliases": ["噪声表", "加噪调度", "Noise Scheduler"],
+      "tier": 3,
+      "one_liner": "规定扩散模型每一步加多少噪声的时间表，影响训练效果和生成质量。",
+      "explanation": "噪声调度是扩散模型的一个设计选择：规定前向加噪过程中第 t 步时原始数据还保留多少、噪声占多少。2020 年的 DDPM 用线性调度；2021 年 OpenAI 的 Nichol 与 Dhariwal 发现它在低分辨率图像上后段几乎全是噪声、白白浪费步数，于是提出余弦调度，让信息在中段匀速减少、两端变化平缓。调度决定模型在各个噪声水平上分配多少训练，对生成质量影响明显；流匹配里与之对应的是训练时间步的采样分布。机器人策略同样要调：扩散策略选用余弦调度，π0 训练流匹配时刻意多采样高噪声的时间步。",
+      "example": "扩散策略论文比较后采用 iDDPM 提出的余弦调度，训练用 100 个扩散步，真机推理时用 DDIM 只走 10 步，在 RTX 3080 上约 0.1 秒出一次动作。",
+      "related": ["扩散模型", "去噪扩散概率模型", "去噪步数", "流匹配", "扩散策略", "预测目标参数化（ε / v / x₀ 预测）"],
+      "sources": [
+        {"title": "Improved Denoising Diffusion Probabilistic Models (arXiv:2102.09672)", "url": "https://arxiv.org/abs/2102.09672"},
+        {"title": "Diffusion Policy: Visuomotor Policy Learning via Action Diffusion (arXiv:2303.04137)", "url": "https://arxiv.org/abs/2303.04137"},
+        {"title": "π0: A Vision-Language-Action Flow Model for General Robot Control (arXiv:2410.24164)", "url": "https://arxiv.org/abs/2410.24164"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "归一化层（层归一化 / RMSNorm / 批归一化）",
+      "name_en": "Normalization Layers (LayerNorm / RMSNorm / BatchNorm)",
+      "abbr": "LN / RMSNorm / BN",
+      "aliases": ["LayerNorm", "BatchNorm", "均方根层归一化", "Norm 层"],
+      "tier": 3,
+      "one_liner": "把网络中间特征拉回稳定数值范围的层，让深层网络训练更稳更快。",
+      "explanation": "归一化层对中间特征做「减均值、除以标准差」一类的缩放，再乘上可学习的缩放和偏移，防止数值随层数加深而失控，让训练更稳。批归一化（BN，2015 年）在一个批次内统计每个通道的均值方差，是卷积网络标配，但依赖批大小，训练和推理时的算法也不同。层归一化（LN，2016 年）改在单个样本的全部特征上统计，训练推理一致，成为 Transformer 标配。RMSNorm（2019 年）去掉减均值，只除以均方根，更省计算，Llama 等大模型都用它，以它们为语言骨干的 VLA 也就多用 RMSNorm。扩散 Transformer 还常用自适应层归一化来注入时间步等条件。",
+      "example": "扩散策略把 ResNet-18 视觉编码器里的批归一化全部换成组归一化（GroupNorm），原因是批归一化和扩散模型常用的指数移动平均（EMA）权重一起用时训练不稳定。",
+      "related": ["自适应层归一化", "Transformer", "残差网络", "卷积神经网络", "Llama", "指数移动平均"],
+      "sources": [
+        {"title": "Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift (arXiv:1502.03167)", "url": "https://arxiv.org/abs/1502.03167"},
+        {"title": "Layer Normalization (arXiv:1607.06450)", "url": "https://arxiv.org/abs/1607.06450"},
+        {"title": "Root Mean Square Layer Normalization (arXiv:1910.07467)", "url": "https://arxiv.org/abs/1910.07467"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "标准化流",
+      "name_en": "Normalizing Flow",
+      "abbr": "",
+      "aliases": ["归一化流", "流模型", "Flow-based Generative Model"],
+      "tier": 3,
+      "one_liner": "用一串可逆变换把简单分布变成复杂分布、能精确算出概率的生成模型。",
+      "explanation": "标准化流是一类生成模型：从标准高斯这类简单分布出发，经过一串可逆的神经网络变换，得到复杂的数据分布。因为每步都可逆，用概率论的变量替换公式就能精确算出样本的似然，直接用最大似然训练；生成时采一个噪声、正向过一遍网络即可。代价是每层必须可逆，且雅可比行列式（衡量变换把体积放大缩小多少）要好算，网络结构受限。2015 年 Rezende 与 Mohamed 把它用于变分推断后广为人知，代表模型有 NICE、RealNVP、Glow。2018 年的连续标准化流把变换写成常微分方程；流匹配正是训练连续标准化流的一种免模拟方法，两者名字里的「流」同源。",
+      "example": "Glow（2018）用耦合层和可逆 1×1 卷积搭出流模型，既能生成逼真的人脸图像，又能给出每张图的精确对数似然。",
+      "related": ["生成模型", "流匹配", "变分自编码器", "扩散模型", "生成对抗网络", "速度场"],
+      "sources": [
+        {"title": "Wikipedia: Flow-based generative model", "url": "https://en.wikipedia.org/wiki/Flow-based_generative_model"},
+        {"title": "Variational Inference with Normalizing Flows (arXiv:1505.05770)", "url": "https://arxiv.org/abs/1505.05770"},
+        {"title": "Flow Matching for Generative Modeling (arXiv:2210.02747)", "url": "https://arxiv.org/abs/2210.02747"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "Eagle（英伟达 VLM）",
+      "name_en": "NVIDIA Eagle VLM",
+      "abbr": "",
+      "aliases": ["Eagle 2", "Eagle 2.5", "NVEagle"],
+      "tier": 3,
+      "one_liner": "英伟达开源的视觉语言模型系列，GR00T N1 到 N1.6 都用它当视觉语言主干。",
+      "explanation": "Eagle 是英伟达研究团队的开源视觉语言模型（VLM）系列。初代 Eagle（2024 年 8 月）研究如何组合多个视觉编码器，发现把几个互补编码器的视觉 token 直接拼接就很有效；Eagle 2（2025 年 1 月）公开了后训练数据策略的构建细节，有 1B、2B、9B 等规模；Eagle 2.5（2025 年 4 月发布技术报告）面向长上下文，支持最长 128K token，加强长视频和高分辨率图像理解。它在具身领域的主要身份是 GR00T 的「系统 2」视觉语言主干：GR00T N1 用 Eagle 2，N1.5 和 N1.6 用 Eagle 2.5 系列的改进版。据 GR00T 官方仓库，N1.7 起改用 Cosmos-Reason2-2B。",
+      "example": "GR00T N1.5 以 Eagle 2.5 为起点，针对物体定位和物理理解进一步微调，并在预训练和微调阶段都冻结这个 VLM、不再更新它的参数。",
+      "related": ["GR00T N1 系列", "视觉语言模型", "视觉编码器", "快慢双系统", "Cosmos Reason", "视觉-语言-动作模型"],
+      "sources": [
+        {"title": "GitHub: NVlabs/EAGLE", "url": "https://github.com/NVlabs/EAGLE"},
+        {"title": "NVIDIA GEAR: GR00T N1.5", "url": "https://research.nvidia.com/labs/gear/gr00t-n1_5/"},
+        {"title": "GitHub: NVIDIA/Isaac-GR00T", "url": "https://github.com/NVIDIA/Isaac-GR00T"}
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "单步生成",
+      "name_en": "One-step Generation",
+      "abbr": "",
+      "aliases": ["一步生成", "1-NFE 生成", "One-step Sampling"],
+      "tier": 3,
+      "one_liner": "只跑一次网络前向就从噪声直接得到结果，用来解决扩散模型采样慢。",
+      "explanation": "单步生成指生成模型只做一次网络前向计算（1 NFE，即函数评估次数为 1）就产出样本。生成对抗网络、变分自编码器、标准化流天生是一步生成；扩散模型和流匹配则要从噪声出发迭代几十到上千步，质量高但慢。对机器人来说，动作头每多走一步都增加控制延迟，所以把扩散或流式策略压到一步是重要方向。常见做法有三类：一是蒸馏，用多步教师训练一步学生，如一致性蒸馏；二是换训练目标，让模型直接学「一步跳到终点」，如一致性模型、平均流；三是把生成路径拉直，如整流流。代价通常是质量略降或训练更复杂。",
+      "example": "Consistency Policy 把扩散策略蒸馏成一致性模型，推理比已有最快方法快一个数量级，能在笔记本 GPU 上跑；MP1 用平均流一步生成动作，推理约 6.8 毫秒。",
+      "related": ["去噪步数", "一致性模型", "平均流", "整流流", "Consistency Policy（一致性策略）", "推理延迟"],
+      "sources": [
+        {"title": "Consistency Models (arXiv:2303.01469)", "url": "https://arxiv.org/abs/2303.01469"},
+        {"title": "Consistency Policy: Accelerated Visuomotor Policies via Consistency Distillation (arXiv:2405.07503)", "url": "https://arxiv.org/abs/2405.07503"},
+        {"title": "Mean Flows for One-step Generative Modeling (arXiv:2505.13447)", "url": "https://arxiv.org/abs/2505.13447"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "并行解码",
+      "name_en": "Parallel Decoding",
+      "abbr": "",
+      "aliases": ["非自回归解码", "Non-autoregressive Decoding"],
+      "tier": 3,
+      "one_liner": "一次前向同时输出整段序列，而不是像自回归那样逐个 token 生成。",
+      "explanation": "并行解码是相对自回归解码而言的：自回归模型每次只预测下一个 token，输出 N 个 token 要跑 N 次前向；并行解码让模型一次前向同时预测所有位置。它最早在机器翻译里以「非自回归翻译」被系统研究（Gu 等，2017），延迟降了约一个数量级，代价是位置之间的依赖建模变弱、质量略降。VLA 里这个问题很突出：OpenVLA 把每个动作维度离散成一个 token 逐个生成，7 维动作要跑 7 次，做动作分块后更慢。OpenVLA-OFT 改为输入一组空的动作占位嵌入，把因果注意力掩码换成双向注意力，一次前向输出整段动作块。离散扩散等方法也属于并行或少步并行解码。",
+      "example": "OpenVLA-OFT 在 LIBERO 上用并行解码加动作分块（每次输出 8 步、每步 7 维动作），动作吞吐从 OpenVLA 的 4.2 Hz 提到 108.8 Hz，约快 26 倍。",
+      "related": ["自回归解码", "动作分块", "OpenVLA-OFT", "因果注意力", "离散扩散", "投机解码"],
+      "sources": [
+        {"title": "Non-Autoregressive Neural Machine Translation (arXiv:1711.02281)", "url": "https://arxiv.org/abs/1711.02281"},
+        {"title": "Fine-Tuning Vision-Language-Action Models: Optimizing Speed and Success (OpenVLA-OFT, arXiv:2502.19645)", "url": "https://arxiv.org/abs/2502.19645"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "Perceiver 重采样器",
+      "name_en": "Perceiver Resampler",
+      "abbr": "",
+      "aliases": ["Perceiver", "感知器重采样器"],
+      "tier": 3,
+      "one_liner": "用少量可学习查询向量，把数量不定的视觉特征压成固定数目的视觉 token。",
+      "explanation": "Perceiver 重采样器是 DeepMind 2022 年在 Flamingo 视觉语言模型中提出的连接模块，思路来自 2021 年的 Perceiver 模型。视觉编码器输出的特征数量随图像分辨率、视频帧数变化，而且往往很多，直接送进语言模型太贵。重采样器预设一小组可学习的查询向量（Flamingo 中是 64 个），让它们通过交叉注意力去「读」全部视觉特征，输出固定数量的视觉 token。Flamingo 的消融实验显示它优于普通 Transformer 和 MLP 做连接。它和 BLIP-2 的 Q-Former 思路相近，都是用查询向量压缩视觉信息。机器人模型里，字节的 GR-1 就用它压缩图像 token。",
+      "example": "字节 GR-1 先用 MAE 预训练的 ViT 把每帧图像编成大量图块 token，再经 Perceiver 重采样器压成少量 token，然后与语言和机器人状态一起送入 GPT 式 Transformer，预测动作和未来画面。",
+      "related": ["投影层", "Q-Former", "可学习查询", "交叉注意力", "视觉 token", "字节 GR-1"],
+      "sources": [
+        {"title": "Flamingo: a Visual Language Model for Few-Shot Learning (arXiv:2204.14198)", "url": "https://arxiv.org/abs/2204.14198"},
+        {"title": "Perceiver: General Perception with Iterative Attention (arXiv:2103.03206)", "url": "https://arxiv.org/abs/2103.03206"},
+        {"title": "Unleashing Large-Scale Video Generative Pre-training for Visual Robot Manipulation (GR-1, arXiv:2312.13139)", "url": "https://arxiv.org/abs/2312.13139"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "点云编码器",
+      "name_en": "Point Cloud Encoder",
+      "abbr": "",
+      "aliases": ["点云骨干网络", "Point Cloud Backbone"],
+      "tier": 3,
+      "one_liner": "把一堆无序的三维点转换成神经网络能用的特征向量的模块。",
+      "explanation": "点云编码器把深度相机或激光雷达得到的点云（一组带 xyz 坐标、有时还带颜色的无序三维点）转换成特征。难点在于点没有固定顺序、数量也不固定，不能直接套用处理图像网格的卷积。2016 年斯坦福的 PointNet 用共享的多层感知机逐点提特征，再用最大池化这种与顺序无关的操作汇总，开创了直接处理点云的路线；之后有 PointNet++、Point Transformer 系列等更强的结构。具身智能里用 3D 输入的策略都离不开它：3D 扩散策略（DP3）先用最远点采样把点云降到 512 或 1024 个点，再用三层 MLP 加最大池化的轻量编码器得到 64 维特征，论文消融中它比 PointNet++ 等复杂编码器效果更好。",
+      "example": "DP3 的点云编码器故意不用颜色通道，只用几何坐标，论文称这样对物体外观变化的泛化更好。",
+      "related": ["点云", "PointNet", "Point Transformer V3", "3D 扩散策略", "最远点采样", "视觉编码器"],
+      "sources": [
+        {"title": "PointNet: Deep Learning on Point Sets for 3D Classification and Segmentation (arXiv:1612.00593)", "url": "https://arxiv.org/abs/1612.00593"},
+        {"title": "3D Diffusion Policy (arXiv:2403.03954)", "url": "https://arxiv.org/abs/2403.03954"}
+      ],
+      "as_of": ""
+    }
+  ]
+}

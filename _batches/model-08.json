@@ -1,0 +1,419 @@
+{
+ "category": "model",
+ "batch": 8,
+ "terms": [
+  {
+   "name_zh": "文生视频 / 图生视频",
+   "name_en": "Text-to-Video / Image-to-Video",
+   "abbr": "T2V / I2V",
+   "aliases": [
+    "文本生成视频",
+    "图像生成视频",
+    "Text2Video",
+    "Image2Video"
+   ],
+   "tier": 2,
+   "one_liner": "按一段文字，或一张图片加文字，生成一段视频的任务。",
+   "explanation": "文生视频（T2V）和图生视频（I2V）是视频生成模型最常见的两种用法：前者只给文字描述，模型从零生成视频；后者给一张图（通常当作第一帧）加文字，让画面接着动起来。Stability AI 的 Stable Video Diffusion、阿里的通义万相 Wan 都同时提供两种版本，主流做法是在 VAE 压缩出的潜在空间里用扩散或流匹配逐步去噪。对机器人来说 I2V 更有用：把相机当前画面当首帧、任务指令当文字，生成的视频就是对接下来会发生什么的预演。UniPi 用文本引导的视频生成做规划，NVIDIA 的 DreamZero 则直接在 Wan2.1 的图生视频 14B 模型上加动作输出。",
+   "example": "给图生视频模型输入一张机械臂和桌上杯子的照片，加上指令「把杯子放进水槽」，模型从这张照片出发生成几秒钟的视频，展示机械臂完成任务的过程。",
+   "related": [
+    "视频生成模型",
+    "扩散模型",
+    "潜在扩散模型",
+    "变分自编码器",
+    "世界动作模型",
+    "UniPi"
+   ],
+   "sources": [
+    {
+     "title": "Stable Video Diffusion: Scaling Latent Video Diffusion Models to Large Datasets (arXiv 2311.15127)",
+     "url": "https://arxiv.org/abs/2311.15127"
+    },
+    {
+     "title": "Wan: Open and Advanced Large-Scale Video Generative Models (arXiv 2503.20314)",
+     "url": "https://arxiv.org/abs/2503.20314"
+    },
+    {
+     "title": "World Action Models are Zero-shot Policies (arXiv 2602.15922)",
+     "url": "https://arxiv.org/html/2602.15922"
+    }
+   ],
+   "as_of": "2026-02"
+  },
+  {
+   "name_zh": "分词器",
+   "name_en": "Tokenizer",
+   "abbr": "",
+   "aliases": [
+    "tokenizer",
+    "词元化器",
+    "词表"
+   ],
+   "tier": 2,
+   "one_liner": "把文字、图像或动作切成 token 并换成整数编号的预处理模块。",
+   "explanation": "分词器是模型前面的预处理模块：把输入切成一个个 token（词元，模型处理的最小单位），再按一张固定的词表换成整数编号；模型输出编号后也靠它还原成文字。大语言模型多用子词算法，例如 BPE（字节对编码，反复合并最常相邻出现的字符对），常见词保留成一个 token，生僻词拆成几段，GPT-2 的词表有 50257 个 token。在具身智能里这个词被推广了：视频分词器把视频压成 token，动作分词器把连续的关节动作变成离散 token，让语言模型能像说话一样输出动作。怎么分词决定了序列有多长、模型能表示什么，是 VLA 设计里的关键选择。",
+   "example": "OpenVLA 把每一维动作分成 256 个区间，并直接占用 Llama 分词器里 256 个最少用到的 token 来代表这些区间，于是一步 7 维动作就变成 7 个 token。",
+   "related": [
+    "token（词元）",
+    "字节对编码",
+    "动作分词器",
+    "视频分词器",
+    "视觉 token",
+    "分箱离散化"
+   ],
+   "sources": [
+    {
+     "title": "Hugging Face Transformers Docs: Tokenization algorithms",
+     "url": "https://huggingface.co/docs/transformers/tokenizer_summary"
+    },
+    {
+     "title": "OpenVLA: An Open-Source Vision-Language-Action Model (arXiv 2406.09246)",
+     "url": "https://arxiv.org/html/2406.09246"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "U-Net",
+   "name_en": "U-Net",
+   "abbr": "",
+   "aliases": [
+    "U 型网络",
+    "UNet"
+   ],
+   "tier": 2,
+   "one_liner": "先逐层压缩再逐层还原、同层左右直接相连的 U 形卷积网络。",
+   "explanation": "U-Net 是 Ronneberger 等人 2015 年为医学图像分割提出的卷积网络。左半边编码器逐层下采样，缩小分辨率、提取更抽象的特征；右半边解码器逐层上采样还原到原尺寸；同一层级的左右两侧用跳跃连接（把编码器的特征直接拼给解码器）相连，画出来像字母 U。这样既能看到全局上下文，又不丢细节位置，适合输入一张图、输出同尺寸结果的任务。后来它成为扩散模型去噪网络的标准骨干，Stable Diffusion 和 Stable Video Diffusion 都用它；2022 年提出的扩散 Transformer（DiT）开始取代它。机器人的扩散策略也常用一维时间卷积 U-Net 来给动作序列去噪。",
+   "example": "Stable Diffusion 生成图片时，每一步都把带噪的潜变量送进 U-Net，由它预测其中的噪声，减掉后再进入下一步，反复几十次得到清晰图像。",
+   "related": [
+    "卷积神经网络",
+    "扩散模型",
+    "扩散 Transformer",
+    "潜在扩散模型",
+    "扩散策略",
+    "残差网络"
+   ],
+   "sources": [
+    {
+     "title": "U-Net: Convolutional Networks for Biomedical Image Segmentation (arXiv 1505.04597)",
+     "url": "https://arxiv.org/abs/1505.04597"
+    },
+    {
+     "title": "Scalable Diffusion Models with Transformers (arXiv 2212.09748)",
+     "url": "https://arxiv.org/abs/2212.09748"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "统一动作空间",
+   "name_en": "Unified Action Space",
+   "abbr": "",
+   "aliases": [
+    "通用动作空间",
+    "Universal Action Space",
+    "物理可解释统一动作空间"
+   ],
+   "tier": 2,
+   "one_liner": "把不同机器人的动作按物理含义放进同一个固定格式，便于混合训练。",
+   "explanation": "不同机器人的动作格式各不相同：单臂 7 维、双臂 14 维，有的给关节角，有的给末端位姿（夹爪在空间中的位置和朝向）。想用多种机器人的数据训练同一个模型，就得先把动作对齐成统一格式，这就是统一动作空间。最直接的做法是定一个足够长的向量，每个位置固定代表一种物理量，缺的维度补零：清华团队的 RDT-1B 用 128 维，左臂、右臂、底盘各有固定槽位；π0 把所有机器人的动作补零到 18 维。另一条路是学一个抽象的潜在动作空间，如 UniAct，再为每种机器人加一个小解码器还原成具体指令。它是跨本体训练的基础。",
+   "example": "把一台 6 自由度单臂机器人的数据放进 RDT-1B 的 128 维向量时，单臂按右臂处理，关节角只填右臂关节槽位的前 6 格，左臂和底盘部分全部填 0。",
+   "related": [
+    "跨本体",
+    "动作空间",
+    "本体专属头",
+    "潜在动作",
+    "跨本体数据",
+    "RDT-1B"
+   ],
+   "sources": [
+    {
+     "title": "RDT-1B: a Diffusion Foundation Model for Bimanual Manipulation (arXiv 2410.07864)",
+     "url": "https://arxiv.org/html/2410.07864"
+    },
+    {
+     "title": "π0: A Vision-Language-Action Flow Model for General Robot Control (arXiv 2410.24164)",
+     "url": "https://arxiv.org/html/2410.24164"
+    },
+    {
+     "title": "Universal Actions for Enhanced Embodied Foundation Models (arXiv 2501.10105)",
+     "url": "https://arxiv.org/abs/2501.10105"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "变分自编码器",
+   "name_en": "Variational Autoencoder",
+   "abbr": "VAE",
+   "aliases": [
+    "变分自动编码器"
+   ],
+   "tier": 2,
+   "one_liner": "把数据压成服从某种分布的潜变量，并能从中采样还原或生成数据的模型。",
+   "explanation": "变分自编码器由 Kingma 和 Welling 于 2013 年提出，是一种生成模型。编码器把输入（如一张图）压成低维潜变量，但输出的是一个分布（均值和方差）而不是一个固定点；解码器从这个分布里采样，再还原出数据。训练时同时要求重建得像、潜在分布接近标准正态分布，后者让潜在空间连续平滑，随便采一个点也能解码出合理结果。靠重参数化技巧，这种带随机采样的模型也能用梯度下降训练。它今天最常见的用途是给扩散模型当压缩器：Stable Diffusion、通义万相 Wan 等先用 VAE 把像素压到潜在空间再去噪；机器人里 ACT 用它的条件版本 CVAE 来刻画演示动作的多样性。",
+   "example": "Stable Diffusion 的 VAE 把 512×512 的彩色图片压成 64×64×4 的潜变量，扩散模型只在这个小得多的空间里去噪，最后再由解码器还原成图片。",
+   "related": [
+    "自编码器",
+    "潜在空间",
+    "条件变分自编码器",
+    "向量量化变分自编码器",
+    "潜在扩散模型",
+    "视频分词器"
+   ],
+   "sources": [
+    {
+     "title": "Auto-Encoding Variational Bayes (arXiv 1312.6114)",
+     "url": "https://arxiv.org/abs/1312.6114"
+    },
+    {
+     "title": "High-Resolution Image Synthesis with Latent Diffusion Models (arXiv 2112.10752)",
+     "url": "https://arxiv.org/abs/2112.10752"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "视频生成模型",
+   "name_en": "Video Generation Model",
+   "abbr": "",
+   "aliases": [
+    "视频扩散模型",
+    "Video Diffusion Model",
+    "视频生成大模型"
+   ],
+   "tier": 2,
+   "one_liner": "根据文字、图片或已有片段，生成一段连贯新视频的生成式模型。",
+   "explanation": "视频生成模型能凭文字、图片或已有片段生成新视频。2022 年 Google 的 Video Diffusion Models 把图像扩散模型扩展到视频，此后主流做法是先用视频 VAE 把视频压到潜在空间，再用扩散 Transformer 或 U-Net 同时对多帧逐步去噪，保证前后连贯。代表有 OpenAI 的 Sora、Google 的 Veo、阿里开源的通义万相 Wan。模型从海量视频里学到物体怎么运动、怎么被推动，因此常被当作世界模型的起点：NVIDIA Cosmos 等世界基础模型、UniPi 这类先生成视频再推出动作的策略，以及 DreamZero 等世界动作模型，都建立在视频生成模型之上。",
+   "example": "通义万相 Wan 开源了 1.3B 和 14B 两个规模，其中 1.3B 版本只需约 8GB 显存，消费级显卡就能跑文生视频。",
+   "related": [
+    "文生视频 / 图生视频",
+    "扩散模型",
+    "扩散 Transformer",
+    "视频预测模型",
+    "世界模型",
+    "通义万相"
+   ],
+   "sources": [
+    {
+     "title": "Video Diffusion Models (arXiv 2204.03458)",
+     "url": "https://arxiv.org/abs/2204.03458"
+    },
+    {
+     "title": "Wan: Open and Advanced Large-Scale Video Generative Models (arXiv 2503.20314)",
+     "url": "https://arxiv.org/abs/2503.20314"
+    }
+   ],
+   "as_of": "2025-04"
+  },
+  {
+   "name_zh": "视频预测模型",
+   "name_en": "Video Prediction Model",
+   "abbr": "",
+   "aliases": [
+    "视觉预见",
+    "Visual Foresight",
+    "动作条件视频预测",
+    "Action-conditioned Video Prediction"
+   ],
+   "tier": 2,
+   "one_liner": "根据已有画面（常加上计划执行的动作）预测接下来画面的模型。",
+   "explanation": "视频预测模型输入过去几帧画面，输出未来的画面；在机器人里通常还输入计划执行的动作，回答「如果这样动，相机会看到什么」，这类叫动作条件视频预测。2016 年 Finn 和 Levine 提出视觉预见（Visual Foresight）：机器人不靠人工标注、自己推动物体采集数据训练预测模型，再结合模型预测控制（每一步在模型里试多组动作，挑预测结果最接近目标的执行）完成推物体任务。它和视频生成模型的区别在于侧重接着已有画面往下演，而不是凭文字从零生成。近年改用大规模视频扩散模型，例如视频预测策略 VPP 用视频模型的预测特征驱动逆动力学模型输出动作。",
+   "example": "要把桌上的积木推到目标位置时，机器人先在视频预测模型里试大量候选动作序列，比较各自预测出的画面哪个最接近目标图像，再执行这组动作的第一步，然后重复。",
+   "related": [
+    "视频生成模型",
+    "世界模型",
+    "模型预测控制",
+    "正向动力学模型",
+    "视频预测策略",
+    "世界动作模型"
+   ],
+   "sources": [
+    {
+     "title": "Deep Visual Foresight for Planning Robot Motion (arXiv 1610.00696)",
+     "url": "https://arxiv.org/abs/1610.00696"
+    },
+    {
+     "title": "Visual Foresight: Model-Based Deep Reinforcement Learning for Vision-Based Robotic Control (arXiv 1812.00568)",
+     "url": "https://arxiv.org/abs/1812.00568"
+    },
+    {
+     "title": "Video Prediction Policy: A Generalist Robot Policy with Predictive Visual Representations (arXiv 2412.14803)",
+     "url": "https://arxiv.org/abs/2412.14803"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "视觉基础模型",
+   "name_en": "Vision Foundation Model",
+   "abbr": "VFM",
+   "aliases": [
+    "视觉大模型",
+    "Visual Foundation Model"
+   ],
+   "tier": 2,
+   "one_liner": "在海量图像上预训练、能直接或稍加调整用于多种视觉任务的通用模型。",
+   "explanation": "基础模型指在大规模数据上训练、能适配大量下游任务的模型，这个说法由斯坦福团队 2021 年提出；视觉基础模型是其中面向图像的一类。常见三种思路：OpenAI 的 CLIP 用 4 亿对网上图文做对比学习，学到和语言对齐的视觉特征；Meta 的 DINOv2 在 1.42 亿张精选图片上做自监督训练，特征更擅长刻画空间和几何细节；Meta 的 SAM（分割一切模型）能按点或框提示分割任意物体。它们大多基于 ViT。具身智能很少从零训练视觉部分，而是直接接一个现成的 VFM 当视觉编码器，再把特征送进语言模型或策略网络。",
+   "example": "OpenVLA 把同一张相机图片分别送进 SigLIP 和 DINOv2 两个视觉基础模型，两路特征拼接后经一个两层 MLP 投影到 Llama 2 的输入空间。",
+   "related": [
+    "基础模型",
+    "视觉编码器",
+    "视觉 Transformer",
+    "CLIP",
+    "DINOv2",
+    "分割一切模型"
+   ],
+   "sources": [
+    {
+     "title": "On the Opportunities and Risks of Foundation Models (arXiv 2108.07258)",
+     "url": "https://arxiv.org/abs/2108.07258"
+    },
+    {
+     "title": "DINOv2: Learning Robust Visual Features without Supervision (arXiv 2304.07193)",
+     "url": "https://arxiv.org/abs/2304.07193"
+    },
+    {
+     "title": "Learning Transferable Visual Models From Natural Language Supervision (CLIP, arXiv 2103.00020)",
+     "url": "https://arxiv.org/abs/2103.00020"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "视觉 Transformer",
+   "name_en": "Vision Transformer",
+   "abbr": "ViT",
+   "aliases": [
+    "视觉变换器"
+   ],
+   "tier": 2,
+   "one_liner": "把图片切成小方块当作词序列，用 Transformer 处理图像的网络。",
+   "explanation": "视觉 Transformer 由 Google 团队 2020 年在论文「An Image is Worth 16x16 Words」中提出。做法是把图片切成固定大小的小方块（常用 16×16 像素），每块拉平后线性映射成一个向量，加上位置编码（告诉模型每块在哪），当成一串 token 送进标准的 Transformer 编码器；自注意力让每一块都能直接看到全图其他块。此前图像任务主要靠卷积神经网络，ViT 证明在足够大的数据上预训练后，纯 Transformer 也能在 ImageNet 等基准上达到同等水平，而且训练算力更省。今天 CLIP、SigLIP、DINOv2 等视觉基础模型几乎都是 ViT 结构，VLA 的视觉编码器也基本用它。",
+   "example": "一张 224×224 的图片按 16×16 像素切块，得到 14×14＝196 个图块，也就是 196 个视觉 token。",
+   "related": [
+    "Transformer",
+    "视觉 token",
+    "自注意力",
+    "位置编码",
+    "卷积神经网络",
+    "视觉编码器"
+   ],
+   "sources": [
+    {
+     "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale (arXiv 2010.11929)",
+     "url": "https://arxiv.org/abs/2010.11929"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "视觉 token",
+   "name_en": "Visual Token",
+   "abbr": "",
+   "aliases": [
+    "图像 token",
+    "图像块",
+    "patch",
+    "Image Token",
+    "Patch Token"
+   ],
+   "tier": 2,
+   "one_liner": "图像切块并编码后得到的一个个向量，是模型处理图像的基本单位。",
+   "explanation": "视觉 token 是图像进入 Transformer 时的基本单位。常见做法源自 ViT：把图像切成固定大小的图块（patch），每块经视觉编码器变成一个向量，这就是一个视觉 token；视觉语言模型再用投影层把它们映射到和文字 token 相同的空间，与指令拼成一条序列一起处理。token 数随分辨率平方增长：PaliGemma 输入 224 像素图像时是 256 个 token，448 像素是 1024 个，896 像素是 4096 个。机器人通常有多路相机、每秒要推理多次，视觉 token 往往占序列的大头，直接影响推理延迟，所以才有视觉 token 剪枝、重采样等压缩方法。视频模型里对应的单位是时空块。",
+   "example": "π0 以 PaliGemma 为骨干：每路相机的图像先编码成视觉 token，再和语言指令的 token 拼进同一条序列送入模型。",
+   "related": [
+    "视觉 Transformer",
+    "token（词元）",
+    "投影层",
+    "视觉 token 剪枝",
+    "时空块",
+    "视觉编码器"
+   ],
+   "sources": [
+    {
+     "title": "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale (arXiv 2010.11929)",
+     "url": "https://arxiv.org/abs/2010.11929"
+    },
+    {
+     "title": "PaliGemma: A versatile 3B VLM for transfer (arXiv 2407.07726)",
+     "url": "https://arxiv.org/html/2407.07726"
+    },
+    {
+     "title": "π0: A Vision-Language-Action Flow Model for General Robot Control (arXiv 2410.24164)",
+     "url": "https://arxiv.org/html/2410.24164"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "世界动作模型",
+   "name_en": "World Action Model",
+   "abbr": "WAM",
+   "aliases": [
+    "World-Action Model",
+    "视频动作模型",
+    "Video-Action Model",
+    "VAM"
+   ],
+   "tier": 2,
+   "one_liner": "同时预测未来画面和机器人动作，用对世界的预测来指导动作的模型。",
+   "explanation": "世界动作模型这个名称由 NVIDIA 2026 年 2 月的 DreamZero 论文正式提出：凡是利用世界建模能力（预测未来状态）来预测动作的模型都叫 WAM，此前的 GR-1、UWM、Cosmos Policy 等视频-动作联合模型也被归入其中。典型做法是以预训练视频生成模型为骨干，加上动作输入输出，训练时同时预测未来视频和动作。和从视觉语言模型出发的 VLA 相比，它从视频里学物理动态，DreamZero 报告对新任务、新环境的泛化比当时最好的 VLA 高一倍多。不叫视频动作模型，是因为预测对象将来也可以是触觉或力。未决问题是推理时是否真要生成未来画面：Fast-WAM 只在训练时联合预测视频、推理时跳过，效果相近而快 4 倍以上。",
+   "example": "DreamZero 以 Wan2.1 图生视频 14B 模型为骨干，输入相机画面和语言指令，同时生成未来视频和动作，在真机上以 7Hz 实时控制。",
+   "related": [
+    "视觉-语言-动作模型",
+    "世界模型",
+    "视频生成模型",
+    "DreamZero",
+    "Fast-WAM",
+    "视频预测策略"
+   ],
+   "sources": [
+    {
+     "title": "World Action Models are Zero-shot Policies (DreamZero, arXiv 2602.15922)",
+     "url": "https://arxiv.org/abs/2602.15922"
+    },
+    {
+     "title": "Fast-WAM: Do World Action Models Need Test-time Future Imagination? (arXiv 2603.16666)",
+     "url": "https://arxiv.org/abs/2603.16666"
+    }
+   ],
+   "as_of": "2026-03"
+  },
+  {
+   "name_zh": "世界基础模型",
+   "name_en": "World Foundation Model",
+   "abbr": "WFM",
+   "aliases": [
+    "World Foundation Models"
+   ],
+   "tier": 2,
+   "one_liner": "在海量真实视频上预训练、可再微调成各种专用世界模型的通用世界模型。",
+   "explanation": "世界基础模型这个说法由 NVIDIA 在 2025 年 1 月发布的 Cosmos 平台论文中提出，指一个通用的世界模型，可再后训练成面向具体应用的定制世界模型。世界模型负责根据当前画面加动作或指令，预测世界接下来的样子。WFM 把大语言模型先大规模预训练、再按任务微调的路线搬了过来：Cosmos 从约 2000 万小时的原始视频中筛出约 1 亿个片段，训练了扩散和自回归两类模型。用途包括为机器人和自动驾驶生成合成训练数据、在模型里训练和评估策略、把仿真画面转成逼真画面。NVIDIA 之后陆续推出 Cosmos Predict、Transfer、Reason 等系列，以及把推理、视频和动作生成放进同一个模型的 Cosmos 3。",
+   "example": "Cosmos 论文把预训练好的 WFM 后训练成机器人操作版本：输入当前画面和一段机器人动作，预测执行这段动作后的视频。",
+   "related": [
+    "世界模型",
+    "基础模型",
+    "Cosmos",
+    "视频生成模型",
+    "合成数据",
+    "物理AI"
+   ],
+   "sources": [
+    {
+     "title": "Cosmos World Foundation Model Platform for Physical AI (arXiv 2501.03575)",
+     "url": "https://arxiv.org/abs/2501.03575"
+    },
+    {
+     "title": "NVIDIA Glossary: What Are World Models?",
+     "url": "https://www.nvidia.com/en-us/glossary/world-models/"
+    },
+    {
+     "title": "NVIDIA Cosmos",
+     "url": "https://www.nvidia.com/en-us/ai/cosmos/"
+    }
+   ],
+   "as_of": "2026-09"
+  }
+ ]
+}

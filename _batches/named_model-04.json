@@ -1,0 +1,191 @@
+{
+  "category": "named_model",
+  "batch": 4,
+  "terms": [
+    {
+      "name_zh": "OpenVLA-OFT",
+      "name_en": "OpenVLA-OFT (Optimized Fine-Tuning recipe for VLAs)",
+      "abbr": "OFT",
+      "aliases": ["OFT", "OpenVLA-OFT+", "VLA 优化微调配方"],
+      "tier": 2,
+      "one_liner": "斯坦福提出的 VLA 微调配方，让 OpenVLA 动作生成快 26 倍、成功率更高。",
+      "explanation": "OpenVLA-OFT 是斯坦福 Moo Jin Kim、Chelsea Finn、Percy Liang 在 2025 年 2 月提出的 VLA 微调配方。原版 OpenVLA 把动作离散成 token 逐个自回归输出，推理慢，难做高频控制。OFT 在微调时改了四处：并行解码（一次前向算出全部动作）、动作分块（一次预测多步）、连续动作表示、L1 回归损失；OFT+ 再加 FiLM 特征调制，加强对语言指令的跟随。结果 LIBERO 平均成功率从 76.5% 提到 97.1%，动作生成吞吐提升 26 倍，在 ALOHA 双臂真机上也胜过 π0、RDT-1B 等微调后的 VLA。它常被当作 VLA 微调的强基线。",
+      "example": "在 LIBERO 上微调 OpenVLA 时，把输出从逐个吐出的离散动作 token 改成一次前向回归出一整段连续动作，推理吞吐大幅提升，成功率也更高。",
+      "related": ["OpenVLA", "视觉-语言-动作模型", "动作分块", "并行解码", "FiLM 特征调制", "LIBERO"],
+      "sources": [
+        {"title": "OpenVLA-OFT 项目主页", "url": "https://openvla-oft.github.io/"},
+        {"title": "Fine-Tuning Vision-Language-Action Models: Optimizing Speed and Success (arXiv:2502.19645)", "url": "https://arxiv.org/abs/2502.19645"}
+      ],
+      "as_of": "2025-04"
+    },
+    {
+      "name_zh": "PaLM-E",
+      "name_en": "PaLM-E: An Embodied Multimodal Language Model",
+      "abbr": "PaLM-E",
+      "aliases": ["PaLM-E-562B", "具身多模态语言模型"],
+      "tier": 2,
+      "one_liner": "谷歌 2023 年把图像和机器人状态接进 PaLM 的具身多模态大模型。",
+      "explanation": "PaLM-E 是谷歌与柏林工业大学在 2023 年 3 月发布的具身多模态语言模型，最大版本 PaLM-E-562B 有 5620 亿参数，由 PaLM 语言模型加 ViT 视觉编码器组成。它把图像、机器人状态估计等连续输入编码成向量，和文字 token 交错拼成「多模态句子」送进语言模型。它输出的是文字形式的中层计划，再交给底层技能策略执行，本身不直接输出电机指令。论文发现把网络图文数据和机器人数据一起训练有正迁移，562B 版本还在 OK-VQA 视觉问答上达到当时最好水平。它是大模型做机器人任务规划的代表工作，也是 RT-2 等 VLA 的前序。",
+      "example": "给 PaLM-E 一张厨房照片和指令「把抽屉里的薯片拿给我」，它逐步生成「去抽屉旁」「打开抽屉」「拿出薯片」等子步骤，由底层策略依次执行。",
+      "related": ["SayCan", "RT-2", "多模态大语言模型", "大模型任务规划", "视觉 Transformer", "语言接地"],
+      "sources": [
+        {"title": "PaLM-E 项目主页", "url": "https://palm-e.github.io/"},
+        {"title": "PaLM-E: An Embodied Multimodal Language Model (arXiv:2303.03378)", "url": "https://arxiv.org/abs/2303.03378"}
+      ],
+      "as_of": "2023-03"
+    },
+    {
+      "name_zh": "千问 Qwen-Robot 系列",
+      "name_en": "Qwen-Robot series (Qwen-RobotManip / Qwen-RobotNav / Qwen-RobotWorld, Alibaba)",
+      "abbr": "",
+      "aliases": ["Qwen-RobotManip", "Qwen-RobotNav", "Qwen-RobotWorld"],
+      "tier": 2,
+      "one_liner": "阿里通义千问团队 2026 年发布的操作、导航、世界模型三件套具身模型。",
+      "explanation": "Qwen-Robot 是阿里通义千问团队 2026 年 6 月集中发布的一组具身模型，都建在 Qwen 视觉语言模型之上，三个成员分工不同。Qwen-RobotManip 是操作用的 VLA，在 Qwen-VL 骨干后接流匹配 DiT 动作头，只用开源机器人数据和由人手视频合成的机器人轨迹，攒出约 3.81 万小时预训练数据，重点是先把不同本体的数据对齐再放大规模；Qwen-RobotNav 用统一的路点预测接口同时做视觉语言导航、物体搜索、目标跟踪和自动驾驶；Qwen-RobotWorld 是语言条件的视频世界模型，用来合成训练数据和评测策略。官方仓库写明目前没有开放 Manip 和 Nav 权重的计划。",
+      "example": "Qwen-RobotNav 零样本部署在宇树 Go2 四足上，用 Jetson Thor 推理，约 5 Hz 地在没见过的环境里按语言指令导航。",
+      "related": ["通义千问 Qwen-VL", "视觉-语言-动作模型", "世界模型", "视觉语言导航", "流匹配", "跨本体"],
+      "sources": [
+        {"title": "Qwen-RobotManip Technical Report (arXiv:2606.17846)", "url": "https://arxiv.org/abs/2606.17846"},
+        {"title": "QwenLM/Qwen-RobotNav GitHub 仓库", "url": "https://github.com/QwenLM/Qwen-RobotNav"},
+        {"title": "Qwen-RobotWorld Technical Report (arXiv:2606.17030)", "url": "https://arxiv.org/abs/2606.17030"}
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "快速运动适应",
+      "name_en": "Rapid Motor Adaptation",
+      "abbr": "RMA",
+      "aliases": ["RMA", "快速运动自适应"],
+      "tier": 2,
+      "one_liner": "让四足机器人零点几秒内察觉地形和负载变化、自动调整步态的方法。",
+      "explanation": "RMA 由 UC 伯克利和卡内基梅隆大学的 Ashish Kumar、Zipeng Fu、Deepak Pathak、Jitendra Malik 提出，发表于 RSS 2021。真实地面的软硬、摩擦、负载、电机磨损都会变，仿真里训好的策略上真机容易摔。RMA 分两部分：基础策略在仿真里训练时能读到这些环境参数（特权信息），把它们压成低维的「外参」向量来调节动作；适应模块只看最近一段关节状态和动作历史，学着反推出这个向量。部署到宇树 A1 时不做真机微调，零点几秒内就能适应沙地、泡沫垫、台阶、湿滑地面等。这种「训练时用特权信息、部署时从历史估计」的思路后来成了足式机器人仿真到现实迁移的常用套路。",
+      "example": "宇树 A1 背上突然加了负载，适应模块从最近几步关节状态的变化里估出新的外参，策略随即调整步态继续走，不需要重新训练。",
+      "related": ["仿真到现实迁移", "特权信息", "教师-学生蒸馏", "强化学习运控", "域随机化", "HORA（手内物体旋转 + RMA）"],
+      "sources": [
+        {"title": "RMA: Rapid Motor Adaptation for Legged Robots 项目主页", "url": "https://ashish-kmr.github.io/rma-legged-robots/"}
+      ],
+      "as_of": "2021-07"
+    },
+    {
+      "name_zh": "RDT-1B",
+      "name_en": "RDT-1B: a Diffusion Foundation Model for Bimanual Manipulation (Robotics Diffusion Transformer)",
+      "abbr": "RDT",
+      "aliases": ["RDT", "Robotics Diffusion Transformer"],
+      "tier": 2,
+      "one_liner": "清华 2024 年发布的约 12 亿参数双臂操作扩散基础模型。",
+      "explanation": "RDT-1B（Robotics Diffusion Transformer）是清华大学团队 2024 年 10 月发布的机器人扩散基础模型，约 12 亿参数。双臂操作里同一局面常有多种合理做法（动作多峰），直接回归容易取平均而出错，RDT 用扩散 Transformer 逐步去噪生成一段动作来建模这种分布。为了用上各家机器人的数据，它设计了「物理可解释的统一动作空间」，把不同机器人的关节角、末端位姿等物理量放进统一向量里的固定位置。模型先在 46 个数据集、100 万条以上轨迹上预训练，再用 6000 多条 ALOHA 双臂数据微调，1–5 条演示就能学会新技能。后续版本是 RDT2。",
+      "example": "只给 1–5 条演示，RDT-1B 就能在 ALOHA 双臂机器人上学会一个新的双臂操作；遇到没见过的物体和场景也能零样本执行。",
+      "related": ["扩散策略", "扩散 Transformer", "双臂操作", "统一动作空间", "动作多峰性", "RDT2"],
+      "sources": [
+        {"title": "RDT-1B 项目主页", "url": "https://rdt-robotics.github.io/rdt-robotics/"}
+      ],
+      "as_of": "2024-10"
+    },
+    {
+      "name_zh": "ReKep",
+      "name_en": "ReKep: Spatio-Temporal Reasoning of Relational Keypoint Constraints for Robotic Manipulation",
+      "abbr": "ReKep",
+      "aliases": ["关系关键点约束", "Relational Keypoint Constraints"],
+      "tier": 2,
+      "one_liner": "用大模型把任务写成关键点之间的约束代码，再靠优化求出机器人动作。",
+      "explanation": "ReKep（关系关键点约束）是斯坦福李飞飞团队与哥伦比亚大学在 2024 年 9 月提出的免训练操作方法。它先用 DINOv2 视觉特征在 RGB-D 图像里找出候选 3D 关键点，再把标了编号的图和语言指令交给 GPT-4o，让它写出若干 Python 函数：每个函数输入关键点坐标、输出一个代价，表达「壶嘴要对准杯口」这类关系，任务还可以分成多个阶段。然后用分层优化实时求出末端执行器的位姿序列，并随关键点跟踪闭环重规划。这样不需要任务专属的训练数据，就能在单臂和双臂机器人上倒茶、叠衣服、双臂装鞋，是「大模型给约束、优化器出动作」路线的代表。",
+      "example": "指令「给杯子倒茶」时，GPT-4o 写出的约束包括：抓取阶段夹爪要靠近壶把上的关键点；倒水阶段壶嘴关键点要在杯口关键点正上方且壶身倾斜，优化器据此算出整段动作。",
+      "related": ["VoxPoser", "OmniManip", "可供性", "语义关键点", "DINOv2", "大模型任务规划"],
+      "sources": [
+        {"title": "ReKep 项目主页", "url": "https://rekep-robot.github.io/"}
+      ],
+      "as_of": "2024-09"
+    },
+    {
+      "name_zh": "RECAP",
+      "name_en": "RL with Experience and Corrections via Advantage-conditioned Policies",
+      "abbr": "RECAP",
+      "aliases": ["π*0.6 的强化学习方法", "优势条件化策略强化学习"],
+      "tier": 2,
+      "one_liner": "PI 公司让 VLA 从自己的运行经验和人工纠正中持续变强的训练方法。",
+      "explanation": "RECAP 是 Physical Intelligence 在 2025 年 11 月随 π*0.6 发布的训练方法。纯模仿学习最多学到演示的水平，而机器人部署后会产生大量成功、失败和人工接管的数据。RECAP 把三类数据放在一起用：离线演示、机器人自主运行的轨迹、专家在运行中遥操作介入的纠正。它先训练一个价值函数，预测离任务完成还剩多少步，据此判断每个动作比平均水平好还是差（优势），再把「Advantage: positive / negative」作为文本 token 输入策略一起训练；推理时以 positive 为条件，让模型输出更好的动作。部署、重训价值函数、微调策略可以反复迭代。在叠衣服、组装纸箱、做咖啡等任务上吞吐量翻倍以上、失败率约减半。",
+      "example": "π*0.6 用 RECAP 训练后，PI 报告它能连续 13 小时制作意式咖啡，也能在陌生家庭里连续两个多小时叠没见过的衣物。",
+      "related": ["π*0.6", "优势条件化", "价值函数", "离线强化学习", "人在回路", "无分类器引导"],
+      "sources": [
+        {"title": "π*0.6: a VLA That Learns From Experience (arXiv:2511.14759)", "url": "https://arxiv.org/abs/2511.14759"}
+      ],
+      "as_of": "2025-11"
+    },
+    {
+      "name_zh": "RT-X",
+      "name_en": "RT-X (RT-1-X / RT-2-X, trained on Open X-Embodiment)",
+      "abbr": "RT-X",
+      "aliases": ["RT-1-X", "RT-2-X"],
+      "tier": 2,
+      "one_liner": "在 Open X-Embodiment 跨本体数据集上重新训练的 RT-1 和 RT-2。",
+      "explanation": "RT-X 是谷歌 DeepMind 牵头、21 家机构 34 个实验室合作，于 2023 年 10 月随 Open X-Embodiment 数据集一起发布的一组模型。这份数据集汇集 60 个已有机器人数据集、22 种机器人本体、100 万条以上真机轨迹。RT-1-X 和 RT-2-X 分别沿用 RT-1（专门的机器人 Transformer）和 RT-2（在视觉语言模型上微调的 VLA）的结构，只把训练数据换成这份混合数据。结果显示跨本体训练有正迁移：RT-1-X 在小数据场景下比各实验室原有方法平均高约 50%，RT-2-X 在涌现技能评测上约为 RT-2 的 3 倍。它带动了跨本体数据共享，Octo、OpenVLA 等后续模型都用这份数据训练。",
+      "example": "RT-2-X 学到了其他实验室数据里才有的空间概念，能分清「把苹果放到布上」和「把苹果放到布旁边」这类只差一个介词的指令。",
+      "related": ["Open X-Embodiment 数据集", "RT-1", "RT-2", "跨本体", "Octo", "OpenVLA"],
+      "sources": [
+        {"title": "Open X-Embodiment: Robotic Learning Datasets and RT-X Models 项目主页", "url": "https://robotics-transformer-x.github.io/"}
+      ],
+      "as_of": "2023-10"
+    },
+    {
+      "name_zh": "SayCan",
+      "name_en": "SayCan (Do As I Can, Not As I Say: Grounding Language in Robotic Affordances)",
+      "abbr": "",
+      "aliases": ["PaLM-SayCan", "Do As I Can, Not As I Say"],
+      "tier": 2,
+      "one_liner": "语言模型判断哪步「有用」、价值函数判断哪步「做得到」，两者相乘选动作。",
+      "explanation": "SayCan 是谷歌机器人团队与 Everyday Robots 在 2022 年 4 月发布的工作。大语言模型懂常识，却不知道眼前这台机器人在当前场景能做什么，直接让它写计划容易出现做不到的步骤。SayCan 给机器人准备一组训练好的技能（如「拿起海绵」「去桌子旁」），每一步让语言模型评估各技能对完成指令有多大帮助，再用强化学习得到的价值函数评估当前状态下各技能能否成功（即可供性），两个分数相乘，选最高的执行，循环到任务结束。换用 PaLM 的 PaLM-SayCan 在真实厨房 101 条指令上规划成功率 84%、执行成功率 74%。它是大模型做机器人高层规划的开山工作之一。",
+      "example": "用户说「我把可乐洒了，能拿点东西帮我擦一下吗」，SayCan 依次选出「找到海绵」「拿起海绵」「拿给你」「完成」。",
+      "related": ["可供性", "语言接地", "大模型任务规划", "Inner Monologue", "PaLM-E", "价值函数"],
+      "sources": [
+        {"title": "SayCan 项目主页", "url": "https://say-can.github.io/"}
+      ],
+      "as_of": "2022-08"
+    },
+    {
+      "name_zh": "字节 GR-3",
+      "name_en": "Seed GR-3 (ByteDance Seed Generalist Robot Model 3)",
+      "abbr": "GR-3",
+      "aliases": ["Seed GR-3"],
+      "tier": 2,
+      "one_liner": "字节跳动 Seed 2025 年发布的约 40 亿参数通用机器人 VLA 模型。",
+      "explanation": "GR-3 是字节跳动 Seed 团队 2025 年 7 月发布的视觉-语言-动作模型，接续 GR-1、GR-2。它约 40 亿参数，以 Qwen2.5-VL-3B 为视觉语言骨干，后接用流匹配训练的扩散 Transformer 动作头，一次生成一段动作块。训练数据有三类：机器人轨迹做模仿学习；网络图文数据协同训练，保住对新物体和抽象指令的理解；VR 设备采集的人类轨迹做少样本适配，论文报告对没见过的物体每个只加 10 条，抓放成功率就从 57.8% 提到 86.7%。配套机器人 ByteMini 是 22 自由度的双臂移动平台，GR-3 在长程收拾餐桌和挂衣服等任务上都超过 π0。",
+      "example": "挂衣服任务里，GR-3 控制 ByteMini 的两只手臂配合，把衣架穿进衣服再挂到晾衣架上，属于双臂柔性物体操作。",
+      "related": ["字节 GR-2", "字节 GR-1", "字节跳动 Seed", "视觉-语言-动作模型", "流匹配", "协同训练"],
+      "sources": [
+        {"title": "GR-3 Technical Report (arXiv:2507.15493)", "url": "https://arxiv.org/abs/2507.15493"}
+      ],
+      "as_of": "2025-07"
+    },
+    {
+      "name_zh": "SmolVLA",
+      "name_en": "SmolVLA: A Vision-Language-Action Model for Affordable and Efficient Robotics (Hugging Face)",
+      "abbr": "",
+      "aliases": [],
+      "tier": 2,
+      "one_liner": "Hugging Face 推出的约 4.5 亿参数开源小 VLA，消费级设备就能训练和运行。",
+      "explanation": "SmolVLA 是 Hugging Face 的 LeRobot 团队 2025 年 6 月发布的开源视觉-语言-动作模型，约 4.5 亿参数。它以小型视觉语言模型 SmolVLM2 为骨干，后接约 1 亿参数、用流匹配训练的动作专家；为省算力，每帧图像只保留 64 个视觉 token，并跳过部分网络层。预训练只用社区上传的 487 个 LeRobot 数据集、约 1000 万帧，比常见 VLA 的数据少一个数量级。它还支持异步推理：机器人执行当前动作块时就开始算下一块，官方称任务完成快约 30%。在 LIBERO、Meta-World 和 SO-100/SO-101 真机上，它的表现接近或超过更大的模型，能在消费级显卡甚至 MacBook 上跑。",
+      "example": "用 LeRobot 采一批 SO-101 机械臂抓积木的演示，在一张消费级显卡上微调 SmolVLA，再部署回同一台机械臂执行。",
+      "related": ["LeRobot", "视觉-语言-动作模型", "动作专家", "流匹配", "异步推理", "SO-100 / SO-101 机械臂"],
+      "sources": [
+        {"title": "SmolVLA: Efficient Vision-Language-Action Model trained on Lerobot Community Data (Hugging Face Blog)", "url": "https://huggingface.co/blog/smolvla"}
+      ],
+      "as_of": "2025-06"
+    },
+    {
+      "name_zh": "Sora（视频生成即世界模拟器）",
+      "name_en": "Sora / Sora 2 (OpenAI; Video generation models as world simulators)",
+      "abbr": "",
+      "aliases": ["Sora 2", "Video generation models as world simulators"],
+      "tier": 2,
+      "one_liner": "OpenAI 的文生视频模型，技术报告提出视频生成模型可以当作世界模拟器。",
+      "explanation": "Sora 是 OpenAI 的视频生成模型，2024 年 2 月首次展示，同年 12 月向付费用户开放，配套技术报告题为《Video generation models as world simulators》。它是扩散 Transformer：先把视频压到潜在空间，切成时空块当作 token，再逐步去噪生成。报告认为，把视频生成模型做大会自然出现 3D 一致、物体持续存在等能力，可能通向物理世界模拟器。这把视频生成和世界模型两条线连了起来，也引发它是否真懂物理的争论，报告自己也承认玻璃碎裂等交互模拟不准。2025 年 9 月 30 日发布 Sora 2 和配套社交 App；OpenAI 于 2026 年 3 月宣布停止 Sora，App 于 4 月 26 日下线，API 于 9 月 24 日关闭。",
+      "example": "技术报告里 Sora 生成了一段 Minecraft 画面，同时控制玩家角色并渲染周围世界，被当作「模拟数字世界」的例子。",
+      "related": ["视频生成模型", "世界模型", "扩散 Transformer", "时空块", "世界基础模型", "直觉物理"],
+      "sources": [
+        {"title": "Sora (text-to-video model) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Sora_(text-to-video_model)"},
+        {"title": "Sora (人工智能模型) - 维基百科", "url": "https://zh.wikipedia.org/wiki/Sora_(人工智能模型)"}
+      ],
+      "as_of": "2026-09"
+    }
+  ]
+}

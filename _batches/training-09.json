@@ -1,0 +1,200 @@
+{
+  "category": "training",
+  "batch": 9,
+  "terms": [
+    {
+      "name_zh": "双延迟深度确定性策略梯度",
+      "name_en": "Twin Delayed Deep Deterministic Policy Gradient",
+      "abbr": "TD3",
+      "aliases": ["TD3 算法", "Twin Delayed DDPG"],
+      "tier": 2,
+      "one_liner": "在 DDPG 上加三处改进、专门抑制 Q 值高估的连续动作强化学习算法。",
+      "explanation": "TD3 由 Scott Fujimoto、Herke van Hoof、David Meger 在 ICML 2018 提出，是 DDPG（输出确定动作的演员-评论家算法）的改进版，属于异策略算法（可反复利用旧数据），只用于连续动作。DDPG 的 Q 网络容易高估动作价值，策略又会去钻这些高估的空子，训练常不稳定。TD3 用三招应对：同时训练两个 Q 网络，算目标值时取较小者（Twin）；Q 网络更新两次才更新一次策略和目标网络（Delayed）；给目标动作加截断噪声，让 Q 值随动作变化更平滑。它和 SAC 是连续控制最常用的两个基线，离线强化学习方法 TD3+BC 也以它为底座。",
+      "example": "原论文在 OpenAI Gym 的 MuJoCo 连续控制任务（如 HalfCheetah、Hopper、Walker2d）上测试，TD3 的表现超过了 DDPG 等当时的主流算法。",
+      "related": ["深度确定性策略梯度", "Q 值高估", "目标网络", "软演员-评论家", "异策略", "价值函数"],
+      "sources": [
+        {"title": "Addressing Function Approximation Error in Actor-Critic Methods (TD3, arXiv 1802.09477)", "url": "https://arxiv.org/abs/1802.09477"},
+        {"title": "OpenAI Spinning Up: Twin Delayed DDPG", "url": "https://spinningup.openai.com/en/latest/algorithms/td3.html"},
+        {"title": "A Minimalist Approach to Offline Reinforcement Learning (TD3+BC, arXiv 2106.06860)", "url": "https://arxiv.org/abs/2106.06860"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "欠拟合",
+      "name_en": "Underfitting",
+      "abbr": "",
+      "aliases": ["拟合不足"],
+      "tier": 2,
+      "one_liner": "模型太弱或训练不够，连训练数据里的规律都没学会。",
+      "explanation": "欠拟合是机器学习的基础概念，与过拟合相对：模型在训练集上误差就很高，到验证集、测试集上同样差。常见原因有模型容量不够（参数少、结构太简单）、训练步数不足、学习率不合适、正则化过强，或输入里缺少完成任务所需的信息。判断看训练损失：训练损失降不下去是欠拟合；训练损失很低而验证损失回升才是过拟合。机器人学习里的典型表现是策略连训练时的演示场景都做不对，这时应先加大模型、延长训练，或检查观测与动作数据（如相机画面、动作归一化）有没有出错，而不是急着上数据增强这类防过拟合手段。",
+      "example": "用一个很小的多层感知机去学双臂叠衣服的演示，训练损失很早就停在高位，在训练集里的场景上回放也抓不准衣角，这就是欠拟合。",
+      "related": ["过拟合", "正则化", "训练集 / 验证集 / 测试集", "损失函数", "参数量", "收敛"],
+      "sources": [
+        {"title": "Google Machine Learning Crash Course: Overfitting", "url": "https://developers.google.com/machine-learning/crash-course/overfitting/overfitting"},
+        {"title": "Wikipedia: Overfitting（含 Underfitting 一节）", "url": "https://en.wikipedia.org/wiki/Overfitting"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "无监督学习",
+      "name_en": "Unsupervised Learning",
+      "abbr": "",
+      "aliases": ["非监督学习"],
+      "tier": 2,
+      "one_liner": "只用没有标签的数据，让模型自己找出数据里的结构。",
+      "explanation": "无监督学习是与监督学习相对的机器学习范式：训练数据只有输入、没有人工标注的答案，模型要自己发现其中的规律。经典任务有聚类（如 k-means 把相似样本分组）、降维（如主成分分析 PCA）和密度估计（学出数据的概率分布）；自编码器等生成模型也常归入此类。自监督学习（从数据本身构造监督信号，如预测被遮住的部分）有时被视为它的一个分支。它重要是因为标注昂贵而无标签数据极多，大模型预训练大量依赖无标签文本、图像和视频。在具身智能里，从无动作标签的人类视频中学潜在动作、让机器人通过无监督技能发现自己探索出多种行为，都属于这一思路。",
+      "example": "对一批没有标注的桌面场景图片做 k-means 聚类，算法不知道类别名，只按特征相似度把图片分成若干组。",
+      "related": ["监督学习", "自监督学习", "表征学习", "预训练", "无监督技能发现", "自编码器"],
+      "sources": [
+        {"title": "Wikipedia: Unsupervised learning", "url": "https://en.wikipedia.org/wiki/Unsupervised_learning"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "价值函数",
+      "name_en": "Value Function",
+      "abbr": "",
+      "aliases": ["状态价值函数", "V 函数", "Critic", "评论家", "演员-评论家", "Actor-Critic", "行动者-评论家"],
+      "tier": 2,
+      "one_liner": "估计「从当前状态出发、按某策略做下去，未来总共能拿多少奖励」的函数。",
+      "explanation": "价值函数是强化学习的核心概念。状态价值函数 V(s) 表示从状态 s 出发、一直按策略 π 行动的期望回报（未来奖励的折扣累加）；Q 函数 Q(s,a) 是先执行动作 a 再按策略走的期望回报；A=Q−V 叫优势函数，衡量某个动作比平均水平好多少。有了它就能判断哪些状态、动作更值得追求。演员-评论家（Actor-Critic）架构把策略和价值结合：演员是策略网络，负责出动作；评论家是价值网络，给动作打分、提供优势信号来更新演员，PPO、SAC、TD3 都属于这一类。具身智能里，价值函数还被用来筛选数据、给 VLA 做强化学习，如 π*0.6 的 RECAP 方法。",
+      "example": "π*0.6 训练了一个价值函数，预测「离任务成功还剩多少步」（失败轨迹给很低的值），据此算出每个动作的优势，告诉策略哪些动作更好。",
+      "related": ["Q 函数", "优势函数", "贝尔曼方程", "时序差分学习", "回报", "非对称演员-评论家"],
+      "sources": [
+        {"title": "OpenAI Spinning Up: Key Concepts in RL（Value Functions）", "url": "https://spinningup.openai.com/en/latest/spinningup/rl_intro.html"},
+        {"title": "Hugging Face Deep RL Course: Advantage Actor-Critic (A2C)", "url": "https://huggingface.co/learn/deep-rl-course/unit6/advantage-actor-critic"},
+        {"title": "π*0.6: a VLA That Learns From Experience (arXiv 2511.14759)", "url": "https://arxiv.org/abs/2511.14759"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "梯度消失 / 梯度爆炸",
+      "name_en": "Vanishing / Exploding Gradients",
+      "abbr": "",
+      "aliases": ["梯度消失", "梯度爆炸", "梯度弥散", "Vanishing Gradient", "Exploding Gradient"],
+      "tier": 2,
+      "one_liner": "反向传播时梯度逐层连乘后变得极小或极大，导致深层网络难以训练。",
+      "explanation": "深度网络靠反向传播算梯度，靠前层的梯度是后面许多层导数（矩阵）的连乘。这些因子普遍偏小，梯度传到浅层就趋近于零，前面的层几乎学不动，叫梯度消失；普遍偏大则会指数级增长，一步更新就让参数发散、损失变成 NaN，叫梯度爆炸。Bengio 等人 1994 年分析过循环神经网络中的这一问题，Pascanu 等人 2013 年提出用梯度范数裁剪应对爆炸。常用对策还有：ReLU 等不易饱和的激活函数（sigmoid 输入过大或过小时导数都接近零）、Xavier/He 初始化、残差连接、归一化层，以及 LSTM 的门控结构。训练 VLA、扩散策略时常设的梯度裁剪也是为了防止这类数值不稳定。",
+      "example": "用 sigmoid 激活堆几十层全连接网络，前几层的梯度往往接近 0、参数几乎不动；换成 ReLU 并加上残差连接后，同样深度的网络就能正常训练。",
+      "related": ["反向传播", "梯度裁剪", "残差网络", "激活函数", "归一化层（层归一化 / RMSNorm / 批归一化）", "长短期记忆网络 / 门控循环单元"],
+      "sources": [
+        {"title": "Dive into Deep Learning: Numerical Stability and Initialization", "url": "https://d2l.ai/chapter_multilayer-perceptrons/numerical-stability-and-init.html"},
+        {"title": "On the difficulty of training Recurrent Neural Networks (Pascanu et al., arXiv 1211.5063)", "url": "https://arxiv.org/abs/1211.5063"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "动作与状态归一化",
+      "name_en": "Action / State Normalization",
+      "abbr": "",
+      "aliases": ["归一化统计量", "norm stats", "分位数归一化", "动作归一化", "状态归一化"],
+      "tier": 3,
+      "one_liner": "训练前把各维动作和本体状态缩放到统一范围，推理后再换算回真实数值。",
+      "explanation": "机器人动作和本体状态（关节角、夹爪开合、末端位置等）各维单位和量级差别很大，直接输入网络会让大数值维度主导损失、训练不稳。常见做法是在训练数据上统计每一维的均值和标准差，或第 1、第 99 百分位数（分位数归一化），把数据缩放到零均值单位方差或 [-1, 1]。这些统计量就是 norm stats，要随模型权重一起保存，推理时对输出做反归一化才得到真实指令；分位数比最小/最大值更不怕异常值。Physical Intelligence 的 FAST 论文即用 1%/99% 分位数归一化动作；openpi 微调前要先跑 compute_norm_stats.py，若新任务的机器人在预训练数据里出现过，也可沿用预训练的统计量。统计量没对上是真机动作异常的常见原因。",
+      "example": "π0-FAST 在把动作切成 token 之前，先把训练集中每个动作维度的第 1 和第 99 百分位数映射到 [-1, 1]，方便不同机器人的数据用同一套分词器。",
+      "related": ["动作分词器", "π0-FAST", "本体感知", "跨本体数据", "openpi", "微调"],
+      "sources": [
+        {"title": "FAST: Efficient Action Tokenization for Vision-Language-Action Models (arXiv 2501.09747)", "url": "https://arxiv.org/abs/2501.09747"},
+        {"title": "openpi（Physical Intelligence GitHub）", "url": "https://github.com/Physical-Intelligence/openpi"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "Actor-Learner 分离架构",
+      "name_en": "Actor-Learner Architecture (Distributed RL)",
+      "abbr": "",
+      "aliases": ["Actor-Learner 架构", "执行者-学习者架构", "采样与训练解耦"],
+      "tier": 3,
+      "one_liner": "把「与环境交互采数据」和「更新网络参数」拆给不同进程或机器并行执行。",
+      "explanation": "这是分布式强化学习常用的系统设计：多个 actor（执行者）各持一份策略副本，在各自的环境里交互、产生经验；learner（学习者）集中收集经验、在 GPU 上更新参数，再定期把新参数同步回 actor。DeepMind 2018 年的 Ape-X 和 IMPALA 是代表：Ape-X 让 actor 把经验写入共享的回放缓冲区；IMPALA 让 actor 直接把轨迹发给 learner，并用 V-trace（一种重要性加权修正）处理 actor 策略略微落后带来的偏差。好处是采样与训练互不阻塞，可扩展到上千台机器。真机强化学习同样需要这种拆分：SERL 把 actor 和 learner 放在不同线程，训练再慢也不会拖低机器人的控制频率。",
+      "example": "SERL 在真机上并行跑三个进程：actor 选动作、learner 训练网络、机器人环境执行动作，从而保持固定的控制频率，也缩短了真实世界训练的总耗时。",
+      "related": ["经验回放", "异策略", "重要性采样", "真机强化学习", "SERL", "大规模并行强化学习"],
+      "sources": [
+        {"title": "IMPALA: Scalable Distributed Deep-RL with Importance Weighted Actor-Learner Architectures (arXiv 1802.01561)", "url": "https://arxiv.org/abs/1802.01561"},
+        {"title": "Distributed Prioritized Experience Replay (Ape-X, arXiv 1803.00933)", "url": "https://arxiv.org/abs/1803.00933"},
+        {"title": "SERL: A Software Suite for Sample-Efficient Robotic Reinforcement Learning (arXiv 2401.16013)", "url": "https://arxiv.org/abs/2401.16013"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "适配器",
+      "name_en": "Adapter",
+      "abbr": "",
+      "aliases": ["Adapter 微调", "适配器微调", "Adapter 模块", "瓶颈适配器"],
+      "tier": 3,
+      "one_liner": "在冻结的大模型层间插入小模块，只训练这些小模块来适配新任务。",
+      "explanation": "适配器是一类参数高效微调方法，由 Houlsby 等人 2019 年在论文《Parameter-Efficient Transfer Learning for NLP》中提出：在 Transformer 各层插入「先降维、再升维」的小型瓶颈网络（带残差连接），微调时冻结原模型，只训练适配器。在 BERT 的 26 个文本分类任务上，每个任务只增加 3.6% 的参数，效果与全参数微调相差不到 0.4%。它省显存、省存储，一个底座可挂多个任务的适配器，也能减轻灾难性遗忘；后来的 LoRA 延续了同一思路。机器人领域中，TAIL（ICLR 2024）比较了瓶颈适配器、P-Tuning 和 LoRA 在模仿学习中的表现，给 VLA 适配新任务、新本体时也常用这类方法。",
+      "example": "TAIL 用少量演示微调预训练的决策模型，发现 LoRA 只训练约 1% 的参数就能达到与全参数微调相当的效果，并在持续学习中避免了灾难性遗忘。",
+      "related": ["参数高效微调", "低秩适配", "冻结骨干网络", "灾难性遗忘", "全参数微调", "提示微调 / 软提示"],
+      "sources": [
+        {"title": "Parameter-Efficient Transfer Learning for NLP (Houlsby et al., arXiv 1902.00751)", "url": "https://arxiv.org/abs/1902.00751"},
+        {"title": "TAIL: Task-specific Adapters for Imitation Learning with Large Pretrained Models (arXiv 2310.05905)", "url": "https://arxiv.org/abs/2310.05905"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "优势条件化",
+      "name_en": "Advantage Conditioning",
+      "abbr": "",
+      "aliases": ["优势条件策略", "Advantage-Conditioned Policy", "优势条件化策略"],
+      "tier": 3,
+      "one_liner": "训练时告诉策略每个动作「好不好」，部署时只让它生成「好」的动作。",
+      "explanation": "优势条件化把强化学习变成带条件的监督学习：先训练价值函数，算出数据中每个动作的优势（比平均水平好多少），再把优势或其二值化结果作为额外输入交给策略，照常做模仿学习。这样好、坏数据都能用来训练，推理时把条件设成「好」，策略就偏向输出高优势动作。它与按回报条件化的决策 Transformer 思路相近，也和 Frans 等人 2025 年提出的 CFGRL（把扩散模型的无分类器引导视作策略改进）相通。Physical Intelligence 2025 年 11 月发布的 π*0.6 用它构成 RECAP 方法：按阈值把优势二值化，以文本「Advantage: positive / negative」输入策略，训练时随机去掉该条件，推理时设为 positive，或用无分类器引导进一步放大改进。",
+      "example": "π*0.6 用 RECAP 训练后，能在真实家庭里叠衣服、稳定组装纸箱、用专业咖啡机做意式咖啡；论文称在部分最难的任务上吞吐量提高到两倍以上，失败率大约减半。",
+      "related": ["RECAP", "π*0.6", "优势函数", "回报条件化", "无分类器引导", "优势加权回归"],
+      "sources": [
+        {"title": "π*0.6: a VLA That Learns From Experience (RECAP, arXiv 2511.14759)", "url": "https://arxiv.org/abs/2511.14759"},
+        {"title": "Diffusion Guidance Is a Controllable Policy Improvement Operator (CFGRL, arXiv 2505.23458)", "url": "https://arxiv.org/abs/2505.23458"}
+      ],
+      "as_of": "2025-11"
+    },
+    {
+      "name_zh": "优势加权回归",
+      "name_en": "Advantage-Weighted Regression",
+      "abbr": "AWR",
+      "aliases": ["优势加权行为克隆", "Advantage-Weighted Behavioral Cloning"],
+      "tier": 3,
+      "one_liner": "按动作优势大小加权做模仿学习，优势越大越被模仿的强化学习算法。",
+      "explanation": "AWR 由 Xue Bin Peng、Aviral Kumar、Grace Zhang、Sergey Levine 于 2019 年提出，目标是只用监督学习的回归步骤来做强化学习。每轮两步：先用回归拟合价值函数；再做加权的行为克隆，数据里每个动作按 exp(优势/β) 加权，优势高的动作被模仿得更多，β 是温度系数。它能利用经验回放里的旧数据（异策略），也能只靠固定数据集学习，几行代码即可实现，连续和离散动作都支持。这种「先估优势、再加权模仿」的策略提取方式被后续离线强化学习广泛采用，例如隐式 Q 学习（IQL）就用优势加权行为克隆提取最终策略。",
+      "example": "隐式 Q 学习先从离线数据学出 Q 函数和价值函数，最后一步用优势加权行为克隆提取策略：优势为正且越大的数据动作，在模仿时权重越高。",
+      "related": ["优势函数", "离线强化学习", "隐式 Q 学习", "行为克隆", "策略约束", "优势条件化"],
+      "sources": [
+        {"title": "Advantage-Weighted Regression: Simple and Scalable Off-Policy Reinforcement Learning (arXiv 1910.00177)", "url": "https://arxiv.org/abs/1910.00177"},
+        {"title": "Offline Reinforcement Learning with Implicit Q-Learning (arXiv 2110.06169)", "url": "https://arxiv.org/abs/2110.06169"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "对抗运动先验",
+      "name_en": "Adversarial Motion Priors",
+      "abbr": "AMP",
+      "aliases": ["AMP 风格奖励", "对抗运动先验奖励"],
+      "tier": 3,
+      "one_liner": "用判别器评判动作像不像动捕数据，把「像不像」当奖励来学自然动作。",
+      "explanation": "AMP 由 Xue Bin Peng、Pieter Abbeel、Sergey Levine、Angjoo Kanazawa 等人 2021 年提出，最初用于仿真角色动画。它借鉴生成对抗模仿学习：训练一个判别器，输入相邻两帧状态，判断这段运动来自参考动作数据集还是来自策略；策略把骗过判别器的程度当作风格奖励，与任务奖励（如按指令速度前进）加权相加后用强化学习优化。好处是不必手写模仿目标，也不用挑选要跟踪的动作片段，一堆无结构的动捕片段就能让动作自然。2022 年 Escontrela 等人把它用到 Unitree A1 四足机器人上，只用约 4.5 秒德牧动捕数据就学出了自然且节能的步态，常被用来替代繁琐的奖励工程。",
+      "example": "Escontrela 等人在 A1 上把风格奖励权重设为 0.65、任务奖励设为 0.35，机器狗学出类似真狗的步态，并能随速度自然切换步态，直接迁移到真机。",
+      "related": ["生成对抗模仿学习", "奖励工程", "DeepMimic", "ASE（对抗技能嵌入）", "运动跟踪", "仿真到现实迁移"],
+      "sources": [
+        {"title": "AMP: Adversarial Motion Priors for Stylized Physics-Based Character Control (arXiv 2104.02180)", "url": "https://arxiv.org/abs/2104.02180"},
+        {"title": "Adversarial Motion Priors Make Good Substitutes for Complex Reward Functions (arXiv 2203.15103)", "url": "https://arxiv.org/abs/2203.15103"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "非对称演员-评论家",
+      "name_en": "Asymmetric Actor-Critic",
+      "abbr": "",
+      "aliases": ["非对称 AC", "Asymmetric AC", "非对称 Actor-Critic"],
+      "tier": 3,
+      "one_liner": "评论家看仿真里的完整状态，演员只看真机上也能拿到的观测。",
+      "explanation": "非对称演员-评论家由 Lerrel Pinto、Marcin Andrychowicz、Pieter Abbeel 等人 2017 年提出。演员-评论家算法里，评论家（价值网络）只在训练时使用、部署时丢掉，所以在仿真训练时可以给它完整的真实状态（物体精确位姿、速度等特权信息），而演员（策略）只接收相机图像等真机上拿得到的输入。评论家估值更准，训练更快更稳，留下的策略又能直接上真机。原论文结合域随机化，在 7 自由度 Fetch 机械臂上不用任何真机数据完成了抓取、推动等任务。OpenAI 的灵巧手项目 Dactyl 也用了这种做法；如今用 PPO 训练足式机器人运动控制时，让评论家额外读取地形、摩擦等特权观测也很常见。",
+      "example": "Dactyl 训练时，价值网络能读到真机上拿不到的额外信息，策略只用真机可获取的观测，训练好后直接部署到 Shadow 灵巧手上转动方块。",
+      "related": ["特权信息", "教师-学生蒸馏", "价值函数", "部分可观测马尔可夫决策过程", "仿真到现实迁移", "域随机化"],
+      "sources": [
+        {"title": "Asymmetric Actor Critic for Image-Based Robot Learning (arXiv 1710.06542)", "url": "https://arxiv.org/abs/1710.06542"},
+        {"title": "Learning Dexterous In-Hand Manipulation (OpenAI Dactyl, arXiv 1808.00177)", "url": "https://arxiv.org/abs/1808.00177"}
+      ],
+      "as_of": ""
+    }
+  ]
+}

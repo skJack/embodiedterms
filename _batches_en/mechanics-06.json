@@ -1,0 +1,113 @@
+{
+  "batch": "mechanics-06",
+  "terms": [
+    {
+      "key": "mechanics-06#0",
+      "name_en": "Singular Configuration (Kinematic Singularity)",
+      "aliases": ["Kinematic Singularity", "Singularity", "Wrist Singularity", "Boundary Singularity"],
+      "one_liner": "An arm posture where the Jacobian matrix loses rank, so the end effector can't move in certain directions.",
+      "explanation": "A singular configuration is a special class of arm posture. The Jacobian matrix — which converts joint velocities into end-effector velocity — has full rank across most postures, but at a singular configuration it loses rank, and the end effector becomes unable to move in some direction no matter how the joints turn. Two common types: a boundary singularity happens when the arm is fully extended, with the end effector at the very edge of the workspace; a wrist singularity happens on a 6-axis arm when the two wrist joint axes line up, effectively losing one degree of freedom. Near a singularity, moving the end effector a short distance in a straight line can demand extremely fast rotation from some joints, and numerical inverse-kinematics solutions also tend to become unstable there. This is why trajectory planning tries to avoid singularities, why numerical IK commonly uses damped least squares to keep joint speeds from exploding, and why manipulability is used to measure how far a posture is from becoming singular.",
+      "example": "When a planar two-link arm is fully extended, the end effector can only move perpendicular to the arm — no combination of joint speeds produces any velocity continuing straight outward along the arm's own direction. In that posture, an external force pulling along the arm's direction is carried directly by the structure, with no torque needed from the joints.",
+      "related": ["Jacobian Matrix", "Manipulability", "Damped Least Squares", "Jacobian Pseudoinverse", "Spherical Wrist", "Workspace"]
+    },
+    {
+      "key": "mechanics-06#1",
+      "name_en": "Linear Inverted Pendulum Model (LIPM)",
+      "aliases": ["LIP", "3D-LIPM"],
+      "one_liner": "A simplified model of bipedal walking that holds the center-of-mass height constant, used for fast gait planning.",
+      "explanation": "The linear inverted pendulum model is the most widely used simplification for bipedal walking, introduced by Shuuji Kajita and colleagues — a planar version at ICRA in 1991, and a 3D version, 3D-LIPM, at IROS in 2001. It represents the robot as a point mass concentrated at the center of mass, attached to a massless leg, and assumes the center-of-mass height stays constant; under that assumption, the otherwise nonlinear inverted-pendulum equation becomes linear: ẍ = (g/z_c)(x − p). Here x is the center of mass's horizontal position, p is the support point's position (the center of pressure, i.e., the ZMP), g is gravitational acceleration, and z_c is the center-of-mass height. The linear equation has a closed-form solution and is fast to compute, which suits real-time gait generation and ZMP preview control, and the capture point is also derived from it. The tradeoff is that it ignores leg mass and upper-body rotation.",
+      "example": "With center-of-mass height z_c = 0.8 m, g/z_c ≈ 12.3 s⁻². If the center of mass is 5 cm ahead of the support point, horizontal acceleration is about 0.6 m/s² and keeps increasing as the robot tips further, so the robot must take its next step in time to move the support point forward.",
+      "related": ["Inverted Pendulum Model (IPM)", "Zero Moment Point (ZMP)", "Capture Point", "Cart-Table Model", "ZMP Preview Control", "Center of Mass (CoM)"]
+    },
+    {
+      "key": "mechanics-06#2",
+      "name_en": "Mass Matrix",
+      "aliases": ["Inertia Matrix", "Joint-Space Inertia Matrix (JSIM)", "M(q)"],
+      "one_liner": "The matrix M(q) in a robot's dynamics equation that describes how hard each joint is to accelerate.",
+      "explanation": "The mass matrix appears in a robot's standard dynamics equation, τ = M(q)q̈ + c(q, q̇) + g(q): τ is joint torque, q, q̇, and q̈ are joint angles and their first and second derivatives, c is the Coriolis and centrifugal term, and g is the gravity term. M(q) is an n×n matrix (n is the number of joints) that determines how much torque a given set of joint accelerations requires; kinetic energy can also be written as T = ½q̇ᵀM(q)q̇. It's symmetric, positive definite, and changes with posture: with the arm fully extended, the shoulder joint has to move more inertia. Its off-diagonal entries capture inertial coupling between joints — accelerating only the elbow joint also produces a reaction torque at the shoulder. Computed-torque control, operational-space control, and forward-dynamics simulation all need it, and libraries like Pinocchio and MuJoCo compute it directly.",
+      "example": "For a planar two-link arm, when the elbow is straight, the diagonal entry of the mass matrix corresponding to the shoulder joint is at its largest — the same shoulder torque produces less angular acceleration when the arm is extended than when the elbow is bent.",
+      "related": ["Rigid-Body Dynamics", "Coriolis and Centrifugal Terms", "Composite Rigid-Body Algorithm", "Inverse Dynamics", "Forward Dynamics", "Euler-Lagrange Equations"]
+    },
+    {
+      "key": "mechanics-06#3",
+      "name_en": "Mass-Spring-Damper System",
+      "aliases": ["Spring-Mass-Damper System"],
+      "one_liner": "The most basic vibrating system, made of a mass, a spring, and a damper, used as an approximation throughout control and contact modeling.",
+      "explanation": "The mass-spring-damper system is the most fundamental dynamic model in mechanics and control: a mass m attached to a spring of stiffness k and a damper with damping coefficient c, with equation of motion mẍ + cẋ + kx = F, where x is displacement from equilibrium and F is an external force. The spring pulls the mass back toward equilibrium, and the damper dissipates energy. It defines a natural frequency ωn = √(k/m) and a damping ratio ζ = c/(2√(km)): ζ < 1 oscillates its way to a stop (underdamped), ζ = 1 returns to equilibrium fastest with no overshoot (critically damped), and ζ > 1 creeps back slowly (overdamped). It's everywhere in robotics: PD control at a joint behaves like a virtual spring plus damper, impedance control makes an end effector behave like a desired mass-spring-damper system, and many simulators compute soft-contact forces using a spring-damper model too.",
+      "example": "In joint PD control, τ = Kp(q_target − q) − Kd·q̇, Kp acts like spring stiffness k and Kd acts like damping c: too small a Kd and the joint oscillates back and forth, too large and the motion becomes sluggish.",
+      "related": ["Damping Ratio", "Natural Frequency", "Stiffness", "Damping", "Impedance Control", "PD Control"]
+    },
+    {
+      "key": "mechanics-06#4",
+      "name_en": "Moment of Inertia",
+      "aliases": ["Rotational Inertia", "Mass Moment of Inertia"],
+      "one_liner": "How hard an object is to spin up or slow down about a given axis, I = Σmr².",
+      "explanation": "Moment of inertia describes an object's resistance to rotating about a given axis, defined as the sum, over every part of the object, of its mass times the square of its distance from that axis: I = Σmr², in kg·m²; Euler introduced this concept in 1765. It plays the same role in rotation that mass plays in straight-line motion: τ = Iα, where τ is torque and α is angular acceleration. For the same mass, the farther it's distributed from the axis, the larger the moment of inertia: a uniform rod has moment of inertia ml²/12 about its midpoint, but ml²/3 about one end. A 3D rigid body needs the full 3×3 inertia tensor to describe its moment of inertia about every possible axis. Robot designers commonly push motors toward the torso and use lightweight materials for shins and fingers precisely to reduce the moment of inertia of the far-out links, so limbs can swing faster with less effort. Note this is different from the “second moment of area” used in structural mechanics, despite the similar name.",
+      "example": "Many bipedal and quadruped robots mount the knee motor up near the top of the thigh and drive the knee joint through a linkage or belt instead, keeping the shin light and reducing its moment of inertia during a leg swing.",
+      "related": ["Inertia Tensor", "Torque", "Parallel Axis Theorem", "Inertial Parameters", "Rigid-Body Dynamics", "Reflected Inertia"]
+    },
+    {
+      "key": "mechanics-06#5",
+      "name_en": "Newton-Euler Equations",
+      "aliases": ["Newton-Euler Formulation"],
+      "one_liner": "A pair of dynamics equations describing a rigid body's translation (F = ma) and rotation (Euler's equation) together.",
+      "explanation": "The Newton-Euler equations combine Newton's second law with Euler's equation for rigid-body rotation to describe how a rigid body translates and rotates under applied forces and torques: F = ma, and τ = Iα + ω×(Iω). F is the net external force, m is mass, a is the acceleration of the center of mass; τ is the net torque about the center of mass, I is the inertia tensor, α is angular acceleration, ω is angular velocity, and ω×(Iω) is the gyroscopic term produced by the rotation itself. A robot is made of many links, and each one satisfies this pair of equations. The classic recursive Newton-Euler algorithm first sweeps from base to tip, computing each link's velocity and acceleration, then sweeps back from tip to base, computing forces and torques, ending with the torque required at every joint — its computation cost grows only linearly with the number of joints. Along with the Euler-Lagrange equations, it's one of the two main routes to deriving robot dynamics.",
+      "example": "Given an arm's current joint angles, joint velocities, and the desired joint accelerations, the recursive Newton-Euler algorithm computes the torque each motor should output — exactly the feedforward term used in computed-torque control.",
+      "related": ["Recursive Newton-Euler Algorithm", "Euler-Lagrange Equations", "Inverse Dynamics", "Rigid-Body Dynamics", "Inertia Tensor", "Computed-Torque Control"]
+    },
+    {
+      "key": "mechanics-06#6",
+      "name_en": "Normal Force and Tangential (Shear) Force",
+      "aliases": ["Normal Force", "Tangential Force", "Shear Force"],
+      "one_liner": "The contact-force component perpendicular to a surface is normal force; the component parallel to it is tangential (shear) force.",
+      "explanation": "When two objects touch, the contact force between them can be split into two parts: a normal force, perpendicular to the contact surface, which presses the two surfaces together and keeps them from interpenetrating, and a tangential force, parallel to the surface — also called shear force — usually supplied by friction, which resists relative sliding. The two are linked by Coulomb's law of friction: |f_t| ≤ μf_n, where f_t is tangential force, f_n is normal force, and μ is the friction coefficient. If the tangential force needed exceeds μ times the normal force, the surfaces slip; in 3D, that constraint is exactly the friction cone. When a gripper holds a cup from the sides, the cup's entire weight is supported by tangential friction at the fingertips — if the grip force (normal force) isn't enough, the cup slides out. This is why tactile sensors usually measure both normal and shear force together, with changes in shear force serving as an important early signal of impending slip; legged robots likewise have to keep the ground reaction force inside the friction cone.",
+      "example": "A two-finger gripper holds a 0.3 kg cup from the side, with a friction coefficient of 0.5: each finger needs to provide about 1.5 N of upward tangential force, so each finger's normal (gripping) force must be at least about 3 N — with some margin added in practice.",
+      "related": ["Contact Force", "Coulomb Friction", "Friction Cone", "Friction Coefficient", "Slip Detection", "Tactile Sensor"]
+    },
+    {
+      "key": "mechanics-06#7",
+      "name_en": "Null Space",
+      "aliases": ["Kernel", "Jacobian Null Space", "Self-Motion"],
+      "one_liner": "Every input that a matrix maps to zero; for a redundant arm, the joint motions that don't change the end-effector pose at all.",
+      "explanation": "Null space is originally a linear-algebra concept: the null space of a matrix A is every vector x satisfying Ax = 0. In robotics, it usually refers to the null space of the Jacobian matrix J: since J converts joint velocities into end-effector velocity, any joint velocity that falls in its null space produces no motion or rotation of the end effector at all. A kinematically redundant arm — one with more joints than the task strictly needs, like a 7-axis arm performing a 6-dimensional pose task — always has this kind of motion available, called self-motion; a non-redundant arm only gets it at a singular configuration. Null-space control exploits exactly this: the primary task keeps the end effector tracking its target, while secondary objectives — staying away from joint limits, avoiding obstacles, steering clear of singularities — get executed by projecting them into the null space with the projection matrix (I − J⁺J), where J⁺ is the Jacobian pseudoinverse, so they never interfere with the primary task. Task-priority schemes in humanoid whole-body control are also built from layered null-space projections like this.",
+      "example": "Holding a 7-axis arm's end effector fixed directly above a cup, the elbow can still trace a circle around the shoulder-wrist line (changing the arm angle) — a one-dimensional self-motion, which can be used to steer the elbow away from a nearby obstacle.",
+      "related": ["Kinematic Redundancy", "Null-Space Control", "Jacobian Pseudoinverse", "Task Priority", "Arm Angle (Elbow Self-Motion Angle)", "Jacobian Matrix"]
+    },
+    {
+      "key": "mechanics-06#8",
+      "name_en": "Numerical Inverse Kinematics",
+      "aliases": ["Numerical IK", "Iterative IK"],
+      "one_liner": "An inverse-kinematics method that starts from an initial guess and repeatedly refines the joint angles to approach a target pose.",
+      "explanation": "Inverse kinematics has to find joint angles that produce a desired end-effector pose. Analytical IK derives a closed-form formula and only works for arms with special geometry; numerical IK is more general-purpose: starting from an initial set of joint angles, it uses forward kinematics to compute the current error between the end effector and the target, converts that error into a joint-angle correction using the Jacobian matrix, and repeats until the error is small enough. The most basic version is the Newton-Raphson method with the Jacobian pseudoinverse; common refinements include damped least squares (which keeps joint angles from swinging wildly near a singularity), the Jacobian transpose method, and formulating the whole problem as an optimization with joint limits and obstacle avoidance written in as constraints. The downside is that it only converges to whichever solution happens to be near the starting guess, and it can fail to converge or get stuck in a local optimum. In real-time control, using the previous time step's joint angles as the initial guess usually means convergence in just a few iterations. Libraries like KDL, TRAC-IK, and mink all provide numerical IK.",
+      "example": "During VR teleoperation, each frame takes the headset controller's pose as the arm's target end-effector pose, and runs a few iterations of numerical IK starting from the previous frame's joint angles to get real-time joint angles.",
+      "related": ["Inverse Kinematics", "Analytical Inverse Kinematics", "Jacobian Pseudoinverse", "Damped Least Squares", "Jacobian Transpose Method", "TRAC-IK"]
+    },
+    {
+      "key": "mechanics-06#9",
+      "name_en": "Parallel Mechanism",
+      "aliases": ["Parallel Manipulator", "Parallel Robot"],
+      "one_liner": "A mechanism connecting a base to an end platform through several kinematic chains at once — stiff and fast, but with a small workspace.",
+      "explanation": "A parallel mechanism has its end platform connected to the base by two or more independent kinematic chains at the same time, forming closed loops; its counterpart, a serial mechanism, has just one chain running from base to tip — an ordinary 6-axis arm is serial. Classic examples include the Stewart platform, which holds up a platform on six extendable struts (used in flight simulators), and the Delta robot — nicknamed the “spider robot” — invented in the early 1980s by Reymond Clavel's team at EPFL (the Swiss Federal Institute of Technology in Lausanne), widely used for high-speed pick-and-place sorting of food and electronics. A parallel mechanism's motors are mostly mounted on the base, keeping the moving parts light, and the load is shared across several chains, giving high stiffness, high precision, and high speed; the tradeoffs are a small workspace, hard-to-solve forward kinematics, and extra singular configurations that a serial arm doesn't have. Many humanoid robots also use a parallel structure for their ankle joints.",
+      "example": "A Delta robot's three actively driven arms each carry a parallelogram linkage, so the end platform can only translate, never rotate; according to Wikipedia, it can complete up to about 300 pick-and-place cycles per minute.",
+      "related": ["Serial Mechanism", "Delta Parallel Robot (Spider Robot)", "Parallel Ankle Joint", "Kinematic Chain", "Singular Configuration", "Four-Bar Linkage"]
+    },
+    {
+      "key": "mechanics-06#10",
+      "name_en": "Prismatic Joint",
+      "aliases": ["Slider Joint", "Sliding Pair", "P Joint"],
+      "one_liner": "A single-degree-of-freedom joint that lets two parts slide relative to each other along one straight axis, with no rotation.",
+      "explanation": "The prismatic joint is one of the two most basic robot joints, alongside the revolute joint: it constrains two links to slide relative to each other along a shared axis only, with no rotation, giving 1 translational degree of freedom, and its joint variable is a displacement rather than an angle. In mechanism theory, it's classified as a lower pair, also called a sliding pair; in shorthand notation it's written P, as in RRP for two revolute joints plus a prismatic joint. It's usually driven by a linear actuator, such as a motor-and-ball-screw electric cylinder, a hydraulic cylinder, or a linear motor. The three axes of a Cartesian robot, a SCARA robot's vertical lift axis, a hybrid robot's lift column, and the opening and closing motion of a parallel-jaw two-finger gripper are all prismatic joints. In URDF, this joint type is written prismatic, with an axis direction and upper/lower travel limits specified.",
+      "example": "A SCARA robot is typically two horizontal revolute joints plus one vertical prismatic joint: the revolute joints position the tool within a plane, and the prismatic joint plunges it down or lifts it up.",
+      "related": ["Revolute Joint", "Linear Actuator (Electric Cylinder)", "Cartesian Robot", "SCARA Robot", "Kinematic Pairs (Revolute / Prismatic / Lower / Higher Pair)", "URDF (Unified Robot Description Format)"]
+    },
+    {
+      "key": "mechanics-06#11",
+      "name_en": "Projected Gravity",
+      "aliases": ["Projected Gravity Vector", "projected_gravity", "projected_gravity_b"],
+      "one_liner": "Gravity's straight-down direction expressed in the robot's own body frame, telling a policy how far the body is tilted.",
+      "explanation": "Projected gravity is a near-universal observation in reinforcement learning for legged and humanoid robots: it takes the unit gravity direction in the world frame, (0, 0, −1), and rotates it into the body (base) frame using the inverse of the torso's orientation quaternion. When the robot stands perfectly upright, this equals (0, 0, −1); when the body tips forward or sideways, the x and y components become nonzero, with their magnitude reflecting how much pitch and roll are present. It carries only tilt information, with no heading (yaw) — which is useful, since yaw does nothing for balance and tends to drift on a real robot — so it's a cleaner input than feeding in the raw orientation quaternion directly. On real hardware, it's computed from the orientation an IMU estimates. Both legged_gym and Isaac Lab include it in their observations, and reward functions commonly penalize the squared sum of its x and y components to keep the body level.",
+      "example": "Unitree's unitree_rl_gym real-robot deployment script reads the IMU quaternion, computes projected gravity, and places it in dimensions 4–6 of the observation, alongside angular velocity, velocity commands, and joint angles, as input to the walking policy.",
+      "related": ["Proprioception", "Inertial Measurement Unit (IMU)", "Body Frame", "Quaternion", "RL-Based Locomotion Control", "Roll-Pitch-Yaw (RPY)"]
+    }
+  ]
+}

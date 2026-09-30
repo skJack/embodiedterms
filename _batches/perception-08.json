@@ -1,0 +1,407 @@
+{
+ "category": "perception",
+ "batch": 8,
+ "terms": [
+  {
+   "name_zh": "语义分割",
+   "name_en": "Semantic Segmentation",
+   "abbr": "",
+   "aliases": [
+    "像素级分类",
+    "Semantic Seg"
+   ],
+   "tier": 2,
+   "one_liner": "给图像里每个像素标上类别，如「桌子」「杯子」「地面」。",
+   "explanation": "语义分割是计算机视觉的基础任务：判断图像中每个像素属于哪一类，输出一张和原图一样大的类别图。它只管「是什么类」，不区分同类的不同个体，两只杯子会被标成同一片「杯子」；要把个体分开用实例分割，两者合起来叫全景分割。2015 年 Long 等人提出全卷积网络（FCN），让网络端到端直接做逐像素预测，之后成为主流做法。机器人用它找出可抓取物体所在的区域、可通行的地面，或把类别投到三维点云上建语义地图。早期模型只认训练集里的固定类别，现在常用开放词汇分割，按文字描述去分任意类别。",
+   "example": "输入一张厨房照片，桌面像素标成「桌子」，两只杯子都标成「杯子」，其余为「背景」；机器人据此取出「杯子」区域对应的点云来规划抓取。",
+   "related": [
+    "实例分割",
+    "全景分割",
+    "开放词汇分割",
+    "掩码",
+    "语义地图",
+    "分割一切模型"
+   ],
+   "sources": [
+    {
+     "title": "Fully Convolutional Networks for Semantic Segmentation (Long, Shelhamer, Darrell, CVPR 2015)",
+     "url": "https://arxiv.org/abs/1411.4038"
+    },
+    {
+     "title": "Wikipedia: Image segmentation",
+     "url": "https://en.wikipedia.org/wiki/Image_segmentation"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "SMPL 人体模型",
+   "name_en": "Skinned Multi-Person Linear Model",
+   "abbr": "SMPL",
+   "aliases": [
+    "SMPL-X",
+    "SMPL+H",
+    "蒙皮多人线性模型"
+   ],
+   "tier": 2,
+   "one_liner": "用少量形状和姿态参数生成三维人体网格的参数化人体模型。",
+   "explanation": "SMPL 是德国马普智能系统研究所 Michael Black 团队 2015 年发表的参数化人体模型，从数千个人体扫描中学出。给定形状参数 β（常用 10 维，管高矮胖瘦）和姿态参数 θ（23 个关节的旋转加全局朝向），就能生成一个 6890 个顶点的三角网格，关节弯曲时靠线性混合蒙皮和修正形变保持自然。2019 年的 SMPL-X 并入 MANO 手和 FLAME 脸，共 10475 个顶点。它是人体动作数据的通用格式：AMASS 把 15 个动捕数据集统一成 SMPL 参数，人形机器人做动作重定向也多从 SMPL 动作出发。模型仅限科研免费使用，商用需授权。",
+   "example": "H2O 先优化 SMPL 的形状参数，让人体骨架比例贴近宇树 H1，再把 AMASS 中约 1 万条 SMPL 动作重定向到 H1，用来训练全身动作跟踪策略。",
+   "related": [
+    "MANO 手部模型",
+    "AMASS 人体动捕数据集",
+    "动作重定向",
+    "人体网格恢复",
+    "人体姿态估计",
+    "H2O（人到人形）"
+   ],
+   "sources": [
+    {
+     "title": "SMPL 官方项目页（Max Planck Institute for Intelligent Systems）",
+     "url": "https://smpl.is.tue.mpg.de/"
+    },
+    {
+     "title": "Expressive Body Capture: 3D Hands, Face, and Body from a Single Image（SMPL-X，CVPR 2019）",
+     "url": "https://arxiv.org/abs/1904.05866"
+    },
+    {
+     "title": "Learning Human-to-Humanoid Real-Time Whole-Body Teleoperation（H2O）",
+     "url": "https://arxiv.org/abs/2403.04436"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "状态估计",
+   "name_en": "State Estimation",
+   "abbr": "",
+   "aliases": [
+    "机器人状态估计",
+    "位姿与速度估计"
+   ],
+   "tier": 2,
+   "one_liner": "用带噪声的传感器读数，推算机器人此刻的位置、姿态和速度。",
+   "explanation": "状态估计是根据传感器测量和运动模型，推断不能直接读出的状态量，如机身位姿、速度和传感器零偏。各种传感器都有噪声和漂移，要按可信度融合，常用卡尔曼滤波家族、粒子滤波或因子图优化。以腿足机器人为例：IMU 测角速度和加速度，关节编码器配合腿部运动学算出脚相对机身的位置，再假设支撑脚不打滑，就能估出机身速度；密歇根大学 2018 年的接触辅助不变 EKF 在 Cassie 双足上验证了这种做法。强化学习运控策略需要的机身线速度就来自状态估计器，也有工作直接用神经网络学它。",
+   "example": "四足机器人盲走时，把 IMU 读数、各关节角和足端触地状态送入扩展卡尔曼滤波，每个控制周期输出机身姿态和线速度，供运控策略使用。",
+   "related": [
+    "卡尔曼滤波",
+    "不变扩展卡尔曼滤波",
+    "腿式里程计",
+    "惯性测量单元",
+    "本体感知",
+    "学习型状态估计器"
+   ],
+   "sources": [
+    {
+     "title": "Timothy Barfoot 主页：State Estimation for Robotics（第二版 2024，含免费 PDF 与中译本信息）",
+     "url": "https://asrl.utias.utoronto.ca/~tdb/"
+    },
+    {
+     "title": "Contact-Aided Invariant Extended Kalman Filtering for Legged Robot State Estimation (RSS 2018)",
+     "url": "https://arxiv.org/abs/1805.10410"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "结构光",
+   "name_en": "Structured Light",
+   "abbr": "",
+   "aliases": [
+    "结构光相机",
+    "编码结构光",
+    "结构光三维扫描"
+   ],
+   "tier": 2,
+   "one_liner": "向物体投射已知图案，根据图案的变形算出深度的测距方法。",
+   "explanation": "结构光是一种主动三维测量方法：投影器向场景打出已知图案（条纹、编码图案或红外点阵），相机从另一角度拍摄；表面起伏让图案变形错位，结合已知的投影器与相机相对位置，按三角测量逐点算出深度。它不依赖物体纹理，白墙也能测，近距离精度高。代表有 2010 年的初代 Kinect（投射近红外点阵）和 iPhone 的 Face ID（投射 3 万多个红外点）。反光、透明表面会让图案丢失，强日光下投射图案对比度下降，所以多用于室内中近距离。主动双目也投散斑，但深度靠两台相机做立体匹配算出，这是两者的区别。",
+   "example": "初代 Kinect 把一片近红外点阵投到客厅里，红外相机拍到点阵随人体和家具发生的偏移，据此算出每个像素的深度，生成深度图用于体感游戏。",
+   "related": [
+    "散斑结构光",
+    "主动双目",
+    "飞行时间法",
+    "深度相机",
+    "三角化",
+    "透明/反光物体感知"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Structured-light 3D scanner",
+     "url": "https://en.wikipedia.org/wiki/Structured-light_3D_scanner"
+    },
+    {
+     "title": "Wikipedia: Kinect（初代结构光与 Xbox One 版 ToF）",
+     "url": "https://en.wikipedia.org/wiki/Kinect"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "第三视角相机",
+   "name_en": "Third-Person (Static) Camera",
+   "abbr": "",
+   "aliases": [
+    "固定相机",
+    "外部相机",
+    "全局相机",
+    "Exterior Camera",
+    "3rd-person Camera"
+   ],
+   "tier": 2,
+   "one_liner": "固定在机器人身体之外、从旁边看整个工作区的相机。",
+   "explanation": "第三视角相机装在三脚架、墙面或桌边，不随机械臂移动，和腕部相机、头部相机相对。它视野大，能同时拍到机器人、物体和环境，提供全局位置信息；缺点是远处细节看不清，手臂和物体容易互相遮挡，所以操作数据集通常把它和腕部相机搭配使用。这种布置属于「眼在手外」，要先标定相机外参，才能把图像位置换算到机器人基坐标系。相机一挪位置，策略看到的画面就变了，成功率常会下降，视角泛化因此是常见评测项。论文里也写作 exterior camera 或 3rd person camera。",
+   "example": "DROID 数据集的每台采集平台配两台可调位置的 ZED 2 双目相机作第三视角、一台 ZED Mini 装在手腕上；每换一个场景，采集员重新摆放第三视角相机，并用棋盘格标定外参。",
+   "related": [
+    "腕部相机",
+    "头部相机",
+    "眼在手外",
+    "相机外参",
+    "多视角",
+    "DROID 数据集"
+   ],
+   "sources": [
+    {
+     "title": "DROID: A Large-Scale In-The-Wild Robot Manipulation Dataset",
+     "url": "https://arxiv.org/abs/2403.12945"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "飞行时间法",
+   "name_en": "Time of Flight",
+   "abbr": "ToF",
+   "aliases": [
+    "ToF 相机",
+    "TOF 深度相机",
+    "飞行时间相机"
+   ],
+   "tier": 2,
+   "one_liner": "测量光从发出到被物体反射回来所用的时间，换算成距离。",
+   "explanation": "飞行时间法靠测光的往返时间测距：距离等于光速乘往返时间再除以 2。ToF 相机自带近红外光源，每个像素各测一个距离，直接输出深度图。直接飞行时间（dToF）发短脉冲直接计时，激光雷达多用它；间接飞行时间（iToF）发调制光、测回波相位差再换算，Kinect for Xbox One 和 Azure Kinect 属于这类。它不依赖物体纹理，模组紧凑；常见问题是多路径干扰（光在墙角多次反射使测距偏大）、物体边缘的飞点，以及强日光或深色表面导致回波太弱。机器人上常用于近距离避障和桌面深度感知。",
+   "example": "Azure Kinect 用调幅连续波 iToF：发出调制的近红外光，按回波相位算深度；拍墙角时光在两面墙之间来回反射，这些像素会被判为无效，深度值记为 0。",
+   "related": [
+    "直接飞行时间",
+    "间接飞行时间",
+    "激光雷达",
+    "结构光",
+    "飞点",
+    "深度相机"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Time-of-flight camera",
+     "url": "https://en.wikipedia.org/wiki/Time-of-flight_camera"
+    },
+    {
+     "title": "Azure Kinect DK depth camera（Microsoft Learn）",
+     "url": "https://learn.microsoft.com/en-us/previous-versions/azure/kinect-dk/depth-camera"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "网格（三角网格）",
+   "name_en": "Triangle Mesh",
+   "abbr": "",
+   "aliases": [
+    "Mesh",
+    "网格模型",
+    "三角面片",
+    "多边形网格"
+   ],
+   "tier": 2,
+   "one_liner": "用顶点和三角形面片拼出物体表面的三维表示方式。",
+   "explanation": "三角网格是三维图形里最常用的表面表示：一组顶点坐标，加上每个三角形由哪三个顶点组成的索引，拼出物体表面，还可带法向、颜色和贴图坐标。GPU 渲染以三角形为单位，所以大多数 3D 资产用网格存储，常见格式有 OBJ、STL、PLY、DAE、glTF。和点云相比，它有面和连接关系，能直接渲染、做碰撞。机器人的 URDF、MJCF 文件用网格描述连杆的外观和碰撞形状；但 MuJoCo 等引擎碰撞时只用网格的凸包，杯、碗这类凹形物体要先做凸分解。三维重建和 SMPL 人体模型的输出也是网格。",
+   "example": "把马克杯的 OBJ 模型直接导入 MuJoCo 做碰撞，会按凸包处理，杯口相当于被「封」住，小球放不进去；用 CoACD 把它分解成若干凸块后，才能正常往杯里装东西。",
+   "related": [
+    "点云",
+    "体素",
+    "网格文件",
+    "碰撞体",
+    "凸分解",
+    "统一机器人描述格式"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Polygon mesh",
+     "url": "https://en.wikipedia.org/wiki/Polygon_mesh"
+    },
+    {
+     "title": "MuJoCo XML Reference: asset/mesh（「collision detection works with the convex hull of the mesh」）",
+     "url": "https://raw.githubusercontent.com/google-deepmind/mujoco/main/doc/XMLreference.rst"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "视触觉传感器",
+   "name_en": "Vision-Based Tactile Sensor",
+   "abbr": "VBTS",
+   "aliases": [
+    "视觉触觉传感器",
+    "光学触觉传感器",
+    "Optical Tactile Sensor",
+    "GelSight 类传感器",
+    "Visuotactile Sensor"
+   ],
+   "tier": 2,
+   "one_liner": "用内置相机拍软胶表面的形变，把触觉转成图像的触觉传感器。",
+   "explanation": "视触觉传感器在透明弹性胶体表面涂反光膜，内部放 LED 和微型相机；物体压上来时胶面变形，相机拍到的就是「触觉图像」。借助光度立体（由不同方向光照下的明暗反推表面法向）可重建接触面的细微几何，胶面标记点的位移则反映剪切力和滑移。代表是 MIT 的 GelSight（2009 年做出首个原型）和 Meta 2020 年开源设计的小型低成本 DIGIT，后者能装在灵巧手指尖。优点是分辨率高、输出就是图像，可直接用视觉网络处理；不足是胶面会磨损、传感器有一定厚度，力的数值还需额外标定。",
+   "example": "研究者把两个 DIGIT 装在 Allegro 灵巧手的两根手指上，根据触觉图像预测接触变化，用触觉模型预测控制在两指之间拨动玻璃弹珠。",
+   "related": [
+    "GelSight",
+    "DIGIT 视触觉传感器",
+    "触觉传感器",
+    "光度立体",
+    "标记点跟踪",
+    "触觉图像"
+   ],
+   "sources": [
+    {
+     "title": "GelSight: High-Resolution Robot Tactile Sensors for Estimating Geometry and Force (Sensors 2017)",
+     "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5751610/"
+    },
+    {
+     "title": "DIGIT: A Novel Design for a Low-Cost Compact High-Resolution Tactile Sensor (RA-L 2020)",
+     "url": "https://arxiv.org/abs/2005.14679"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "纯视觉方案",
+   "name_en": "Vision-Only Approach",
+   "abbr": "",
+   "aliases": [
+    "纯视觉",
+    "纯视觉路线",
+    "Camera-Only"
+   ],
+   "tier": 2,
+   "one_liner": "只靠摄像头感知环境，不用激光雷达、毫米波雷达等测距传感器。",
+   "explanation": "纯视觉方案指感知只用摄像头（通常是普通 RGB 相机），距离和三维结构都由算法从图像推出，不用激光雷达、毫米波雷达、超声波等测距传感器。最有名的是特斯拉：2021 年 5 月起北美产 Model 3/Y 去掉毫米波雷达，称「Tesla Vision」，2022 年 10 月又宣布取消超声波雷达。优点是硬件便宜、数据易规模化；代价是深度只能估计，暗光、逆光和透明反光物体上更易出错。具身领域里「纯视觉」也指策略只看图像、不接触觉力觉，如 OpenVLA 只输入一张 RGB 图和语言指令。它和多传感器融合路线孰优孰劣仍有争论。",
+   "example": "OpenVLA 只接收单张 RGB 图像和一句指令，不输入深度、力觉或本体状态，直接输出机械臂末端的动作。",
+   "related": [
+    "RGB相机",
+    "激光雷达",
+    "深度相机",
+    "多传感器融合",
+    "视触觉融合",
+    "自动驾驶"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Tesla Autopilot hardware（Tesla Vision：2021 年去毫米波雷达、2022 年去超声波雷达）",
+     "url": "https://en.wikipedia.org/wiki/Tesla_Autopilot_hardware"
+    },
+    {
+     "title": "OpenVLA: An Open-Source Vision-Language-Action Model（局限：仅支持单图输入）",
+     "url": "https://arxiv.org/abs/2406.09246"
+    }
+   ],
+   "as_of": "2022-10"
+  },
+  {
+   "name_zh": "视觉定位（Grounding）",
+   "name_en": "Visual Grounding",
+   "abbr": "",
+   "aliases": [
+    "短语定位",
+    "指代表达理解",
+    "REC",
+    "Referring Expression Comprehension",
+    "Phrase Grounding"
+   ],
+   "tier": 2,
+   "one_liner": "根据一句话描述，在图像里找出它所指物体的位置。",
+   "explanation": "视觉定位（visual grounding）把语言和图像区域对应起来：输入图片和一段文字，输出所指物体的框、掩码或点。给短语找区域叫短语定位；给「左边那只红杯子」这类只指向唯一目标的描述叫指代表达理解（REC），常用 RefCOCO 系列数据集评测。它比普通检测多了理解属性和空间关系的要求。2023 年 IDEA 研究院的 Grounding DINO 能按任意文字找物体，如今多数视觉语言模型也能直接输出框或点坐标。机器人按指令抓东西，第一步往往就是 grounding。注意中文「视觉定位」也常指机器人用相机确定自身位置（visual localization），两者不是一回事。",
+   "example": "指令是「把左边那只红色杯子递给我」，模型先在相机图像里框出这一只杯子（旁边的蓝杯子不算），再把框内的深度点投到三维空间，交给抓取模块。",
+   "related": [
+    "指代表达分割",
+    "3D视觉定位",
+    "Grounding DINO",
+    "开放词汇检测",
+    "指向（点预测）",
+    "视觉语言模型"
+   ],
+   "sources": [
+    {
+     "title": "Modeling Context in Referring Expressions (RefCOCO / RefCOCO+ / RefCOCOg, ECCV 2016)",
+     "url": "https://arxiv.org/abs/1608.00272"
+    },
+    {
+     "title": "Grounding DINO: Marrying DINO with Grounded Pre-Training for Open-Set Object Detection",
+     "url": "https://arxiv.org/abs/2303.05499"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "视觉里程计",
+   "name_en": "Visual Odometry",
+   "abbr": "VO",
+   "aliases": [
+    "视觉测程"
+   ],
+   "tier": 2,
+   "one_liner": "比较相邻帧图像，逐帧推算相机走了多远、转了多少。",
+   "explanation": "视觉里程计用一台或多台相机连续拍摄的图像，逐帧估计相机的相对运动，再累加成轨迹。这个名字由 Nistér 等人 2004 年提出，借自轮式里程计（累加车轮转数估位移）；它不受车轮打滑影响，NASA 的两台火星探测车就用过。做法分两类：特征点法提取特征并跨帧匹配，直接法用像素亮度误差求运动。单目只能恢复比例未知的轨迹，双目或加 IMU（即视觉惯性里程计）才有真实尺度。它只管相邻帧的局部跟踪，误差越积越大形成漂移；加上回环检测和全局优化，就构成视觉 SLAM。",
+   "example": "四足机器人在走廊里前进，前视双目相机每帧匹配特征点，估出相对上一帧前进了多少、转了多少度并累加成轨迹；绕一大圈回到起点时，估计的终点往往和起点对不上，这就是漂移。",
+   "related": [
+    "视觉惯性里程计",
+    "视觉SLAM",
+    "同步定位与建图",
+    "回环检测",
+    "特征点",
+    "轮式里程计"
+   ],
+   "sources": [
+    {
+     "title": "Scaramuzza & Fraundorfer, Visual Odometry Part I: The First 30 Years and Fundamentals (IEEE RAM 2011)",
+     "url": "https://rpg.ifi.uzh.ch/docs/VO_Part_I_Scaramuzza.pdf"
+    },
+    {
+     "title": "Wikipedia: Visual odometry",
+     "url": "https://en.wikipedia.org/wiki/Visual_odometry"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "视觉问答",
+   "name_en": "Visual Question Answering",
+   "abbr": "VQA",
+   "aliases": [
+    "图像问答"
+   ],
+   "tier": 2,
+   "one_liner": "给一张图和一个自然语言问题，让模型用文字作答。",
+   "explanation": "视觉问答输入一张图和关于它的问题（如「桌上有几个杯子」），输出自然语言答案，需要同时理解画面、语言和常识。任务由 Antol、Agrawal 等人在 ICCV 2015 提出，VQA 数据集约 25 万张图、76 万个问题；2017 年的 VQA v2 做了平衡，减少模型不看图、只凭问题猜答案。如今视觉语言模型大多用问答形式训练和评测，ERQA、VSI-Bench 等具身与空间推理基准也是问答形式；训练 VLA 时常混入 VQA 数据协同训练，如 π0.5 用了 VQAv2 等网络数据来保住看图理解能力。和具身问答不同，VQA 只看给定图片，不需要机器人移动去找答案。",
+   "example": "给模型一张厨房台面照片，问「水槽左边的杯子是空的吗」，模型回答「是空的」；具身推理基准会把这类问题换成「机器人夹爪要先移到哪个物体上方」。",
+   "related": [
+    "视觉语言模型",
+    "多模态大语言模型",
+    "具身问答",
+    "协同训练",
+    "ERQA 具身推理问答基准",
+    "VSI-Bench 视觉空间智能基准"
+   ],
+   "sources": [
+    {
+     "title": "VQA: Visual Question Answering (ICCV 2015)",
+     "url": "https://arxiv.org/abs/1505.00468"
+    },
+    {
+     "title": "VQA 官网（VQA v2 数据集与挑战赛）",
+     "url": "https://visualqa.org/"
+    },
+    {
+     "title": "π0.5: a Vision-Language-Action Model with Open-World Generalization（协同训练用到 VQAv2 等网络数据）",
+     "url": "https://arxiv.org/abs/2504.16054"
+    }
+   ],
+   "as_of": "2025-04"
+  }
+ ]
+}

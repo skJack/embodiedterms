@@ -1,0 +1,113 @@
+{
+  "batch": "perception-08",
+  "terms": [
+    {
+      "key": "perception-08#0",
+      "name_en": "Semantic Segmentation",
+      "aliases": ["Semantic Seg", "Pixel-Level Classification"],
+      "one_liner": "Labels every pixel in an image with a category, like “table,” “cup,” or “floor.”",
+      "explanation": "Semantic segmentation is a core computer vision task: deciding which category every pixel in an image belongs to, and producing a category map the same size as the original image. It only cares about class, not individual identity — two cups both get labeled “cup” without being told apart; separating individual objects is instance segmentation, and combining the two is panoptic segmentation. In 2015, Long and colleagues introduced the fully convolutional network (FCN), which let a network predict pixel labels end to end, and this became the standard approach. Robots use semantic segmentation to find the region of a graspable object, identify walkable floor, or project labels onto a 3D point cloud to build a semantic map. Early models could only recognize the fixed set of categories they were trained on; today, open-vocabulary segmentation is common, letting a model segment any category described in text.",
+      "example": "Given a photo of a kitchen, the table pixels are labeled “table,” both cups are labeled “cup,” and everything else is “background”; a robot then pulls out the point cloud corresponding to the “cup” region to plan a grasp.",
+      "related": ["Instance Segmentation", "Panoptic Segmentation", "Open-Vocabulary Segmentation", "Mask", "Semantic Map", "Segment Anything Model"]
+    },
+    {
+      "key": "perception-08#1",
+      "name_en": "SMPL",
+      "aliases": ["Skinned Multi-Person Linear Model", "SMPL-X", "SMPL+H"],
+      "one_liner": "A parametric 3D human body model that generates a full body mesh from a small set of shape and pose parameters.",
+      "explanation": "SMPL was published in 2015 by Michael Black’s group at the Max Planck Institute for Intelligent Systems in Germany, learned from thousands of body scans. Given shape parameters β (usually 10 numbers controlling height and build) and pose parameters θ (rotations for 23 joints plus global orientation), it generates a triangle mesh with 6,890 vertices; linear blend skinning plus corrective deformations keep the mesh looking natural as joints bend. SMPL-X, released in 2019, folds in the MANO hand model and the FLAME face model for 10,475 vertices total. SMPL has become the common format for human motion data: AMASS unifies 15 motion-capture datasets into SMPL parameters, and humanoid robots doing motion retargeting usually start from SMPL motion clips. The model is free for research use only; commercial use requires a license.",
+      "example": "H2O first optimizes SMPL’s shape parameters so the body skeleton proportions match Unitree’s H1 humanoid, then retargets about 10,000 SMPL motion clips from AMASS onto the H1 to train a whole-body motion-tracking policy.",
+      "related": ["MANO", "AMASS", "Motion Retargeting", "Human Mesh Recovery", "Human Pose Estimation", "H2O (Human-to-Humanoid)"]
+    },
+    {
+      "key": "perception-08#2",
+      "name_en": "State Estimation",
+      "aliases": ["Robot State Estimation"],
+      "one_liner": "Estimates a robot’s current position, orientation, and velocity from noisy sensor readings.",
+      "explanation": "State estimation infers quantities that can’t be measured directly — such as body pose, velocity, and sensor bias — from sensor measurements and a motion model. Every sensor has noise and drift, so readings must be fused according to how much each can be trusted, typically using the Kalman filter family, particle filters, or factor-graph optimization. Take a legged robot as an example: the IMU measures angular velocity and acceleration, joint encoders combined with leg kinematics give each foot’s position relative to the body, and assuming the stance foot doesn’t slip lets the system estimate body velocity. A 2018 University of Michigan paper validated this approach with a contact-aided invariant EKF on the Cassie biped. The body linear velocity that reinforcement-learning locomotion policies need comes from a state estimator; some work instead trains a neural network to learn that estimate directly.",
+      "example": "While a quadruped robot walks blind, IMU readings, joint angles, and foot contact states are fed into an extended Kalman filter every control cycle, which outputs body orientation and linear velocity for the locomotion policy to use.",
+      "related": ["Kalman Filter", "Invariant Extended Kalman Filter", "Leg Odometry", "Inertial Measurement Unit", "Proprioception", "Learned State Estimator"]
+    },
+    {
+      "key": "perception-08#3",
+      "name_en": "Structured Light",
+      "aliases": ["Structured-Light Camera", "Coded Structured Light", "Structured-Light 3D Scanning"],
+      "one_liner": "Projects a known pattern onto a scene and computes depth from how the pattern gets distorted.",
+      "explanation": "Structured light is an active 3D-sensing method: a projector casts a known pattern — stripes, a coded pattern, or an infrared dot array — onto the scene, and a camera views it from a different angle. Surface bumps and dips distort the pattern, and knowing the relative position of the projector and camera lets the system triangulate depth at each point. It doesn’t depend on surface texture, so it works even on a blank white wall, and it’s accurate at close range. Well-known examples include the original 2010 Kinect, which projects a near-infrared dot pattern, and the iPhone’s Face ID, which projects over 30,000 infrared dots. Reflective or transparent surfaces make the pattern disappear, and strong sunlight washes out its contrast, so structured light is mostly used indoors at short-to-medium range. Active stereo also projects a speckle pattern, but computes depth through stereo matching between two cameras — that’s the key difference between the two methods.",
+      "example": "The original Kinect projects a near-infrared dot pattern across a living room; its infrared camera captures how the dots shift around people and furniture, and from that shift it computes per-pixel depth to generate a depth map for motion-controlled games.",
+      "related": ["Speckle Structured Light", "Active Stereo", "Time of Flight", "Depth Camera", "Triangulation", "Perceiving Transparent and Reflective Objects"]
+    },
+    {
+      "key": "perception-08#4",
+      "name_en": "Third-Person Camera",
+      "aliases": ["Static Camera", "External Camera", "Exterior Camera", "Global Camera", "3rd-Person Camera"],
+      "one_liner": "A camera mounted off the robot’s body, fixed in place, viewing the whole workspace from the side.",
+      "explanation": "A third-person camera is mounted on a tripod, wall, or table edge and doesn’t move with the robot arm, in contrast to a wrist camera or head camera. It has a wide field of view and captures the robot, objects, and environment together, giving global position information; the tradeoff is that distant details are hard to see and the arm can easily occlude objects, so manipulation datasets usually pair it with a wrist camera. This setup is a form of “eye-to-hand” mounting, and its extrinsics — the camera’s position and orientation relative to the robot — must be calibrated before image coordinates can be converted into the robot’s base frame. If the camera moves even slightly, the scene a policy sees changes, and success rates often drop, which is why generalization across viewpoints is a common evaluation axis. In papers this camera is also called an exterior camera or 3rd-person camera.",
+      "example": "Each capture rig in the DROID dataset has two repositionable ZED 2 stereo cameras serving as third-person views, plus a ZED Mini mounted on the wrist; every time the scene changes, the operator repositions the third-person cameras and recalibrates their extrinsics with a checkerboard.",
+      "related": ["Wrist Camera", "Head Camera", "Eye-to-Hand", "Camera Extrinsics", "Multi-View", "DROID Dataset"]
+    },
+    {
+      "key": "perception-08#5",
+      "name_en": "Time of Flight",
+      "aliases": ["ToF", "ToF Camera", "Time-of-Flight Camera"],
+      "one_liner": "Measures how long light takes to bounce off an object and return, then converts that time into distance.",
+      "explanation": "Time of flight measures distance from the round-trip travel time of light: distance equals the speed of light times the round-trip time, divided by two. A ToF camera carries its own near-infrared light source and measures a distance at every pixel, producing a depth map directly. Direct time of flight (dToF) sends short pulses and times them directly — most lidar uses this; indirect time of flight (iToF) sends modulated light and measures the phase shift of the returning signal to compute distance, which is how the Kinect for Xbox One and Azure Kinect work. ToF doesn’t depend on surface texture and the module is compact; common problems include multipath interference (light bouncing repeatedly in corners, inflating the measured distance), flying pixels at object edges, and weak returns under strong sunlight or from dark surfaces. Robots commonly use it for close-range obstacle avoidance and tabletop depth sensing.",
+      "example": "Azure Kinect uses amplitude-modulated continuous-wave iToF: it emits modulated near-infrared light and computes depth from the phase of the returning signal; when it images a corner, the light bounces back and forth between the two walls, so those pixels get marked invalid with a depth of zero.",
+      "related": ["Direct Time of Flight", "Indirect Time of Flight", "Lidar", "Structured Light", "Flying Pixels", "Depth Camera"]
+    },
+    {
+      "key": "perception-08#6",
+      "name_en": "Triangle Mesh",
+      "aliases": ["Mesh", "Polygon Mesh"],
+      "one_liner": "Represents a 3D object’s surface using vertices connected into triangular faces.",
+      "explanation": "A triangle mesh is the most common surface representation in 3D graphics: a set of vertex coordinates plus an index of which three vertices form each triangle, together tracing out an object’s surface, optionally with normals, colors, and texture coordinates. GPUs render in units of triangles, so most 3D assets are stored as meshes, in formats like OBJ, STL, PLY, DAE, and glTF. Compared with a point cloud, a mesh has faces and connectivity, so it can be rendered and used for collision directly. Robot description files in URDF and MJCF use meshes to describe a link’s visual appearance and collision shape; but engines like MuJoCo only use a mesh’s convex hull for collision, so concave objects like cups and bowls need convex decomposition first. The outputs of 3D reconstruction and of the SMPL human body model are also meshes.",
+      "example": "Importing a mug’s OBJ model directly into MuJoCo for collision treats it as a convex hull, which effectively “seals” the cup’s opening so a small ball can’t be dropped inside; only after decomposing it into several convex pieces with CoACD can objects actually be placed inside the cup.",
+      "related": ["Point Cloud", "Voxel", "Mesh File", "Collision Geometry", "Convex Decomposition", "Unified Robot Description Format"]
+    },
+    {
+      "key": "perception-08#7",
+      "name_en": "Vision-Based Tactile Sensor",
+      "aliases": ["VBTS", "Visuotactile Sensor", "Optical Tactile Sensor", "GelSight-Style Sensor"],
+      "one_liner": "A tactile sensor that uses a built-in camera to photograph how a soft surface deforms on contact.",
+      "explanation": "A vision-based tactile sensor coats the surface of a transparent elastic gel with a reflective membrane, with LEDs and a tiny camera inside; when an object presses on it, the gel surface deforms, and what the camera captures is essentially a “tactile image.” Photometric stereo — reconstructing surface normals from how shading changes under lights from different directions — can recover fine geometry of the contact surface, while the displacement of markers embedded in the gel reveals shear force and slip. The best-known examples are MIT’s GelSight, first prototyped in 2009, and Meta’s DIGIT, an open-source, small, low-cost design released in 2020 that’s compact enough to mount on a dexterous fingertip. The advantage is high resolution with image output that vision networks can process directly; the downsides are that the gel surface wears down, the sensor has some thickness, and force values still need separate calibration.",
+      "example": "Researchers mounted two DIGIT sensors on two fingers of an Allegro dexterous hand and used a tactile model-predictive controller to roll a glass marble back and forth between the fingers, predicting contact changes from the tactile images.",
+      "related": ["GelSight", "DIGIT", "Tactile Sensor", "Photometric Stereo", "Marker Tracking", "Tactile Image"]
+    },
+    {
+      "key": "perception-08#8",
+      "name_en": "Vision-Only Approach",
+      "aliases": ["Camera-Only"],
+      "one_liner": "Perceives the environment using only cameras, without lidar, millimeter-wave radar, or other ranging sensors.",
+      "explanation": "A vision-only approach means perception relies solely on cameras — usually ordinary RGB cameras — with distance and 3D structure both inferred from images by an algorithm, without lidar, millimeter-wave radar, ultrasonic sensors, or other ranging hardware. The best-known example is Tesla: starting in May 2021, North American–built Model 3/Y dropped millimeter-wave radar under the name “Tesla Vision,” and in October 2022 Tesla announced it was removing ultrasonic sensors too. The advantages are cheap hardware and data that’s easy to scale; the cost is that depth can only be estimated, so errors are more likely in low light, backlight, and with transparent or reflective objects. In embodied AI, “vision-only” also describes a policy that looks only at images, without tactile or force input — for example, OpenVLA takes just a single RGB image and a language instruction. Whether a vision-only approach or multi-sensor fusion is better remains debated.",
+      "example": "OpenVLA receives only a single RGB image and one instruction, with no depth, force, or proprioceptive input, and outputs the robot arm’s end-effector action directly.",
+      "related": ["RGB Camera", "Lidar", "Depth Camera", "Multi-Sensor Fusion", "Visuo-Tactile Fusion", "Autonomous Driving"]
+    },
+    {
+      "key": "perception-08#9",
+      "name_en": "Visual Grounding",
+      "aliases": ["Referring Expression Comprehension", "REC", "Phrase Grounding"],
+      "one_liner": "Finds the location in an image that a phrase or sentence refers to.",
+      "explanation": "Visual grounding links language to image regions: given an image and a piece of text, it outputs the box, mask, or point of the object referred to. Finding a region for a phrase is phrase grounding; finding the single region that a uniquely identifying description like “the red cup on the left” points to is referring expression comprehension (REC), commonly evaluated on the RefCOCO family of datasets. It demands more than plain detection — understanding attributes and spatial relationships too. In 2023, IDEA Research’s Grounding DINO could locate objects from arbitrary text, and today most vision-language models can output boxes or point coordinates directly. When a robot follows an instruction to pick something up, grounding is usually the first step. Note that the Chinese term for this, 视觉定位, is also commonly used for a robot figuring out its own location from a camera (visual localization) — a different, unrelated task despite the similar name.",
+      "example": "Given the instruction “hand me the red cup on the left,” the model first draws a box around that one cup in the camera image, ignoring the blue cup next to it, then projects the depth points inside the box into 3D space for the grasping module to use.",
+      "related": ["Referring Expression Segmentation", "3D Visual Grounding", "Grounding DINO", "Open-Vocabulary Detection", "Pointing (Point Prediction)", "Vision-Language Model"]
+    },
+    {
+      "key": "perception-08#10",
+      "name_en": "Visual Odometry",
+      "aliases": ["VO"],
+      "one_liner": "Compares consecutive camera frames to estimate, frame by frame, how far and how much a camera has turned.",
+      "explanation": "Visual odometry uses a sequence of images from one or more cameras to estimate the camera’s relative motion frame by frame, then accumulates those estimates into a trajectory. The name was coined by Nistér and colleagues in 2004, borrowed from wheel odometry, which accumulates wheel rotations to estimate displacement; unlike wheel odometry, it isn’t thrown off by wheel slip, and NASA used it on both of its Mars rovers. There are two main approaches: feature-based methods extract and match features across frames, while direct methods solve for motion from pixel brightness error. A single, monocular camera can only recover a trajectory with unknown scale; stereo cameras or adding an IMU (making it visual-inertial odometry) give true scale. Visual odometry only tracks motion locally between neighboring frames, so error accumulates into drift over time; adding loop closure and global optimization turns it into visual SLAM.",
+      "example": "As a quadruped robot walks down a corridor, its front-facing stereo camera matches feature points frame by frame, estimating how far forward and how many degrees it turned relative to the previous frame and accumulating this into a trajectory; after going all the way around a large loop back to the start, the estimated endpoint usually doesn’t line up with the actual starting point — that mismatch is drift.",
+      "related": ["Visual-Inertial Odometry", "Visual SLAM", "Simultaneous Localization and Mapping", "Loop Closure", "Feature Point", "Wheel Odometry"]
+    },
+    {
+      "key": "perception-08#11",
+      "name_en": "Visual Question Answering",
+      "aliases": ["VQA", "Image QA"],
+      "one_liner": "Given an image and a natural-language question about it, the model answers in words.",
+      "explanation": "Visual question answering takes an image and a question about it, such as “how many cups are on the table?”, and outputs a natural-language answer, requiring the model to understand the image, the language, and relevant common sense together. The task was introduced by Antol, Agrawal, and colleagues at ICCV 2015; the VQA dataset has about 250,000 images and 760,000 questions. The 2017 VQA v2 rebalanced the dataset to reduce cases where a model could guess the answer from the question alone, without looking at the image. Today most vision-language models are trained and evaluated with question-answering formats, and embodied and spatial-reasoning benchmarks like ERQA and VSI-Bench are also framed as question answering; VQA data is often mixed into VLA training as a co-training task — for example, π0.5 uses web data including VQAv2 to preserve its image-understanding ability. Unlike embodied question answering, VQA only looks at a given image and never requires the robot to move around to find the answer.",
+      "example": "Given a photo of a kitchen counter, ask “is the cup to the left of the sink empty?” and the model answers “yes, it’s empty”; an embodied-reasoning benchmark would instead ask something like “which object should the robot’s gripper move above first?”",
+      "related": ["Vision-Language Model", "Multimodal Large Language Model", "Embodied Question Answering", "Co-Training", "ERQA (Embodied Reasoning Question Answering)", "VSI-Bench (Visual-Spatial Intelligence Benchmark)"]
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "batch": "perception-05",
+  "terms": [
+    {
+      "key": "perception-05#0",
+      "name_en": "Human Pose Estimation",
+      "aliases": ["HPE", "Human Keypoint Detection"],
+      "one_liner": "Finding the positions of a person's body joints from an image or video and connecting them into a skeleton.",
+      "explanation": "Human pose estimation takes an image or video as input and outputs the positions of a person's joints — shoulders, elbows, wrists, hips, knees, ankles, and so on — as 2D pixel coordinates or 3D positions, which together form a skeleton. The COCO dataset annotates 17 keypoints per person and scores predictions with object keypoint similarity (OKS), which normalizes by body scale; Carnegie Mellon's OpenPose (CVPR 2017) first finds all the joints in an image and then assigns them to individual people, running in real time even with multiple people in frame; Google's MediaPipe can output 33 body points. For embodied AI, this is the first step in turning human motion into robot data: teleoperation reads the operator's pose in real time, or motion is extracted from human video, and motion retargeting then maps it onto the robot's joints.",
+      "example": "Stanford's HumanPlus uses just one RGB camera to estimate the operator's body and hand pose in real time, letting a custom 33-DOF humanoid mimic it synchronously — used both for teleoperation and to collect demonstration data.",
+      "related": ["Keypoint Detection", "Markerless Motion Capture", "Motion Retargeting", "SMPL Body Model", "Hand Pose Estimation", "MediaPipe (Hand / Body Landmarks)"]
+    },
+    {
+      "key": "perception-05#1",
+      "name_en": "Instance Segmentation",
+      "aliases": ["Instance-Level Segmentation"],
+      "one_liner": "Cutting out every object in an image pixel by pixel, keeping separate objects of the same class distinct from each other.",
+      "explanation": "Instance segmentation has to answer two questions at once — ‘what is this’ and ‘which one is this’ — generating a separate pixel-level mask and class label for every countable object (‘things,’ in the terminology of the field) in an image. This differs from semantic segmentation, which only assigns a class to each pixel: three cups on a table would merge into a single ‘cup’ region under semantic segmentation, whereas instance segmentation splits them into cup 1, cup 2, and cup 3. The representative method is Mask R-CNN, from Kaiming He and colleagues in 2017, which adds a parallel mask-prediction branch on top of an object-detection box. Panoptic segmentation, proposed in 2018, further folds in uncountable background regions (‘stuff’) such as sky and ground. Robot grasping usually uses instance segmentation first to cut out the target object, then crops the corresponding point cloud to compute a grasp pose.",
+      "example": "Two identical apples sit side by side on a table. Semantic segmentation only gives one merged ‘apple’ region, while instance segmentation outputs two separate masks, letting the robot grasp specifically the one on the left as instructed.",
+      "related": ["Semantic Segmentation", "Panoptic Segmentation", "Mask", "Object Detection", "Mask R-CNN", "Segment Anything Model"]
+    },
+    {
+      "key": "perception-05#2",
+      "name_en": "Intersection over Union",
+      "aliases": ["IoU", "Jaccard Index"],
+      "one_liner": "The overlap area of two regions divided by their combined area, used to judge how accurate a predicted box or mask is.",
+      "explanation": "Intersection over union measures how much two regions overlap: intersection area divided by union area, with 1 meaning perfect overlap and 0 meaning no overlap at all — mathematically, this is the Jaccard index, proposed by Paul Jaccard in 1901. Vision tasks use it to judge whether a detected box or mask is accurate: a prediction counts as correct only if its IoU with the ground truth exceeds some threshold. PASCAL VOC uses a threshold of 0.5; COCO is stricter, computing average precision (AP) at thresholds from 0.50 to 0.95 in steps of 0.05 and then averaging them — the commonly cited AP50 and AP75 are the results at the 0.5 and 0.75 thresholds specifically. Segmentation tasks use the same formula, just applied to mask pixels instead of a box.",
+      "example": "A ground-truth box and a predicted box each have an area of 100 and overlap by 60. Their union is then 140, giving an IoU of about 0.43 — below 0.5, so by the VOC standard this detection wouldn't count as correct.",
+      "related": ["Object Detection", "Bounding Box (Detection)", "Mean Average Precision (mAP)", "Non-Maximum Suppression (NMS)", "Instance Segmentation", "Precision / Recall (F1)"]
+    },
+    {
+      "key": "perception-05#3",
+      "name_en": "Joint Torque Sensor",
+      "aliases": ["Joint Torque Sensing", "One-Axis Torque Sensor"],
+      "one_liner": "A sensor built into a robot joint that directly measures the torque the joint is actually producing.",
+      "explanation": "A joint torque sensor sits between a joint's reducer output and the link it drives, measuring torque only around that single joint's rotation axis — hence it's also called a one-axis torque sensor — and is mostly strain-gauge based, converting a tiny deformation of an elastic element into a torque reading. Motor current can also be used to estimate torque, but friction in the reducer makes that estimate inaccurate; measuring directly at the output lets the robot sense even very light external forces. KUKA's LBR iiwa carries one of these sensors on all seven axes, and the manufacturer states that this lets it immediately sense contact and reduce force and speed, allowing it to work alongside people without safety fencing; Franka's control interface likewise reports each joint's measured torque directly as tau_J. This is the basis for collision detection, torque control, impedance control, and kinesthetic teaching, at the cost of a higher price and a more complex joint design.",
+      "example": "A person pushes on a moving KUKA iiwa arm by hand. The joint torque sensor's reading exceeds what the dynamics model predicts, and the controller judges that a collision has occurred, immediately stopping or yielding to the push.",
+      "related": ["Six-Axis Force/Torque Sensor", "Strain Gauge", "Sensorless Force Estimation", "Torque Control", "Impedance Control", "Collision Detection (Onboard Safety)"]
+    },
+    {
+      "key": "perception-05#4",
+      "name_en": "Keypoint Detection",
+      "aliases": ["Keypoints", "Keypoint Localization"],
+      "one_liner": "Locating a handful of pre-defined, meaningful points in an image, like a wrist, a cup's handle, or a box's corner.",
+      "explanation": "Keypoint detection locates a small number of points with predefined meaning in an image, such as a wrist, a cup's handle, or a box's corner. It's more precise than a bounding box and lighter-weight than a segmentation mask; it also differs from feature points like SIFT or ORB, which only need to be locally recognizable and carry no fixed meaning. The most common case is human body keypoints: COCO labels each point as ‘not labeled,’ ‘occluded,’ or ‘visible,’ and scores predictions with OKS similarity. In robot manipulation, MIT's kPAM (2019) represents a whole category of objects with a few 3D semantic keypoints, so swapping in a differently shaped cup still works under the same rule — handling shape variation within a category better than estimating a single 6D pose would.",
+      "example": "To hang various mugs on a mug rack, the robot first detects each mug's base, rim, and handle as 3D keypoints, then plans motion so the handle lines up with the hook — the same rule works even though the mugs differ in size and shape.",
+      "related": ["Human Pose Estimation", "Semantic Keypoints", "Feature Point", "6D Object Pose Estimation", "ReKep", "Any-Point Tracking"]
+    },
+    {
+      "key": "perception-05#5",
+      "name_en": "Lens Distortion",
+      "aliases": ["Radial Distortion", "Tangential Distortion", "Undistortion"],
+      "one_liner": "The way a real lens's image deviates from the ideal pinhole model, bending straight lines into curves.",
+      "explanation": "The pinhole camera model assumes a straight line in space still photographs as a straight line, but real lenses deviate from this — that deviation is lens distortion. Radial distortion worsens toward the edges of the image: wide-angle and fisheye lenses commonly bow outward (barrel distortion), while telephoto lenses commonly bow inward (pincushion distortion); tangential distortion comes from the lens not being mounted perfectly parallel to the sensor. It's commonly described with the Brown-Conrady model, which OpenCV represents using three radial coefficients (k1, k2, k3) and two tangential coefficients (p1, p2); these are solved together with focal length and the principal point through checkerboard camera calibration, and an undistort function then straightens the image. Robots need to undistort before computing a 3D position from pixels, performing hand-eye calibration, or running visual SLAM, or the error near the edges of the frame grows significantly.",
+      "example": "A wrist camera's wide-angle lens photographs the table's edge as a curved arc. After calibrating the distortion coefficients and calling OpenCV's cv.undistort, the table edge straightens back out, letting edge objects' pixel coordinates convert accurately into arm coordinates.",
+      "related": ["Camera Calibration", "Camera Intrinsics", "Pinhole Camera Model", "Fisheye Camera", "Calibration Board (Checkerboard / ChArUco)", "OpenCV"]
+    },
+    {
+      "key": "perception-05#6",
+      "name_en": "LiDAR SLAM",
+      "aliases": ["Lidar-Based SLAM"],
+      "one_liner": "Using a lidar's scanned point clouds to localize a robot and build a map of the environment at the same time.",
+      "explanation": "Lidar SLAM is simultaneous localization and mapping that uses lidar as its primary sensor: as the robot moves, it aligns each new frame's point cloud with the existing map to work out its own position, while stitching the new point cloud into the map. Lidar measures distance directly and isn't affected by darkness, making it more stable than visual SLAM in large scenes and low-light places, though it lacks color and texture. 2D lidar SLAM is common in vacuums and warehouse AGVs; Google's open-source Cartographer supports both 2D and 3D. In 3D, Carnegie Mellon's 2014 LOAM splits the problem into a high-frequency odometry step and a low-frequency mapping step, and the MARS Lab at the University of Hong Kong's FAST-LIO2 further fuses in an IMU, running at up to 100 Hz and working well with narrow-field-of-view solid-state lidars too.",
+      "example": "Mounting a 3D lidar on a quadruped's back and driving it remotely around a campus loop, FAST-LIO2 builds a point-cloud map; afterward, during autonomous navigation, matching the live point cloud against this map tells the robot where it is.",
+      "related": ["Simultaneous Localization and Mapping", "LiDAR", "LiDAR-Inertial Odometry (LIO)", "FAST-LIO2", "Visual SLAM", "Loop Closure Detection"]
+    },
+    {
+      "key": "perception-05#7",
+      "name_en": "Livox Mid-360",
+      "aliases": ["Mid-360", "Mid360"],
+      "one_liner": "A small 360° hybrid solid-state lidar from Livox with a built-in IMU, widely used on mobile robots.",
+      "explanation": "The Mid-360 is a small, 360° hybrid solid-state lidar from Livox Technology, aimed at mobile robots. Its official specs are a 360° horizontal and −7° to 52° vertical field of view, a range of 40 meters for a target with 10% reflectivity and a minimum range of 0.1 meters, 200,000 points per second, a weight of 265 grams, and a built-in ICM40609-model IMU (inertial measurement unit). Its angular resolution improves with integration time — the longer it stays pointed somewhere, the denser the point cloud gets. It's officially positioned to replace 2D lidar, RGB-D cameras, and ultrasonic sensors for indoor navigation and obstacle avoidance; its driver, livox_ros_driver2, supports both ROS 1 and ROS 2, and the built-in IMU also makes it convenient to run lidar-inertial odometry directly.",
+      "example": "Mounting a Mid-360 on a wheeled or legged robot, publishing its point cloud and IMU topics with livox_ros_driver2, and feeding them into FAST-LIO2 for mapping, the result can then be handed off to the navigation stack for obstacle avoidance and path planning.",
+      "related": ["LiDAR", "LiDAR SLAM", "Solid-State LiDAR", "LiDAR-Inertial Odometry (LIO)", "FAST-LIO2", "Livox Technology"]
+    },
+    {
+      "key": "perception-05#8",
+      "name_en": "Machine Vision",
+      "aliases": ["Industrial Vision", "Industrial Machine Vision"],
+      "one_liner": "Using cameras and software on a factory floor to automatically inspect, measure, identify, and guide robots.",
+      "explanation": "Machine vision refers to using cameras, lenses, light sources, processors, and image-processing software on a factory floor to automate inspection, measurement, recognition, and localization — turning an image directly into an actionable conclusion such as ‘pass or fail’ or ‘the part is here.’ Typical applications include appearance defect detection and sorting, dimensional measurement, code reading, and visual guidance that gives a robot arm a workpiece's position and orientation. Its relationship to computer vision is that CV is the academic field studying image understanding, while machine vision is more systems-engineering focused, emphasizing lighting design, cycle time, and long-term stability, often relying on rule-based algorithms with deep learning as a supplement rather than the core. As 3D cameras have become widespread, 3D-vision-guided bin picking and part feeding have become common configurations on industrial robots, and machine vision is also the reference point embodied AI has to reckon with as it moves into factories.",
+      "example": "On a production line, a camera photographs each part as it passes, and software judges whether it has scratches and triggers rejection; at the next station, a 3D camera identifies the pose of parts piled randomly in a bin and guides a robot arm to pick them up one by one for loading.",
+      "related": ["Computer Vision", "3D Vision-Guided Robotics", "Bin Picking", "Quality Inspection", "Structured Light", "Mech-Mind"]
+    },
+    {
+      "key": "perception-05#9",
+      "name_en": "Markerless Motion Capture",
+      "aliases": ["Video-Based Motion Capture"],
+      "one_liner": "Recovering 3D human motion straight from ordinary video, with no reflective markers worn on the body.",
+      "explanation": "Traditional optical motion capture sticks reflective markers on the body and tracks them with multiple infrared cameras, giving high precision but requiring expensive equipment that only works in a dedicated studio space. Markerless motion capture removes the markers, instead relying on human pose estimation to find joints from one or a few ordinary camera videos, then fitting the result to a 3D skeleton or a parametric model such as SMPL. Stanford's OpenCap, from 2023, films with two or more iPhones and reports an average joint-angle error of about 4.5°; Zhejiang University's GVHMR (SIGGRAPH Asia 2024) can recover human motion in world-frame coordinates from a single monocular video alone. Markerless capture still lags behind optical capture on occlusion, fast motion, and finger detail. For embodied AI, it makes it possible to turn large amounts of human video into motion references for humanoid robots.",
+      "example": "Filming a dance with a phone, then recovering it into a world-frame SMPL motion sequence with GVHMR and retargeting it onto a humanoid's joints, gives a reference motion for reinforcement-learning motion tracking.",
+      "related": ["Motion Capture", "Optical Motion Capture", "Human Pose Estimation", "Human Mesh Recovery", "SMPL Body Model", "Motion Retargeting"]
+    },
+    {
+      "key": "perception-05#10",
+      "name_en": "Mask",
+      "aliases": ["Segmentation Mask", "Binary Mask"],
+      "one_liner": "A pixel-by-pixel map, the same size as the image, marking which pixels belong to a given object.",
+      "explanation": "A mask is an image the same size as the original, where each pixel takes a value of 0 or 1 (or a class ID), marking which pixels belong to a given object. The output of a segmentation model is essentially a mask: semantic segmentation produces one per class, and instance segmentation produces one per object. A mask is more precise than a bounding box, which often mixes in background, since a mask hugs the object's actual outline. For storage, the COCO dataset uses polygon vertices for a single object and run-length encoding (RLE) compression for groups of objects. Meta's SAM was trained on more than a billion annotated masks across 11 million images, and can produce a mask for essentially any object from just a click or a box. Robots commonly use a mask to pull just the target object out of a depth map or point cloud before computing a grasp. Note that the ‘attention mask’ used in transformers is an unrelated concept — don't confuse the two.",
+      "example": "Given the instruction ‘grasp the red cup,’ Grounded-SAM first produces the cup's mask, overlays it on the aligned depth map, back-projects only the cup's pixels into a point cloud, and hands that to the grasp-detection network.",
+      "related": ["Instance Segmentation", "Semantic Segmentation", "Segment Anything Model", "Grounded-SAM", "Attention Mask", "Point Cloud Segmentation"]
+    },
+    {
+      "key": "perception-05#11",
+      "name_en": "Monocular Depth Estimation",
+      "aliases": ["MDE", "Single-Image Depth Estimation"],
+      "one_liner": "Predicting how far away every pixel is from just one ordinary color photo.",
+      "explanation": "Monocular depth estimation predicts the depth of every pixel from just a single ordinary RGB image, taken with one camera rather than a stereo pair, producing a depth map. It's inherently ambiguous: the same photo could show a small nearby object or a large distant one, and scale is the hardest thing to pin down, so a model can only rely on learned cues such as typical object size, perspective, and occlusion. Researchers at NYU, David Eigen and colleagues, were among the first to use a deep network to predict depth coarse-to-fine in 2014; Depth Anything V2 (NeurIPS 2024) trains on synthetic data plus large-scale pseudo-labeled real images. Output is either relative depth (only the ordering of distances is known) or metric depth (given in meters). For robots, it can supply 3D information when no depth camera is available, and it's also commonly used to recover scene geometry from ordinary internet video.",
+      "example": "An arm has only a wrist-mounted RGB camera. Using the metric-depth version of Depth Anything V2 estimates a depth map from each frame, which is then back-projected into a point cloud using the camera's intrinsics for grasp planning.",
+      "related": ["Depth Estimation", "Metric Depth / Relative Depth", "Depth Anything (V1 / V2)", "Depth Pro", "Depth Map", "Stereo Matching"]
+    }
+  ]
+}

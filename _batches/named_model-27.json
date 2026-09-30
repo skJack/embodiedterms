@@ -1,0 +1,203 @@
+{
+  "category": "named_model",
+  "batch": 27,
+  "terms": [
+    {
+      "name_zh": "Visual Dexterity（视觉手内重定向）",
+      "name_en": "Visual Dexterity: In-Hand Reorientation of Novel and Complex Object Shapes",
+      "abbr": "",
+      "aliases": ["视觉灵巧性", "Visual Dexterity"],
+      "tier": 3,
+      "one_liner": "MIT 用一台深度相机让低成本灵巧手在空中实时翻转没见过的物体。",
+      "explanation": "Visual Dexterity 是 MIT CSAIL Improbable AI Lab 的 Tao Chen、Pulkit Agrawal 等人的工作，2022 年 11 月上线 arXiv，2023 年刊于 Science Robotics。手内重定向指不借助桌面，只靠手指把物体转到任意目标朝向，难在接触复杂、物体会被手挡住。它先在仿真里用强化学习训练一个能读取物体真实状态的「教师」，再蒸馏给只看深度相机点云的「学生」（用稀疏卷积网络处理，约 12 Hz 实时控制）。训练用了约 150 个物体，硬件是开源的 D'Claw 三指（9 自由度）或四指手，整套不到 5000 美元，还能在手掌朝下、要对抗重力时完成翻转，中位用时约 7 秒。它说明仿真训练加视觉输入可以泛化到新形状物体，是 Dactyl 之后手内操作的代表工作。",
+      "example": "机器人手掌朝下悬空握着一只训练时没见过的塑料鸭子，只凭深度相机点云把它转到指定姿态；鸭子在 56% 的试次中掉落，没掉落时约 75% 能转到误差 23 度以内。",
+      "related": ["手内操作", "灵巧操作", "教师-学生蒸馏", "仿真到现实迁移", "Dactyl（OpenAI 魔方灵巧手）", "HORA（手内物体旋转 + RMA）"],
+      "sources": [
+        {"title": "Visual Dexterity: In-Hand Reorientation of Novel and Complex Object Shapes (arXiv 2211.11744)", "url": "https://arxiv.org/abs/2211.11744"},
+        {"title": "Visual Dexterity 项目主页", "url": "https://taochenshh.github.io/projects/visual-dexterity"}
+      ],
+      "as_of": "2023-11"
+    },
+    {
+      "name_zh": "VLMaps",
+      "name_en": "Visual Language Maps for Robot Navigation",
+      "abbr": "VLMaps",
+      "aliases": ["视觉语言地图", "Visual Language Maps"],
+      "tier": 3,
+      "one_liner": "把视觉语言特征写进三维地图，让机器人按「椅子右边三米」这类话导航。",
+      "explanation": "VLMaps 由弗莱堡大学、Google Research 和纽伦堡工业大学的 Chenguang Huang、Oier Mees、Andy Zeng、Wolfram Burgard 提出，2022 年 10 月上线 arXiv，发表于 ICRA 2023。它让机器人边走边用 RGB-D 视频建图：用开放词汇分割模型 LSeg 给每个像素算一个视觉语言特征，借助深度和位姿投到三维表面，再压成俯视网格地图。查询时把「沙发」「冰箱」等词用文本编码器编码，和地图特征比相似度，就能定位任意物体，属于开放词汇语义地图。复杂指令先交给大语言模型（GPT-3 系列）写成调用地图接口的代码，因此能处理「在两个物体之间」「往右三米」等空间关系。同一张地图还能按不同机器人生成各自的障碍物地图。它是把基础模型接进导航地图的早期代表工作。",
+      "example": "对机器人说「移动到椅子右边三米的地方」，语言模型把指令转成代码，先在地图里查出椅子的位置，再算出右侧三米的目标点让机器人前往。",
+      "related": ["语义地图", "视觉语言导航", "开放词汇", "代码即策略", "CLIP", "VLFM（视觉语言前沿地图）"],
+      "sources": [
+        {"title": "Visual Language Maps for Robot Navigation (arXiv 2210.05714)", "url": "https://arxiv.org/abs/2210.05714"},
+        {"title": "VLMaps 项目主页", "url": "https://vlmaps.github.io/"},
+        {"title": "vlmaps/vlmaps (GitHub)", "url": "https://github.com/vlmaps/vlmaps"}
+      ],
+      "as_of": "2023-03"
+    },
+    {
+      "name_zh": "VLA-0",
+      "name_en": "VLA-0: Building State-of-the-Art VLAs with Zero Modification",
+      "abbr": "VLA-0",
+      "aliases": ["VLA-0（动作即文本）"],
+      "tier": 3,
+      "one_liner": "英伟达提出的极简 VLA：不改模型结构，让 VLM 直接把动作写成数字文本。",
+      "explanation": "VLA-0 是英伟达 Ankit Goyal 等人 2025 年 10 月发布的工作。常见 VLA（视觉-语言-动作模型）要么往视觉语言模型词表里加专门的动作 token，要么外挂动作头；VLA-0 什么都不改，直接让 Qwen2.5-VL-3B 用普通文本输出动作：把每个连续动作维度归一化成 0–1000 的整数写出来，再解码回去。论文指出要让这种做法好用，需要几项技巧：训练时随机遮掉目标数字串里的字符，逼模型看图而不是顺着文本续写；推理时把相邻时刻的预测做集成平均。结果在 LIBERO 上平均成功率 94.7%，超过同样只用该基准数据训练的 OpenVLA-OFT、SmolVLA 等，也超过用了大规模机器人数据预训练的 π0、GR00T N1 等；真机 SO-100 上比 SmolVLA 高 12.5 个百分点。它提醒大家先把简单基线做扎实。",
+      "example": "给定相机画面和指令，模型像回答问题一样输出一串 0–1000 之间的整数文本，每个数对应一个动作维度，反归一化后交给机械臂执行。",
+      "related": ["视觉-语言-动作模型", "动作分词器", "分箱离散化", "通义千问 Qwen-VL", "LIBERO", "SmolVLA"],
+      "sources": [
+        {"title": "VLA-0: Building State-of-the-Art VLAs with Zero Modification (arXiv 2510.13054)", "url": "https://arxiv.org/abs/2510.13054"},
+        {"title": "VLA-0 项目主页", "url": "https://vla0.github.io/"}
+      ],
+      "as_of": "2025-10"
+    },
+    {
+      "name_zh": "VLA-Adapter",
+      "name_en": "VLA-Adapter: An Effective Paradigm for Tiny-Scale Vision-Language-Action Model",
+      "abbr": "",
+      "aliases": ["VLA-Adapter-Pro"],
+      "tier": 3,
+      "one_liner": "用 0.5B 小模型加轻量策略模块、不做机器人预训练也能打到顶尖水平的 VLA。",
+      "explanation": "VLA-Adapter 由北京邮电大学、西湖大学、浙江大学、港科大（广州）和 OpenHelix 团队等 2025 年 9 月发布，已开源代码和权重。常见 VLA 依赖大参数视觉语言模型（VLM）并在大量机器人数据上预训练，成本很高。作者系统比较了 VLM 里哪些层、哪些特征最适合作为动作生成的条件，据此设计了一个约 9700 万参数的策略模块：用 Bridge Attention 把 VLM 各层的原始视觉语言特征和一组可学习查询（ActionQuery）的特征注入动作空间，注入多少由可学习参数控制。骨干只用 Qwen2.5-0.5B，不做机器人数据预训练，LIBERO 平均成功率 97.3%（Pro 版 98.5%），CALVIN ABC→D 平均完成长度 4.50（Pro 版）。它大幅降低了训练和部署门槛，后续 VLA-RFT 等工作以它为基座。",
+      "example": "论文报告在单张消费级显卡上约 8 小时即可训练出可用模型；推理吞吐 219.2 Hz，同条件下 OpenVLA-OFT 为 71.4 Hz。",
+      "related": ["视觉-语言-动作模型", "可学习查询", "适配器", "OpenVLA-OFT", "LIBERO", "VLA-RFT"],
+      "sources": [
+        {"title": "VLA-Adapter (arXiv 2509.09372)", "url": "https://arxiv.org/abs/2509.09372"},
+        {"title": "VLA-Adapter 项目主页", "url": "https://vla-adapter.github.io/"},
+        {"title": "OpenHelix-Team/VLA-Adapter (GitHub)", "url": "https://github.com/OpenHelix-Team/VLA-Adapter"}
+      ],
+      "as_of": "2025-09"
+    },
+    {
+      "name_zh": "VLA-OPD",
+      "name_en": "VLA-OPD: Bridging Offline SFT and Online RL for Vision-Language-Action Models via On-Policy Distillation",
+      "abbr": "VLA-OPD",
+      "aliases": ["On-Policy VLA Distillation", "VLA 在线策略蒸馏"],
+      "tier": 3,
+      "one_liner": "让强教师在学生自己跑出的轨迹上逐 token 纠错的 VLA 后训练方法。",
+      "explanation": "VLA-OPD 是港科大（广州）团队 2026 年 3 月提出的 VLA 后训练框架。离线监督微调（SFT）只学演示数据，遇到自己走偏的状态就不会处理，还容易灾难性遗忘预训练能力；在线强化学习又受稀疏奖励拖累，样本效率低。VLA-OPD 走中间路线，即在线策略蒸馏：学生策略自己在环境里执行，由一个更强的教师策略在这些学生亲自到达的状态上给出逐 token 的稠密监督，不依赖环境奖励。损失用反向 KL 散度，作者认为它偏向「选定一个模式」，比正向 KL（易使熵爆炸）和硬交叉熵（易使熵过早坍缩）训练更稳。实验中教师是 SimpleVLA-RL 训练出的专家，学生是 OpenVLA-OFT，在 LIBERO 和 RoboTwin 2.0 上比强化学习样本效率更高、比 SFT 更稳健，也更少遗忘。",
+      "example": "LIBERO 上，学生只用 1 条演示微调后平均成功率 48.9%；经 VLA-OPD 蒸馏升到 87.4%，再接 GRPO 强化学习到 93.4%，接近教师的 93.9%。",
+      "related": ["在线策略蒸馏", "监督微调", "强化学习微调", "灾难性遗忘", "KL 散度", "SimpleVLA-RL"],
+      "sources": [
+        {"title": "VLA-OPD (arXiv 2603.26666)", "url": "https://arxiv.org/abs/2603.26666"},
+        {"title": "VLA-OPD 项目主页", "url": "https://irpn-lab.github.io/VLA-OPD/"}
+      ],
+      "as_of": "2026-03"
+    },
+    {
+      "name_zh": "VLA-RFT",
+      "name_en": "VLA-RFT: Vision-Language-Action Reinforcement Fine-tuning with Verified Rewards in World Simulators",
+      "abbr": "",
+      "aliases": ["世界模型中的 VLA 强化微调"],
+      "tier": 3,
+      "one_liner": "在学出来的世界模型里跑强化学习，只用几百步就把 VLA 调得更稳。",
+      "explanation": "VLA-RFT 由西湖大学、浙江大学、OpenHelix 团队等 2025 年 10 月提出。只靠模仿学习的 VLA 容易误差累积、遇到扰动就失败；强化学习能改善，但真机交互昂贵，传统仿真器又有虚实差距。它的做法是先用真实交互数据训练一个约 1.38 亿参数的自回归世界模型，根据当前画面和动作预测未来画面，把它当作可控的模拟器；策略在里面推演一整段轨迹，奖励由预测画面与专家参考轨迹画面之间的像素误差（L1）和感知误差（LPIPS）算出，属于可验证奖励；再用 GRPO（组相对策略优化）更新策略。基座策略是 VLA-Adapter。不到 400 步微调就超过监督微调基线，并在物体位置、初始状态等扰动下更稳健。它说明世界模型可以作为 VLA 后训练的实用环境。",
+      "example": "LIBERO 上，VLA-Adapter 监督微调基线平均成功率 86.6%，在世界模型里做 400 步强化微调后提升到 91.1%。",
+      "related": ["世界模型", "强化学习微调", "组相对策略优化", "VLA-Adapter", "WMPO", "想象中学习"],
+      "sources": [
+        {"title": "VLA-RFT (arXiv 2510.00406)", "url": "https://arxiv.org/abs/2510.00406"},
+        {"title": "VLA-RFT 项目主页", "url": "https://vla-rft.github.io/"}
+      ],
+      "as_of": "2025-10"
+    },
+    {
+      "name_zh": "VLA-RL",
+      "name_en": "VLA-RL: Towards Masterful and General Robotic Manipulation with Scalable Reinforcement Learning",
+      "abbr": "",
+      "aliases": [],
+      "tier": 3,
+      "one_liner": "用在线强化学习继续提升自回归 VLA（如 OpenVLA）的早期框架。",
+      "explanation": "VLA-RL 由清华大学深圳国际研究生院与南洋理工大学的研究者 2025 年 5 月提出，代码开源。靠模仿演示训练的 VLA 只见过有限状态，一出分布就容易失败；VLA-RL 让预训练好的自回归 VLA 在环境里自己试错、在线改进。它把一次机器人操作轨迹看成多轮多模态对话，用 PPO（近端策略优化）做轨迹级强化学习；为缓解稀疏奖励，把一个视觉语言模型微调成机器人过程奖励模型，训练标签来自自动切分出的任务片段（以夹爪稳定时刻等为关键帧）。工程上还用了课程式选任务、GPU 负载均衡的并行环境、批量解码和价值网络预热等技巧。它是较早系统展示「VLA + 在线 RL」可行性的工作之一，作者还观察到增加测试时优化能继续提升效果。",
+      "example": "在 LIBERO 的 40 个操作任务上，VLA-RL 把 OpenVLA-7B 的平均成功率从 76.5% 提到 81.0%，与 π0-FAST 相当。",
+      "related": ["强化学习微调", "近端策略优化", "奖励模型", "OpenVLA", "LIBERO", "SimpleVLA-RL"],
+      "sources": [
+        {"title": "VLA-RL (arXiv 2505.18719)", "url": "https://arxiv.org/abs/2505.18719"},
+        {"title": "GuanxingLu/vlarl (GitHub)", "url": "https://github.com/GuanxingLu/vlarl"}
+      ],
+      "as_of": "2025-05"
+    },
+    {
+      "name_zh": "VLFM（视觉语言前沿地图）",
+      "name_en": "VLFM: Vision-Language Frontier Maps for Zero-Shot Semantic Navigation",
+      "abbr": "VLFM",
+      "aliases": ["Vision-Language Frontier Maps", "视觉语言前沿地图"],
+      "tier": 3,
+      "one_liner": "用视觉语言模型给探索边界打分，零样本在陌生环境里找指定物体。",
+      "explanation": "VLFM 由佐治亚理工学院和波士顿动力 AI 研究所的 Naoki Yokoyama、Dhruv Batra、Bernadette Bucher 等人提出，2023 年 12 月上线 arXiv，发表于 ICRA 2024 并获该会认知机器人方向最佳论文。任务是物体目标导航：在没去过的环境里找到某类物体。它用深度图建占据地图，找出已知与未知区域的交界（前沿）；同时用 BLIP-2 计算当前画面与「附近可能有目标」这类文字提示的相似度，写进一张语言价值地图，然后选价值最高的前沿去探索。看到目标后用 YOLOv7、Grounding DINO 检测，Mobile-SAM 抠出轮廓再走过去。整个流程无需针对导航训练，在 Gibson、HM3D、MP3D 上按 SPL（路径长度加权成功率）取得当时最佳，并直接部署到波士顿动力 Spot 上。",
+      "example": "在一栋没有预先建图的办公楼里，Spot 收到要找的物体类别后，优先走向视觉语言模型认为更可能出现该物体的方向，找到后停在旁边。",
+      "related": ["物体目标导航", "前沿探索", "零样本", "路径长度加权成功率", "占据栅格地图", "VLMaps"],
+      "sources": [
+        {"title": "VLFM: Vision-Language Frontier Maps for Zero-Shot Semantic Navigation (arXiv 2312.03275)", "url": "https://arxiv.org/abs/2312.03275"},
+        {"title": "VLFM 项目页", "url": "https://naoki.io/portfolio/vlfm"}
+      ],
+      "as_of": "2024-05"
+    },
+    {
+      "name_zh": "Voyager",
+      "name_en": "Voyager: An Open-Ended Embodied Agent with Large Language Models",
+      "abbr": "",
+      "aliases": ["MineDojo Voyager"],
+      "tier": 3,
+      "one_liner": "由 GPT-4 驱动、在 Minecraft 里自己定目标、写代码攒技能的终身学习智能体。",
+      "explanation": "Voyager 由英伟达、加州理工、UT Austin、斯坦福、亚利桑那州立大学的 Guanzhi Wang、Linxi Fan、Yuke Zhu、Anima Anandkumar 等人 2023 年 5 月发布，后被 TMLR 接收，代码开源。它是在 Minecraft 里运行的大模型智能体，不微调模型参数，只通过调用 GPT-4 工作。三个核心部件：自动课程，根据当前状态提出下一个探索目标；技能库，把验证成功的行为存成可执行代码并按描述检索、组合；迭代提示，把环境反馈、执行报错和自我检查结果喂回 GPT-4 修改代码。技能以代码形式积累，便于复用，也缓解了灾难性遗忘。它比此前方法多获得 3.3 倍不同物品、行进距离长 2.3 倍，解锁关键科技树节点最快快 15.3 倍，是「大模型 + 代码技能库」式具身智能体的代表。",
+      "example": "Voyager 学会「合成工作台」「制作木镐」后把代码存进技能库；换到一个新的 Minecraft 世界，它直接检索并组合这些技能去完成新任务。",
+      "related": ["具身智能体", "大语言模型", "Minecraft 环境（MineDojo / MineRL）", "代码即策略", "课程学习", "持续学习"],
+      "sources": [
+        {"title": "Voyager (arXiv 2305.16291)", "url": "https://arxiv.org/abs/2305.16291"},
+        {"title": "Voyager 项目主页", "url": "https://voyager.minedojo.org/"},
+        {"title": "Voyager (OpenReview, TMLR)", "url": "https://openreview.net/forum?id=ehfRiF0R3a"}
+      ],
+      "as_of": "2024-03"
+    },
+    {
+      "name_zh": "VRB（从人类视频学可供性）",
+      "name_en": "VRB: Affordances from Human Videos as a Versatile Representation for Robotics",
+      "abbr": "VRB",
+      "aliases": ["Vision-Robotics Bridge", "视觉-机器人桥"],
+      "tier": 3,
+      "one_liner": "从人类视频学「该抓哪、抓后往哪动」，把这种可供性直接交给机器人用。",
+      "explanation": "VRB（Vision-Robotics Bridge）是卡内基梅隆大学 Deepak Pathak 组的 Shikhar Bahl、Russell Mendonca 等人与 Meta AI 的工作，2023 年 4 月上线 arXiv，发表于 CVPR 2023。可供性指物体「能被怎么用」，例如抽屉把手可以拉。VRB 用 EPIC-KITCHENS、Ego4D 等大量人类第一人称视频训练一个视觉可供性模型：输入一张场景图，输出两样东西——接触点热图（人最可能在哪里下手）和接触后手腕的运动轨迹（下手后往哪个方向动）。这种表示不依赖某种机器人的身体结构，因此能插进多种机器人学习方式：离线模仿学习、探索、目标条件学习，以及作为强化学习的动作参数化。论文在 4 个真实环境、10 多个任务、2 种机器人平台上验证了效果，是用人类视频弥补机器人数据不足的早期代表。",
+      "example": "看到一张厨房照片，模型在柜门把手处标出高接触概率，并给出「抓住后向外拉」的轨迹；机器人从这里下手、沿轨迹移动，就能尝试打开柜门。",
+      "related": ["可供性", "人类视频数据", "第一人称视频", "EPIC-KITCHENS 数据集", "从观测中模仿学习", "可供性检测"],
+      "sources": [
+        {"title": "Affordances from Human Videos as a Versatile Representation for Robotics (arXiv 2304.08488)", "url": "https://arxiv.org/abs/2304.08488"},
+        {"title": "VRB 项目主页", "url": "https://robo-affordances.github.io/"}
+      ],
+      "as_of": "2023-06"
+    },
+    {
+      "name_zh": "Walk These Ways",
+      "name_en": "Walk These Ways: Tuning Robot Control for Generalization with Multiplicity of Behavior",
+      "abbr": "",
+      "aliases": ["行为多样性（MoB）控制器", "Multiplicity of Behavior"],
+      "tier": 3,
+      "one_liner": "一个策略学会多种步态，部署时可实时调参应对新地形的四足运控。",
+      "explanation": "Walk These Ways 是 MIT Improbable AI Lab 的 Gabriel Margolis 和 Pulkit Agrawal 提出的四足运动控制方法，2022 年 12 月上线 arXiv，为 CoRL 2022 口头报告论文。强化学习训练的行走策略在训练分布外失败时，通常只能回去改奖励、改环境再重训，很慢。作者提出「行为多样性」（MoB）：训练一个同时接收速度指令和一组行为参数的策略，参数包括触地时序（可切换小跑、跳跃、踱步等步态）、步频、机身高度、机身俯仰、站姿宽度和抬脚高度。不同参数组合用不同方式完成同一任务，泛化表现也不同，部署时人或脚本可以实时切换，而不用重训。策略在 Isaac Gym 中训练，部署在宇树 Go1 上，控制频率 50 Hz，代码开源，后来常被用作四足运控的起步代码。",
+      "example": "论文展示：在打滑地面冲刺时调高步频就能成功；上楼梯需要低步频加高抬脚；被人推时降低抬脚、加宽站姿会更稳。",
+      "related": ["腿足运动", "步态", "强化学习运控", "Isaac Gym", "宇树 Go1", "仿真到现实迁移"],
+      "sources": [
+        {"title": "Walk These Ways (arXiv 2212.03238)", "url": "https://arxiv.org/abs/2212.03238"},
+        {"title": "Walk These Ways 项目主页", "url": "https://gmargo11.github.io/walk-these-ways/"},
+        {"title": "Improbable-AI/walk-these-ways (GitHub)", "url": "https://github.com/Improbable-AI/walk-these-ways"}
+      ],
+      "as_of": "2022-12"
+    },
+    {
+      "name_zh": "自变量 WALL-A",
+      "name_en": "WALL-A (X Square Robot)",
+      "abbr": "",
+      "aliases": ["WALL-A 操作大模型", "WALL-A 系列"],
+      "tier": 3,
+      "one_liner": "自变量机器人自研的闭源具身操作大模型系列，端到端从感知直到动作控制。",
+      "explanation": "WALL-A 是深圳具身智能公司自变量机器人（X Square Robot）自研的操作大模型系列，不开源，官网介绍它实现「从感知、理解到动作控制的全流程智能统一」，即端到端的视觉-语言-动作模型路线。据智东西 2026 年 1 月报道，WALL-A 系列把 VLA 与世界模型结合，用世界模型预测环境状态的时空变化，再与视觉一起做推理和动作决策。2025 年 9 月开源的 WALL-OSS 论文把 WALL-A 的结构画成共享自注意力、不同模态各用一套前馈层的紧耦合设计，WALL-OSS 沿用了这一思路，可看作 WALL-A 路线的开源版本。2026 年 4 月公司又发布世界统一模型 WALL-B，此后对外展示（家务、物流分拣等）多由 WALL-B 驱动。WALL-A 的首发时间和参数规模本条未能从公开资料核实。",
+      "example": "据智东西报道，自变量「量子一号」基于其模型完成了跨室外和室内的移动操作演示：在户外拆解、回收外卖纸盒，再自己穿过楼门、乘电梯送到室内。",
+      "related": ["自变量机器人", "自变量 WALL-OSS", "视觉-语言-动作模型", "世界模型", "具身大模型", "混合专家模型"],
+      "sources": [
+        {"title": "自变量机器人官网", "url": "https://www.x2robot.com/"},
+        {"title": "字节、阿里、美团首次在具身智能「同框」，十亿级融资背后，自变量到底凭什么？（智东西，2026-01-12）", "url": "https://zhidx.com/p/528318.html"},
+        {"title": "Igniting VLMs toward the Embodied Space (WALL-OSS, arXiv 2509.11766)", "url": "https://arxiv.org/abs/2509.11766"}
+      ],
+      "as_of": "2026-09"
+    }
+  ]
+}

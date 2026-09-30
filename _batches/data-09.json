@@ -1,0 +1,196 @@
+{"category": "data", "batch": 9, "terms": [
+{
+  "name_zh": "Ego-Exo4D 数据集",
+  "name_en": "Ego-Exo4D",
+  "abbr": "",
+  "aliases": [],
+  "tier": 3,
+  "one_liner": "Meta 牵头的第一人称与第三视角同步拍摄的大规模技能活动视频数据集。",
+  "explanation": "Meta FAIR 牵头、联合全球十多所高校于 2023 年发布的多视角视频数据集，约 1286 小时，740 名参与者，分布在 13 座城市。录制时参与者戴 Aria 眼镜拍第一人称画面，周围再架 4–5 台 GoPro 拍第三视角，内容是做饭、修自行车、跳舞、攀岩等 8 类技能活动，并附视线、IMU（惯性测量单元）、3D 点云、相机位姿和专家讲解文字。它用来研究同一个动作在自己眼里和旁人眼里分别是什么样。对具身智能来说，机器人头部和腕部相机看到的接近第一人称画面，而网上的教学视频多是第三视角，这套数据可用来学两种视角的对应，以及手部和人体 3D 姿态估计。",
+  "example": "同一段「修自行车」被 Aria 眼镜和 4 台 GoPro 同时拍下，研究者可以训练模型把第三视角画面转换成第一人称视角（论文中的跨视角转换基准）。",
+  "related": ["第一人称视频", "第三视角视频", "Ego4D 数据集", "Project Aria 眼镜", "人类视频数据", "手部姿态估计"],
+  "sources": [
+    {"title": "Ego-Exo4D: Understanding Skilled Human Activity from First- and Third-Person Perspectives (arXiv)", "url": "https://arxiv.org/abs/2311.18259"},
+    {"title": "Ego-Exo4D 官网", "url": "https://ego-exo4d-data.org/"}
+  ],
+  "as_of": "2024-09"
+},
+{
+  "name_zh": "Egocentric-10K 数据集",
+  "name_en": "Egocentric-10K",
+  "abbr": "",
+  "aliases": [],
+  "tier": 3,
+  "one_liner": "Build AI 开源的万小时工厂工人第一人称视频数据集。",
+  "explanation": "美国创业公司 Build AI 于 2025 年在 Hugging Face 开源的第一人称视频数据集，Apache 2.0 许可。工人戴单目头戴相机在 85 个真实工厂里干活时录制，共约 1 万小时、19.29 万段视频、10.8 亿帧，1080p、30 帧/秒，并附鱼眼相机内参。它强调画面里手部可见、正在操作的镜头占比高，定位是给机器人学习用的数据，而不是做一般的视频理解。数据不带动作标签，通常用于人类视频预训练或潜在动作预训练：先从大量人手操作中学视觉表征和动作先验，再用少量机器人数据微调。据其官网，此后还发布了 Egocentric-100K、Egocentric-1M 等更大版本。",
+  "example": "数据集中一段典型视频：工人戴头戴相机在工位上把零件装进夹具，双手全程在画面内，适合拿来学手部操作。",
+  "related": ["第一人称视频", "人类视频数据", "无动作标签视频", "人类视频预训练", "潜在动作预训练", "野外数据"],
+  "sources": [
+    {"title": "Egocentric-10K (Hugging Face dataset card)", "url": "https://huggingface.co/datasets/builddotai/Egocentric-10K"},
+    {"title": "Build AI 官网", "url": "https://www.build.ai/"}
+  ],
+  "as_of": "2026-03"
+},
+{
+  "name_zh": "EgoMimic",
+  "name_en": "EgoMimic: Scaling Imitation Learning via Egocentric Video",
+  "abbr": "",
+  "aliases": [],
+  "tier": 3,
+  "one_liner": "用 Aria 眼镜采人手数据、与机器人数据联合训练同一个策略的框架。",
+  "explanation": "佐治亚理工 Danfei Xu 团队 2024 年提出的模仿学习框架。人戴 Project Aria 眼镜做任务，眼镜录下第一人称视频和 3D 手部轨迹；另配一台特意设计得接近人手臂运动学的低成本双臂机器人。训练时把人手轨迹和机器人动作做统一的归一化，对画面中的人手和机械臂加遮罩以减小外观差异，再用同一个策略网络协同训练。实验中它在长程、单臂和双臂任务上优于只用机器人数据的模仿学习方法，还能泛化到新场景，并发现多加 1 小时人手数据比多加 1 小时机器人数据更有用。它是用便宜的人类第一人称数据替代部分遥操作数据这条路线的代表，同一团队后来牵头了 EgoVerse 数据平台。",
+  "example": "物体放进碗任务：用 2 小时机器人数据加 1 小时人手数据训练的 EgoMimic，明显优于用 3 小时机器人数据训练的 ACT。",
+  "related": ["第一人称视频", "Project Aria 眼镜", "协同训练", "人类视频数据", "本体差异", "EgoVerse 数据集"],
+  "sources": [
+    {"title": "EgoMimic: Scaling Imitation Learning via Egocentric Video (arXiv)", "url": "https://arxiv.org/abs/2410.24221"},
+    {"title": "EgoMimic 项目主页", "url": "https://egomimic.github.io/"}
+  ],
+  "as_of": "2024-10"
+},
+{
+  "name_zh": "EgoVerse 数据集",
+  "name_en": "EgoVerse",
+  "abbr": "",
+  "aliases": ["EgoVerse: An Egocentric Human Dataset for Robot Learning from Around the World"],
+  "tier": 3,
+  "one_liner": "高校和企业共建、持续扩充的机器人学习用第一人称人类演示数据平台。",
+  "explanation": "由佐治亚理工 Danfei Xu 团队牵头，联合斯坦福、UCSD、ETH 苏黎世等高校和 Meta、Scale AI、光轮智能等企业共建的开放数据集与平台，2026 年 4 月发布论文。论文版本含 1362 小时、约 8 万条人类演示，覆盖 1965 个任务、240 个场景、2087 名演示者；官网称它是持续增长的数据集，当前版本约 4000 小时。数据统一格式，附相机位姿、头部 3D 跟踪和稠密语言标注。论文在多个实验室、多种机器人上用统一流程做人到机器人的迁移实验，结论是人类数据越多策略通常越好，但前提是人类数据要和机器人要学的任务对得上。",
+  "example": "论文中的「把杯子放到碟子上」双臂任务：多个实验室在各自的机器人上，用同一流程比较加入不同数量人类数据后的成功率。",
+  "related": ["EgoMimic", "第一人称视频", "人类视频数据", "跨本体数据", "数据缩放律（模仿学习）", "众包采集"],
+  "sources": [
+    {"title": "EgoVerse: An Egocentric Human Dataset for Robot Learning from Around the World (arXiv)", "url": "https://arxiv.org/abs/2604.07607"},
+    {"title": "EgoVerse 官网", "url": "https://egoverse.ai/"}
+  ],
+  "as_of": "2026-09"
+},
+{
+  "name_zh": "EPIC-KITCHENS 数据集",
+  "name_en": "EPIC-KITCHENS",
+  "abbr": "",
+  "aliases": ["EPIC-KITCHENS-100", "EPIC-KITCHENS-55"],
+  "tier": 3,
+  "one_liner": "头戴相机拍摄真实厨房日常操作的经典第一人称视频数据集。",
+  "explanation": "英国布里斯托大学牵头的第一人称视频数据集，首版 EPIC-KITCHENS-55 于 2018 年发布，含 55 小时、32 名参与者。2020 年扩展为 EPIC-KITCHENS-100：参与者戴头戴相机在自家厨房做饭、洗碗，不按脚本，覆盖 45 个厨房，共 100 小时、2000 万帧、约 9 万个动作片段。标注来自参与者事后口述自己在做什么，再整理成「动词 + 名词」形式的动作标签。配套基准有动作识别、检测、预判、跨模态检索和无监督域自适应。之后又陆续补充了手-物分割（VISOR）、声音事件（EPIC-Sounds）、3D 相机信息（EPIC-Fields）等标注。机器人领域常拿它研究手-物交互、可供性和视觉表征预训练。",
+  "example": "一个动作片段标为「take plate」：视频里参与者从架子上拿起盘子，标签由动词 take 和名词 plate 组成。",
+  "related": ["第一人称视频", "Ego4D 数据集", "人类视频数据", "手物交互", "可供性检测", "数据标注"],
+  "sources": [
+    {"title": "Rescaling Egocentric Vision: Collection, Pipeline and Challenges for EPIC-KITCHENS-100 (arXiv)", "url": "https://arxiv.org/abs/2006.13256"},
+    {"title": "The EPIC-KITCHENS Dataset: Collection, Challenges and Baselines (arXiv)", "url": "https://arxiv.org/abs/2005.00343"},
+    {"title": "EPIC-KITCHENS 官网", "url": "https://epic-kitchens.github.io/"}
+  ],
+  "as_of": "2025-06"
+},
+{
+  "name_zh": "第三视角视频",
+  "name_en": "Exocentric Video",
+  "abbr": "Exo",
+  "aliases": ["第三人称视频", "外视角视频", "Third-person Video"],
+  "tier": 3,
+  "one_liner": "相机放在执行者身体之外、从旁观角度拍摄人或机器人的视频。",
+  "explanation": "与第一人称视频（相机戴在执行者头上或胸前）相对，第三视角视频的相机在执行者身体之外，比如三脚架上的相机、监控摄像头或旁人手持拍摄。网上的教学视频、体育转播大多属于这一类，数量远多于第一人称视频。它能看清全身姿态以及人和环境的整体关系，但手部细节常被身体或物体挡住，视角也和机器人自身相机看到的不同。具身智能里常用它做人体动作估计，再重定向给人形机器人模仿，或从中学任务流程；机器人数据采集中固定在桌边的第三视角相机拍的也是这类画面。Ego-Exo4D 等数据集同时录两种视角，专门研究它们之间的对应。",
+  "example": "用 GVHMR 从一段第三视角的单目视频中估计人体动作，再经 GMR 重定向成人形机器人的关节轨迹。",
+  "related": ["第一人称视频", "第三视角相机", "Ego-Exo4D 数据集", "互联网视频数据", "人体姿态估计", "动作重定向"],
+  "sources": [
+    {"title": "Ego-Exo4D: Understanding Skilled Human Activity from First- and Third-Person Perspectives (arXiv)", "url": "https://arxiv.org/abs/2311.18259"},
+    {"title": "Ego-Exo4D 官网", "url": "https://ego-exo4d-data.org/"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "FastUMI",
+  "name_en": "FastUMI: A Scalable and Hardware-Independent Universal Manipulation Interface",
+  "abbr": "",
+  "aliases": ["FastUMI-100K"],
+  "tier": 3,
+  "one_liner": "上海 AI 实验室等改进 UMI 的手持夹爪采集系统及配套数据集。",
+  "explanation": "2024 年 9 月由上海人工智能实验室牵头，联合上海交大、复旦、港大等提出，是对 UMI（通用操作接口：人手持一个带相机的夹爪做演示，数据再迁移给机器人）的改进。原版 UMI 靠 GoPro 画面跑视觉惯性里程计来算夹爪位姿，流程较复杂；FastUMI 改用现成的 RealSense T265 跟踪模块直接输出 200Hz 位姿，GoPro 鱼眼相机只负责拍画面，并用标准化的可换指尖和相机安装件，让同一套设备适配不同机械臂和夹爪。同时开源了 22 个日常任务、1 万多条轨迹的数据；2025 年 10 月又发布了 54 个家务任务、10 万多条轨迹的 FastUMI-100K。",
+  "example": "采集者手持 FastUMI 在真实家庭里做一次抓取放置，T265 记下夹爪轨迹，GoPro 录下画面，这条演示可用于训练装了同款指尖的机械臂。",
+  "related": ["通用操作接口", "手持夹爪采集", "无本体采集", "松灵 Pika 采集套件", "演示数据", "视觉惯性里程计"],
+  "sources": [
+    {"title": "FastUMI: A Scalable and Hardware-Independent Universal Manipulation Interface with Dataset (arXiv)", "url": "https://arxiv.org/abs/2409.19499"},
+    {"title": "FastUMI-100K: Advancing Data-driven Robotic Manipulation with a Large-scale UMI-style Dataset (arXiv)", "url": "https://arxiv.org/abs/2510.08022"}
+  ],
+  "as_of": "2025-10"
+},
+{
+  "name_zh": "脚滑 / 漂浮 / 穿地（动作数据伪影）",
+  "name_en": "Foot Skating / Floating / Penetration (Motion Data Artifacts)",
+  "abbr": "",
+  "aliases": ["脚滑步", "足部滑动", "Foot Sliding", "地面穿透"],
+  "tier": 3,
+  "one_liner": "人体动作重定向到机器人后常见的三种违反物理的脚部错误。",
+  "explanation": "把人体动捕或视频估计出的动作重定向（换算成机器人关节轨迹）时最常见的三类物理伪影：脚滑是脚本应踩稳地面，却在水平方向滑动；漂浮是该着地时脚悬在地面上方；穿地是脚陷到地面以下。它们多来自人和机器人身高、腿长比例不同带来的缩放误差，以及视频姿态估计本身的误差。这些问题肉眼看不明显，但在物理仿真里训练运动跟踪策略时，机器人复现不了这些动作，会导致平衡学不好、跟踪误差变大。常见处理是在重定向时加约束：接触帧强制脚高贴合地面、压低接触时的脚部水平速度，或按阈值筛掉问题片段，GMR、PHUMA 等工作都专门处理了这类伪影。",
+  "example": "PHUMA 用三项指标衡量：接触时脚离地 1 厘米以内算不漂浮、陷入 1 厘米以内算不穿地、水平速度低于 10 厘米/秒算不脚滑。",
+  "related": ["动作重定向", "GMR 通用动作重定向", "PHUMA 人形动作数据集", "运动跟踪", "动作捕捉", "穿模"],
+  "sources": [
+    {"title": "PHUMA: Physically Reliable Humanoid Locomotion Dataset (arXiv)", "url": "https://arxiv.org/abs/2510.26236"},
+    {"title": "Retargeting Matters: General Motion Retargeting for Humanoid Motion Tracking (arXiv)", "url": "https://arxiv.org/abs/2510.02252"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "傅利叶 ActionNet 数据集",
+  "name_en": "Fourier ActionNet",
+  "abbr": "",
+  "aliases": ["ActionNet"],
+  "tier": 3,
+  "one_liner": "傅利叶开源的人形机器人加灵巧手遥操作数据集，约 3 万条轨迹。",
+  "explanation": "人形机器人公司傅利叶于 2025 年开源的真机数据集。数据由操作员戴 Apple Vision Pro 做 VR 遥操作，驱动傅利叶 GR1-T1、GR1-T2 和 GR2 人形机器人采集，配 6 自由度和 12 自由度两种灵巧手，共 3 万多条轨迹、约 140 小时，以桌面双手操作为主，如抓取放置、倒水、开关柜门、精确摆放。每条数据的语言指令先由 Qwen2.5-VL-7B 自动生成，再全部人工核对。数据采用 LeRobot 数据集格式，可直接用来训练 ACT、扩散策略、iDP3 等方法；数据集本身为非商用许可，训练代码为 Apache 2.0。",
+  "example": "一条倒水轨迹：GR2 用灵巧手拿起容器把水倒进杯子，同时记录第一人称相机画面、关节状态和一句语言指令。",
+  "related": ["傅利叶", "傅利叶 GR-2", "VR 遥操作", "灵巧手", "LeRobot 数据集格式", "真机数据"],
+  "sources": [
+    {"title": "Fourier ActionNet 官网", "url": "https://action-net.org/"}
+  ],
+  "as_of": "2025"
+},
+{
+  "name_zh": "星海图开放世界数据集",
+  "name_en": "Galaxea Open-World Dataset",
+  "abbr": "",
+  "aliases": ["Galaxea Open-World 数据集"],
+  "tier": 3,
+  "one_liner": "星海图用同一款移动双臂机器人在真实场所采集的约 500 小时数据集。",
+  "explanation": "具身智能公司星海图（Galaxea）2025 年 8 月随 G0 模型论文开源的真机数据集。全部数据用自家 R1 Lite 移动双臂机器人（23 个自由度）采集，地点是 11 处真实的住宅、餐饮、零售和办公场所，共约 10 万条轨迹、150 类任务、50 个场景、1600 多种物体、58 种操作技能，约 500 小时。每条数据切分成原子子任务，标注员从标准化描述里选词，附中英文子任务语言标注。数据为 LeRobot 格式，含头部和双腕 4 路相机、关节状态和 IMU，可在 Hugging Face 和魔搭社区下载。它的特点是单一本体、真实环境，论文发现用它做单本体预训练对 G0 模型效果很关键。",
+  "example": "任务「整理水果」：R1 Lite 在真实环境中把水果摆好，整条轨迹被切成若干子任务，每段附中英文描述。",
+  "related": ["星海图", "星海图 R1", "星海图 G0", "真机数据", "子任务切分", "LeRobot 数据集格式"],
+  "sources": [
+    {"title": "Galaxea Open-World Dataset and G0 Dual-System VLA Model (arXiv)", "url": "https://arxiv.org/abs/2509.00576"},
+    {"title": "Galaxea Open-World Dataset (Hugging Face)", "url": "https://huggingface.co/datasets/OpenGalaxea/Galaxea-Open-World-Dataset"},
+    {"title": "GalaxeaVLA 项目主页", "url": "https://opengalaxea.github.io/GalaxeaVLA/"}
+  ],
+  "as_of": "2025-08"
+},
+{
+  "name_zh": "GELLO",
+  "name_en": "GELLO: A General, Low-Cost, and Intuitive Teleoperation Framework for Robot Manipulators",
+  "abbr": "GELLO",
+  "aliases": ["GELLO 遥操作臂"],
+  "tier": 3,
+  "one_liner": "伯克利开源的低成本主从臂遥操作装置，用缩小版复刻臂操控真机。",
+  "explanation": "加州大学伯克利 Pieter Abbeel 团队 2023 年提出的遥操作框架。做法是为目标机械臂 3D 打印一个关节结构相同、尺寸缩小的复刻臂，每个关节装一个现成舵机读角度；操作员摆动复刻臂，真机按关节角逐一跟随，属于主从臂遥操作。两者运动学一致，关节角可以直接映射，不像 VR 手柄那样要把手的位姿换算成机械臂姿态。零件成本低于 300 美元，软硬件全部开源。论文做了 Franka、UR5、xArm 三个版本，用户实验显示它比 VR 手柄和 3D 鼠标采集演示更稳、更快，也能做双臂和接触丰富的任务。社区后来又贡献了 FR3、YAM 等机型的设计，常用来采集模仿学习数据。",
+  "example": "操作员握住桌边的 GELLO 复刻臂做一遍抓取放置，Franka 同步跟着做，相机画面和关节角被记录成一条训练演示。",
+  "related": ["主从臂遥操作", "遥操作", "ALOHA 双臂平台", "演示数据", "3D 鼠标遥操作", "VR 遥操作"],
+  "sources": [
+    {"title": "GELLO: A General, Low-Cost, and Intuitive Teleoperation Framework for Robot Manipulators (arXiv)", "url": "https://arxiv.org/abs/2309.13037"},
+    {"title": "GELLO 项目主页", "url": "https://wuphilipp.github.io/gello_site/"},
+    {"title": "gello_mechanical (GitHub)", "url": "https://github.com/wuphilipp/gello_mechanical"}
+  ],
+  "as_of": "2024-07"
+},
+{
+  "name_zh": "GMR 通用动作重定向",
+  "name_en": "General Motion Retargeting",
+  "abbr": "GMR",
+  "aliases": ["Retargeting Matters: General Motion Retargeting for Humanoid Motion Tracking"],
+  "tier": 3,
+  "one_liner": "斯坦福开源的把人体动作实时映射到多款人形机器人的重定向工具。",
+  "explanation": "斯坦福大学吴佳俊、C. Karen Liu 团队（Araújo、Yanjie Ze 等）2025 年开源的动作重定向方法与代码库。动作重定向是把人的动作换算成机器人关节角，难点在于两者身材比例和关节结构不同。GMR 先指定人体与机器人对应的身体部位、对齐两者的静止姿态、按部位分别缩放，再用两阶段逆运动学优化求关节角，以减少脚滑、自穿透和关节角突变。输入支持 AMASS 等 SMPL-X 数据、LAFAN1 等 BVH 文件、OptiTrack FBX、Xsens 实时流，也能经 GVHMR 从单目视频提取。README 列出支持 18 款人形机器人，普通 CPU 上可达 60–70 帧/秒。论文显示它比 PHC、ProtoMotions 等开源方案更利于训练跟踪策略，也是 TWIST 遥操作系统的重定向模块。",
+  "example": "把 LAFAN1 里一段人类跑跳动捕数据用 GMR 重定向到宇树 G1，再在仿真中训练运动跟踪策略去模仿它。",
+  "related": ["动作重定向", "脚滑 / 漂浮 / 穿地（动作数据伪影）", "TWIST", "LAFAN1 动捕数据集", "AMASS 人体动捕数据集", "运动跟踪"],
+  "sources": [
+    {"title": "Retargeting Matters: General Motion Retargeting for Humanoid Motion Tracking (arXiv)", "url": "https://arxiv.org/abs/2510.02252"},
+    {"title": "GMR (GitHub)", "url": "https://github.com/YanjieZe/GMR"}
+  ],
+  "as_of": "2026-09"
+}
+]}

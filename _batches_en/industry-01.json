@@ -1,0 +1,226 @@
+{
+ "batch": "industry-01",
+ "terms": [
+  {
+   "key": "industry-01#0",
+   "name_en": "arXiv Preprint",
+   "aliases": [
+    "arXiv",
+    "Preprint",
+    "Posting to arXiv"
+   ],
+   "one_liner": "A paper version posted publicly before formal publication; most AI-field papers post to arXiv first.",
+   "explanation": "arXiv is a free preprint platform created by physicist Paul Ginsparg in 1991, hosted by Cornell University for most of its history, and since July 2026 an independent nonprofit. Authors upload a paper and it goes public after light screening, without peer review. AI and embodied-AI research moves fast, and most new papers are posted to arXiv around the time they are submitted, without waiting for formal acceptance, so “posting to arXiv” is essentially how a paper first appears. Each paper gets an ID number whose first four digits give the year and month it first went public. When reading one, keep in mind that a preprint hasn't been peer-reviewed, so its conclusions and experiments may still change across versions (v1, v2, and so on); it's worth checking whether a formally published version exists before citing it.",
+   "example": "The π0 paper is arXiv:2410.24164 — the first four digits, 2410, mean it went public in October 2024.",
+   "related": [
+    "Top-tier Conferences & Journals (CCF-A Venues)",
+    "Conference on Robot Learning",
+    "IEEE International Conference on Robotics and Automation",
+    "State of the Art",
+    "π0 (pi-zero)"
+   ]
+  },
+  {
+   "key": "industry-01#1",
+   "name_en": "ChatGPT Moment for Robotics",
+   "aliases": [
+    "GPT Moment"
+   ],
+   "one_liner": "Industry shorthand for the hoped-for turning point when general-purpose robot ability suddenly becomes usable and visible to the public.",
+   "explanation": "The phrase borrows from how quickly large language models broke into the mainstream after ChatGPT launched in late 2022, and refers to a hoped-for equivalent turning point for robots: a single general-purpose model that lets a robot handle many tasks in unfamiliar environments, at which point ordinary people first feel that robots “actually work.” Media and researchers were already discussing this in 2024, and after NVIDIA CEO Jensen Huang said at CES 2025, while unveiling Cosmos, that “the ChatGPT moment for robotics is coming,” the phrase became a fixture at product launches and in funding news. It isn't a technical metric and has no agreed-upon threshold, so when you hear it, it's worth asking: across how many tasks, how many new environments, and at what success rate does the claim actually hold. Similar phrases include the “iPhone moment” and the “ImageNet moment.”",
+   "example": "When NVIDIA unveiled its Cosmos world foundation model at CES 2025, Jensen Huang said the ChatGPT moment for robotics was coming.",
+   "related": [
+    "iPhone Moment",
+    "ImageNet Moment",
+    "“DeepSeek Moment” for Embodied AI",
+    "Embodied AI Bubble",
+    "General-purpose Robot",
+    "NVIDIA"
+   ]
+  },
+  {
+   "key": "industry-01#2",
+   "name_en": "Demo (Demonstration Video)",
+   "aliases": [
+    "Demo"
+   ],
+   "one_liner": "A video companies or teams use to show off a robot's abilities, usually a selected highlight clip.",
+   "explanation": "Nearly every embodied-AI company or team accompanies a model or product launch with a video of a robot folding laundry, cooking, or moving boxes — known in the field simply as a demo. It's the most direct material a newcomer has for gauging a company's progress, but it carries limited information: how many attempts it took to succeed, whether it was teleoperated, whether it was sped up, and whether the scene was staged in advance often aren't visible in the footage. When watching a demo, first look for on-screen labels such as “1x” or “autonomous,” then check the paper or technical report for success rates and test conditions. Related jargon includes teleoperated demo, edited demo, cherry-picking, and one-take video.",
+   "example": "At Tesla's We, Robot event in October 2024, Optimus chatted and interacted with guests on stage; it later came out that these interactions were mostly driven by a person operating it remotely, and Tesla was criticized for not disclosing that at the event.",
+   "related": [
+    "Teleoperated Demo",
+    "Fully Autonomous",
+    "Playback Speed Label (1x vs. Sped-up)",
+    "Edited Demo",
+    "Cherry-picking",
+    "One-Take (Uncut) Video"
+   ]
+  },
+  {
+   "key": "industry-01#3",
+   "name_en": "Fully Autonomous",
+   "aliases": [
+    "Autonomous Label",
+    "Non-teleoperated"
+   ],
+   "one_liner": "The robot carries out a task under its own model's control the whole way through, with no person operating it from behind the scenes.",
+   "explanation": "This term is the counterpart to teleoperation, in which a person wearing a VR headset or holding a leader arm controls the robot in real time; “fully autonomous” means the policy model — a network that maps observations to actions — decides every step on its own. When releasing a demo, companies often label the footage “Autonomous” to signal that no one is operating it, sometimes alongside a “1x speed” label to show it hasn't been sped up. Note that “fully autonomous” only tells you no one was remote-controlling it during execution — it doesn't mean the results weren't cherry-picked, that the scene wasn't staged in advance, or that the task was something the model had never seen before; it's also worth checking whether the whole run was autonomous or whether a person stepped in partway through (see intervention rate).",
+   "example": "When Figure released Helix 02 in January 2026, it noted that the demo videos on the page were “all fully autonomous, not teleoperated,” and said the robot loaded and unloaded a dishwasher throughout an entire kitchen in a 4-minute task with no resets and no human intervention.",
+   "related": [
+    "Teleoperated Demo",
+    "Demo (Demonstration Video)",
+    "Playback Speed Label (1x vs. Sped-up)",
+    "Remote Teleoperation Takeover (Human Fallback)",
+    "Intervention Rate",
+    "Levels of Autonomy"
+   ]
+  },
+  {
+   "key": "industry-01#4",
+   "name_en": "Mass Production",
+   "aliases": [
+    "Thousand-Unit Mass Production",
+    "Scaled Mass Production"
+   ],
+   "one_liner": "Moving a product from a handful of hand-built prototypes to large-batch, consistent manufacturing on a fixed process.",
+   "explanation": "This means a product's design is finalized and it is then built in large batches on a standardized line with a stable supply chain, as opposed to hand-assembled prototypes or small runs of a few dozen units. Humanoid-robot companies often publicize milestones like “reaching thousand-unit mass production” or “year one of mass production.” Genuine mass production requires solving for consistency and yield — every unit performing the same way, with few defects — and BOM cost, the total cost of a unit's materials, plus a steady delivery cadence, not just proving the product can be built at all. When evaluating a claim, look at actual shipment volume and who it went to, rather than planned capacity or framework orders; a company's own use of the word “mass production” sometimes just means small-batch deliveries have begun.",
+   "example": "In March 2025, Figure announced its self-built humanoid-robot factory, BotQ, saying its first-generation line had a maximum annual capacity of 12,000 units — that's a capacity ceiling, not the same as actual units shipped.",
+   "related": [
+    "Year One of Mass Production",
+    "Bill of Materials Cost",
+    "Shipment Volume",
+    "Yield Rate / Manufacturing Consistency",
+    "Start of Production (SOP)",
+    "BotQ (Figure AI manufacturing facility)"
+   ]
+  },
+  {
+   "key": "industry-01#5",
+   "name_en": "Real-world Deployment",
+   "aliases": [
+    "Application Scenario",
+    "Scenario Deployment"
+   ],
+   "one_liner": "A robot moves into an actual factory, warehouse, store, or similar setting and does real work that creates value.",
+   "explanation": "“Deployment” means a technology moves out of the lab and into real business operations; “scenario” means the specific use case, such as moving totes at a car factory, picking in a warehouse, or giving tours in a mall. Embodied-AI companies' fundraising and marketing often center on which scenarios they've deployed into, because being able to work reliably in a real environment over time, with a customer willing to pay for it, is what actually demonstrates the technology works. Deployment usually passes through a few stages — proof of concept, a small-scale demonstration that something is feasible, pilot or small-batch delivery, and scaled deployment — with the hard parts being reliability, cycle time (how fast one unit of work gets done), and return on investment. When reading news about this, it's worth distinguishing a showcase-style in-factory pilot from paid, ongoing operation.",
+   "example": "Agility Robotics' Digit humanoid robot is reportedly deployed in logistics company GXO's warehouses under a robots-as-a-service (RaaS) model, where the customer pays to use it by subscription rather than buying it outright.",
+   "related": [
+    "Proof of Concept",
+    "Pilot / Small-Batch Delivery",
+    "Scaled Deployment",
+    "In-Factory Training / Pilot Deployment",
+    "Closed Commercial Loop",
+    "Killer App (Killer Use Case)"
+   ]
+  },
+  {
+   "key": "industry-01#6",
+   "name_en": "Robot “Brain” vs. “Cerebellum”",
+   "aliases": [
+    "Brain-Cerebellum Split",
+    "Embodied Brain and Motion Cerebellum"
+   ],
+   "one_liner": "Industry shorthand splitting robot software into two layers: a “brain” for understanding and planning, a “cerebellum” for motion control.",
+   "explanation": "The split borrows from how the human brain divides labor: the “brain” refers to the model that understands a scene, parses a spoken instruction, and breaks a task into steps — usually built on a vision-language model and running relatively slowly — while the “cerebellum” refers to the control layer that turns a goal into joint motions, keeps the robot balanced, and executes fine movement, which needs to run at high frequency in real time and can be either classical control or a policy trained with reinforcement learning. This mirrors the academic ideas of a dual-system architecture (fast and slow) and hierarchical architectures. Chinese companies often organize their work along this split, with some focused purely on brain models and others on the body and its motion control. It's an industry shorthand with fuzzy boundaries: an end-to-end VLA model tries to handle both layers in one network, but the underlying stack usually still keeps a high-frequency joint controller or balance controller.",
+   "example": "Figure's Helix splits into two parts: a slower System 2 that understands the scene and language, and a faster System 1 that outputs continuous upper-body motion at 200 Hz.",
+   "related": [
+    "Brain–Cerebellum Architecture",
+    "Dual-System Architecture (System 1 / System 2)",
+    "Hierarchical Architecture",
+    "Vision-Language-Action Model",
+    "Motion Control / Locomotion Control",
+    "Robot-Brain (Model-only) Company"
+   ]
+  },
+  {
+   "key": "industry-01#7",
+   "name_en": "Robot Body Maker",
+   "aliases": [
+    "Robot OEM",
+    "Body Maker"
+   ],
+   "one_liner": "A company that designs and manufactures a robot's complete physical hardware, such as a humanoid or quadruped maker.",
+   "explanation": "“Embodiment” refers to a robot's physical body — its mechanical structure, joint motors, sensors, and onboard compute — and a “body maker” is a company that builds and sells the complete robot, often called a robot OEM in English (note that in Chinese, “OEM” usually implies contract manufacturing under someone else's brand, a different meaning). In the industry's supply chain, body makers sit in the middle, with upstream suppliers of reducers, motors, sensors, and other components below them and scenario owners and system integrators above. Unitree, UBTech, AgiBot, and Figure are all body makers in this sense. The contrasting category is a “brain company,” which builds only models and no hardware; some companies do both hardware and software in-house. When reading industry news or picking a research platform, it often helps to first work out whether a company is a body maker or a brain company.",
+   "example": "Unitree Robotics sells complete robots such as the Go2 quadruped and the G1 humanoid, making it a classic robot body maker.",
+   "related": [
+    "Robot Embodiment",
+    "Robot-Brain (Model-only) Company",
+    "Hardware-Software Integration",
+    "Upstream / Midstream / Downstream of the Industry Chain",
+    "Unitree Robotics",
+    "Core Components"
+   ]
+  },
+  {
+   "key": "industry-01#8",
+   "name_en": "Teleoperated Demo",
+   "aliases": [
+    "Wizard-of-Oz Demo"
+   ],
+   "one_liner": "A video in which the robot is actually being controlled in real time by a person offstage, not making decisions on its own.",
+   "explanation": "Teleoperation is when a person controls a robot in real time using a VR headset, a leader-follower arm setup, a motion-capture suit, or similar equipment. It's a legitimate technique in its own right, and the main way training data gets collected — the problem is presenting teleoperated footage as a demonstration of autonomous ability without saying so, which the field calls a “puppet-show demo,” borrowing the English phrase Wizard-of-Oz, meaning someone pulling the strings behind the curtain. Teleoperation can prove the hardware is capable, but it doesn't prove the model has learned anything. To spot it, check whether the footage is labeled teleoperated or autonomous, whether the robot's responses look as instant and varied as a human's, and whether the publisher has given a success rate for autonomous operation.",
+   "example": "When Stanford's Mobile ALOHA launched in January 2024, its project page split “autonomous skills” and “teleoperated” videos into separate sections; the household-chore videos that went viral afterward were later described by the authors on social media as teleoperated recordings.",
+   "related": [
+    "Teleoperation",
+    "Fully Autonomous",
+    "Demo (Demonstration Video)",
+    "Remote Teleoperation Takeover (Human Fallback)",
+    "Mobile ALOHA",
+    "Pre-programmed (Choreographed) Motion"
+   ]
+  },
+  {
+   "key": "industry-01#9",
+   "name_en": "Top-tier Conferences & Journals (CCF-A Venues)",
+   "aliases": [
+    "Top-tier Venues",
+    "CCF-A"
+   ],
+   "one_liner": "The conferences and journals widely seen as most influential in a field, commonly benchmarked in China against the CCF's A-tier list.",
+   "explanation": "CCF is the China Computer Federation, which publishes a “Recommended List of International Academic Conferences and Journals” that sorts computer-science venues in each subfield into tiers A, B, and C; the A tier is what Chinese universities commonly mean by “top-tier,” and the list is revised every few years, with the seventh edition published in March 2026. Embodied-AI-relevant CCF-A venues include conferences such as CVPR, ICCV, NeurIPS, ICML, and ICLR, and journals such as TPAMI and IJCV. Robotics-specific venues such as ICRA, IROS, CoRL, and RSS are considered top venues within robotics circles, but none of them are CCF-A: ICRA is tier B, IROS is tier C, and CoRL and RSS aren't listed at all, so “top venue” and “CCF-A” aren't the same thing. Computer science overall leans on conferences rather than journals, and papers are commonly posted to arXiv around the time they're submitted.",
+   "example": "ECCV is tier B in the CCF list, but within the vision community it's considered one of the “big three” alongside CVPR and ICCV.",
+   "related": [
+    "arXiv Preprint",
+    "Conference on Computer Vision and Pattern Recognition / International Conference on Computer Vision / European Conference on Computer Vision",
+    "NeurIPS / ICML / ICLR",
+    "IEEE International Conference on Robotics and Automation",
+    "Conference on Robot Learning",
+    "Robotics: Science and Systems"
+   ]
+  },
+  {
+   "key": "industry-01#10",
+   "name_en": "Upstream / Midstream / Downstream of the Industry Chain",
+   "aliases": [
+    "Upstream Components / Midstream Bodies / Downstream Applications"
+   ],
+   "one_liner": "A way of splitting an industry into components, complete products, and end applications, following the order of production.",
+   "explanation": "In embodied AI and humanoid robotics, “upstream” refers to core components and foundational hardware and software — reducers, motors, screws, sensors, chips, dexterous hands; “midstream” refers to body makers, which integrate those components into a complete robot along with control software and models; and “downstream” refers to application scenarios and customers, such as auto factories, logistics, commercial services, or research and education. Brokerage research reports, policy documents, and investment news commonly use this three-part split to analyze where the profit sits and where the technology is bottlenecked, or “choked.” For a newcomer, this framework is a quick way to place a company: a joint-module maker sits upstream, a complete-robot maker sits midstream, and a company doing scenario integration and operations for factory customers sits downstream.",
+   "example": "Leaderdrive makes harmonic reducers and sits upstream; UBTech builds complete Walker S-series humanoid robots and sits midstream; an automaker that buys humanoid robots for its factory floor sits downstream.",
+   "related": [
+    "Core Components",
+    "Robot Body Maker (Robot OEM)",
+    "Scenario Owner (End Customer)",
+    "System Integrator",
+    "Domestic Substitution",
+    "Per-Unit Content Value (component value per robot)"
+   ]
+  },
+  {
+   "key": "industry-01#11",
+   "name_en": "10,000-Yuan-Class Humanoid Robot",
+   "aliases": [],
+   "one_liner": "A small humanoid robot priced from around RMB 10,000 to several tens of thousands, aimed mainly at individuals and education.",
+   "explanation": "Starting in 2025, Chinese makers began pushing humanoid-robot prices down to the ten-thousand-RMB range; these are mostly small units around a meter tall or shorter, with weaker joint torque and payload than full-size models, sold mainly to developers, university teaching programs, science-outreach exhibits, and home entertainment rather than for factory work. Reported examples include Unitree's R1, starting around RMB 39,900, and Noetix's Bumi, about RMB 9,998. These let individuals afford a walking, running, hackable humanoid platform for the first time, though battery life, onboard compute, and dexterity still lag well behind full-size machines. Prices change quickly, so go by a maker's latest listed price.",
+   "example": "Noetix's Bumi reportedly sells for RMB 9,998, stands about 94 centimeters tall, and targets education and home users.",
+   "related": [
+    "Consumer-Grade Robot",
+    "Small-size Humanoid Robot",
+    "Unitree R1",
+    "Noetix Bumi",
+    "Price War (Humanoid Robots)",
+    "Research & Education Market"
+   ]
+  }
+ ]
+}

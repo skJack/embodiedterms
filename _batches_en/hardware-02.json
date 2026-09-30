@@ -1,0 +1,225 @@
+{
+ "batch": "hardware-02",
+ "terms": [
+  {
+   "key": "hardware-02#0",
+   "name_en": "Speed Reducer / Gearbox",
+   "aliases": [
+    "Gear Reducer",
+    "Precision Reducer"
+   ],
+   "one_liner": "A geared mechanism mounted behind a motor that trades high speed and low torque for low speed and high torque.",
+   "explanation": "A speed reducer (or gearbox) sits between a motor and its load, using gears to convert the motor's high rotational speed and low torque into low speed and high torque. A motor by itself spins fast but doesn't produce much force, while a robot joint needs to move slowly with a lot of force, so almost every joint actuator module is built as “motor + gearbox + encoder + driver.” A larger gear ratio (input speed divided by output speed) gives more output torque, but backdrivability gets worse, and the effects of backlash and friction become more noticeable. Robots commonly use three kinds: harmonic drives (compact, nearly zero backlash, mostly used in arms and wrists), RV reducers (rigid and impact-resistant, mostly used in the large joints of industrial robot arms), and planetary gearboxes (low ratio, good backdrivability, mostly used in the quasi-direct-drive joints of quadrupeds and humanoids).",
+   "example": "On an industrial 6-axis arm, load-bearing joints like the base and upper arm commonly use an RV reducer, while lighter joints like the wrist commonly use a harmonic drive.",
+   "related": [
+    "Gear Ratio",
+    "Strain Wave Gear (Harmonic Drive)",
+    "Planetary Gearbox",
+    "Rotate Vector Reducer",
+    "Joint Actuator Module",
+    "Backlash"
+   ]
+  },
+  {
+   "key": "hardware-02#1",
+   "name_en": "Strain Wave Gear (Harmonic Drive)",
+   "aliases": [
+    "Harmonic Drive",
+    "Strain Wave Gearing"
+   ],
+   "one_liner": "A precision reducer that gets its ratio from a flexible gear ring bending elastically — compact with almost no backlash",
+   "explanation": "A strain wave gear is built from three parts: a wave generator (an elliptical cam wrapped in a flexible bearing), a flexspline (a thin-walled, elastically flexible gear ring with external teeth), and a circular spline (a rigid ring gear with internal teeth). As the wave generator turns, it flexes the flexspline into an ellipse, so it only meshes with the circular spline at the two ends of the long axis; because the flexspline typically has two fewer teeth than the circular spline, one full turn of the wave generator advances the flexspline by only two teeth relative to the circular spline, giving a very high reduction ratio from a single stage — roughly 30:1 to 320:1. The principle was invented by the American engineer C. Walton Musser, who filed the patent in 1955 (it was granted in 1959); Japan's Harmonic Drive Systems is the leading manufacturer, alongside Chinese makers such as Leaderdrive (绿的谐波) and Laifu Harmonic. It's compact, lightweight, and has near-zero backlash, making it widely used in collaborative robot arms and the arm and wrist joints of humanoid robots; its downsides are that the flexspline can fatigue over time, and its stiffness and impact resistance are lower than an RV reducer's.",
+   "example": "Joint modules on collaborative robot arms often use a hollow “frameless torque motor plus harmonic drive” design, with cables routed straight through the center.",
+   "related": [
+    "Speed Reducer / Gearbox",
+    "Wave Generator",
+    "Flexspline",
+    "Circular Spline",
+    "Backlash",
+    "Leaderdrive"
+   ]
+  },
+  {
+   "key": "hardware-02#2",
+   "name_en": "3D Printing (FDM / Resin SLA)",
+   "aliases": [
+    "Additive Manufacturing",
+    "FDM",
+    "SLA"
+   ],
+   "one_liner": "Building a part by depositing material layer by layer — the go-to lab tool for fast grippers and mounts.",
+   "explanation": "3D printing is an additive-manufacturing method that builds parts directly, one layer at a time. FDM (fused deposition modeling) heats and extrudes plastic filament — PLA, PETG, nylon — and stacks it layer by layer; it's cheap and good for structural parts. Resin printing (SLA/LCD) cures liquid resin layer by layer with light, giving finer surface detail and higher precision, though the resulting parts tend to be more brittle. Embodied-AI labs commonly use it to quickly make gripper fingertips, camera mounts, handheld data-collection rigs, and parts for open-source robot arms, so a design revision can be printed and tested the same day. Many open-source hardware projects ship printable model files directly, ready to assemble with off-the-shelf servos or motors.",
+   "example": "The structural parts of LeRobot's SO-100/SO-101 arms and the UMI handheld gripper are both printed on desktop FDM printers.",
+   "related": [
+    "Open-source Hardware",
+    "SO-100 / SO-101 Arm (LeRobot)",
+    "LEAP Hand (Low-cost, Efficient, Anthropomorphic Hand)",
+    "Universal Manipulation Interface",
+    "Gripper",
+    "CAD Software (SolidWorks / Onshape / Fusion 360; STEP files)"
+   ]
+  },
+  {
+   "key": "hardware-02#3",
+   "name_en": "Allegro Hand",
+   "aliases": [
+    "Allegro"
+   ],
+   "one_liner": "A South Korean four-fingered, 16-DOF dexterous hand from Wonik Robotics, a staple in academic research.",
+   "explanation": "The Allegro Hand is a commercial dexterous hand made by South Korea's Wonik Robotics: four fingers with four joints each, for 16 degrees of freedom total, with each joint driven by its own motor and controllable by current (torque), communicating over a CAN bus at about 333 Hz. It costs far less than a Shadow Dexterous Hand, and with ready-made ROS drivers and simulation models, it has long been a standard platform in academia for in-hand manipulation, dexterous grasping, and sim-to-real transfer research. Its limitation is having only four fingers — one fewer than a human hand — and relatively low torque per joint. According to the manufacturer, the newer V5 generation adds tactile sensors to the fingertips.",
+   "example": "The HORA method trains a policy with reinforcement learning in simulation and transfers it to the real robot, letting an Allegro Hand continuously rotate a variety of objects in its grasp using only proprioception.",
+   "related": [
+    "Dexterous Hand",
+    "LEAP Hand (Low-cost, Efficient, Anthropomorphic Hand)",
+    "Shadow Dexterous Hand",
+    "In-hand Manipulation",
+    "HORA: In-Hand Object Rotation via Rapid Motor Adaptation",
+    "Dexterous Manipulation"
+   ]
+  },
+  {
+   "key": "hardware-02#4",
+   "name_en": "Autonomous Battery Swapping",
+   "aliases": [
+    "Automatic Battery Swap"
+   ],
+   "one_liner": "A robot that walks itself to a swap station and replaces its own battery when it's low, with no human help.",
+   "explanation": "Autonomous battery swapping means a robot, when running low on power, goes to a battery-swap station on its own, removes its depleted battery, installs a fully charged one, and gets back to work — all without a person's involvement. Compared with plugging in to charge, it skips the hours-long wait, letting a robot run close to around the clock, which makes it a problem factories can't avoid once they put humanoid robots on the production line. Implementing it requires a battery mechanism that can be quickly plugged and unplugged (often paired with a dual-battery setup or backup power so the robot never loses power mid-swap), plus precise localization and hand-eye coordination. UBTech's Walker S2, released in 2025, claims it can autonomously swap its own battery in about 3 minutes using both arms.",
+   "example": "On a production line, when a UBTech Walker S2 runs low on power, it walks to a battery cabinet, pulls the battery pack off its back with both arms, and inserts a fully charged one, all without stopping operations.",
+   "related": [
+    "Autonomous Docking and Recharging",
+    "Hot-Swappable Battery",
+    "Battery Endurance / Runtime",
+    "Battery Management System",
+    "UBTech Walker S2"
+   ]
+  },
+  {
+   "key": "hardware-02#5",
+   "name_en": "Autonomous Docking and Recharging",
+   "aliases": [
+    "Auto-Return Charging"
+   ],
+   "one_liner": "A robot that finds its own way back to a charging dock and lines itself up to recharge when the battery runs low.",
+   "explanation": "Autonomous docking and recharging means a robot, when its battery runs low or a task finishes, navigates back to a charging dock on its own, aligns with the contacts or plug, completes charging, and heads back out. Robot vacuums were the first to make this common, and today quadrupeds, inspection robots, and mobile bases largely treat it as a standard feature. The hard part is the last few centimeters of alignment, usually solved with infrared beacons, markers like QR codes or AprilTags, or matching the shape of the dock with lidar. Compared with autonomous battery swapping, docking to recharge is mechanically simpler and cheaper, but the robot can't work while it's charging.",
+   "example": "When a robot vacuum finishes cleaning or its battery gets low, it drives itself back to its dock to recharge, then returns to where it left off once it's full.",
+   "related": [
+    "Autonomous Battery Swapping",
+    "Battery Endurance / Runtime",
+    "Wireless (Inductive) Charging",
+    "Robot Vacuum Cleaner",
+    "AprilTag",
+    "Navigation"
+   ]
+  },
+  {
+   "key": "hardware-02#6",
+   "name_en": "Backdrivability",
+   "aliases": [],
+   "one_liner": "Whether an external force applied at a joint's output can easily push the whole drivetrain and motor backward.",
+   "explanation": "Backdrivability describes whether a force applied at a joint's output end can easily push back through the drivetrain and turn the motor in reverse. A joint with good backdrivability yields when a person pushes or bumps it, and the motor's current reflects the size of the external force, which is useful for force control, collision detection, and kinesthetic (hand-guided) teaching. A joint with poor backdrivability — for example, one with a large gear ratio, a worm gear, or a self-locking screw — can't be pushed back at all; it feels “stiffer” and is more prone to damage from impacts. Backdrivability is mainly determined by gear ratio, transmission efficiency, and friction: a larger gear ratio means more reflected inertia and friction at the output end, making the joint harder to backdrive. The quasi-direct-drive joints common in quadruped and humanoid robots deliberately use a smaller gear ratio to get good backdrivability.",
+   "example": "When a quasi-direct-drive leg lands and takes an impact, the ground can push it back slightly, cushioning the hit; a joint with a high gear ratio instead transmits the impact straight into the gears.",
+   "related": [
+    "Quasi-Direct Drive",
+    "Reflected Inertia",
+    "Gear Ratio",
+    "Proprioceptive Actuator",
+    "Kinesthetic Teaching",
+    "Compliance"
+   ]
+  },
+  {
+   "key": "hardware-02#7",
+   "name_en": "Backlash",
+   "aliases": [
+    "Gear Play",
+    "Lost Motion"
+   ],
+   "one_liner": "The small bit of free play where the input reverses direction before the output actually starts moving.",
+   "explanation": "Backlash is the gap left between meshing teeth in a transmission: when the input reverses direction, it has to travel through this gap before the output starts following it. It's usually measured in arcminutes. Backlash creates a small “dead zone” at every direction reversal, which lowers positioning accuracy and control stability — especially noticeable during fine manipulation or force control, and it can also cause oscillation in a control loop. Backlash varies a lot by gearbox type: a harmonic drive has close to zero, an RV reducer has very little, and an ordinary planetary gearbox has comparatively more. Whether the encoder sits on the motor side or the output side (a dual-encoder setup) also affects whether backlash can be detected and compensated for.",
+   "example": "If an arm's end effector sweeps back and forth over a small range and a joint has significant backlash, the end effector pauses briefly at each direction change before catching up, showing up as a small step in the trajectory.",
+   "related": [
+    "Speed Reducer / Gearbox",
+    "Strain Wave Gear (Harmonic Drive)",
+    "Planetary Gearbox",
+    "Dual Encoder",
+    "Pose Repeatability"
+   ]
+  },
+  {
+   "key": "hardware-02#8",
+   "name_en": "Ball Screw",
+   "aliases": [],
+   "one_liner": "A screw and nut with ball bearings packed between their threads, turning rotation into linear motion efficiently.",
+   "explanation": "A ball screw converts a motor's rotary motion into linear motion: rows of steel balls sit in the matching helical grooves of the screw shaft and the nut, rolling and recirculating as the nut travels, which turns the sliding friction of an ordinary lead screw into rolling friction. That gives it high transmission efficiency, high precision, and low wear. It's widely used in CNC machine tools, linear modules, and Cartesian robots. In humanoid robots, ball screws are used to build linear actuators (electric cylinders) that drive joints like the knee or ankle; for heavier loads, a planetary roller screw, which has more contact area, is used instead. Because it's so efficient, a ball screw generally can't self-lock, so a holding brake is needed to keep the load from sliding back when power is cut.",
+   "example": "A CNC machine tool's worktable is driven by a servo motor turning a ball screw, giving it precise linear feed motion.",
+   "related": [
+    "Planetary Roller Screw",
+    "Linear Actuator (Electric Cylinder)",
+    "Screw Lead",
+    "Trapezoidal Lead Screw & Self-Locking",
+    "Holding Brake"
+   ]
+  },
+  {
+   "key": "hardware-02#9",
+   "name_en": "Brushless DC Motor",
+   "abbr": "BLDC",
+   "aliases": [
+    "BLDC Motor"
+   ],
+   "one_liner": "A DC motor that swaps mechanical brushes for electronic commutation — the workhorse motor in robot joints.",
+   "explanation": "A brushless DC motor puts permanent magnets on the rotor and coils on the stator; a driver switches current through the coils electronically based on the rotor's position (sensed by Hall-effect sensors or an encoder), replacing the brushes and commutator that wear out in a brushed motor. As a result it lasts longer, runs more efficiently, and concentrates heat in the stator where it's easier to dissipate, while also giving higher torque density. Most motors in robot joints, drones, and dexterous hands are brushless, usually paired with field-oriented control (FOC) for precise current and torque control. It's structurally similar to a permanent magnet synchronous motor, and the two are often used interchangeably in engineering talk, with the main technical difference being in back-EMF waveform and drive method.",
+   "example": "A quadruped robot's joint module is typically an outrunner brushless motor plus a planetary gearbox and an encoder, with a driver using FOC to control the output torque.",
+   "related": [
+    "Permanent Magnet Synchronous Motor",
+    "Field-Oriented Control",
+    "Outrunner Motor",
+    "Servo Drive / Motor Driver",
+    "Hall-effect Sensor",
+    "Joint Actuator Module"
+   ]
+  },
+  {
+   "key": "hardware-02#10",
+   "name_en": "Common Training and Inference GPUs (RTX 4090 / A100 / H100 / B200)",
+   "aliases": [
+    "RTX 4090",
+    "A100",
+    "H100",
+    "B200"
+   ],
+   "one_liner": "The handful of NVIDIA GPUs most often used to train and run embodied-AI models, differing mainly in memory and compute.",
+   "explanation": "These are the NVIDIA GPUs that show up most often in embodied-AI papers and code repositories. The RTX 4090 (Ada architecture, 24 GB of memory) is a consumer gaming card, often used for single-machine inference and small-scale fine-tuning. The A100 (Ampere architecture, 40 or 80 GB) and H100 (Hopper architecture, 80 GB, with FP8 support) are data-center cards, used in multi-GPU clusters for pretraining and full-parameter fine-tuning. The B200 (Blackwell architecture) has up to about 180 GB of memory per card, and an 8-GPU DGX B200 system has roughly 1.4 TB of memory combined. When choosing a card, memory capacity comes first, since it determines how large a model and batch size fit; compute throughput, supported numeric precisions, and inter-GPU interconnect bandwidth matter next. Models running on the robot itself typically run on an edge chip like a Jetson rather than on any of these cards.",
+   "example": "The openpi repository's guidance: running π0 inference needs at least 8 GB of memory and LoRA fine-tuning needs at least 22.5 GB, both of which an RTX 4090 can handle; full-parameter fine-tuning needs at least 70 GB, requiring an 80 GB A100 or an H100.",
+   "related": [
+    "GPU Memory (VRAM)",
+    "NVIDIA Jetson",
+    "Low-Rank Adaptation",
+    "Full Fine-Tuning",
+    "Numerical Precision Formats (FP32 / BF16 / FP16 / FP8 / INT8)",
+    "AutoDL GPU Cloud"
+   ]
+  },
+  {
+   "key": "hardware-02#11",
+   "name_en": "Controller Area Network (CAN)",
+   "abbr": "CAN",
+   "aliases": [
+    "CAN FD (CAN with Flexible Data-Rate)",
+    "CAN Bus"
+   ],
+   "one_liner": "A two-wire field bus linking multiple motors and sensors together, the standard way robot joints talk to their controller.",
+   "explanation": "CAN is a serial communication bus Bosch designed for cars in the 1980s: a single pair of differential wires links multiple nodes together, giving strong noise immunity and simple wiring, with priority arbitration and error detection built into every frame. Classic CAN tops out at 1 Mbit/s with up to 8 data bytes per frame; CAN FD (CAN with Flexible Data-Rate) is the later upgrade, with a faster data phase and up to 64 bytes per frame. In robots, large numbers of joint motors, dexterous hands, and battery management systems all communicate over CAN or CAN FD, with a host computer sending and receiving commands through a USB-CAN adapter or Linux's SocketCAN. Its bandwidth is limited, so systems with many joints or high control frequencies are often split across multiple bus lines, or switched to EtherCAT instead.",
+   "example": "Joint motors like Damiao's and Xiaomi's CyberGear receive MIT-mode position, velocity, stiffness, damping, and feedforward-torque commands over CAN.",
+   "related": [
+    "EtherCAT (Ethernet for Control Automation Technology)",
+    "RS-485",
+    "SocketCAN (Linux CAN interface)",
+    "CANopen / CiA 402 Drive Profile",
+    "Servo Drive / Motor Driver",
+    "MIT Mode (MIT Cheetah-style Joint Motor Command)"
+   ]
+  }
+ ]
+}

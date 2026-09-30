@@ -1,0 +1,113 @@
+{
+  "batch": "sim-04",
+  "terms": [
+    {
+      "key": "sim-04#0",
+      "name_en": "Elo Rating",
+      "aliases": ["Bradley-Terry Model", "BT Model", "Elo Rating System"],
+      "one_liner": "A scoring method that estimates each player's or policy's relative strength from a series of head-to-head wins and losses.",
+      "explanation": "Elo rating was designed by physics professor and chess master Arpad Elo to rank chess players, and the US Chess Federation adopted it in 1960. Each player gets a single number; the gap between two ratings predicts the expected win probability, and after each game a rating is nudged by (actual result minus expected result) times a constant K. Mathematically, Elo is a special case of the Bradley-Terry model, which writes the probability that A beats B as a sigmoid function of the difference in their abilities. Embodied AI borrows this to solve a real problem: success rates reported by different labs on different tasks cannot be compared directly. Instead, two policies are compared head-to-head on the same task, and aggregating many such comparisons produces a leaderboard. RoboArena found that plain Elo rankings get distorted when tasks vary widely in difficulty, so it uses a Bradley-Terry variant that adds a task-difficulty parameter.",
+      "example": "RoboArena has evaluators at different sites blindly compare two policies on tasks of their own choosing and judge which one did better, then aggregates over 600 real-robot comparisons into a leaderboard of seven general-purpose policies using a modified Bradley-Terry model.",
+      "related": ["Blind Pairwise Comparison", "RoboArena", "Real-robot Evaluation", "Success Rate", "Benchmark"]
+    },
+    {
+      "key": "sim-04#1",
+      "name_en": "Fréchet Inception Distance",
+      "aliases": ["FID", "FID Score"],
+      "one_liner": "A metric for how close a batch of generated images is to real images in overall distribution; lower is better.",
+      "explanation": "FID was introduced by Heusel and colleagues in a NeurIPS 2017 paper to evaluate the image quality of GANs and other generative models. It works by feeding a batch of real images and a batch of generated images through a pretrained Inception v3 network (an image classifier), taking the 2048-dimensional features from its final pooling layer, fitting each set to a multivariate Gaussian distribution, and computing the Fréchet distance between the two Gaussians. Because it compares overall distributions rather than pixel by pixel, it captures both image quality and diversity at once; lower scores are better, and 0 means the two sets are statistically identical. Its limitations are that it depends on Inception's learned features, doesn't always track human judgment, and is biased when the sample size is small. The video version is called FVD. In embodied AI, FID, FVD, and PSNR are often reported together when evaluating the generated frames of world models and video-generation models.",
+      "example": "To evaluate a robot video world model, researchers take a few thousand frames of its generated manipulation footage and a few thousand real frames from the same scene, run both through Inception v3, and compute FID; a lower score means the generated footage looks more like real data overall.",
+      "related": ["Fréchet Video Distance", "PSNR / SSIM / LPIPS Image Similarity Metrics", "Video Generation Model", "World Model Evaluation", "Generative Adversarial Network", "Generative Model"]
+    },
+    {
+      "key": "sim-04#2",
+      "name_en": "Gaussian Splatting-based Simulation",
+      "aliases": ["3DGS Simulation", "GS Simulation", "Gaussian Splatting Simulator"],
+      "one_liner": "Rendering simulated scenes with 3D Gaussian Splatting reconstructions of real places, paired with a physics engine for motion.",
+      "explanation": "This approach plugs 3D Gaussian Splatting (3DGS) — introduced by Kerbl and colleagues in 2023, which represents a scene as a large number of colored 3D Gaussian blobs and can render photorealistic images in real time — into robot simulation. Typically, a phone or camera scans a real scene to reconstruct it as 3DGS, and the objects and robot inside it are then aligned with the collision bodies used by the physics engine: the physics engine computes motion, while 3DGS handles rendering the camera view. The goal is to close the visual sim-to-real gap caused by traditional simulators' obviously synthetic-looking graphics, making it easier for policies trained on simulated vision to transfer zero-shot to a real robot, and enabling reproducible closed-loop evaluation. Notable projects include SplatSim, RoboGSim, and Real2Render2Real; AgiBot's Genie Sim 3.0 also added 3DGS scene reconstruction. Gaussian points carry no physical properties of their own, so collision geometry and a dynamics model still have to be supplied separately.",
+      "example": "SplatSim replaced a simulator's usual mesh rendering with Gaussian-splatting rendering; an RGB manipulation policy trained only on simulated data then deployed zero-shot to a real robot at an average success rate of 86.25%, versus 97.5% for a policy trained on real-robot data.",
+      "related": ["3D Gaussian Splatting", "Real-to-Sim-to-Real Loop", "Sim-to-Real Gap", "Digital Twin", "RoboGSim", "Real2Render2Real (R2R2R)"]
+    },
+    {
+      "key": "sim-04#3",
+      "name_en": "Gazebo",
+      "aliases": ["Gazebo Classic", "Gazebo Sim", "Ignition Gazebo"],
+      "one_liner": "The most widely used open-source robot simulator in the ROS ecosystem, maintained by Open Robotics.",
+      "explanation": "Gazebo is an open-source 3D robot simulator that began in 2002 as part of the Player project, became independent in 2011 with support from Willow Garage, and has been maintained since 2012 by the Open Source Robotics Foundation (OSRF, renamed Open Robotics in 2018) — the same organization behind ROS. It can simulate robots, cameras, lidar, IMUs, and other sensors and environments, and is commonly used to test navigation, mapping, and control code before deploying it on a real robot, as well as in competitions such as the DARPA Robotics Challenge. A rewrite that began in 2017 was branded Ignition for a while, then renamed back to Gazebo in 2022 over trademark issues, with the older codebase relabeled Gazebo Classic; Gazebo Classic stopped being maintained in January 2025. As of 2026 the current long-term-support release is Gazebo Jetty. Gazebo is oriented toward software integration testing rather than massively parallel GPU training, so reinforcement-learning work tends to use Isaac Lab, MuJoCo, or similar tools instead.",
+      "example": "When building a mobile robot with ROS 2, developers commonly load the robot's URDF model and a warehouse scene into Gazebo first, get Nav2 navigation and SLAM mapping working there, and then deploy the same set of ROS nodes to the real robot.",
+      "related": ["Robot Operating System", "ROS 2", "Simulator", "Unified Robot Description Format", "SDFormat", "Nav2"]
+    },
+    {
+      "key": "sim-04#4",
+      "name_en": "Generalization / Robustness Evaluation",
+      "aliases": ["Perturbation Test", "OOD Evaluation", "Out-of-Distribution Evaluation", "Robustness Benchmark"],
+      "one_liner": "Deliberately changing lighting, positions, objects, or instructions to test how much skill a policy retains outside its training conditions.",
+      "explanation": "Rather than only reporting a policy's success rate under conditions that match its training distribution, this kind of evaluation systematically applies perturbations — swapping an object's color or shape, adding distractor objects, changing lighting and background, moving the camera viewpoint, changing the robot's starting pose, rewording the language instruction, adding sensor noise — and measures how far the success rate drops. The question it answers is whether a high score reflects real task competence or just memorization of the training scenes. A common approach is to vary one dimension of perturbation at a time to locate specific weaknesses, though multiple perturbations are also stacked together. Notable benchmarks include The Colosseum, LIBERO-Plus, and LIBERO-PRO; the variant aggregations in SimplerEnv follow the same idea. This kind of evaluation routinely shows that models scoring near-perfectly on standard benchmarks lose a large chunk of their success rate under even mild perturbation.",
+      "example": "LIBERO-Plus perturbs LIBERO along seven dimensions — object layout, camera viewpoint, robot initial state, language instructions, lighting, background texture, and sensor noise — and finds that some VLA models' success rates fall from 95% to below 30%, often because the model simply ignores the language instruction.",
+      "related": ["Generalization", "Robustness", "Out-of-Distribution", "Distractor Object", "LIBERO-Plus", "The Colosseum"]
+    },
+    {
+      "key": "sim-04#5",
+      "name_en": "Generative Simulation",
+      "aliases": ["Automatic Simulation-Scene Generation", "Automatic Simulation-Task Generation"],
+      "one_liner": "Using foundation models to automatically generate simulation tasks, scenes, and training supervision, producing robot training data at scale.",
+      "explanation": "Generative simulation is an approach proposed by Zhou Xian and colleagues in a 2023 paper: rather than having a large model output robot actions directly, use foundation models — language models, image and 3D generative models — to fully automatically generate diverse tasks, scenes, and training supervision (such as reward functions and demonstration trajectories), and learn skills at scale inside simulation. It targets the problem that manually building scenes and designing tasks and rewards is slow and limits data diversity. A typical pipeline: a large model first proposes a task, then retrieves or generates 3D assets to build the scene, breaks the task into sub-steps, and uses reinforcement learning or motion planning to generate data and train a policy. Notable projects include RoboGen, GenSim, and Holodeck. It differs from procedural generation (building randomized scenes from hand-written rules) in that it is driven by foundation models rather than fixed rules.",
+      "example": "RoboGen's loop works like this: a large model proposes a task and skill to learn, selects relevant object assets and arranges them into a plausible simulated scene, breaks the task into sub-tasks, then chooses its own learning method, generates training supervision, and trains a policy — all without manual task design.",
+      "related": ["Procedural Generation", "Synthetic Data", "Simulation Data", "RoboGen", "Holodeck", "Genesis"]
+    },
+    {
+      "key": "sim-04#6",
+      "name_en": "Genesis",
+      "aliases": ["Genesis World", "Genesis Simulator", "Genesis-Embodied-AI"],
+      "one_liner": "A multi-physics GPU simulation platform open-sourced in late 2024, built for speed and unified rigid-body, soft-body, and fluid simulation.",
+      "explanation": "Genesis (now branded Genesis World) is a physics simulation platform for robotics and embodied AI, open-sourced as an academic project in December 2024 under the Apache 2.0 license and now developed with backing from Genesis AI; it has over 30,000 GitHub stars. It unifies several solvers — rigid body, finite element method (FEM, for soft-body deformation), material point method (MPM, for granular materials like sand), and PBD/SPH particle methods (for cloth and fluids) — inside a single scene, and ships with a photorealistic renderer called Nyx. It is written in Python and compiled to CUDA, Metal, and other backends by Quadrants, a compiler forked from Taichi. The developers claim throughput 10 to 80 times that of GPU simulators such as Isaac Gym/Sim/Lab and MuJoCo MJX. It is commonly used for massively parallel reinforcement learning, such as training locomotion controllers for quadrupeds and humanoids.",
+      "example": "The official examples include a script that runs thousands of Unitree Go2 environments in parallel with Genesis and trains a walking policy with PPO, completing training on a single GPU.",
+      "related": ["GPU-Accelerated Parallel Simulation", "Physics Engine", "Material Point Method", "Isaac Lab", "MuJoCo", "Generative Simulation"]
+    },
+    {
+      "key": "sim-04#7",
+      "name_en": "Genie Sim",
+      "aliases": ["AgiBot Genie Sim", "Genie Sim Benchmark", "Genie Sim 3.0"],
+      "one_liner": "AgiBot's open-source embodied-simulation platform, combining scene generation, synthetic data, and an evaluation benchmark.",
+      "explanation": "Genie Sim is an open-source robot manipulation simulation platform from AgiBot, built on NVIDIA Isaac Sim, with code released under the MPL 2.0 license. Version 2.x shipped in 2025, and Genie Sim 3.0 shipped with a public technical report in January 2026, later updated to 3.2. It bundles several pieces together: a generator that turns natural-language descriptions into simulated scenes using a large model; 3D Gaussian Splatting to reconstruct simulation assets from real-world scenes; an evaluation benchmark covering over 200 tasks and more than 100,000 scenes that is scored automatically by a vision-language model; and an open-sourced synthetic dataset of over 10,000 hours. The goal is to let simulated data substitute for part of the real-robot data needed to train policies, and AgiBot has reported results on zero-shot sim-to-real transfer.",
+      "example": "A developer writes a description such as “arrange several rows of beverage bottles in front of a supermarket shelf,” and Genie Sim's generator retrieves assets and outputs a .usda scene file; AgiBot's Genie G2 robot model is then used in that scene to collect synthetic data or run evaluations.",
+      "related": ["AgiBot", "Isaac Sim", "Simulation Benchmark", "Synthetic Data", "Gaussian Splatting-based Simulation", "Generative Simulation"]
+    },
+    {
+      "key": "sim-04#8",
+      "name_en": "GPU-Accelerated Parallel Simulation",
+      "aliases": ["Massively Parallel Simulation", "GPU-Accelerated Simulation"],
+      "one_liner": "Running thousands of simulated environments at once on a single GPU, shrinking robot training from days to minutes.",
+      "explanation": "GPU-accelerated parallel simulation moves the physics simulation itself onto the GPU, advancing thousands of mutually independent environments at the same time and handing the simulation state directly to a framework like PyTorch as tensors for training — skipping the back-and-forth data copying between CPU and GPU that older pipelines needed. NVIDIA's Isaac Gym brought this approach into the mainstream in 2021; its paper claimed speedups of two to three orders of magnitude over the traditional “CPU simulation plus GPU training” pipeline. The most direct beneficiary is reinforcement learning: once sampling becomes cheap, policies for legged locomotion or dexterous manipulation can be trained on a single GPU in tens of minutes. Commonly used platforms today include Isaac Lab, MuJoCo MJX and MuJoCo Warp, Genesis, ManiSkill3, and Brax. The trade-off is that scenes must be written in a batched form, and complex contact or high-quality rendering noticeably slows things down.",
+      "example": "ETH Zürich's Rudin and colleagues simulated thousands of ANYmal quadruped robots in parallel on a single GPU, training a flat-ground walking policy in under 4 minutes and a rough-terrain policy in about 20 minutes, then transferred both successfully to the real robot.",
+      "related": ["Parallel Environments", "Isaac Gym", "Isaac Lab", "Massively Parallel Reinforcement Learning", "MJX", "legged_gym"]
+    },
+    {
+      "key": "sim-04#9",
+      "name_en": "Habitat",
+      "aliases": ["Habitat-Sim", "Habitat-Lab", "Habitat 3.0", "AI Habitat"],
+      "one_liner": "Meta's open-source embodied-AI simulation platform, used mainly for indoor navigation, object rearrangement, and human-robot collaboration tasks.",
+      "explanation": "Habitat is an open-source embodied-AI simulation platform developed by Meta (formerly Facebook AI Research) together with several universities, first described in a paper at ICCV 2019. It has two layers: Habitat-Sim is a high-speed 3D simulator that can load real indoor scans from datasets such as Matterport3D, HM3D, Gibson, and Replica, and can render over 10,000 frames per second using multiple processes on a single GPU; Habitat-Lab is the upper-level library used to define tasks, configure agents, and handle training and evaluation. Habitat 2.0 (2021) added physical interaction and household rearrangement tasks, and Habitat 3.0 (2023) added humanoid avatars and human-in-the-loop control, supporting social navigation and human-robot collaborative rearrangement. It is one of the main platforms for visual navigation research, and hosts an annual Habitat Challenge that requires participants to submit code for evaluation in scenes it has never seen.",
+      "example": "In a point-goal navigation task, an agent is placed in a previously unseen apartment scan from HM3D and told only the target's coordinates relative to its starting point; it must reach the target using nothing but its camera feed and depth map.",
+      "related": ["Point-Goal Navigation", "Object-Goal Navigation", "HM3D Dataset", "Social Navigation", "Object Rearrangement", "Matterport3D Dataset"]
+    },
+    {
+      "key": "sim-04#10",
+      "name_en": "Interpenetration",
+      "aliases": ["Penetration", "Clipping"],
+      "one_liner": "A simulation or animation glitch where two objects that should block each other pass through one another instead.",
+      "explanation": "Interpenetration (often called clipping) originated as gaming and animation jargon for models overlapping incorrectly; in robot simulation it means two collision bodies overlap — a finger poking through a tabletop, or a foot sinking into the ground. Physics engines tolerate a small amount of penetration by design: MuJoCo uses a soft-contact model that generates contact force based on penetration depth, and PhysX also treats penetration as a negative distance and progressively increases contact force to push objects apart. The problem is penetration that goes too deep. Common causes include too large a simulation timestep, too few solver iterations, collision geometry that is too thin or too coarse, or objects moving too fast (passing all the way through is called tunneling). Deep interpenetration distorts contact forces and grasp outcomes, and a policy can even learn to exploit it as a “cheat” that fails once deployed on a real robot. Fixes include shrinking the timestep, adding substeps and solver iterations, using convex decomposition for collision geometry, and enabling continuous collision detection. Feet sinking into the ground in motion-capture data is also called interpenetration.",
+      "example": "When training a grasping policy in simulation, if a cup's collision geometry is a thin hollow mesh, a finger may pass straight through the cup wall; the simulator still counts this as a successful grasp, but the real robot cannot actually pick the cup up. Switching to convex-decomposed collision geometry and increasing solver iterations usually helps.",
+      "related": ["Collision Body", "Soft Contact", "Continuous Collision Detection", "Simulation Timestep", "Convex Decomposition", "Solver Iterations"]
+    },
+    {
+      "key": "sim-04#11",
+      "name_en": "Intervention Rate",
+      "aliases": ["Takeover Rate", "Disengagement Rate"],
+      "one_liner": "How often a human has to take over or correct a policy while it runs autonomously; lower means more independent operation.",
+      "explanation": "Intervention rate measures how autonomous a system really is: the fraction of the time a human has to take over or correct a robot or self-driving system while it operates, usually counted per episode, per hour, or per kilometer, and sometimes reported instead as the average time between interventions (mean time between interventions). The concept comes from the “takeover” or “disengagement” metric used in self-driving cars, and it matters just as much for deployed robots: success rate alone only tells you the outcome, while intervention rate reveals how much human labor was needed to get there, and directly determines how many robots one person can supervise at once. Human-in-the-loop methods such as HG-DAgger and Sirius have a person take over when the robot makes a mistake or a situation gets risky, and feed those intervention episodes back into training as correction data, so the intervention rate should fall as more deployment rounds accumulate. Because different teams may define what counts as one intervention differently, reports need to state that definition, or the numbers are not comparable across teams.",
+      "example": "Sirius lets a human remotely take over whenever the robot makes a mistake and adds that intervention data back into training; as more rounds of deployment accumulate, the amount of human intervention needed drops sharply, and by the third round the robot operates autonomously most of the time.",
+      "related": ["Mean Time Between Interventions", "Human-in-the-Loop", "HG-DAgger", "Intervention Data", "Remote Takeover (Human Fallback)", "Levels of Autonomy"]
+    }
+  ]
+}

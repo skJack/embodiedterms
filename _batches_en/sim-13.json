@@ -1,0 +1,113 @@
+{
+  "batch": "sim-13",
+  "terms": [
+    {
+      "key": "sim-13#0",
+      "name_en": "LIBERO-Plus",
+      "aliases": ["In-depth Robustness Analysis of Vision-Language-Action Models"],
+      "one_liner": "A benchmark that adds 7 kinds of perturbations to LIBERO specifically to test the robustness of VLA models.",
+      "explanation": "LIBERO-Plus is a manipulation evaluation benchmark released in October 2025 by teams from Fudan University, the National University of Singapore, Tongji University, and others. It adds 7 categories of controlled perturbation to the popular LIBERO simulation benchmark — object placement, camera viewpoint, robot initial pose, language instructions, lighting, background texture, and sensor noise — for a total of 10,030 task variants, used to test whether a VLA (vision-language-action) model's high score reflects real skill or just memorization of the training scenes. The results show that a small change in viewpoint or initial pose can drop success rate from 95% to below 30%; models turn out to be relatively insensitive to language perturbation, often because they don't really look at the instruction at all. The repository is a drop-in replacement for the original LIBERO, and perturbed training data has also been open-sourced.",
+      "example": "OpenVLA scores 76.5% success on the original LIBERO but falls to 1.1% once the camera viewpoint is changed; replacing OpenVLA-OFT's instructions with blank text barely moves its success rate on the object task group.",
+      "related": ["LIBERO", "LIBERO-PRO", "Generalization / Robustness Evaluation", "Robustness", "Vision-Language-Action Model", "OpenVLA-OFT"]
+    },
+    {
+      "key": "sim-13#1",
+      "name_en": "LIBERO-PRO",
+      "aliases": ["Towards Robust and Fair Evaluation of Vision-Language-Action Models Beyond Memorization"],
+      "one_liner": "Adds object, position, instruction, and environment perturbations to LIBERO to test whether a VLA model is just memorizing.",
+      "explanation": "LIBERO-PRO is an extended evaluation benchmark released in October 2025 by teams from Huazhong University of Science and Technology, Harvard, MIT, Lehigh University, and others. The authors point out that LIBERO's training and test scenes are nearly identical, so a model can score well by memorizing action sequences and tabletop layouts, inflating scores and making fair comparison difficult. LIBERO-PRO adds reasonable perturbations across four dimensions — the manipulated object, initial state, task instruction, and environment — which can be freely combined. Results show that models scoring above 90% success under the standard setup can drop to 0% under the generalization setup: a model keeps reaching for the target object even after it's swapped for an unrelated one, and its actions barely change even when the instruction is scrambled or replaced with gibberish. It appeared around the same time as LIBERO-Plus, and both point to LIBERO having become saturated as a benchmark.",
+      "example": "The project homepage reports OpenVLA scoring 0.98 success on the original tasks, dropping to 0.00 after object-position perturbation; π0.5 drops from 0.97 to 0.38.",
+      "related": ["LIBERO", "LIBERO-Plus", "Benchmark Saturation", "Generalization / Robustness Evaluation", "Out-of-Distribution", "Benchmark Gaming"]
+    },
+    {
+      "key": "sim-13#2",
+      "name_en": "Linear Complementarity Problem",
+      "aliases": ["LCP"],
+      "one_liner": "A math problem asking for two sets of non-negative variables where one being positive forces the other to be zero — what contact-force solving reduces to.",
+      "explanation": "The linear complementarity problem was formulated by Cottle and Dantzig in 1968: given a matrix M and a vector q, find non-negative vectors z and w such that w = Mz + q, with the added condition that for each corresponding pair of components, at least one of z or w must be zero (the complementarity condition). In simulation, this describes contact exactly: two objects either have a gap between them, with zero contact force, or are pressed together, with positive contact force, and the two situations can never hold at once — a physics engine has to solve for contact forces satisfying this kind of condition at every step. ODE's contact and friction model is based on Dantzig's LCP solver, and game engines commonly use iterative methods like Projected Gauss-Seidel to approximate a solution. MuJoCo, by contrast, notes that LCPs with friction are NP-hard, and instead uses a convex soft-contact model that relaxes the complementarity condition.",
+      "example": "A box resting still on a table has zero normal gap and a positive supporting force; once the box is lifted off the table, the gap becomes positive and the supporting force drops to zero. Solving for exactly this pair of complementary conditions is what the solver does at every step.",
+      "related": ["Contact Model", "Constraint Solver", "Projected Gauss-Seidel Solver", "Coulomb Friction", "Soft Contact", "Physics Engine"]
+    },
+    {
+      "key": "sim-13#3",
+      "name_en": "LocoMuJoCo",
+      "aliases": ["Imitation Learning Benchmark for Whole-Body Locomotion"],
+      "one_liner": "A MuJoCo-based imitation-learning benchmark for whole-body locomotion, with humanoid, quadruped, and human musculoskeletal models.",
+      "explanation": "LocoMuJoCo is an open-source benchmark released in 2023 by Jan Peters's group at TU Darmstadt in Germany (Firas Al-Hafez and colleagues), specifically for evaluating imitation-learning algorithms aimed at locomotion. Earlier locomotion benchmarks were mostly simplified toy tasks; this one provides quadruped, humanoid, and human musculoskeletal models, paired with real motion-capture data, expert data, and suboptimal data. Later versions switched to JAX, adding MJX and MuJoCo Warp for parallel simulation; it currently contains 12 humanoid and 4 quadruped environments, retargeting over 22,000 motion-capture clips from AMASS, LAFAN1, and other sources onto various humanoids, along with baselines including PPO, GAIL, AMP, and DeepMimic, plus a domain-randomization interface.",
+      "example": "Using ImitationFactory to create a Unitree H1 environment, loading dance and walking clips from LAFAN1, and then training a policy to imitate those motions with the built-in AMP algorithm.",
+      "related": ["MuJoCo", "MJX", "Imitation Learning", "Motion Retargeting", "AMASS", "Adversarial Motion Priors"]
+    },
+    {
+      "key": "sim-13#4",
+      "name_en": "Material Point Method",
+      "aliases": ["MPM"],
+      "one_liner": "A continuum simulation method where particles carry the material's state while forces are computed on a background grid.",
+      "explanation": "The material point method is a hybrid Eulerian-Lagrangian numerical method: an object is discretized into a large number of “material points,” with each particle carrying mass, velocity, stress, and the rest of its full state; at each step, this information is mapped onto a fixed background grid to solve the momentum equation, and the results are mapped back onto the particles. It traces back to the particle-in-cell (PIC) method Harlow introduced in 1957, and was developed into its current form starting in 1993 by Sulsky and colleagues. Compared with the finite element method, it avoids repeatedly re-meshing, making it well suited to materials that undergo large deformation, fracture, or flow, such as snow, sand, mud, and plasticine — Disney's Frozen used it to simulate snow. The cost is heavy memory and computation. In embodied AI it's used for deformable-object manipulation simulation, and simulators such as Genesis have a built-in MPM solver.",
+      "example": "The PlasticineLab benchmark uses a differentiable MLS-MPM (Moving Least Squares Material Point Method) to simulate plasticine, letting an agent learn to pinch and mold it into a target shape.",
+      "related": ["Soft-Body Simulation", "Finite Element Method", "Smoothed-Particle Hydrodynamics", "Differentiable Simulation", "Genesis", "Deformable Object Manipulation"]
+    },
+    {
+      "key": "sim-13#5",
+      "name_en": "Mean Maximum Rank Violation",
+      "aliases": ["MMRV"],
+      "one_liner": "A metric for whether a simulated evaluation's ranking of policies matches the real-robot ranking; lower is better.",
+      "explanation": "MMRV was proposed in the 2024 SIMPLER (SimplerEnv) paper. The authors argue that a simulated evaluation doesn't need to reproduce the absolute value of real-robot success rate — what matters is getting the relative ranking of policies right. It's computed as follows: for any pair of policies, if their ordering in simulation is reversed compared to the real robot, that counts as one “rank violation,” with a magnitude equal to the difference between their real-robot success rates; each policy takes its single worst violation, and these are averaged across all policies, giving a value between 0 and 1. This way, two policies that were already close in real-robot performance getting swapped only counts as a small error, while swapping two policies with a large real-robot gap counts as a large error. It's usually reported alongside the Pearson correlation coefficient, which only captures linear relationships and can be thrown off by real-robot evaluation noise when policies are close in skill.",
+      "example": "The SIMPLER paper ranks 6 Google Robot policies: ranking by validation-set action MSE gives an average MMRV of 0.375, while ranking with SIMPLER's “visual matching” simulated evaluation brings it down to 0.056.",
+      "related": ["SimplerEnv", "Sim-to-Real Correlation", "Visual Matching", "Variant Aggregation", "Simulation Evaluation", "Real-robot Evaluation"]
+    },
+    {
+      "key": "sim-13#6",
+      "name_en": "Mean Per-Joint Position Error",
+      "aliases": ["MPJPE"],
+      "one_liner": "The average distance between predicted and ground-truth joint positions, measuring how accurate a pose estimate or motion tracking is.",
+      "explanation": "MPJPE was originally the standard metric for 3D human pose estimation, widely used on datasets such as Human3.6M: for every frame, the Euclidean distance between each joint's predicted 3D position and its ground truth is computed, then averaged across all joints and frames, usually in millimeters, with lower being better. There are three common variants: root-relative MPJPE, which first aligns the root joint (the pelvis) and so measures only local pose; global MPJPE (g-MPJPE), computed with no alignment at all, which also captures overall positional drift; and PA-MPJPE, computed after a rigid-body (Procrustes) alignment. In humanoid robotics, motion-tracking work such as PHC and ASAP uses it to measure how precisely a robot reproduces a reference motion in simulation or on the real robot, usually reported together with success rate, velocity error, and acceleration error.",
+      "example": "PHC reports both root-relative MPJPE and global MPJPE (in mm) on the AMASS test set, and counts tracking as failed whenever the average joint deviation from the reference motion exceeds 0.5 meters.",
+      "related": ["Motion Tracking", "Human Pose Estimation", "Motion Retargeting", "PHC", "ASAP", "AMASS"]
+    },
+    {
+      "key": "sim-13#7",
+      "name_en": "Mean Time Between Interventions",
+      "aliases": ["MTBI"],
+      "one_liner": "How long, on average, a robot can keep working continuously before a human has to step in.",
+      "explanation": "MTBI measures a robot's reliability over long continuous operation: total operating time divided by the number of human interventions during that time, with a larger number being better. An intervention generally includes a manual emergency stop, a manual reset, a human repositioning an object for the robot, or a human taking over after a task times out. The idea is borrowed from mean time between failures (MTBF) in industrial reliability. The single-trial success rate commonly reported in academic papers is measured after a careful manual reset each time, which hides problems like state gradually drifting or occasional getting stuck during long runs, and also blends speed and accuracy into one number. Deployment-focused teams have therefore started reporting MTBI under a continuous-operation protocol with no resets, measuring it alongside tasks completed per hour to capture both efficiency and reliability.",
+      "example": "The Habilis-β paper runs a 1-hour continuous-operation evaluation: in a real humanoid-robot logistics workflow, its MTBI is 137.4 seconds, compared with 46.1 seconds for π0.5.",
+      "related": ["Intervention Rate", "Mean Time Between Failures", "Success Rate", "Real-robot Evaluation", "Full Autonomy", "Remote Takeover (Human Fallback)"]
+    },
+    {
+      "key": "sim-13#8",
+      "name_en": "MIKASA-Robo",
+      "aliases": ["MIKASA-Robo-VLA"],
+      "one_liner": "A tabletop-manipulation benchmark specifically testing robot memory, with tasks requiring recall of information that's occluded or gone.",
+      "explanation": "MIKASA-Robo is a memory-intensive manipulation benchmark proposed by Cherepanov, Panov, and colleagues in February 2025, part of MIKASA (a suite for evaluating memory-intensive skills), with its paper published at ICLR 2026. Many real-world tasks are partially observable: an object gets blocked from view, critical information appears only briefly, and a policy that only looks at the current frame has no way to succeed. It's built on ManiSkill3, with the first version containing 32 tasks. It later expanded into MIKASA-Robo-VLA, aimed at VLA models: the task count grew to 90, covering 10 categories of memory, each task paired with a language instruction, with 22,500 trajectories released on Hugging Face, usable to test memory-equipped models such as MemoryVLA.",
+      "example": "In the ShellGameTouch task, the robot can see the red ball under one of three positions for the first 5 steps; all three are then covered with cups, and the robot must touch the cup hiding the ball.",
+      "related": ["Embodied Memory", "Memory-Augmented VLA", "Partially Observable Markov Decision Process", "ManiSkill", "MemoryVLA", "Benchmark"]
+    },
+    {
+      "key": "sim-13#9",
+      "name_en": "Minecraft Environments",
+      "aliases": ["MineDojo", "MineRL"],
+      "one_liner": "Agent training and evaluation platforms built on the game Minecraft, used for open-world research.",
+      "explanation": "Minecraft is an open-world sandbox game with long task chains and open-ended goals that often require crafting items through several steps, which is why it's commonly used as a virtual testbed for agents. MineRL, released in 2019 by a team including Carnegie Mellon University, provides Gym-style environments and over 60 million human demonstration state-action pairs, and has run competitions at NeurIPS, with its classic task being mining a diamond from scratch. MineDojo, released in 2022 by teams from NVIDIA, Caltech, Stanford, and others, contains thousands of open-ended tasks described in language along with a knowledge base built from 730,000 YouTube videos, wiki pages, and Reddit posts, using a video-language model called MineCLIP as a reward function; it won a NeurIPS 2022 Outstanding Paper Award.",
+      "example": "Voyager has GPT-4 automatically write code and build up a skill library inside the MineDojo environment, continuously unlocking new tools and items.",
+      "related": ["VPT (Video PreTraining)", "Voyager", "DreamerV3", "Open World", "Long-Horizon Task", "Reward Function"]
+    },
+    {
+      "key": "sim-13#10",
+      "name_en": "mjlab",
+      "aliases": [],
+      "one_liner": "A lightweight GPU robot-learning framework combining an Isaac Lab-style interface with MuJoCo Warp physics.",
+      "explanation": "mjlab is an open-source framework developed by Kevin Zakka, Koushil Sreenath, Pieter Abbeel, and colleagues, with its paper released in January 2026. It reuses Isaac Lab's “manager-based” interface, where observations, rewards, randomization events, and so on are written as composable modules to assemble an environment; its physics backend is instead MuJoCo Warp, the GPU version of MuJoCo, which can simulate thousands of environments in parallel. Its advantages are that it installs with a single command, has few dependencies, and gives direct access to MuJoCo's native data structures. It ships with three reference task categories — velocity tracking, motion imitation, and manipulation — commonly used for humanoid and quadruped reinforcement-learning locomotion control. Training requires an NVIDIA GPU; macOS can only be used for evaluation.",
+      "example": "Running uv run train Mjlab-Velocity-Flat-Unitree-G1 --env.scene.num-envs 4096 trains a Unitree G1 to walk according to velocity commands across 4,096 parallel environments.",
+      "related": ["MuJoCo Warp", "Isaac Lab", "MuJoCo Playground", "GPU-Accelerated Parallel Simulation", "Reinforcement Learning-based Locomotion Control", "Unitree G1"]
+    },
+    {
+      "key": "sim-13#11",
+      "name_en": "MolmoSpaces",
+      "aliases": ["MolmoSpaces-Bench"],
+      "one_liner": "The Allen Institute for AI's open ecosystem of large-scale indoor simulation scenes and robot evaluation tools.",
+      "explanation": "MolmoSpaces is an open ecosystem released by the Allen Institute for AI (Ai2) in February 2026, for generating data and training and evaluating robot policies at scale. It includes over 230,000 indoor scenes (drawn from iTHOR, ProcTHOR, Holodeck, and others) and 130,000 annotated object models, of which 48,000 are manipulable objects paired with 42 million stable grasp poses. Scenes aren't tied to any one simulator, supporting MuJoCo, ManiSkill, and Isaac. Its companion benchmark, MolmoSpaces-Bench, contains 8 tasks covering tabletop and mobile manipulation, navigation, and cross-room long-horizon tasks; the paper reports that its simulated scores correlate strongly with real-robot scores (R = 0.96), and finds that policies are quite sensitive to instruction wording, initial joint positions, and camera occlusion.",
+      "example": "Ai2's MolmoBot procedurally generates 1.8 million simulated trajectories in MolmoSpaces and deploys directly to a Franka FR3 with no real-robot data at all, reaching a real-robot tabletop pick-and-place success rate of 79.2%, compared with 39.2% for π0.5.",
+      "related": ["Allen Institute for AI", "Simulation Evaluation", "Sim-to-Real Correlation", "ProcTHOR", "Objaverse", "Mobile Manipulation"]
+    }
+  ]
+}

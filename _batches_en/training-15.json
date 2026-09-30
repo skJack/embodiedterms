@@ -1,0 +1,113 @@
+{
+  "batch": "training-15",
+  "terms": [
+    {
+      "key": "training-15#0",
+      "name_en": "Parameter-Efficient Fine-Tuning",
+      "aliases": ["PEFT"],
+      "one_liner": "Freezing most of a large model's parameters and training only a small added or selected subset for a new task.",
+      "explanation": "Parameter-efficient fine-tuning is an umbrella term for fine-tuning methods that keep a pretrained model's parameters mostly frozen and train only a small subset to adapt it to a new task. Four approaches are common: inserting small modules (adapters); prepending learnable vectors to the input (prompt tuning); representing weight changes with low-rank matrices (LoRA); and unfreezing only a few of the original parameters, such as just the biases. It addresses the high cost of full fine-tuning: memory, compute, and the storage cost of keeping a full copy of the weights per task all drop sharply, while performance often comes close to full fine-tuning. Hugging Face's PEFT library bundles many of these methods together. When adapting an open-source VLA to one's own robot, LoRA is the most commonly used choice.",
+      "example": "In the OpenVLA paper, using LoRA to update only about 1.4% of the parameters, trained for 10 to 15 hours on a single A100, reached a 68.2% task success rate, close to full fine-tuning's 69.7%, which needed two GPUs and about 163 GB of memory.",
+      "related": ["Low-Rank Adaptation", "Adapter", "Prompt Tuning / Soft Prompt", "Full Fine-Tuning", "Backbone Freezing", "Fine-tuning"]
+    },
+    {
+      "key": "training-15#1",
+      "name_en": "Policy Constraint",
+      "aliases": ["Behavior Regularization", "Behavior Constraint"],
+      "one_liner": "In offline RL, keeping the new policy's actions close to what the behavior policy in the dataset actually did.",
+      "explanation": "Policy constraint is a major family of methods in offline reinforcement learning, which trains only on existing data with no further environment interaction. The Q-function, which estimates how much return an action will earn, tends to be overestimated for actions that never appear in the data, and a policy that chases those inflated values falls apart — a failure mode called extrapolation error. Policy constraint methods add a limit: the policy's output actions must stay close to the behavior policy that collected the data, enforced with a distance measure such as KL divergence or MMD, or by adding a behavior-cloning term to the objective. BCQ, BEAR, and TD3+BC all belong to this line; in 2019, Wu, Tucker, and Nachum's BRAC paper unified them under the name “behavior regularization.” Together with conservative-Q-learning-style methods, which instead suppress the value of unfamiliar actions, this forms one of the two main lines of offline RL.",
+      "example": "TD3+BC just adds a behavior-cloning term to the online algorithm TD3's policy update — pulling the output action toward the dataset's actions — and normalizes the states, yet it matched the performance of far more complex offline RL algorithms of its time.",
+      "related": ["Offline Reinforcement Learning", "Extrapolation Error", "KL Regularization", "Behavior Cloning", "Conservative Q-Learning", "Advantage-Weighted Regression"]
+    },
+    {
+      "key": "training-15#2",
+      "name_en": "Policy Distillation",
+      "aliases": ["Specialist-to-Generalist Distillation"],
+      "one_liner": "Having a student policy imitate one or more already-trained teacher policies, compressing or merging their skills.",
+      "explanation": "Policy distillation is knowledge distillation applied to decision-making: instead of learning directly from reward, the student policy fits the actions or action distributions the teacher policy outputs at each state. DeepMind's Rusu and colleagues systematically proposed this on Atari games in 2015, for two purposes: compressing a large network into a small one, and merging several single-game experts into one multi-task policy whose combined performance beats each expert trained alone. A common robotics pattern is “specialist to generalist”: train separate specialist policies for different objects or tasks, sometimes using privileged information (ground-truth state only available in simulation), and then distill them into one generalist policy, often paired with DAgger so the student queries the teacher for labels at the states it actually visits.",
+      "example": "Peking University's He Wang and colleagues' UniDexGrasp++ first groups thousands of objects by geometric features, trains a specialist grasping policy for each group, then iteratively distills them into one generalist policy, ultimately reaching grasp success rates of 85.4% on training objects and 78.2% on held-out ones.",
+      "related": ["Knowledge Distillation", "Teacher-Student Distillation", "Specialist Policy", "Generalist Policy", "DAgger", "On-Policy Distillation"]
+    },
+    {
+      "key": "training-15#3",
+      "name_en": "Policy Iteration / Value Iteration",
+      "aliases": ["Dynamic Programming (RL)", "Value Iteration"],
+      "one_liner": "Two classic dynamic-programming algorithms that repeatedly update values or the policy to solve for an optimal policy, given a known model.",
+      "explanation": "Policy iteration and value iteration are two classic dynamic-programming algorithms for solving a Markov decision process, the mathematical framework describing states, actions, rewards, and transitions, assuming both the transition probabilities and the reward function are already known. Value iteration, introduced by Bellman in 1957, repeatedly applies the Bellman optimality equation to update every state's value, and once it converges, picks actions by value. Policy iteration, introduced by Howard in 1960, alternates two steps: policy evaluation, computing every state's value under the current policy, and policy improvement, switching each state to its highest-value action, until the policy stops changing. Real robots have continuous states and an unknown model, so these cannot be applied directly, but algorithms such as Q-learning and actor-critic methods can be viewed as sampled, function-approximated variants of them.",
+      "example": "In a 4×4 grid maze where every step costs a reward of −1, the episode ends at the goal, and movement is deterministic, value iteration repeatedly updates each cell's value; once it converges, each cell's value equals the negative of its shortest distance to the goal, and moving toward higher value traces out the shortest path.",
+      "related": ["Markov Decision Process", "Bellman Equation", "Value Function", "Q-Learning", "Model-Based Reinforcement Learning", "Policy Gradient"]
+    },
+    {
+      "key": "training-15#4",
+      "name_en": "Population-Based Training",
+      "aliases": ["PBT"],
+      "one_liner": "Training a whole population of models at once, periodically copying good weights over bad ones and perturbing hyperparameters.",
+      "explanation": "Population-based training is a hyperparameter-optimization method proposed by DeepMind's Jaderberg and colleagues in 2017. It trains a batch of models in parallel and periodically compares their performance: worse-performing members directly copy the weights of better-performing ones (exploit), then have hyperparameters such as the learning rate randomly perturbed before continuing to train (explore). This way, there is no need to finish tuning hyperparameters before real training starts — a single run automatically discovers a hyperparameter schedule that changes over time, using roughly the same total compute as running the same number of ordinary parallel experiments. The original paper validated the approach on deep reinforcement learning, machine translation, and GANs. Reinforcement learning is especially sensitive to hyperparameters, so PBT is often paired with massively parallel GPU simulation.",
+      "example": "NVIDIA's DexPBT (RSS 2023) uses decentralized PBT in Isaac Gym to train single-arm and dual-arm robots fitted with multi-fingered dexterous hands on tasks such as regrasping, throwing after grasping, and object reorientation, exploring noticeably better than standard end-to-end training.",
+      "related": ["Hyperparameter", "Massively Parallel Reinforcement Learning", "Exploration vs. Exploitation", "GPU-Accelerated Parallel Simulation", "Reinforcement Learning", "NVIDIA Isaac Gym"]
+    },
+    {
+      "key": "training-15#5",
+      "name_en": "Prediction Target Parameterization",
+      "aliases": ["epsilon-prediction", "x0-prediction", "v-prediction", "Noise Prediction"],
+      "one_liner": "What a diffusion or flow model's network should output: the noise ε, the clean data x0, or a blend v of the two.",
+      "explanation": "Diffusion models train by first adding noise to data, then having a network work backward to recover it. The network's target output has several common forms. ε-prediction outputs the noise that was added, popularized after 2020's DDPM. x0-prediction outputs the clean data directly. v-prediction, introduced by Salimans and Ho in their 2022 progressive-distillation paper, outputs a combination of the noise and the data, weighted by the noise level, which is more stable when only a few sampling steps are used. Flow matching's “predict the velocity field” is a closely related idea. These targets can be converted into one another mathematically, but they differ in how easy they are for a network to learn, which affects training stability and quality under few-step sampling; a 2025 paper by Li and Kaiming He, JiT, argues for predicting the clean image directly on high-resolution images.",
+      "example": "Diffusion Policy's denoising network predicts the noise ε; π0 trains its action expert with flow matching, where the network outputs the velocity field that pushes noise toward the real action.",
+      "related": ["Diffusion Model", "Flow Matching", "Velocity Field", "Noise Schedule", "Denoising Loss", "Diffusion Policy"]
+    },
+    {
+      "key": "training-15#6",
+      "name_en": "Progress Reward Model",
+      "aliases": ["Progress Estimator", "Task Progress Prediction"],
+      "one_liner": "A model that looks at the current frame and estimates how much of a task is done, used as a reward.",
+      "explanation": "A progress reward model is a class of robot reward model: given a task instruction and the current frame, sometimes also the start frame or recent history, it outputs how far along the task is, usually normalized to between 0 and 1. Real manipulation tasks often only offer a sparse succeeded-or-not reward, which reinforcement learning struggles to learn from; a progress score can serve as a dense reward instead, letting the policy know at every step whether it is getting closer to or farther from the goal, and it can also be used to filter data or judge success. There are two main approaches: having a vision-language model estimate progress zero-shot, as in Google DeepMind's GVL, or training one specifically on large amounts of trajectory data, as in 2026's Robometer. The risk is reward hacking, where the policy learns to make the footage merely look like it is progressing.",
+      "example": "GVL shuffles the frame order of a robot video and asks a VLM to estimate the completion percentage of each frame; with no training at all, it gives usable progress values across more than 300 real tasks, and is used for data filtering and success detection.",
+      "related": ["Reward Model", "Sparse Reward", "Dense Reward", "Success Detector", "Generative Value Learning", "Robometer"]
+    },
+    {
+      "key": "training-15#7",
+      "name_en": "Prompt Tuning / Soft Prompt",
+      "aliases": ["Soft Prompt", "Soft Prompt Tuning"],
+      "one_liner": "Freezing the whole model and training only a short learnable vector prepended to the input to adapt it to a task.",
+      "explanation": "Prompt tuning is a parameter-efficient fine-tuning method proposed by Google's Lester and colleagues in 2021. A hand-written text prompt is a “hard prompt”; a soft prompt, by contrast, is a sequence of vectors learned directly in embedding space that does not correspond to any actual words. During training, the model's parameters stay entirely frozen, and only this short vector sequence is updated by gradient descent, so each task needs only a tiny soft prompt stored for it, and one model can serve many tasks. The paper found that as models get larger, performance gets closer to full fine-tuning, essentially matching it at billions of parameters. Prefix tuning, which prepends a learnable prefix before every attention layer, and visual prompt tuning are related ideas. In robotics, soft prompts have also been used to mark different embodiments or data sources.",
+      "example": "X-VLA gives each data source — different robot embodiments and collection setups — its own learnable soft-prompt embedding on top of a standard Transformer backbone, letting a 0.9-billion-parameter model train across embodiments and get tested on multiple simulated and real-robot platforms.",
+      "related": ["Parameter-Efficient Fine-Tuning", "Prompt Engineering", "Low-Rank Adaptation", "Adapter", "X-VLA", "Embedding"]
+    },
+    {
+      "key": "training-15#8",
+      "name_en": "Q-Chunking",
+      "aliases": ["Reinforcement Learning with Action Chunking", "QC"],
+      "one_liner": "Doing reinforcement learning where both the policy and the Q-function operate on a whole chunk of actions at once.",
+      "explanation": "Q-chunking is a reinforcement learning method proposed by Sergey Levine's team at Berkeley in 2025, aimed at long-horizon, sparse-reward, offline-to-online tasks, where a policy is pretrained on existing data and then goes online. It brings action chunking, a technique common in imitation learning, into reinforcement learning: the policy outputs a chunk of h consecutive actions at once, and the Q-function, which judges how good an action is, also takes the state plus the whole action chunk as input. This has two benefits: acting in chunks makes exploration more coherent and lets the agent carry over behavioral habits from the offline data, and scoring a whole chunk at once enables unbiased multi-step temporal-difference updates, so value information propagates faster. To keep the policy from drifting too far from the data, it samples several action chunks from a flow-matching policy and picks the one with the highest Q-value, or adds a distillation constraint.",
+      "example": "On OGBench's block- and puzzle-manipulation tasks and on robomimic tasks, with 1 million steps of offline pretraining followed by 1 million steps of online interaction, Q-chunking with a chunk length of 5 clearly beats offline-to-online baselines such as RLPD, and the harder the task, the bigger the gap.",
+      "related": ["Action Chunking", "Offline-to-Online Reinforcement Learning", "Temporal Difference Learning", "Reinforcement Learning with Prior Data", "Flow Matching", "Sparse Reward"]
+    },
+    {
+      "key": "training-15#9",
+      "name_en": "Reference State Initialization",
+      "aliases": ["RSI"],
+      "one_liner": "In motion-imitation training, starting each episode from a random point in the reference motion instead of always frame one.",
+      "explanation": "Reference state initialization is a reinforcement-learning training trick introduced by Peng and colleagues in 2018's DeepMimic, for training a simulated character or robot to imitate a reference motion such as motion-capture data. If every episode starts from the beginning of the motion, the policy can only learn the first half before the second; for a backflip, without first learning how to land, the early takeoff phase alone tends to make the agent fall and score worse, so it never even gets to practice the landing. RSI instead picks a random point in the reference motion for each episode and sets the character's root position, orientation, velocity, and joint state directly to that frame, letting every phase of the motion get practiced in parallel. It is commonly paired with early termination, ending the episode on a fall, and has become standard practice for training humanoid motion tracking; BeyondMimic goes further and adaptively picks the starting point based on failure rate.",
+      "example": "In DeepMimic's ablation study, a backflip policy trained without RSI never learns the full flip and only manages a small backward hop; ASAP also used RSI when training a Unitree G1 to imitate highly dynamic motions such as Cristiano Ronaldo's signature jump celebration.",
+      "related": ["DeepMimic", "Early Termination", "Motion Tracking", "ASAP", "BeyondMimic", "Exploration vs. Exploitation"]
+    },
+    {
+      "key": "training-15#10",
+      "name_en": "REINFORCE",
+      "aliases": ["Monte Carlo Policy Gradient"],
+      "one_liner": "The earliest policy-gradient algorithm: raise the probability of actions that led to high return across a full trajectory.",
+      "explanation": "REINFORCE was proposed by Ronald Williams in 1992, and is the earliest policy-gradient algorithm. It runs the current policy through several full episodes and, for every action taken, weights the gradient of that action's log-probability by the cumulative return that followed it, so actions that led to higher return get pushed to be more likely. Because the return comes directly from sampling a whole trajectory rather than from a learned value estimate, it is also called the Monte Carlo policy gradient; the estimate is unbiased but high-variance and sample-inefficient. Subtracting a baseline, such as the average return or a value function, noticeably reduces variance, and this idea later grew into actor-critic methods. PPO also builds on policy gradients; in large-language-model post-training, RLOO and GRPO use the average return within a group as a baseline, carrying REINFORCE's basic idea forward.",
+      "example": "Training an arm to push a block: an episode that reaches the goal scores 1, otherwise 0. REINFORCE raises the probability of every action in a successful episode, while a failed episode gets zero gradient; with a baseline added, actions in below-average episodes get pushed down instead.",
+      "related": ["Policy Gradient", "Monte Carlo Methods", "Return", "Advantage Function", "Proximal Policy Optimization", "Group Relative Policy Optimization"]
+    },
+    {
+      "key": "training-15#11",
+      "name_en": "Reinforcement Learning with Prior Data",
+      "aliases": ["RLPD", "Efficient Online Reinforcement Learning with Offline Data"],
+      "one_liner": "A simple, efficient way to do online RL by mixing offline data half-and-half with freshly collected data in every batch.",
+      "explanation": "RLPD was proposed by Ball, Smith, Kostrikov, and Levine at ICML 2023, addressing how to make the best use of existing offline data — expert demonstrations or a large amount of suboptimal trajectories — once online interaction begins. The authors found that no elaborate offline pretraining was needed: just a few small changes to the off-policy algorithm SAC were enough. Every training batch draws half from the offline data and half from the online replay buffer (symmetric sampling); the critic network gets layer normalization to stop it from overestimating the value of unseen actions; and the critic is an ensemble of 10 networks trained with a higher update-to-data ratio. The paper reports roughly a 2.5x improvement over prior methods across several benchmarks. The real-robot RL framework SERL uses RLPD as its core algorithm.",
+      "example": "SERL trains on a real robot using RLPD: human demonstrations go into the offline buffer, and data the robot generates through its own interaction goes into the online buffer, with every training batch drawing half from each.",
+      "related": ["Offline-to-Online Reinforcement Learning", "Soft Actor-Critic", "Update-to-Data Ratio", "Experience Replay", "SERL", "HIL-SERL"]
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "batch": "training-05",
+  "terms": [
+    {
+      "key": "training-05#0",
+      "name_en": "Inverse Reinforcement Learning",
+      "aliases": ["IRL"],
+      "one_liner": "Working backward from an expert's demonstrated behavior to infer the reward function it's implicitly optimizing.",
+      "explanation": "Inverse reinforcement learning runs reinforcement learning in reverse: ordinary RL starts from a given reward function (the rule that scores behavior) and learns a policy, while IRL instead observes expert demonstrations and infers what reward the expert must be optimizing. Stuart Russell posed this problem in 1998, Andrew Ng and Russell gave the first algorithms in 2000, and Abbeel and Ng applied it to “apprenticeship learning” in 2004: infer the reward first, then use reinforcement learning to find a policy from it. Its value is that many tasks have rewards that are hard to hand-write, and a learned reward often transfers to new environments better than copying actions directly does. The difficulty is that the same behavior can be explained by many different reward functions, so extra assumptions such as maximum entropy are needed to resolve the ambiguity. Later methods like generative adversarial imitation learning (GAIL) and adversarial motion priors (AMP) continue this line of thinking.",
+      "example": "Abbeel, Coates, and Ng used apprenticeship learning to teach an autonomous helicopter aerobatic maneuvers — flips, loops, autorotation landings — by learning from a human pilot's demonstrations, instead of hand-writing a reward function.",
+      "related": ["Reinforcement Learning", "Reward Function", "Imitation Learning", "Generative Adversarial Imitation Learning", "Adversarial Motion Priors", "Behavior Cloning"]
+    },
+    {
+      "key": "training-05#1",
+      "name_en": "Knowledge Distillation",
+      "aliases": ["KD", "Model Distillation"],
+      "one_liner": "Training a small student model to mimic a large teacher model's outputs, compressing the teacher's ability into a smaller model.",
+      "explanation": "Knowledge distillation was systematically formalized by Hinton, Vinyals, and Dean in a 2015 paper: first train a large, strong teacher model, then train a small student model to match the teacher's output probability distribution (called soft labels) rather than only the ground-truth labels. The paper raises the softmax “temperature” to make the soft labels smoother, which exposes similarity relationships between classes so the student learns more from each example. This addresses the problem that large models are expensive to deploy and slow to run inference on. In embodied AI, distillation often takes a teacher-student form: a teacher trained in simulation with privileged information unavailable on a real robot (such as exact terrain shape or contact state), and a student that only sees real-robot sensors and learns to imitate the teacher's actions — this is one route to sim-to-real transfer. It's also used to distill a multi-step denoising diffusion policy into a model that needs far fewer steps, cutting inference latency.",
+      "example": "In Lee and colleagues' 2020 Science Robotics work on the ANYmal quadruped, the teacher policy sees ground-truth terrain and foot-contact information in simulation, while the student policy takes only a history of onboard proprioception and learns by imitating the teacher, eventually deploying zero-shot on mud, snow, and rubble in the wild.",
+      "related": ["Teacher-Student Distillation", "Privileged Information", "Policy Distillation", "On-Policy Distillation", "KL Divergence", "Diffusion Step Distillation"]
+    },
+    {
+      "key": "training-05#2",
+      "name_en": "Kullback-Leibler Divergence",
+      "aliases": ["KL Divergence", "KL", "Relative Entropy"],
+      "one_liner": "A measure of how far one probability distribution is from another; not symmetric between the two.",
+      "explanation": "KL divergence was introduced by Solomon Kullback and Richard Leibler in 1951; in the discrete case, D_KL(P‖Q) = Σ P(x)·log(P(x)/Q(x)), representing the extra information cost of approximating the true distribution P with a distribution Q. It's always non-negative, and equals zero only when the two distributions are identical, but it isn't symmetric — D_KL(P‖Q) generally doesn't equal D_KL(Q‖P) — so it isn't a distance in the strict mathematical sense. It shows up everywhere in machine learning: cross-entropy equals KL divergence plus P's own entropy, so minimizing cross-entropy is equivalent to minimizing KL; variational autoencoders use a KL term to pull the latent variable toward a standard normal distribution; PPO, RLHF, and some offline reinforcement-learning methods use a KL penalty to keep a new policy from drifting too far from a reference policy; and knowledge distillation uses it to pull the student's output distribution toward the teacher's.",
+      "example": "ACT's training loss is the action-reconstruction error plus β times a KL term (the paper uses β = 10); the KL term keeps the style variable z produced by its conditional variational autoencoder close to a standard normal distribution, and at inference time z is simply set to the prior's mean of 0.",
+      "related": ["Cross-Entropy", "KL Regularization", "Variational Autoencoder", "Proximal Policy Optimization", "Knowledge Distillation", "Maximum Likelihood Estimation / Negative Log-Likelihood"]
+    },
+    {
+      "key": "training-05#3",
+      "name_en": "L1 Loss",
+      "aliases": ["Mean Absolute Error", "MAE", "Absolute Error Loss"],
+      "one_liner": "A loss function that measures error as the absolute value of the difference between a prediction and the ground truth.",
+      "explanation": "L1 loss takes the absolute value of the difference between each prediction and its ground truth and sums it up; averaged per sample, it's called mean absolute error (MAE). Compared with L2 loss (mean squared error), which squares the error, L1 penalizes large errors linearly rather than blowing them up quadratically, so it's less thrown off by outliers — but its gradient has constant magnitude, so it doesn't automatically shrink as the prediction nears the target. From a probabilistic view, minimizing L1 loss corresponds to maximum likelihood estimation under the assumption that errors follow a Laplace distribution, and the optimal solution trends toward the median rather than the mean. In embodied AI, L1 is common for continuous action regression: ACT uses L1 for reconstructing action sequences, with the authors reporting it models action sequences more precisely than the more common L2; OpenVLA-OFT also switched to L1 regression to output continuous actions directly.",
+      "example": "OpenVLA-OFT replaced OpenVLA's approach of generating discrete action tokens one at a time with parallel decoding, action chunking, and L1 regression for continuous action output, raising action-generation throughput 26-fold and lifting the average success rate across four LIBERO task suites from 76.5% to 97.1%.",
+      "related": ["Mean Squared Error", "Loss Function", "Continuous Action Regression", "ACT", "OpenVLA-OFT", "Action Chunking"]
+    },
+    {
+      "key": "training-05#4",
+      "name_en": "Learning Rate",
+      "aliases": ["LR", "Step Size"],
+      "one_liner": "The size of the step taken at each parameter update in gradient descent; one of the most important hyperparameters.",
+      "explanation": "The learning rate is the hyperparameter in an optimization algorithm that controls how big each parameter update is: parameters move in the direction opposite the gradient, by an amount equal to the learning rate times the gradient (adaptive optimizers like Adam further rescale this per parameter, based on that parameter's gradient history). Set it too high and parameters overshoot the minimum, making the loss oscillate or even diverge to NaN; set it too low and convergence is slow, or training gets stuck at a mediocre point. It's usually the first thing tuned, and it's tied to batch size — when batch size goes up, the learning rate is often scaled up proportionally too (the linear scaling rule). In practice, training rarely uses one fixed value throughout; instead it follows a learning rate schedule, typically warming up first and then decaying gradually. Fine-tuning a pretrained large model usually uses a much smaller learning rate than training from scratch, to avoid damaging what it already learned.",
+      "example": "LLaVA uses a learning rate of 2e-3 in its first stage, when only the projection layer is trained, and drops to 2e-5 in the second stage, when the language model is fine-tuned along with it. OpenVLA trains with a fixed 2e-5 throughout, and its authors found adding warmup gave no benefit; ACT uses 1e-5.",
+      "related": ["Learning Rate Schedule (Warmup and Cosine Decay)", "Gradient Descent", "Optimizer", "AdamW", "Batch Size", "Hyperparameter"]
+    },
+    {
+      "key": "training-05#5",
+      "name_en": "Learning Rate Schedule (Warmup and Cosine Decay)",
+      "aliases": ["Warmup", "Cosine Decay", "Cosine Annealing", "Learning Rate Decay"],
+      "one_liner": "Changing the learning rate over the course of training: ramping it up during warmup, then easing it down along a cosine curve.",
+      "explanation": "A learning rate schedule changes the learning rate during training according to a predefined rule, rather than keeping it fixed throughout. The most common combination is “warmup plus cosine decay.” Warmup linearly raises the learning rate from near 0 up to its peak value over the first stretch of training: at that point the parameters are freshly initialized or a new module has just been attached, so gradients are unstable, and jumping straight to a large learning rate risks divergence. Goyal and colleagues (2017) used gradual warmup together with a linear scaling rule to scale ResNet-50 training up to a batch size of 8192 without losing accuracy. After warmup, the learning rate eases down to a very small value along a cosine curve, letting the model converge carefully in the later stages; this cosine shape comes from Loshchilov and Hutter's SGDR paper (ICLR 2017). Other common schedules include step decay, exponential decay, and linear decay.",
+      "example": "openpi's default recipe for fine-tuning π0 linearly ramps the learning rate up to 2.5e-5 over the first 1,000 steps, then eases it down to 2.5e-6 along a cosine curve over 30,000 steps.",
+      "related": ["Learning Rate", "Optimizer", "AdamW", "Batch Size", "Convergence", "Fine-tuning"]
+    },
+    {
+      "key": "training-05#6",
+      "name_en": "LoRA",
+      "aliases": ["Low-Rank Adaptation"],
+      "one_liner": "Freezing a large model's original weights and fine-tuning it by training only two small matrices inserted alongside them.",
+      "explanation": "LoRA was introduced by Microsoft's Edward Hu and colleagues in 2021 and is the most widely used parameter-efficient fine-tuning method. It freezes the pretrained weight matrix W and adds a side path B·A next to selected layers (commonly the projection matrices inside a Transformer's attention blocks): A and B are two narrow matrices whose rank r is far smaller than the original matrix's dimensions, and only A and B are trained during fine-tuning. After training, B·A can be added straight back into W, adding no extra latency at inference. The paper reports roughly a 10,000-fold reduction in trainable parameters and about a third of the memory requirement compared with fully fine-tuning GPT-3 175B with Adam. For embodied AI, since most VLAs are built on multi-billion-parameter vision-language models, LoRA lets an ordinary lab adapt a model to its own robot and tasks on a single consumer GPU.",
+      "example": "In the OpenVLA paper, a rank-32 LoRA trains only about 1.4% of the parameters and reaches 68.2% success, close to full fine-tuning's 69.7%. The openpi repository lists π0 LoRA fine-tuning as needing 22.5 GB of memory or more, running on an RTX 4090, versus 70 GB or more for full fine-tuning.",
+      "related": ["Parameter-Efficient Fine-Tuning", "Full Fine-Tuning", "Adapter", "Fine-tuning", "Backbone Freezing", "OpenVLA"]
+    },
+    {
+      "key": "training-05#7",
+      "name_en": "Markov Decision Process",
+      "aliases": ["MDP"],
+      "one_liner": "The standard mathematical framework for an agent's loop of seeing a state, acting, getting a reward, and moving to a new state.",
+      "explanation": "The Markov decision process is reinforcement learning's standard mathematical model, usually written as the tuple (S, A, P, R, γ): the state space, the action space, the state-transition probability (the chance of reaching a given next state after taking action a in state s), the reward function, and a discount factor that discounts distant rewards. Its core assumption is the Markov property: the next state depends only on the current state and action, not on earlier history. Its mathematical foundation comes from Richard Bellman's dynamic-programming work around 1957, and the Bellman equation, value functions, and policy gradients are all built on top of it. Reinforcement learning's goal is to find a policy within an MDP that maximizes expected cumulative discounted return. Real robots often can't observe the full state (an object might be occluded), which calls for a partially observable Markov decision process (POMDP) instead; in practice this is often handled by feeding in a history of past observations.",
+      "example": "When training a quadruped to walk, the state can include joint angles, joint velocities, body orientation, and the commanded velocity; the action is the 12 joints' target angles; the reward rewards tracking the commanded velocity and penalizes energy use and falling; and the policy outputs one action per control cycle based on the current state.",
+      "related": ["Reinforcement Learning", "Partially Observable Markov Decision Process", "Bellman Equation", "Reward Function", "Discount Factor", "Policy"]
+    },
+    {
+      "key": "training-05#8",
+      "name_en": "Massively Parallel Reinforcement Learning",
+      "aliases": ["Parallel Environment Training", "GPU-Parallel Reinforcement Learning"],
+      "one_liner": "Running thousands of simulated environments at once on a single GPU to collect data, training a locomotion policy in just minutes.",
+      "explanation": "Massively parallel reinforcement learning means running both the physics simulation and the neural-network training on the GPU, with thousands of independent simulated environments running simultaneously, so a huge amount of interaction data can be collected in one pass to train a policy. Reinforcement learning needs enormous amounts of trial and error, and older CPU-based simulators with few parallel environments often took a dozen to a hundred-plus hours to train a legged-locomotion policy. NVIDIA's Isaac Gym (2021) kept simulation data on the GPU as PyTorch tensors the entire time, reportedly 2–3 orders of magnitude faster than CPU-based simulation; the same year, Rudin and colleagues ran 4,096 parallel ANYmal environments on a single GPU with PPO, training flat-ground walking in under 4 minutes and complex terrain in about 20. This paradigm made reinforcement learning the mainstream approach for legged and humanoid locomotion control, with Isaac Lab and legged_gym among the common tools.",
+      "example": "Rudin and colleagues' open-source legged_gym simulates 4,096 ANYmal robots at once on a single RTX A6000, uses a game-style terrain curriculum that adjusts difficulty automatically, trains a policy that walks complex terrain in about 20 minutes, and transfers it to a real ANYmal C.",
+      "related": ["GPU-Parallel Simulation", "Parallel Environments", "Proximal Policy Optimization", "Isaac Lab", "legged_gym", "Sim-to-Real Transfer"]
+    },
+    {
+      "key": "training-05#9",
+      "name_en": "Maximum Likelihood Estimation",
+      "aliases": ["MLE", "Negative Log-Likelihood", "NLL", "NLL Loss"],
+      "one_liner": "Finding the parameters that make the observed data most probable; taking the negative log of that probability gives a loss to minimize.",
+      "explanation": "Maximum likelihood estimation (MLE) is statistics' most basic method for estimating parameters: assume the data comes from some probability model with unknown parameters, and pick the parameters that make the probability of the observed data — the likelihood — as large as possible. In practice, a logarithm turns the product of probabilities into a sum, and a minus sign turns it into a minimization problem — this is exactly the negative log-likelihood (NLL) loss used in deep learning. Many familiar losses are special cases of it: cross-entropy for classification is the negative log-likelihood under a categorical distribution; when errors are assumed Gaussian, MLE is equivalent to minimizing mean squared error; when errors are assumed to follow a Laplace distribution, it corresponds to L1 loss. It's also equivalent to minimizing the KL divergence between the data distribution and the model's distribution. In embodied AI, behavior cloning is essentially maximum likelihood estimation on expert actions: a VLA that discretizes actions predicts action tokens with cross-entropy, while a Gaussian policy directly minimizes the negative log-likelihood of the action.",
+      "example": "OpenVLA divides each action dimension into 256 evenly spaced bins between the 1st and 99th percentile of the training data, then uses the standard next-token-prediction objective, computing cross-entropy only on the action tokens — which is maximum likelihood estimation applied to expert actions.",
+      "related": ["Cross-Entropy", "KL Divergence", "Mean Squared Error", "Behavior Cloning", "Loss Function", "Gaussian Policy"]
+    },
+    {
+      "key": "training-05#10",
+      "name_en": "Mean Squared Error",
+      "aliases": ["MSE", "L2 Loss", "Squared Error Loss"],
+      "one_liner": "The average of the squared difference between predictions and ground truth; the most common loss for regression.",
+      "explanation": "Mean squared error squares the difference between each sample's prediction and its ground truth, then averages over all samples; the sum without averaging is often called L2 loss. It's differentiable everywhere, and its gradient shrinks as the error shrinks, giving smooth optimization, which makes it the default loss for regression tasks. From a probabilistic view, minimizing MSE is equivalent to maximum likelihood estimation under the assumption that errors are Gaussian, with the optimal solution being the conditional mean. Because it squares the error, large errors get amplified, so MSE is more easily thrown off by outliers than L1 loss. In robot imitation learning it has a well-known failure mode: if a demonstrator sometimes goes around an obstacle from the left and sometimes from the right, regressing actions directly with MSE learns the average of the two, producing a path down the middle that matches neither — this is the action-multimodality problem, and it's part of why generative policies like diffusion policies and flow matching became popular. A diffusion model's own training objective is also MSE, just applied to the noise that was added rather than to the action itself.",
+      "example": "Diffusion Policy adds random noise to an expert action sequence during training and has the network predict that added noise; the loss is the MSE between predicted and true noise, and the paper notes that minimizing this loss also minimizes a variational bound on the KL divergence between the data distribution and the model's distribution.",
+      "related": ["L1 Loss", "Loss Function", "Maximum Likelihood Estimation / Negative Log-Likelihood", "Action Multimodality", "Continuous Action Regression", "Denoising Loss"]
+    },
+    {
+      "key": "training-05#11",
+      "name_en": "Modality Alignment (Alignment Pretraining Stage)",
+      "aliases": ["Alignment Pretraining", "Feature Alignment Pretraining", "Cross-modal Alignment"],
+      "one_liner": "Mapping features from a new modality, like images, into a representation space the language model can already understand.",
+      "explanation": "Modality alignment means bringing representations of different modalities — image, language, robot state, action — into a space where they correspond to one another. Narrowly, it often refers to the first stage of training a multimodal large model, “alignment pretraining”: LLaVA (2023), for example, freezes both a CLIP vision encoder and a large language model and trains only the projection layer in between, using about 595,000 image-text pairs, so image features turn into visual tokens the language model can process; the second stage then fine-tunes the projection layer together with the language model on instruction data. Aligning first, on its own, lets the randomly initialized projection layer learn to produce reasonable visual tokens before the language model itself is unfrozen. More broadly, CLIP's use of contrastive learning to pull image and text embeddings into the same space also counts as modality alignment. VLA models face the same problem when attaching a state encoder and an action head to a vision-language model.",
+      "example": "LLaVA's first stage trains only the projection matrix for 1 epoch, at a learning rate of 2e-3, on a filtered subset of CC3M (595,000 image-text pairs); its second stage freezes the vision encoder and fine-tunes the projection layer and language model together on 158,000 multimodal instruction examples.",
+      "related": ["Projection Layer", "Vision-Language Model", "Multimodal Large Language Model", "CLIP", "Backbone Freezing", "Knowledge Insulation"]
+    }
+  ]
+}

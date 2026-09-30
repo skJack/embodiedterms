@@ -1,0 +1,196 @@
+{
+  "category": "software",
+  "batch": 8,
+  "terms": [
+    {
+      "name_zh": "云边端协同",
+      "name_en": "Cloud-Edge-Device Collaboration",
+      "abbr": "",
+      "aliases": ["云端协同"],
+      "tier": 3,
+      "one_liner": "把机器人的计算分到云、边缘和机身三层，各担一部分。",
+      "explanation": "一套把算力分层部署的做法：云端做训练和需要大显存的大模型推理，边缘服务器（放在厂区或楼里的本地机器）做低延迟的视觉与规划，机器人本体的主控只跑必须实时的控制环。这么分是因为具身大模型的算力需求和机身的功耗、散热、成本互相矛盾：全放机身跑不动，全放云端一旦网络抖动就失控。常见形态是策略服务器远程推理加本体端保底的运动控制，和端侧部署、推理延迟、异步推理这些词直接相关。",
+      "example": "π0 的开源实现 openpi 提供策略服务器与客户端：策略在带 GPU 的机器上推理，机器人端只发观测、收动作。",
+      "related": ["端侧部署", "策略服务器", "推理延迟", "异步推理", "端侧模型", "主控"],
+      "sources": [
+        {"title": "Edge computing - Wikipedia", "url": "https://en.wikipedia.org/wiki/Edge_computing"},
+        {"title": "openpi (Physical Intelligence) - GitHub", "url": "https://github.com/Physical-Intelligence/openpi"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "cmd_vel 速度指令话题（Twist 消息）",
+      "name_en": "cmd_vel Topic (geometry_msgs/Twist velocity command)",
+      "abbr": "",
+      "aliases": ["/cmd_vel"],
+      "tier": 3,
+      "one_liner": "ROS 里给移动机器人下发线速度和角速度的标准话题。",
+      "explanation": "ROS / ROS 2 中约定俗成的一个话题名（话题即发布-订阅的数据通道），消息类型是 geometry_msgs/Twist，内含线速度 linear 与角速度 angular 各三个分量。导航栈、遥操作和键盘控制程序都往 /cmd_vel 发，底盘驱动节点订阅后换算成左右轮转速或转向角。它的意义是把上层决策和下层底盘解耦：差速、麦克纳姆、阿克曼底盘对外都是同一个接口。Nav2 默认也发这个话题，近年还出现了带时间戳的 TwistStamped 用法。",
+      "example": "用 teleop_twist_keyboard 往 /cmd_vel 发指令，让 TurtleBot 以 0.2 m/s 前进、0.5 rad/s 原地转。",
+      "related": ["话题", "消息", "机器人操作系统", "ROS 2", "Nav2", "差速驱动运动学"],
+      "sources": [
+        {"title": "geometry_msgs/msg/Twist.msg (ros2/common_interfaces)", "url": "https://github.com/ros2/common_interfaces/blob/rolling/geometry_msgs/msg/Twist.msg"},
+        {"title": "Nav2 Documentation", "url": "https://docs.nav2.org/"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "CoACD 凸分解工具",
+      "name_en": "CoACD (Collision-Aware Approximate Convex Decomposition)",
+      "abbr": "",
+      "aliases": ["CoACD"],
+      "tier": 3,
+      "one_liner": "把网格模型自动切成一组凸块，给物理引擎当碰撞体。",
+      "explanation": "一个开源的近似凸分解工具，来自加州大学圣迭戈分校 Hao Su 组（Wei 等，SIGGRAPH 2022）。物理引擎算碰撞时凸形状最快，但仿真资产多是任意形状的三角网格，直接用又慢又不稳；早先常用的 V-HACD 容易把关键凹结构（杯口、抽屉缝）填平，抓取和插入任务就没法仿真。CoACD 在切分时显式考虑碰撞感知的凹度，再用树搜索挑切法，把这些结构保留下来。用法是把 OBJ/STL 跑一遍，输出的多个凸块写进 URDF 或 MJCF 的碰撞字段。",
+      "example": "在 MuJoCo、Isaac Sim 里导入杯子或家具网格前先跑 CoACD 生成凸碰撞体，避免夹爪抓不进杯口。",
+      "related": ["凸分解", "碰撞体", "仿真资产", "网格文件", "统一机器人描述格式", "MJCF"],
+      "sources": [
+        {"title": "CoACD - GitHub", "url": "https://github.com/SarahWeiii/CoACD"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "COLMAP",
+      "name_en": "COLMAP",
+      "abbr": "",
+      "aliases": [],
+      "tier": 3,
+      "one_liner": "开源的运动恢复结构加多视图立体三维重建工具。",
+      "explanation": "一套通用三维重建流水线，作者 Johannes Schönberger 等。它先做运动恢复结构（SfM，从多张照片同时求相机位姿和稀疏点云），再做多视图立体（MVS，稠密化出点云和网格）。之所以重要，是因为它几乎成了「从照片拿相机位姿」的事实标准：神经辐射场、3D 高斯泼溅的训练数据基本都靠 COLMAP 标位姿。有命令行和图形界面，也常被脚本自动调用；机器人这边常用它把绕物体或场景拍一圈的视频变成可用的三维资产。",
+      "example": "训练 3D 高斯泼溅前，把绕桌面拍的一圈图跑 COLMAP，得到相机内外参和稀疏点云。",
+      "related": ["运动恢复结构", "多视图立体", "3D高斯泼溅", "神经辐射场", "光束法平差", "相机外参"],
+      "sources": [
+        {"title": "COLMAP Documentation", "url": "https://colmap.github.io/"},
+        {"title": "colmap/colmap - GitHub", "url": "https://github.com/colmap/colmap"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "ROS 常用 SLAM 建图包（GMapping / SLAM Toolbox / RTAB-Map）",
+      "name_en": "Common ROS SLAM Packages (GMapping / SLAM Toolbox / RTAB-Map)",
+      "abbr": "",
+      "aliases": [],
+      "tier": 3,
+      "one_liner": "ROS 生态里三个装上就能用的建图定位功能包。",
+      "explanation": "GMapping 是最老的 2D 激光 SLAM 包（基于粒子滤波，源自 OpenSLAM），ROS 1 时代教学小车的默认选择；SLAM Toolbox 由 Steve Macenski 开发，是 ROS 2 里 2D 激光建图的主力，走图优化，支持在已有地图上继续建图和大场景；RTAB-Map 由 Mathieu Labbé 开发，面向 RGB-D 和双目，自带基于外观的回环检测，能输出稠密三维地图。它们的价值是把 SLAM 变成改配置就能跑的功能包，配合 Nav2 直接产出可导航的栅格地图；代价是精度和鲁棒性不如针对场景专门调过的算法。",
+      "example": "给带 2D 激光雷达的移动底盘跑 SLAM Toolbox 建一张楼层栅格地图，再交给 Nav2 做导航。",
+      "related": ["同步定位与建图", "激光SLAM", "占据栅格地图", "Nav2", "RTAB-Map", "功能包"],
+      "sources": [
+        {"title": "slam_toolbox - GitHub", "url": "https://github.com/SteveMacenski/slam_toolbox"},
+        {"title": "gmapping - ROS Wiki", "url": "https://wiki.ros.org/gmapping"},
+        {"title": "RTAB-Map", "url": "http://introlab.github.io/rtabmap/"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "可组合节点 / 进程内通信",
+      "name_en": "Composable Nodes (Components) & Intra-process Communication",
+      "abbr": "",
+      "aliases": ["ROS 2 组件", "Component"],
+      "tier": 3,
+      "one_liner": "把多个 ROS 2 节点装进一个进程，通信直接传指针不拷数据。",
+      "explanation": "ROS 2 的组件机制：节点编译成共享库，运行时由一个容器进程按需加载多个，这样的节点叫可组合节点。同一进程内的发布订阅可以走进程内通信，消息以智能指针传递，省掉序列化和内存拷贝；跨进程则要经中间件（DDS）走网络栈。这对高带宽数据很关键——多路相机图像和点云若每一跳都拷一份，CPU 占用和延迟都吃不住。做法是写节点时注册为组件，再用启动文件把相机驱动、图像处理、推理节点放进同一个容器；Isaac ROS 等视觉流水线默认就这么组织。",
+      "example": "把相机驱动、去畸变、目标检测三个节点放进一个组件容器，图像在进程内零拷贝流转。",
+      "related": ["节点", "ROS 2", "中间件", "数据分发服务", "零拷贝", "ROS 2 执行器与回调组"],
+      "sources": [
+        {"title": "Intra-process Communications in ROS 2 (design.ros2.org)", "url": "https://design.ros2.org/articles/intraprocess_communications.html"},
+        {"title": "About Composition - ROS 2 Documentation", "url": "https://docs.ros.org/en/rolling/Concepts/Intermediate/About-Composition.html"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "昇腾 CANN",
+      "name_en": "Compute Architecture for Neural Networks (Huawei Ascend)",
+      "abbr": "CANN",
+      "aliases": ["CANN"],
+      "tier": 3,
+      "one_liner": "华为昇腾 NPU 的底层计算架构和算子编译工具链。",
+      "explanation": "全称 Compute Architecture for Neural Networks，是华为为昇腾（Ascend）AI 处理器做的异构计算软件栈，地位类似英伟达的 CUDA 加 cuDNN：底下对接昇腾芯片，上面支撑 MindSpore、PyTorch 等框架。内容包括编程接口 AscendCL、图编译与优化引擎、算子加速库，以及自己写算子用的 Ascend C。对具身智能的意义是国产算力路线上的部署基座：模型要在昇腾板卡或服务器上跑，就得经 CANN 转换、编译、调优，角色对应 TensorRT 之于英伟达、RKNN-Toolkit 之于瑞芯微。",
+      "example": "把 PyTorch 训好的视觉模型导出后用 CANN 工具链转成昇腾离线模型，在昇腾板卡上推理。",
+      "related": ["算子", "昇思 MindSpore", "TensorRT", "推理部署", "端侧部署", "华为"],
+      "sources": [
+        {"title": "昇腾 CANN 异构计算架构（华为昇腾社区）", "url": "https://www.hiascend.com/software/cann"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "Crocoddyl",
+      "name_en": "Crocoddyl (Contact RObot COntrol by Differential DYnamic programming Library)",
+      "abbr": "",
+      "aliases": [],
+      "tier": 3,
+      "one_liner": "面向接触的最优控制库，用微分动态规划解机器人轨迹。",
+      "explanation": "名字拼自 Contact RObot COntrol by Differential DYnamic programming Library，由爱丁堡大学与 LAAS-CNRS 的研究者（Mastalli 等）开源。它把带接触的多体动力学最优控制问题写成统一形式，再用 DDP、FDDP 这类求解器迭代出关节力矩和整条轨迹，速度快到可以做在线模型预测控制。腿足机器人绕不开这类工具：跳跃、上台阶要同时决定落足点、接触力和整机运动，光靠逆运动学做不出来。底层动力学用 Pinocchio，提供 C++ 和 Python 接口，常与 OCS2、acados 一起被比较。",
+      "example": "给四足机器人规划一段跳跃：在 Crocoddyl 里定义接触序列和代价函数，用 FDDP 解出力矩轨迹。",
+      "related": ["微分动态规划", "最优控制", "轨迹优化", "模型预测控制", "Pinocchio", "OCS2"],
+      "sources": [
+        {"title": "loco-3d/crocoddyl - GitHub", "url": "https://github.com/loco-3d/crocoddyl"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "交叉编译",
+      "name_en": "Cross-compilation",
+      "abbr": "",
+      "aliases": ["交叉构建"],
+      "tier": 3,
+      "one_liner": "在 x86 电脑上编出能在机器人 ARM 主控上跑的程序。",
+      "explanation": "指在一台机器（宿主机）上编译出另一种 CPU 架构或操作系统上运行的可执行文件。机器人上需要它的原因很实际：主控常是 Jetson、树莓派、瑞芯微这类 ARM 板子，算力内存都有限，直接在上面编译大工程（ROS 2 工作空间、OpenCV、推理引擎）要等很久甚至编不过，而开发机是 x86 的。做法是装目标架构的工具链（如 aarch64-linux-gnu-gcc）和目标系统的头文件与库，再配好 CMake 的 toolchain 文件；也常用 Docker 加 QEMU 模拟目标架构，绕开环境不一致。",
+      "example": "在 x86 工作站上用 aarch64 工具链编好 ROS 2 节点和推理程序，拷到 Jetson Orin 上直接运行。",
+      "related": ["嵌入式软件开发", "CMake", "英伟达 Jetson", "Docker", "端侧部署", "固件"],
+      "sources": [
+        {"title": "Cross compiler - Wikipedia", "url": "https://en.wikipedia.org/wiki/Cross_compiler"},
+        {"title": "cmake-toolchains(7) - CMake Documentation", "url": "https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "cuDNN",
+      "name_en": "CUDA Deep Neural Network Library",
+      "abbr": "cuDNN",
+      "aliases": ["cuDNN"],
+      "tier": 3,
+      "one_liner": "英伟达为深度学习常用算子做的 GPU 加速库。",
+      "explanation": "英伟达提供的深度学习原语加速库，把卷积、池化、归一化、注意力等常用算子（算子即神经网络里的基本计算单元）在各代 GPU 上做了高度优化的实现。PyTorch、TensorFlow 这些框架并不自己写这些底层 kernel，而是调 cuDNN，所以它装得对不对、版本与 CUDA 和驱动是否匹配，直接决定训练能不能跑、跑多快。它不是独立工具，而是随 CUDA 生态一起安装的库；实践中最常遇到的就是环境版本对齐问题，以及卷积算法自动选优导致头几个 batch 偏慢。",
+      "example": "PyTorch 里打开 torch.backends.cudnn.benchmark，让 cuDNN 为固定输入尺寸挑最快的卷积实现。",
+      "related": ["CUDA", "PyTorch", "TensorRT", "算子", "GPU 显存", "混合精度训练"],
+      "sources": [
+        {"title": "NVIDIA cuDNN", "url": "https://developer.nvidia.com/cudnn"},
+        {"title": "NVIDIA cuDNN Documentation", "url": "https://docs.nvidia.com/deeplearning/cudnn/"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "CUDA Graph",
+      "name_en": "CUDA Graphs",
+      "abbr": "",
+      "aliases": ["CUDA 图"],
+      "tier": 3,
+      "one_liner": "把一串 GPU 操作录成一张图，之后一次提交省启动开销。",
+      "explanation": "CUDA 的一种执行模型：先把一段计算里的 kernel 启动、内存拷贝及它们的依赖关系录制成一张图，之后每次只提交这张图，由驱动一次性调度。它解决的是 CPU 端的启动开销——模型里小算子很多时，每个 kernel 单独启动占用的 CPU 时间可能超过 GPU 实际算的时间，成了瓶颈。这对机器人策略推理尤其有用：视觉-语言-动作模型、扩散策略要在几十毫秒内反复跑结构固定的前向，张量形状不变，正好适合录图。PyTorch 通过图捕获和 torch.compile 的低开销模式暴露这个能力。",
+      "example": "把扩散动作头的多步去噪循环用 CUDA Graph 捕获，减少单帧推理里的 kernel 启动开销。",
+      "related": ["CUDA", "推理延迟", "torch.compile", "TensorRT", "算子", "策略推理频率"],
+      "sources": [
+        {"title": "Getting Started with CUDA Graphs (NVIDIA Technical Blog)", "url": "https://developer.nvidia.com/blog/cuda-graphs/"},
+        {"title": "CUDA semantics - PyTorch Documentation", "url": "https://pytorch.org/docs/stable/notes/cuda.html"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "cuRobo",
+      "name_en": "cuRobo (NVIDIA GPU-accelerated motion planning)",
+      "abbr": "",
+      "aliases": ["CuRobo"],
+      "tier": 3,
+      "one_liner": "英伟达的 GPU 并行运动规划库，毫秒级出无碰撞轨迹。",
+      "explanation": "英伟达开源的机械臂运动生成库，把逆运动学、碰撞检查（对网格、点云、符号距离场）和轨迹优化都写成 GPU 并行 kernel，同时对成千上万条初始轨迹做优化，因此能在毫秒量级给出无碰撞、满足关节限位的平滑轨迹。它针对的是传统采样式规划（RRT 那一类）在机械臂抓取里太慢、结果抖动的问题，也常被大模型系统当成底层执行器：上层只给目标位姿，怎么走过去交给它。Isaac ROS 里的 cuMotion 就是它的封装。",
+      "example": "上层系统给出目标末端位姿后，用 cuRobo 在几十毫秒内解出避开桌面和箱子的关节轨迹。",
+      "related": ["运动规划", "逆运动学", "轨迹优化", "cuMotion", "符号距离场", "Isaac ROS"],
+      "sources": [
+        {"title": "cuRobo Documentation", "url": "https://curobo.org/"},
+        {"title": "NVlabs/curobo - GitHub", "url": "https://github.com/NVlabs/curobo"}
+      ],
+      "as_of": ""
+    }
+  ]
+}

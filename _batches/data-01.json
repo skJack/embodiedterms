@@ -1,0 +1,447 @@
+{
+ "category": "data",
+ "batch": 1,
+ "terms": [
+  {
+   "name_zh": "数据飞轮",
+   "name_en": "Data Flywheel",
+   "abbr": "",
+   "aliases": [
+    "数据闭环",
+    "数据引擎",
+    "Data Closed Loop",
+    "Data Engine"
+   ],
+   "tier": 1,
+   "one_liner": "部署产生数据、数据改进模型、更好的模型再多部署，循环加速的机制。",
+   "explanation": "数据飞轮指一种自我强化的循环：模型部署出去，在使用中产生新数据（成功、失败、人工纠正），筛选标注后用来改进模型；更好的模型能接更多任务、部署到更多地方，又带回更多数据。英伟达把它定义为用 AI 交互中收集的数据持续改进模型的自我提升回路。自动驾驶行业较早用这种做法（特斯拉称之为数据引擎）。机器人数据很贵，公司普遍希望靠真实部署摊薄数据成本；飞轮能转起来的前提，是机器人先在真实场景里有用。",
+   "example": "Physical Intelligence 的 π*0.6 用 RECAP 方法，把机器人在真实家庭叠衣服、用专业咖啡机做意式咖啡、组装纸箱时的自主执行数据和专家遥操作纠正数据回收训练；据论文，在最难的几项任务上吞吐量提升一倍多、失败率约减半。",
+   "related": [
+    "数据回流",
+    "干预数据",
+    "RECAP",
+    "自我提升",
+    "人在回路",
+    "机群学习 / 部署中学习"
+   ],
+   "sources": [
+    {
+     "title": "NVIDIA Glossary: What Is a Data Flywheel?",
+     "url": "https://www.nvidia.com/en-us/glossary/data-flywheel/"
+    },
+    {
+     "title": "π*0.6: a VLA That Learns From Experience (arXiv 2511.14759)",
+     "url": "https://arxiv.org/abs/2511.14759"
+    }
+   ],
+   "as_of": "2025-11"
+  },
+  {
+   "name_zh": "数据手套",
+   "name_en": "Data Glove",
+   "abbr": "",
+   "aliases": [
+    "动捕手套",
+    "数采手套",
+    "Wired Glove",
+    "CyberGlove"
+   ],
+   "tier": 1,
+   "one_liner": "戴在手上、实时记录每根手指弯曲和手部姿态的传感手套。",
+   "explanation": "数据手套是一种穿戴式输入设备，用弯曲传感器、惯性测量单元（IMU，测角速度和加速度的芯片）或电磁感应测量各手指关节角度，常配合追踪器获得整只手的空间位姿。它早期主要用于人机交互、虚拟现实和动画制作，1977 年的 Sayre Glove 被认为是第一款。在具身智能里主要有两个用途：遥操作灵巧手时把人手动作实时映射到机器人手上；以及不用机器人、直接采集人手操作数据，经动作重定向（把人的动作换算成机器人关节指令）后用于训练。带力反馈的型号还能把接触感觉传回操作者。",
+   "example": "MANUS 的 Metagloves Pro 主打机器人训练数据采集和遥操作；DexCap 系统用基于电磁场的动捕手套记录手指动作，再用 SLAM 相机（能边移动边算出自身位置的相机）跟踪手腕，便携地记录人手操作，供灵巧手做模仿学习。",
+   "related": [
+    "动作捕捉",
+    "力反馈手套",
+    "触觉手套",
+    "遥操作",
+    "动作重定向",
+    "灵巧手"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Wired glove",
+     "url": "https://en.wikipedia.org/wiki/Wired_glove"
+    },
+    {
+     "title": "MANUS 官网（Metagloves 产品）",
+     "url": "https://www.manus-meta.com/"
+    },
+    {
+     "title": "DexCap: Scalable and Portable Mocap Data Collection System for Dexterous Manipulation (arXiv 2403.07788)",
+     "url": "https://arxiv.org/abs/2403.07788"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "演示数据",
+   "name_en": "Demonstration Data",
+   "abbr": "",
+   "aliases": [
+    "演示",
+    "示教数据",
+    "示教",
+    "专家演示",
+    "Expert Demonstration",
+    "demo 数据"
+   ],
+   "tier": 1,
+   "one_liner": "人示范完成任务时录下的观测与动作序列，供机器人模仿学习。",
+   "explanation": "演示数据是模仿学习的原料：人通过遥操作、拖动示教或手持采集设备把任务做一遍，系统按固定频率记录每一帧的观测（相机画面、关节角等本体状态）和对应动作，一次从头到尾的示范存成一条轨迹，数据集里通常叫一个回合（episode）；机器人自己执行时录下的回合则不算演示。策略网络学的就是「看到这种观测时该做这个动作」。质量直接决定效果：动作是否一致、相机是否固定、物体是否始终入镜都有影响。单个任务几十条就能训出可用策略，通用 VLA（视觉-语言-动作）模型则需要成千上万小时、覆盖多任务多场景的演示做预训练。",
+   "example": "ALOHA 论文中多数双臂任务只采 50 条演示（每个任务约 10–20 分钟数据），用 ACT 算法训练后，把电池插进遥控器的任务成功率达 96%；LeRobot 教程建议入门抓取任务至少录 50 条。",
+   "related": [
+    "模仿学习",
+    "行为克隆",
+    "遥操作",
+    "观测-动作对",
+    "回合",
+    "真机数据"
+   ],
+   "sources": [
+    {
+     "title": "ALOHA: Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware",
+     "url": "https://tonyzhaozh.github.io/aloha/"
+    },
+    {
+     "title": "Zhao et al. 2023: Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware (arXiv 2304.13705)",
+     "url": "https://arxiv.org/abs/2304.13705"
+    },
+    {
+     "title": "LeRobot Docs: Imitation Learning on Real-World Robots",
+     "url": "https://huggingface.co/docs/lerobot/il_robots"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "第一人称视频",
+   "name_en": "Egocentric Video",
+   "abbr": "Ego",
+   "aliases": [
+    "第一人称视角",
+    "第一视角视频",
+    "自我中心视频",
+    "第一人称视频数据",
+    "Egocentric View",
+    "Egocentric Video Data"
+   ],
+   "tier": 1,
+   "one_liner": "用头戴或眼镜式相机从本人视角拍的视频，能看清自己的双手。",
+   "explanation": "第一人称视频由佩戴者头部或眼镜上的相机拍摄，画面就是人眼看到的样子，双手和正在操作的物体通常在画面中央，与之相对的是第三视角视频。它对机器人有用，是因为视角接近机器人头部相机，手部操作细节也看得清。代表数据集有 Meta 牵头、13 所大学参与的 Ego4D（2022 年发布，3670 多小时日常活动），以及苹果用 Vision Pro 采集、带 3D 手部关节标注的 EgoDex（829 小时）。这类视频没有机器人动作标签，要靠手部姿态估计、潜在动作（从前后帧推断出的抽象动作）等方法转换后才能训练策略。",
+   "example": "EgoDex 用 Apple Vision Pro 记录 194 种桌面操作任务，同时保存每个手指关节的 3D 位置，可直接当作手部动作轨迹使用。",
+   "related": [
+    "第三视角视频",
+    "人类视频数据",
+    "Ego4D 数据集",
+    "EgoDex 数据集",
+    "Project Aria 眼镜",
+    "手部姿态估计"
+   ],
+   "sources": [
+    {
+     "title": "Ego4D 官网",
+     "url": "https://ego4d-data.org/"
+    },
+    {
+     "title": "EgoDex: Learning Dexterous Manipulation from Large-Scale Egocentric Video (arXiv 2505.11709)",
+     "url": "https://arxiv.org/abs/2505.11709"
+    }
+   ],
+   "as_of": "2025-05"
+  },
+  {
+   "name_zh": "具身智能训练场",
+   "name_en": "Embodied AI Training Ground (Robot Data Collection Center)",
+   "abbr": "",
+   "aliases": [
+    "训练场",
+    "数采场",
+    "数采中心",
+    "数据采集中心",
+    "数据工厂",
+    "数采工厂",
+    "数据采集工厂",
+    "数据训练场",
+    "数采厂",
+    "数据采集训练场",
+    "Data Factory",
+    "Data Collection Factory",
+    "Robot Training Ground"
+   ],
+   "tier": 1,
+   "one_liner": "按真实场景搭建、让大批机器人集中采集训练数据的场地。",
+   "explanation": "具身智能训练场（也叫数采工厂、数据采集中心）是国内行业常用说法，指按家庭、商超、工厂、餐厅等真实环境 1:1 搭建场景，由数采员遥操作多台机器人反复执行任务、批量生产真机数据的场地，也用来测试和评测模型。它要解决的是机器人数据没法从网上抓、只能一条条采的问题：把设备、场景、采集流程（SOP）和质检标准化，产量和质量才能上去。智元为 AgiBot World 建了约 4000 平方米的采集场地，用 100 台真机采了 100 多万条轨迹。2025 年起国内多地陆续建设此类训练场，如当年 1 月国家地方共建人形机器人创新中心在上海启用的异构（多家厂商、不同型号）人形机器人训练场，首期可容纳 100 多台人形机器人同时训练。",
+   "example": "AgiBot World 的采集场地覆盖家居、零售、工业、餐饮、办公五大领域、100 多个真实场景（其中工业和零售场景按 1:1 复刻），每条数据含多视角相机、深度、相机标定和子步骤语言标注。",
+   "related": [
+    "真机数据",
+    "数采员",
+    "采集 SOP",
+    "AgiBot World 数据集",
+    "遥操作",
+    "数据质检"
+   ],
+   "sources": [
+    {
+     "title": "AgiBot World Colosseo: A Large-scale Manipulation Platform for Scalable and Intelligent Embodied Systems (arXiv 2503.06669)",
+     "url": "https://arxiv.org/abs/2503.06669"
+    },
+    {
+     "title": "AgiBot World GitHub",
+     "url": "https://github.com/OpenDriveLab/AgiBot-World"
+    },
+    {
+     "title": "中新网：全国首个异构人形机器人训练场在上海启用（2025-01-21）",
+     "url": "https://www.chinanews.com.cn/cj/2025/01-21/10357409.shtml"
+    }
+   ],
+   "as_of": "2025-03"
+  },
+  {
+   "name_zh": "人类视频数据",
+   "name_en": "Human Video Data",
+   "abbr": "",
+   "aliases": [
+    "人类数据",
+    "人手视频",
+    "Human Video"
+   ],
+   "tier": 1,
+   "one_liner": "拍人做事的视频，不用机器人就能采，用来教机器人理解和模仿操作。",
+   "explanation": "人类视频数据指记录人完成各种操作的视频，包括第一人称视频、第三视角视频和网上的教学视频。最大优势是量大、便宜、场景多，采集不依赖昂贵的机器人。难点是视频里没有机器人能直接执行的动作标签，且人手和机器人手结构不同（本体差异）。常见用法：用手部姿态估计提取手腕和手指轨迹当动作；用潜在动作模型从前后帧学出抽象动作；或只用来预训练视觉表征和世界模型，再用少量真机数据微调。英伟达 2026 年的 EgoScale 用 2 万多小时带动作标注的第一人称视频预训练 VLA（视觉-语言-动作）模型，发现数据量与验证损失呈对数线性关系。",
+   "example": "EgoScale 先在人类视频上预训练，再用少量对齐的人-机数据做中训练（预训练和任务微调之间的一段过渡训练），在 22 自由度灵巧手上的平均成功率比不做预训练高 54%。",
+   "related": [
+    "第一人称视频",
+    "互联网视频数据",
+    "无动作标签视频",
+    "潜在动作预训练",
+    "本体差异",
+    "人类视频预训练"
+   ],
+   "sources": [
+    {
+     "title": "EgoScale: Scaling Dexterous Manipulation with Diverse Egocentric Human Data (NVIDIA GEAR)",
+     "url": "https://research.nvidia.com/labs/gear/egoscale/"
+    },
+    {
+     "title": "EgoDex: Learning Dexterous Manipulation from Large-Scale Egocentric Video (arXiv 2505.11709)",
+     "url": "https://arxiv.org/abs/2505.11709"
+    }
+   ],
+   "as_of": "2026-02"
+  },
+  {
+   "name_zh": "主从臂遥操作",
+   "name_en": "Leader-Follower Teleoperation",
+   "abbr": "",
+   "aliases": [
+    "主从臂",
+    "主从遥操作",
+    "主手/从手",
+    "同构主手",
+    "同构遥操作",
+    "Leader-Follower Arms",
+    "主从臂（遥操作主手）",
+    "主从臂遥操作（同构主手）"
+   ],
+   "tier": 1,
+   "one_liner": "人扳动一台主臂，机器人从臂实时复制它每个关节的角度。",
+   "explanation": "主从臂遥操作是常用的机器人数据采集方式：主臂（leader）是与机器人从臂（follower）运动学结构相同或按比例缩小的手动机械臂，关节装有编码器或舵机。操作者扳动主臂，系统读出各关节角度直接发给从臂。因为是关节对关节映射，不用解逆运动学（由末端位置反算关节角），延迟低、动作直观，适合采精细的双臂操作数据。代价是每种机器人要配一套主臂，且通常没有力反馈。ALOHA 用 WidowX 主臂带 ViperX 从臂做双臂遥操作；伯克利的 GELLO 用 3D 打印件加现成电机，成本不到 300 美元。",
+   "example": "在 LeRobot 里用 SO-101 主臂遥控 SO-101 从臂，边操作边记录相机画面和关节角，录够 50 条就能训练 ACT 策略。",
+   "related": [
+    "遥操作",
+    "ALOHA 双臂平台",
+    "GELLO",
+    "双边遥操作",
+    "演示数据",
+    "SO-100 / SO-101 机械臂"
+   ],
+   "sources": [
+    {
+     "title": "GELLO: A General, Low-Cost, and Intuitive Teleoperation Framework for Robot Manipulators",
+     "url": "https://wuphilipp.github.io/gello_site/"
+    },
+    {
+     "title": "ALOHA: Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware",
+     "url": "https://tonyzhaozh.github.io/aloha/"
+    },
+    {
+     "title": "LeRobot Docs: Imitation Learning on Real-World Robots",
+     "url": "https://huggingface.co/docs/lerobot/il_robots"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "动作捕捉",
+   "name_en": "Motion Capture",
+   "abbr": "MoCap",
+   "aliases": [
+    "动捕",
+    "运动捕捉"
+   ],
+   "tier": 1,
+   "one_liner": "用相机或穿戴传感器把人或物体的运动精确记录成数字数据。",
+   "explanation": "动作捕捉（动捕）是把人或物体的运动高精度记录进计算机的技术，最早大量用于电影、游戏动画和运动分析。主流方案有两类：光学动捕在身上贴反光标记点，由多台红外相机三角测量位置，精度可达毫米级甚至更高，Vicon、OptiTrack 是代表厂商；惯性动捕在身上绑 IMU（测角速度和加速度的传感器），不需要外部相机，适合户外和大范围使用，代表是 Xsens。此外还有只靠普通视频估计姿态的无标记动捕。在具身智能里，动捕数据经动作重定向后可训练人形机器人的全身动作跟踪，也用于遥操作和给数据集提供位姿真值。",
+   "example": "AMASS 把 15 个光学动捕数据集统一转成 SMPL 格式（一种用少量参数描述体型和姿态的人体网格模型），包含 300 多名受试者、1 万多段动作，常被用来训练人形机器人的运动跟踪策略。",
+   "related": [
+    "光学动捕",
+    "惯性动捕",
+    "视频动捕（无标记动捕）",
+    "动作重定向",
+    "AMASS 人体动捕数据集",
+    "数据手套"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Motion capture",
+     "url": "https://en.wikipedia.org/wiki/Motion_capture"
+    },
+    {
+     "title": "AMASS: Archive of Motion Capture as Surface Shapes",
+     "url": "https://amass.is.tue.mpg.de/"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "Open X-Embodiment 数据集",
+   "name_en": "Open X-Embodiment",
+   "abbr": "OXE",
+   "aliases": [
+    "OXE",
+    "Open X",
+    "RT-X 数据集"
+   ],
+   "tier": 1,
+   "one_liner": "谷歌牵头汇总 22 种机器人、100 多万条真机轨迹的开源数据集。",
+   "explanation": "Open X-Embodiment（OXE）是 2023 年 10 月由谷歌 DeepMind 牵头、21 家机构合作发布的跨本体机器人数据集，把 34 个实验室已有的 60 个数据集整理成统一的 RLDS 格式（谷歌提出的按回合存储机器人数据的格式），共 100 多万条真机轨迹、22 种机器人本体、527 种技能。此前各家的数据格式和动作定义不一，很难合并训练。团队在其上训练了 RT-1-X 和 RT-2-X：在数据较少的机器人上，RT-1-X 的成功率平均比只用该机器人自己数据训练的模型高约 50%，说明混合多种机器人的数据能互相帮忙。OXE 随后成为 Octo、OpenVLA 等开源通用策略的主要预训练数据。",
+   "example": "RT-2-X 用 OXE 混合数据训练后，在涌现技能（谷歌机器人自己的数据里没有、要从别家机器人数据里学来的技能）评测上的成功率约为只用谷歌自家数据的 RT-2 的 3 倍。",
+   "related": [
+    "跨本体数据",
+    "RT-X",
+    "RLDS 格式",
+    "Octo",
+    "OpenVLA",
+    "Magic Soup（OXE 数据配方）"
+   ],
+   "sources": [
+    {
+     "title": "Open X-Embodiment: Robotic Learning Datasets and RT-X Models（项目主页）",
+     "url": "https://robotics-transformer-x.github.io/"
+    },
+    {
+     "title": "google-deepmind/open_x_embodiment（GitHub）",
+     "url": "https://github.com/google-deepmind/open_x_embodiment"
+    }
+   ],
+   "as_of": "2023-10"
+  },
+  {
+   "name_zh": "真机数据",
+   "name_en": "Real-Robot Data",
+   "abbr": "",
+   "aliases": [
+    "真机采集",
+    "本体采集",
+    "本体数据",
+    "真实机器人数据",
+    "真机采集（本体采集）",
+    "Real-World Robot Data"
+   ],
+   "tier": 1,
+   "one_liner": "用真实机器人在物理世界里实际操作时采到的数据。",
+   "explanation": "真机数据指真实机器人本体在物理世界执行任务时记录的数据，包括相机画面、关节状态和动作指令，通常靠遥操作采集，也包括机器人自主执行时回收的数据。它没有虚实差距（仿真与现实在物理和画面上的差异），动作能直接在同型号机器人上复现，被普遍认为质量最高。缺点是贵且慢：要买机器人、搭场景、雇数采员一条条采。业界常用「数据金字塔」来描述：底层是海量互联网和人类视频，中间是仿真与合成数据，顶端是少而精的真机数据。代表数据集有 DROID、AgiBot World 和 Open X-Embodiment。",
+   "example": "DROID 由 13 家机构的 50 名采集员用 Quest 2 头显遥控 Franka 机械臂，花 12 个月采了 7.6 万条轨迹、共 350 小时，覆盖 564 个场景。",
+   "related": [
+    "遥操作",
+    "仿真数据",
+    "数据金字塔",
+    "DROID 数据集",
+    "AgiBot World 数据集",
+    "真机派 / 仿真派"
+   ],
+   "sources": [
+    {
+     "title": "DROID: A Large-Scale In-the-Wild Robot Manipulation Dataset",
+     "url": "https://droid-dataset.github.io/"
+    },
+    {
+     "title": "AgiBot World Colosseo (arXiv 2503.06669)",
+     "url": "https://arxiv.org/abs/2503.06669"
+    }
+   ],
+   "as_of": "2025-03"
+  },
+  {
+   "name_zh": "仿真数据",
+   "name_en": "Simulation Data",
+   "abbr": "",
+   "aliases": [
+    "仿真合成数据",
+    "sim 数据",
+    "Sim Data"
+   ],
+   "tier": 1,
+   "one_liner": "在物理仿真器里让虚拟机器人执行任务而自动生成的训练数据。",
+   "explanation": "仿真数据是在 Isaac Sim、MuJoCo 等物理仿真器中生成的数据：场景、物体和机器人都是虚拟的，由脚本、运动规划器或强化学习策略自动完成任务，同时记录图像、深度、关节状态和动作。好处是便宜、能大规模并行、自带精确标注，还能随机改变光照、材质和物体位置（域随机化），覆盖真机难采的长尾情况。主要障碍是虚实差距：仿真里的接触物理和渲染画面与现实不完全一致，柔性物体和精细接触尤其难。常见做法是先用仿真数据大规模预训练，再用少量真机数据微调，或两者混合协同训练。",
+   "example": "银河通用等团队的 GraspVLA 以仿真生成的十亿帧抓取数据集 SynGrasp-1B（1 万多个物体、240 个类别）作为全部动作数据，再配合互联网图文定位数据联合预训练，不用任何真机数据就能零样本迁移到真实环境做抓取。",
+   "related": [
+    "仿真器",
+    "合成数据",
+    "虚实差距",
+    "域随机化",
+    "仿真到现实迁移",
+    "SynGrasp-1B 数据集"
+   ],
+   "sources": [
+    {
+     "title": "GraspVLA: a Grasping Foundation Model Pre-trained on Billion-scale Synthetic Action Data",
+     "url": "https://pku-epic.github.io/GraspVLA-web/"
+    },
+    {
+     "title": "MimicGen: A Data Generation System for Scalable Robot Learning using Human Demonstrations",
+     "url": "https://mimicgen.github.io/"
+    }
+   ],
+   "as_of": "2025"
+  },
+  {
+   "name_zh": "合成数据",
+   "name_en": "Synthetic Data",
+   "abbr": "",
+   "aliases": [
+    "生成数据",
+    "合成训练数据",
+    "Synthetic Data Generation"
+   ],
+   "tier": 1,
+   "one_liner": "不靠真实采集、用仿真或生成模型造出来的训练数据。",
+   "explanation": "合成数据是计算机生成而非真实采集的数据，英伟达的定义是用计算机仿真、生成式 AI 模型或两者结合生成的文本、图像和视频。在具身智能里主要有三条路：在仿真器里渲染和执行任务（即仿真数据）；把少量人工示范自动变换、扩增成大量新示范，如 MimicGen；用视频生成模型或世界模型直接生成机器人干活的视频，再用逆动力学模型（根据前后画面推算动作的模型）补上伪动作标签，如英伟达的 DreamGen。它能缓解真机数据稀缺，但生成内容是否物理合理、是否贴近真实分布，最终要靠真机评测检验。",
+   "example": "MimicGen 从不到 200 条人工示范自动生成 5 万多条示范，覆盖 18 个任务；DreamGen 只用一个抓放任务的遥操作数据，就让人形机器人在 10 个新环境里学会 22 种新动作。",
+   "related": [
+    "仿真数据",
+    "MimicGen",
+    "DreamGen（GR00T Dreams）",
+    "神经轨迹",
+    "伪动作标签",
+    "生成式数据增强"
+   ],
+   "sources": [
+    {
+     "title": "NVIDIA Glossary: What Is Synthetic Data Generation?",
+     "url": "https://www.nvidia.com/en-us/glossary/synthetic-data-generation/"
+    },
+    {
+     "title": "MimicGen: A Data Generation System for Scalable Robot Learning using Human Demonstrations",
+     "url": "https://mimicgen.github.io/"
+    },
+    {
+     "title": "DreamGen: Unlocking Generalization in Robot Learning through Video World Models (NVIDIA GEAR)",
+     "url": "https://research.nvidia.com/labs/gear/dreamgen/"
+    }
+   ],
+   "as_of": "2025-05"
+  }
+ ]
+}

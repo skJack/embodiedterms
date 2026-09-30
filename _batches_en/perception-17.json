@@ -1,0 +1,113 @@
+{
+  "batch": "perception-17",
+  "terms": [
+    {
+      "key": "perception-17#0",
+      "name_en": "Invariant Extended Kalman Filter",
+      "aliases": ["InEKF", "IEKF", "Contact-Aided InEKF"],
+      "one_liner": "An extended Kalman filter that defines error on a Lie group, converging more reliably, commonly used for legged-robot state estimation.",
+      "explanation": "The invariant extended Kalman filter was systematically developed by French researchers Barrau and Bonnabel around 2014, as a variant of the extended Kalman filter (EKF). An ordinary EKF linearizes around the current estimate, so if the estimate drifts far off, the linearization becomes inaccurate and the filter can diverge. InEKF instead places states like attitude, velocity, and position on a Lie group (a mathematical structure describing rotation and translation) and defines the error using the group’s own operation; for a broad class of systems, the error’s evolution no longer depends on the current estimate, giving a larger and more stable region of convergence. A 2019 paper by Hartley, Grizzle, and colleagues at the University of Michigan applied this to fusing an IMU with leg kinematics and contact information, outperforming a quaternion-based EKF on the Cassie series of biped robots, and released a C++ implementation.",
+      "example": "The University of Michigan’s open-source invariant-ekf library (C++, depends on Eigen, BSD-3 licensed) uses the IMU as its motion model, incorporates joint kinematics and foot-contact measurements, and estimates the body’s 3D pose, velocity, and IMU bias, usable on biped or quadruped robots.",
+      "related": ["Extended Kalman Filter", "Error-State Kalman Filter", "Lie Group", "Leg Odometry", "State Estimation", "Inertial Measurement Unit"]
+    },
+    {
+      "key": "perception-17#1",
+      "name_en": "Iterative Closest Point",
+      "aliases": ["ICP", "Point-to-Point ICP", "Point-to-Plane ICP"],
+      "one_liner": "A classic registration algorithm that repeatedly finds nearest-point pairs and solves for rotation and translation to align two point clouds.",
+      "explanation": "Iterative closest point is the classic algorithm for point cloud registration (aligning two point clouds into the same coordinate frame), independently proposed by Chen and Medioni (1991) and Besl and McKay (1992). It loops through four steps: for every point in the source cloud, find its nearest point in the target cloud as a correspondence; solve for the rotation and translation that minimizes the sum of squared distances between these corresponding points; transform the source cloud accordingly; and repeat until the error stops decreasing. Common variants are point-to-point and the normal-vector-based point-to-plane, with the latter usually converging faster. ICP only performs local fine alignment and needs a roughly correct initial pose, or it easily gets stuck in a local optimum — so it is usually preceded by a global coarse registration step. It is widely used in lidar odometry, stitching together multiple scans, and refining object pose, with ready-made implementations in both PCL and Open3D.",
+      "example": "Refining an object pose in Open3D: first do global coarse registration with FPFH features plus RANSAC, then feed that result as an initial guess to point-to-plane ICP, which outputs a 4×4 transform matrix along with a fitness score measuring overlap and an inlier_rmse measuring correspondence error.",
+      "related": ["Point Cloud Registration", "Point Cloud", "Fast Point Feature Histograms", "NDT Registration (Normal Distributions Transform)", "6D Pose Estimation", "LOAM Family of Lidar Odometry"]
+    },
+    {
+      "key": "perception-17#2",
+      "name_en": "LERF",
+      "aliases": ["Language Embedded Radiance Fields", "LERF-TOGO"],
+      "one_liner": "Embeds CLIP language features into a NeRF, so objects in a 3D scene can be found with natural language.",
+      "explanation": "LERF was proposed by Justin Kerr, Chung Min Kim, Angjoo Kanazawa, and colleagues at UC Berkeley, published at ICCV 2023 as an oral presentation. On top of a neural radiance field (NeRF, which uses a network to represent color and density at every point in a scene), it additionally learns a multi-scale language field: a point in space maps to a CLIP vector at each of several scales, supervised during training by CLIP features extracted from an image pyramid across multiple viewpoints, and regularized with DINO features to sharpen object boundaries. Once built, feeding in any text produces a relevance heatmap rendered in 3D space, with no detection box, segmentation mask, or model fine-tuning needed. It is an early landmark for bringing a vision-language model’s open-vocabulary ability into 3D scenes, with code integrated into Nerfstudio.",
+      "example": "LERF-TOGO (2023) first uses LERF to localize an object part like “the handle of the cup” in a scene, then ranks the candidate grasps from an off-the-shelf grasp planner; across 31 real objects, it picked the correct part 81% of the time, with a 69% grasp success rate.",
+      "related": ["Neural Radiance Field", "CLIP", "Distilled Feature Fields", "F3RM", "Open-Vocabulary", "3D Visual Grounding"]
+    },
+    {
+      "key": "perception-17#3",
+      "name_en": "Laser Triangulation",
+      "aliases": ["Line-Laser Profiler", "Laser Profilometer", "Laser Profile Scanner"],
+      "one_liner": "A laser projects a dot or line, a camera views the spot from the side, and triangulation gives distance and profile.",
+      "explanation": "Laser triangulation is an active optical ranging method: a laser projects a dot or a line onto an object, and a camera set a known distance away from the laser, viewing from a different angle, captures where the spot lands; the laser, camera, and spot form a triangle, and the spot’s position in the image gives the distance. Swapping the dot for a line turns this into line-laser profile scanning, which captures an entire cross-sectional profile in one shot; moving the object on a conveyor belt, or sweeping the sensor with a robot arm, stitches these profiles into a 3D point cloud. It is highly accurate, down to tens of micrometers, but its range is usually limited to within a few meters, and it struggles with occlusion and highly reflective surfaces. Industrially it is used for dimensional measurement, defect detection, and weld-seam tracking, a common approach in machine vision and 3D vision-guided robotics; structured-light cameras are based on the same triangulation principle.",
+      "example": "A welding robot mounts a line-laser profile scanner in front of its torch (such as the Micro-Epsilon scanCONTROL 8x00, with 4,224 points per profile at a 10 kHz profile rate), measuring the weld seam’s cross-section position in real time and guiding the arm to correct its path along the seam.",
+      "related": ["Structured Light", "Triangulation", "Machine Vision (Industrial Vision)", "3D Vision-Guided Robotics", "Point Cloud", "Time of Flight"]
+    },
+    {
+      "key": "perception-17#4",
+      "name_en": "Learned State Estimator",
+      "aliases": ["Concurrent Estimator Network", "Estimator Network"],
+      "one_liner": "A neural network that estimates quantities like body velocity from joint and IMU data, often trained jointly with a locomotion policy.",
+      "explanation": "A learned state estimator uses a neural network to replace or supplement a Kalman filter, regressing hard-to-measure states directly from proprioceptive data — a history of joint angles, joint velocities, and IMU readings. A landmark example is a 2022 RA-L paper from Hwangbo’s group at KAIST in Korea: it trains a control policy and an estimator network simultaneously in simulation, the policy with PPO reinforcement learning and the estimator with supervised learning against simulation ground truth, estimating body linear velocity, foot height, and contact probability, which then feed into the policy as input. This needs no predefined gait and no foot-contact sensor, and the estimator sees plenty of randomized slippery and rough terrain during training. In the paper, the quadruped robot reached a top speed of 3.75 m/s on flat ground and 3.54 m/s on a wet surface with a friction coefficient of 0.22. Many later legged reinforcement-learning locomotion projects have adopted a similar estimator network.",
+      "example": "In Ji and colleagues’ real-robot system, the estimator network first estimates body linear velocity, foot height, and contact probability from a history of proprioception, and the policy network then outputs desired joint positions based on this, completing high-speed walking over slopes, wet boards, and bumpy ground.",
+      "related": ["State Estimation", "Reinforcement-Learning Locomotion Control", "Privileged Information", "Leg Odometry", "DreamWaQ", "HIM (Hybrid Internal Model)"]
+    },
+    {
+      "key": "perception-17#5",
+      "name_en": "Leg Odometry",
+      "aliases": ["Proprioceptive Odometry", "Kinematic Odometry"],
+      "one_liner": "Uses joint encoders, the IMU, and contact detection to work out how far and in what direction a legged robot has moved.",
+      "explanation": "Leg odometry is a method for a legged robot to estimate its body position and velocity using only its own sensors (proprioception). The basic idea: while a supporting leg’s foot is planted on the ground and not moving, joint encoder readings and forward kinematics give that foot’s position relative to the body, which can be used to infer how the body itself is moving; this is then fused with the IMU’s acceleration and angular velocity, usually with a Kalman-filter-family method. ETH’s Bloesch and colleagues proposed at RSS 2012 putting the foothold position itself into the extended Kalman filter’s state, requiring no assumptions about the terrain, and validated this on a quadruped; the later invariant extended Kalman filter converges more reliably on the Cassie biped. It is unaffected by lighting or texture and runs at high frequency, making it a foundational input for motion control; but foot slip or a wrong contact judgment introduces error, and it drifts over long durations, so it is often corrected with visual or lidar odometry.",
+      "example": "MIT Cheetah 3 and Mini Cheetah’s open-source LinearKFPositionVelocityEstimator uses a linear Kalman filter to estimate body position and velocity, with the IMU as the prediction step and foot position and velocity computed from leg kinematics as the measurement.",
+      "related": ["State Estimation", "Proprioception", "Contact Estimation", "Extended Kalman Filter", "Invariant Extended Kalman Filter", "Wheel Odometry"]
+    },
+    {
+      "key": "perception-17#6",
+      "name_en": "LiDAR Channels",
+      "aliases": ["Beams", "Lines", "Channel Count"],
+      "one_liner": "The number of laser channels arranged vertically in a multi-line lidar, which sets how dense the point cloud is top to bottom.",
+      "explanation": "Channel count refers to the number of laser transmit-receive channels a multi-line lidar arranges vertically. A traditional mechanically spinning lidar stacks multiple laser channels at different pitch angles into a column and spins the whole assembly horizontally, with each channel tracing out one “scan line” per rotation — so a 16-channel lidar produces 16 rings of points per frame. More channels means higher vertical resolution and more points landing on distant objects, but also higher cost, data volume, and compute requirements. Velodyne’s HDL-64E, released around 2007, spins 64 laser channels, producing about a million points per second; the Ouster OS1 offers up to 128 channels with a 45° vertical field of view. Solid-state or non-repetitive-scan lidars have no fixed rings, so vendors often describe point-cloud density using an “equivalent channel count” — for example, Livox’s Mid-360 is rated at an equivalent of 40 lines.",
+      "example": "The Hesai JT128 is a 128-channel lidar built for robots: 360° horizontal by 189° vertical field of view, 0.74° vertical angular resolution, about 1.15 million points per second in single-return mode, and a weight of 265 grams.",
+      "related": ["Lidar", "Solid-State Lidar", "Field of View", "Point Cloud", "Hesai JT128", "Livox Mid-360"]
+    },
+    {
+      "key": "perception-17#7",
+      "name_en": "LiDAR-Inertial Odometry",
+      "aliases": ["LIO", "LiDAR-IMU Odometry"],
+      "one_liner": "Fuses lidar point clouds with IMU readings to estimate a robot’s pose in real time while building a point-cloud map.",
+      "explanation": "LiDAR-inertial odometry fuses a lidar with an IMU (inertial measurement unit) to estimate its own motion, forming the core of lidar SLAM. The two are complementary: a single point-cloud scan takes a stretch of time to capture (commonly 10 Hz, or 0.1 second), and the robot’s motion during that time distorts the point cloud — the high-frequency IMU can estimate this motion to correct the distortion (deskewing) and provide an initial guess for registration; registering the point cloud against the map, in turn, corrects the drift that accumulates from integrating the IMU. Systems are categorized as loosely or tightly coupled by how they fuse the two, with tightly coupled now the mainstream approach. Landmark systems include Tixiao Shan and colleagues’ LIO-SAM at IROS 2020 (factor-graph optimization) and the University of Hong Kong MARS Lab’s FAST-LIO / FAST-LIO2 (iterated Kalman filter), the latter skipping feature extraction to register raw points directly, reaching up to 100 Hz and also working with solid-state lidars.",
+      "example": "Walking a loop through a building holding a lidar with a built-in IMU, FAST-LIO2 can output the trajectory and point-cloud map in real time; in the paper’s tests, pose estimation stayed reliable even while the sensor was spun rapidly at angular rates up to about 1000°/s.",
+      "related": ["Lidar SLAM", "FAST-LIO / FAST-LIO2", "LIO-SAM", "IMU Preintegration", "Tightly Coupled / Loosely Coupled Fusion", "Visual-Inertial Odometry"]
+    },
+    {
+      "key": "perception-17#8",
+      "name_en": "LingBot-Depth",
+      "aliases": ["Masked Depth Modeling for Spatial Perception", "Masked Depth Modeling"],
+      "one_liner": "An open-source depth-completion model from Ant Group’s Robbyant that uses a color image to repair a depth camera’s holes and noise.",
+      "explanation": "LingBot-Depth is a depth model released and open-sourced in January 2026 by Robbyant, the embodied-AI company under Ant Group; the paper is titled “Masked Depth Modeling for Spatial Perception,” and the GitHub page states it has been accepted at ECCV 2026. RGB-D depth cameras often can’t measure depth on transparent or reflective surfaces, leaving holes and noise. LingBot-Depth treats these missing regions as a natural “mask”: given a color image, raw depth, and camera intrinsics, it uses a ViT-Large backbone to fuse the two modalities and outputs a completed metric depth map and a point cloud in the camera’s coordinate frame. It was trained on about 3 million paired RGB-D samples (about 2 million real, 1 million synthetic). The team states its depth-completion error is 40–50% lower than the best prior methods. Code, weights, and the dataset are all open source.",
+      "example": "In the official grasping experiments, grasping hard-to-sense objects using depth repaired by LingBot-Depth: success rate for a transparent storage box rose from 0% to 50%, for a glass cup from 60% to 80%, and for a steel cup from 65% to 85%.",
+      "related": ["Depth Completion", "Depth Camera", "Perceiving Transparent and Reflective Objects", "Depth Holes (Missing Depth)", "Masked Autoencoder", "Robbyant"]
+    },
+    {
+      "key": "perception-17#9",
+      "name_en": "LIO-SAM",
+      "aliases": ["LiDAR Inertial Odometry via Smoothing and Mapping"],
+      "one_liner": "An open-source tightly coupled lidar-inertial odometry and mapping system built on factor-graph optimization.",
+      "explanation": "LIO-SAM is a lidar-inertial SLAM system by Tixiao Shan, Brendan Englot, Daniela Rus, and colleagues, published at IROS 2020; Shan and Englot had previously built LeGO-LOAM. It formulates localization and mapping as a factor graph (a graph model that treats each measurement as a constraint and jointly optimizes a sequence of poses), supporting four types of factors: IMU preintegration, lidar odometry, GPS, and loop closure. IMU preintegration both deskews the point cloud and provides an initial guess for registration. To stay real-time, it only selects keyframes and registers each new keyframe against a local map made from a fixed number of nearby historical keyframes, rather than matching against the global map. Its back end is built on the GTSAM library. The code is open source under a BSD-3 license, with a ROS 1 version and a ROS 2 branch.",
+      "example": "The README notes that LIO-SAM only works with a 9-axis IMU that can output roll, pitch, and yaw, recommended at 200 Hz or higher; when using an Ouster lidar, its built-in 6-axis IMU is not sufficient, so a separate external 9-axis IMU is needed.",
+      "related": ["LiDAR-Inertial Odometry", "Factor Graph Optimization", "IMU Preintegration", "GTSAM", "Loop Closure", "LOAM Family of Lidar Odometry"]
+    },
+    {
+      "key": "perception-17#10",
+      "name_en": "LOAM (LiDAR Odometry and Mapping)",
+      "aliases": ["LeGO-LOAM", "A-LOAM"],
+      "one_liner": "A classic method that splits lidar SLAM into a high-frequency odometry step and a low-frequency mapping step, plus its lightweight variants.",
+      "explanation": "LOAM is a lidar odometry and mapping method proposed by Ji Zhang and Sanjiv Singh at Carnegie Mellon University at RSS 2014. Its core idea is splitting the problem into two parts running at frequencies about an order of magnitude apart: odometry estimates the lidar’s motion roughly, at high frequency, while mapping registers the point cloud finely into the map at low frequency. It picks out edge points and planar points from each scan based on local curvature and matches only these features, keeping computation light; it achieves low drift with no IMU needed, reaching accuracy close to offline batch methods on the KITTI odometry benchmark. LeGO-LOAM, published by Tixiao Shan and Brendan Englot at IROS in 2018, lightened this for ground vehicles: it segments out ground points before extracting features, solves for the 6-DoF pose in two steps, and adds ICP-based loop closure. The later LIO-SAM then tightly coupled in the IMU.",
+      "example": "LeGO-LOAM’s original configuration targets the Clearpath Jackal ground robot: a horizontally mounted Velodyne VLP-16 lidar plus an optional IMU, outputting 6-DoF pose in real time; the README also warns that its simple ICP loop closure often fails when odometry drift gets too large.",
+      "related": ["Lidar SLAM", "LIO-SAM", "LiDAR-Inertial Odometry", "Iterative Closest Point", "Loop Closure", "FAST-LIO / FAST-LIO2"]
+    },
+    {
+      "key": "perception-17#11",
+      "name_en": "Loop Closure Detection",
+      "aliases": ["Loop Closure", "Place Recognition"],
+      "one_liner": "Lets a robot recognize that it has returned to a place it has already been, used to remove SLAM’s accumulated drift.",
+      "explanation": "Loop closure detection is a step in SLAM (simultaneous localization and mapping): deciding whether the scene the robot currently sees is a place it has already visited. Every step of odometry carries a small error, and the farther the robot travels the more this drift accumulates, so by the time it loops back to the starting point, the map no longer lines up. Once a return to a familiar place is confirmed, a constraint is added between the two poses and handed to the back-end pose-graph or factor-graph optimization, pulling the whole trajectory and map back into consistency. Visual SLAM commonly compares image features using a bag-of-words model, such as the DBoW2 library used in the ORB-SLAM series; lidar SLAM commonly uses a global point-cloud descriptor like Scan Context to find candidates, then aligns them precisely with ICP. A false detection is costly — one wrong loop closure can warp the entire map — so a geometric consistency check is usually added as well.",
+      "example": "DBoW2 converts an image’s ORB or BRIEF features into a bag-of-words vector; according to its README, processing BRIEF features takes about 3 milliseconds per image, and it can search a database of tens of thousands of images for likely loop-closure candidates.",
+      "related": ["Simultaneous Localization and Mapping", "Visual Place Recognition", "Relocalization", "Factor Graph Optimization", "Iterative Closest Point", "SLAM Front End / Back End"]
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "batch": "software-03",
+  "terms": [
+    {
+      "key": "software-03#0",
+      "name_en": "Hugging Face Mirror (hf-mirror.com)",
+      "aliases": ["hf-mirror", "HF_ENDPOINT"],
+      "one_liner": "An unofficial mirror site that makes it fast to download Hugging Face models and datasets from inside China.",
+      "explanation": "hf-mirror.com is a community-run mirror of Hugging Face, not an official Hugging Face service. Direct connections to huggingface.co from within China are often slow or fail outright, yet almost all VLA models, vision encoders, and LeRobot datasets are hosted on Hugging Face, so the mirror has become the standard entry point for reproducing papers there. It is simple to use: set the environment variable HF_ENDPOINT to the mirror's address, and downloads from transformers, huggingface-cli, LeRobot, and similar tools automatically route through it instead of the original site. Gated models, which require accepting a license before download, still need permission requested on the official Hugging Face site plus an access token — the mirror does not bypass that step.",
+      "example": "After running export HF_ENDPOINT=https://hf-mirror.com, you can use huggingface-cli download to fetch the openvla/openvla-7b weights.",
+      "related": ["Hugging Face", "Hugging Face Transformers", "ModelScope", "Package Mirror Sources in China (pip / conda / apt / Docker mirrors)", "LeRobot", "AutoDL (GPU compute rental platform)"]
+    },
+    {
+      "key": "software-03#1",
+      "name_en": "Hugging Face Transformers",
+      "aliases": ["transformers", "🤗 Transformers"],
+      "one_liner": "Hugging Face's open-source Python library for loading pretrained models with a few lines of code.",
+      "explanation": "Transformers is Hugging Face's open-source library, bundling the architecture definitions and loading code for a huge number of pretrained models, spanning language models, vision models, and vision-language models (VLMs — models that can look at an image and describe it in words). Its core interfaces are AutoModel, AutoProcessor, and from_pretrained: give it a model name and it automatically downloads the weights, configuration, and tokenizer (the tool that splits text into tokens). In embodied AI, many VLA backbones — PaliGemma, Qwen-VL, Llama, and others — are loaded directly through it, and models like OpenVLA also publish their weights in a Transformers-compatible format. That makes it a foundational library that anyone reading code or fine-tuning models in this space has to know.",
+      "example": "OpenVLA's official example loads the 7B weights with AutoModelForVision2Seq.from_pretrained, then calls predict_action to output robot arm actions.",
+      "related": ["Hugging Face", "Transformer", "Vision-Language Model (VLM)", "OpenVLA", "Hugging Face Diffusers", "Hugging Face Mirror (hf-mirror.com)"]
+    },
+    {
+      "key": "software-03#2",
+      "name_en": "JAX",
+      "aliases": ["Flax"],
+      "one_liner": "Google's NumPy-like framework for numerical computing and deep learning, with automatic differentiation and compilation.",
+      "explanation": "JAX is Google's open-source Python library for numerical computing, with an interface close to NumPy plus a set of composable function transforms: grad for automatic differentiation, jit for compiling code into fast GPU/TPU programs via the XLA compiler, and vmap for automatic batching. Flax is a neural-network library built on top of JAX that defines layers and manages parameters; the two are usually used together. In embodied AI, JAX shows up heavily in large-scale parallel simulation and in Google-adjacent work: MJX and Brax use it to run physics simulation on GPUs, and Octo and Physical Intelligence's openpi were originally implemented in JAX. Compared with PyTorch, it leans more functional in style and has a somewhat steeper learning curve.",
+      "example": "The π0 training code in the openpi repository was originally written in JAX and Flax.",
+      "related": ["PyTorch", "TensorFlow", "MJX", "Brax", "openpi (Physical Intelligence)", "Octo"]
+    },
+    {
+      "key": "software-03#3",
+      "name_en": "Launch File",
+      "aliases": ["roslaunch", "ros2 launch", ".launch file"],
+      "one_liner": "A ROS script that starts multiple nodes at once and configures their parameters.",
+      "explanation": "A robot system typically has to run a dozen or more nodes at the same time — camera drivers, state estimation, planning, control — and starting each one by hand in its own terminal is tedious and error-prone. A launch file writes down, in one place, which nodes to start, what parameters to pass them, how to remap their topics, and which namespace to put them in, so a single command brings the whole system up. ROS 1 uses XML-format .launch files with the roslaunch command; ROS 2 supports Python (.launch.py), XML, and YAML, launched with ros2 launch, and the Python form — which allows conditionals and loops — is the most common. Launch files are usually kept in a package's launch directory.",
+      "example": "A single command, ros2 launch realsense2_camera rs_launch.py, starts the RealSense camera driver and publishes color and depth image topics.",
+      "related": ["Robot Operating System", "ROS 2", "Node (ROS)", "Package (ROS)", "Parameter Server", "Topic (ROS)"]
+    },
+    {
+      "key": "software-03#4",
+      "name_en": "MATLAB / Simulink",
+      "aliases": ["MATLAB", "Simulink"],
+      "one_liner": "MathWorks' commercial numerical computing and graphical modeling-and-simulation software, widely used in controls.",
+      "explanation": "MATLAB is commercial software from MathWorks that serves as both a programming language and a computing environment, strong at matrix operations, signal processing, and plotting. Simulink is its companion graphical tool, where dynamic systems are built by dragging blocks and wiring them together and then simulated; models can also be auto-converted into embedded C code and flashed onto a controller. In robotics, the pair is mainly used for control algorithm design: modeling a motor's current loop and field-oriented control, tuning PID gains, system identification (inferring a system's model from data), and arm kinematics, aided by toolboxes like Robotics System Toolbox and ROS Toolbox. Many controls and motor courses, and engineering teams generally, rely on it; researchers working on learning-based methods tend to use Python instead.",
+      "example": "Build a cascaded current-loop, velocity-loop, and position-loop model for a joint motor in Simulink, tune the PID gains, then generate C code and flash it to the driver board.",
+      "related": ["PID Control", "Field-Oriented Control (FOC)", "System Identification", "Embedded Software Development", "Model Predictive Control (MPC)", "Python and C++ (common embodied-AI programming languages)"]
+    },
+    {
+      "key": "software-03#5",
+      "name_en": "Mesh File (STL / OBJ / DAE / glTF)",
+      "aliases": ["STL", "OBJ", "DAE", "glTF", "model file"],
+      "one_liner": "A 3D file that describes an object's shape as a collection of triangles — the visual “shell” of a robot model.",
+      "explanation": "A mesh file breaks a part or object's surface into many triangles and records their vertex coordinates and faces. Common formats include: STL, which stores geometry only, with no color or defined units; OBJ, which stores geometry plus texture coordinates, with materials in a companion .mtl file; DAE (COLLADA), an XML format that can carry materials and color and is common in ROS; and glTF, a newer format from the Khronos Group that supports physically based materials and suits web and rendering use cases. Robot description files like URDF and MJCF don't store shape directly — they reference these mesh files separately for the visual appearance and for the collision geometry used in physics checks. Collision meshes usually need to be simplified or convex-decomposed, or simulation becomes slow and unstable; another common pitfall is mixing up whether an STL file's units are millimeters or meters, which can make a model a thousand times too big.",
+      "example": "In a URDF exported from SolidWorks, each link references a meshes/xxx.STL file for both its visual appearance and its collision shape.",
+      "related": ["Unified Robot Description Format (URDF)", "MJCF (MuJoCo XML Format)", "Collision Geometry", "Convex Decomposition", "Mesh (Triangle Mesh)", "SolidWorks-to-URDF Exporter Plugin"]
+    },
+    {
+      "key": "software-03#6",
+      "name_en": "Message (msg / srv / action interface)",
+      "aliases": ["msg", "ROS message", "interface type", "interface"],
+      "one_liner": "The agreed-upon data format that ROS nodes use to exchange information.",
+      "explanation": "Before ROS nodes can exchange data, they need to agree on what that data looks like — that agreement is a message, collectively called an interface in ROS 2. There are three kinds of interface files: .msg defines the data structure carried on a topic; .srv defines a service's request and response, separated by three dashes; and .action defines a goal, result, and intermediate feedback for an action. These files only declare field types and names; the build tools generate the corresponding C++ and Python code automatically. Commonly used standard message packages include std_msgs, geometry_msgs (e.g. the velocity command Twist, or the pose type Pose), and sensor_msgs (e.g. the image type Image, joint state JointState, or point cloud PointCloud2). Reusing a standard message instead of defining a custom one keeps a node easy to connect to existing tools.",
+      "example": "Running ros2 interface show geometry_msgs/msg/Twist shows it's made of a linear and an angular three-dimensional vector, which is what base velocity commands use.",
+      "related": ["Topic (ROS)", "Service (ROS)", "Action (ROS)", "Publish-Subscribe", "ROS 2", "cmd_vel Topic (geometry_msgs/Twist velocity command)"]
+    },
+    {
+      "key": "software-03#7",
+      "name_en": "Middleware",
+      "aliases": ["communication middleware", "robot middleware"],
+      "one_liner": "The software layer sitting between the operating system and applications that handles communication between programs.",
+      "explanation": "Middleware is a layer of software between the operating system and applications that takes care of generic problems on the developer's behalf: how programs find each other, how data gets packaged, how it moves between processes or machines, and how packet loss and latency are handled. Robot software is made up of many independent processes, sensor data volumes are large, and latency matters, so communication middleware is critical. ROS 2 does not implement transport itself; instead it plugs into an underlying implementation through the ROS middleware interface (RMW), defaulting to a DDS (Data Distribution Service) implementation such as Fast DDS or Cyclone DDS, though it can also be switched to Zenoh. Frameworks like ROS, LCM, and dora-rs are sometimes referred to collectively as robot middleware as well.",
+      "example": "Setting the environment variable RMW_IMPLEMENTATION=rmw_cyclonedds_cpp switches ROS 2's underlying communication from the default Fast DDS to Cyclone DDS.",
+      "related": ["ROS Middleware Interface (RMW)", "Data Distribution Service (DDS)", "eProsima Fast DDS", "Eclipse Cyclone DDS", "Eclipse Zenoh", "Quality of Service (QoS)"]
+    },
+    {
+      "key": "software-03#8",
+      "name_en": "ModelScope",
+      "aliases": ["Moda"],
+      "one_liner": "Alibaba's domestic open-source model and dataset community, roughly a Chinese counterpart to Hugging Face.",
+      "explanation": "ModelScope (魔搭社区) is an open-source model platform launched by Alibaba in 2022 that hosts model weights, datasets, and online demos. It is reliably accessible from within China, and Chinese-made models such as the Qwen series are usually released here in sync with Hugging Face. It provides a modelscope Python library and command-line tool for downloading models directly, along with companion fine-tuning frameworks such as ms-swift. For students in China working on embodied AI, ModelScope and the Hugging Face mirror are the two go-to routes for downloading VLM backbones or robotics datasets.",
+      "example": "Running modelscope download --model Qwen/Qwen2.5-VL-7B-Instruct fetches the Qwen2.5-VL weights over a domestic Chinese connection, for use as a VLA's vision-language backbone.",
+      "related": ["Hugging Face", "Hugging Face Mirror (hf-mirror.com)", "Qwen-VL series (Qwen2.5-VL / Qwen3-VL)", "LLaMA-Factory / ms-swift (ModelScope SWIFT)", "Hugging Face Transformers"]
+    },
+    {
+      "key": "software-03#9",
+      "name_en": "MoveIt Motion Planning Framework",
+      "aliases": ["MoveIt 2", "MoveIt2"],
+      "one_liner": "The most widely used open-source motion planning framework for robot arms, built on ROS.",
+      "explanation": "MoveIt is an open-source, ROS-based motion planning framework for robot arms. It originated at Willow Garage and is now led by PickNik Robotics together with the community; the ROS 2 version is called MoveIt 2. It packages together a set of commonly needed arm capabilities: inverse kinematics (computing joint angles from a desired end-effector pose), calling planners such as OMPL to find a collision-free path, using a collision-checking library to detect self-collision and collisions with the environment, and adding velocity and timing information to a path before handing it to a controller for execution. Its Setup Assistant can generate an SRDF and configuration package from a URDF, and an RViz plugin lets users drag the end effector and plan interactively. Traditional teaching and pick-and-place pipelines rely on it heavily; learned policies that output actions directly often bypass it.",
+      "example": "Import a Franka arm's URDF with the MoveIt Setup Assistant, generate a configuration package, then drag the end-effector marker in RViz and click Plan & Execute to move the arm around obstacles to a target pose.",
+      "related": ["Open Motion Planning Library (OMPL)", "Motion Planning", "Inverse Kinematics (IK)", "Semantic Robot Description Format (SRDF)", "RViz / RViz2", "cuRobo (NVIDIA GPU-accelerated motion planning)"]
+    },
+    {
+      "key": "software-03#10",
+      "name_en": "MJCF (MuJoCo XML Format)",
+      "aliases": ["MuJoCo XML"],
+      "one_liner": "The XML model format the MuJoCo simulator uses to describe robots and scenes.",
+      "explanation": "MJCF is MuJoCo's native model format, describing a simulated scene in XML: rigid bodies are nested into a tree by parent-child relationships, and each body carries its joints, geoms (a sphere, box, or referenced mesh file), and mass and inertia; the format can also specify actuators, sensors, tendons, contact parameters, and the simulation time step. Compared with URDF, it can express more simulation-specific detail and is written more compactly. MuJoCo can also read URDF, but files are usually converted to MJCF and then given extra parameters. MuJoCo Menagerie, maintained by DeepMind, collects a large number of well-tuned robot MJCF models, and tools like MJX and MuJoCo Playground use the format directly.",
+      "example": "The unitree_g1 directory in MuJoCo Menagerie provides an MJCF file for the Unitree G1, which can be loaded directly into simulation for reinforcement-learning locomotion training.",
+      "related": ["MuJoCo (Multi-Joint dynamics with Contact)", "Unified Robot Description Format (URDF)", "MuJoCo Menagerie", "Mesh File (STL / OBJ / DAE / glTF)", "SDFormat (Simulation Description Format)", "Universal Scene Description (OpenUSD)"]
+    },
+    {
+      "key": "software-03#11",
+      "name_en": "Numerical Precision Formats (FP32 / FP16 / BF16 / FP8 / INT8 / INT4)",
+      "aliases": ["FP32", "FP16", "BF16", "FP8", "INT8", "INT4", "half precision", "single precision"],
+      "one_liner": "The bit width and format used to store a model's numbers, which sets its memory use, speed, and accuracy.",
+      "explanation": "Every parameter and intermediate result in a neural network is a number, and how many bits are used to store it directly affects memory, speed, and precision. FP32 is 32-bit single precision, the most stable but the most memory-hungry; FP16 half precision uses only 16 bits with a small numeric range, so training with it easily overflows and needs loss scaling; BF16 also uses 16 bits but keeps the same exponent range as FP32 — wide range, lower precision — and is the default choice for large-model training today; FP8 uses only 8 bits and needs GPUs from the H100 generation or later; INT8 and INT4 are integer formats mainly used to compress models for inference. As a rough rule, memory equals parameter count times bytes per number (4 for FP32, 2 for BF16, 1 for INT8, 0.5 for INT4), so a 7B-parameter model stored in BF16 needs roughly 14 GB, or about 3.5 GB quantized to INT4 — which determines whether a VLA can fit on a robot's onboard compute.",
+      "example": "A 7B model like OpenVLA takes roughly 15 GB of GPU memory loaded in BF16; quantizing it to 4 bits lets it run on smaller GPUs, though action accuracy may drop.",
+      "related": ["Mixed-Precision Training", "Post-Training Quantization (PTQ)", "Quantization-Aware Training (QAT)", "GPU Memory (VRAM)", "On-Device / Edge Deployment", "NVIDIA TensorRT"]
+    }
+  ]
+}

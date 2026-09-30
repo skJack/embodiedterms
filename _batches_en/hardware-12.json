@@ -1,0 +1,113 @@
+{
+  "batch": "hardware-12",
+  "terms": [
+    {
+      "key": "hardware-12#0",
+      "name_en": "mjbots moteus",
+      "aliases": ["moteus"],
+      "one_liner": "An open-source, palm-sized brushless motor driver from mjbots that turns an RC motor into a servo joint.",
+      "explanation": "moteus is a brushless motor controller from the American company mjbots, led by Josh Pieper: it's about the size of a palm and mounts directly behind a motor, turning an ordinary RC-style brushless motor into a servo actuator with controllable position, velocity, and torque. The current r4.11 version supports 10–44V input and 100A peak phase current, integrates an onboard absolute magnetic encoder (to measure rotor angle), and communicates over a 5 Mbps CAN-FD bus (a high-speed fieldbus) so multiple units can be daisy-chained; its firmware is open source under the Apache 2.0 license. Internally it runs field-oriented control (FOC, an algorithm that makes a brushless motor deliver torque smoothly), making it a popular choice for DIY quadrupeds, small humanoids, and robot-arm joints — a common low-cost quasi-direct-drive actuator.",
+      "example": "mjbots' own quad A1 quadruped robot drives an outrunner brushless motor at each joint with one moteus board.",
+      "related": ["Motor Driver", "Field-Oriented Control (FOC)", "CAN Bus", "ODrive", "Quasi-Direct Drive", "Magnetic Encoder"]
+    },
+    {
+      "key": "hardware-12#1",
+      "name_en": "Motor Thermal Derating / Overheat Protection",
+      "aliases": ["Thermal Derating", "Overtemperature Protection"],
+      "one_liner": "A motor heats up with use, so the driver limits current by temperature and shuts down if it gets too hot.",
+      "explanation": "As a motor runs, current flowing through its windings generates heat (copper loss, proportional to the square of the current), and the core loses some energy as heat too, so temperature keeps climbing. Too much heat can burn the winding insulation or demagnetize the permanent magnets, so a driver typically uses a thermistor to monitor winding and power-transistor temperature: as it nears the limit, the driver derates itself, actively lowering the maximum current and torque it allows; past a threshold, it faults and shuts down. This is also why motors have separate peak and rated torque figures — peak torque can only be held for a few seconds, while sustained operation is limited to the rated value. For humanoid and quadruped robots, standing for a long time, holding a half-squat, or carrying a heavy load puts sustained high torque on the knee and hip joints, which is the most common trigger for overheating; common fixes include liquid-cooled joints, added heat sinks, and penalizing joint torque in reinforcement-learning reward functions.",
+      "example": "When a humanoid robot holds a half-squat while carrying a box for a long time, its knee motors heat up, the driver automatically lowers the current limit, and the robot's legs weaken and its motion slows — in severe cases it shuts down into protection mode.",
+      "related": ["Peak Torque", "Rated Torque", "Liquid-Cooled Joint Actuators (Active Thermal Management)", "Torque Limiting", "Motor Driver", "Torque-Speed Curve (T-N Curve)"]
+    },
+    {
+      "key": "hardware-12#2",
+      "name_en": "Motor Velocity Constant (KV Rating)",
+      "aliases": ["KV", "KV Rating", "Velocity Constant"],
+      "one_liner": "How many more RPM a motor spins at no load for each extra volt applied.",
+      "explanation": "The KV rating is the most commonly quoted spec for a brushless motor, in units of rpm/V: a motor rated KV100 connected to 24V spins at roughly 2,400 rpm with no load. It's roughly inversely proportional to the torque constant (Kt, the torque produced per amp of current), with a common estimate of Kt ≈ 9.55 / KV (N·m/A). So a lower-KV motor produces more torque for the same current, at a lower speed, while a higher-KV motor does the opposite. Drones and RC models want high speed, so they typically use high-KV motors; robot joints want low speed and high torque, so they typically use large-diameter, low-KV outrunner motors paired with a low-ratio reducer. When choosing a motor, KV needs to be considered together with supply voltage, target speed, and gear ratio.",
+      "example": "A KV100 motor connected to a 24V supply spins at roughly 2,400 rpm with no load; by the estimation formula, its torque constant is about 0.095 N·m/A.",
+      "related": ["Torque Constant (Kt)", "Outrunner Motor", "Brushless DC Motor", "Torque-Speed Curve (T-N Curve)", "Quasi-Direct Drive", "Gear Ratio"]
+    },
+    {
+      "key": "hardware-12#3",
+      "name_en": "ODrive",
+      "aliases": ["ODrive Robotics"],
+      "one_liner": "A brushless motor driver line from ODrive Robotics, popular with robotics hobbyists and labs.",
+      "explanation": "ODrive is a line of brushless motor controllers from ODrive Robotics, driving motors with field-oriented control (FOC) and offering position, velocity, and torque control. The early ODrive v3.x hardware and firmware were open source under the MIT license and became very popular with robotics hobbyists and universities, though that line is no longer being developed. Today's main products are the ODrive Pro (14–58V, 3000W continuous) and the ODrive S1 (12–50V, 1600W continuous), which support CAN, UART, and step/direction interfaces and come with Python, Arduino, and ROS 2 libraries, though firmware for the newer products is no longer published openly. It's commonly used to drive hub-motor chassis and prototype joints for quadruped and humanoid robots.",
+      "example": "Many open-source quadruped and wheeled-base projects use a single ODrive board to drive two brushless motors at once, connected to the host computer over CAN.",
+      "related": ["Motor Driver", "Field-Oriented Control (FOC)", "mjbots moteus", "CAN Bus", "Brushless DC Motor", "Encoder"]
+    },
+    {
+      "key": "hardware-12#4",
+      "name_en": "Omni Wheel",
+      "aliases": ["Omnidirectional Wheel", "Omni-Wheel"],
+      "one_liner": "A wheel ringed with small rollers that lets it roll forward normally but also slide sideways with no resistance.",
+      "explanation": "An omni wheel has a ring of small, freely spinning rollers around its rim, with each roller's axis perpendicular to the wheel's own axle. Driven by a motor, the wheel rolls forward normally; under sideways force, the small rollers spin and let the wheel slide sideways with almost no resistance. Arranging three wheels at 120° to each other, or four wheels in a cross layout, and controlling each wheel's speed independently, lets a base translate in any direction on the floor while also rotating in place. Together with the Mecanum wheel, it's one of the two main omnidirectional-drive approaches: a Mecanum wheel's rollers sit at 45° with the wheels mounted parallel like a car's, while an omni wheel's rollers sit at 90°, requiring the wheels themselves to be mounted at an angle. Its downside is that the gaps between rollers cause vibration while driving, and its load capacity and ability to cross obstacles are limited, so it's best suited to smooth indoor floors.",
+      "example": "RoboCup's Small Size League soccer robots commonly use a base built from four omni wheels, letting them translate sideways and spin while dribbling the ball.",
+      "related": ["Mecanum Wheel", "Swerve Drive Wheel", "Mobile Base / Chassis", "Differential Drive Base", "Nonholonomic Constraint", "Mobile Manipulation"]
+    },
+    {
+      "key": "hardware-12#5",
+      "name_en": "Optical Encoder",
+      "aliases": ["Optical-Type Encoder"],
+      "one_liner": "A high-precision encoder that measures rotation angle by shining light through a marked disc.",
+      "explanation": "An optical encoder is built from a light source, a code disc, and a photodetector: the disc is etched with alternating transparent and opaque stripes, and as it turns with the motor shaft, the light is periodically interrupted; the detector converts that into pulses, or reads a coded track, which is translated into a rotation angle. By output type, it can be incremental (counting pulses, needing to be re-homed after a power loss) or absolute (a unique code for every position, so the angle is known the instant it's powered on). Its advantages are high resolution and accuracy, and no sensitivity to magnetic fields, which is why it's common in industrial servo motors and high-end robot-arm joints; its downsides are sensitivity to dust, oil, and shock, plus higher size and cost than a magnetic encoder, which is why low-cost robot joints tend to use magnetic encoders instead.",
+      "example": "An industrial servo motor commonly carries a 17-bit-or-higher absolute optical encoder at its rear, resolving 2^17 = 131,072 distinct positions per revolution.",
+      "related": ["Encoder", "Incremental Encoder", "Absolute Encoder", "Magnetic Encoder", "Dual Encoder", "Servo Motor"]
+    },
+    {
+      "key": "hardware-12#6",
+      "name_en": "ORCA: Open-Source, Reliable, Cost-Effective, Anthropomorphic Robotic Hand",
+      "aliases": ["ORCA", "ORCA Hand"],
+      "one_liner": "A 17-DOF, open-source, tendon-driven anthropomorphic dexterous hand from ETH Zurich.",
+      "explanation": "ORCA is an open-source anthropomorphic dexterous hand from ETH Zurich's Soft Robotics Lab, with its paper posted in April 2025 and later published at IROS 2025. It has 17 degrees of freedom (16 in the fingers, 1 in the wrist), uses tendon drive (motors sit outside the hand and pull the fingers via cables, like tendons), and integrates tactile sensors; its parts can be 3D-printed or bought off the shelf, with material costs under CHF 2,000 and an assembly time of under 8 hours. Its design includes joints that can dislocate and reset without damage, automatic calibration, and automatic tendon tensioning, and in testing it ran continuously for more than 10,000 cycles (about 20 hours) with no hardware failure. In June 2026, the team published a follow-up platform paper connecting low-level control, simulation, teleoperation from consumer devices, and hand motion retargeting, and integrating it with the LeRobot training pipeline.",
+      "example": "A researcher can 3D-print and assemble their own ORCA hand using the STL files and assembly video on the project's website, then teleoperate it with a VR headset to collect data and train a dexterous-manipulation policy.",
+      "related": ["Dexterous Hand", "Tendon-Driven Actuation", "LEAP Hand", "Tactile Sensor", "Open-Source Hardware", "LeRobot"]
+    },
+    {
+      "key": "hardware-12#7",
+      "name_en": "Outrunner Motor",
+      "aliases": ["Outrunner Brushless Motor"],
+      "one_liner": "A brushless motor whose magnet-lined outer shell spins as the rotor, giving it high torque.",
+      "explanation": "An outrunner motor is a brushless-motor layout in which the stator, carrying the windings, stays fixed in the center, while an outer shell lined with permanent magnets rotates around it as the rotor. Because the magnets sit farther from the shaft, the same electromagnetic force produces more torque, so outrunner motors naturally deliver low speed and high torque, with high torque density — but they also have higher rotational inertia, and because the windings are enclosed inside, they dissipate heat less easily. They first became popular in RC models and drones, where they're cheap and available in many sizes. In robotics, pairing one with a single low-ratio planetary reducer is the standard recipe for a quasi-direct-drive actuator: enough torque, good backdrivability, well suited to legged joints that need compliance and shock tolerance.",
+      "example": "MIT's Mini Cheetah joint actuator is exactly this: an outrunner brushless motor with a roughly 6:1 planetary reducer built into it.",
+      "related": ["Brushless DC Motor", "Quasi-Direct Drive", "MIT Mini Cheetah Actuator", "Motor Velocity Constant (KV Rating)", "Torque Density", "Axial Flux Motor"]
+    },
+    {
+      "key": "hardware-12#8",
+      "name_en": "Payload-to-Weight Ratio",
+      "aliases": ["Weight-to-Payload Ratio"],
+      "one_liner": "A robot's rated payload divided by its own weight; higher means lighter and stronger for its size.",
+      "explanation": "Payload-to-weight ratio is the rated payload divided by the weight of the robot itself (usually meaning a robot arm, or the whole machine), used to gauge whether a design is light and its actuation strong. Some sources flip the ratio and report weight-to-payload instead, so it's worth checking which way a number is written. The ratio is shaped jointly by motor torque density, the reducer, and structural materials: improving it means using higher-power-density joints and lightweight materials like magnesium alloy or carbon fiber. For an arm bolted to a table, this ratio mainly affects mounting and cost; it matters even more for a humanoid, a quadruped, or an arm mounted on a mobile base, because every extra kilogram on the arm is a kilogram the legs, base, and battery all have to carry too, which shortens battery life. When comparing numbers, also check whether a manufacturer's figure is rated or peak payload, and at what reach and speed it was measured.",
+      "example": "A collaborative arm weighing 20 kg with a 5 kg rated payload has a payload-to-weight ratio of 1:4.",
+      "related": ["Payload", "Torque Density", "Lightweighting (Magnesium Alloy / Carbon Fiber)", "Robot Arm", "Collaborative Robot", "Power Density"]
+    },
+    {
+      "key": "hardware-12#9",
+      "name_en": "Permanent Magnet Synchronous Motor (PMSM)",
+      "aliases": ["PMSM", "Permanent Magnet AC Servo Motor"],
+      "one_liner": "An AC motor with permanent magnets on its rotor, spinning in strict sync with the supply frequency.",
+      "explanation": "A permanent magnet synchronous motor has permanent magnets (usually neodymium-iron-boron) mounted on its rotor; the stator is fed three-phase AC current that creates a rotating magnetic field, and the rotor follows that field at exactly the same frequency, which is why it's called “synchronous.” Its structure is nearly identical to a brushless DC motor's; the main differences are the shape of the back-EMF waveform (sinusoidal versus trapezoidal) and how it's driven — a PMSM uses sinusoidal current together with field-oriented control (FOC), giving smoother torque and less noise. In robotics circles, the two terms are often used loosely and interchangeably. A PMSM is efficient and has high power density, but it needs a position sensor, such as an encoder, to tell the driver where the rotor is. Electric-vehicle drive motors, industrial servo motors, and most robot joint motors fall into this category.",
+      "example": "The frameless torque motor at the heart of a humanoid's joint module is, in most cases, essentially a permanent magnet synchronous motor driven with FOC.",
+      "related": ["Brushless DC Motor", "Field-Oriented Control (FOC)", "Rare-Earth Permanent Magnets (Neodymium-Iron-Boron)", "Servo Motor", "Frameless Torque Motor", "Joint Module"]
+    },
+    {
+      "key": "hardware-12#10",
+      "name_en": "Pneumatic Actuation",
+      "aliases": ["Pneumatic Drive"],
+      "one_liner": "Using compressed air to push a cylinder or soft chamber and produce motion.",
+      "explanation": "Pneumatic actuation uses compressed air from an air compressor, controlled by solenoid valves, to fill and empty a pneumatic cylinder, an air motor, or a soft inflatable chamber, converting air pressure into linear or rotary motion. Its advantages are a simple, cheap structure and a high power-to-weight ratio; because air is compressible, it's naturally compliant, giving a gentle impact when it contacts a person or object, and it's safer than an electric motor in flammable or explosive environments. Its disadvantages stem from that same compressibility: precise position and force control are difficult, response is delayed, and it also needs a compressor, tubing, and valve manifolds, making it noisy, inefficient, and awkward to fit inside a mobile robot. So in factories it's mainly used for simple open/close actions, such as pneumatic grippers, vacuum cups, and positioning cylinders; in research, it's the primary power source behind soft robots and pneumatic artificial muscles.",
+      "example": "A pneumatic two-finger gripper on a production line only has two states, open and closed, switching its air path through a solenoid valve to complete a grasp in tens of milliseconds.",
+      "related": ["Pneumatic Gripper", "Pneumatic Artificial Muscle (McKibben Muscle)", "Soft Robot", "Hydraulic Actuation", "Vacuum Suction Cup", "Compliance"]
+    },
+    {
+      "key": "hardware-12#11",
+      "name_en": "Pneumatic Artificial Muscle (McKibben Muscle)",
+      "aliases": ["PAM", "McKibben Muscle", "Pneumatic Muscle"],
+      "one_liner": "A tube-shaped actuator that shortens and thickens like a real muscle, pulling with force, when inflated.",
+      "explanation": "The classic form of pneumatic artificial muscle is the McKibben muscle: a rubber inner tube is wrapped in a braided mesh sleeve, and when the tube is inflated, it bulges outward, but the braided sleeve converts that radial expansion into axial shortening, producing a pulling force at both ends — closely resembling how a biological muscle contracts. It's named after physicist Joseph L. McKibben, who designed it in the 1950s for orthotic devices for polio patients. Its advantages are that it's very light, has a high force-to-weight ratio, and is naturally compliant; its disadvantages are that it can only pull, not push, so it needs to be arranged in antagonistic pairs like real muscles, its range of contraction is limited, and it shows significant nonlinearity and hysteresis, making precise modeling and control difficult. It's commonly found in rehabilitation exoskeletons, biomimetic robot arms, and soft-robotics research.",
+      "example": "Festo's Fluidic Muscle is a commercialized pneumatic-muscle product, used in applications such as gripping and tensioning that need compliant pulling force.",
+      "related": ["Pneumatic Actuation", "Artificial Muscle", "Exoskeleton", "Soft Robot", "Biomimetic Robot", "Hydraulically Amplified Self-Healing Electrostatic Actuator (HASEL)"]
+    }
+  ]
+}

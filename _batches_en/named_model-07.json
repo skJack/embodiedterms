@@ -1,0 +1,113 @@
+{
+  "batch": "named_model-07",
+  "terms": [
+    {
+      "key": "named_model-07#0",
+      "name_en": "TARS Robotics AWE",
+      "aliases": ["AWE (AI World Engine)", "AWE 3.0", "AWE 3.5"],
+      "one_liner": "TARS Robotics' general-purpose embodied foundation model, whose main selling point is training on large-scale human manipulation data.",
+      "explanation": "AWE is the general-purpose embodied foundation model from TARS Robotics (它石智航), a Shanghai embodied-AI company reportedly founded in February 2025; the company describes it as built on a proprietary “AI World Engine” architecture. The company released AWE 3.0 on March 14, 2026, with three main selling points: training on its own WIYH human-manipulation dataset (which the company says exceeds 1 million hours); generating actions in “latent space” (a compressed latent representation), which it says cuts jitter by more than 45%; and added high-density tactile sensing. At WAIC in July 2026, AWE won a SAIL Award, with the company's booth showing a robot doing wire-harness assembly driven by AWE 3.5. It represents a domestic line of work centered on human data as the primary training source, but there is currently no public paper, and all the figures above come from the company's own announcements.",
+      "example": "According to the company's launch demo, a TARS robot running AWE 3.0 completed more than a hundred sub-millimeter-precision wire-harness assemblies in one hour.",
+      "related": ["TARS Robotics", "TARS WIYH Dataset", "Human Video Data", "Latent Action", "Embodied Foundation Model", "Visuo-tactile Fusion"]
+    },
+    {
+      "key": "named_model-07#1",
+      "name_en": "BEAST",
+      "aliases": ["B-spline Encoded Action Sequence Tokenizer", "BEAST-F", "BEAST-ACT"],
+      "one_liner": "An action tokenizer that compresses a chunk of actions into a fixed number of tokens using B-spline control points.",
+      "explanation": "BEAST is an action tokenizer proposed in June 2025 by a team at the Karlsruhe Institute of Technology (KIT) in Germany, published at NeurIPS 2025. The idea is to fit an action sequence with a B-spline curve (a smooth curve whose shape is set by a small number of “control points”), then treat the control points as tokens: they can be quantized into discrete tokens for a language model, or kept as continuous values. Compared with tokenizers like FAST, which need separate training and produce variable-length output, BEAST needs no training and always produces a fixed number of tokens per chunk, so decoding can happen in parallel in a single forward pass; the B-spline also guarantees smooth transitions between the start and end of adjacent action chunks, reducing jitter. The paper plugs it into small models like Florence-2 (BEAST-F) and into architectures like ACT, gets competitive results on CALVIN and LIBERO, and reaches roughly twice π0's inference throughput.",
+      "example": "BEAST-ACT turns the 100-step action sequence ACT would normally predict step by step into just 15 control points, which a B-spline then reconstructs into a smooth trajectory.",
+      "related": ["Action Tokenizer", "Action Chunking", "π0-FAST", "Parallel Decoding", "Florence-2", "ACT"]
+    },
+    {
+      "key": "named_model-07#2",
+      "name_en": "Barkour",
+      "aliases": ["Barkour: Benchmarking Animal-level Agility with Quadruped Robots"],
+      "one_liner": "A quadruped-robot agility benchmark from Google, modeled on dog agility trials, for measuring animal-level agility in a repeatable way.",
+      "explanation": "Barkour is a quadruped-robot agility benchmark released by the Google Research team (later folded into Google DeepMind) in May 2023, its name blending “bark” and “parkour.” Modeled on canine agility trials, it sets up weave poles, an A-frame ramp, a 0.5-meter broad jump, and a finish-line table in a 5-meter-by-5-meter course, scoring 0 to 1 based on whether each obstacle is cleared and whether the time comes close to that of a small dog (about 10 seconds). The team first trained specialized skills — walking, climbing, jumping — separately with reinforcement learning, then used teacher-student distillation to combine them into a single Transformer-based generalist locomotion policy, which completed the course on the team's own quadruped robot in about 20 seconds, roughly half a small dog's speed. Its contribution is giving “animal-level agility” a quantifiable, reproducible way to compare systems.",
+      "example": "The team's own quadruped robot typically completes the Barkour course in about 20 seconds, versus about 10 seconds for a small dog.",
+      "related": ["Quadruped Robot", "Legged Locomotion", "Parkour", "Benchmark", "Teacher-Student Distillation", "Reinforcement-Learning-Based Locomotion Control"]
+    },
+    {
+      "key": "named_model-07#3",
+      "name_en": "Behavior Transformer",
+      "aliases": ["BeT", "VQ-BeT", "Vector-Quantized Behavior Transformer"],
+      "one_liner": "A Transformer-based imitation-learning method that learns several different valid behaviors at once from multimodal demonstration data.",
+      "explanation": "BeT (Behavior Transformer) is a behavior-cloning method proposed in 2022 by Lerrel Pinto's group at NYU. Human demonstrations often show “action multimodality”: several equally valid ways to act in the same situation, and direct regression averages them into one wrong action. BeT first clusters continuous actions into a number of bins with k-means, has a Transformer predict which bin to pick, and then predicts a continuous offset to correct it into a precise action — preserving multiple behavior modes this way. VQ-BeT, from 2024 (NYU and Seoul National University, ICML 2024), replaces k-means with residual vector quantization, which suits high-dimensional actions and long action sequences better, running inference at roughly 5x the speed of a diffusion policy. BeT and diffusion policies are two representative lines of work from the same period addressing the same multimodality problem.",
+      "example": "In the Franka Kitchen simulated kitchen, demonstrators complete a set of subtasks in different orders each time, and BeT is used to test whether a model can learn and reproduce these different behavior patterns.",
+      "related": ["Action Multimodality", "Behavior Cloning", "Vector Quantization", "Diffusion Policy", "Action Tokenizer", "Franka Kitchen"]
+    },
+    {
+      "key": "named_model-07#4",
+      "name_en": "Being-H0",
+      "aliases": ["Being-H0.5", "Being-H0.7", "Being-H Series"],
+      "one_liner": "BeingBeyond's series of dexterous-manipulation VLA models, pretrained on large-scale video of human hands doing manipulation.",
+      "explanation": "Being-H0 is a vision-language-action model released in July 2025 by Peking University, Renmin University of China, and the embodied-AI company BeingBeyond (智在无界), later accepted at ICML 2026. Its idea is to treat the human hand as a universal manipulator: it first pretrains on human hand-manipulation data, using a part-specific action tokenizer to compress wrist and finger motion into tokens, then does 3D spatial alignment, and finally post-trains on a small amount of robot data to transfer onto a dexterous robot hand. Its companion dataset, UniHand, pools motion capture, VR, and ordinary video, totaling about 1,100 hours and 165 million instruction samples. Being-H0.5, from January 2026, expands the data to more than 35,000 hours across 30 embodiments, with an emphasis on cross-embodiment transfer; Being-H0.7, from April, switches to a latent-space world-action model.",
+      "example": "In real-robot experiments, the researchers post-trained Being-H0 onto a Franka arm fitted with an Inspire six-degree-of-freedom dexterous hand for dexterous manipulation tasks.",
+      "related": ["Human Video Pretraining", "UniHand Dataset", "Vision-Language-Action Model", "Dexterous Manipulation", "Cross-Embodiment", "BeingBeyond"]
+    },
+    {
+      "key": "named_model-07#5",
+      "name_en": "BFM-Zero",
+      "aliases": ["BFM-Zero: A Promptable Behavioral Foundation Model for Humanoid Control Using Unsupervised RL"],
+      "one_liner": "A humanoid whole-body control foundation model trained with no task reward at all, switching tasks through a simple “prompt.”",
+      "explanation": "BFM-Zero is a humanoid behavioral foundation model released in November 2025 by Guanya Shi's group at Carnegie Mellon University together with Meta and other institutions. It's trained with unsupervised reinforcement learning: no specific task reward is given during training; instead, a forward-backward representation (a method that maps states and tasks into the same latent space) learns a shared latent space, into which reference motions, target poses, and reward functions can all be encoded as vectors. At deployment, giving the corresponding vector — the “prompt” — lets the same policy perform motion tracking, reaching a target pose, or optimizing a given reward, all zero-shot, and it also supports few-shot adaptation. The team demonstrated push recovery and getting back up after a fall on a real Unitree G1, calling it the first behavioral foundation model that can switch tasks on a real humanoid through prompts.",
+      "example": "The same BFM-Zero policy deployed on a Unitree G1 does motion tracking when given a reference motion, poses itself to match a given target pose, or acts to optimize a given reward function — all without retraining in between.",
+      "related": ["Behavior Foundation Model", "Unsupervised Skill Discovery", "Motion Tracking", "Unitree G1", "Meta Motivo (Humanoid Behavior Foundation Model)", "Learned Whole-Body Control"]
+    },
+    {
+      "key": "named_model-07#6",
+      "name_en": "BridgeVLA",
+      "aliases": ["BridgeVLA++", "BridgeVLA: Input-Output Alignment for Efficient 3D Manipulation Learning with Vision-Language Models"],
+      "one_liner": "A 3D-manipulation VLA that projects point clouds into 2D images and reads off actions as heatmaps on them.",
+      "explanation": "BridgeVLA was proposed in June 2025 by teams at the Institute of Automation, Chinese Academy of Sciences, and ByteDance Seed, published at NeurIPS 2025. The problem: VLMs are pretrained on 2D images and text, while 3D manipulation needs to handle point clouds and output 3D poses — the two are misaligned, so knowledge transfers poorly between them. BridgeVLA renders a point cloud into several multi-view 2D images and feeds them into PaliGemma, having the model output a 2D heatmap on each image (each pixel representing the likelihood of “act here”), then combines the multi-view heatmaps to determine the 3D position the end effector should go to; before formal training, it's also pretrained to output heatmaps using object-detection data. It raised success rate on RLBench from 81.4% to 88.2%. In August 2026 the team also open-sourced BridgeVLA++.",
+      "example": "Tested on a real Franka Research 3 arm across more than 10 tasks, given only 3 demonstrations per task, it reached an average success rate of 96.8%.",
+      "related": ["3D-VLA", "PaliGemma", "RVT-2", "RLBench", "The Colosseum", "Keyframe Action Prediction"]
+    },
+    {
+      "key": "named_model-07#7",
+      "name_en": "ChatVLA",
+      "aliases": ["ChatVLA: Unified Multimodal Understanding and Robot Control with Vision-Language-Action Model"],
+      "one_liner": "A unified VLA model that can both answer questions about images and directly control a robot.",
+      "explanation": "ChatVLA was proposed in February 2025 by teams at Midea Group and East China Normal University, and was selected for an oral presentation at the EMNLP 2025 main conference. It targets a common problem in VLAs: fine-tuning on robot data tends to wipe out the base VLM's original image question-answering ability (the paper calls this spurious forgetting), while training control and understanding data together makes the two interfere with each other. Its fix has two parts. First, staged alignment training: the model is trained on robot data alone until it can control the robot, then image-text data is mixed back in at a 1:3 ratio to restore understanding. Second, a mixture-of-experts structure: attention layers are shared, but feed-forward layers split into an understanding expert and a control expert, routed by task. Built on Qwen2-VL-2B, it scores 47.2 on MMStar, with multimodal understanding clearly stronger than earlier VLAs, and it also beats OpenVLA and ECoT across 25 real-robot tasks.",
+      "example": "The same ChatVLA model can both answer questions about a photo and carry out instructions like grasp, place, push, or hang in scenes such as a bathroom, kitchen, or tabletop.",
+      "related": ["Vision-Language-Action Model", "Catastrophic Forgetting", "Mixture of Experts", "Co-training", "DexVLA", "Knowledge Isolation"]
+    },
+    {
+      "key": "named_model-07#8",
+      "name_en": "CLIPort",
+      "aliases": ["CLIPort: What and Where Pathways for Robotic Manipulation"],
+      "one_liner": "A language-conditioned manipulation policy that combines CLIP's semantic understanding with Transporter Networks' pixel-level spatial precision.",
+      "explanation": "CLIPort is work by Mohit Shridhar, Lucas Manuelli, and Dieter Fox at the University of Washington and NVIDIA, published at CoRL 2021. It borrows the neuroscience idea of separate “what” and “where” visual pathways. The semantic pathway uses a pretrained CLIP (an image-text contrastive learning model) to understand “what to act on” — color, shape, object category; the spatial pathway uses the fully convolutional network from Transporter Networks to process RGB-D images and decide “where to pick up, where to place,” outputting pixel-level heatmaps for grasping and placement. Fusing the two lets it follow language instructions on tabletop tasks like packing a box or folding cloth without needing object poses, segmentation masks, or symbolic state. It's an early, representative example of connecting large-scale pretrained image-text models to robot manipulation, and the same authors' later PerAct extends this idea to 3D voxels.",
+      "example": "A single multi-task policy learned to follow language instructions across 9 real tabletop tasks using just 179 paired real image-action examples.",
+      "related": ["CLIP", "Transporter Networks", "Language-Conditioned Policy", "Tabletop Manipulation", "PerAct", "Pick-and-Place"]
+    },
+    {
+      "key": "named_model-07#9",
+      "name_en": "CLONE",
+      "aliases": ["CLONE: Closed-Loop Whole-Body Humanoid Teleoperation for Long-Horizon Tasks"],
+      "one_liner": "A humanoid whole-body teleoperation system that tracks only the head and hands, correcting drift in closed loop.",
+      "explanation": "CLONE was proposed in June 2025 by teams at the Beijing Institute for General Artificial Intelligence (BIGAI), Peking University, and Beijing Institute of Technology. Earlier humanoid teleoperation often controlled the upper and lower body separately to stay stable, producing uncoordinated motion; robots also drift further from the operator's actual position the longer they walk (accumulated drift). CLONE captures only the operator's head and hand poses with an Apple Vision Pro headset, and a mixture-of-experts (MoE) whole-body policy generates whole-body joint actions for a Unitree G1, with the robot's actual global position fed back to the policy in real time for closed-loop drift correction. The paper reports an average position error of about 5.1 centimeters over 8.9 meters of straight-line walking, and it can perform long-horizon tasks requiring whole-body coordination, such as squatting to pick something up off the floor. Systems like this are also a basic tool for collecting demonstration data on humanoid robots.",
+      "example": "An operator wearing an Apple Vision Pro walks around a room and bends down; the G1 walks over and squats to pick an object up off the floor, following along.",
+      "related": ["Whole-Body Teleoperation", "Mixture of Experts", "Unitree G1", "Apple Vision Pro", "Motion Tracking", "OmniH2O"]
+    },
+    {
+      "key": "named_model-07#10",
+      "name_en": "CogACT",
+      "aliases": ["CogACT: A Foundational Vision-Language-Action Model for Synergizing Cognition and Action in Robotic Manipulation"],
+      "one_liner": "An open-source VLA that attaches a diffusion Transformer action module behind a frozen vision-language backbone.",
+      "explanation": "CogACT is a vision-language-action model released in November 2024 by Microsoft Research Asia together with Tsinghua University, the University of Science and Technology of China, and others. At the time, models like OpenVLA had the VLM output discrete action tokens directly, limiting precision and continuity. CogACT separates cognition from action: a VLM such as Prismatic-7B understands the image and instruction and outputs a cognitive feature, and a diffusion Transformer (DiT) action module of up to about 300 million parameters then generates a continuous action sequence conditioned on that feature. At inference, adaptive action ensembling averages only similar action predictions together, avoiding mixing different modes. Trained on about 400,000 trajectories from Open X-Embodiment, it beats OpenVLA by more than 35% in SIMPLER simulation and 55% on real robots, and even outperforms the 55-billion-parameter RT-2-X in simulation.",
+      "example": "Researchers tested CogACT on two different real arms, a Realman and a Franka, and it still completed manipulation tasks with objects and backgrounds it had never seen.",
+      "related": ["Vision-Language-Action Model", "Diffusion Action Head", "Action Expert", "OpenVLA", "Prismatic VLM", "Temporal Ensembling"]
+    },
+    {
+      "key": "named_model-07#11",
+      "name_en": "ConRFT",
+      "aliases": ["Cal-ConRFT", "HIL-ConRFT"],
+      "one_liner": "A method that fine-tunes a VLA with reinforcement learning using a consistency policy, offline first, then online on the real robot.",
+      "explanation": "ConRFT was proposed in February 2025 by Dongbin Zhao's group at the Institute of Automation, Chinese Academy of Sciences, published at RSS 2025. Supervised fine-tuning of a VLA on a small number of demonstrations often isn't reliable enough for contact-rich real-robot tasks, while running reinforcement learning directly on the real robot is slow and unsafe. ConRFT works in two stages. The offline stage (Cal-ConRFT) combines behavior cloning with Q-learning to learn a reasonably stable policy and value estimate from a small number of demonstrations. The online stage (HIL-ConRFT) continues fine-tuning with reinforcement learning on the real robot, letting a person take over and correct it at any time to keep exploration safe. The action head uses a consistency policy (a diffusion-style model that can generate an action in one or a few steps), which fits well with reinforcement learning. Built on Octo-small, after 45–90 minutes of online fine-tuning across 8 real tasks, average success rate reached 96.3%, 144% higher than pure supervised fine-tuning.",
+      "example": "Tasks included picking up a banana, opening a drawer, putting bread in a toaster, mounting a car wheel, and hanging a Chinese knot; during online training, the operator could take over whenever the robot was about to make a mistake.",
+      "related": ["Reinforcement Learning Fine-tuning", "Consistency Policy", "HIL-SERL", "Human-in-the-Loop", "Octo", "Real-Robot Reinforcement Learning"]
+    }
+  ]
+}

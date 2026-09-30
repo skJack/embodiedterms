@@ -1,0 +1,424 @@
+{
+ "category": "sim",
+ "batch": 9,
+ "terms": [
+  {
+   "name_zh": "自动域随机化",
+   "name_en": "Automatic Domain Randomization",
+   "abbr": "ADR",
+   "aliases": [
+    "自动化域随机化"
+   ],
+   "tier": 3,
+   "one_liner": "随策略变强自动扩大随机化范围的域随机化方法，由 OpenAI 提出。",
+   "explanation": "ADR 是 OpenAI 2019 年在「用机器人手解魔方」工作中提出的算法。普通域随机化（在仿真里随机改摩擦、质量、外观等参数，好让策略迁移到真机）要人手动设定每个参数的随机范围，参数一多就很难调。ADR 把它做成自动课程：初始分布只集中在一个按真机标定值设定的环境；训练中随机挑一个参数固定在当前范围的边界上评测，表现高于上阈值就扩大该参数范围，低于下阈值就缩小。这样难度跟着能力增长，最终范围可远超人工设定。论文用它同时训练控制策略和视觉位姿估计网络，全部在仿真里训练后迁移到真实的 Shadow 灵巧手。",
+   "example": "论文中最好的策略在真机上复原需 15 步拧转的魔方成功率约 60%，需 26 步的最难情形约 20%；复原步骤由传统的 Kociemba 求解器给出，神经网络负责手上的操作。",
+   "related": [
+    "域随机化",
+    "动力学随机化",
+    "仿真到现实迁移",
+    "课程学习",
+    "Dactyl（OpenAI 魔方灵巧手）",
+    "Shadow 灵巧手"
+   ],
+   "sources": [
+    {
+     "title": "Solving Rubik's Cube with a Robot Hand (OpenAI, arXiv 1910.07113)",
+     "url": "https://arxiv.org/abs/1910.07113"
+    }
+   ],
+   "as_of": "2019-10"
+  },
+  {
+   "name_zh": "批量渲染",
+   "name_en": "Batched / Tiled Rendering",
+   "abbr": "",
+   "aliases": [
+    "并行渲染",
+    "平铺渲染",
+    "Tiled Camera",
+    "批量渲染器（Batch Renderer）"
+   ],
+   "tier": 3,
+   "one_liner": "一次性渲染成百上千个并行环境的相机画面，给视觉策略训练高速供图。",
+   "explanation": "GPU 并行仿真能同时跑几千个环境，但若每个环境的相机单独渲染、单独拷贝，图像带宽就成了瓶颈：Isaac Lab 文档估算，一张 800×600 的浮点图接近 2MB，60 帧每秒就要 120MB/s，还要乘以相机数和环境数。批量渲染把所有环境里同一台相机合并处理。以 Isaac Lab 的 TiledCamera 为例（Isaac Sim 4.2.0 起支持），所有克隆相机共用一个渲染产物，各环境的画面按格子拼成一张大图，一次同步就能交给训练端。ManiSkill3 的 SAPIEN 并行渲染、MuJoCo Playground 自带的批量渲染器也提供类似能力。它让从像素学习的视觉运动策略也能用大规模并行强化学习来训练。",
+   "example": "在 Isaac Lab 里用 TiledCameraCfg 把相机路径写成 /World/envs/env_.*/Camera，就能一次拿到所有环境的 80×80 RGB 图；官方建议在 RTX 4090 级显卡上放约 512 个相机。",
+   "related": [
+    "GPU 并行仿真",
+    "并行环境",
+    "渲染",
+    "Isaac Lab",
+    "ManiSkill",
+    "大规模并行强化学习"
+   ],
+   "sources": [
+    {
+     "title": "Isaac Lab Documentation: Camera (Tiled Rendering)",
+     "url": "https://isaac-sim.github.io/IsaacLab/main/source/overview/core-concepts/sensors/camera.html"
+    },
+    {
+     "title": "ManiSkill3: GPU Parallelized Robotics Simulation and Rendering for Generalizable Embodied AI (arXiv 2410.00425)",
+     "url": "https://arxiv.org/abs/2410.00425"
+    },
+    {
+     "title": "MuJoCo Playground (arXiv 2502.08844)",
+     "url": "https://arxiv.org/abs/2502.08844"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "基准饱和",
+   "name_en": "Benchmark Saturation",
+   "abbr": "",
+   "aliases": [
+    "榜单刷满",
+    "基准测试饱和"
+   ],
+   "tier": 3,
+   "one_liner": "主流模型在某个基准上分数都接近满分，它再也分不出方法好坏。",
+   "explanation": "基准测试（固定任务和评测协议的公共考卷）用久了，各家分数会逼近上限，差距只剩一两个百分点，甚至落在随机误差内，这就是饱和。原因可能是方法确实进步了，也可能是大家反复针对同一测试集调参，或测试场景和训练数据太像、模型靠记忆就能拿高分。NLP 领域的 Dynabench 论文（2021）就指出，模型很快在基准上取得出色成绩，却在简单的挑战样例上失败。具身领域的典型例子是 LIBERO：多款 VLA 在标准设定下成功率已超过 90%。饱和后社区通常会推出更难或加扰动的新版本，或转向真机评测、泛化与鲁棒性评测。在饱和基准上的小幅领先，说服力有限。",
+   "example": "LIBERO-PRO（2025）指出，模型在标准 LIBERO 上成功率超过 90%，但在替换物体、改初始状态、改指令、换环境等设定下成功率跌到 0.0%，说明高分很大程度来自对训练轨迹和场景布局的记忆。",
+   "related": [
+    "基准测试",
+    "LIBERO",
+    "LIBERO-PRO",
+    "LIBERO-Plus",
+    "刷榜",
+    "泛化与鲁棒性评测"
+   ],
+   "sources": [
+    {
+     "title": "LIBERO-PRO: Towards Robust and Fair Evaluation of Vision-Language-Action Models Beyond Memorization (arXiv 2510.03827)",
+     "url": "https://arxiv.org/abs/2510.03827"
+    },
+    {
+     "title": "Dynabench: Rethinking Benchmarking in NLP (arXiv 2104.14337)",
+     "url": "https://arxiv.org/abs/2104.14337"
+    },
+    {
+     "title": "Stanford HAI: The 2025 AI Index Report",
+     "url": "https://hai.stanford.edu/ai-index/2025-ai-index-report"
+    }
+   ],
+   "as_of": "2025-10"
+  },
+  {
+   "name_zh": "Bi-DexHands",
+   "name_en": "Bi-DexHands (DexterousHands)",
+   "abbr": "",
+   "aliases": [
+    "DexterousHands",
+    "双手灵巧操作基准"
+   ],
+   "tier": 3,
+   "one_liner": "北京大学团队基于 Isaac Gym 的双 Shadow 灵巧手强化学习基准。",
+   "explanation": "Bi-DexHands 出自北京大学 PKU-MARL 团队，论文《Towards Human-Level Bimanual Dexterous Manipulation with Reinforcement Learning》收录于 NeurIPS 2022 数据集与基准赛道，代码仓库名为 DexterousHands。它在 Isaac Gym（英伟达的 GPU 并行仿真器）里放两只 Shadow 灵巧手，包含数十个双手任务和数千个目标物体，任务按认知科学文献对应不同水平的人类运动技能来设计。论文称单张 RTX 3090 可跑到 3 万帧每秒以上。基准覆盖单智能体、多智能体（把每只手当作一个智能体）、离线、多任务和元强化学习。结论是 PPO 类算法能掌握相当于 48 个月大幼儿水平的简单任务，多智能体方法有助于需要双手配合的任务，但多任务和少样本设定下现有算法大多失败。",
+   "example": "论文中 PPO 类算法能学会接住飞来的物体、打开瓶子这类任务；抬锅、叠积木等需要双手紧密配合的任务，用多智能体强化学习更容易学会。",
+   "related": [
+    "灵巧操作",
+    "双臂操作",
+    "Shadow 灵巧手",
+    "Isaac Gym",
+    "多智能体强化学习",
+    "近端策略优化"
+   ],
+   "sources": [
+    {
+     "title": "Towards Human-Level Bimanual Dexterous Manipulation with Reinforcement Learning (arXiv 2206.08686)",
+     "url": "https://arxiv.org/abs/2206.08686"
+    },
+    {
+     "title": "PKU-MARL/DexterousHands (GitHub)",
+     "url": "https://github.com/PKU-MARL/DexterousHands"
+    }
+   ],
+   "as_of": "2022-10"
+  },
+  {
+   "name_zh": "Brax",
+   "name_en": "Brax",
+   "abbr": "",
+   "aliases": [],
+   "tier": 3,
+   "one_liner": "谷歌用 JAX 写的可微刚体物理引擎，附带强化学习训练库。",
+   "explanation": "Brax 由谷歌团队在 2021 年开源（论文一作 C. Daniel Freeman），用 JAX（可自动求导、能编译到 GPU/TPU 上运行的数值计算库）编写。它的卖点是物理仿真和学习算法编译到同一块加速器上运行，省去 CPU 与 GPU 之间来回搬数据，在类 MuJoCo 的 Gym 任务上几分钟就能训出可用策略；因为仿真可微，还能直接对仿真求梯度来优化策略。后来 Brax 提供四种物理后端：MJX（MuJoCo 的 JAX 重写版）、广义坐标、基于位置的动力学和弹簧模型。据仓库说明，从 0.13.0 起只有 brax/training（PPO、SAC 等训练代码）还在积极维护，物理仿真建议改用 MJX 或 MuJoCo Warp，环境则推荐 MuJoCo Playground。",
+   "example": "MuJoCo Playground 的仓库说明，要按论文原样复现结果，可直接运行 Brax 的训练脚本，环境本身用 MJX 或 MuJoCo Warp 实现。",
+   "related": [
+    "MJX",
+    "MuJoCo Playground",
+    "JAX",
+    "可微仿真",
+    "GPU 并行仿真",
+    "大规模并行强化学习"
+   ],
+   "sources": [
+    {
+     "title": "Brax - A Differentiable Physics Engine for Large Scale Rigid Body Simulation (arXiv 2106.13281)",
+     "url": "https://arxiv.org/abs/2106.13281"
+    },
+    {
+     "title": "google/brax (GitHub)",
+     "url": "https://github.com/google/brax"
+    },
+    {
+     "title": "google-deepmind/mujoco_playground (GitHub)",
+     "url": "https://github.com/google-deepmind/mujoco_playground"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "宽相 / 窄相碰撞检测",
+   "name_en": "Broad-phase / Narrow-phase Collision Detection",
+   "abbr": "",
+   "aliases": [
+    "宽阶段 / 窄阶段",
+    "粗检测 / 精检测",
+    "近相（near-phase）"
+   ],
+   "tier": 3,
+   "one_liner": "碰撞检测分两步：先用包围盒粗筛可能相撞的对，再精确算接触。",
+   "explanation": "物理引擎每一步都要找出哪些物体接触了。n 个几何体两两组合有 n(n-1)/2 对，全部精确检查太慢，所以分阶段做。宽相只用简单包围体（如轴对齐包围盒 AABB）做保守判断，快速排除明显不相交的对，只报告「可能碰撞」；常用算法是扫掠剪枝（sweep-and-prune，按坐标轴排序后找区间重叠）。窄相再对剩下的候选对调用按几何类型定制的精确算法（如凸体之间的 GJK/EPA），算出是否接触、接触点、法向和穿透深度，交给约束求解器。MuJoCo 在两者之间还有一层中相，用包围盒层次树继续筛选；PhysX 提供 SAP、MBP、GPU 等多种宽相算法。碰撞过滤一般插在宽相和窄相之间。",
+   "example": "MuJoCo 的宽相用改进的 sweep-and-prune，排序轴取所有几何体中心的协方差矩阵主特征向量；窄相里，非凸网格会被替换成它的凸包再检测。",
+   "related": [
+    "碰撞检测（物理引擎）",
+    "包围盒",
+    "GJK 算法",
+    "碰撞过滤（碰撞组）",
+    "碰撞体",
+    "物理引擎"
+   ],
+   "sources": [
+    {
+     "title": "MuJoCo Documentation: Computation - Collision detection",
+     "url": "https://mujoco.readthedocs.io/en/stable/computation/index.html#collision"
+    },
+    {
+     "title": "NVIDIA PhysX 5 SDK Documentation: Rigid Body Collision",
+     "url": "https://nvidia-omniverse.github.io/PhysX/physx/5.4.1/docs/RigidBodyCollision.html"
+    },
+    {
+     "title": "Wikipedia: Collision detection",
+     "url": "https://en.wikipedia.org/wiki/Collision_detection"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "CARLA",
+   "name_en": "CARLA",
+   "abbr": "",
+   "aliases": [
+    "CARLA 仿真器"
+   ],
+   "tier": 3,
+   "one_liner": "基于虚幻引擎的开源自动驾驶仿真器，常用于驾驶策略的闭环测试。",
+   "explanation": "CARLA 由 Alexey Dosovitskiy、German Ros、Vladlen Koltun 等人在 2017 年首届 CoRL 上发布，开源提供城市道路布局、建筑、车辆等数字资产，可以灵活配置相机、激光雷达、深度、GPS 等传感器，以及天气、光照和交通参与者。原论文就用它比较了三种驾驶方案：传统模块化流水线、模仿学习端到端模型和强化学习端到端模型。此后它成为自动驾驶闭环评测的常用平台，并配有自动驾驶排行榜（Leaderboard）。据官网，0.10.0（2024 年 12 月）升级到虚幻引擎 5.5，基于虚幻引擎 4 的 0.9.x 系列仍在维护，0.9.16 发布于 2025 年 9 月；代码为 MIT 许可，资产为 CC-BY 许可。",
+   "example": "CARLA 自动驾驶排行榜让参赛的驾驶系统在固定路线和交通场景中闭环行驶，按路线完成度和违规情况自动打分。",
+   "related": [
+    "自动驾驶",
+    "仿真器",
+    "游戏引擎",
+    "闭环评测",
+    "端到端",
+    "激光雷达"
+   ],
+   "sources": [
+    {
+     "title": "CARLA: An Open Urban Driving Simulator (arXiv 1711.03938)",
+     "url": "https://arxiv.org/abs/1711.03938"
+    },
+    {
+     "title": "CARLA Simulator 官网",
+     "url": "https://carla.org/"
+    },
+    {
+     "title": "carla-simulator/carla (GitHub)",
+     "url": "https://github.com/carla-simulator/carla"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "布料仿真",
+   "name_en": "Cloth Simulation",
+   "abbr": "",
+   "aliases": [
+    "布料建模",
+    "织物仿真"
+   ],
+   "tier": 3,
+   "one_liner": "在计算机里模拟布料拉伸、弯曲、褶皱和碰撞，衣物操作研究离不开它。",
+   "explanation": "布料仿真是软体仿真的一类，计算机图形学从 1980 年代就开始研究。早期几何方法（如 Weil 1986）只用悬链线近似褶皱形状，不管动力学；物理方法把布料看成弹簧相连的质点网格，考虑拉伸、剪切、弯曲和重力；更精细的做法用能量模型或有限元。难点在于布料很薄、极易自碰撞和穿模，拉伸方向又很硬，步长稍大就容易数值发散。机器人研究常用的实现有基于粒子的 NVIDIA FleX，以及 MuJoCo 的 flex 可变形体（可做绳、布和体积软体）。真实布料的物理参数难以测准，所以布料任务的虚实差距通常比刚体任务大。",
+   "example": "SoftGym（CoRL 2020）基于 NVIDIA FleX 提供展平布料、对折布料、让布料平铺落地等任务，用来测试强化学习在柔性物体操作上的表现。",
+   "related": [
+    "软体仿真",
+    "衣物操作",
+    "柔性物体操作",
+    "基于位置的动力学",
+    "有限元法",
+    "SoftGym"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Cloth modeling",
+     "url": "https://en.wikipedia.org/wiki/Cloth_modeling"
+    },
+    {
+     "title": "SoftGym: Benchmarking Deep Reinforcement Learning for Deformable Object Manipulation (arXiv 2011.07215)",
+     "url": "https://arxiv.org/abs/2011.07215"
+    },
+    {
+     "title": "MuJoCo Documentation: Modeling - Deformable objects",
+     "url": "https://mujoco.readthedocs.io/en/stable/modeling.html#deformable-objects"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "CoACD / V-HACD 凸分解工具",
+   "name_en": "CoACD (Collision-Aware Approximate Convex Decomposition) / V-HACD",
+   "abbr": "",
+   "aliases": [
+    "CoACD",
+    "V-HACD",
+    "近似凸分解工具"
+   ],
+   "tier": 3,
+   "one_liner": "把凹的三维网格拆成若干凸块、给物理引擎当碰撞体用的开源工具。",
+   "explanation": "多数物理引擎只擅长处理凸形状之间的碰撞，MuJoCo 甚至会把非凸网格直接换成它的凸包，杯子、碗这类有凹陷的物体就被「填实」了。近似凸分解是把凹网格切成少量凸块来近似原形。V-HACD 由 Karim Mammou 开发，面向游戏等场景的碰撞检测，用得很广；它的仓库现已归档，并注明新开发转到 CoACD。CoACD 由 UCSD 苏昊团队的 Xinyue Wei 等人发表于 SIGGRAPH 2022，提出「碰撞感知凹度」来衡量分解后碰撞行为是否保真，直接用平面切割网格，并用多步树搜索挑选切面，能用更少的凸块更贴近原形。可以 pip install coacd 安装，据其仓库介绍已被 ManiSkill、SAPIEN 等仿真框架采用。",
+   "example": "把马克杯网格直接当碰撞体，凸包会把杯口封死，仿真里勺子放不进去；用 CoACD 分解成若干凸块后，杯壁和杯内空间都能正确碰撞。",
+   "related": [
+    "凸分解",
+    "碰撞体",
+    "网格文件",
+    "仿真资产",
+    "SAPIEN",
+    "ManiSkill"
+   ],
+   "sources": [
+    {
+     "title": "Approximate Convex Decomposition for 3D Meshes with Collision-Aware Concavity and Tree Search (arXiv 2205.02961)",
+     "url": "https://arxiv.org/abs/2205.02961"
+    },
+    {
+     "title": "SarahWeiii/CoACD (GitHub)",
+     "url": "https://github.com/SarahWeiii/CoACD"
+    },
+    {
+     "title": "kmammou/v-hacd (GitHub)",
+     "url": "https://github.com/kmammou/v-hacd"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "碰撞过滤（碰撞组）",
+   "name_en": "Collision Filtering (Collision Groups)",
+   "abbr": "",
+   "aliases": [
+    "碰撞组",
+    "contype/conaffinity",
+    "碰撞掩码",
+    "碰撞层"
+   ],
+   "tier": 3,
+   "one_liner": "事先规定哪些物体之间不算碰撞，既省计算又避免不该有的接触。",
+   "explanation": "仿真里并非所有物体对都要算碰撞：机器人相邻连杆在关节处本来就挨在一起，同时训练的上千个并行环境之间也不该互相碰到。碰撞过滤就是在宽相之后、窄相之前把这些物体对丢掉。常见做法是给几何体配位掩码。MuJoCo 里每个 geom 有 contype 和 conaffinity 两个整数，只有一方的 contype 与另一方的 conaffinity 至少有一位同为 1 才检测，这套机制借自 ODE 引擎，默认两者都是 1；此外 MuJoCo 默认跳过同一刚体、父子刚体之间的碰撞，也能用 exclude 显式排除。PhysX 用过滤着色器（filter shader）实现类似分组。设错了会出现夹爪抓不住物体、脚穿过地面等问题。",
+   "example": "Isaac Lab 的 InteractiveSceneCfg 默认 filter_collisions=True，克隆出的各个环境之间互不碰撞，但可以都与地面这类全局物体碰撞。",
+   "related": [
+    "宽相 / 窄相碰撞检测",
+    "碰撞检测（物理引擎）",
+    "自碰撞检测",
+    "碰撞体",
+    "MJCF",
+    "并行环境"
+   ],
+   "sources": [
+    {
+     "title": "MuJoCo Documentation: Computation - Collision detection (Selection)",
+     "url": "https://mujoco.readthedocs.io/en/stable/computation/index.html#collision"
+    },
+    {
+     "title": "NVIDIA PhysX 5 SDK Documentation: Rigid Body Collision - Collision Filtering",
+     "url": "https://nvidia-omniverse.github.io/PhysX/physx/5.4.1/docs/RigidBodyCollision.html"
+    },
+    {
+     "title": "Isaac Lab API: isaaclab.scene (InteractiveSceneCfg.filter_collisions)",
+     "url": "https://isaac-sim.github.io/IsaacLab/main/source/api/lab/isaaclab.scene.html"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "约束求解器",
+   "name_en": "Constraint Solver",
+   "abbr": "",
+   "aliases": [
+    "接触求解器",
+    "约束解算器"
+   ],
+   "tier": 3,
+   "one_liner": "物理引擎里算接触力和关节约束力的模块，保证物体不穿透、关节不脱开。",
+   "explanation": "碰撞检测只告诉引擎「哪里接触了」，接触处要多大的支撑力和摩擦力、关节要多大的力才能保持连接，由约束求解器算。这些力要同时满足不穿透、摩擦力不超过摩擦锥等条件，本质是互补问题或优化问题，通常迭代求解。投影高斯-赛德尔（PGS）每次只更新一个约束分量，反复扫多遍；PhysX 5.1 起加入时间高斯-赛德尔（TGS），把一步拆成若干子步求解，官方文档称一般更推荐 TGS。MuJoCo 把约束力定义为一个凸优化问题的唯一全局解，提供 PGS、共轭梯度（CG）和默认的牛顿法三种求解器。迭代不够会导致穿模、关节漂移、抓取打滑，这是调仿真参数的重点。",
+   "example": "PhysX 刚体默认 4 次位置迭代、1 次速度迭代；灵巧手抓取这类接触和关节都多的场景，常需调高位置迭代次数。",
+   "related": [
+    "求解器迭代次数",
+    "投影高斯-赛德尔求解器",
+    "线性互补问题",
+    "接触模型",
+    "软接触",
+    "物理引擎"
+   ],
+   "sources": [
+    {
+     "title": "MuJoCo Documentation: Computation - Constraint solver",
+     "url": "https://mujoco.readthedocs.io/en/stable/computation/index.html#constraint-solver"
+    },
+    {
+     "title": "NVIDIA PhysX 5 SDK Documentation: Rigid Body Dynamics - Constraint Solver",
+     "url": "https://nvidia-omniverse.github.io/PhysX/physx/5.4.1/docs/RigidBodyDynamics.html"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "连续碰撞检测（隧穿问题）",
+   "name_en": "Continuous Collision Detection (Tunneling)",
+   "abbr": "CCD",
+   "aliases": [
+    "连续碰撞检测",
+    "隧穿",
+    "tunnelling"
+   ],
+   "tier": 3,
+   "one_liner": "按物体在一步内的运动轨迹找碰撞，防止高速物体直接穿过障碍物。",
+   "explanation": "普通的离散碰撞检测只在每个时间步末尾检查物体是否重叠。物体很快或很薄时，一步之内可能从障碍物一侧直接跳到另一侧，前后两次检查都不重叠，碰撞就被漏掉，这就是隧穿（tunneling）。连续碰撞检测沿物体在这一步内扫过的轨迹求最早接触时刻，在穿过之前处理碰撞，代价是更耗算力，速度越快、物体越密越明显。PhysX 要在场景、物体对、刚体三处分别打开 CCD，另有更便宜的推测式 CCD（按速度放大接触距离）。另一种常见对策是减小仿真步长或增加子步。注意：MuJoCo 文档里的 CCD 指「凸碰撞检测」（convex collision detection），不是连续碰撞检测。",
+   "example": "仿真里快速挥动的细棍或抛出的小球在大步长下直接穿过桌面，开启 CCD 或减小仿真步长后恢复正常。",
+   "related": [
+    "碰撞检测（物理引擎）",
+    "穿模",
+    "仿真步长",
+    "子步",
+    "宽相 / 窄相碰撞检测",
+    "PhysX"
+   ],
+   "sources": [
+    {
+     "title": "NVIDIA PhysX 5 SDK Documentation: Advanced Collision Detection - Continuous Collision Detection",
+     "url": "https://nvidia-omniverse.github.io/PhysX/physx/5.4.1/docs/AdvancedCollisionDetection.html"
+    },
+    {
+     "title": "Wikipedia: Collision detection",
+     "url": "https://en.wikipedia.org/wiki/Collision_detection"
+    },
+    {
+     "title": "MuJoCo Documentation: Computation - Convex collisions",
+     "url": "https://mujoco.readthedocs.io/en/stable/computation/index.html#convex-collisions"
+    }
+   ],
+   "as_of": ""
+  }
+ ]
+}

@@ -1,0 +1,204 @@
+{
+  "category": "mechanics",
+  "batch": 1,
+  "terms": [
+    {
+      "name_zh": "基坐标系",
+      "name_en": "Base Frame",
+      "abbr": "",
+      "aliases": ["基座坐标系", "机器人基坐标系", "base_link"],
+      "tier": 1,
+      "one_liner": "固定在机器人底座上的坐标系，机械臂末端的位置和朝向多以它为参照。",
+      "explanation": "基坐标系是刚性固定在机器人底座上的参考坐标系，原点位置和轴朝向由厂商规定，ROS 约定 x 朝前、y 朝左、z 朝上。机械臂控制器报出的末端位置和姿态，默认都是相对它说的，比如 Franka 的接口把末端位姿记为 O_T_EE，即「末端在基坐标系 O 下的位姿」；ROS 里通常叫 base_link。它和世界坐标系的区别是：机械臂装在移动底盘或人形身上时，基坐标系跟着机器人一起动，世界坐标系则固定在环境里。采集数据时动作按哪个坐标系记录必须写清，否则换一台机器就对不上。",
+      "example": "桌上一台固定机械臂，指令「末端移到基坐标系下 (0.5, 0, 0.3) 米」，按 x 朝前、z 朝上的约定，就是底座正前方 0.5 米、高 0.3 米处。",
+      "related": ["世界坐标系", "坐标系", "末端位姿", "坐标变换", "TF 坐标树", "机体坐标系"],
+      "sources": [
+        {"title": "ROS REP 105: Coordinate Frames for Mobile Platforms", "url": "https://raw.githubusercontent.com/ros-infrastructure/rep/master/rep-0105.rst"},
+        {"title": "ROS REP 103: Standard Units of Measure and Coordinate Conventions", "url": "https://raw.githubusercontent.com/ros-infrastructure/rep/master/rep-0103.rst"},
+        {"title": "libfranka robot_state.h（O_T_EE: end effector pose in base frame）", "url": "https://raw.githubusercontent.com/frankarobotics/libfranka/main/include/franka/robot_state.h"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "质心",
+      "name_en": "Center of Mass",
+      "abbr": "CoM",
+      "aliases": ["质量中心", "重心", "Center of Gravity", "CoG"],
+      "tier": 1,
+      "one_liner": "各部分位置按质量加权平均得到的点，分析整体平移运动时可当作全部质量集中于此。",
+      "explanation": "质心是按质量加权的位置平均：r_c = Σmᵢrᵢ / Σmᵢ，mᵢ 是第 i 部分的质量，rᵢ 是它的位置。在均匀重力场里质心和重心重合，所以工程上常混用。对机器人，质心决定平衡：静止站立时，质心在地面上的投影要落在支撑多边形（脚底接触区域围成的范围）内才可能不倒，人形和四足的步态控制、零力矩点分析都围绕质心轨迹展开。机械臂抓重物时，负载质心离末端法兰（机械臂末端安装工具的接口面）越远，关节要扛的力矩越大。URDF 等模型文件里每个连杆都要填质量和质心位置，填错会让仿真和真机表现不一致。",
+      "example": "1 kg 和 3 kg 两个小球分别放在 x=0 和 x=4 米处，质心在 (1×0+3×4)/(1+3)=3 米处，偏向重的那个。",
+      "related": ["支撑多边形", "零力矩点", "质心动力学", "静态稳定", "惯性参数", "负载"],
+      "sources": [
+        {"title": "Wikipedia: Center of mass", "url": "https://en.wikipedia.org/wiki/Center_of_mass"},
+        {"title": "Wikipedia: Support polygon", "url": "https://en.wikipedia.org/wiki/Support_polygon"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "坐标系",
+      "name_en": "Coordinate Frame",
+      "abbr": "",
+      "aliases": ["参考系", "参考坐标系", "Reference Frame", "frame"],
+      "tier": 1,
+      "one_liner": "规定了原点和坐标轴朝向的参照，用来描述位置和方向。",
+      "explanation": "坐标系（机器人领域常叫 frame）由一个原点和三根互相垂直的坐标轴构成，位置用 (x, y, z) 三个数表示，朝向用相对各轴的旋转表示。同一个点在不同坐标系下数值不同，所以任何位置、速度、力都要说明「在哪个坐标系下」。一台机器人身上有很多坐标系：世界坐标系固定在环境里，基坐标系固定在底座，每个连杆、相机、夹爪也各有一个。物理学里的参考系还涉及观察者的运动状态，但机器人工程中两个词常混用。ROS 规定一律用右手坐标系，并用 TF 坐标树管理坐标系之间的关系。",
+      "example": "相机测得杯子在相机坐标系下位于镜头正前方 0.6 米，而机械臂需要杯子在基坐标系下的位置，两者要通过坐标变换换算。",
+      "related": ["世界坐标系", "基坐标系", "相机坐标系", "坐标变换", "TF 坐标树", "位姿"],
+      "sources": [
+        {"title": "Wikipedia: Frame of reference", "url": "https://en.wikipedia.org/wiki/Frame_of_reference"},
+        {"title": "ROS REP 103: Standard Units of Measure and Coordinate Conventions", "url": "https://raw.githubusercontent.com/ros-infrastructure/rep/master/rep-0103.rst"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "坐标变换",
+      "name_en": "Coordinate Transformation",
+      "abbr": "",
+      "aliases": ["坐标系变换", "Frame Transformation", "刚体变换", "位姿变换"],
+      "tier": 1,
+      "one_liner": "把点或位姿在一个坐标系下的数值，换算成另一个坐标系下的数值。",
+      "explanation": "坐标变换回答「A 坐标系下的这个点，在 B 坐标系下是多少」。两个坐标系之间差一个旋转加一个平移：p_B = R·p_A + t，R 是 3×3 旋转矩阵，表示 A 系相对 B 系的朝向；t 是平移向量，即 A 系原点在 B 系下的坐标。实践中常把 R 和 t 拼成 4×4 齐次变换矩阵 T，这样平移也能写成矩阵乘法，多段变换直接连乘，如 T_base_obj = T_base_cam · T_cam_obj。机器人里处处要用：相机看到的物体要换到基坐标系才能去抓；正运动学就是沿关节逐段连乘变换矩阵。ROS 用 TF 库维护和查询这些变换。",
+      "example": "相机固定在机器人外部时，手眼标定得到相机在基坐标系下的位姿 T_base_cam，视觉模型给出杯子在相机坐标系下的位置，两者相乘就得到杯子在基坐标系下的位置，机械臂据此规划抓取。",
+      "related": ["齐次变换矩阵", "旋转矩阵", "TF 坐标树", "手眼标定", "相机外参", "正运动学"],
+      "sources": [
+        {"title": "Wikipedia: Transformation matrix（Affine transformations / homogeneous coordinates）", "url": "https://en.wikipedia.org/wiki/Transformation_matrix"},
+        {"title": "ROS REP 105: Coordinate Frames for Mobile Platforms", "url": "https://raw.githubusercontent.com/ros-infrastructure/rep/master/rep-0105.rst"},
+        {"title": "Modern Robotics（Lynch & Park）Ch.3 Rigid-Body Motions", "url": "https://hades.mech.northwestern.edu/index.php/Modern_Robotics"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "自由度",
+      "name_en": "Degrees of Freedom",
+      "abbr": "DoF",
+      "aliases": ["DOF", "自由度数"],
+      "tier": 1,
+      "one_liner": "确定系统各部分位置所需的最少独立变量数，机器人里常指能独立运动的关节数。",
+      "explanation": "自由度是完整确定一个机械系统构型（系统上每一点在哪）所需的最少独立参数个数。空间中一个自由刚体有 6 个自由度：沿 x、y、z 平移，加绕三根轴旋转。机器人每个转动或移动关节通常贡献 1 个自由度，所以有「六轴机械臂」「7 自由度机械臂」的说法。6 个自由度是让末端在空间中任意摆放位置和朝向的最低数量；多出来的叫冗余自由度，同一个末端位姿可对应无数组关节角，可用来绕开障碍。人的手臂（肩 3、肘 1、腕 3）就是 7 自由度。厂商标的总自由度常把灵巧手手指算进去，对比时要看清口径。",
+      "example": "据宇树官网，G1 基础版共 23 个自由度（单腿 6、单臂 5、腰 1），EDU 版加装灵巧手等部件后为 23–43 个。",
+      "related": ["主动自由度 / 被动自由度", "运动学冗余", "转动关节", "构型空间", "关节空间", "欠驱动"],
+      "sources": [
+        {"title": "Wikipedia: Degrees of freedom (mechanics)", "url": "https://en.wikipedia.org/wiki/Degrees_of_freedom_(mechanics)"},
+        {"title": "Unitree G1 官网规格", "url": "https://www.unitree.com/g1"}
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "动力学",
+      "name_en": "Dynamics",
+      "abbr": "",
+      "aliases": ["机器人动力学", "Robot Dynamics"],
+      "tier": 1,
+      "one_liner": "研究力和力矩如何产生运动，回答「给多大力矩会有什么加速度」。",
+      "explanation": "动力学是经典力学的分支，研究力与运动的关系，根基是牛顿第二定律 F=ma。机器人动力学把它推广到多关节系统，常写成 M(q)q̈ + C(q,q̇)q̇ + g(q) = τ：q 是关节角，q̇、q̈ 是关节速度和加速度，M 是质量矩阵（各连杆惯性折算到关节上），C 项是科里奥利力和离心力，g 是重力项，τ 是关节力矩。已知力矩求加速度叫正动力学，物理引擎每一步都在算；已知期望运动求所需力矩叫逆动力学，用于重力补偿和力矩控制。运动学只管几何，抓重物、快速运动、腿足平衡则离不开动力学。",
+      "example": "机械臂举着物体静止不动时 q̇、q̈ 都为 0，方程只剩 g(q)=τ，逆动力学算出的就是各关节抵消重力（含物体重量）所需的力矩。",
+      "related": ["正动力学", "逆动力学", "质量矩阵", "刚体动力学", "运动学", "物理引擎"],
+      "sources": [
+        {"title": "Wikipedia: Dynamics (mechanics)", "url": "https://en.wikipedia.org/wiki/Dynamics_(mechanics)"},
+        {"title": "MIT Underactuated Robotics: Multi-Body Dynamics（manipulator equations）", "url": "https://underactuated.mit.edu/multibody.html"},
+        {"title": "MuJoCo Documentation: Computation（forward / inverse dynamics）", "url": "https://mujoco.readthedocs.io/en/stable/computation/index.html"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "末端位姿",
+      "name_en": "End-Effector Pose",
+      "abbr": "EEF Pose",
+      "aliases": ["末端执行器位姿", "EE Pose", "TCP Pose"],
+      "tier": 1,
+      "one_liner": "机械臂末端夹爪或工具在空间中的位置加朝向，通常相对基坐标系表示。",
+      "explanation": "末端执行器是机械臂最末端、直接和环境打交道的部件，如夹爪、吸盘、焊枪；末端位姿就是它的位置 (x, y, z) 加朝向，合起来 6 个自由度，一般以基坐标系为参照。朝向可用旋转矩阵、四元数、欧拉角或轴角表示，所以不同数据集里末端位姿的维数可能是 6、7 或更多。它连接「任务」和「电机」：人和视觉模型关心夹爪到哪、朝哪，电机只认关节角，两者靠正、逆运动学换算。不少 VLA 和模仿学习策略直接输出末端位姿或其增量，再由控制器解算成关节指令。",
+      "example": "robosuite 的 OSC_POSE 控制器接收 6 维动作：前 3 维是末端位置增量，后 3 维是轴角形式的朝向增量；Franka 的 libfranka 接口里，O_T_EE 就是末端在基坐标系下的 4×4 位姿矩阵。",
+      "related": ["末端执行器", "位姿", "工具中心点", "任务空间", "逆运动学", "增量动作 / 绝对动作"],
+      "sources": [
+        {"title": "robosuite Documentation: Controllers（OSC_POSE）", "url": "https://robosuite.ai/docs/modules/controllers.html"},
+        {"title": "libfranka robot_state.h（O_T_EE）", "url": "https://raw.githubusercontent.com/frankarobotics/libfranka/main/include/franka/robot_state.h"},
+        {"title": "Wikipedia: Robot end effector", "url": "https://en.wikipedia.org/wiki/Robot_end_effector"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "欧拉角",
+      "name_en": "Euler Angles",
+      "abbr": "",
+      "aliases": [],
+      "tier": 1,
+      "one_liner": "用依次绕坐标轴转动的三个角度来描述物体朝向。",
+      "explanation": "欧拉角由瑞士数学家欧拉提出，用三次绕坐标轴的旋转描述刚体朝向，三个角常记作 α、β、γ 或 φ、θ、ψ。转动顺序共 12 种：首尾同轴的（如 Z-X-Z）是经典欧拉角，三轴各不相同的（如 Z-Y-X）叫 Tait-Bryan 角，常说的横滚、俯仰、偏航属于后者。绕随物体转动的轴旋转叫内旋，绕固定轴叫外旋。欧拉角直观好读，但顺序和内外旋约定不同，同一组数字代表的姿态就不同；某些角度下两根转轴重合会丢掉一个自由度，即万向节死锁。所以程序内部多用四元数或旋转矩阵，神经网络预测旋转常改用 6D 表示。",
+      "example": "一架飞机先转向 30°、再抬头 10°、机身不滚转，可以写成一组 Z-Y-X 顺序的欧拉角：偏航 30°、俯仰 10°、横滚 0°。",
+      "related": ["横滚-俯仰-偏航角", "万向节死锁", "四元数", "旋转矩阵", "内旋与外旋", "6D 旋转表示"],
+      "sources": [
+        {"title": "Wikipedia: Euler angles", "url": "https://en.wikipedia.org/wiki/Euler_angles"},
+        {"title": "Wikipedia: Gimbal lock", "url": "https://en.wikipedia.org/wiki/Gimbal_lock"},
+        {"title": "On the Continuity of Rotation Representations in Neural Networks（Zhou et al.）", "url": "https://arxiv.org/abs/1812.07035"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "正运动学",
+      "name_en": "Forward Kinematics",
+      "abbr": "FK",
+      "aliases": ["正解", "运动学正解", "正向运动学"],
+      "tier": 1,
+      "one_liner": "已知各关节角度，算出机械臂末端在空间中的位置和朝向。",
+      "explanation": "正运动学利用机器人的几何结构（连杆长度、关节轴方向），从关节角算出末端位姿。做法是从基座出发，每经过一个关节和一根连杆就乘一个 4×4 变换矩阵，一路乘到末端，结果就是末端在基坐标系下的位姿。描述每段变换的经典方法是 Denavit 和 Hartenberg 在 1955 年提出的 DH 参数，每个关节用 4 个参数；也可以用指数积公式。串联机械臂的正运动学解唯一，几次矩阵乘法就能算完。它用于由编码器读数显示末端位置、仿真渲染机器人、把关节数据转成末端位姿标签，也是求逆运动学的基础。",
+      "example": "平面两连杆臂，连杆长 l₁、l₂，关节角 θ₁、θ₂，末端坐标为 x = l₁cosθ₁ + l₂cos(θ₁+θ₂)，y = l₁sinθ₁ + l₂sin(θ₁+θ₂)。",
+      "related": ["逆运动学", "DH参数", "齐次变换矩阵", "运动链", "指数积公式", "关节空间"],
+      "sources": [
+        {"title": "Wikipedia: Forward kinematics", "url": "https://en.wikipedia.org/wiki/Forward_kinematics"},
+        {"title": "Modern Robotics（Lynch & Park）Ch.4 Forward Kinematics", "url": "https://hades.mech.northwestern.edu/index.php/Modern_Robotics"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "逆运动学",
+      "name_en": "Inverse Kinematics",
+      "abbr": "IK",
+      "aliases": ["逆解", "运动学逆解", "反向运动学"],
+      "tier": 1,
+      "one_liner": "已知末端要到达的位置和朝向，反推各关节应转到的角度。",
+      "explanation": "逆运动学是正运动学的反问题：给定目标末端位姿，求关节角。它难得多：方程非线性，可能有多组解（如肘部朝上或朝下都能到同一点）；7 自由度等冗余机械臂有无穷多解；目标超出工作空间则无解，靠近奇异位形（末端在某些方向上动不了的关节姿势）时数值不稳。求法分两类：解析逆解用封闭公式直接算，快，但只适用于特定结构；数值逆解用雅可比矩阵（关节速度到末端速度的映射）迭代逼近，通用但依赖初值、可能不收敛。VLA 输出末端位姿时，常靠 IK 转成关节指令；动画里拖动角色的手、肩肘自动跟随也是 IK。",
+      "example": "让夹爪移到杯子正上方 10 厘米、爪口朝下，IK 求出各关节角；MATLAB 的 Robotics System Toolbox 中，inverseKinematics 默认用 BFGS 梯度投影法数值求解，初值不好时可能只返回近似解。",
+      "related": ["正运动学", "解析逆解", "数值逆解", "雅可比矩阵", "奇异位形", "运动学冗余"],
+      "sources": [
+        {"title": "Wikipedia: Inverse kinematics", "url": "https://en.wikipedia.org/wiki/Inverse_kinematics"},
+        {"title": "MathWorks: Inverse Kinematics Algorithms", "url": "https://www.mathworks.com/help/robotics/ug/inverse-kinematics-algorithms.html"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "关节空间",
+      "name_en": "Joint Space",
+      "abbr": "",
+      "aliases": ["关节坐标空间", "关节角空间"],
+      "tier": 1,
+      "one_liner": "把全部关节角（或位移）当坐标的空间，一个点就是机器人的一种关节摆法。",
+      "explanation": "关节空间把机器人所有关节变量排成一个向量 q = (q₁, …, qₙ)，n 是关节数，转动关节取角度，移动关节取位移，q 所有可能的取值就构成关节空间。与之相对的是任务空间（也叫笛卡尔空间），用末端位姿描述机器人，两者靠正、逆运动学换算。在关节空间里规划和控制最直接，电机本来就按关节角执行，也没有逆解多解的问题，但末端在空间里走出的路径不直观。用关节角记录的示教数据能在同型号机器人上精确复现，换成结构不同的机器人就不能直接用，所以不少跨本体工作改用末端位姿作动作。",
+      "example": "libfranka 读出的 q 是 7 个关节角（单位弧度），就是 Franka 机械臂在关节空间中的一个点；同一时刻的 O_T_EE 则是它在任务空间中的表示。",
+      "related": ["任务空间", "构型空间", "正运动学", "逆运动学", "自由度", "动作空间"],
+      "sources": [
+        {"title": "Wikipedia: Configuration space (physics)（Robotic arm / joint space）", "url": "https://en.wikipedia.org/wiki/Configuration_space_(physics)"},
+        {"title": "libfranka robot_state.h（q: measured joint position）", "url": "https://raw.githubusercontent.com/frankarobotics/libfranka/main/include/franka/robot_state.h"},
+        {"title": "robosuite Documentation: Controllers（Joint Position / Velocity / Torque）", "url": "https://robosuite.ai/docs/modules/controllers.html"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "运动学",
+      "name_en": "Kinematics",
+      "abbr": "",
+      "aliases": ["机器人运动学", "Robot Kinematics"],
+      "tier": 1,
+      "one_liner": "只研究运动的几何关系（位置、速度、加速度），不管运动是什么力引起的。",
+      "explanation": "运动学是经典力学的分支，研究点和物体如何运动（位置、速度、加速度），不考虑引起运动的力，所以也叫「运动的几何学」；这个词源自安培造的法语词 cinématique。机器人运动学研究关节变量与各连杆、末端位姿之间的几何关系，主要包括正运动学（关节角→末端位姿）、逆运动学（末端位姿→关节角）和微分运动学（关节速度→末端速度，用雅可比矩阵描述）。它只需要连杆长度、关节轴方向等几何参数，不需要质量和惯性；考虑力和力矩的是动力学。轨迹规划、遥操作映射、动作重定向都建立在运动学之上。",
+      "example": "已知机械臂每个关节转了多少度，就能算出夹爪现在在哪；这个计算只用到连杆尺寸，和夹爪里东西多重无关，所以属于运动学。",
+      "related": ["正运动学", "逆运动学", "微分运动学", "雅可比矩阵", "动力学", "运动链"],
+      "sources": [
+        {"title": "Wikipedia: Kinematics", "url": "https://en.wikipedia.org/wiki/Kinematics"},
+        {"title": "Wikipedia: Robot kinematics", "url": "https://en.wikipedia.org/wiki/Robot_kinematics"}
+      ],
+      "as_of": ""
+    }
+  ]
+}

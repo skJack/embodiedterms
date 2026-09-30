@@ -1,0 +1,435 @@
+{
+  "category": "control",
+  "batch": 12,
+  "terms": [
+    {
+      "name_zh": "分层任务网络",
+      "name_en": "Hierarchical Task Network",
+      "abbr": "HTN",
+      "aliases": [
+        "HTN 规划",
+        "层次任务网络",
+        "HTN Planning"
+      ],
+      "tier": 3,
+      "one_liner": "按人写好的「拆解方法」把大任务一层层拆成可直接执行的动作序列的规划方法。",
+      "explanation": "分层任务网络是经典 AI 规划的一种形式，思想源自 1970 年代的 NOAH 等规划器，1994 年 Erol、Hendler、Nau 给出形式化定义。任务分两类：原子任务可直接执行，复合任务需继续拆。领域专家为每个复合任务写好「方法」，规定在什么条件下拆成哪些子任务、按什么顺序；规划器从顶层任务反复拆解，直到只剩原子动作序列。与 PDDL 只给目标、让规划器自己搜索动作组合相比，HTN 借助人写的知识，搜得更快、结果更可控，代价是方法要人工编写。代表系统有 SHOP2。机器人里常用于长程任务的上层拆解，也常与大模型任务规划、行为树配合。",
+      "example": "「收拾餐桌」拆成「收餐具」和「擦桌子」；「收餐具」的方法再拆成「移动到桌边→识别碗→抓起碗→放进水槽」，桌上还有餐具就重复，最底层每一步都对应机器人已有的技能。",
+      "related": [
+        "任务规划",
+        "规划领域定义语言",
+        "符号规划",
+        "大模型任务规划",
+        "行为树",
+        "长程任务"
+      ],
+      "sources": [
+        {
+          "title": "Erol, Hendler, Nau: HTN Planning: Complexity and Expressivity (AAAI 1994)",
+          "url": "https://www.cs.umd.edu/~nau/papers/erol1994htn.pdf"
+        },
+        {
+          "title": "Nau et al.: SHOP2: An HTN Planning System (JAIR 2003)",
+          "url": "https://www.jair.org/index.php/jair/article/view/10362"
+        },
+        {
+          "title": "Höller et al.: HDDL: An Extension to PDDL for Expressing Hierarchical Planning Problems (AAAI 2020)",
+          "url": "https://ojs.aaai.org/index.php/AAAI/article/view/6542"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "拟人步态（直膝行走 / 足跟-足尖行走）",
+      "name_en": "Human-like Gait (Straight-knee Walking / Heel-to-toe Walking)",
+      "abbr": "",
+      "aliases": [
+        "仿人步态",
+        "类人步态",
+        "Human-like Walking",
+        "Heel-strike / Toe-off",
+        "Heel-contact and Toe-off Walking"
+      ],
+      "tier": 3,
+      "one_liner": "让人形机器人像人一样伸直膝盖、脚跟先着地、再用脚尖蹬离地面的走法。",
+      "explanation": "拟人步态是人形机器人行业的常用说法，指走路姿态接近人：支撑腿膝盖基本伸直，脚跟先着地，重心滚过脚掌后用脚尖蹬离，双臂与腿反向摆动。早期基于零力矩点（ZMP）的人形机器人多屈膝、平足、腰高不变地走，原因之一是膝盖伸直时腿接近奇异位形，难以控制髋部高度。2006 年早稻田大学的 WABIAN-2R 借腰部运动避开奇异、在脚上加被动脚趾关节，较早实现了直膝加足跟-足尖行走。近年多用强化学习实现：奖励里加入模仿人类步行参考轨迹的项，同时兼顾速度跟踪和能耗。",
+      "example": "2025 年 3 月 Figure 公布 Figure 02 的强化学习行走控制器：在 GPU 仿真里奖励机器人模仿人类步行参考轨迹，学到脚跟着地、脚尖蹬离和与腿同步的摆臂，再零样本迁移到真机。国内众擎 2024 年 10 月发布的 SE01 也以直膝步态为主要卖点（据报道）。",
+      "related": [
+        "直膝行走",
+        "步态",
+        "零力矩点",
+        "双足行走",
+        "对抗运动先验",
+        "支撑相 / 摆动相"
+      ],
+      "sources": [
+        {
+          "title": "Ogura et al.: Human-like Walking with Knee Stretched, Heel-contact and Toe-off Motion by a Humanoid Robot (IROS 2006)",
+          "url": "https://gaoyichao.com/Xiaotu/robot_cases/papers/2006%20-%20Human-like%20walking%20with%20knee%20stretched,%20heel-contact%20and%20toe-off%20motion%20by%20a%20humanoid%20robot%20-%20Ogura%20et%20al.pdf"
+        },
+        {
+          "title": "Figure: Natural Humanoid Walk Using Reinforcement Learning (2025-03)",
+          "url": "https://www.figure.ai/news/reinforcement-learning-walking"
+        },
+        {
+          "title": "科创板日报：深圳人形机器人行走视频走红 拟人步态震惊英伟达科学家（2025-01）",
+          "url": "https://www.cls.cn/detail/1915921"
+        }
+      ],
+      "as_of": "2025-03"
+    },
+    {
+      "name_zh": "混合 A*",
+      "name_en": "Hybrid A*",
+      "abbr": "",
+      "aliases": [
+        "Hybrid A星",
+        "Hybrid-A*",
+        "混合A星"
+      ],
+      "tier": 3,
+      "one_liner": "在栅格上搜索、但记录车辆连续位置和朝向，保证路径车能开出来的 A* 变体。",
+      "explanation": "混合 A* 由 Dolgov、Thrun 等人为斯坦福无人车 Junior 参加 2007 年 DARPA 城市挑战赛设计。普通 A* 只在栅格中心间跳，折线路径汽车开不出来，因为车不能原地转向（非完整约束）。混合 A* 在位置 x、y 和朝向 θ 上搜索：格子仍用来给节点去重，但节点记着车真实的连续位姿；扩展时按几种固定方向盘转角（含倒车）模拟开一小段，每段都满足车辆运动学。启发值取两者较大者：忽略障碍、按车辆转弯能力算的最短距离，和考虑障碍、忽略朝向的网格最短距离；最后用数值优化把路径磨平。常用于泊车、掉头等场景。",
+      "example": "Junior 在比赛中用它在停车场里倒车入位、在堵路上掉头，论文报告整轮重规划耗时约 50–300 毫秒。ROS 2 导航框架 Nav2 的 Smac Planner 也提供 Hybrid-A* 实现，面向阿克曼转向的车式底盘。",
+      "related": [
+        "A* 算法",
+        "非完整约束",
+        "路径规划",
+        "动力学约束规划",
+        "路径平滑",
+        "自动驾驶"
+      ],
+      "sources": [
+        {
+          "title": "Dolgov, Thrun, Montemerlo, Diebel: Practical Search Techniques in Path Planning for Autonomous Driving (2008)",
+          "url": "https://ai.stanford.edu/~ddolgov/papers/dolgov_gpp_stair08.pdf"
+        },
+        {
+          "title": "Open Robotics Discourse: [Nav2] SmacPlanner (Hybrid-A*, 2D A*) Now Available (2020-10)",
+          "url": "https://discourse.openrobotics.org/t/nav2-smacplanner-hybrid-a-2d-a-now-available-reminder-meeting-oct-15-cancelled/16759"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "混合零动态",
+      "name_en": "Hybrid Zero Dynamics",
+      "abbr": "HZD",
+      "aliases": [
+        "虚拟约束",
+        "Virtual Constraints",
+        "HZD 控制"
+      ],
+      "tier": 3,
+      "one_liner": "用「虚拟约束」把双足步行压成低维系统，再设计并证明步态稳定的控制理论。",
+      "explanation": "混合零动态由 Westervelt、Grizzle、Koditschek 于 2003 年提出，面向欠驱动双足机器人，比如点足机器人无法靠脚踝对地施加力矩。步行是「混合」系统：摆腿时是连续动力学，落地瞬间有碰撞和换腿，是离散跳变。先选一个随步态单调前进的相位变量 θ，用反馈让每个驱动关节角 q_a 跟踪指定函数 h(θ)，即强制 y = q_a − h(θ) = 0，这叫虚拟约束；机器人被压到低维曲面上，剩下的欠驱动部分就是零动态。再用庞加莱映射检查它每步碰撞后能否回到同一周期轨道（极限环），据此证明步态稳定。它不要求脚掌平贴地面，这是与 ZMP 方法的主要区别。",
+      "example": "密歇根大学 Grizzle 团队 2018 年用虚拟约束加步态库控制 Cassie，收到机器人约六周后，就让它在人行道、草地、雪地和沙地上行走，还能站在赛格威平衡车上保持平衡。",
+      "related": [
+        "欠驱动",
+        "双足行走",
+        "极限环",
+        "零力矩点",
+        "Agility Cassie",
+        "步态相位（相位时钟）"
+      ],
+      "sources": [
+        {
+          "title": "Grizzle & Chevallereau: Virtual Constraints and Hybrid Zero Dynamics for Realizing Underactuated Bipedal Locomotion (arXiv:1706.01127)",
+          "url": "https://arxiv.org/abs/1706.01127"
+        },
+        {
+          "title": "Gong et al.: Feedback Control of a Cassie Bipedal Robot: Walking, Standing, and Riding a Segway (arXiv:1809.07279)",
+          "url": "https://arxiv.org/abs/1809.07279"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "基于图像的视觉伺服",
+      "name_en": "Image-Based Visual Servoing",
+      "abbr": "IBVS",
+      "aliases": [
+        "图像视觉伺服",
+        "2D 视觉伺服",
+        "2D Visual Servoing"
+      ],
+      "tier": 3,
+      "one_liner": "直接用图像里特征点的像素误差来计算相机或机械臂速度的视觉闭环控制。",
+      "explanation": "视觉伺服是用相机反馈闭环控制机器人，分基于图像（IBVS）和基于位置（PBVS）两类，前者由 Weiss 和 Sanderson 在 1980 年代提出。IBVS 不重建目标三维位姿，直接在图像上定义误差 e = s − s*，s 是当前特征（如角点像素坐标），s* 是期望值。特征速度与相机速度 v 满足 ṡ = L·v，L 叫交互矩阵（图像雅可比），与像素坐标和深度 Z 有关。控制律 v = −λ·L⁺·e（L⁺ 为伪逆，λ 为增益）让误差近似指数衰减。它不需要物体模型、对标定误差较鲁棒；缺点是深度只能估计，大角度绕光轴转时相机会先后退，也可能陷入局部极小。PBVS 先估位姿再在三维空间控制，更依赖标定和模型。",
+      "example": "腕部相机对准装配件上的 4 个标记角点：先在对准位置拍图，记下 4 个角点的像素坐标作为 s*；运行时控制器不断比较当前与期望像素，输出相机的 6 维速度，直到四点重合，夹爪也就对准了插孔。",
+      "related": [
+        "视觉伺服",
+        "基于位置的视觉伺服",
+        "雅可比矩阵",
+        "眼在手上",
+        "相机内参",
+        "闭环"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Visual servoing",
+          "url": "https://en.wikipedia.org/wiki/Visual_servoing"
+        },
+        {
+          "title": "Chaumette & Hutchinson: Visual servo control, Part II: Advanced approaches (IEEE RAM 2007，含 Part I 基本公式回顾)",
+          "url": "https://inria.hal.science/inria-00350638v1/document"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "Informed RRT*",
+      "name_en": "Informed RRT* (Informed Sampling)",
+      "abbr": "",
+      "aliases": [
+        "知情 RRT*",
+        "启发式采样 RRT*",
+        "Informed Sampling"
+      ],
+      "tier": 3,
+      "one_liner": "找到一条路径后，只在「可能更短」的椭球区域里采样，从而更快收敛的 RRT*。",
+      "explanation": "Informed RRT* 由 Gammell、Srinivasa、Barfoot 在 IROS 2014 提出。RRT* 找到可行路径后会继续采样、重连树枝，让路径逼近最短，但它仍在全空间均匀撒点，多数样本不可能改进结果。设当前最好路径长 c_best，能让路径变短的点 x 必须满足 ‖x−x_s‖ + ‖x−x_g‖ < c_best（x_s、x_g 为起点、终点），这在二维是以起终点为焦点的椭圆，高维是长椭球。Informed RRT* 只在该椭球内采样并剪掉椭球外节点；路径越短椭球越瘦，搜索越集中。它保留 RRT* 的渐近最优性，在高维和大地图中收敛更快，BIT* 等后续算法沿用了这一思路。",
+      "example": "开源运动规划库 OMPL 提供 InformedRRTstar 规划器，可通过 OMPL 接入 MoveIt 等框架，让机械臂在找到可行轨迹后继续在剩余时间内缩短路径。",
+      "related": [
+        "RRT*",
+        "快速扩展随机树",
+        "BIT*",
+        "基于采样的规划",
+        "OMPL",
+        "概率完备性"
+      ],
+      "sources": [
+        {
+          "title": "Gammell, Srinivasa, Barfoot: Informed RRT* (arXiv:1404.2334, IROS 2014)",
+          "url": "https://arxiv.org/abs/1404.2334"
+        },
+        {
+          "title": "OMPL: ompl::geometric::InformedRRTstar Class Reference",
+          "url": "https://ompl.kavrakilab.org/classompl_1_1geometric_1_1InformedRRTstar.html"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "输入整形（振动抑制）",
+      "name_en": "Input Shaping (Residual Vibration Suppression)",
+      "abbr": "",
+      "aliases": [
+        "指令整形",
+        "Command Shaping",
+        "ZV 整形器",
+        "残余振动抑制"
+      ],
+      "tier": 3,
+      "one_liner": "把运动指令拆成几段在时间上错开的指令，让它们激起的振动互相抵消。",
+      "explanation": "输入整形是一种前馈的振动抑制方法，现代形式由 MIT 的 Singer 和 Seering 在 1990 年提出。细长机械臂、吊车吊绳、皮带传动轴等柔性系统，运动结束后会在固有频率上残余振动。做法是把原指令与一串脉冲做卷积：最简单的 ZV（零振动）整形器用两个脉冲，间隔半个振动周期，幅值按阻尼比分配（无阻尼时各占一半），第一个脉冲激起的振动恰好被第二个抵消。代价是运动多花约半个周期，且对频率估计误差敏感，于是有 ZVD、EI 等更鲁棒但更慢的版本。它只需知道频率和阻尼比、不需额外传感器，可与 S 型速度曲线等平滑轨迹叠加使用。",
+      "example": "开源 3D 打印机固件 Klipper 用输入整形消除打印件表面的「振纹」：先测出机架的共振频率，再选 ZV、MZV、EI 等整形器；其中 ZV 只延迟半个周期，但对频率误差最敏感。",
+      "related": [
+        "固有频率",
+        "阻尼比",
+        "柔性关节",
+        "前馈控制",
+        "S 型速度曲线",
+        "轨迹规划"
+      ],
+      "sources": [
+        {
+          "title": "Zaber: Input Shaping for Vibration Reduction（引 Singer & Seering 1990）",
+          "url": "https://www.zaber.com/articles/input-shaping-for-vibration-reduction"
+        },
+        {
+          "title": "Klipper documentation: Resonance Compensation",
+          "url": "https://www.klipper3d.org/Resonance_Compensation.html"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "积分饱和与抗饱和",
+      "name_en": "Integral Windup / Anti-windup",
+      "abbr": "",
+      "aliases": [
+        "积分饱和",
+        "积分器饱和",
+        "抗积分饱和",
+        "Integrator Windup",
+        "Reset Windup"
+      ],
+      "tier": 3,
+      "one_liner": "执行器顶到上限时积分项仍在累加导致超调；抗饱和就是在饱和时管住积分项。",
+      "explanation": "积分饱和出现在带积分项的控制器（PI、PID）里。执行器有物理上限，电机力矩、电流都不能无限大。当误差很大，比如设定值突变或关节被外物挡住，控制器要的输出超过上限，实际只能输出上限，误差消得慢，积分项 K_i·∫e dt 却一直累加。等误差反号，积分项要很久才能放掉，于是出现大超调和长时间振荡。常见抗饱和办法：限幅，把积分项钳在上下界内；条件积分，输出饱和时暂停积分；反算法，把饱和前后输出之差乘一个增益反馈给积分器，让它跟着实际输出走。机器人关节的速度环、电流环都要处理这个问题。",
+      "example": "机械臂关节被人手按住，速度环输出一直顶在力矩上限，积分项不断累加；松手瞬间关节会猛地甩过目标位置。给积分器加上限幅或反算抗饱和后，松手时关节能平稳回到指令轨迹。",
+      "related": [
+        "PID 控制",
+        "力矩限幅",
+        "阶跃响应指标（超调 / 调节时间 / 稳态误差）",
+        "串级控制",
+        "自抗扰控制"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Integral windup",
+          "url": "https://en.wikipedia.org/wiki/Integral_windup"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "ISO 10218 工业机器人安全标准（2025 版）",
+      "name_en": "ISO 10218-1/-2:2025 Robotics — Safety Requirements (Part 1: Industrial Robots; Part 2: Industrial Robot Applications and Robot Cells)",
+      "abbr": "",
+      "aliases": [
+        "ISO 10218:2025",
+        "ISO 10218-1:2025",
+        "ISO 10218-2:2025",
+        "ANSI/A3 R15.06-2025"
+      ],
+      "tier": 3,
+      "one_liner": "国际上管工业机器人本体设计和集成应用的核心安全标准，2025 年发布新版。",
+      "explanation": "ISO 10218 由 ISO/TC 299 机器人技术委员会制定，第 1 部分管工业机器人本体设计，第 2 部分管把机器人集成进应用和工作单元。2025 年 2 月发布的新版取代 2011 版，主要变化：原先单独的协作机器人规范 ISO/TS 15066 被并入，人体接触力和压力限值放进第 2 部分；分析对象改为包含工件、程序和周边设备的「机器人应用」；功能安全不再统一要求 PL d、Category 3，而是按每项安全功能给默认等级；按危险程度把机器人分为 1 类和 2 类；新增网络安全要求。它不适用于公众可接触的服务机器人、医疗和载人等场合，这些归 ISO 13482 等标准。",
+      "example": "工厂里一台协作机械臂和工人共用工位拧螺丝，集成商要按 ISO 10218-2:2025 做风险评估；若采用功率与力限制，就要验证机械臂可能碰到的各人体部位的接触力和压力不超过标准给出的限值。",
+      "related": [
+        "ISO/TS 15066 协作机器人安全标准",
+        "功率与力限制",
+        "速度与分离监控",
+        "协作机器人",
+        "工业机器人",
+        "ISO 13849 性能等级 PL（安全完整性等级 SIL）"
+      ],
+      "sources": [
+        {
+          "title": "ISO 10218-1:2025 Robotics — Safety requirements — Part 1: Industrial robots",
+          "url": "https://www.iso.org/standard/73933.html"
+        },
+        {
+          "title": "ISO 10218-2:2025 Part 2: Industrial robot applications and robot cells",
+          "url": "https://www.iso.org/standard/73934.html"
+        },
+        {
+          "title": "IBF Solutions: New standards for industrial robots EN ISO 10218-1 and -2",
+          "url": "https://www.ibf-solutions.com/en/seminars-and-news/news/new-standards-for-industrial-robots-en-iso-10218-1-and-2"
+        }
+      ],
+      "as_of": "2025-02"
+    },
+    {
+      "name_zh": "ISO 13482 个人护理机器人安全标准",
+      "name_en": "ISO 13482 (Safety Requirements for Personal Care Robots)",
+      "abbr": "",
+      "aliases": [
+        "ISO 13482:2014",
+        "ISO/FDIS 13482",
+        "服务机器人安全要求",
+        "Safety requirements for service robots"
+      ],
+      "tier": 3,
+      "one_liner": "针对移动服务、穿戴助力、载人这类贴近人日常生活的机器人的国际安全标准。",
+      "explanation": "ISO 13482 于 2014 年 2 月发布，针对三类在非工业、非医疗场合与人近距离接触的地面机器人：移动服务机器人（如送物机器人）、身体助力机器人（如穿戴式助力外骨骼）和载人机器人。它规定本质安全设计、防护措施和使用说明，允许人与机器人有物理接触。不适用于时速超过 20 公里的机器人、玩具、水下和飞行机器人、工业机器人（归 ISO 10218）、医疗器械和军警用途；标准也注明发布时国际上还没有公认的碰撞疼痛或受伤限值。据 ISO 官网，修订稿 ISO/FDIS 13482 已到最终草案阶段，标题改为「服务机器人安全要求」，范围扩大到个人和专业/商用服务机器人。",
+      "example": "2014 年 11 月，Cyberdyne 的腰部助力外骨骼 HAL for Labor Support 和 HAL for Care Support 获得日本质量保证机构（JQA）依据 ISO 13482:2014 颁发的证书，官方称是全球首批。",
+      "related": [
+        "服务机器人",
+        "外骨骼",
+        "ISO 10218 工业机器人安全标准（2025 版）",
+        "功能安全",
+        "物理人机交互",
+        "具身安全"
+      ],
+      "sources": [
+        {
+          "title": "ISO 13482:2014 Robots and robotic devices — Safety requirements for personal care robots",
+          "url": "https://www.iso.org/standard/53820.html"
+        },
+        {
+          "title": "ISO/FDIS 13482 Robotics — Safety requirements for service robots",
+          "url": "https://www.iso.org/standard/83498.html"
+        },
+        {
+          "title": "CYBERDYNE: HAL received the world-first certificates of ISO 13482 (2014-11)",
+          "url": "https://www.cyberdyne.jp/en/news/1441.html"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "ISO 13849 性能等级 PL（安全完整性等级 SIL）",
+      "name_en": "ISO 13849 Performance Level (PL a–e, Category B–4) / Safety Integrity Level (SIL, IEC 62061/61508)",
+      "abbr": "PL / SIL",
+      "aliases": [
+        "性能等级",
+        "安全完整性等级",
+        "Performance Level",
+        "Safety Integrity Level",
+        "ISO 13849-1:2023",
+        "IEC 62061",
+        "IEC 61508",
+        "PL d",
+        "SIL 2"
+      ],
+      "tier": 3,
+      "one_liner": "衡量机器安全功能有多可靠的分级：ISO 13849 的 PL a–e 与 IEC 体系的 SIL。",
+      "explanation": "功能安全关心急停、保护性停止、限速这类安全功能在需要时能否可靠执行。ISO 13849-1（现行 2023 版）用性能等级 PL 衡量，a 到 e 递增，对应每小时危险失效概率 PFHd，如 PL d 为 10⁻⁷～10⁻⁶。先按伤害严重度、暴露频率、能否躲开定出所需等级 PLr，再由架构类别（Category B、1、2、3、4，3 和 4 要求单个故障不丢失安全功能）、元件平均危险失效时间 MTTFd 和诊断覆盖率 DC 算出实际 PL，要求不低于 PLr。另一套是 IEC 61508 的 SIL 1–4，其机械行业版 IEC 62061 用 SIL 1–3。两者按 PFHd 大致对应：PL b、c≈SIL 1，PL d≈SIL 2，PL e≈SIL 3。",
+      "example": "ISO 10218-1 的 2011 版要求工业机器人的安全相关控制功能一律达到 PL d、Category 3；2025 版改为按功能给默认等级，例如保护性停止默认 PL d 或 SIL 2，风险评估允许时可以调整。",
+      "related": [
+        "功能安全",
+        "安全扭矩关断",
+        "急停",
+        "保护性停止",
+        "ISO 10218 工业机器人安全标准（2025 版）",
+        "ISO 25785-1 动态稳定移动机器人安全标准"
+      ],
+      "sources": [
+        {
+          "title": "ISO 13849-1:2023 Safety of machinery — Safety-related parts of control systems — Part 1",
+          "url": "https://www.iso.org/standard/73481.html"
+        },
+        {
+          "title": "Spilma: ISO 13849 and IEC 62061: machinery functional safety",
+          "url": "https://www.spilma.com/en/guides/iec-62061-iso-13849-machinery-functional-safety"
+        },
+        {
+          "title": "IBF Solutions: New standards for industrial robots EN ISO 10218-1 and -2",
+          "url": "https://www.ibf-solutions.com/en/seminars-and-news/news/new-standards-for-industrial-robots-en-iso-10218-1-and-2"
+        }
+      ],
+      "as_of": "2025-02"
+    },
+    {
+      "name_zh": "ISO 25785-1 动态稳定移动机器人安全标准",
+      "name_en": "ISO 25785-1 (Safety Requirements for Dynamically Stable Industrial Mobile Robots, i.e. with Actively Controlled Stability, e.g. legged/humanoid — Part 1: Robots)",
+      "abbr": "",
+      "aliases": [
+        "ISO/CD 25785-1",
+        "人形机器人安全标准",
+        "动态稳定机器人安全标准",
+        "Actively Controlled Stability"
+      ],
+      "tier": 3,
+      "one_liner": "专为人形、四足等需主动平衡才站得住的工业移动机器人制定的安全标准，仍在起草。",
+      "explanation": "ISO 25785-1 由 ISO/TC 299 第 12 工作组起草，2025 年 5 月立项，Agility Robotics、波士顿动力和美国自动化协会 A3 的专家参与牵头。它针对「主动控制稳定性」的工业移动机器人，即断电或控制失效就可能倒下的双足人形、四足和轮式自平衡机器人（可带手臂），场景限于公众不能随意进入的工业环境。传统机器人遇险就切断电机力矩（安全扭矩关断），停住即安全；主动平衡的机器人一断电反而会倒下，所以跌倒、质心越出支撑范围等要作为专门危险处理。第 1 部分管机器人本体，第 2 部分将另行制定、管集成应用。2026 年 5 月进入委员会草案（ISO/CD）阶段，截至 2026 年 9 月尚未发布。",
+      "example": "仓库里一台人形机器人搬箱时检测到故障，若像传统机械臂那样立即切断关节力矩，它会整个倒下；按该标准草案的思路，要先评估它可能倒向哪里、冲击多大，设计受控的停机或蹲坐动作，并划定可能的跌倒区域。",
+      "related": [
+        "人形机器人",
+        "动态稳定",
+        "安全扭矩关断",
+        "跌倒保护与摔倒恢复",
+        "ISO 10218 工业机器人安全标准（2025 版）",
+        "四足机器人"
+      ],
+      "sources": [
+        {
+          "title": "ISO/CD 25785-1 Robotics — Safety requirements for dynamically stable industrial mobile robots — Part 1: Robots",
+          "url": "https://www.iso.org/standard/91469.html"
+        },
+        {
+          "title": "Synapticon: ISO 25785-1: Safety Standard for Dynamically Stable Robots",
+          "url": "https://www.synapticon.com/en/newslist/iso-25785-sicherheit-dynamisch-stabile-roboter"
+        },
+        {
+          "title": "Provael: ISO 25785-1 crosswalk（CD 于 2026-05-08 登记）",
+          "url": "https://www.provael.com/compliance/iso-25785"
+        }
+      ],
+      "as_of": "2026-09"
+    }
+  ]
+}

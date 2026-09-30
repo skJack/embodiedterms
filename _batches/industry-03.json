@@ -1,0 +1,197 @@
+{"category": "industry", "batch": 3, "terms": [
+{
+  "name_zh": "EDU 版（科研教育版）",
+  "name_en": "EDU Edition (Research & Education Version)",
+  "abbr": "EDU",
+  "aliases": ["EDU 版", "开发者版", "科研版", "教育版"],
+  "tier": 2,
+  "one_liner": "厂商面向高校和开发者的版本，开放底层接口，加配算力和传感器。",
+  "explanation": "国内机器人厂商常把同一款机器人分成几个版本出售，其中面向高校、科研机构和开发者的叫 EDU 版。和消费版、基础版相比，EDU 版通常开放底层 SDK（软件开发包）和关节级控制接口，加配机载算力（如英伟达 Jetson 模块）、更多传感器或灵巧手，价格也明显更高。做研究时要能读关节状态、下发力矩或位置指令，才能把自己训练的策略部署到真机上，所以论文里的真机多是 EDU 版。各版本开放到哪一层差别很大，买之前要对照厂商的规格表看清楚。",
+  "example": "据宇树官网，Go2 只有 EDU 版配足端力传感器；G1 基础版 23 个关节，EDU 版加装灵巧手等部件后最多 43 个。",
+  "related": ["二次开发", "软件开发工具包", "科研教育市场", "宇树 Go2", "宇树 G1", "本体厂商"],
+  "sources": [
+    {"title": "Unitree Go2 产品页（规格表）", "url": "https://www.unitree.com/go2"},
+    {"title": "Unitree G1 产品页（规格表）", "url": "https://www.unitree.com/g1"},
+    {"title": "宇树开发者文档中心", "url": "https://support.unitree.com/home/zh/developer"}
+  ],
+  "as_of": "2026-09"
+},
+{
+  "name_zh": "具身智能泡沫",
+  "name_en": "Embodied AI Bubble",
+  "abbr": "",
+  "aliases": ["泡沫", "具身泡沫论", "人形机器人泡沫"],
+  "tier": 2,
+  "one_liner": "担心具身智能的融资和估值跑在技术成熟与商业落地前面。",
+  "explanation": "指对具身智能、特别是人形机器人赛道过热的质疑：公司数量、融资额和估值涨得很快，但能稳定干活、带来持续收入的场景还少，公布的订单里不少是框架订单或科研教育采购，演示视频也常有遥操作、剪辑的成分。持这种看法的人担心赛道会像其他过热技术一样，热度退去后进入低谷、大批公司出局。反方认为模型和硬件在快速进步，新产业早期投入过热是常态。判断时可以看三件事：演示是否全自主、订单是否真实交付、单台能否回本。",
+  "example": "据报道，2025 年 11 月国家发改委新闻发布会提到国内人形机器人企业已超过 150 家，提示要防范高度相似的产品扎堆上市、研发空间被压缩等风险。",
+  "related": ["技术成熟度曲线（Gartner 炒作周期）", "百机大战", "同质化 / 重复建设", "框架订单 / 意向订单", "Demo（演示视频）", "商业闭环"],
+  "sources": [
+    {"title": "Embodied Intelligence 2026: Farewell to Narrative Hype, Practical Deployment Reigns Supreme (36Kr)", "url": "https://eu.36kr.com/en/p/3953394550537606"},
+    {"title": "Wikipedia: Gartner hype cycle", "url": "https://en.wikipedia.org/wiki/Gartner_hype_cycle"}
+  ],
+  "as_of": "2025-11"
+},
+{
+  "name_zh": "具身数据服务商（数据采集服务商）",
+  "name_en": "Embodied AI Data Service Provider",
+  "abbr": "",
+  "aliases": ["数据采集服务商", "具身数据公司"],
+  "tier": 2,
+  "one_liner": "专门为机器人公司采集、标注和出售训练数据的企业。",
+  "explanation": "指主业不是卖机器人或模型、而是给具身智能公司提供训练数据的企业。业务包括：建数据采集场，雇数采员用遥操作、动作捕捉、数据手套或手持夹爪采集演示数据；做清洗、子任务切分、语言标注和质检；按小时或按条交付，也有的出售现成数据集或采集设备。这个角色出现的原因是模仿学习需要大量真机数据，而机器人公司自建采集团队成本高、周期长。它相当于大模型时代 Scale AI 这类标注公司在机器人领域的对应物。评估一家服务商时，主要看数据格式、采集本体是否和自家机器人一致、有效数据占比。",
+  "example": "一家机器人公司要训练叠衣服，把任务外包给数据服务商，对方在采集场用同型号机械臂遥操作采集几百小时演示，标好子任务后按 LeRobot 格式交付。",
+  "related": ["数采员", "具身智能训练场", "数据标注", "数据质检", "Scale AI", "有效数据"],
+  "sources": [
+    {"title": "数据决定上限：25家国内具身智能数据采集厂商盘点（艾邦机器人）", "url": "https://www.aibangbots.com/a/11921"},
+    {"title": "钛媒体：机器人还没学会做家务，卖数据的已经先赚到了钱", "url": "https://www.tmtpost.com/8062934.html"},
+    {"title": "Wikipedia: Scale AI", "url": "https://en.wikipedia.org/wiki/Scale_AI"}
+  ],
+  "as_of": "2026-09"
+},
+{
+  "name_zh": "政府工作报告首次写入具身智能",
+  "name_en": "Embodied AI First Named in the Government Work Report (2025)",
+  "abbr": "",
+  "aliases": ["具身智能写入政府工作报告"],
+  "tier": 2,
+  "one_liner": "2025 年政府工作报告首次点名具身智能，把它列为要培育的未来产业。",
+  "explanation": "2025 年 3 月 5 日，国务院总理李强在十四届全国人大三次会议上作政府工作报告，在 2025 年工作任务中关于新兴产业、未来产业的部分写道：培育生物制造、量子科技、具身智能、6G 等未来产业。这是「具身智能」一词第一次出现在政府工作报告里。政府工作报告是每年两会上国务院向全国人大报告的年度施政纲领，写进去意味着具身智能被列为国家层面的产业方向。此后各地陆续出台专项政策、设立产业基金、建设数据采集训练场，业内常把这件事看作具身智能在国内被正式定调的节点。",
+  "example": "报告原文：「培育生物制造、量子科技、具身智能、6G等未来产业。」",
+  "related": ["未来产业", "新质生产力", "十五五规划", "人工智能+ 行动", "人形机器人创新发展指导意见", "具身智能"],
+  "sources": [
+    {"title": "政府工作报告（2025 年 3 月 5 日，中国政府网）", "url": "https://www.gov.cn/yaowen/liebiao/202503/content_7013163.htm"}
+  ],
+  "as_of": "2025-03"
+},
+{
+  "name_zh": "具身智能机器人应用技术员（新职业）",
+  "name_en": "Embodied AI Robot Application Technician (National New Occupation)",
+  "abbr": "",
+  "aliases": ["具身智能机器人数据采集员", "具身智能机器人训练师"],
+  "tier": 2,
+  "one_liner": "2026 年 9 月发布的国家新职业，覆盖数据采集、模型适配到现场部署。",
+  "explanation": "2026 年 9 月 9 日，人社部等部门发布第八批新职业，其中有「具身智能机器人应用技术员」（职业编码 4-04-05-16），由中国电子学会申报，北京人形机器人创新中心做技术支撑。官方定义大意是：使用遥操作设备、空间数字化工具和仿真测试平台，从事机器人多模态交互数据采集与处理、算法模型微调与适配、软硬件现场部署与调试、运行监控与维护优化的人员。下设两个工种：具身智能机器人数据采集员和训练师（别名里列的就是这两个工种）。进入国家职业分类后，可以据此制定职业标准、开展培训和技能评价，数采员这类一线岗位也有了正式的职业名称。",
+  "example": "在数据基地戴 VR 头显遥操作机器人叠衣服的数采员，属于其中的「具身智能机器人数据采集员」工种。",
+  "related": ["数采员", "具身智能训练场", "遥操作", "采集 SOP", "具身数据服务商（数据采集服务商）", "北京人形机器人创新中心"],
+  "sources": [
+    {"title": "北京人形：具身智能机器人应用技术员进入国家新职业序列", "url": "https://www.x-humanoid.com/news-view-330.html"},
+    {"title": "钛媒体：机器人还没学会做家务，卖数据的已经先赚到了钱", "url": "https://www.tmtpost.com/8062934.html"}
+  ],
+  "as_of": "2026-09"
+},
+{
+  "name_zh": "工程化",
+  "name_en": "Engineering / Productionization",
+  "abbr": "",
+  "aliases": ["工程落地", "产品化"],
+  "tier": 2,
+  "one_liner": "把实验室里跑通的技术做成稳定、可量产、可维护的产品。",
+  "explanation": "行业里常说论文和产品之间隔着工程化。一个策略在实验室演示成功率 80% 就能发论文，到了工厂可能要求 99% 以上、连续几小时不出错、换一台同型号机器人照样能用、坏了能很快修好。工程化就是补上这段差距的工作：提高可靠性和一致性，处理各种长尾故障，做推理加速和端侧部署（让模型直接在机器人自带的芯片上跑），完善标定、监控、远程运维和 OTA 升级，同时控制成本和良率。具身智能公司之间真正拉开差距的往往在这一环，所以融资稿和招聘里常出现「工程化能力」这个说法。",
+  "example": "叠衣服策略在实验室演示成功一次就够；要进洗衣工厂，就得 24 小时连续运行、失败后自动重试，还要能在几十台机器人上同时部署和更新，这些都算工程化。",
+  "related": ["量产", "良率 / 一致性", "场景落地", "几个 9（可靠性）", "平均无故障时间", "端侧部署"],
+  "sources": [
+    {"title": "Wikipedia: Technology readiness level", "url": "https://en.wikipedia.org/wiki/Technology_readiness_level"},
+    {"title": "Embodied Intelligence 2026: Farewell to Narrative Hype, Practical Deployment Reigns Supreme (36Kr)", "url": "https://eu.36kr.com/en/p/3953394550537606"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "形态之争",
+  "name_en": "Form-Factor Debate (humanoid vs. non-humanoid, wheeled vs. legged)",
+  "abbr": "",
+  "aliases": ["人形 vs 非人形", "轮式 vs 足式"],
+  "tier": 2,
+  "one_liner": "通用机器人该做成人形还是别的样子、用腿还是用轮子的争论。",
+  "explanation": "具身智能行业围绕机器人本体长什么样的长期争论，主要有两组。一是人形还是非人形：支持人形的一方认为人类的环境、工具和数据（人类视频、动作捕捉）都是按人的身体来的，人形可以直接复用；反对方认为双足不稳、成本高，很多任务用机械臂加移动底盘就够。二是轮式还是足式：轮式在平地上更快、更省电、更稳，足式能上下楼梯、跨越障碍。折中方案有轮式人形机器人（下半身轮式底盘、上半身双臂）和轮足机器人。争论背后是成本、可靠性和目标场景的取舍，目前没有定论，不少公司同时推出多种形态。",
+  "example": "逐际动力的 TRON 2 可以在双臂、足式、轮足等几种形态之间切换，是厂商在形态上两头下注的一个例子。",
+  "related": ["人形机器人", "轮式人形机器人", "轮足机器人", "足式机器人", "路线之争", "本体"],
+  "sources": [
+    {"title": "Wikipedia: Humanoid robot", "url": "https://en.wikipedia.org/wiki/Humanoid_robot"},
+    {"title": "逐际动力 TRON 2 具身机器人发布：可变化三种形态（IT之家）", "url": "https://www.ithome.com/0/906/067.htm"}
+  ],
+  "as_of": "2026-09"
+},
+{
+  "name_zh": "全栈自研",
+  "name_en": "Full-Stack In-House Development",
+  "abbr": "",
+  "aliases": ["垂直整合", "全栈"],
+  "tier": 2,
+  "one_liner": "本体、核心部件、控制到大模型，主要环节都由公司自己开发。",
+  "explanation": "指一家机器人公司把机械结构、关节模组、灵巧手、电控、运动控制、感知和上层大模型等主要环节都放在自己手里做，而不是买别人的本体或调用别人的模型。好处是软硬件可以一起迭代，出问题容易定位，数据格式统一，长期成本更可控；代价是投入大、周期长，团队什么都要懂。与之相对的是只做本体的本体厂商、只做模型的大脑公司，以及采购核心部件再集成的模式。宣传里的「全栈自研」口径不统一，要看关键部件和模型是否真是自己做的。",
+  "example": "星动纪元官网称「软硬件全栈自研」，同时做人形机器人 L7、灵巧手 XHAND1 和端到端模型 ERA-42。",
+  "related": ["软硬一体", "本体厂商", "大脑公司", "关节模组", "软硬解耦（模型与本体解耦）", "星动纪元"],
+  "sources": [
+    {"title": "星动纪元：关于我们", "url": "https://www.robotera.com/about/us"},
+    {"title": "北京人形机器人创新中心：关于我们", "url": "https://www.x-humanoid.com/about.html"}
+  ],
+  "as_of": "2026-09"
+},
+{
+  "name_zh": "软硬一体",
+  "name_en": "Hardware-Software Integration",
+  "abbr": "",
+  "aliases": ["软硬件一体化"],
+  "tier": 2,
+  "one_liner": "硬件和算法由同一方配套设计、调优，按整体方案交付。",
+  "explanation": "指机器人的硬件（本体、传感器、算力平台）和软件（控制、感知、模型）作为一个整体来设计、调优和交付。和全栈自研相比，侧重点不同：全栈自研强调每个环节都自己做，软硬一体强调软硬件配合调好、给客户一个开箱能用的方案，其中部分硬件可以外购。出发点是具身模型的效果高度依赖具体本体：相机装在哪、关节延迟多大、控制频率多高都会影响策略表现，软硬件分开做容易对不上。与之相对的说法是软硬解耦，即模型尽量不绑定特定本体，一个大脑适配多种机器人。",
+  "example": "据报道，星源智不造机器人本体，但把具身大脑模型和端侧算力平台一起交付，称走「软硬一体、端侧部署」路线。",
+  "related": ["全栈自研", "软硬解耦（模型与本体解耦）", "本体厂商", "大脑公司", "端侧部署", "一脑多机"],
+  "sources": [
+    {"title": "新京报：星源智完成 Pre-A 轮融资", "url": "https://m.bjnews.com.cn/detail/1780455817129694.html"},
+    {"title": "36氪：无界动力", "url": "https://m.36kr.com/p/3869370059035913"}
+  ],
+  "as_of": "2026-06"
+},
+{
+  "name_zh": "人形机器人半程马拉松",
+  "name_en": "Humanoid Robot Half Marathon (Beijing E-Town)",
+  "abbr": "",
+  "aliases": ["机器人半马", "亦庄半马", "北京亦庄人形机器人半程马拉松"],
+  "tier": 2,
+  "one_liner": "北京亦庄举办的人形机器人跑半马（约 21 公里）比赛，首届在 2025 年 4 月。",
+  "explanation": "在北京经济技术开发区（亦庄）举办的人形机器人半程马拉松，机器人与人类跑者同日比赛、分道跑完约 21 公里。首届在 2025 年 4 月举行，被宣传为全球首个人形机器人半马：北京人形机器人创新中心的天工 Ultra 以 2 小时 40 分 42 秒夺冠，松延动力 N2 获得亚军。2026 年 4 月 19 日的第二届有百余台机器人参赛，遥控组成绩乘 1.2 后与自主导航组统一排名：荣耀「闪电」自主跑出净时 50 分 26 秒夺冠，荣耀包揽前三；率先冲线的遥控「闪电」净时 48 分 19 秒，折算后未能夺冠。冠军成绩快于当时的人类男子半马世界纪录 57 分 20 秒（乌干达选手基普利莫 2026 年 3 月在里斯本创造；部分报道引用的 56 分 42 秒是他 2025 年在巴塞罗那的成绩，未获世界田联认可）。这项比赛考的是长时间运动的稳定性、电机散热和续航，不涉及操作能力，看成绩时要注意这一点。",
+  "example": "2026 年比赛中，夺冠的「闪电」自主跑完 21.0975 公里，中途只在 10.6 公里处换了一次电池。",
+  "related": ["世界人形机器人运动会", "天工", "荣耀「闪电」人形机器人", "松延动力 N2", "北京人形机器人创新中心", "续航"],
+  "sources": [
+    {"title": "北京人形：天工自主跑完北京亦庄半马", "url": "https://x-humanoid.com/news-view-164.html"},
+    {"title": "百余台机器人同跑半马 「闪电」超越人类纪录（新华网）", "url": "https://www.news.cn/sports/20260419/0834250af22d4432ac708322aa8f7123/c.html"},
+    {"title": "马拉松亚军人形机器人「松延动力 N2」被拍卖（IT之家）", "url": "https://www.ithome.com/0/847/782.htm"},
+    {"title": "50分26秒！2026北京亦庄人形机器人半马冠军出炉（澎湃新闻）", "url": "https://m.thepaper.cn/newsDetail_forward_33004042"},
+    {"title": "一年提速近两小时、从遥控到自主、跑赢人类！人形机器人「半马」刷新纪录（每日经济新闻，2026-04-19）", "url": "https://www.nbd.com.cn/articles/2026-04-19/4345990.html"},
+    {"title": "Kiplimo breaks world half marathon record with 57:20 on Lisbon return（World Athletics，2026-03-08）", "url": "https://worldathletics.org/competitions/world-athletics-label-road-races/news/jacob-kiplimo-half-marathon-world-record-lisbon"}
+  ],
+  "as_of": "2026-04"
+},
+{
+  "name_zh": "ICRA",
+  "name_en": "IEEE International Conference on Robotics and Automation",
+  "abbr": "ICRA",
+  "aliases": ["IEEE 国际机器人与自动化会议", "国际机器人与自动化会议"],
+  "tier": 2,
+  "one_liner": "IEEE 机器人与自动化学会主办的年度旗舰机器人学术会议。",
+  "explanation": "ICRA 由 IEEE 机器人与自动化学会（RAS）主办，1984 年起每年举办，通常在 5–6 月，是规模最大的机器人学术会议之一，每年投稿数千篇。内容覆盖机器人各方向：运动规划、控制、感知、SLAM、操作、足式运动、人机交互，近年机器人学习和 VLA 类论文增长很快。它和 IROS 并称机器人领域两大综合性会议；和 CoRL、RSS 相比，收录面更广、规模更大。它还和期刊 RA-L 联动，RA-L 录用的论文可以选择到 ICRA 上宣讲。2025 年 ICRA 在美国亚特兰大举办。",
+  "example": "不少经典算法首发于 ICRA，例如 Kajita 等人 2003 年的 ZMP 预观控制、Mellinger 和 Kumar 2011 年的四旋翼最小 Snap 轨迹。",
+  "related": ["IROS", "CoRL", "RSS", "T-RO / IJRR / RA-L（机器人期刊）", "IEEE 机器人与自动化学会", "顶会 / 顶刊（CCF-A）"],
+  "sources": [
+    {"title": "Wikipedia: International Conference on Robotics and Automation", "url": "https://en.wikipedia.org/wiki/International_Conference_on_Robotics_and_Automation"}
+  ],
+  "as_of": "2025-05"
+},
+{
+  "name_zh": "IROS",
+  "name_en": "IEEE/RSJ International Conference on Intelligent Robots and Systems",
+  "abbr": "IROS",
+  "aliases": ["智能机器人与系统国际会议", "IEEE/RSJ 智能机器人与系统国际会议"],
+  "tier": 2,
+  "one_liner": "与 ICRA 并列的年度大型机器人学术会议，每年秋季举办。",
+  "explanation": "IROS 全称 IEEE/RSJ 智能机器人与系统国际会议，1988 年在东京首次举办，由 IEEE 和日本机器人学会（RSJ）等联合主办，一般在秋季召开，每年投稿超过 2000 篇。研究范围和 ICRA 高度重合，从运动控制、感知、SLAM 到机器人学习都有，业内常把两者合称机器人两大会。它在亚洲、欧洲、美洲之间轮换举办：2024 年在阿布扎比，2025 年在杭州，2026 年在美国匹兹堡，2027 年定在意大利佛罗伦萨。新人投稿时，IROS 和 ICRA 常被当作机器人方向的首选会议。",
+  "example": "激光 SLAM 里常用的 LIO-SAM 就发表在 IROS 2020。",
+  "related": ["ICRA", "CoRL", "RSS", "Humanoids 会议", "T-RO / IJRR / RA-L（机器人期刊）", "顶会 / 顶刊（CCF-A）"],
+  "sources": [
+    {"title": "Wikipedia: International Conference on Intelligent Robots and Systems", "url": "https://en.wikipedia.org/wiki/International_Conference_on_Intelligent_Robots_and_Systems"}
+  ],
+  "as_of": "2026-09"
+}
+]}

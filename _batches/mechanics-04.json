@@ -1,0 +1,198 @@
+{"category": "mechanics", "batch": 4, "terms": [
+{
+"name_zh": "差速驱动运动学",
+"name_en": "Differential Drive Kinematics",
+"abbr": "",
+"aliases": ["差速模型", "独轮车模型", "Unicycle Model", "差速运动学"],
+"tier": 2,
+"one_liner": "描述左右两轮转速如何决定底盘前进速度和转弯角速度的公式。",
+"explanation": "差速驱动是最常见的移动底盘结构：左右各一个独立电机驱动的轮子，再配万向脚轮防倾，靠两轮转速差转向，不需要单独的转向机构。它的运动学只有两条式子：线速度 v = (v_R + v_L)/2，角速度 ω = (v_R − v_L)/b，其中 v_R、v_L 是右、左轮的线速度（轮角速度乘轮半径 r），b 是两轮间距。反过来，给定想要的 v 和 ω 就能算出每个轮子该转多快。于是底盘在平面上等价于只能「往前走 + 原地转」的点，即独轮车模型；它不能直接横移，这种只约束速度的限制叫非完整约束。ROS 的 diff_drive_controller 就按这两条式子把 cmd_vel 换成左右轮指令，并用轮子反馈反算里程计。",
+"example": "扫地机器人要原地左转时，让右轮以速度 u 向前、左轮以同样速度向后：v = 0，ω = 2u/b，机身绕两轮中点原地旋转。",
+"related": ["非完整约束", "差速底盘", "轮式里程计", "cmd_vel 速度指令话题（Twist 消息）", "移动底盘", "正运动学"],
+"sources": [
+{"title": "Differential wheeled robot - Wikipedia", "url": "https://en.wikipedia.org/wiki/Differential_wheeled_robot"},
+{"title": "ros2_control: diff_drive_controller 文档", "url": "https://control.ros.org/master/doc/ros2_controllers/diff_drive_controller/doc/userdoc.html"}
+],
+"as_of": ""
+},
+{
+"name_zh": "微分运动学",
+"name_en": "Differential Kinematics",
+"abbr": "",
+"aliases": ["速度运动学", "Velocity Kinematics", "微分逆运动学", "Differential Inverse Kinematics", "Diff IK"],
+"tier": 2,
+"one_liner": "用雅可比矩阵把关节速度和末端速度联系起来的运动学。",
+"explanation": "正运动学回答「关节角是多少时末端在哪」，微分运动学回答「关节转多快时末端动多快」。桥梁是雅可比矩阵 J(q)，即正运动学对关节角 q 的偏导：V = J(q)·q̇，V 是末端 6 维空间速度（3 维线速度 + 3 维角速度），q̇ 是各关节速度。反过来用就是微分逆运动学：给定期望末端速度 V_d，用伪逆（非方阵上的「求逆」）算 q̇ = J⁺V_d，再积分成关节角指令，每个控制周期重复一次。它不必一次性求解析逆解，很适合遥操作和输出末端增量动作的策略；但在奇异位形（J 降秩）附近伪逆会爆大，实际常用阻尼最小二乘，或写成带关节限位的二次规划。Pink、mink 都是这类库。",
+"example": "VR 遥操作时，每个控制周期把手柄的位移换算成末端期望速度，用 q̇ = J⁺V_d 求出 7 个关节该转多快，机械臂末端就平滑地跟着手走。",
+"related": ["雅可比矩阵", "逆运动学", "雅可比伪逆", "阻尼最小二乘法", "奇异位形", "mink"],
+"sources": [
+{"title": "Robotic Manipulation (MIT, Russ Tedrake) - Basic Pick and Place: Differential kinematics", "url": "https://manipulation.csail.mit.edu/pick.html"},
+{"title": "kevinzakka/mink - GitHub", "url": "https://github.com/kevinzakka/mink"},
+{"title": "stephane-caron/pink - GitHub", "url": "https://github.com/stephane-caron/pink"}
+],
+"as_of": ""
+},
+{
+"name_zh": "动态稳定",
+"name_en": "Dynamic Stability",
+"abbr": "",
+"aliases": ["动态平衡", "Dynamic Balance"],
+"tier": 2,
+"one_liner": "重心可暂时越出支撑范围，靠持续运动和下一步落脚把平衡找回来。",
+"explanation": "足式机器人的「稳」有两种。静态稳定要求重心在地面的投影始终落在支撑多边形（各着地脚围成的凸区域）内，任何时刻停下都不会倒，比如六足机器人三条腿轮流支撑慢慢爬。动态稳定放宽了这一要求：重心可以短时间跑出支撑区，只要能通过下一步落脚、调整地面力让运动不发散到摔倒即可，人走路和跑步都属于这种。1980 年代 Raibert 的单腿跳跃机器人证明，只靠不停跳跃也能站稳。衡量动态稳定常用零力矩点（ZMP，脚底反力不产生水平力矩的点，须留在支撑区内）、捕获点（能让机器人停下来的落脚位置）等；如今人形机器人的强化学习运控则直接在仿真中学会动态平衡。",
+"example": "人形机器人快走时，单脚支撑阶段重心已经前倾到支撑脚之外，靠下一步及时落地接住身体，这是动态稳定；如果每步都先把重心挪到支撑脚正上方再迈腿，就是静态稳定走法，会慢很多。",
+"related": ["静态稳定", "支撑多边形", "零力矩点", "捕获点", "倒立摆模型", "平衡控制"],
+"sources": [
+{"title": "Legged robot - Wikipedia", "url": "https://en.wikipedia.org/wiki/Legged_robot"},
+{"title": "Zero moment point - Wikipedia", "url": "https://en.wikipedia.org/wiki/Zero_moment_point"},
+{"title": "Underactuated Robotics (MIT) - Humanoid Robots", "url": "https://underactuated.csail.mit.edu/humanoids.html"}
+],
+"as_of": ""
+},
+{
+"name_zh": "拉格朗日方程",
+"name_en": "Euler-Lagrange Equations",
+"abbr": "",
+"aliases": ["拉格朗日动力学", "拉格朗日法", "欧拉-拉格朗日方程", "第二类拉格朗日方程", "Lagrangian Dynamics"],
+"tier": 2,
+"one_liner": "从动能和势能出发推导机器人运动方程的方法，不必逐个分析约束力。",
+"explanation": "拉格朗日力学由拉格朗日提出，集中写在他 1788 年的《分析力学》里。做法是先写拉格朗日量 L = T − V（T 为动能，V 为势能），再对每个广义坐标 q_i（如关节角）列方程 d/dt(∂L/∂q̇_i) − ∂L/∂q_i = τ_i，τ_i 是作用在该坐标上的广义力（如电机力矩）。好处是只算能量，关节间的约束力自动消掉，方程个数等于自由度数。对机械臂整理后得到标准形式 M(q)q̈ + C(q,q̇)q̇ + g(q) = τ：M 是质量矩阵，C 项含科里奥利力和离心力，g 是重力项。这组方程是计算力矩控制、重力补偿、模型预测控制和物理仿真的基础；手推适合两三个关节的教学例子，大型机器人实际用递归牛顿-欧拉等算法数值计算。",
+"example": "单摆：摆长 l、质量 m、摆角 θ，动能 T = ½ml²θ̇²，势能 V = −mgl·cosθ，代入得 ml²θ̈ + mgl·sinθ = τ，就是熟悉的单摆方程。",
+"related": ["牛顿-欧拉方程", "广义坐标", "质量矩阵", "科里奥利力与离心力项", "正动力学", "逆动力学"],
+"sources": [
+{"title": "Lagrangian mechanics - Wikipedia", "url": "https://en.wikipedia.org/wiki/Lagrangian_mechanics"},
+{"title": "Underactuated Robotics (MIT) - Multi-Body Dynamics", "url": "https://underactuated.csail.mit.edu/multibody.html"}
+],
+"as_of": ""
+},
+{
+"name_zh": "腾空相",
+"name_en": "Flight Phase (Aerial Phase)",
+"abbr": "",
+"aliases": ["腾空期", "飞行相", "Aerial Phase"],
+"tier": 2,
+"one_liner": "步态中所有脚同时离地、身体在空中的那一段时间。",
+"explanation": "腿足运动按时间可切成几段：脚着地承重叫支撑相，脚在空中前摆叫摆动相；如果某段时间所有脚都不接触地面，这段就叫腾空相。它是区分走和跑的关键：走路时至少有一只脚始终在地上，跑步则有腾空相。对机器人来说，腾空时只有重力作用，重心沿抛物线飞行，控制器无法借地面力改变整体动量，只能调整腿的姿态为落地做准备，落地瞬间还要承受冲击，所以跑、跳、跑酷比走路难得多。Raibert 的单腿跳跃机器人就把一个周期拆成支撑和腾空分别控制，腾空时摆腿选落脚点；四足的跳跃步态、疾驰步态以及人形机器人奔跑和空翻都包含腾空相。",
+"example": "人形机器人慢跑时，一只脚蹬地离开、另一只脚还没落地的那一小段时间就是腾空相，此时策略只能调整摆腿姿态，为下一次落地做准备。",
+"related": ["支撑相 / 摆动相", "步态", "步态周期与占空比", "弹簧负载倒立摆", "跳跃步态", "疾驰步态"],
+"sources": [
+{"title": "Running - Wikipedia", "url": "https://en.wikipedia.org/wiki/Running"},
+{"title": "Legged robot - Wikipedia", "url": "https://en.wikipedia.org/wiki/Legged_robot"}
+],
+"as_of": ""
+},
+{
+"name_zh": "浮动基",
+"name_en": "Floating Base",
+"abbr": "",
+"aliases": ["浮动基座", "浮动基动力学", "自由关节", "Free Joint", "Free-flyer Joint"],
+"tier": 2,
+"one_liner": "机器人躯干不固定在地上，本身还有 6 个可自由移动和转动的自由度。",
+"explanation": "固定在桌上的机械臂叫固定基，底座不动，只用关节角就能描述姿态。人形、四足、无人机的躯干（base）不和世界相连，除了关节还要多 6 个自由度描述躯干在空间中的位置和朝向，这就是浮动基。建模时通常在世界和躯干之间加一个虚拟的「自由关节」：MuJoCo 叫 free joint，位置用 7 个数（3 维位置 + 4 维单位四元数），速度用 6 个数（3 维线速度 + 3 维角速度）。难点在于这 6 个自由度没有电机直接驱动，只能靠脚与地面的接触力间接推动躯干，属于欠驱动；因此浮动基机器人的控制离不开接触力、摩擦锥和状态估计，躯干位姿要靠 IMU 和腿式里程计估出来。",
+"example": "MuJoCo Menagerie 里的宇树 G1 模型，根节点 pelvis 带一个名为 floating_base_joint 的 freejoint，所以 qpos 前 7 维是骨盆位置和四元数，后面才是各关节角。",
+"related": ["广义坐标", "欠驱动", "质心动力学", "全身控制", "状态估计", "MJCF"],
+"sources": [
+{"title": "MuJoCo Documentation - Overview (joint types, free joint)", "url": "https://mujoco.readthedocs.io/en/stable/overview.html"},
+{"title": "MuJoCo Menagerie - unitree_g1/g1.xml", "url": "https://github.com/google-deepmind/mujoco_menagerie/blob/main/unitree_g1/g1.xml"},
+{"title": "Underactuated Robotics (MIT) - Multi-Body Dynamics", "url": "https://underactuated.csail.mit.edu/multibody.html"}
+],
+"as_of": ""
+},
+{
+"name_zh": "力封闭",
+"name_en": "Force Closure",
+"abbr": "",
+"aliases": ["力闭合"],
+"tier": 2,
+"one_liner": "抓取点借助摩擦能抵抗任意方向的外力和力矩，物体不会被扯脱。",
+"explanation": "力封闭是抓取力学里判断「抓没抓牢」的经典标准。每个接触点在摩擦作用下能施加的力是一个摩擦锥；把所有接触点能产生的力和力矩（合称力旋量，共 6 维）叠加起来，若能覆盖整个 6 维空间，就称这个抓取力封闭：无论外界往哪个方向推、拧，手指只要调整用力都能抵消。与之相对的是形封闭，只靠接触几何把物体卡死、不依赖摩擦，通常需要更多接触点。力封闭依赖摩擦系数，同样的指尖位置，抓干燥纸盒可能满足，抓沾油的玻璃杯就可能不满足。它是传统抓取规划和抓取质量指标的出发点；平面问题中两指抓取满足力封闭的条件是两接触点连线同时落在两个摩擦锥内。",
+"example": "两指夹爪夹一块积木，两侧接触面平行、法线正对（对跖抓取）：只要两点连线在两个摩擦锥内，积木往上拉、往侧推都能被夹住，在平面意义上就是力封闭。",
+"related": ["形封闭", "摩擦锥", "力旋量", "对跖抓取", "抓取质量指标", "抓取矩阵"],
+"sources": [
+{"title": "Robotic Manipulation (MIT, Russ Tedrake) - Bin Picking: contact wrench cone, force closure", "url": "https://manipulation.csail.mit.edu/clutter.html"}
+],
+"as_of": ""
+},
+{
+"name_zh": "正动力学",
+"name_en": "Forward Dynamics",
+"abbr": "",
+"aliases": ["动力学正问题", "前向动力学"],
+"tier": 2,
+"one_liner": "已知当前状态和施加的力矩，算出机器人此刻的加速度和接下来的运动。",
+"explanation": "动力学研究力和运动的关系，分正、逆两个方向。正动力学是已知关节位置 q、速度 q̇ 和施加的力矩 τ，求加速度 q̈：由 M(q)q̈ + c(q,q̇) = τ 解出 q̈ = M⁻¹(τ − c)，其中 M 是质量矩阵，c 汇总了科里奥利力、离心力和重力。把 q̈ 按时间步长积分，就得到机器人接下来的轨迹，这正是物理仿真器每一步做的事，MuJoCo、Isaac Sim 等还要在此基础上求解接触力和摩擦。逆动力学方向相反：给定想要的运动求所需力矩，多用于控制。正动力学的经典高效算法是 Featherstone 的铰接体算法。注意它和学习领域的「正向动力学模型」不同，后者是用神经网络学习预测下一状态。",
+"example": "在 MuJoCo 里给机械臂所有关节施加 0 力矩后反复调用 mj_step，仿真器按正动力学算出重力带来的加速度，机械臂就会自然下垂、来回摆动。",
+"related": ["逆动力学", "拉格朗日方程", "质量矩阵", "铰接体算法", "物理引擎", "正向动力学模型"],
+"sources": [
+{"title": "MuJoCo Documentation - Computation", "url": "https://mujoco.readthedocs.io/en/stable/computation/index.html"},
+{"title": "Inverse dynamics - Wikipedia", "url": "https://en.wikipedia.org/wiki/Inverse_dynamics"},
+{"title": "Featherstone's algorithm - Wikipedia", "url": "https://en.wikipedia.org/wiki/Featherstone%27s_algorithm"}
+],
+"as_of": ""
+},
+{
+"name_zh": "摩擦系数",
+"name_en": "Friction Coefficient (Coefficient of Friction)",
+"abbr": "μ",
+"aliases": ["静摩擦系数", "动摩擦系数", "Coefficient of Friction"],
+"tier": 2,
+"one_liner": "最大摩擦力与法向压力之比，决定接触面多不容易打滑。",
+"explanation": "按库仑摩擦定律，两接触面间的摩擦力 f 不超过摩擦系数 μ 乘以法向力 N（垂直于接触面的压力）：f ≤ μN。μ 是无量纲数，取决于两种材料和表面状态，与接触面积基本无关，只能靠实验测量。它分两种：静摩擦系数 μ_s 决定物体开始滑动前能承受的最大切向力，动摩擦系数 μ_k 对应已经滑动时的摩擦，通常 μ_s 大于 μ_k。常见干燥材料多在 0.3–0.6 之间，橡胶对混凝土约 0.6–0.85，冰对冰只有 0.02–0.09。在机器人里，μ 决定夹爪要多大握力才不掉东西、脚踩地时能用多大水平力而不打滑；MuJoCo 为每个接触设滑动、扭转、滚动三种摩擦参数，训练时常对 μ 做随机化以缩小虚实差距。",
+"example": "两指夹爪夹 0.5 kg 的杯子，每指法向力 N、μ = 0.5 时，两侧摩擦最多 2×0.5×N，要托住约 4.9 N 的重力，N 至少约 4.9 N；换成 μ = 0.25 的光滑杯面，所需握力翻倍到约 9.8 N。",
+"related": ["库仑摩擦", "摩擦锥", "法向力与切向力（剪切力）", "打滑", "静摩擦与 Stribeck 效应", "动力学随机化"],
+"sources": [
+{"title": "Friction - Wikipedia", "url": "https://en.wikipedia.org/wiki/Friction"},
+{"title": "MuJoCo Documentation - Computation (contact, friction)", "url": "https://mujoco.readthedocs.io/en/stable/computation/index.html"}
+],
+"as_of": ""
+},
+{
+"name_zh": "摩擦锥",
+"name_en": "Friction Cone",
+"abbr": "",
+"aliases": ["摩擦圆锥"],
+"tier": 2,
+"one_liner": "一个接触点在不打滑前提下能施加的全部力，构成一个圆锥形集合。",
+"explanation": "由库仑摩擦定律，接触力沿表面的切向分量不能超过垂直表面的法向分量乘摩擦系数 μ，写成 √(f_x² + f_y²) ≤ μ·f_z，其中 f_z 是法向力，f_x、f_y 是两个切向分量。满足这个不等式的所有力在三维空间里恰好组成以接触法线为轴的圆锥，半顶角 θ 满足 tanθ = μ。力在锥内就不打滑，出了锥就会滑动。摩擦锥是接触计算的基本约束：抓取分析用它判断力封闭，腿足机器人的模型预测控制和全身控制要求每只脚的地面反作用力留在锥内，物理引擎也用它约束接触力。圆锥是非线性约束，优化时常用多棱锥（摩擦金字塔）近似成线性不等式；MuJoCo 同时提供棱锥和椭圆锥两种选项。",
+"example": "四足机器人在 μ 约 0.6 的地面上行走，控制器要求每只脚的水平力不超过竖直力的 0.6 倍；到了湿滑瓷砖上 μ 变小、锥变窄，就得缩小步幅、减小蹬地的水平力。",
+"related": ["摩擦系数", "库仑摩擦", "摩擦金字塔", "力封闭", "地面反作用力", "接触力优化"],
+"sources": [
+{"title": "Robotic Manipulation (MIT, Russ Tedrake) - Bin Picking: friction cone", "url": "https://manipulation.csail.mit.edu/clutter.html"},
+{"title": "MuJoCo Documentation - Computation (pyramidal / elliptic cones)", "url": "https://mujoco.readthedocs.io/en/stable/computation/index.html"},
+{"title": "Friction - Wikipedia", "url": "https://en.wikipedia.org/wiki/Friction"}
+],
+"as_of": ""
+},
+{
+"name_zh": "广义坐标",
+"name_en": "Generalized Coordinates",
+"abbr": "",
+"aliases": ["广义速度", "广义力", "qpos / qvel", "关节状态", "Joint State", "joint_states", "关节位置/速度/力矩"],
+"tier": 2,
+"one_liner": "用一组最少的独立变量（如各关节角）唯一描述机器人整体构型。",
+"explanation": "描述多连杆机器人，可以记下每个连杆在空间的位置和朝向，但它们受关节约束，变量大量冗余。广义坐标只取一组能唯一确定构型的独立参数，对串联机械臂就是各关节角 q，个数通常等于自由度数。它对时间的导数 q̇ 叫广义速度；与每个坐标配对、沿该坐标做功的力叫广义力，对转动关节就是关节力矩。拉格朗日方程、质量矩阵和多数仿真器都在广义坐标下工作。落到代码里：MuJoCo 用 qpos、qvel 存位置和速度，含自由关节或球关节时姿态用四元数，所以位置维数 nq 可大于速度维数 nv；ROS 的 sensor_msgs/JointState（话题常叫 /joint_states）按关节名发布 position、velocity、effort 三组数组，也是很多机器人数据集里「关节状态」的来源。",
+"example": "固定在桌上的 7 自由度机械臂，q 就是 7 个关节角；四足机器人宇树 Go2 在 MuJoCo 里 qpos 是 7（躯干位置 + 四元数）+ 12（腿关节）= 19 维，qvel 是 6 + 12 = 18 维。",
+"related": ["自由度", "构型空间", "拉格朗日方程", "浮动基", "关节空间", "本体感知"],
+"sources": [
+{"title": "Generalized coordinates - Wikipedia", "url": "https://en.wikipedia.org/wiki/Generalized_coordinates"},
+{"title": "MuJoCo Documentation - Overview (qpos / qvel, nq / nv)", "url": "https://mujoco.readthedocs.io/en/stable/overview.html"},
+{"title": "ros2/common_interfaces - sensor_msgs/msg/JointState.msg", "url": "https://github.com/ros2/common_interfaces/blob/rolling/sensor_msgs/msg/JointState.msg"}
+],
+"as_of": ""
+},
+{
+"name_zh": "万向节死锁",
+"name_en": "Gimbal Lock",
+"abbr": "",
+"aliases": ["万向锁", "框架自锁"],
+"tier": 2,
+"one_liner": "用欧拉角表示旋转时，某个角转到 90° 使两根转轴重合、丢掉一个自由度。",
+"explanation": "万向节死锁原本是机械问题：三层嵌套的万向支架转到某个角度时，两根转轴变得平行，平台就失去一个方向的转动能力。数学上用欧拉角或横滚-俯仰-偏航角描述姿态也有同样现象：俯仰角到 ±90° 时，偏航和横滚绕的是同一根轴，改哪个效果都一样，附近某些小转动无法用角度的小变化表达，插值和求导都会出现跳变。阿波罗 11 号的惯性测量单元就受此限制，按设计俯仰接近 85° 时平台会被冻结，需要人工把飞船转离该姿态。机器人里的应对是用四元数、旋转矩阵或 6D 旋转表示来存储和计算姿态，欧拉角只留给人看；训练策略时若直接回归欧拉角，也可能在奇异点附近学出不连续的动作。",
+"example": "用横滚-俯仰-偏航角控制机械臂末端时，把俯仰调到 90° 后会发现，调偏航和调横滚都让夹爪绕同一根轴转，另一个方向的微小转动必须让三个角一起大幅跳变才能做到。",
+"related": ["欧拉角", "横滚-俯仰-偏航角", "四元数", "6D 旋转表示", "旋转矩阵", "奇异位形"],
+"sources": [
+{"title": "Gimbal lock - Wikipedia", "url": "https://en.wikipedia.org/wiki/Gimbal_lock"}
+],
+"as_of": ""
+}
+]}

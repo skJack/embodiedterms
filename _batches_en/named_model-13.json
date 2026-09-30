@@ -1,0 +1,233 @@
+{
+  "batch": "named_model-13",
+  "terms": [
+    {
+      "key": "named_model-13#0",
+      "name_en": "GEN-1",
+      "aliases": [
+        "GEN-1.5",
+        "Scaling Embodied Foundation Models to Mastery"
+      ],
+      "one_liner": "Generalist AI's second-generation embodied foundation model, aiming for reliable, fast “mastery” of simple tasks rather than just getting them done.",
+      "explanation": "GEN-1 is an embodied foundation model released in April 2026 by the US robotics company Generalist AI, the successor to GEN-0. It was pretrained on more than 500,000 hours of real physical-interaction data, mostly collected from people wearing low-cost wearable devices while doing everyday activities. The company defines its goal as “mastery”: reliable, fast, and able to improvise. According to the company, fine-tuning on just about 1 hour of robot data per task brought success on tasks where the previous model scored around 64% up to 99%, folding a paper box in about 12.1 seconds — roughly 3 times faster than the previous best. The August 2026 version, GEN-1.5, gained in-context learning ability (learning from a demonstration without changing its weights): it can perform a new task after watching just a 3-to-12-second demonstration, with an average single-shot success rate of about 59%.",
+      "example": "In an official demo, GEN-1 folded paper boxes 200 times in a row and assembled blocks 1,800 times in a row, to demonstrate its reliability over long, continuous operation.",
+      "related": [
+        "GEN-0",
+        "Generalist AI",
+        "Embodied Foundation Model",
+        "In-Context Learning",
+        "Scaling Laws",
+        "Real-Robot Data"
+      ]
+    },
+    {
+      "key": "named_model-13#1",
+      "name_en": "Gen2Act",
+      "aliases": [
+        "Human Video Generation in Novel Scenarios enables Generalizable Robot Manipulation"
+      ],
+      "one_liner": "A manipulation method that first generates a video of a human performing the task, then has the robot execute it by following that video.",
+      "explanation": "Gen2Act was proposed in September 2024 by researchers at Google DeepMind, Carnegie Mellon University, and Stanford. It splits “follow a language instruction to manipulate an object” into two steps: first, a video-generation model trained on web video generates, zero-shot with no fine-tuning, a video of a human completing the task in the current scene; then a robot policy watches this video and executes it, with a point-trajectory prediction loss added during training (predicting how points in the image move) so the policy learns to read motion information out of the video. Generalizing across objects and actions is handed off to the generative model, which has seen a vast amount of web video, while the robot data only has to teach “translating the action in the video into a robot action” — which lets it handle object categories and actions that never appear in the robot data itself.",
+      "example": "Action types absent from the robot data, such as stirring in a circle or dragging an object in a new direction, can be carried out with the help of a generated human video; chaining several such steps together can also accomplish long-horizon tasks like “clear the table” or “make coffee.”",
+      "related": [
+        "Video Generation Model",
+        "Human Video Data",
+        "Any-Point Tracking",
+        "Behavior Cloning",
+        "UniPi",
+        "DreamGen (GR00T Dreams)"
+      ]
+    },
+    {
+      "key": "named_model-13#2",
+      "name_en": "GENE-26.5",
+      "aliases": [
+        "GENE"
+      ],
+      "one_liner": "Genesis AI's first robotics foundation model system, released in May 2026, focused on dexterous manipulation.",
+      "explanation": "GENE-26.5 was released on May 7, 2026 by the robotics company Genesis AI, the first public version of its GENE model family — the “26.5” in the name refers to May 2026. The company frames manipulation as a full-stack systems problem: using a high-DOF dexterous hand close to a human hand to narrow the embodiment gap; collecting human data with a tactile-equipped data glove plus first-person and third-person video (more than 200,000 hours total with partners); modeling the joint distribution of language, vision, proprioception, touch, and action with flow matching; running large-scale closed-loop evaluation in the company's own high-fidelity simulator, Genesis World; and building its own low-latency control stack. The company says most difficult skills need less than an hour of task-specific robot data.",
+      "example": "In an official demo, the same model autonomously completed a roughly 4-minute cooking routine of more than 20 sub-tasks at normal speed, including cracking an egg one-handed and holding a tomato steady with one hand while cutting it with the other.",
+      "related": [
+        "Genesis AI",
+        "Genesis",
+        "Dexterous Hand",
+        "Tactile Glove",
+        "Flow Matching",
+        "Embodiment Gap"
+      ]
+    },
+    {
+      "key": "named_model-13#3",
+      "name_en": "Generative Value Learning (GVL)",
+      "aliases": [
+        "Vision Language Models are In-Context Value Learners"
+      ],
+      "one_liner": "Has a vision-language model estimate task progress from shuffled video frames, turning it into a general-purpose value function.",
+      "explanation": "GVL was proposed in November 2024 by researchers at Google DeepMind, together with the University of Pennsylvania and Stanford, published at ICLR 2025. “Value” here means what percentage of the task is complete, which can be used to judge success or failure, filter data, or serve as a reward for reinforcement learning. Directly having a vision-language model (VLM) score each frame in chronological order works poorly, because adjacent frames are highly correlated and the model tends to just output a monotonically increasing score based on order alone. GVL instead shuffles the video frames first, then has the model (the paper uses Gemini-1.5-Pro) estimate completion percentage frame by frame, forcing it to actually look at what's in each frame. It needs no task-specific training, works zero-shot or few-shot across more than 300 real tasks, and can even learn by putting human videos or other robots' demonstrations into its context.",
+      "example": "Use GVL to score a batch of demonstration videos for progress; clips where the predicted progress correlates poorly with the true chronological order (usually failed or low-quality demonstrations) can be filtered out, and the remaining data used to train an imitation-learning policy.",
+      "related": [
+        "Progress Reward Model",
+        "VLM as Reward Model",
+        "Value Function",
+        "Success Detector",
+        "In-Context Learning",
+        "Data Curation"
+      ]
+    },
+    {
+      "key": "named_model-13#4",
+      "name_en": "Genie 2",
+      "aliases": [],
+      "one_liner": "Google DeepMind's large-scale world model that generates a controllable 3D world from a single image.",
+      "explanation": "Genie 2 is a foundation world model released by Google DeepMind on December 4, 2024, the successor to the original Genie. Given a single image — either a real photo or output from the Imagen 3 text-to-image model — it generates a 3D environment that can be controlled with a keyboard and mouse, staying visually consistent for up to about a minute, though most examples hold for 10–20 seconds. Its architecture is an autoregressive latent diffusion model trained on large-scale video data: it denoises and generates frame by frame inside a compressed latent space. It can simulate effects like gravity, water, and smoke, along with object interactions, and remembers content that has moved out of view. Its main use is providing diverse training and evaluation environments for agents such as SIMA; its successor is Genie 3.",
+      "example": "Given a real-world photo, Genie 2 can turn it into an interactive 3D scene that you can walk through in first person using the keyboard.",
+      "related": [
+        "Genie (Original)",
+        "Genie 3",
+        "World Model",
+        "Interactive World Model",
+        "Latent Diffusion Model",
+        "SIMA 2"
+      ]
+    },
+    {
+      "key": "named_model-13#5",
+      "name_en": "Genie Envisioner (AgiBot)",
+      "aliases": [
+        "GE-Base",
+        "GE-Act",
+        "GE-Sim",
+        "GE-Act 2.0",
+        "A Unified World Foundation Platform for Robotic Manipulation"
+      ],
+      "one_liner": "AgiBot's platform that unifies a video world model, a policy, a neural simulator, and evaluation into one system.",
+      "explanation": "Genie Envisioner is a robot-manipulation platform released in August 2025 by the AgiBot team. Its core, GE-Base, is a diffusion model that generates video from a language instruction, trained on about 1 million clips (2,967 hours total) of dual-arm real-robot data from AgiBot World, learning to predict how the next frames will unfold. GE-Act uses a roughly 160-million-parameter flow-matching decoder to convert GE-Base's latent representation into actions; GE-Sim takes in an action and generates future frames, serving as a neural simulator for closed-loop evaluation; and EWMBench is used to measure the quality of this kind of world model. Code and weights are open-source. The September 2026 GE-Act 2.0 switched to training entirely from scratch on manipulation data, chaining together an autoencoder, a single-step visual planner, and an inverse dynamics model.",
+      "example": "In the paper, adapting to a new task with just about 1 hour of data lets GE-Act transfer to other bimanual platforms, such as AgileX's Cobot Magic, to carry out manipulation tasks.",
+      "related": [
+        "AgiBot",
+        "World Action Model",
+        "AgiBot World Dataset",
+        "EWMBench",
+        "Neural Simulator",
+        "AgiBot GO-1"
+      ]
+    },
+    {
+      "key": "named_model-13#6",
+      "name_en": "Genie (Original)",
+      "aliases": [
+        "Genie 1",
+        "Generative Interactive Environments"
+      ],
+      "one_liner": "Google DeepMind's model that learns a “playable world” from unlabeled video, a generative interactive environment.",
+      "explanation": "Genie was released by Google DeepMind in February 2024, with 11 billion parameters, and is the first generative interactive environment trained in an unsupervised way from nothing but unlabeled internet video. It has three components: a spatiotemporal video tokenizer that compresses video into discrete tokens; a latent action model that infers, from a pair of consecutive frames, which action occurred, out of a small set of discrete action codes (8 in the paper); and an autoregressive dynamics model that predicts the next frame from the current frame and the action. The key point is that no action labels are needed during training, yet a person can still control the generated world frame by frame. It was trained mainly on 2D platform-jumping game videos, and was also validated on RT-1 robot video; the latent-action idea was later carried over by robot-pretraining work such as LAPA.",
+      "example": "Give Genie a hand-drawn sketch, and it will turn it into a 2D platform game you can play frame by frame with your actions.",
+      "related": [
+        "Genie 2",
+        "Genie 3",
+        "Latent Action Model",
+        "Video Tokenizer",
+        "Interactive World Model",
+        "LAPA"
+      ]
+    },
+    {
+      "key": "named_model-13#7",
+      "name_en": "GigaBrain-0",
+      "aliases": [
+        "GigaBrain",
+        "GigaBrain-0.5",
+        "GigaBrain-0.5M*",
+        "GigaBrain-0.7",
+        "A World Model-Powered Vision-Language-Action Model"
+      ],
+      "one_liner": "A VLA model series from GigaAI trained mainly on data generated by a world model.",
+      "explanation": "GigaBrain-0 is a vision-language-action (VLA) model released by GigaAI in October 2025. To address the fact that real-robot data is expensive and scarce, it replaces a large share of training data with data generated by a world model, including video generation, appearance transfer, human-video transfer, viewpoint transfer, and sim-to-real transfer. The model takes RGB-D images as input to strengthen spatial awareness, first produces an embodied chain of thought (writing out intermediate reasoning in language) before outputting an action, and uses knowledge insulation to keep the reasoning training from interfering with the action output. There is also a GigaBrain-0-Small variant that can run on a Jetson AGX Orin. Later versions followed: GigaBrain-0.5, trained on more than 10,000 hours of real-robot data; 0.5M*, which adds world-model-based reinforcement learning; and 0.7, from August 2026, which uses more than 37,000 hours of data and a three-system architecture.",
+      "example": "The paper gradually raised the share of world-model-generated data in the training mix from 0% to 90%, and the model's generalization to changes in object appearance, placement, and camera viewpoint improved markedly as a result.",
+      "related": [
+        "GigaAI",
+        "GigaWorld-0",
+        "Vision-Language-Action Model",
+        "Embodied Chain-of-Thought",
+        "Knowledge Insulation",
+        "Synthetic Data"
+      ]
+    },
+    {
+      "key": "named_model-13#8",
+      "name_en": "GigaWorld-0",
+      "aliases": [
+        "GigaWorld-0-Video",
+        "GigaWorld-0-3D",
+        "World Models as Data Engine to Empower Embodied AI"
+      ],
+      "one_liner": "GigaAI's framework that uses a world model as a “data engine” to mass-produce robot training data.",
+      "explanation": "GigaWorld-0 was released by GigaAI in November 2025, positioned as a world-model framework for producing training data for vision-language-action (VLA) models. It has two parts: GigaWorld-0-Video uses a large-scale video-generation model to produce texture-rich robot manipulation videos, with fine-grained control over appearance, camera viewpoint, and action semantics; GigaWorld-0-3D combines 3D generation, 3D Gaussian splatting reconstruction, differentiable physics system identification, and motion planning to keep results geometrically consistent and physically plausible. Its companion training framework, GigaTrain, uses FP8 precision and sparse attention to save compute. GigaBrain-0, trained on this synthetic data, performs well on real robots. Code and models are open-source; in July 2026 the team also released GigaWorld-1, aimed at policy evaluation.",
+      "example": "Take a real-robot manipulation video and change the tabletop texture, lighting, or camera viewpoint, generating multiple versions of training data that look different but share the same action, used to improve a VLA's generalization to appearance changes.",
+      "related": [
+        "GigaBrain-0",
+        "GigaAI",
+        "World Model",
+        "Synthetic Data",
+        "3D Gaussian Splatting",
+        "World Model Evaluation"
+      ]
+    },
+    {
+      "key": "named_model-13#9",
+      "name_en": "GMT",
+      "aliases": [
+        "General Motion Tracking"
+      ],
+      "one_liner": "A whole-body control method that uses one unified policy to make a humanoid track many different human motions.",
+      "explanation": "GMT was proposed in June 2025 by Xiaolong Wang's group at UC San Diego together with Xue Bin Peng at Simon Fraser University. Motion tracking means having a robot imitate a reference motion — such as human motion-capture data — in real time. Earlier methods often needed one policy per motion category, or per-category fine-tuning; GMT instead uses a single policy that covers walking, kicking, soccer kicks, dancing, and more. Two ideas are key: adaptive sampling, which automatically practices harder clips more during training, and a motion mixture-of-experts (MoE), which lets different parts of the network specialize in different types of motion. Training first uses PPO to produce a teacher policy with access to privileged information, then distills it with DAgger into a student policy that sees only proprioception. The data comes from about 33 hours of motion drawn from AMASS and LAFAN1, deployed on a real 23-degree-of-freedom Unitree G1.",
+      "example": "The same GMT policy on a Unitree G1 can perform martial-arts kicks and soccer kicks, and also imitate a drunken walk, a crouching walk, and dancing, all without training separately for each motion category.",
+      "related": [
+        "Motion Tracking",
+        "Mixture of Experts",
+        "Unitree G1",
+        "Teacher-Student Distillation",
+        "AMASS Dataset",
+        "BeyondMimic"
+      ]
+    },
+    {
+      "key": "named_model-13#10",
+      "name_en": "GNM",
+      "aliases": [
+        "General Navigation Model"
+      ],
+      "one_liner": "A general visual-navigation model trained on mixed data from 6 robot types that can drive different robots.",
+      "explanation": "GNM was proposed in October 2022 by Sergey Levine's group at UC Berkeley (Dhruv Shah and others), published at ICRA 2023. It pools about 60 hours of navigation data from 6 robot types — TurtleBot2, Jackal, Spot, an RC car, an all-terrain vehicle, and more — to train a single image-goal navigation policy: given the current image, a few past frames (used to infer embodiment context, i.e., “which kind of robot am I”), and a goal image, it outputs the time-distance to the goal and the next 5 normalized waypoints. A normalized action space is what lets it work across different robots. The finding is that a single policy trained on this heterogeneous data outperforms any policy trained on a single dataset, and it can even deploy directly on robots absent from the training set, such as a quadrotor drone. Follow-up work includes ViNT and NoMaD.",
+      "example": "At deployment, a topological map made of images along a route is built first; GNM estimates how far the current view is from each node, and Dijkstra's algorithm then plans a sequence of sub-goals for the robot to navigate to one by one.",
+      "related": [
+        "ViNT",
+        "NoMaD",
+        "Cross-Embodiment",
+        "Image-Goal Navigation",
+        "Topological Map",
+        "Berkeley AI Research (BAIR)"
+      ]
+    },
+    {
+      "key": "named_model-13#11",
+      "name_en": "GOVLA (Global & Omni-body Vision-Language-Action)",
+      "aliases": [
+        "Alpha Brain",
+        "AlphaBrain",
+        "AI2R Brain"
+      ],
+      "one_liner": "AI² Robotics' large VLA model that outputs both full-body actions and a movement trajectory at once, across arbitrary embodiments and spaces.",
+      "explanation": "GOVLA was introduced by AI² Robotics in April 2025 alongside its AlphaBot 2 robot, at the same time the company upgraded its earlier embodied-model brand, AI2R Brain, to Alpha Brain, whose core is GOVLA (Global & Omni-body Vision-Language-Action model). It has three parts: a spatial-interaction foundation model, a slow system, and a fast system. The slow system (System 2) handles complex reasoning, task decomposition, and language interaction, while the fast system (System 1) outputs whole-body control actions and a movement trajectory. The company's framing is that ordinary VLA models only output robot-arm actions and can only operate within tabletop range, whereas GOVLA targets tasks ranging from the tabletop to open environments and from single-arm to whole-body coordination, and incorporates technology from DeepSeek in its construction to strengthen long-horizon reasoning.",
+      "example": "As the company's own example puts it: an ordinary VLA robot needs a person to first put the ingredients on the table before it can work, whereas a robot running GOVLA can go get ingredients from the refrigerator itself, make breakfast, and bring it to the table.",
+      "related": [
+        "AI² Robotics",
+        "AI² Robotics AlphaBot",
+        "Fast-Slow Dual System",
+        "Vision-Language-Action Model",
+        "RoboMamba",
+        "Mobile Manipulation"
+      ]
+    }
+  ]
+}

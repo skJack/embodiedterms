@@ -1,0 +1,113 @@
+{
+  "batch": "data-04",
+  "terms": [
+    {
+      "key": "data-04#0",
+      "name_en": "Generative Data Augmentation",
+      "aliases": ["Semantic Data Augmentation"],
+      "one_liner": "Using image or video generation models to rewrite existing robot data, producing new-scene training examples from old demonstrations.",
+      "explanation": "Generative data augmentation means using generative models — text-to-image or video generation — to swap in new objects, backgrounds, distractors, or lighting on top of existing robot demonstrations, producing new training examples while reusing the original action labels. Notable examples include Google's 2023 ROSIE, which uses a text-guided diffusion model to inpaint new objects and backgrounds into images, and the University of Washington and collaborators' GenAug. It targets the problem that real-robot data is expensive and each demonstration only covers one tabletop: after augmentation, the same motion can be paired with many different appearances, improving visual generalization and robustness to distractors. Its limitation is that it mainly changes appearance, not the physical process or the action itself. Video world models such as Cosmos Transfer are also commonly used for this kind of augmentation.",
+      "example": "ROSIE uses a diffusion model to inpaint new objects and backgrounds onto Google's existing robot data; a policy trained on these images can handle new objects and distractors that never appeared in the original data.",
+      "related": ["Data Augmentation", "Synthetic Data", "Diffusion Model", "NVIDIA Cosmos Transfer", "Visual Generalization", "Cross-Painting (Robot Embodiment Visual Swap)"]
+    },
+    {
+      "key": "data-04#1",
+      "name_en": "Handheld Gripper Data Collection",
+      "aliases": ["UMI-style Collection"],
+      "one_liner": "A human holds a camera-equipped gripper and performs tasks directly, recording footage and gripper motion as robot training data.",
+      "explanation": "Handheld gripper data collection is a way to gather data without a real robot present: a collector holds a gripper matching the exact model used on the robot's end effector, with a camera mounted on it, and performs the task directly in the real world; afterward, algorithms recover the gripper's pose trajectory and opening width from the video to serve as action labels. The best-known example is UMI, from Stanford, Columbia, and the Toyota Research Institute at RSS 2024: a wrist-mounted GoPro with a 155° fisheye lens and side mirrors uses visual-inertial SLAM (simultaneous localization and mapping) to track the trajectory. It is cheaper and more portable than teleoperation, letting data collection leave the lab entirely — UMI reports collection speeds more than 3 times faster than teleoperation. The precondition is that the gripper and camera viewpoint must match between collection and deployment.",
+      "example": "UMI uses a handheld gripper to collect demonstrations for dishwashing, two-arm cloth folding, and throwing objects into bins; the resulting policy deploys directly onto a robot arm and can complete tasks in environments and with objects it never saw during collection.",
+      "related": ["Universal Manipulation Interface", "FastUMI: A Scalable and Hardware-Independent Universal Manipulation Interface", "AgileX Pika", "Robot-free (Embodiment-free) Data Collection", "Collection-Execution Isomorphism", "DexUMI: Using Human Hand as the Universal Manipulation Interface for Dexterous Manipulation"]
+    },
+    {
+      "key": "data-04#2",
+      "name_en": "Hierarchical Data Format version 5",
+      "aliases": ["HDF5", ".h5 File", ".hdf5 File"],
+      "one_liner": "A general-purpose file format that stores many large arrays hierarchically in one file, commonly used for robot demonstration data.",
+      "explanation": "HDF5 is an open-source file format and software library maintained by the HDF Group, usually with a .h5 or .hdf5 extension. It works like a folder system inside a single file: “groups” provide the hierarchy, each group holds multidimensional arrays (called datasets), metadata can be attached anywhere, and any part of the file can be read without loading the rest. A robot demonstration contains multiple camera streams, joint state, and actions as time series, which fits naturally into HDF5. robomimic stores a whole dataset this way, with each trajectory as a group like data/demo_0; the ACT/ALOHA collection scripts likewise save each episode as its own HDF5 file. Storing images verbatim makes files large, so newer open datasets increasingly use the LeRobot format or RLDS instead.",
+      "example": "In a robomimic dataset file, data/demo_0/actions is one trajectory's action array, shaped (number of steps, action dimension); data/demo_0/obs/agentview_image holds the camera image for each of those same time steps.",
+      "related": ["LeRobotDataset", "RLDS (Reinforcement Learning Datasets)", "Zarr", "Apache Parquet", "robomimic", "Action Chunking with Transformers"]
+    },
+    {
+      "key": "data-04#3",
+      "name_en": "Human Intervention Data",
+      "aliases": ["Takeover Data"],
+      "one_liner": "Data recorded when a human takes over from an autonomously running policy just as it's about to make a mistake.",
+      "explanation": "Human intervention data is recorded when, during a policy's autonomous run on a real robot, a human sees it about to go wrong and takes over by teleoperation, steering the robot back on track; the observations and the human's actions during that takeover are what get recorded. The idea traces back to interactive imitation learning methods like DAgger: pure behavior cloning has only ever seen an expert's “standard route,” so once it drifts off that path it has no idea what to do, and the error compounds. Intervention data fills in exactly “how to recover once things have gone wrong,” concentrated at precisely the states where the policy is weakest. HG-DAgger (2018) has a human take over whenever they judge the situation unsafe; Berkeley's HIL-SERL uses human intervention to guide exploration during real-robot reinforcement learning; and Physical Intelligence's π*0.6 also trains on a mix of expert interventions and autonomous experience.",
+      "example": "Early in HIL-SERL training, a human takes over frequently, demonstrating how to complete the task from a wide range of states; once the policy's success rate rises, the amount of intervention is gradually reduced.",
+      "related": ["Human-in-the-Loop", "Human-Gated DAgger", "Recovery and Correction Data", "Human-in-the-Loop Sample-Efficient Robotic Reinforcement Learning (Precise and Dexterous Robotic Manipulation via Human-in-the-Loop RL)", "RL with Experience and Corrections via Advantage-conditioned Policies", "Intervention Rate"]
+    },
+    {
+      "key": "data-04#4",
+      "name_en": "In-the-wild Data",
+      "aliases": ["Real-world Scene Data"],
+      "one_liner": "Data collected in homes, offices, outdoors, and other uncontrolled real-world settings, rather than a fixed lab bench.",
+      "explanation": "In-the-wild data borrows a term from computer vision, meaning data collected in real settings outside the lab, where lighting, background, and object placement are all uncontrolled and every scene differs from the last. Most robot data used to come from a handful of fixed lab tabletops, so models easily failed in a new room; researchers have since moved collection into real environments to improve scene generalization. The difficulty is that a real robot isn't easy to move around, so portable alternatives have emerged: DROID mounts a Franka arm on a movable height-adjustable cart and collected 76,000 trajectories across 564 scenes; UMI uses a handheld gripper, and DexWild uses a bare human hand plus a palm-mounted camera — neither needs a robot physically on-site.",
+      "example": "Carnegie Mellon's DexWild collected 9,290 human demonstrations across 93 different environments; co-trained with robot data, the resulting policy's success rate in new environments was about 4 times that of a policy trained on robot data alone.",
+      "related": ["DROID (Distributed Robot Interaction Dataset)", "Universal Manipulation Interface", "DexWild: Dexterous Human Interactions for In-the-Wild Robot Policies", "Scene / Environment Generalization", "Data Diversity", "Robot-free (Embodiment-free) Data Collection"]
+    },
+    {
+      "key": "data-04#5",
+      "name_en": "Internet Video Data",
+      "aliases": ["Web Video Data"],
+      "one_liner": "The vast supply of publicly available online video — large and cheap, but without action labels a robot can use.",
+      "explanation": "Internet video data refers to video from video platforms and public video datasets, mostly showing people doing chores, cooking, and using tools. Compared with robot data, it is orders of magnitude larger in scale, covers a far wider range of scenes and objects, and carries a great deal of knowledge about how objects move and how tasks break into steps. The difficulty is that it has no action labels: the frame shows a human hand rather than a robot arm, and there is no way to know what joint command each frame corresponds to. Common uses fall into three groups: pretraining visual representations (as in R3M); learning latent actions, which automatically infer an action-like code from the change between adjacent frames (as in LAPA); and training video-generation or world models that later infer actions from predicted frames. Egocentric video collections such as Ego4D are commonly used this way too.",
+      "example": "LAPA first uses a VQ-VAE to learn discrete latent actions from adjacent frames of unlabeled video, pretrains a VLA on those latent actions, then maps them to actual robot commands using only a small amount of real-robot data.",
+      "related": ["Human Video Data", "Action-free Video", "Latent Action", "LAPA: Latent Action Pretraining from Videos", "Egocentric Video", "Ego4D"]
+    },
+    {
+      "key": "data-04#6",
+      "name_en": "Kinesthetic Teaching",
+      "aliases": ["KT", "Hand Guiding", "Direct Teaching"],
+      "one_liner": "A human physically pushes a robot arm through a motion by hand, and the robot records it as a demonstration.",
+      "explanation": "Kinesthetic teaching is the most direct form of demonstration: the arm is switched into gravity-compensation or zero-force (free-drive) mode, in which the motors only cancel out the arm's own weight, so a person can move it around easily, then an operator guides the arm by hand through the whole task while its joint encoders record the entire trajectory. Early industrial robots' “teach and playback” programming worked this way — remembering a sequence of positions and replaying them; in robot learning, it supplies demonstrations for imitation learning. The benefit is that the motion happens directly on the robot's own joints, so there's no need to map a human's action onto the robot, and no extra teleoperation hardware is required. The drawbacks are that the arm has to support being pushed by hand, the human's body enters the camera view and interferes with vision-based policies, it's hard to guide two arms or a multi-fingered hand at once, and it is more physically tiring than teleoperation.",
+      "example": "Put an arm with joint-torque sensors into hand-guiding mode, grab the end effector, guide the gripper to a cup's handle, close the gripper, and lift — the recorded sequence of joint angles is one demonstration.",
+      "related": ["Zero-Force Drag (Free-Drive / Hand Guiding Mode)", "Gravity Compensation", "Teach-and-Playback Programming", "Teleoperation", "Demonstration Data", "Impedance Control"]
+    },
+    {
+      "key": "data-04#7",
+      "name_en": "Language Annotation",
+      "aliases": ["Instruction Annotation"],
+      "one_liner": "Attaching a natural-language description to a robot trajectory, such as 'put the red cup in the sink,' so a model can follow instructions.",
+      "explanation": "Language annotation means attaching a text description to robot data, most commonly one task instruction per trajectory, though it can go finer, with one sentence per subtask. It is what makes it possible to train language-conditioned policies and VLA models that act on instructions. Sources fall roughly into three groups: deciding the instruction before collection and having the operator follow it; writing it in afterward by a human watching the video, called hindsight relabeling; and generating or rewriting it automatically with a vision-language model. Annotation quality directly affects how well a model understands instructions — if the same motion is only ever described one way, the model tends to latch onto that fixed phrasing. Large datasets therefore commonly pair one trajectory with several different phrasings, and split long tasks into text-labeled subtask segments to help hierarchical models learn.",
+      "example": "Google's Language-Table used hindsight relabeling to produce nearly 600,000 language-labeled tabletop pushing trajectories; DROID's December 2024 update added 3 language descriptions to each of about 75,000 successful trajectories.",
+      "related": ["Data Annotation", "Hindsight Relabeling", "Subtask Segmentation", "Auto-labeling", "Language-conditioned Policy", "Instruction Augmentation"]
+    },
+    {
+      "key": "data-04#8",
+      "name_en": "LeRobotDataset",
+      "aliases": ["LeRobot Dataset", "LeRobotDataset v3.0"],
+      "one_liner": "LeRobot's standard dataset format, storing state and actions in tables and camera footage as video.",
+      "explanation": "LeRobotDataset is the dataset format used by LeRobot, Hugging Face's open-source robotics library, and can be shared directly on the Hub. It splits data into three parts: low-dimensional signals such as state, actions, and timestamps are stored as Parquet tables; camera footage is encoded as MP4 video; and a meta directory records field definitions, frame rate, normalization statistics, task text, and each episode's start and end position. Version 3.0, released in September 2025, packs multiple episodes into the same file (v2.1 used one file per episode) and locates them by metadata, supporting much larger scale, and it can also be streamed directly from the Hub without downloading. Models in LeRobot such as ACT, Diffusion Policy, and SmolVLA all read this format directly.",
+      "example": "Use lerobot-record to teleoperate an SO-101 arm while recording; the data is saved in v3.0 format and pushed to the Hub. During training, LeRobotDataset loads it, and each sample is a tensor dictionary containing observation.state, action, and camera images.",
+      "related": ["LeRobot (Hugging Face)", "Hugging Face", "Apache Parquet", "Hierarchical Data Format version 5", "RLDS (Reinforcement Learning Datasets)", "SO-100 / SO-101 Arm (LeRobot)"]
+    },
+    {
+      "key": "data-04#9",
+      "name_en": "MimicGen",
+      "aliases": [],
+      "one_liner": "A system that segments a few human demonstrations by object, transforms and stitches them, and auto-generates many new demonstrations.",
+      "explanation": "MimicGen is an automatic data-generation system proposed by NVIDIA and UT Austin at CoRL 2023. It splits a human demonstration into object-centric subtask segments (such as “grasp the cup” and “place it on the plate”); when applied to a new scene where the object is in a different position, it transforms each segment's end-effector trajectory to match that object's new pose, stitches the segments back together, executes the result in simulation, and keeps only the successful runs. Using fewer than 200 human demonstrations, the paper generated more than 50,000 demonstrations across 18 tasks, easing imitation learning's dependence on human-collected demonstrations. NVIDIA's Isaac Lab Mimic, built into Isaac Lab, follows the same idea — annotate subtasks, then generate automatically — and also supports humanoid robots.",
+      "example": "For one simulated manipulation task, giving MimicGen just 10 human demonstrations lets it generate 1,000 demonstrations across a wider range of object placements, which are then used to train a policy.",
+      "related": ["DexMimicGen: Automated Data Generation for Bimanual Dexterous Manipulation via Imitation Learning", "DemoGen: Synthetic Demonstration Generation for Data-Efficient Visuomotor Policy Learning", "Synthetic Data", "Demonstration Data", "NVIDIA Isaac Lab", "Behavior Cloning"]
+    },
+    {
+      "key": "data-04#10",
+      "name_en": "Motion Retargeting",
+      "aliases": ["Retargeting", "Hand Retargeting"],
+      "one_liner": "Converting a human's (or another robot's) motion into the joint motion a target robot can actually perform.",
+      "explanation": "Motion retargeting originated as an animation technique for transferring a character's motion onto another character with different bone proportions. In embodied AI it means converting human-body or hand motion — from motion capture, video pose estimation, or a VR device — into joint angles a robot can execute. The difficulty is that limb lengths, joint counts, and ranges of motion differ between a human and a robot, so joint angles cannot simply be copied over. The usual approach frames it as an optimization problem: make key points such as the wrist and fingertips match the human's position or orientation as closely as possible, while respecting the robot's joint limits — essentially a constrained inverse-kinematics problem. It is a prerequisite step for teleoperation, learning from human video, and training humanoid robots' motion tracking; common open-source tools include GMR and dex-retargeting.",
+      "example": "GMR can convert human motion-capture data from AMASS or LAFAN1 into joint trajectories for humanoid robots like the Unitree G1, runs in real time on a CPU, and is also used by TWIST for whole-body teleoperation.",
+      "related": ["General Motion Retargeting", "dex-retargeting (AnyTeleop hand retargeting library)", "Inverse Kinematics", "Motion Capture", "Motion Tracking", "OmniRetarget: Interaction-Preserving Data Generation for Humanoid Whole-Body Loco-Manipulation and Scene Interaction"]
+    },
+    {
+      "key": "data-04#11",
+      "name_en": "Multi-sensor Time Synchronization / Timestamp Alignment",
+      "aliases": ["Timestamp Alignment", "Time Sync", "Hardware Sync"],
+      "one_liner": "Aligning readings from cameras, encoders, IMUs, and other sensors onto one shared clock so simultaneous data lines up correctly.",
+      "explanation": "A robot's cameras, joint encoders, force sensors, and IMU each run at their own frequency and with their own latency — a camera's latency, from exposure, encoding, and transmission, is usually larger than a joint reading's. Time synchronization puts all this data on one shared timeline: on the hardware side, a shared trigger signal can make multiple cameras expose at the same instant, or Precision Time Protocol (PTP, IEEE 1588) can align device clocks to sub-microsecond precision; on the software side, messages get paired by matching their timestamps to the closest match, as with ROS's message_filters, which offers both exact and approximate matching. For imitation learning, misalignment means the model ends up learning from mismatched observation-action pairs.",
+      "example": "UMI first measures the latency of each data stream — camera, gripper width, and so on — separately, then aligns every observation to whichever stream has the largest latency, usually the camera; at deployment time it issues action commands slightly early to cancel out execution latency.",
+      "related": ["Precision Time Protocol", "Multi-Sensor Fusion", "Camera-IMU Calibration", "Observation-Action Pair", "ROS Bag", "Control Latency"]
+    }
+  ]
+}

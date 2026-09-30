@@ -1,0 +1,113 @@
+{
+  "batch": "data-08",
+  "terms": [
+    {
+      "key": "data-08#0",
+      "name_en": "Data Quality Control",
+      "aliases": ["Data Quality Inspection", "Data Quality Review"],
+      "one_liner": "Checking each piece of collected robot data before training to catch and discard unusable or flawed samples.",
+      "explanation": "Data quality control is the step, after collection and before annotation and training, where each piece of robot data is checked and judged usable or not. Common checks include whether the camera dropped frames, whether the different sensors' timestamps are aligned, whether the joint and action recordings are complete, whether the trajectory has abnormal jumps, whether the task was actually completed, and whether the language annotation matches the video. The usual approach runs automated rule-based scripts first, followed by manual spot checks. Imitation learning will happily learn from bad demonstrations along with good ones, so quality control has a direct effect on the resulting model. In July 2026, China's Ministry of Industry and Information Technology approved industry standard YD/T 6771-2026, drafted under the lead of the China Academy of Information and Communications Technology (CAICT), which scores embodied-AI datasets across eight dimensions including completeness, consistency, and authenticity; it takes effect on November 1, 2026.",
+      "example": "In a teleoperated clothes-folding demonstration, the wrist camera drops frames partway through and the gripper's open/close timing no longer lines up with the video; a quality-control script flags it as unusable, so it's excluded from the training set.",
+      "related": ["Data Cleaning", "Data Filtering (Data Curation)", "Valid Data", "Data Collection SOP", "Multi-Sensor Time Synchronization (Timestamp Alignment)", "Failure Data"]
+    },
+    {
+      "key": "data-08#1",
+      "name_en": "Retrieval-Based Data Selection",
+      "aliases": ["Data Retrieval"],
+      "one_liner": "Using a handful of demonstrations for a target task to search a large dataset for similar clips, then training on the combined set.",
+      "explanation": "Retrieval-based data selection is a family of methods for choosing training data: collect a few demonstrations for the target task, then search a large existing robot dataset for trajectories or segments that are visually or behaviorally similar, and train on the retrieved data together with the target demonstrations. It addresses a tradeoff: training on all available data mixed together risks negative transfer, where unrelated data interferes with learning, while training on just a handful of demonstrations isn't enough data on its own. Representative work includes Stanford's Behavior Retrieval (2023); the University of Washington's STRAP (ICLR 2025), which retrieves at the sub-trajectory level using vision-foundation-model features and dynamic time warping for matching; and Stanford's IWR (CoRL 2025), which uses importance weighting to correct for retrieval bias. It addresses the same underlying problem as data filtering and data mixing ratios.",
+      "example": "To teach a robot to pick up a cup, put it in a drawer, and close the drawer, only a few demonstrations were collected; STRAP retrieves sub-segments involving “picking up a cup” and “opening/closing a drawer” from a large offline dataset and trains the policy on those together with the target demonstrations.",
+      "related": ["Data Filtering (Data Curation)", "Data Mixing Ratio", "Few-Shot", "Positive Transfer / Negative Transfer", "Open X-Embodiment", "Behavioral Cloning"]
+    },
+    {
+      "key": "data-08#2",
+      "name_en": "DemoGen",
+      "aliases": ["DemoGen: Synthetic Demonstration Generation for Data-Efficient Visuomotor Policy Learning"],
+      "one_liner": "A method that automatically turns one real-robot demonstration into many synthetic demonstrations with objects in new positions.",
+      "explanation": "DemoGen is a synthetic-demonstration-generation method from Huazhe Xu's group at Tsinghua University, in collaboration with the Shanghai Qi Zhi Institute and Shanghai AI Lab, published at RSS 2025. Imitation-learning policies generalize poorly across space — moving an object to a new position can make them fail — but collecting demonstrations by hand at every possible position is expensive. DemoGen needs only one human demonstration per task: it splits the trajectory into free-space transport segments and contact-based manipulation segments; when the object moves to a new position, the contact segment is transformed along with it, and the transport segment is reconnected using motion planning. Observations are produced by directly editing the point cloud, moving the points belonging to the object and the end effector together — no simulator is needed, and there's no need to re-collect data on the real robot. The paper reports generating a full dataset in about 22 seconds, versus roughly 83.7 hours for the MimicGen approach. Training pairs this with 3D Diffusion Policy (DP3), which takes point clouds as input.",
+      "example": "On a jar-opening task, with only 1 collected demonstration, DemoGen generates demonstrations with the jar in different positions; the paper reports the resulting policy reaches 100% success even at out-of-distribution positions.",
+      "related": ["MimicGen", "DexMimicGen", "3D Diffusion Policy (DP3)", "Synthetic Data", "Positional Generalization (Spatial Generalization)", "Point Cloud"]
+    },
+    {
+      "key": "data-08#3",
+      "name_en": "Deployment Data Backflow",
+      "aliases": ["Data Backflow", "Field Data Feedback Loop"],
+      "one_liner": "A term from China's robotics industry: feeding data generated during real-world robot deployment back into training, then redeploying the updated model.",
+      "explanation": "Data backflow is a common term in China's embodied-AI industry for a loop: data generated while a robot works in the real world — autonomously executed trajectories, failure cases, and clips where a human took over and corrected it — is logged, sent back, cleaned, and annotated, then added to training; the updated model is redeployed, and the cycle repeats. It's the key link that gets a “data flywheel” actually spinning: teleoperation data collected in a training facility covers a limited distribution, and errors that show up in the field are the best way to expose a model's real weaknesses. CAICT's Embodied Intelligence Development Report (2025) argues that robots need to move past pure “demonstration” data as quickly as possible and establish a continuous data-backflow loop from real deployment. The hard part is cost: if every robot needs an operator watching and ready to take over the whole time, it's difficult to make commercially viable.",
+      "example": "When training π*0.6, Physical Intelligence used the RECAP method to keep training on a mix of data autonomously generated while robots made espresso, folded laundry, and assembled boxes, together with human correction data; the company reported that throughput on some of the hardest tasks more than doubled, while the failure rate dropped by roughly half.",
+      "related": ["Data Flywheel", "Intervention Data", "Correction Data", "Fleet Learning / Learning-in-Deployment", "RECAP", "π*0.6 (pi-star-0.6)"]
+    },
+    {
+      "key": "data-08#4",
+      "name_en": "dex-retargeting",
+      "aliases": ["dex_retargeting", "AnyTeleop Hand Retargeting Library"],
+      "one_liner": "An open-source library that converts human hand keypoint poses into joint angles for many different robotic dexterous hands.",
+      "explanation": "dex-retargeting is an open-source Python library, MIT-licensed and pip-installable, spun out of the AnyTeleop project (UC San Diego and NVIDIA, RSS 2023). Human hands and robot hands differ in finger count, length, and joint structure, so joint angles can't just be copied over — they need retargeting: the library takes hand keypoints from a MediaPipe or MANO hand model as input, and solves an optimization problem for the robot hand's joint angles that keeps fingertip positions, or the vectors between fingertips, as close as possible to the human hand's. It offers three retargeting modes — vector retargeting (suited to real-time video teleoperation), position retargeting (suited to offline conversion of hand-object interaction datasets), and DexPilot — along with a model library covering hands such as Allegro, Shadow, LEAP, and Inspire. Many dexterous-hand teleoperation and human-hand data-collection projects use it to convert human hand motion into robot hand motion.",
+      "example": "An official example uses position retargeting to offline-convert the MANO hand poses of people grasping objects in the DexYCB dataset into grasping trajectories for robot hands such as Allegro and Shadow.",
+      "related": ["AnyTeleop", "Motion Retargeting", "MANO Hand Model", "Dexterous Hand", "MediaPipe (Hand/Body Keypoints)", "DexYCB"]
+    },
+    {
+      "key": "data-08#5",
+      "name_en": "DexCap",
+      "aliases": ["DexCap: Scalable and Portable Mocap Data Collection System for Dexterous Manipulation"],
+      "one_liner": "Stanford's wearable hand motion-capture system that collects data by having a human use their own hands, for teaching robot dexterous hands.",
+      "explanation": "DexCap is a portable hand-motion-capture data collection system from Fei-Fei Li's group at Stanford (first author Chen Wang), published at RSS 2024, paired with DexIL, an algorithm for learning policies from human hand data. Teleoperating a dexterous hand to collect data is slow, expensive, and requires a robot to be physically present; DexCap instead lets a person wear a device and perform tasks directly with their own hands. Rokoko electromagnetic motion-capture gloves measure each finger's position relative to the palm and aren't disrupted by objects blocking the view; a chest-mounted rig carries an RGB-D LiDAR camera plus three SLAM tracking cameras that record wrist pose and a point cloud of the scene; a mini PC and battery pack in a backpack support about 40 minutes of continuous collection. DexIL uses inverse kinematics to convert the human hand motion into motion for a LEAP robot hand, then trains a policy with point-cloud-based imitation learning; a human can also step in to correct the policy during deployment.",
+      "example": "The paper demonstrates policies trained with only about 30 minutes of human hand motion-capture data and no teleoperation at all, including two-handed tasks like making tea and cutting things with scissors.",
+      "related": ["Motion Capture (MoCap)", "Data Glove", "Embodiment-Free Data Collection", "DexUMI", "LEAP Hand", "Human-in-the-Loop"]
+    },
+    {
+      "key": "data-08#6",
+      "name_en": "DexGraspNet",
+      "aliases": ["DexGraspNet: A Large-Scale Robotic Dexterous Grasp Dataset for General Objects Based on Simulation"],
+      "one_liner": "A simulation-generated dexterous-hand grasping dataset from Peking University, with 1.32 million grasps across 5,355 objects.",
+      "explanation": "DexGraspNet is a large-scale dexterous-hand grasping dataset released by He Wang's group at Peking University, together with the Beijing Institute for General Artificial Intelligence (BIGAI) and Tsinghua University, published at ICRA 2023. Large datasets already existed for two-finger parallel-jaw grasping, but dexterous-hand grasping had long lacked data. The authors used an accelerated, differentiable force-closure estimator (force closure means the fingers' contact forces can resist an external force from any direction) to synthesize grasp poses at scale, generating 1.32 million grasps for a Shadow dexterous hand across 5,355 objects in more than 133 categories — over 200 grasps per object — all verified in the Isaac Gym simulator. It's mainly used to train and evaluate dexterous grasp-generation algorithms. In 2024 the team released DexGraspNet 2.0, expanding to 8,270 cluttered scenes and 427 million grasps, and demonstrating zero-shot transfer to a real robot.",
+      "example": "A generative model that takes an object's point cloud as input and outputs a Shadow-hand grasp pose can be trained using DexGraspNet's grasps as supervision.",
+      "related": ["Dexterous Manipulation", "Force Closure", "Shadow Hand", "Isaac Gym", "Synthetic Data", "Grasp Pose Detection"]
+    },
+    {
+      "key": "data-08#7",
+      "name_en": "DexMimicGen",
+      "aliases": ["DexMimicGen: Automated Data Generation for Bimanual Dexterous Manipulation via Imitation Learning"],
+      "one_liner": "NVIDIA's automatic data-generation system that expands a few dozen demonstrations into tens of thousands of bimanual dexterous-hand demonstrations.",
+      "explanation": "DexMimicGen is an automated data-generation system from NVIDIA Research, together with the University of Texas at Austin and UC San Diego, published at ICRA 2025; it extends MimicGen to bimanual dexterous manipulation, such as the upper body of a humanoid robot. MimicGen's approach is to split a small number of human demonstrations into per-object subtask segments, transform those segments to match new object positions, replay them in simulation, and keep only the trajectories that succeed. In two-arm tasks, the two hands sometimes act independently, sometimes need to move in sync, and sometimes must act in a specific order, so DexMimicGen adds per-arm subtask segmentation along with synchronization and ordering constraints. The paper generates about 21,000 demonstrations from 60 human demonstrations across 9 tasks, and validates the approach on a real-robot can-sorting task using a real-to-sim-to-real pipeline.",
+      "example": "Starting from 60 human teleoperated demonstrations, the system automatically generates about 21,000 bimanual dexterous-hand demonstrations in simulators such as robosuite, which are then used to train a policy with behavioral cloning.",
+      "related": ["MimicGen", "DemoGen", "Bimanual Manipulation", "Real-to-Sim-to-Real", "Synthetic Data", "Behavioral Cloning"]
+    },
+    {
+      "key": "data-08#8",
+      "name_en": "DEXOP",
+      "aliases": ["DEXOP: A Device for Robotic Transfer of Dexterous Human Manipulation"],
+      "one_liner": "MIT's passive hand exoskeleton that lets a human's own hand directly drive a robot hand to collect vision and touch data.",
+      "explanation": "DEXOP is a dexterous-hand data-collection device made public in September 2025 by the MIT Improbable AI Lab (Haozhi Qi, Pulkit Agrawal, and others). The authors propose a collection paradigm called perioperation: record real human manipulation while keeping the data as directly transferable to a robot as possible. DEXOP is a passive hand exoskeleton: a person's fingers are mechanically linked to the fingers of a robot hand, so whatever the person's hand does, the robot hand mirrors the same pose; the robot hand itself carries cameras and tactile sensors, so the data collected is the robot's own vision and touch data from the start. Compared with teleoperation, the operator feels contact force directly through their fingers, making the motion more natural, faster, and more accurate. The paper reports that, measured per unit of collection time, policies trained on DEXOP data clearly outperform those trained on teleoperation data.",
+      "example": "An operator wearing DEXOP performs contact-rich dexterous tasks while the cameras and tactile sensors on the robot hand record in sync; this data is used directly to train a policy for that same robot hand.",
+      "related": ["Exoskeleton", "Tactile Data", "Embodiment-Free Data Collection", "DexUMI", "Teleoperation", "Contact-Rich Manipulation"]
+    },
+    {
+      "key": "data-08#9",
+      "name_en": "DexUMI",
+      "aliases": ["DexUMI: Using Human Hand as the Universal Manipulation Interface for Dexterous Manipulation"],
+      "one_liner": "A wearable exoskeleton that lets a human hand collect dexterous-hand data directly, then digitally replaces the hand in footage with the robot hand.",
+      "explanation": "DexUMI is a dexterous-hand data collection and policy-learning framework from Shuran Song's group at Stanford, together with Columbia University, NVIDIA, and others, from 2025; it was a best-paper finalist at CoRL 2025. It extends the idea behind UMI (Universal Manipulation Interface, which collects data with a handheld gripper) to multi-fingered dexterous hands, using the human hand itself as the collection interface, and narrows the embodiment gap between human and robot hands in two ways. On the hardware side, a wearable exoskeleton is custom-built for the target robot hand, constraining human hand motion to what the robot hand can actually do while letting the operator feel contact directly; wrist pose is recorded with an iPhone, a wide-angle camera sits below the wrist, and the exoskeleton carries tactile sensors. On the software side, the human hand and exoskeleton are digitally erased from the footage and the background is inpainted, then an image of the robot hand in the matching pose is composited in, so the training footage matches what the robot will actually see at deployment. Across two robot hands, Inspire and XHand, it reaches 86% average success.",
+      "example": "On a tea-leaf-scooping task, the paper reports DexUMI's data-collection throughput is about 3.2 times that of conventional teleoperation.",
+      "related": ["Universal Manipulation Interface (UMI)", "Exoskeleton", "Embodiment Gap", "DexCap", "Dexterous Hand", "DEXOP"]
+    },
+    {
+      "key": "data-08#10",
+      "name_en": "DexWild",
+      "aliases": ["DexWild: Dexterous Human Interactions for In-the-Wild Robot Policies", "DexWild-System"],
+      "one_liner": "CMU's portable hand-data-collection system that lets ordinary people gather dexterous-manipulation data with their own hands in real-world settings.",
+      "explanation": "DexWild is a dexterous-manipulation data-collection and training approach from Deepak Pathak's group at Carnegie Mellon University, published at RSS 2025. Teleoperated data is high quality but expensive, and it's hard to cover enough different environments this way; DexWild instead has ordinary people wear a low-cost, portable device called the DexWild-System and collect data with their own hands in real-world settings. A motion-capture glove measures finger pose; markers on the glove are located by a tracking camera to capture wrist position; two cameras mounted on the palm capture a close-up view in which the hand itself is barely visible, which makes the footage easier to reuse across different robot embodiments. Ten untrained collectors gathered 9,290 demonstrations across 93 environments, at roughly 4.6 times the speed of teleoperation. After co-training on this human hand data together with a smaller amount of robot data, the resulting policy reaches 68.5% success in unseen environments — about 4 times the success rate of training on robot data alone.",
+      "example": "A clothes-folding task was co-trained on about 1,124 human hand demonstrations plus 290 robot demonstrations; the training used a LEAP hand mounted on an xArm, and the resulting policy also transferred zero-shot to a Franka arm.",
+      "related": ["In-the-Wild Data", "Co-Training", "Data Glove", "Cross-Embodiment", "LEAP Hand", "Embodiment-Free Data Collection"]
+    },
+    {
+      "key": "data-08#11",
+      "name_en": "DexYCB",
+      "aliases": ["DexYCB: A Benchmark for Capturing Hand Grasping of Objects"],
+      "one_liner": "NVIDIA's multi-view dataset of human hands grasping objects, with 3D pose annotations for both the hand and the object.",
+      "explanation": "DexYCB is a real human-hand object-grasping dataset released by NVIDIA and the University of Washington, published at CVPR 2021. The authors used 8 synchronized RealSense D415 depth cameras to film 10 subjects grasping 20 YCB objects (YCB is a standard set of everyday objects widely used in robotics research) from multiple angles, yielding 1,000 sequences and about 580,000 RGB-D frames in total. Hand pose is annotated using the MANO parametric hand model, and each object is given a 6D pose (3D position plus 3D orientation). It's used as a benchmark for 2D detection, 6D object pose estimation, and 3D hand pose estimation, and the paper also proposes an evaluation for generating safe grasps when a person hands an object to a robot. In embodied AI, it's commonly used as a source of human grasping demonstrations, which are converted into robot dexterous-hand trajectories through motion retargeting.",
+      "example": "Using dex-retargeting's position-retargeting mode, the MANO hand poses of people grasping objects in DexYCB are converted into grasping trajectories for robot hands such as Allegro and Shadow.",
+      "related": ["YCB Object Set", "MANO Hand Model", "Hand Pose Estimation", "6D Pose Estimation", "Human-to-Robot Object Handover", "dex-retargeting"]
+    }
+  ]
+}

@@ -1,0 +1,199 @@
+{"category": "perception", "batch": 14, "terms": [
+{
+ "name_zh": "误差状态卡尔曼滤波",
+ "name_en": "Error-State Kalman Filter",
+ "abbr": "ESKF",
+ "aliases": ["误差状态 EKF", "ES-EKF", "Error-State EKF"],
+ "tier": 3,
+ "one_liner": "不直接估计状态本身，而是估计「名义值与真值之差」的卡尔曼滤波写法。",
+ "explanation": "误差状态卡尔曼滤波是扩展卡尔曼滤波（EKF，把非线性系统局部线性化后套用卡尔曼滤波）的一种写法，常用于 IMU（惯性测量单元）与相机、激光雷达、GPS 的融合。它把状态拆成两部分：用 IMU 读数高频积分出的「名义状态」，和一个小的「误差状态」。滤波器只估计误差，每次观测更新后把误差并回名义状态再清零。好处是误差始终很小、线性化更准；姿态误差可用 3 维旋转向量表示，避开四元数用 4 个数表示 3 个自由度导致的协方差奇异。Joan Solà 2017 年的讲义是最常被引用的推导参考。",
+ "example": "PX4 飞控的 EKF2 估计器融合 IMU、GPS、磁力计等数据，官方文档说明它采用「误差状态」形式，以便把旋转的不确定性表示成 3 维向量。",
+ "related": ["卡尔曼滤波", "扩展卡尔曼滤波", "惯性测量单元", "IMU 预积分", "四元数", "多传感器融合"],
+ "sources": [
+  {"title": "Joan Solà: Quaternion kinematics for the error-state Kalman filter (arXiv 1711.02508)", "url": "https://arxiv.org/abs/1711.02508"},
+  {"title": "PX4 Docs: Using PX4's Navigation Filter (EKF2)", "url": "https://docs.px4.io/main/en/advanced_config/tuning_the_ecl_ekf"}
+ ],
+ "as_of": ""
+},
+{
+ "name_zh": "事件相机",
+ "name_en": "Event Camera (Dynamic Vision Sensor)",
+ "abbr": "DVS",
+ "aliases": ["动态视觉传感器", "神经形态相机", "Neuromorphic Camera", "硅视网膜", "Silicon Retina"],
+ "tier": 3,
+ "one_liner": "每个像素只在亮度变化时独立输出「事件」、不拍整帧图像的相机。",
+ "explanation": "事件相机是一种仿生视觉传感器，又叫动态视觉传感器（DVS）或神经形态相机。普通相机按固定帧率输出整幅图像；事件相机的每个像素独立、异步工作，只有亮度变化超过阈值时才输出一个事件，内容是像素坐标、时间戳和变亮还是变暗（极性）。Gallego 等人 2020 年发表在 TPAMI 的综述总结了它的优点：时间分辨率达微秒级、动态范围约 140 dB（普通相机约 60 dB）、功耗低、几乎没有运动模糊。代价是画面静止时几乎没有输出，也没有颜色和完整亮度信息，需要专门的算法处理。它适合高速运动和明暗剧烈变化的场景，如无人机避障、高速抓取和视觉里程计。",
+ "example": "苏黎世大学与苏黎世联邦理工的研究者（ICRA 2023）给四足机器人装上事件相机接球，能接住从 4 米外以最高 15 m/s 飞来的物体，成功率 83%，算法在 Jetson Orin 上以 100 Hz 运行。",
+ "related": ["RGB相机", "全局快门 / 卷帘快门", "视觉里程计", "光流", "外部感知", "多传感器融合"],
+ "sources": [
+  {"title": "Event-based Vision: A Survey (Gallego et al., TPAMI 2020)", "url": "https://arxiv.org/abs/1904.08405"},
+  {"title": "Wikipedia: Event camera", "url": "https://en.wikipedia.org/wiki/Event_camera"},
+  {"title": "Event-based Agile Object Catching with a Quadrupedal Robot (ICRA 2023)", "url": "https://arxiv.org/abs/2303.17479"}
+ ],
+ "as_of": ""
+},
+{
+ "name_zh": "外部感知",
+ "name_en": "Exteroception",
+ "abbr": "",
+ "aliases": ["外感受", "环境感知", "外部传感", "Exteroceptive Sensing"],
+ "tier": 3,
+ "one_liner": "机器人用相机、激光雷达等传感器获取自身以外环境信息的感知。",
+ "explanation": "外部感知一词来自生理学，指生物感受身体以外刺激（如视觉、听觉、皮肤触觉）的能力，与感知自身肢体位置和运动的本体感知（proprioception）相对。机器人学沿用这个区分：相机、深度相机、激光雷达、超声波、触觉传感器等测量环境的属于外部感知；关节编码器、IMU、电机电流等测量机器人自身状态的属于本体感知。外部感知能让机器人提前看到台阶、障碍和目标物体，但容易受光照、遮挡、反光和噪声影响；本体感知稳定，却只能在接触发生后才察觉地形。所以腿足机器人常把两者融合：外部信息可靠时提前调整步态，不可靠时退回依赖本体感知。",
+ "example": "苏黎世联邦理工的四足行走工作（Science Robotics 2022）用一个带注意力的循环编码器端到端融合外部感知与本体感知，机器人在接触地形前就能调整步态，并以人类推荐用时走完一段阿尔卑斯山徒步路线。",
+ "related": ["本体感知", "多传感器融合", "感知行走", "盲走", "状态估计", "激光雷达"],
+ "sources": [
+  {"title": "Wikipedia: Exteroception", "url": "https://en.wikipedia.org/wiki/Exteroception"},
+  {"title": "Learning robust perceptive locomotion for quadrupedal robots in the wild (Science Robotics 2022)", "url": "https://arxiv.org/abs/2201.08117"}
+ ],
+ "as_of": ""
+},
+{
+ "name_zh": "外部接触感知",
+ "name_en": "Extrinsic Contact Sensing",
+ "abbr": "",
+ "aliases": ["外接触估计", "外部接触估计", "工具-环境接触感知", "Extrinsic Contact Estimation"],
+ "tier": 3,
+ "one_liner": "推断手中物体与外部环境在哪里、以什么方式接触的感知任务。",
+ "explanation": "机器人抓着物体干活时有两类接触：手指与物体之间的叫内部接触（intrinsic contact），被抓物体与桌面、孔壁等环境之间的叫外部接触（extrinsic contact）。外部接触发生在手外，往往被遮挡，手指也摸不到，只能间接推断。MIT 的 Ma、Dong、Rodriguez 在 ICRA 2021 论文中用分布式触觉传感器跟踪物体在手里的细微相对运动，结合不穿透、摩擦等刚体约束，估计出点接触或线接触的位置，并指出分布式触觉比只看六维力传感器的合力更适合做这件事。后续工作也用神经网络从触觉、视觉甚至声音推断接触位置。它对插孔装配、工具使用等接触丰富的任务很关键：知道哪里碰到了，才知道往哪边调整。",
+ "example": "Higuera 等人的 NCF-v2 从夹爪触觉推断被抓物体与环境的接触，接入插入策略后，把杯子放进杯托的成功率提高 33%、执行快 1.36 倍，把碗放进碗架的成功率提高 13%。",
+ "related": ["接触检测", "触觉传感器", "轴孔装配", "接触丰富操作", "工具使用", "外在灵巧性"],
+ "sources": [
+  {"title": "Extrinsic Contact Sensing with Relative-Motion Tracking from Distributed Tactile Measurements (ICRA 2021)", "url": "https://arxiv.org/abs/2103.08108"},
+  {"title": "Perceiving Extrinsic Contacts from Touch Improves Learning Insertion Policies", "url": "https://arxiv.org/abs/2309.16652"}
+ ],
+ "as_of": ""
+},
+{
+ "name_zh": "眼动追踪 / 注视估计",
+ "name_en": "Eye Tracking / Gaze Estimation",
+ "abbr": "",
+ "aliases": ["视线追踪", "视线估计", "注视点估计", "Gaze Tracking"],
+ "tier": 3,
+ "one_liner": "测量人眼转动，并估计这个人此刻正在看哪里。",
+ "explanation": "眼动追踪测量眼球相对头部的运动，注视估计则进一步算出视线落点，也就是人在看哪里。主流方法是用红外光照射眼睛，用相机同时拍下瞳孔中心和角膜上的反光点，由两者的相对位置推算视线方向；另一类方法用神经网络直接从普通图像回归视线。在具身智能里它主要有两种用途：一是采集示教数据时记录示教者的注视点，作为「该关注画面哪里」的额外信号，帮助策略把计算集中在关键区域；二是在人机交互中判断人的意图和注意对象。Meta 的 Project Aria 眼镜等头戴设备内置眼动追踪相机，采第一人称数据时可以一并录下注视信息。",
+ "example": "Kim 等人（RA-L 2021）在遥操作时记录操作者注视点，训练出的策略在注视点附近用高分辨率图像、在周边用低分辨率图像，完成了机器人穿针这类高精度任务。",
+ "related": ["第一人称视频", "Project Aria 眼镜", "人机交互", "意图理解（隐式指令）", "模仿学习", "主动感知"],
+ "sources": [
+  {"title": "Wikipedia: Eye tracking", "url": "https://en.wikipedia.org/wiki/Eye_tracking"},
+  {"title": "Gaze-based dual resolution deep imitation learning for high-precision dexterous robot manipulation (RA-L 2021)", "url": "https://arxiv.org/abs/2102.01295"},
+  {"title": "Project Aria Gen 1 hardware specifications", "url": "https://facebookresearch.github.io/projectaria_tools/docs/tech_spec/hardware_spec"}
+ ],
+ "as_of": ""
+},
+{
+ "name_zh": "因子图优化",
+ "name_en": "Factor Graph Optimization",
+ "abbr": "",
+ "aliases": ["因子图", "Factor Graph", "图优化"],
+ "tier": 3,
+ "one_liner": "把各种测量约束画成「变量-因子」图，再用最小二乘求最可能状态的方法。",
+ "explanation": "因子图是一种二分图：一类节点是待估计的变量，如机器人各时刻的位姿、路标的三维坐标；另一类节点是因子，每个因子代表一条测量或先验带来的概率约束，比如 IMU 给出两帧之间的相对运动，相机给出某个路标的观测。求最大后验估计（在所有观测下最可能的状态）等价于最小化所有因子误差的平方和，可以用高斯-牛顿、Levenberg-Marquardt 等非线性最小二乘方法求解，并利用图的稀疏性加速。Frank Dellaert 与 Michael Kaess 2017 年的综述系统阐述了这套框架，佐治亚理工开源的 GTSAM 是常用实现。它是现代 SLAM 和多传感器融合后端的主流写法，加一种新传感器只需加一种因子。",
+ "example": "LIO-SAM（IROS 2020）把激光雷达里程计、IMU 预积分和回环检测都作为因子加入同一个因子图，统一优化机器人轨迹，并用优化结果估计 IMU 零偏。",
+ "related": ["同步定位与建图", "GTSAM", "光束法平差", "IMU 预积分", "回环检测", "多传感器融合"],
+ "sources": [
+  {"title": "GTSAM: Factor Graphs and GTSAM tutorial", "url": "https://gtsam.org/tutorials/intro.html"},
+  {"title": "Dellaert & Kaess: Factor Graphs for Robot Perception (Foundations and Trends in Robotics, 2017)", "url": "https://www.cs.cmu.edu/~kaess/pub/Dellaert17fnt.html"},
+  {"title": "LIO-SAM: Tightly-coupled Lidar Inertial Odometry via Smoothing and Mapping", "url": "https://arxiv.org/abs/2007.00258"}
+ ],
+ "as_of": ""
+},
+{
+ "name_zh": "最远点采样",
+ "name_en": "Farthest Point Sampling",
+ "abbr": "FPS",
+ "aliases": ["最远点下采样", "Furthest Point Sampling"],
+ "tier": 3,
+ "one_liner": "每次挑离已选点最远的点，把点云均匀降到固定点数的下采样方法。",
+ "explanation": "最远点采样是一种点云下采样算法：先选一个起点，然后反复从剩余点里挑出「到已选点集合的最近距离最大」的那个点，直到选够设定的数量。和随机采样相比，同样的点数能更均匀地覆盖整个物体或场景，不容易丢掉稀疏区域的结构；缺点是需要逐点迭代，点很多时比随机采样和体素降采样慢，而且结果取决于起始点。PointNet++（NeurIPS 2017）用它为每一层挑选局部区域的中心点，之后大量点云网络沿用了这一做法。机器人策略用点云作输入时，通常先裁掉桌面和背景，再用最远点采样降到几百到几千个点，以控制计算量。",
+ "example": "3D 扩散策略 DP3（RSS 2024）先裁剪深度相机生成的点云，再用最远点采样降到 512 或 1024 个点，作者称这个数量对仿真和真机任务都够用。",
+ "related": ["点云", "PointNet", "点云滤波与降采样（体素降采样 / 离群点去除）", "3D 扩散策略", "点云编码器", "深度相机"],
+ "sources": [
+  {"title": "PointNet++: Deep Hierarchical Feature Learning on Point Sets in a Metric Space", "url": "https://arxiv.org/abs/1706.02413"},
+  {"title": "3D Diffusion Policy (DP3)", "url": "https://arxiv.org/html/2403.03954"}
+ ],
+ "as_of": ""
+},
+{
+ "name_zh": "FPFH 点云特征",
+ "name_en": "Fast Point Feature Histograms",
+ "abbr": "FPFH",
+ "aliases": ["快速点特征直方图", "FPFH 描述子"],
+ "tier": 3,
+ "one_liner": "用邻域内法向量几何关系的统计直方图，描述每个点局部形状的手工特征。",
+ "explanation": "FPFH 由 Radu Rusu、Nico Blodow 和 Michael Beetz 在 ICRA 2009 提出，是 PFH（点特征直方图）的加速版。做法是先为每个点估计法向量，再计算它与邻域点之间的几个角度关系，统计成直方图作为描述子。PFH 要计算邻域内所有点对，复杂度 O(nk²)；FPFH 只算中心点与各邻居的关系，再按距离加权合并邻居的结果，复杂度降到 O(nk)，区分能力损失不大。PCL 和 Open3D 的默认实现都是 33 维。它不需要训练，最典型的用途是全局点云配准：先用 FPFH 在两片点云间找对应点，再用 RANSAC 求粗略位姿，最后交给 ICP 精配准。",
+ "example": "Open3D 的全局配准教程先对两片点云做体素降采样和法向量估计，计算 33 维 FPFH 后用 RANSAC 求初始位姿，再用 ICP 细化。",
+ "related": ["点云配准", "法向量估计", "迭代最近点", "随机采样一致性", "点云库", "Open3D"],
+ "sources": [
+  {"title": "PCL Tutorials: Fast Point Feature Histograms (FPFH) descriptors", "url": "https://pcl.readthedocs.io/projects/tutorials/en/latest/fpfh_estimation.html"},
+  {"title": "Open3D: Global registration", "url": "https://www.open3d.org/docs/release/tutorial/pipelines/global_registration.html"}
+ ],
+ "as_of": ""
+},
+{
+ "name_zh": "特征匹配",
+ "name_en": "Feature Matching",
+ "abbr": "",
+ "aliases": ["特征点匹配", "对应点匹配", "Keypoint Matching", "Correspondence Matching"],
+ "tier": 3,
+ "one_liner": "在两张图像之间找出对应同一个物理点的特征点配对。",
+ "explanation": "特征匹配是在两幅图像（或两片点云）之间找出对应同一物理点的特征对。经典流程是：先在每张图上提取特征点和描述子（如 SIFT、ORB）；再按描述子距离找最近邻，浮点描述子用欧氏距离，ORB 这类二进制描述子用汉明距离；接着用 David Lowe 提出的比值检验去掉模棱两可的匹配，即最近邻与次近邻的距离比太大就丢弃；最后用 RANSAC 拟合几何模型，剔除不符合的外点。近年 SuperGlue、LightGlue 等用注意力网络直接学习匹配，在视角和光照变化大时更可靠。匹配结果是相机位姿估计、三角化、视觉 SLAM 和运动恢复结构的基础。",
+ "example": "苏黎世联邦理工的 LightGlue（ICCV 2023）在 SuperGlue 基础上改进，能根据图像对的难易自适应提前结束计算，两张图重叠多、外观变化小时匹配明显更快。",
+ "related": ["特征点", "随机采样一致性", "SuperPoint / LightGlue", "运动恢复结构", "视觉SLAM", "对极几何"],
+ "sources": [
+  {"title": "Wikipedia: Scale-invariant feature transform（含 Lowe 比值检验）", "url": "https://en.wikipedia.org/wiki/Scale-invariant_feature_transform"},
+  {"title": "LightGlue: Local Feature Matching at Light Speed", "url": "https://arxiv.org/abs/2306.13643"}
+ ],
+ "as_of": ""
+},
+{
+ "name_zh": "特征点",
+ "name_en": "Feature Points (SIFT / ORB)",
+ "abbr": "",
+ "aliases": ["局部特征", "兴趣点", "SIFT", "ORB", "Local Features"],
+ "tier": 3,
+ "one_liner": "图像中角点、斑点等容易被重复找到的点，外加一个描述其周围外观的向量。",
+ "explanation": "特征点是图像中纹理明显、换个视角或光照还能被重复找到的点，如角点和斑点。一个特征点包含两部分：位置（有时还带尺度和方向），以及描述子，即概括周围小块图像外观的向量，用来和其他图像比对。SIFT 由 David Lowe 于 1999 年提出、2004 年发表完整论文，对缩放、旋转和光照变化不敏感，描述子是 128 维浮点向量，专利已于 2020 年到期；ORB 由 Rublee 等人 2011 年提出，结合 FAST 角点检测和改进的 BRIEF 二进制描述子，比 SIFT 快得多，适合实时系统。特征点是视觉 SLAM、运动恢复结构和图像拼接的基础，深度学习时代也出现了 SuperPoint 等学习型特征点。",
+ "example": "ORB-SLAM（IEEE T-RO 2015）在跟踪、建图、重定位和回环检测四个环节都使用同一套 ORB 特征。",
+ "related": ["特征匹配", "视觉SLAM", "ORB-SLAM3", "SuperPoint / LightGlue", "关键点检测", "运动恢复结构"],
+ "sources": [
+  {"title": "Wikipedia: Scale-invariant feature transform", "url": "https://en.wikipedia.org/wiki/Scale-invariant_feature_transform"},
+  {"title": "Wikipedia: Oriented FAST and rotated BRIEF", "url": "https://en.wikipedia.org/wiki/Oriented_FAST_and_rotated_BRIEF"},
+  {"title": "ORB-SLAM: a Versatile and Accurate Monocular SLAM System", "url": "https://arxiv.org/abs/1502.00956"}
+ ],
+ "as_of": ""
+},
+{
+ "name_zh": "前馈式三维重建",
+ "name_en": "Feed-Forward 3D Reconstruction",
+ "abbr": "",
+ "aliases": ["前馈重建", "3D 重建基础模型", "前馈式 3D 重建", "Feed-forward Reconstruction"],
+ "tier": 3,
+ "one_liner": "一次网络前向计算就从图像直接输出相机参数、深度和点云的三维重建方法。",
+ "explanation": "传统三维重建走运动恢复结构（SfM）加多视图立体（MVS）的流程：先匹配特征点、估计相机位姿，再用光束法平差反复迭代优化，步骤多、耗时长，纹理少或视角少时容易失败。前馈式三维重建用在大规模三维数据上训练的大网络（多为 Transformer），输入一张或多张图像，一次前向计算就直接输出点图（每个像素对应的三维坐标）、深度、相机内外参等。代表工作有 Naver 的 DUSt3R（CVPR 2024，不需要事先标定相机）、Meta 与牛津大学的 VGGT（CVPR 2025 最佳论文）、π³ 和 MapAnything。对机器人来说，它能从普通 RGB 图像快速得到场景几何，可用于建图、位姿估计，或给策略提供三维输入。",
+ "example": "VGGT 输入同一场景的一张到几百张照片，据论文可在一秒内直接预测出相机参数、深度图、点图和三维点轨迹，不再依赖光束法平差等后处理优化。",
+ "related": ["DUSt3R", "VGGT", "π³（Pi3）", "MapAnything", "点图", "运动恢复结构"],
+ "sources": [
+  {"title": "DUSt3R: Geometric 3D Vision Made Easy", "url": "https://arxiv.org/abs/2312.14132"},
+  {"title": "VGGT: Visual Geometry Grounded Transformer", "url": "https://arxiv.org/abs/2503.11651"},
+  {"title": "MapAnything: Universal Feed-Forward Metric 3D Reconstruction", "url": "https://arxiv.org/abs/2509.13414"}
+ ],
+ "as_of": "2025-09"
+},
+{
+ "name_zh": "飞点",
+ "name_en": "Flying Pixels",
+ "abbr": "",
+ "aliases": ["边缘飞点", "Flying Points", "混合像素", "Mixed Pixels"],
+ "tier": 3,
+ "one_liner": "深度图在物体边缘处出现、悬在前景和背景之间的错误深度点。",
+ "explanation": "飞点是深度数据在物体轮廓处常见的伪影：本该属于前景或背景的边缘像素，被赋予了介于两者之间的深度值，转成点云后就成了悬在空中的一串散点，像物体边缘拖出的一层「面纱」。在 ToF（飞行时间）深度相机里，原因是一个像素同时收到前景和背景反射回来的光，测到的是混合信号，微软 Azure Kinect 文档就把这类边缘像素算作多路径问题并置为无效；在双目匹配和深度估计网络里，回归输出在深度突变处被平滑，同样会产生飞点。飞点会让抓取位姿和碰撞检测出错，常见处理是按深度梯度或邻域一致性把可疑的边缘点滤掉。",
+ "example": "Pixel-Perfect Depth（NeurIPS 2025）指出，先用 VAE 把深度图压进潜空间的生成式深度模型会在边缘和细节处引入飞点，于是改为直接在像素空间做扩散生成，得到几乎没有飞点的点云。",
+ "related": ["深度相机", "飞行时间法", "深度图", "点云", "深度空洞", "单目深度估计"],
+ "sources": [
+  {"title": "Azure Kinect DK depth camera（Invalidation / Multi-path 一节）", "url": "https://learn.microsoft.com/en-us/previous-versions/azure/kinect-dk/depth-camera"},
+  {"title": "Pixel-Perfect Depth with Semantics-Prompted Diffusion Transformers", "url": "https://arxiv.org/abs/2510.07316"}
+ ],
+ "as_of": ""
+}
+]}

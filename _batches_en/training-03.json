@@ -1,0 +1,113 @@
+{
+  "batch": "training-03",
+  "terms": [
+    {
+      "key": "training-03#0",
+      "name_en": "Co-training",
+      "aliases": ["Joint Training", "Mixed Training", "Co-fine-tuning", "Sim-and-Real Co-training"],
+      "one_liner": "Mixing a small amount of target-robot data with data from other sources in fixed proportions to train one model.",
+      "explanation": "In embodied AI, co-training means mixing a small amount of target-robot data together with data from other sources, in a set ratio, into the same training batches for one shared model. The other sources can be web image-text QA data, data from other robots, or simulation data. Google's RT-2 (2023) fine-tuned on robot trajectories together with web tasks like visual question answering, calling it co-fine-tuning; π0.5 (2025) trains jointly on multi-robot data, high-level semantic predictions, and web data. The point is to work around having too little real-robot data: mixing in other data preserves visual and language common sense and improves generalization, and the key is getting the mixing ratio right. Note this is a different sense from the “co-training” Blum and Mitchell proposed in 1998, which is a semi-supervised learning method.",
+      "example": "Mobile ALOHA had only 50 mobile-manipulation demonstrations per task; co-training with existing static ALOHA bimanual data raised success rates by up to 90 percentage points. In a 2025 sim-and-real co-training study from NVIDIA and collaborators, mixing in simulation data raised real-robot task success rates by 38% on average.",
+      "related": ["Data Mixing Ratio", "Sim-to-Real Transfer", "Cross-Embodiment Data", "RT-2", "π0.5", "Mobile ALOHA"]
+    },
+    {
+      "key": "training-03#1",
+      "name_en": "Cold Start",
+      "aliases": ["Cold-start SFT", "Cold-start Data", "Cold-start Fine-tuning"],
+      "one_liner": "Running supervised fine-tuning on a small set of high-quality demonstrations before reinforcement learning, to give the model a decent starting point.",
+      "explanation": "In large-model and VLA training, a cold start means running supervised fine-tuning (SFT — training directly on correct-answer data) on a small amount of high-quality data before reinforcement learning begins, producing an initial model that can already attempt the task reasonably. The term became popular because of DeepSeek-R1 (January 2025): R1-Zero, trained with pure RL, produced hard-to-read output that mixed languages, so the team first fine-tuned on a few thousand long chain-of-thought examples before running RL. This matters because reinforcement learning relies on trial and error, and an initial model that almost never succeeds gets almost no reward signal, making training slow and unstable. The embodied-AI equivalent is training a base policy with behavior cloning on demonstration data first, then fine-tuning it with RL in simulation or on a real robot. Note that “cold start” in recommender systems — a new user with no history — is an unrelated meaning of the same term.",
+      "example": "SimpleVLA-RL (2025) first ran SFT with just one demonstration per task, reaching 17.3% success on LIBERO-Long; using that as the starting point for reinforcement learning then raised it to 91.7%.",
+      "related": ["Supervised Fine-Tuning", "RL Fine-tuning", "Behavior Cloning", "Post-training", "Sparse Reward", "SimpleVLA-RL"]
+    },
+    {
+      "key": "training-03#2",
+      "name_en": "Compounding Error",
+      "aliases": ["Error Compounding", "Error Accumulation", "Compounding Errors"],
+      "one_liner": "Small per-step deviations in an imitation-learned policy add up, pushing the robot into unfamiliar states where it fails.",
+      "explanation": "Compounding error is the central problem with behavior cloning (imitating an expert's actions directly via supervised learning). The policy makes a small error at every step, and once it drifts off the expert's trajectory, it ends up in states that never appeared in the training data, where it's even more likely to err — the deviation snowballs. Ross and Bagnell's 2010 analysis showed that with a per-step error rate of ε over a task of length T, pure supervised imitation can incur cost as bad as order T²ε relative to the expert, growing quadratically with task length. The underlying cause is covariate shift. Common mitigations include DAgger, which has the expert label the states the policy actually wanders into; deliberately collecting recovery data for correcting mistakes; and action chunking, as in ACT, which predicts a whole block of actions at once and reduces the number of decision points.",
+      "example": "The ACT paper notes that in high-precision bimanual fine manipulation, an imitation-learned policy's error accumulates over time, so instead it predicts an entire action sequence at once, reaching 80–90% success on several tasks using just 10 minutes of human demonstrations.",
+      "related": ["Covariate Shift / Distribution Shift", "DAgger (Dataset Aggregation)", "Behavior Cloning", "Action Chunking", "Recovery/Correction Data", "Exposure Bias (Autoregressive Error Accumulation)"]
+    },
+    {
+      "key": "training-03#3",
+      "name_en": "Contrastive Learning",
+      "aliases": ["Contrastive Representation Learning"],
+      "one_liner": "Learning features from unlabeled data by pulling similar samples' representations together and pushing dissimilar ones apart.",
+      "explanation": "Contrastive learning is a family of self-supervised representation-learning methods: construct “positive pairs” (two pieces of data that should be similar, such as two random augmentations of the same image, or an image and its caption) and “negative” examples, then train an encoder to pull positive pairs' vectors closer together and push negatives further apart. A common loss for this is InfoNCE, from the 2018 CPC paper. Well-known examples include SimCLR, MoCo, and CLIP. Because it needs no human labels, it can learn general-purpose visual features from huge amounts of images, video, and image-text pairs. In embodied AI, many VLA models' vision encoders (such as CLIP and SigLIP) are trained with a contrastive objective; R3M instead pretrains robot visual representations on human videos using time-contrastive learning.",
+      "example": "CLIP trains on 400 million image-text pairs scraped from the web, learning to tell which caption matches which image. R3M pretrains on Ego4D human videos with time-contrastive learning among other objectives, and once frozen and handed to a Franka arm, needs only 20 demonstrations to learn manipulation tasks in a real, cluttered apartment.",
+      "related": ["Self-Supervised Learning", "InfoNCE Loss", "CLIP", "SigLIP", "Time-Contrastive Learning", "R3M"]
+    },
+    {
+      "key": "training-03#4",
+      "name_en": "Convergence",
+      "aliases": ["Training Convergence", "Converge"],
+      "one_liner": "The point in training where the loss or return stops changing much, meaning the model has settled into a stable state.",
+      "explanation": "Convergence describes training reaching a point where the loss (a number measuring the gap between prediction and target) or, in reinforcement learning, the return, stops changing much across iterations, so further training gives little benefit. Gradient-descent-style methods are only guaranteed to converge to a local optimum or stationary point under certain conditions; in practice, deep networks are judged by watching the training curve. Too large a learning rate can make the loss oscillate or even diverge, and exploding gradients or data problems can also prevent convergence. In robot learning, a converged loss doesn't necessarily mean the best policy: large-scale robomimic experiments found that the training objective and the real evaluation objective don't always agree, so picking a checkpoint by validation loss alone is unreliable — it's usually necessary to actually roll out the policy and check its success rate before choosing a model.",
+      "example": "When training a legged locomotion policy, the average-return curve rises quickly and then flattens out, which is taken as roughly converged. When training a behavior-cloning policy, even after the loss curve flattens, several checkpoints still get evaluated for success rate before deciding which one to use.",
+      "related": ["Loss Function", "Learning Rate", "Gradient Descent", "Overfitting", "Checkpoint", "Early Stopping"]
+    },
+    {
+      "key": "training-03#5",
+      "name_en": "Covariate Shift / Distribution Shift",
+      "aliases": ["Distribution Shift", "Dataset Shift", "Distribution Drift"],
+      "one_liner": "When the data seen at deployment has a different distribution than the training data, degrading the model's performance.",
+      "explanation": "Distribution shift broadly means the training data's distribution doesn't match the data seen at deployment. Covariate shift is one specific kind: the distribution of the input x changes, but the relationship of what output should follow from a given input, P(y|x), stays the same. Related but distinct are label shift and concept shift. This is especially damaging in imitation learning: training uses states the expert visited, but at deployment the policy sees states it wandered into itself, and one mistake pushes it into territory the expert never demonstrated — this is exactly the root cause of compounding error. Ross and colleagues (2011) pointed out that imitation learning therefore violates supervised learning's i.i.d. assumption, that training and test data are independently drawn from the same distribution. Responses include DAgger, which labels new states as they're encountered; data augmentation and domain randomization, which widen the range of training coverage; and reweighting training samples by importance weights.",
+      "example": "A grasping policy trained on data collected on a white lab tabletop under fixed lighting fails often once moved to a wood-grain table under variable lighting in a home kitchen — that's a distribution shift in the visual input.",
+      "related": ["Compounding Error", "DAgger (Dataset Aggregation)", "Out-of-Distribution", "Domain Adaptation", "Domain Randomization", "Importance Sampling"]
+    },
+    {
+      "key": "training-03#6",
+      "name_en": "Cross-Entropy",
+      "aliases": ["CE", "Cross-Entropy Loss", "Log Loss"],
+      "one_liner": "A measure of how far a model's predicted probability distribution is from the correct answer; the standard loss for classification.",
+      "explanation": "Cross-entropy comes from information theory, where it measures the difference between two probability distributions. In deep learning it's used as a classification loss: the model outputs a probability for each class (usually normalized with softmax), and the loss grows the lower the predicted probability assigned to the correct class is; when there's exactly one correct class per label, it's equivalent to negative log-likelihood (NLL). A large language model's next-token prediction is cross-entropy computed over the entire vocabulary. In embodied AI, VLA models that discretize continuous actions into tokens, such as RT-2 and OpenVLA, also train their action outputs with cross-entropy; policies that regress continuous actions directly usually use mean squared error or L1 loss instead, and diffusion and flow-matching policies use their own denoising losses.",
+      "example": "OpenVLA divides each action dimension into 256 bins spanning the 1st to 99th percentile of the training data, maps them onto the 256 least-used tokens in the Llama vocabulary, and during training computes cross-entropy loss only on those action tokens.",
+      "related": ["Loss Function", "Next-Token Prediction", "Binning/Discretization", "Mean Squared Error", "KL Divergence", "Maximum Likelihood Estimation / Negative Log-Likelihood"]
+    },
+    {
+      "key": "training-03#7",
+      "name_en": "Curriculum Learning",
+      "aliases": ["Curriculum", "Automatic Curriculum Learning"],
+      "one_liner": "A training strategy that starts a model on easy samples or tasks and gradually increases the difficulty.",
+      "explanation": "Curriculum learning was formally proposed by Bengio and colleagues in a 2009 ICML paper: like a student following a course syllabus, the model first sees easy samples or sub-tasks, and the difficulty is gradually increased. Their experiments showed this speeds up convergence and improves generalization. It's used heavily in robot reinforcement learning, because starting directly on the hardest version of a task means the policy almost never earns reward and can't learn at all. Common forms include terrain curricula (a legged robot practices on flat ground before stairs and slopes), gradually raising the commanded speed, and gradually widening the range of domain randomization; difficulty can also be adjusted automatically based on the policy's current performance, called an automatic curriculum.",
+      "example": "legged_gym (Rudin et al., 2021) simulates 4,096 ANYmal quadrupeds at once: a robot that walks past the edge of its current terrain gets a harder terrain next episode, and one that covers less than half the target distance gets an easier one; step height ranges from 5 to 20 cm and slope from 0° to 25° over the curriculum.",
+      "related": ["Terrain Curriculum", "Reinforcement Learning", "Automatic Domain Randomization", "Sparse Reward", "legged_gym", "Massively Parallel Reinforcement Learning"]
+    },
+    {
+      "key": "training-03#8",
+      "name_en": "Data Augmentation",
+      "aliases": ["Image Augmentation"],
+      "one_liner": "Applying random transformations to existing training data to create new samples, without collecting anything new.",
+      "explanation": "Data augmentation means expanding a training set by applying random, meaning-preserving transformations to existing samples rather than collecting new ones — a standard way to reduce overfitting and improve robustness. Common image transformations include random cropping, translation, rotation, color jitter, and random occlusion. Because robot data is expensive and scarce, augmentation is especially valuable there, but the transformation must not break the correspondence between the image and the action label — for instance, flipping an image left-right means the left/right direction in the action must be flipped too. RAD (2020) and similar work showed that adding only simple augmentations like random crop and random translation noticeably improves the data efficiency of pixel-based reinforcement learning. More recent work also includes generative data augmentation, which uses generative models to swap backgrounds or objects, and instruction augmentation, which rewrites language instructions.",
+      "example": "RAD added random crop and random translation to the pixel inputs of the DeepMind Control Suite, reaching state-of-the-art data efficiency and final performance at the time, and it also clearly improved test-time generalization on ProcGen.",
+      "related": ["Overfitting", "Generalization", "Domain Randomization", "Generative Data Augmentation", "Instruction Augmentation", "Visual Generalization"]
+    },
+    {
+      "key": "training-03#9",
+      "name_en": "DAgger",
+      "aliases": ["Dataset Aggregation"],
+      "one_liner": "Letting the policy run itself, having an expert label the correct action at the states it actually reaches, then retraining on the combined data.",
+      "explanation": "DAgger (Dataset Aggregation) is an interactive imitation-learning algorithm introduced by Ross, Gordon, and Bagnell at AISTATS 2011. It targets behavior cloning's compounding-error problem: a policy trained only on an expert's trajectory has no idea what to do once it drifts off that path. The procedure iterates: train an initial policy on expert data; let the current policy run and record the states it actually visits; ask the expert to label what should happen at those states; merge the new labels into the growing dataset and retrain; repeat. The paper proves this reduces the growth of error with task length from quadratic to close to linear. The downside is that the expert must be available to label on demand; on real robots, variants like HG-DAgger are common, where a human supervises and takes over when needed.",
+      "example": "The original paper learned steering in the racing game Super Tux Kart and level completion in Super Mario Bros., and DAgger outperformed plain supervised learning on expert demonstrations alone in both.",
+      "related": ["Compounding Error", "Covariate Shift / Distribution Shift", "Behavior Cloning", "Human-Gated DAgger", "Interactive Imitation Learning", "Human-in-the-Loop"]
+    },
+    {
+      "key": "training-03#10",
+      "name_en": "Deep Q-Network",
+      "aliases": ["DQN", "Deep Q-Learning"],
+      "one_liner": "A reinforcement-learning algorithm that uses a deep neural network to estimate each action's long-term value, its Q-value.",
+      "explanation": "DQN comes from DeepMind's Mnih and colleagues: a 2013 preprint validated it on 7 Atari games, and a 2015 Nature paper extended it to 49 games, using only raw screen pixels and score, reaching performance comparable to a professional human tester overall. It replaces the lookup table in Q-learning (learning how much total return follows from taking a given action in a given state) with a convolutional neural network, and stabilizes training with experience replay (storing past experience and sampling it randomly for training) and a target network (a periodically synced copy used to compute the training target). This launched the deep-reinforcement-learning boom. Because it takes the maximum Q-value over all actions, DQN suits discrete action spaces; for a robot arm's continuous actions, methods like DDPG and SAC are used instead.",
+      "example": "Google's QT-Opt (2018) brought Q-learning to real robot-arm grasping: after more than 580,000 real-world grasp attempts, the resulting closed-loop, vision-based grasping policy reached 96% success on objects it had never seen.",
+      "related": ["Q-Learning", "Q-Function", "Experience Replay", "Target Network", "Deep Deterministic Policy Gradient", "QT-Opt"]
+    },
+    {
+      "key": "training-03#11",
+      "name_en": "Dense Reward",
+      "aliases": [],
+      "one_liner": "A reward design that gives informative feedback at nearly every step, showing whether the agent is getting closer to or further from the goal.",
+      "explanation": "Dense reward means a reinforcement-learning environment gives an informative reward at almost every timestep, as opposed to sparse reward, which pays off only on task success. It's usually built by a human, breaking the task into several weighted terms added together — distance to the goal, velocity-tracking error, an energy penalty, and so on. The benefit is that the agent knows which direction to improve in from the very start, so learning is faster; legged-locomotion reinforcement learning almost always uses dense reward. The cost is that it's laborious to design, and if the weights aren't tuned well, the agent will find a shortcut that racks up score without actually accomplishing the real goal — reward hacking. Projects like Eureka try to have a large language model write this kind of reward-function code automatically.",
+      "example": "Gymnasium-Robotics' FetchReach task has two versions: the sparse version gives −1 per step while the end effector is more than 5 cm from the target and 0 on arrival, while the dense version, FetchReachDense, gives the negative Euclidean distance to the target at every step. legged_gym's quadruped-walking reward likewise combines velocity tracking, a joint-torque penalty, a collision penalty, and more, computed at every simulation step.",
+      "related": ["Sparse Reward", "Reward Shaping", "Reward Function", "Reward Engineering", "Reward Hacking", "Eureka"]
+    }
+  ]
+}

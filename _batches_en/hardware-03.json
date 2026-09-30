@@ -1,0 +1,115 @@
+{
+  "batch": "hardware-03",
+  "terms": [
+    {
+      "key": "hardware-03#0",
+      "name_en": "Core Components",
+      "aliases": ["Three Core Components"],
+      "one_liner": "The key parts that determine a robot's performance and cost — traditionally the reducer, servo, and controller.",
+      "explanation": "“Core components” is industry terminology for the handful of key parts that determine a robot's performance, price, and supply security. In the industrial-robot era, people commonly spoke of the “three core components”: the reducer (which converts a motor's high speed into high torque), the servo system (a servo motor plus its driver), and the controller — together the largest share of a robot's total cost. For humanoid robots, the list usually expands to include joint actuator modules, planetary roller screws, frameless torque motors, coreless motors, dexterous hands, six-axis force sensors, and the main compute chip. The production capacity, yield, and level of domestic sourcing for these components directly determine whether a robot's price can come down and whether it can be mass-produced, which is why they're the main focus when industry reports and investors discuss supply-chain chokepoints and domestic substitution.",
+      "example": "Harmonic and RV reducers long depended on Japan's Harmonic Drive Systems and Nabtesco; the rise of Chinese makers such as Leaderdrive is often cited as an example of domestic substitution for a core component.",
+      "related": ["Speed Reducer / Gearbox", "Servo Motor", "Robot Controller", "Joint Actuator Module", "Domestic Substitution", "Bill of Materials Cost"]
+    },
+    {
+      "key": "hardware-03#1",
+      "name_en": "Coreless Motor",
+      "aliases": ["Ironless Motor", "Coreless DC Motor"],
+      "one_liner": "A small motor whose rotor has no iron core — just a self-supporting cup of windings — light and fast-responding.",
+      "explanation": "A coreless motor is a small DC motor whose rotor skips the laminated steel core and instead forms the copper windings into a self-supporting, cup-shaped coil. Removing the core brings several benefits: the rotor is very light with low rotational inertia, so it starts, stops, and changes speed quickly; there's no eddy-current or hysteresis loss in a core, so efficiency is high; and there's no cogging torque (the notchy, step-by-step feel some motors have while turning), giving smoother motion at low speed. The trade-offs are poorer heat dissipation, a lower power ceiling, and a higher price. It's long been used in medical devices, precision instruments, and model aircraft, with Switzerland's Maxon and Germany's FAULHABER as the leading makers. In embodied AI, it's mainly used in the finger joints of dexterous hands, paired with a miniature lead screw or reduction gears to drive each finger.",
+      "example": "Many dexterous hands pack a coreless motor and a miniature lead screw into the palm or a finger, with one motor driving one degree of freedom.",
+      "related": ["Dexterous Hand", "Brushless DC Motor", "Micro Lead Screw", "Cogging Torque", "maxon", "FAULHABER"]
+    },
+    {
+      "key": "hardware-03#2",
+      "name_en": "Direct Drive",
+      "abbr": "DD",
+      "aliases": ["DD Motor"],
+      "one_liner": "A motor connected straight to the joint or load, with no gearbox or other transmission in between.",
+      "explanation": "Direct drive means a motor's output shaft connects straight to the load, with no gears, gearbox, belt, or other transmission stage in between — a reduction ratio of 1. The benefits are no backlash (the play between gear teeth), low friction, and good backdrivability (an external force can easily push the joint), plus torque can be estimated directly from motor current, giving high control bandwidth and smooth, compliant motion. The downside is that the motor alone has to produce all the torque, so it has to be large and heavy, which strains torque density and generates more heat. Fully direct-drive designs in robots show up mainly in rotary tables, some robot-arm joints, and certain dexterous-hand designs; legged robots more often use the compromise of quasi-direct drive (a planetary gearbox with a small reduction ratio), which balances torque against compliance.",
+      "example": "A fully direct-drive dexterous hand places a motor directly at each finger joint, with no tendon or linkage transmission in between.",
+      "related": ["Quasi-Direct Drive", "Backdrivability", "Backlash", "Gear Ratio", "Fully Direct-Drive Dexterous Hand", "Frameless Torque Motor"]
+    },
+    {
+      "key": "hardware-03#3",
+      "name_en": "Dual Encoder",
+      "aliases": [],
+      "one_liner": "A joint with one encoder at the motor and another at the output, reading both the motor's angle and the joint's true angle.",
+      "explanation": "A dual encoder is a joint-module configuration: one encoder (a sensor that measures rotation angle) sits on the motor shaft, measuring how far the motor has turned, while a second sits at the gearbox's output, directly measuring where the joint actually is. With only a motor-side encoder, the joint angle has to be inferred as “motor angle divided by gear ratio,” and errors creep in from the gearbox's backlash and the flexspline's elastic deformation. Adding an output-side encoder lets the system read the real joint position directly, so it also knows its absolute position the instant it powers on, without needing to home first. The difference between the two readings can also be used to estimate transmission deformation and load torque. This improves positioning accuracy and safety, at the cost of more expense, bulk, and wiring. High-end collaborative arms and many humanoid-robot joint modules use dual encoders.",
+      "example": "A harmonic-drive joint might use a high-resolution incremental encoder at the motor for its velocity loop, and an absolute encoder at the output to read the true joint angle.",
+      "related": ["Rotary Encoder", "Absolute Encoder", "Joint Actuator Module", "Backlash", "Strain Wave Gear (Harmonic Drive)", "Homing / Joint Zero-Offset Calibration"]
+    },
+    {
+      "key": "hardware-03#4",
+      "name_en": "Electric Gripper",
+      "aliases": [],
+      "one_liner": "A motor-driven robot gripper whose opening position, speed, and grip force can all be precisely controlled.",
+      "explanation": "An electric gripper is an end effector mounted on a robot arm whose fingers are opened and closed by a motor, usually through a lead screw, gears, or a linkage. Compared with a pneumatic gripper, which is pushed by compressed air, it needs no air supply, can precisely set opening width, closing speed, and grip force, and can report back its current position and current draw — making it well suited to fragile objects and tasks that need feedback. Its downside is that it's generally more expensive than a pneumatic gripper and produces somewhat less force and speed. The most common choice in embodied-AI research is the two-finger electric gripper, because it has just one degree of freedom, giving a simple action space that's easy to teleoperate and learn policies for; the gripper action recorded in most datasets is just a single opening value.",
+      "example": "The Robotiq 2F-85 and Franka's stock gripper are both common two-finger electric grippers in research.",
+      "related": ["Gripper", "Parallel Jaw Gripper", "Pneumatic Gripper", "End Effector", "Robotiq 2F-85 Gripper", "Fingertip Force / Grip Force"]
+    },
+    {
+      "key": "hardware-03#5",
+      "name_en": "Embedded System",
+      "aliases": [],
+      "one_liner": "A small computer system built into a device to handle one specific control task.",
+      "explanation": "An embedded system is a computer hidden inside a piece of equipment, dedicated to a specific function, built from a processor (a microcontroller unit, or MCU, or a system on chip, or SoC), memory, peripheral interfaces, and the firmware or lightweight operating system running on top. Compared with a general-purpose computer, it's optimized for small size, low power draw, low cost, and predictable response time. Embedded systems are everywhere in a robot: the MCU inside a motor driver runs the current control loop, sensor boards handle data acquisition and packaging, and dexterous hands and battery management systems each have their own onboard controller; even a higher-level compute module like a Jetson is often classified as an embedded platform. Working on robots means dealing with embedded systems directly — flashing firmware, configuring communication protocols, and handling real-time constraints.",
+      "example": "The STM32 inside a joint driver runs the current control loop at tens of kilohertz, then receives commands from the host computer over CAN or EtherCAT.",
+      "related": ["Microcontroller Unit", "System on Chip", "Firmware", "Real-Time Operating System", "STMicroelectronics STM32 MCU Family", "Lower-level Controller (Slave Computer)"]
+    },
+    {
+      "key": "hardware-03#6",
+      "name_en": "EtherCAT (Ethernet for Control Automation Technology)",
+      "abbr": "EtherCAT",
+      "aliases": [],
+      "one_liner": "A real-time Ethernet-based industrial bus from Beckhoff, commonly used to link a robot's joint drivers together.",
+      "explanation": "EtherCAT is an industrial Ethernet field bus created by Germany's Beckhoff, now maintained by the EtherCAT Technology Group and incorporated into the IEC 61158 international standard. Its defining trick is “processing on the fly”: the master sends out a single frame of data that flows through each slave device in sequence, and each slave reads out the command addressed to it and writes back its own status as the frame passes through, instead of every device having to send and receive separately — which lets the communication cycle be extremely short with very little clock-synchronization jitter. In a robot, the main controller acts as the master, with each joint driver and force sensor acting as a slave chained together in a line, exchanging position and torque commands in sync at 1 kHz or higher. Compared with a CAN bus, it has far more bandwidth, which suits humanoid robots with many joints, but it needs dedicated master-side software and pricier slave chips.",
+      "example": "An open-source master stack like SOEM or IgH, running on a real-time-patched Linux system, controls an entire humanoid robot's joint drivers on a 1 kHz cycle.",
+      "related": ["EtherCAT Master (SOEM / IgH)", "Controller Area Network (CAN)", "Servo Drive / Motor Driver", "Real-Time Control", "Cyclic Synchronous Position / Velocity / Torque Modes (CiA 402)"]
+    },
+    {
+      "key": "hardware-03#7",
+      "name_en": "Exoskeleton",
+      "aliases": ["Exoskeleton Robot", "Powered Exoskeleton"],
+      "one_liner": "A wearable mechanical structure whose joints line up with the body's, used to assist motion or to record it.",
+      "explanation": "An exoskeleton is a mechanical structure worn on the outside of the body, with its joints positioned to match the wearer's own. A powered exoskeleton, with motors built in, can assist a person's movement — used in rehabilitation training, helping people with limited mobility walk, or reducing the load on a worker carrying heavy items. A passive exoskeleton, unpowered and fitted only with encoders, instead precisely records the wearer's joint angles. This second kind matters a lot in embodied AI: an exoskeleton built to be isomorphic with a robot arm (matching its number of joints and proportions) lets a person perform a motion while wearing it, and the readings can be mapped directly to robot joint commands — used for teleoperation and collecting demonstration data, with better accuracy and lower latency than vision-based motion capture. Some exoskeletons also provide force feedback, letting the operator feel the resistance the robot encounters.",
+      "example": "AirExo uses a low-cost exoskeleton to teleoperate a dual-arm robot, and HOMIE uses an isomorphic exoskeleton cockpit to control a humanoid robot's upper body.",
+      "related": ["Exoskeleton Teleoperation", "AirExo", "HOMIE: Humanoid Loco-Manipulation with Isomorphic Exoskeleton Cockpit", "Teleoperation", "Leader-Follower Teleoperation", "Motion Capture"]
+    },
+    {
+      "key": "hardware-03#8",
+      "name_en": "Feetech STS3215 Servo",
+      "aliases": ["STS3215", "ST3215"],
+      "one_liner": "A serial-bus smart servo from Feetech, the standard joint used in LeRobot's SO-100/SO-101 arms.",
+      "explanation": "The STS3215 is a serial-bus servo (a small joint unit that packages a motor, reduction gears, a position sensor, and a control board together) made by the Shenzhen company Feetech. It measures angle with a 12-bit magnetic encoder, giving 4,096 steps per revolution, and can rotate a full 360°; multiple servos are chained together on a half-duplex serial bus, each with its own ID, and each can report back its position, speed, voltage, current, temperature, and load. It comes in two common power variants, with a stall torque of about 19 kg·cm at 7.4V and about 30 kg·cm at 12V. It's cheap, easy to buy, and simple to wire, which is why Hugging Face's LeRobot chose it for every joint on its open-source SO-100/SO-101 arms — making it the de facto standard for entering low-cost embodied AI, and it also shows up in platforms like Koch and LeKiwi. Its downside is that the plastic gears have backlash, limiting precision and stiffness.",
+      "example": "Building an SO-101 requires 12 STS3215 servos (six each for the leader and follower arms); after assembly, each one gets its ID set individually before calibration.",
+      "related": ["Servo (Smart Serial Bus Servo)", "SO-100 / SO-101 Arm (LeRobot)", "LeRobot (Hugging Face)", "ROBOTIS DYNAMIXEL Servo", "Magnetic Encoder", "Backlash"]
+    },
+    {
+      "key": "hardware-03#9",
+      "name_en": "Fingertip Force / Grip Force",
+      "aliases": [],
+      "one_liner": "How much force a dexterous hand or gripper can apply — fingertip force is per finger, grip force is the whole hand closing.",
+      "explanation": "Fingertip force is the maximum force a single fingertip can apply to an object, which determines whether fine actions like pinching, pressing a button, or twisting a small object are possible. Grip force is the total clamping force when the whole hand (or both fingers of a gripper) closes around an object, which determines how much weight it can lift and how securely it can hold on. Both are usually given in newtons (N) or kilogram-force, and they're core specs on any dexterous-hand or gripper datasheet. A bigger number isn't automatically better: too much force without fine control can crush an object, while too little lets it slip, so force-control precision, response speed, and heat buildup during sustained use all matter too. When comparing numbers, it's also worth checking whether a manufacturer is reporting a peak or a sustained value, and what finger posture it was measured in.",
+      "example": "A dexterous-hand spec sheet usually lists both single-finger fingertip force and whole-hand grip force side by side, and the two numbers can differ by several times.",
+      "related": ["Dexterous Hand", "Gripper", "Grasping", "Friction Cone", "Force Closure", "Grasp Taxonomy (Power vs. Precision Grasp)"]
+    },
+    {
+      "key": "hardware-03#10",
+      "name_en": "FLOPS / TFLOPS (Floating-Point Operations per Second)",
+      "aliases": ["FLOPS", "TFLOPS"],
+      "one_liner": "How many floating-point calculations a chip can do per second; a TFLOPS is a trillion per second.",
+      "explanation": "FLOPS stands for floating-point operations per second, a measure of how much compute power a GPU or main compute chip has; a TFLOPS is 10¹² operations per second, and a PFLOPS is 10¹⁵. It's easy to confuse with the lowercase-s FLOPs, which is the total number of operations a single forward pass requires — a measure of a model's computational cost; dividing FLOPs by FLOPS gives a rough estimate of inference time. Reading this number requires checking the numeric precision: the same chip's rating can differ several-fold between FP32, FP16, FP8, and FP4, and manufacturers often advertise the peak figure at the lowest precision or under sparse conditions; integer throughput is usually reported separately as TOPS. What a chip can actually sustain is further limited by memory bandwidth and how efficient the operators are. This number comes up when choosing a robot's onboard compute or estimating whether a VLA model can run in real time on the device.",
+      "example": "NVIDIA advertises Jetson Thor's compute figure at FP4 precision, which can't be directly compared to the older Orin's number, which is quoted at FP16.",
+      "related": ["Tera Operations Per Second", "Floating-Point Operations (FLOPs)", "Numerical Precision Formats (FP32 / BF16 / FP16 / FP8 / INT8)", "NVIDIA Jetson Thor", "Onboard Compute Platform", "Inference Latency"]
+    },
+    {
+      "key": "hardware-03#11",
+      "name_en": "Frameless Torque Motor",
+      "aliases": ["Frameless Motor", "Torque Motor"],
+      "one_liner": "A motor sold as just a stator and rotor, with no housing or bearings, built to be mounted straight into a joint.",
+      "explanation": "A frameless torque motor is a permanent-magnet motor sold as a bare component: just a stator (the coils) and a rotor (a ring of magnets), with no housing, bearings, output shaft, or encoder — the robot manufacturer mounts it directly inside a joint housing of its own design. It's typically shaped as a large-diameter, thin, flat ring with many magnetic poles, so it can deliver substantial torque even at low speed, and it leaves a large center bore for routing cables or fitting a gearbox. This design eliminates couplings and duplicate structural parts, making the joint more compact, lighter, and stiffer. A common combination in the rotary joint modules of collaborative arms and humanoid robots is a frameless torque motor paired with a harmonic or planetary gearbox, a dual encoder, and a holding brake. Kollmorgen is one of the leading manufacturers.",
+      "example": "In a collaborative arm's joint, the frameless motor's rotor is fitted onto a hollow shaft and its stator is pressed into the joint housing, with cables routed through the center bore.",
+      "related": ["Joint Actuator Module", "Permanent Magnet Synchronous Motor", "Hollow-Shaft Cable Routing", "Strain Wave Gear (Harmonic Drive)", "Direct Drive", "Kollmorgen"]
+    }
+  ]
+}

@@ -1,0 +1,201 @@
+{"category": "training", "batch": 15, "terms": [
+{
+"name_zh": "参数高效微调",
+"name_en": "Parameter-Efficient Fine-Tuning",
+"abbr": "PEFT",
+"aliases": ["高效微调", "轻量微调"],
+"tier": 3,
+"one_liner": "冻结大模型的大部分参数，只训练极少量新增或选定的参数来适配新任务。",
+"explanation": "参数高效微调是一类微调方法的统称：预训练好的大模型参数基本冻结，只训练一小部分参数，让模型适应新任务。常见做法有四种：插入小模块（适配器）、在输入前拼接可学习向量（提示微调）、用低秩矩阵表示权重的改动（LoRA）、只放开少数原有参数（如只调偏置）。它针对的是全参数微调太贵的问题：显存、算力和「每个任务存一整份权重」的存储开销都大幅下降，效果常能接近全参数微调。Hugging Face 的 PEFT 库集成了多种此类方法。把开源 VLA 迁移到自家机器人时，最常用的就是 LoRA。",
+"example": "OpenVLA 论文中，用 LoRA 只更新约 1.4% 的参数、在单张 A100 上训练 10–15 小时，任务成功率 68.2%，与全参数微调的 69.7% 相近；后者要两张 GPU、约 163 GB 显存。",
+"related": ["低秩适配", "适配器", "提示微调 / 软提示", "全参数微调", "冻结骨干网络", "微调"],
+"sources": [
+{"title": "Hugging Face PEFT 文档", "url": "https://huggingface.co/docs/peft/index"},
+{"title": "Han et al. 2024: Parameter-Efficient Fine-Tuning for Large Models: A Comprehensive Survey", "url": "https://arxiv.org/abs/2403.14608"},
+{"title": "Kim et al. 2024: OpenVLA: An Open-Source Vision-Language-Action Model", "url": "https://arxiv.org/abs/2406.09246"}
+],
+"as_of": ""
+},
+{
+"name_zh": "策略约束",
+"name_en": "Policy Constraint (Behavior Regularization)",
+"abbr": "",
+"aliases": ["行为正则化", "Behavior Regularization", "行为约束"],
+"tier": 3,
+"one_liner": "离线强化学习里，限制新策略不要偏离数据中行为策略太远的一类方法。",
+"explanation": "策略约束是离线强化学习（只用现成数据、不再与环境交互）的一大类方法。Q 函数（估计做某动作能拿多少回报）对数据里没出现过的动作常估得过高，策略去追这些虚高动作就会崩，这叫外推误差。策略约束给策略加一条限制：输出的动作要接近采集数据时的行为策略，可以用 KL 散度、MMD 等距离做惩罚，或在目标里加一项行为克隆损失。BCQ、BEAR、TD3+BC 都属于这一路线，2019 年 Wu、Tucker、Nachum 的 BRAC 把它们统一成「行为正则化」框架。它和保守 Q 学习这类「压低陌生动作价值」的方法是离线 RL 的两条主线。",
+"example": "TD3+BC 只在在线算法 TD3 的策略更新里加一项行为克隆损失（让输出动作靠近数据集动作），再把状态做归一化，就达到了与当时复杂离线 RL 算法相当的效果。",
+"related": ["离线强化学习", "外推误差", "KL 正则化", "行为克隆", "保守 Q 学习", "优势加权回归"],
+"sources": [
+{"title": "Wu, Tucker, Nachum 2019: Behavior Regularized Offline Reinforcement Learning (BRAC)", "url": "https://arxiv.org/abs/1911.11361"},
+{"title": "Fujimoto & Gu 2021: A Minimalist Approach to Offline Reinforcement Learning (TD3+BC)", "url": "https://arxiv.org/abs/2106.06860"},
+{"title": "Levine et al. 2020: Offline Reinforcement Learning: Tutorial, Review, and Perspectives on Open Problems", "url": "https://arxiv.org/abs/2005.01643"}
+],
+"as_of": ""
+},
+{
+"name_zh": "策略蒸馏",
+"name_en": "Policy Distillation",
+"abbr": "",
+"aliases": ["专家到通才蒸馏", "Specialist-to-Generalist Distillation"],
+"tier": 3,
+"one_liner": "让一个学生策略模仿一个或多个训好的老师策略，把本事压缩或合并进来。",
+"explanation": "策略蒸馏是知识蒸馏在决策问题上的用法：学生策略不直接从奖励中学，而是去拟合老师策略在各个状态下输出的动作或动作分布。DeepMind 的 Rusu 等人 2015 年在 Atari 游戏上系统提出这一做法，一是把大网络压成小网络，二是把多个单游戏专家合并成一个多任务策略，合并后的表现超过各自单独训练的版本。机器人里常见的是「专家到通才」：先针对不同物体、任务，或借助特权信息（只在仿真里拿得到的真值状态）分别训练专用策略，再蒸馏进一个通用策略，常配合 DAgger 在学生自己走到的状态上向老师要标签。",
+"example": "北大王鹤团队的 UniDexGrasp++ 先按物体几何特征把数千个物体分组，各训练一个专家抓取策略，再迭代蒸馏成一个通才策略，最终在训练集和测试集物体上的抓取成功率分别为 85.4% 和 78.2%。",
+"related": ["知识蒸馏", "教师-学生蒸馏", "专用策略", "通用策略（通才策略）", "DAgger（数据集聚合）", "在线策略蒸馏"],
+"sources": [
+{"title": "Rusu et al. 2015: Policy Distillation", "url": "https://arxiv.org/abs/1511.06295"},
+{"title": "Wan et al. 2023: UniDexGrasp++", "url": "https://arxiv.org/abs/2304.00464"},
+{"title": "He et al. 2024: HOVER: Versatile Neural Whole-Body Controller for Humanoid Robots", "url": "https://arxiv.org/abs/2410.21229"}
+],
+"as_of": ""
+},
+{
+"name_zh": "策略迭代 / 价值迭代",
+"name_en": "Policy Iteration / Value Iteration (Dynamic Programming)",
+"abbr": "",
+"aliases": ["动态规划", "Dynamic Programming", "值迭代"],
+"tier": 3,
+"one_liner": "环境模型已知时，反复更新价值或策略来求最优策略的两种经典动态规划算法。",
+"explanation": "策略迭代和价值迭代是求解马尔可夫决策过程（描述状态、动作、奖励和转移的数学框架）的两种经典动态规划算法，前提是转移概率和奖励函数都已知。价值迭代由 Bellman 在 1957 年提出，反复用贝尔曼最优方程更新每个状态的价值，收敛后按价值挑动作。策略迭代由 Howard 在 1960 年提出，交替做两步：策略评估（算出当前策略下各状态的价值）和策略改进（每个状态改选价值最高的动作），直到策略不再变化。真实机器人的状态连续、模型未知，没法直接套用，但 Q 学习、演员-评论家等算法都可以看成它们在采样和函数近似下的变体。",
+"example": "在一个 4×4 的网格迷宫里，每走一步奖励 -1、走到终点结束，且移动结果确定。价值迭代反复更新各格的价值，收敛后每格的价值等于它到终点最短步数的相反数，沿价值升高的方向走就是最短路径。",
+"related": ["马尔可夫决策过程", "贝尔曼方程", "价值函数", "Q 学习", "基于模型的强化学习", "策略梯度"],
+"sources": [
+{"title": "Wikipedia: Markov decision process（Algorithms 一节）", "url": "https://en.wikipedia.org/wiki/Markov_decision_process"},
+{"title": "Wikipedia: Bellman equation", "url": "https://en.wikipedia.org/wiki/Bellman_equation"}
+],
+"as_of": ""
+},
+{
+"name_zh": "基于群体的训练",
+"name_en": "Population-Based Training",
+"abbr": "PBT",
+"aliases": ["基于种群的训练", "种群训练", "Population Based Training"],
+"tier": 3,
+"one_liner": "同时训练一群模型，边训练边让差的复制好的权重，并随机调整超参数。",
+"explanation": "基于群体的训练是 DeepMind 的 Jaderberg 等人 2017 年提出的超参数优化方法。它并行训练一批模型，每隔一段时间比较表现：表现差的成员直接复制表现好的成员的权重（利用），再随机扰动学习率等超参数继续训练（探索）。这样不必先调完参数再正式训练，而是在一次训练中自动找出一条随时间变化的超参数日程，总算力和并行跑同样多组普通实验差不多。原论文在深度强化学习、机器翻译和 GAN 上都验证有效。强化学习对超参数特别敏感，PBT 常和 GPU 大规模并行仿真搭配使用。",
+"example": "英伟达的 DexPBT（RSS 2023）在 Isaac Gym 中用去中心化的 PBT 训练装有多指灵巧手的单臂和双臂机器人，完成重新抓取、抓取后抛掷、物体重定向等任务，探索效果明显好于常规的端到端训练。",
+"related": ["超参数", "大规模并行强化学习", "探索与利用", "GPU 并行仿真", "强化学习", "Isaac Gym"],
+"sources": [
+{"title": "Jaderberg et al. 2017: Population Based Training of Neural Networks", "url": "https://arxiv.org/abs/1711.09846"},
+{"title": "Google DeepMind Blog: Population based training of neural networks", "url": "https://deepmind.google/discover/blog/population-based-training-of-neural-networks/"},
+{"title": "Petrenko et al. 2023: DexPBT", "url": "https://arxiv.org/abs/2305.12127"}
+],
+"as_of": ""
+},
+{
+"name_zh": "预测目标参数化（ε / x0 / v 预测）",
+"name_en": "Prediction Target Parameterization (ε- / x0- / v-prediction)",
+"abbr": "",
+"aliases": ["ε 预测", "x0 预测", "v 预测", "噪声预测", "epsilon-prediction", "v-prediction", "x-prediction"],
+"tier": 3,
+"one_liner": "扩散或流模型的网络该输出什么：噪声 ε、干净数据 x0，还是两者的组合 v。",
+"explanation": "扩散模型训练时先给数据加噪，再让网络从带噪样本往回还原。网络的输出目标有几种写法：ε 预测输出所加的噪声，是 2020 年 DDPM 采用后流行起来的做法；x0 预测直接输出干净数据；v 预测由 Salimans 和 Ho 在 2022 年的渐进蒸馏论文中提出，输出噪声和数据按噪声水平加权的组合，采样步数很少时更稳定。流匹配里的「预测速度场」与 v 预测思路相近。这几种目标数学上可以互相换算，但网络学起来难度不同，会影响训练稳定性和少步采样质量；2025 年 Li 和何恺明的 JiT 论文就主张在高维图像上直接预测干净图像。",
+"example": "扩散策略（Diffusion Policy）的去噪网络预测的是噪声 ε；π0 用流匹配训练动作专家，网络输出的是把噪声推向真实动作的速度场。",
+"related": ["扩散模型", "流匹配", "速度场", "噪声调度", "去噪损失", "扩散策略"],
+"sources": [
+{"title": "Ho et al. 2020: Denoising Diffusion Probabilistic Models", "url": "https://arxiv.org/abs/2006.11239"},
+{"title": "Salimans & Ho 2022: Progressive Distillation for Fast Sampling of Diffusion Models", "url": "https://arxiv.org/abs/2202.00512"},
+{"title": "Li & He 2025: Back to Basics: Let Denoising Generative Models Denoise", "url": "https://arxiv.org/abs/2511.13720"}
+],
+"as_of": "2025-11"
+},
+{
+"name_zh": "进度奖励模型",
+"name_en": "Progress Reward Model",
+"abbr": "",
+"aliases": ["进度估计器", "任务进度预测", "Progress Estimator"],
+"tier": 3,
+"one_liner": "看当前画面判断任务完成了几成，并把这个进度当作奖励的模型。",
+"explanation": "进度奖励模型是一类机器人奖励模型：输入任务指令和当前画面（有时加上起始帧或历史帧），输出任务完成进度，通常归一化到 0 到 1。真实操作任务往往只有「成没成」这种稀疏奖励，强化学习很难从中学到东西；进度分数可以当作稠密奖励，让策略每一步都知道离目标近了还是远了，也能用来筛数据、判成败。做法主要有两种：直接让视觉语言模型零样本估计，如谷歌 DeepMind 等提出的 GVL；或在大量轨迹上专门训练，如 2026 年的 Robometer。风险是奖励黑客：策略可能学会让画面「看起来」有进展。",
+"example": "GVL 把一条机器人视频的帧顺序打乱后交给 VLM，让它给每帧估计完成百分比，不做任何训练就能在 300 多个真实任务上给出可用的进度值，并用于数据筛选和成功检测。",
+"related": ["奖励模型", "稀疏奖励", "稠密奖励", "成功检测器", "GVL（生成式价值学习）", "Robometer"],
+"sources": [
+{"title": "Ma et al. 2024: Vision Language Models are In-Context Value Learners (GVL)", "url": "https://arxiv.org/abs/2411.04549"},
+{"title": "Liang et al. 2026: Robometer: Scaling General-Purpose Robotic Reward Models via Trajectory Comparisons", "url": "https://arxiv.org/abs/2603.02115"},
+{"title": "Ayalew et al. 2024: PROGRESSOR", "url": "https://arxiv.org/abs/2411.17764"}
+],
+"as_of": "2026-03"
+},
+{
+"name_zh": "提示微调 / 软提示",
+"name_en": "Prompt Tuning / Soft Prompt",
+"abbr": "",
+"aliases": ["软提示", "Soft Prompt", "软提示微调"],
+"tier": 3,
+"one_liner": "冻结整个模型，只训练拼在输入前面的一小段可学习向量来适配任务。",
+"explanation": "提示微调是一种参数高效微调方法，由谷歌的 Lester 等人 2021 年提出。人写的文字提示属于「硬提示」；软提示则是一串直接在嵌入空间里学出来的向量，不对应任何具体文字。训练时模型全部参数冻结，只用梯度下降更新这一小段向量，每个任务只需额外存一份很小的软提示，同一个模型可以服务多个任务。论文发现模型越大效果越接近全参数微调，在数十亿参数规模时已基本持平。前缀微调（在每层注意力前加可学习前缀）和视觉提示微调是同类思路。在机器人领域，软提示也被用来标记不同本体或数据来源。",
+"example": "X-VLA 给每个数据来源（不同机器人本体和采集设置）配一组可学习的软提示嵌入，主干用标准 Transformer，0.9B 参数的模型即可做跨本体训练，并在多个仿真和真机平台上测试。",
+"related": ["参数高效微调", "提示词 / 提示工程", "低秩适配", "适配器", "X-VLA", "嵌入向量"],
+"sources": [
+{"title": "Lester, Al-Rfou, Constant 2021: The Power of Scale for Parameter-Efficient Prompt Tuning", "url": "https://arxiv.org/abs/2104.08691"},
+{"title": "Zheng et al. 2025: X-VLA: Soft-Prompted Transformer as Scalable Cross-Embodiment VLA Model", "url": "https://arxiv.org/abs/2510.10274"}
+],
+"as_of": "2025-10"
+},
+{
+"name_zh": "动作分块强化学习",
+"name_en": "Q-Chunking (Reinforcement Learning with Action Chunking)",
+"abbr": "QC",
+"aliases": ["Q-chunking", "Q 分块"],
+"tier": 3,
+"one_liner": "策略和 Q 函数都以「一段连续动作」为单位来做强化学习。",
+"explanation": "Q-chunking 是伯克利 Sergey Levine 团队 2025 年提出的强化学习方法，面向离线到在线（先用已有数据训练，再上线交互）的长程、稀疏奖励任务。它把模仿学习里常用的动作分块搬进强化学习：策略一次输出连续 h 步动作，Q 函数（评判动作好坏的网络）也以「状态 + 整段动作」为输入。好处有两点：按块执行让探索更连贯，能沿用离线数据里的行为习惯；整段动作一起评估，可以做无偏的多步时序差分更新，价值传得更快。为防止策略偏离数据，它从流匹配策略里采样多个动作块、挑 Q 值最高的一个，或加蒸馏约束。",
+"example": "在 OGBench 的方块、拼图类操作任务和 robomimic 任务上，先离线预训练 100 万步、再在线交互 100 万步，块长取 5 的 Q-chunking 明显优于 RLPD 等离线到在线基线，任务越难差距越大。",
+"related": ["动作分块", "离线到在线强化学习", "时序差分学习", "利用先验数据的强化学习", "流匹配", "稀疏奖励"],
+"sources": [
+{"title": "Li, Zhou, Levine 2025: Reinforcement Learning with Action Chunking", "url": "https://arxiv.org/abs/2507.07969"}
+],
+"as_of": "2025-07"
+},
+{
+"name_zh": "参考状态初始化",
+"name_en": "Reference State Initialization",
+"abbr": "RSI",
+"aliases": [],
+"tier": 3,
+"one_liner": "动作模仿训练时，每回合从参考动作的随机时刻开始，而不总从第一帧开始。",
+"explanation": "参考状态初始化是 Peng 等人 2018 年在 DeepMimic 中提出的强化学习训练技巧，用于让仿真角色或机器人模仿一段参考动作（如动捕数据）。如果每回合都从动作开头出发，策略只能先学前半段再学后半段；像后空翻，不先学会落地，起跳反而更容易摔、得分更低。RSI 每回合随机抽参考动作中的一个时刻，把角色的根部位置、朝向、速度和关节状态直接设成那一帧，让各阶段并行练习。它常和提前终止（摔倒就结束回合）一起用，已是人形机器人动作跟踪训练的常用配置；BeyondMimic 进一步按失败率自适应地选择起始位置。",
+"example": "DeepMimic 的消融实验中，不用 RSI 训练的后空翻策略始终没学会完整空翻，只会向后小跳；ASAP 在宇树 G1 上训练模仿 C 罗标志性跳跃等高动态动作时也采用了 RSI。",
+"related": ["DeepMimic", "提前终止", "运动跟踪", "ASAP", "BeyondMimic", "探索与利用"],
+"sources": [
+{"title": "Peng et al. 2018: DeepMimic: Example-Guided Deep Reinforcement Learning of Physics-Based Character Skills", "url": "https://arxiv.org/abs/1804.02717"},
+{"title": "He et al. 2025: ASAP: Aligning Simulation and Real-World Physics for Learning Agile Humanoid Whole-Body Skills", "url": "https://arxiv.org/abs/2502.01143"},
+{"title": "Liao et al. 2025: BeyondMimic", "url": "https://arxiv.org/abs/2508.08241"}
+],
+"as_of": ""
+},
+{
+"name_zh": "REINFORCE 算法",
+"name_en": "REINFORCE",
+"abbr": "",
+"aliases": ["蒙特卡洛策略梯度", "Monte Carlo Policy Gradient"],
+"tier": 3,
+"one_liner": "最早的策略梯度算法：按整条轨迹的回报，调高带来高回报的动作的概率。",
+"explanation": "REINFORCE 由 Ronald Williams 在 1992 年提出，是最早的策略梯度算法。做法是：用当前策略完整跑完若干回合，对每一步动作，用它之后拿到的累计回报去加权该动作对数概率的梯度，回报高的动作被调得更容易出现。因为回报直接来自整条轨迹的采样、而不是价值估计，它也叫蒙特卡洛策略梯度，估计无偏但方差大、样本效率低；减去一个基线（如平均回报或价值函数）能明显降低方差，这一思路后来发展成演员-评论家方法。PPO 也建立在策略梯度之上；大语言模型后训练中的 RLOO、GRPO 用组内平均回报当基线，沿用的也是 REINFORCE 的思路。",
+"example": "让机械臂学推方块：每回合推到目标回报记 1，否则记 0。REINFORCE 会调高成功回合里每一步动作的概率，失败回合的梯度为零；加上基线后，低于平均的回合里的动作会被压低。",
+"related": ["策略梯度", "蒙特卡洛方法（蒙特卡洛回报）", "回报", "优势函数", "近端策略优化", "组相对策略优化"],
+"sources": [
+{"title": "Wikipedia: Policy gradient method", "url": "https://en.wikipedia.org/wiki/Policy_gradient_method"},
+{"title": "Ahmadian et al. 2024: Back to Basics: Revisiting REINFORCE Style Optimization for Learning from Human Feedback in LLMs", "url": "https://arxiv.org/abs/2402.14740"}
+],
+"as_of": ""
+},
+{
+"name_zh": "利用先验数据的强化学习",
+"name_en": "Reinforcement Learning with Prior Data",
+"abbr": "RLPD",
+"aliases": ["Efficient Online Reinforcement Learning with Offline Data"],
+"tier": 3,
+"one_liner": "在线强化学习时把离线数据和新采数据各取一半混合训练的简单高效方法。",
+"explanation": "RLPD 是 Ball、Smith、Kostrikov、Levine 在 ICML 2023 提出的方法，研究手里已有离线数据（专家演示或大量次优轨迹）时，上线交互学习该怎么用好它们。作者发现不需要复杂的离线预训练，只要在异策略算法 SAC 上做几处小改动：每个训练批次一半取离线数据、一半取在线回放缓存（对称采样）；给评论家网络加层归一化，防止把没见过动作的价值估高；用 10 个评论家组成集成并提高更新-数据比。论文报告在多个基准上比已有方法提升约 2.5 倍。真机强化学习框架 SERL 以它为核心算法。",
+"example": "SERL 在真机上用 RLPD 训练：人类演示放进离线缓冲区，机器人自己交互产生的数据放进在线缓冲区，每个训练批次两边各取一半。",
+"related": ["离线到在线强化学习", "软演员-评论家", "更新-数据比", "经验回放", "SERL", "HIL-SERL"],
+"sources": [
+{"title": "Ball et al. 2023: Efficient Online Reinforcement Learning with Offline Data (RLPD)", "url": "https://arxiv.org/abs/2302.02948"},
+{"title": "GitHub: ikostrikov/rlpd", "url": "https://github.com/ikostrikov/rlpd"},
+{"title": "Luo et al. 2024: SERL: A Software Suite for Sample-Efficient Robotic Reinforcement Learning", "url": "https://arxiv.org/abs/2401.16013"}
+],
+"as_of": ""
+}
+]}

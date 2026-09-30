@@ -1,0 +1,113 @@
+{
+  "batch": "robot-03",
+  "terms": [
+    {
+      "key": "robot-03#0",
+      "name_en": "Full-size Humanoid Robot",
+      "aliases": [],
+      "one_liner": "A humanoid robot roughly adult height, about 1.5 to 1.8 meters tall.",
+      "explanation": "A full-size humanoid robot is one whose height and arm span roughly match an adult human's; the industry generally classes robots taller than about 1.5 meters, closer to 1.6–1.8 meters, in this category, as opposed to small-size humanoids at around 1.3 meters. The point of this size is that the robot can directly use environments built for people: it can reach shelves and workbenches, step over curbs, and use human tools, which is why factory handling and warehouse applications tend to favor this size class. The tradeoffs are greater weight, higher cost, greater fall risk, and tougher demands on joint actuator modules, meaning integrated motor-plus-reducer joints, and on balance control. Examples outside China include Tesla's Optimus, Figure, and Boston Dynamics' Atlas; in China there is the Beijing Humanoid Robot Innovation Center's Tiangong and Unitree's H1.",
+      "example": "The Beijing Humanoid Robot Innovation Center's Tiangong Ultra stands 180 cm tall and weighs 52 kg; in April 2025 it completed the Beijing Yizhuang Humanoid Robot Half Marathon in 2 hours, 40 minutes, and 42 seconds.",
+      "related": ["Humanoid Robot", "Small-size Humanoid Robot", "Tiangong", "Tesla Optimus", "Unitree H1", "Bipedal Locomotion"]
+    },
+    {
+      "key": "robot-03#1",
+      "name_en": "Hello Robot Stretch",
+      "aliases": ["Stretch RE1", "Stretch 2", "Stretch 3"],
+      "one_liner": "Hello Robot's lightweight, open mobile manipulator, widely used in home-robotics research.",
+      "explanation": "Stretch is the mobile manipulator made by the US company Hello Robot: a small differential-drive base topped with a vertical lifting column, carrying a horizontally telescoping arm with a wrist and gripper at the end. Rather than aim for a humanoid form, it covers tabletop, floor, and cabinet heights around a home with very few degrees of freedom. The third generation, Stretch 3, released in February 2024, is priced at $24,950, weighs about 24.5 kg, has a footprint of about 33×34 cm, and ships with a DexWrist 3 wrist and a depth camera built into the gripper. Because it is light, inexpensive, and runs open-source software, it has become a common academic platform for home mobile-manipulation research; both OK-Robot and Dobb-E ran their experiments on it.",
+      "example": "OK-Robot used a Stretch to perform open-vocabulary pick-and-place in real homes, such as “bring the object on the table to the specified location.”",
+      "related": ["Mobile Manipulator", "Mobile Manipulation", "OK-Robot", "Dobb·E", "Hello Robot", "Household Tasks"]
+    },
+    {
+      "key": "robot-03#2",
+      "name_en": "Honda ASIMO",
+      "aliases": [],
+      "one_liner": "Honda's bipedal humanoid robot, first released in 2000, an icon of early humanoid robotics.",
+      "explanation": "ASIMO is the bipedal humanoid robot developed by Honda in Japan, with its first generation released in 2000 at about 1.2 meters tall. The 2011 version stood 130 cm tall, weighed 48 kg, had 57 degrees of freedom, could run at about 9 km/h, and was able to climb stairs, carry a tray, and interact simply with people. It relied on model-based control, such as the zero moment point (ZMP), for balance, with most of its motions pre-planned by engineers, making it the high-water mark for humanoid robots from before the deep-learning era. Honda halted development in 2018 and retired ASIMO after its last public appearance in March 2022. It is now commonly used as the historical baseline against which today's learning-based humanoid robots are compared.",
+      "example": "In a 2011 demonstration, ASIMO could hop on one leg, run while turning, and pour and serve a drink to an audience member on command.",
+      "related": ["Humanoid Robot", "Bipedal Locomotion", "Zero Moment Point", "Model-Based Control", "HRP Humanoid Robot Series"]
+    },
+    {
+      "key": "robot-03#3",
+      "name_en": "Industrial Robot",
+      "aliases": [],
+      "one_liner": "A programmable, multi-jointed robot arm used in factory automation.",
+      "explanation": "Under ISO 8373, as adopted by the International Federation of Robotics (IFR), an industrial robot is an automatically controlled, reprogrammable, multipurpose manipulator, programmable in at least three axes, which can be either fixed in place or mounted on a mobile platform, used for industrial automation. Common forms include 6-axis arms, SCARA robots, Delta parallel robots, and Cartesian robots, mainly used for welding, painting, material handling, assembly, and palletizing. Most run fixed trajectories set through teach-and-playback or offline programming, achieving high precision and cycle-time performance, but reprogramming is needed for a new task, which is exactly the gap embodied AI is trying to close with learning-based methods. The major manufacturers, FANUC, ABB, KUKA, and Yaskawa, are known as the “Big Four.”",
+      "example": "Rows of 6-axis robot arms in an auto body shop spot-weld car bodies along taught trajectories.",
+      "related": ["Collaborative Robot", "6-Axis Robot Arm", "Selective Compliance Assembly Robot Arm", "Big Four of Industrial Robotics", "Teach-and-Playback Programming", "International Federation of Robotics"]
+    },
+    {
+      "key": "robot-03#4",
+      "name_en": "Legged Robot",
+      "aliases": [],
+      "one_liner": "A robot that moves on legs instead of wheels, such as a quadruped or bipedal humanoid.",
+      "explanation": "A legged robot moves by alternately placing its legs on the ground, and is classified by leg count as bipedal (humanoid), quadruped (robot dog), hexapod, and so on. Compared with wheeled robots, it only needs discrete footholds, so it can climb stairs, cross obstacles, and cover gravel and grass, making it suited to unstructured environments; the tradeoff is that control is hard, since it must keep its balance in real time. Early methods relied on model-based control, such as MPC or the zero moment point; in recent years the mainstream approach trains a locomotion policy with reinforcement learning in simulation, then transfers it to the real robot. Representative examples include Boston Dynamics' Spot, Unitree's Go2, ANYmal, MIT's Mini Cheetah, and various humanoid robots.",
+      "example": "A Unitree Go2 quadruped walks over stairs and grass using a gait trained with reinforcement learning.",
+      "related": ["Quadruped Robot", "Bipedal Robot", "Legged Locomotion", "RL-based Locomotion Control", "Wheel-legged Robot", "MIT Mini Cheetah"]
+    },
+    {
+      "key": "robot-03#5",
+      "name_en": "MIT Mini Cheetah",
+      "aliases": [],
+      "one_liner": "MIT Biomimetic Robotics Lab's small quadruped, the first to land a backflip, in 2019.",
+      "explanation": "Mini Cheetah is a small quadruped robot built by MIT's Biomimetic Robotics Lab, led by Sangbae Kim: about 20 pounds, roughly 9 kg, with 12 modular motors, giving each leg 2 hip degrees of freedom plus 1 knee joint. In 2019 it became the first quadruped robot to perform a backflip. Its biggest influence has been in actuator design: pairing a high torque-density motor with a low-reduction-ratio planetary gearbox, called quasi-direct drive, lets it absorb impacts while still being backdrivable and able to estimate torque from motor current. This “MIT Cheetah actuator,” along with its accompanying MIT-mode motor command style, was later adopted by many manufacturers, including Unitree. The team also lent multiple units to other labs, making it a common early platform for reinforcement-learning locomotion research.",
+      "example": "The MIT team computed the backflip's motion and per-motor torques offline through trajectory optimization, then had Mini Cheetah execute the backflip on real hardware.",
+      "related": ["Quadruped Robot", "Quasi-Direct Drive", "MIT Mini Cheetah Actuator", "MIT Mode", "Legged Robot", "Unitree Robotics"]
+    },
+    {
+      "key": "robot-03#6",
+      "name_en": "Mobile Manipulator",
+      "aliases": [],
+      "one_liner": "A robot combining a mobile base with a robot arm, able to move and do work with its hands.",
+      "explanation": "A mobile manipulator pairs a mobile base, such as an AGV/AMR or a wheeled chassis, with a robot arm; the term “compound robot” (复合机器人) is common in China's robotics industry, while academic English usually just says “mobile manipulator.” A robot arm alone can only work at a fixed station, and a mobile robot alone can only carry things; combining the two lets a robot travel to different spots in a workshop, warehouse, or home to grasp, load and unload parts, or open doors and drawers. The hard part is that the base and arm must be planned and controlled together, and navigation errors propagate to the end effector. Common academic platforms include Hello Robot Stretch, TIAGo, Fetch, and Mobile ALOHA; many wheeled humanoid robots are, at their core, also this kind of system.",
+      "example": "In a factory, an AMR carrying a collaborative arm on its back drives between several machine tools, automatically loading and unloading parts.",
+      "related": ["Mobile Manipulation", "Mobile Base / Chassis", "Autonomous Mobile Robot", "Wheeled Humanoid Robot", "Hello Robot Stretch", "Mobile ALOHA"]
+    },
+    {
+      "key": "robot-03#7",
+      "name_en": "Service Robot",
+      "aliases": [],
+      "one_liner": "A robot that performs useful tasks for people or equipment, as distinct from an industrial robot.",
+      "explanation": "Under ISO 8373:2021, which the IFR's statistics follow, a service robot is a robot that performs useful tasks for humans or equipment, excluding industrial automation applications, which are classed separately as industrial robots. The IFR further splits the category into professional service robots, covering logistics, cleaning, medical, agricultural, inspection, and food-delivery robots, and personal or domestic service robots, covering vacuum robots, companion robots, and education or entertainment robots. Most operate in environments that are crowded and constantly changing, so they rely more heavily on perception, navigation, and human-robot interaction. The household, guided-tour, and retail scenarios that today's embodied-AI companies target with humanoid and mobile-manipulation robots mostly fall under this category.",
+      "example": "Restaurant food-delivery robots, hospital logistics robots, and household robot vacuums are all service robots.",
+      "related": ["Industrial Robot", "Robot Vacuum Cleaner", "Companion Robot", "Autonomous Mobile Robot", "Human-Robot Interaction", "International Federation of Robotics"]
+    },
+    {
+      "key": "robot-03#8",
+      "name_en": "SO-100 / SO-101 Arm",
+      "aliases": ["SO-100", "SO-101", "SO-ARM100", "SO-ARM101"],
+      "one_liner": "A sub-$300, open-source, 3D-printed robot arm built to pair with Hugging Face's LeRobot.",
+      "explanation": "SO-100 is an open-source desktop robot arm co-designed by TheRobotStudio and Hugging Face, with 3D-printed structural parts; each arm uses 6 Feetech STS3215 serial-bus servos, 5 for joints and 1 for the gripper, and a leader-follower pair forms a teleoperation rig: a person moves the leader arm by hand, and the follower arm copies it and logs the data. SO-101, a 2025 revision, improved cable routing, no longer requires disassembling servo gears to build, and swapped in a different-gear-ratio servo for the leader arm. The official bill of materials lists a full leader-follower pair's parts at about $230. It plugs directly into the LeRobot library for data collection and training policies such as ACT and SmolVLA, making it one of the cheapest ways for a newcomer to get hands-on with imitation learning.",
+      "example": "Using an SO-101 leader-follower pair to collect 50 demonstrations of “put the block in the box,” then training an ACT policy with LeRobot so the follower arm can do it autonomously.",
+      "related": ["LeRobot (Hugging Face)", "Leader-Follower Teleoperation", "Feetech STS3215 Servo", "Action Chunking with Transformers", "SmolVLA", "Desktop Robot Arm"]
+    },
+    {
+      "key": "robot-03#9",
+      "name_en": "Tesla Optimus V3 (Optimus Gen 3)",
+      "aliases": ["Optimus V3", "Optimus Gen 3"],
+      "one_liner": "Tesla's third-generation Optimus, designed for mass production but not yet formally released as of September 2026.",
+      "explanation": "Optimus V3 is the third generation of Tesla's humanoid robot Optimus, officially positioned as the first version designed from the outset for mass production. At Tesla's Q1 2026 earnings call in April, Elon Musk said V3 would be unveiled close to when mass production begins; Tesla is installing a line at its Fremont factory designed for an annual capacity of one million units and is planning a larger line at its Texas factory. As of September 2026, V3 has not formally been shown, and specs such as height, degrees of freedom, and price have not been officially disclosed; figures circulating online are mostly media speculation. The previous generation, Optimus Gen 2 (December 2023), had 11 degrees of freedom in one hand; Tesla showed a new 22-DoF hand in 2024. Interest in V3 centers on whether humanoid robots can genuinely reach million-unit-scale production.",
+      "example": "",
+      "related": ["Tesla Optimus", "Tesla", "Tesla Optimus Hand", "Full-size Humanoid Robot", "Mass Production", "Tesla (Optimus) Supply Chain"]
+    },
+    {
+      "key": "robot-03#10",
+      "name_en": "Tiangong",
+      "aliases": ["Tiangong Ultra"],
+      "one_liner": "A full-size, all-electric humanoid platform from the Beijing Humanoid Robot Innovation Center.",
+      "explanation": "Tiangong is the general-purpose humanoid robot “parent platform” released in April 2024 by the Beijing Humanoid Robot Innovation Center (X-Humanoid), fully electric, with its first version standing 163 cm tall and weighing 43 kg, equipped with 3D vision, an IMU, and a six-axis force sensor, and positioned as an open platform for the industry to build on. The later Tiangong Ultra stands 180 cm tall and weighs 52 kg, and in April 2025 won the Beijing Yizhuang Humanoid Robot Half Marathon in 2 hours, 40 minutes, and 42 seconds. The Innovation Center has also released the Huisi Kaiwu platform and the Pelican-VL and XR-1 models alongside it, with Tiangong serving as their main hardware carrier.",
+      "example": "Tiangong Ultra completed the 21-kilometer 2025 Beijing Yizhuang half marathon in first place.",
+      "related": ["Beijing Humanoid Robot Innovation Center", "Full-size Humanoid Robot", "Huisi Kaiwu", "Pelican-VL", "XR-1", "Humanoid Robot Half Marathon"]
+    },
+    {
+      "key": "robot-03#11",
+      "name_en": "Trossen Robotics WidowX 250",
+      "aliases": ["WidowX", "WidowX 250s", "WX250s"],
+      "one_liner": "Trossen Robotics' low-cost 6-DoF research arm, the platform behind the BridgeData datasets.",
+      "explanation": "The WidowX 250 is a desktop arm in Trossen Robotics' Interbotix X-series, driven by ROBOTIS Dynamixel X-series servos. The 6-DoF version, the 250s, has a reach of about 650 mm and a rated payload of 250 g, is priced far below an industrial arm, and supports ROS. It is common in the robot-learning community: Berkeley's BridgeData V2 dataset was collected on a WidowX 250, and that data is included in Open X-Embodiment, Octo, and OpenVLA; SimplerEnv also has a matching WidowX evaluation scene, and ALOHA's leader arms use the same WidowX. Its drawbacks are a small payload and only middling precision.",
+      "example": "The OpenVLA paper runs its real-robot evaluation on a WidowX 250 in BridgeData-style scenes.",
+      "related": ["BridgeData V2", "Trossen Robotics ViperX 300", "ALOHA", "Trossen Robotics", "ROBOTIS DYNAMIXEL Servo", "SimplerEnv"]
+    }
+  ]
+}

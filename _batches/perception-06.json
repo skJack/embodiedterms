@@ -1,0 +1,422 @@
+{
+ "category": "perception",
+ "batch": 6,
+ "terms": [
+  {
+   "name_zh": "多传感器融合",
+   "name_en": "Multi-Sensor Fusion",
+   "abbr": "",
+   "aliases": [
+    "传感器融合",
+    "Sensor Fusion",
+    "前融合 / 后融合",
+    "数据级 / 特征级 / 决策级融合"
+   ],
+   "tier": 2,
+   "one_liner": "把相机、激光雷达、IMU 等多个传感器的数据合起来，得到更准更稳的估计。",
+   "explanation": "多传感器融合是把相机、激光雷达、IMU（惯性测量单元，测加速度和角速度）、关节编码器、触觉等多个传感器的数据合在一起估计同一件事，使结果的不确定性比单用任何一个都小。按合并发生的阶段，常分为数据级（前融合，直接合并原始数据）、特征级（各自提特征后再合并）和决策级（后融合，各自给出结果再投票或加权）。经典做法是卡尔曼滤波一类的概率估计，现在也常用神经网络直接学怎么融合。它重要是因为每种传感器都有盲区：相机怕暗和反光，IMU 会漂移，激光雷达看不出颜色。机器人状态估计、SLAM、自动驾驶感知都靠它，前提是各传感器已做好标定和时间同步。",
+   "example": "四足机器人估计自身速度：IMU 提供高频的加速度和角速度，关节编码器配合足端触地判断算出腿式里程计，两者用扩展卡尔曼滤波合并，减少单用任一来源时的漂移。",
+   "related": [
+    "多模态感知",
+    "卡尔曼滤波",
+    "扩展卡尔曼滤波",
+    "紧耦合 / 松耦合融合",
+    "视觉惯性里程计",
+    "多传感器时间同步"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Sensor fusion",
+     "url": "https://en.wikipedia.org/wiki/Sensor_fusion"
+    },
+    {
+     "title": "ORB-SLAM3: An Accurate Open-Source Library for Visual, Visual-Inertial and Multi-Map SLAM (arXiv 2007.11898)",
+     "url": "https://arxiv.org/abs/2007.11898"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "多传感器时间同步",
+   "name_en": "Multi-Sensor Time Synchronization (Hardware Trigger / Timestamp Alignment)",
+   "abbr": "",
+   "aliases": [
+    "时间戳对齐",
+    "硬件同步",
+    "硬同步 / 软同步",
+    "Time Synchronization"
+   ],
+   "tier": 2,
+   "one_liner": "让不同传感器的数据按同一时刻对齐，不把不同时间采到的数据拼在一起。",
+   "explanation": "机器人上的相机、深度相机、激光雷达、IMU、关节编码器各有自己的时钟和采样频率，时间同步就是保证一起参与计算的那几份数据确实是同一时刻采到的。做法分两层：一是硬件同步，用触发线让多台设备同时曝光，或用 PTP（IEEE 1588 精确时间协议，局域网内可达亚微秒级）让设备共用一个时钟；二是软件对齐，给每条数据打时间戳，再按时间戳配对或插值，如 ROS message_filters 的精确匹配和近似匹配策略。即使只差几十毫秒，机器人快速运动时也会让点云和图像错位、降低视觉惯性里程计精度，还会让采集的观测-动作对错开，训出的策略动作滞后。它是多传感器融合、标定和数据采集的前提。",
+   "example": "双臂遥操作采集时，几路相机以 30 Hz 出图，关节状态以更高频率上报；保存数据时要按每帧图像的时间戳去找最接近的关节读数，否则动作标签会和画面错开。",
+   "related": [
+    "多传感器融合",
+    "精确时间协议",
+    "相机-IMU联合标定",
+    "观测-动作对",
+    "视觉惯性里程计",
+    "rosbag"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Precision Time Protocol",
+     "url": "https://en.wikipedia.org/wiki/Precision_Time_Protocol"
+    },
+    {
+     "title": "ROS 2 message_filters 文档（ExactTime / ApproximateTime 同步策略）",
+     "url": "https://raw.githubusercontent.com/ros2/message_filters/rolling/doc/index.rst"
+    },
+    {
+     "title": "Orbbec Gemini 335L（硬件触发与多机统一硬件时间戳）",
+     "url": "https://www.orbbec.com/products/stereo-vision-camera/gemini-335l/"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "多视角",
+   "name_en": "Multi-View",
+   "abbr": "",
+   "aliases": [
+    "多视图",
+    "多相机",
+    "多机位"
+   ],
+   "tier": 2,
+   "one_liner": "用多台相机或多个角度同时观察同一个场景。",
+   "explanation": "多视角指从两个及以上的位置观察同一场景，可以是多台相机同时拍，也可以是一台相机边移动边拍。它主要出现在两类地方：一是三维视觉，利用多张不同角度的图做三角化、多视图立体重建或训练 NeRF；二是机器人学习，一台机器人常同时接头部相机、腕部相机（装在手腕上，近距离看夹爪和物体）和固定的第三视角相机，策略把几路画面一起当输入。好处是减少遮挡、补上单张图缺失的深度信息，研究还发现加入腕部视角能提升训练效率和对新场景的泛化；代价是标定、同步和算力开销变大，每路相机的内外参都要记录好。",
+   "example": "DROID 数据集的每台采集站配两台可调位置的 ZED 2 双目相机加一台腕部 ZED Mini，共采了 7.6 万条轨迹，覆盖 1417 个相机视角。",
+   "related": [
+    "腕部相机",
+    "头部相机",
+    "第三视角相机",
+    "多视图立体",
+    "遮挡",
+    "相机外参"
+   ],
+   "sources": [
+    {
+     "title": "DROID: A Large-Scale In-the-Wild Robot Manipulation Dataset",
+     "url": "https://droid-dataset.github.io/"
+    },
+    {
+     "title": "Vision-Based Manipulators Need to Also See from Their Hands (ICLR 2022)",
+     "url": "https://arxiv.org/abs/2203.12677"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "多模态感知",
+   "name_en": "Multimodal Perception",
+   "abbr": "",
+   "aliases": [
+    "多模态传感",
+    "多感官感知"
+   ],
+   "tier": 2,
+   "one_liner": "同时用视觉、触觉、力觉、声音等多种感官信息来理解环境。",
+   "explanation": "多模态感知指机器人不只靠相机，还同时用触觉、力/力矩、声音、本体感知（关节角、电机电流等对自身状态的感知），甚至语言指令来理解场景和任务进展。原因是各模态擅长的东西不同：2022 年的 See, Hear, and Feel 工作总结，视觉能看到全局但常被遮挡，声音能及时反映看不见的关键时刻，触觉提供精确的局部几何。难点在于各模态的频率、维度和噪声差别很大，需要为每种模态设计编码器，再选拼接、注意力等方式融合，数据采集也更麻烦。多项研究显示，在插孔、倒水这类接触丰富的操作中，加入触觉和力觉比只用视觉更稳。",
+   "example": "See, Hear, and Feel（CoRL 2022）让机械臂用相机、接触式麦克风和视触觉传感器完成密集装箱和倒水，三路信号用自注意力融合，效果好于只用一两种模态。",
+   "related": [
+    "多传感器融合",
+    "视触觉融合",
+    "本体感知",
+    "触觉传感器",
+    "接触丰富操作",
+    "视觉-触觉-语言-动作模型"
+   ],
+   "sources": [
+    {
+     "title": "See, Hear, and Feel: Smart Sensory Fusion for Robotic Manipulation (CoRL 2022)",
+     "url": "https://arxiv.org/abs/2212.03858"
+    },
+    {
+     "title": "Making Sense of Vision and Touch: Self-Supervised Learning of Multimodal Representations for Contact-Rich Tasks (ICRA 2019)",
+     "url": "https://arxiv.org/abs/1810.10191"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "神经辐射场",
+   "name_en": "Neural Radiance Fields",
+   "abbr": "NeRF",
+   "aliases": [
+    "NeRF",
+    "辐射场"
+   ],
+   "tier": 2,
+   "one_liner": "用神经网络记住场景里每个点的颜色和密度，能渲染出任意新视角的图像。",
+   "explanation": "神经辐射场由 Mildenhall 等人在 ECCV 2020 提出，用一个多层感知机表示整个场景：输入空间位置 (x, y, z) 和观察方向，输出该点的体密度和颜色，再沿相机光线做体渲染合成图像。训练只需要一组已知相机位姿的照片，因为渲染过程可微，拿渲染图和真实照片比误差就能优化网络。它最初用于新视角合成，后来被用于三维重建和机器人：Dex-NeRF 用它恢复深度相机测不准的透明物体几何来做抓取，LERF、F3RM 把 CLIP 等语义特征嵌进辐射场，支持用语言在三维场景里找物体。缺点是每个场景都要单独优化、渲染较慢，2023 年出现的 3D 高斯泼溅渲染快得多，此后不少工作转向它。",
+   "example": "Dex-NeRF（CoRL 2021）对透明玻璃器皿多角度拍照训练 NeRF，从中渲染出深度再交给 Dex-Net 规划抓取，在 ABB YuMi 上的抓取成功率达到 90% 到 100%。",
+   "related": [
+    "3D高斯泼溅",
+    "新视角合成",
+    "蒸馏特征场",
+    "LERF",
+    "F3RM",
+    "多层感知机"
+   ],
+   "sources": [
+    {
+     "title": "NeRF: Representing Scenes as Neural Radiance Fields for View Synthesis (ECCV 2020)",
+     "url": "https://arxiv.org/abs/2003.08934"
+    },
+    {
+     "title": "Dex-NeRF (CoRL 2021, arXiv 2110.14217)",
+     "url": "https://arxiv.org/abs/2110.14217"
+    },
+    {
+     "title": "LERF: Language Embedded Radiance Fields (ICCV 2023)",
+     "url": "https://www.lerf.io/"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "目标跟踪",
+   "name_en": "Object Tracking",
+   "abbr": "",
+   "aliases": [
+    "多目标跟踪",
+    "MOT",
+    "单目标跟踪",
+    "视觉跟踪",
+    "Video Tracking"
+   ],
+   "tier": 2,
+   "one_liner": "在连续视频帧里持续找到同一个物体，并给它保持同一个编号。",
+   "explanation": "目标跟踪是在视频中逐帧定位一个或多个目标，并判断「这一帧的它就是上一帧的它」。单目标跟踪给定第一帧的框后一路跟下去；多目标跟踪（MOT）要同时跟很多个目标并保持各自的 ID。常见套路是「先检测后关联」：每帧先跑检测器，再用卡尔曼滤波预测目标运动、用匈牙利算法把新检测框和已有轨迹配对，2016 年的 SORT 就是这种做法。难点在遮挡、外观变化、快速运动和相似物体混淆。机器人里用它持续锁定要抓的物体、跟随行人，或在人类视频里追踪手在操作的物体；SAM 2 这类视频分割模型也能以掩码形式做跟踪。",
+   "example": "分拣线上包裹随传送带不断移动，系统每帧检测包裹并用跟踪维持编号，机械臂才能在正确时刻抓到指定的那一件。",
+   "related": [
+    "目标检测",
+    "卡尔曼滤波",
+    "视频目标分割",
+    "任意点跟踪",
+    "具身视觉跟踪（目标跟随）",
+    "位姿跟踪"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Video tracking",
+     "url": "https://en.wikipedia.org/wiki/Video_tracking"
+    },
+    {
+     "title": "Simple Online and Realtime Tracking (SORT, ICIP 2016)",
+     "url": "https://arxiv.org/abs/1602.00763"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "遮挡",
+   "name_en": "Occlusion",
+   "abbr": "",
+   "aliases": [
+    "自遮挡",
+    "Self-occlusion",
+    "相互遮挡"
+   ],
+   "tier": 2,
+   "one_liner": "目标被别的物体或机器人自己挡住，传感器看不全。",
+   "explanation": "遮挡指目标的一部分或全部被其他东西挡住，相机或深度传感器因此看不到。机器人场景里常见三种：物体之间互相挡（杂乱堆放的零件）、机器人自身挡住视线（机械臂伸到物体前面，或灵巧手的手指挡住掌心的物体，常称自遮挡），以及操作过程中手和物体互相挡。遮挡会让检测、分割、位姿估计和深度出现缺失或错误，被挡住的物体也可能从策略的输入里「消失」，导致误判。遮挡出现的位置、大小、比例都不固定，是检测模型离人类水平还有差距的主要原因之一。常见应对是多视角相机、腕部相机、主动移动视角（主动感知）、加入触觉或声音，或让模型对被挡部分做补全和记忆。",
+   "example": "机械臂只靠顶部相机去抓杯子，末端靠近时手臂正好挡住杯子，策略看不到杯子的位置变化；加一台腕部相机就能补上这段画面。",
+   "related": [
+    "多视角",
+    "腕部相机",
+    "主动感知",
+    "点云补全 / 形状补全",
+    "视触觉融合",
+    "目标跟踪"
+   ],
+   "sources": [
+    {
+     "title": "Occlusion Handling in Generic Object Detection: A Review (SAMI 2021)",
+     "url": "https://arxiv.org/abs/2101.08845"
+    },
+    {
+     "title": "See, Hear, and Feel: Smart Sensory Fusion for Robotic Manipulation（视觉易受遮挡）",
+     "url": "https://arxiv.org/abs/2212.03858"
+    },
+    {
+     "title": "Vision-Based Manipulators Need to Also See from Their Hands (ICLR 2022)",
+     "url": "https://arxiv.org/abs/2203.12677"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "占据栅格地图",
+   "name_en": "Occupancy Grid Map",
+   "abbr": "",
+   "aliases": [
+    "栅格地图",
+    "占用栅格",
+    "占据栅格",
+    "Occupancy Grid"
+   ],
+   "tier": 2,
+   "one_liner": "把环境切成小格子，每格记录被障碍物占着的概率。",
+   "explanation": "占据栅格地图由 Moravec 和 Elfes 在 1985 年提出，是移动机器人最常用的地图形式之一。它把平面（或空间）均匀划成格子，每个格子存一个被占据的概率，使用时通常分成空闲、占据、未知三类。激光雷达或深度相机每来一帧，就用二值贝叶斯滤波逐格更新，实现时常用对数几率（log-odds）方便累加。经典算法假设机器人位姿已知，所以常与 SLAM（同步定位与建图）配合。路径规划和避障可以直接在它上面算：ROS 的 nav_msgs/OccupancyGrid 消息就是这种地图，-1 表示未知；三维版本有 OctoMap 这样的八叉树地图，自动驾驶里的占用网络则是用神经网络直接预测三维占据。",
+   "example": "扫地机器人用激光雷达边走边建一张平面栅格图：墙和家具处标为占据，走过的地面标为空闲，还没探到的区域标为未知，再在空闲格子上规划清扫路线。",
+   "related": [
+    "同步定位与建图",
+    "代价地图",
+    "八叉树地图",
+    "占用网络",
+    "路径规划",
+    "激光SLAM"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Occupancy grid mapping",
+     "url": "https://en.wikipedia.org/wiki/Occupancy_grid_mapping"
+    },
+    {
+     "title": "ROS 2 nav_msgs/OccupancyGrid 消息定义",
+     "url": "https://raw.githubusercontent.com/ros2/common_interfaces/rolling/nav_msgs/msg/OccupancyGrid.msg"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "开放词汇检测",
+   "name_en": "Open-Vocabulary Object Detection",
+   "abbr": "OVD",
+   "aliases": [
+    "开放词汇目标检测",
+    "开集检测",
+    "Open-Set Detection",
+    "文本引导检测"
+   ],
+   "tier": 2,
+   "one_liner": "用文字说出要找什么，检测器就能框出来，不限于训练时的固定类别。",
+   "explanation": "传统检测器只认训练时标过框的固定类别（如 COCO 的 80 类）。开放词汇检测让检测器接受任意文字描述，也能框出训练时没有框标注的新类别。这个设定由 Zareian 等人在 CVPR 2021 的论文中明确提出：用少量基础类别的框标注，加上大量图文对学到的视觉-语言对齐，去检测新类别。之后的 OWL-ViT、Grounding DINO、YOLO-World 都走这条路，Grounding DINO 在没用 COCO 训练的情况下零样本拿到 52.5 AP。对机器人很实用：用户说「把蓝色马克杯拿过来」，可以直接拿这句话去框物体。严格说「开集检测」原指把没见过的物体识别为「未知」，但现在常和开放词汇混用。",
+   "example": "Grounded-SAM 流水线：先用 Grounding DINO 按文本「香蕉」框出目标，再把框交给 SAM 得到像素级掩码，机器人据此计算抓取点。",
+   "related": [
+    "开放词汇",
+    "Grounding DINO",
+    "OWL-ViT / OWLv2",
+    "YOLO-World",
+    "Grounded-SAM",
+    "目标检测"
+   ],
+   "sources": [
+    {
+     "title": "Open-Vocabulary Object Detection Using Captions (CVPR 2021)",
+     "url": "https://arxiv.org/abs/2011.10678"
+    },
+    {
+     "title": "Grounding DINO: Marrying DINO with Grounded Pre-Training for Open-Set Object Detection",
+     "url": "https://arxiv.org/abs/2303.05499"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "光流",
+   "name_en": "Optical Flow",
+   "abbr": "",
+   "aliases": [
+    "稠密光流",
+    "稀疏光流"
+   ],
+   "tier": 2,
+   "one_liner": "相邻两帧图像之间，每个像素往哪个方向移动了多少。",
+   "explanation": "光流描述相机和场景相对运动时，图像上亮度图案的表观运动，结果通常是一张和图像同尺寸的二维位移场。经典方法基于「亮度恒定」假设，即同一个点在相邻帧里亮度不变；但一个方程解不出两个未知数（孔径问题），于是 1981 年的 Lucas–Kanade 假设局部小窗口内运动一致，Horn–Schunck 则加入全局平滑约束。深度学习时代的代表是 RAFT（ECCV 2020），用所有像素对之间的相关性体加循环迭代来估计稠密光流。只算部分特征点的叫稀疏光流，逐像素的叫稠密光流。机器人里光流用于视觉里程计、避障和运动分割，也被当作动作的中间表示：有些操作策略先预测物体上各点怎么动，再换算成机器人动作。",
+   "example": "无人机向前飞时，前方物体在画面中向外扩散，越近的物体光流越大，可以据此判断是否快要撞上。",
+   "related": [
+    "RAFT 光流",
+    "场景流",
+    "任意点跟踪",
+    "视觉里程计",
+    "事件相机",
+    "特征匹配"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Optical flow",
+     "url": "https://en.wikipedia.org/wiki/Optical_flow"
+    },
+    {
+     "title": "RAFT: Recurrent All-Pairs Field Transforms for Optical Flow",
+     "url": "https://arxiv.org/abs/2003.12039"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "ORB-SLAM3",
+   "name_en": "ORB-SLAM3",
+   "abbr": "",
+   "aliases": [
+    "ORB_SLAM3",
+    "ORB-SLAM 系列"
+   ],
+   "tier": 2,
+   "one_liner": "萨拉戈萨大学开源的经典视觉 SLAM 系统，支持单目、双目、RGB-D 和 IMU。",
+   "explanation": "ORB-SLAM3 是西班牙萨拉戈萨大学 Tardós、Montiel 团队开源的 SLAM（同步定位与建图）库，论文 2021 年发表于 IEEE T-RO。它用 ORB 特征点（一种计算很快的角点特征）做跟踪和建图，支持单目、双目、RGB-D 相机和针孔、鱼眼镜头，并能与 IMU 紧耦合。多地图系统 Atlas 让它跟丢后开新地图，回到旧区域时再自动合并。论文报告双目加 IMU 在 EuRoC 无人机数据集上平均误差 3.6 厘米。代码以 GPLv3 开源，常被当作视觉 SLAM 的基线和入门教材；它建的是稀疏特征点地图，不能直接拿来避障，在弱纹理、光照剧变场景下也有特征点方法共同的跟丢问题。",
+   "example": "在装有带 IMU 深度相机（如 RealSense D435i）的移动机器人上跑 ORB-SLAM3 的双目加 IMU 或 RGB-D 模式，实时输出相机轨迹，作为导航或数据采集时的位姿来源。",
+   "related": [
+    "同步定位与建图",
+    "视觉SLAM",
+    "视觉惯性里程计",
+    "特征点",
+    "回环检测",
+    "光束法平差"
+   ],
+   "sources": [
+    {
+     "title": "ORB-SLAM3: An Accurate Open-Source Library for Visual, Visual-Inertial and Multi-Map SLAM (IEEE T-RO 2021)",
+     "url": "https://arxiv.org/abs/2007.11898"
+    },
+    {
+     "title": "GitHub: UZ-SLAMLab/ORB_SLAM3",
+     "url": "https://github.com/UZ-SLAMLab/ORB_SLAM3"
+    }
+   ],
+   "as_of": "2021-12"
+  },
+  {
+   "name_zh": "奥比中光 Gemini 330 系列",
+   "name_en": "Orbbec Gemini 330 Series (Gemini 335 / 335L / 336)",
+   "abbr": "",
+   "aliases": [
+    "奥比中光 Gemini 335",
+    "Gemini 335L",
+    "Gemini 336",
+    "Gemini 336L",
+    "Gemini 335Lg"
+   ],
+   "tier": 2,
+   "one_liner": "奥比中光的双目立体深度相机系列，室内外都能用，常装在机器人上。",
+   "explanation": "Gemini 330 系列是奥比中光（Orbbec）2024 年 4 月 30 日发布的双目立体深度相机，首批为 Gemini 335 和 335L，后续又有 336、336L 以及 GMSL2 接口的 335Lg。它采用主动加被动的混合双目：既能靠环境光做被动匹配，也能用红外投射给弱纹理表面补纹理；深度由自研 MX6800 芯片在相机内算好，USB 一根线供电和传数据，内置 IMU，支持硬件触发同步。335 基线 50 毫米，最佳范围 0.26–3 米；335L 基线 95 毫米，最佳范围 0.25–6 米，IP65 防护；336 加了只透红外的滤光片，适合强光和反光场景。2024 年 6 月接入英伟达 Isaac Perceptor，据奥比中光 2026 年 3 月新闻，荣耀首款人形机器人也用了该系列相机。",
+   "example": "奥比中光配合英伟达 Isaac Perceptor 的开发套件用 4 台 Gemini 335L 硬件同步，拼出 AMR（自主移动机器人）的 360 度环视深度感知。",
+   "related": [
+    "深度相机",
+    "主动双目",
+    "双目相机",
+    "RealSense 深度相机（D435i / D405）",
+    "奥比中光",
+    "惯性测量单元"
+   ],
+   "sources": [
+    {
+     "title": "Orbbec Unveils Gemini 330 Series of Stereo Vision 3D Cameras（2024-04-30）",
+     "url": "https://www.orbbec.com/news/orbbec-unveils-gemini-330-series-of-stereo-vision-3d-cameras-powered-by-latest-asic-for-outdoor-and-indoor-performance/"
+    },
+    {
+     "title": "Orbbec Gemini 335 产品页",
+     "url": "https://www.orbbec.com/products/stereo-vision-camera/gemini-335/"
+    },
+    {
+     "title": "Orbbec Gemini 335L 产品页",
+     "url": "https://www.orbbec.com/products/stereo-vision-camera/gemini-335l/"
+    }
+   ],
+   "as_of": "2026-03"
+  }
+ ]
+}

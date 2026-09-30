@@ -1,0 +1,429 @@
+{
+  "category": "perception",
+  "batch": 17,
+  "terms": [
+    {
+      "name_zh": "不变扩展卡尔曼滤波",
+      "name_en": "Invariant Extended Kalman Filter",
+      "abbr": "InEKF",
+      "aliases": [
+        "IEKF",
+        "不变 EKF",
+        "接触辅助 InEKF",
+        "Contact-aided InEKF"
+      ],
+      "tier": 3,
+      "one_liner": "在李群上定义误差的扩展卡尔曼滤波，收敛更稳，常用于足式机器人状态估计。",
+      "explanation": "不变扩展卡尔曼滤波由法国学者 Barrau 和 Bonnabel 在 2014 年前后系统提出，是扩展卡尔曼滤波（EKF）的一种变体。普通 EKF 要在当前估计值处做线性化，估计一旦偏得远，线性化就不准，可能发散。InEKF 把姿态、速度、位置等状态放在李群（描述旋转和平移的数学结构）上，并按群运算定义误差；对一大类系统，误差的演化不再依赖当前估计值，因此收敛范围更大、更稳。密歇根大学 Hartley、Grizzle 等人 2019 年的论文把它用于融合 IMU 与腿部运动学和触地信息，在 Cassie 系列双足机器人上表现优于基于四元数的 EKF，并开源了 C++ 实现。",
+      "example": "密歇根大学开源的 invariant-ekf 库（C++，依赖 Eigen，BSD-3 许可）以 IMU 为运动模型，接入关节运动学和触地测量，估计机身三维位姿、速度和 IMU 零偏，可用于双足或四足机器人。",
+      "related": [
+        "扩展卡尔曼滤波",
+        "误差状态卡尔曼滤波",
+        "李群",
+        "腿式里程计",
+        "状态估计",
+        "惯性测量单元"
+      ],
+      "sources": [
+        {
+          "title": "Contact-Aided Invariant Extended Kalman Filtering for Robot State Estimation (Hartley et al., arXiv 1904.09251)",
+          "url": "https://arxiv.org/abs/1904.09251"
+        },
+        {
+          "title": "The Invariant Extended Kalman Filter as a Stable Observer (Barrau & Bonnabel, arXiv 1410.1465)",
+          "url": "https://arxiv.org/abs/1410.1465"
+        },
+        {
+          "title": "GitHub: RossHartley/invariant-ekf",
+          "url": "https://github.com/RossHartley/invariant-ekf"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "迭代最近点",
+      "name_en": "Iterative Closest Point",
+      "abbr": "ICP",
+      "aliases": [
+        "ICP 配准",
+        "ICP 算法",
+        "点到点 ICP",
+        "点到面 ICP"
+      ],
+      "tier": 3,
+      "one_liner": "反复找最近点对、求旋转和平移，把两片点云对齐的经典配准算法。",
+      "explanation": "迭代最近点是点云配准（把两片点云对齐到同一坐标系）的经典算法，由 Chen 与 Medioni（1991）和 Besl 与 McKay（1992）分别独立提出。它循环做四步：给源点云每个点在目标点云里找最近点作为对应；求一组让对应点距离平方和最小的旋转和平移；把源点云按它变换；重复直到误差不再下降。常用变体有点到点和利用法向量的点到面，后者通常收敛更快。ICP 只做局部精对齐，需要大致正确的初始位姿，否则容易陷入局部最优，所以常先做全局粗配准。它广泛用于激光里程计、多次扫描拼接和物体位姿精修，PCL、Open3D 都有现成实现。",
+      "example": "用 Open3D 精修物体位姿：先用 FPFH 特征加 RANSAC 做全局粗配准，把结果作为初值交给点到面 ICP，输出 4×4 变换矩阵，以及衡量重叠程度的 fitness 和对应点误差 inlier_rmse。",
+      "related": [
+        "点云配准",
+        "点云",
+        "FPFH 点云特征",
+        "NDT 配准（正态分布变换）",
+        "6D位姿估计",
+        "LOAM 系列激光里程计"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Iterative closest point",
+          "url": "https://en.wikipedia.org/wiki/Iterative_closest_point"
+        },
+        {
+          "title": "Open3D Tutorial: ICP registration",
+          "url": "https://www.open3d.org/docs/release/tutorial/pipelines/icp_registration.html"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "LERF",
+      "name_en": "Language Embedded Radiance Fields",
+      "abbr": "LERF",
+      "aliases": [
+        "语言嵌入辐射场",
+        "LERF-TOGO（抓取扩展）"
+      ],
+      "tier": 3,
+      "one_liner": "把 CLIP 语言特征嵌进 NeRF，能用自然语言在三维场景里找东西。",
+      "explanation": "LERF 是 UC Berkeley 的 Justin Kerr、Chung Min Kim、Angjoo Kanazawa 等人提出的方法，发表于 ICCV 2023（口头报告）。它在神经辐射场（NeRF，用网络表示场景各点颜色和密度）之外，再学一个多尺度的语言场：空间中的点在不同尺度上对应一个 CLIP 向量，训练时用多视角图像金字塔上提取的 CLIP 特征监督，并用 DINO 特征做正则，让物体边界更清楚。建好后输入任意文字，就能在三维空间里渲染出相关度热图，不需要检测框、分割掩码或微调模型。它是把视觉语言模型的开放词汇能力搬进三维场景的早期代表，代码集成在 Nerfstudio 中。",
+      "example": "LERF-TOGO（2023）先用 LERF 在场景里定位「杯子的把手」这类物体部位，再给现成抓取规划器的候选抓取排序；在 31 个真实物体上，选对部位的比例为 81%，抓取成功率为 69%。",
+      "related": [
+        "神经辐射场",
+        "CLIP",
+        "蒸馏特征场",
+        "F3RM",
+        "开放词汇",
+        "3D视觉定位"
+      ],
+      "sources": [
+        {
+          "title": "LERF: Language Embedded Radiance Fields (ICCV 2023 项目主页)",
+          "url": "https://www.lerf.io/"
+        },
+        {
+          "title": "Language Embedded Radiance Fields for Zero-Shot Task-Oriented Grasping (LERF-TOGO, arXiv 2309.07970)",
+          "url": "https://arxiv.org/abs/2309.07970"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "激光三角测量（线激光轮廓扫描）",
+      "name_en": "Laser Triangulation / Line-Laser Profiler",
+      "abbr": "",
+      "aliases": [
+        "三角测距",
+        "线激光轮廓仪",
+        "激光轮廓扫描仪",
+        "线激光传感器",
+        "Laser Profiler"
+      ],
+      "tier": 3,
+      "one_liner": "激光打点或打线，相机从侧面看光斑位置，按三角几何算出距离和轮廓。",
+      "explanation": "激光三角测量是一种主动光学测距方法：激光器向物体投一个点或一条线，与激光器隔开一段已知距离的相机从另一个角度拍到光斑，激光器、相机和光斑构成三角形，由光斑在图像中的位置就能算出距离。把点换成一条线就是线激光轮廓扫描，一次得到整条截面轮廓；物体在传送带上移动，或传感器随机械臂扫过，就能拼成三维点云。它精度高，可达数十微米量级，但量程一般只有几米以内，且怕遮挡和高反光表面。工业上用于尺寸测量、缺陷检测和焊缝跟踪，是机器视觉和 3D 视觉引导的常见方案；结构光相机也基于同样的三角原理。",
+      "example": "焊接机器人在焊枪前装一台线激光轮廓扫描仪（如 Micro-Epsilon scanCONTROL 8x00，每条轮廓 4224 个点、轮廓频率 10 kHz），实时测出焊缝截面位置，引导机械臂沿焊缝修正轨迹。",
+      "related": [
+        "结构光",
+        "三角化",
+        "机器视觉（工业视觉）",
+        "3D 视觉引导",
+        "点云",
+        "飞行时间法"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: 3D scanning（Triangulation 一节）",
+          "url": "https://en.wikipedia.org/wiki/3D_scanning"
+        },
+        {
+          "title": "KEYENCE LJ-X8000 2D/3D Laser Profiler",
+          "url": "https://www.keyence.com/products/measure/laser-2d/lj-x8000/"
+        },
+        {
+          "title": "Micro-Epsilon scanCONTROL Laser Profile Scanners",
+          "url": "https://www.micro-epsilon.com/2d-3d-measurement/laser-profile-scanners"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "学习型状态估计器",
+      "name_en": "Learned State Estimator (Concurrent Estimator Network)",
+      "abbr": "",
+      "aliases": [
+        "状态估计网络",
+        "估计器网络",
+        "Estimator Network",
+        "策略与估计器联合训练"
+      ],
+      "tier": 3,
+      "one_liner": "用神经网络从关节和 IMU 数据估出机身速度等量，常与运控策略一起训练。",
+      "explanation": "学习型状态估计器指用神经网络代替或补充卡尔曼滤波，从本体感知数据（关节角、关节速度、IMU 读数的历史）直接回归难以直接测到的状态。代表工作是韩国 KAIST Hwangbo 团队 2022 年发表于 RA-L 的论文：在仿真里同时训练控制策略和估计网络，策略用 PPO 强化学习，估计器用仿真真值做监督学习，估出机身线速度、足端高度和触地概率，再作为策略的输入。这样不需要预设步态，也不需要足底接触传感器，估计器在训练中见过大量随机化的打滑、崎岖场景。论文中四足机器人平地最高速度 3.75 m/s，在摩擦系数 0.22 的湿滑面上达到 3.54 m/s。后续不少足式强化学习运控工作沿用了类似的估计网络。",
+      "example": "Ji 等人的系统在真机上：估计网络先由本体感知历史估出机身线速度、足端高度和触地概率，策略网络再据此输出期望关节位置，在山坡、湿滑板和颠簸路面上完成了高速行走。",
+      "related": [
+        "状态估计",
+        "强化学习运控",
+        "特权信息",
+        "腿式里程计",
+        "DreamWaQ",
+        "HIM（混合内部模型）"
+      ],
+      "sources": [
+        {
+          "title": "Concurrent Training of a Control Policy and a State Estimator for Dynamic and Robust Legged Locomotion (Ji et al., RA-L 2022, arXiv 2202.05481)",
+          "url": "https://arxiv.org/abs/2202.05481"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "腿式里程计",
+      "name_en": "Leg Odometry (Proprioceptive Odometry)",
+      "abbr": "",
+      "aliases": [
+        "腿足里程计",
+        "本体感知里程计",
+        "运动学里程计",
+        "Kinematic Odometry"
+      ],
+      "tier": 3,
+      "one_liner": "靠关节编码器、IMU 和触地判断，推算足式机器人走了多远、朝哪走。",
+      "explanation": "腿式里程计是足式机器人只用自身传感器（本体感知）估计机身位置和速度的方法。基本思路：支撑腿的脚踩在地上不动，用关节编码器读数和正运动学算出脚相对机身的位置，就能反推机身怎么移动；再与 IMU 的加速度和角速度融合，通常用卡尔曼滤波一类方法。ETH 的 Bloesch 等人在 RSS 2012 提出把落脚点位置也放进扩展卡尔曼滤波状态里，不需要对地形做假设，并在四足机器人上验证；后来的不变扩展卡尔曼滤波在 Cassie 双足上收敛更稳。它不受光照和纹理影响、频率高，是运动控制的基础输入；但脚打滑或触地判断出错会引入误差，长时间会漂移，常结合视觉或激光里程计修正。",
+      "example": "MIT Cheetah 3 和 Mini Cheetah 开源代码里的 LinearKFPositionVelocityEstimator 用线性卡尔曼滤波估计机身位置和速度，以 IMU 做预测，以腿部运动学算出的足端位置和速度做观测。",
+      "related": [
+        "状态估计",
+        "本体感知",
+        "接触估计",
+        "扩展卡尔曼滤波",
+        "不变扩展卡尔曼滤波",
+        "轮式里程计"
+      ],
+      "sources": [
+        {
+          "title": "State Estimation for Legged Robots - Consistent Fusion of Leg Kinematics and IMU (Bloesch et al., RSS 2012)",
+          "url": "https://www.roboticsproceedings.org/rss08/p03.html"
+        },
+        {
+          "title": "Contact-Aided Invariant Extended Kalman Filtering for Robot State Estimation (arXiv 1904.09251)",
+          "url": "https://arxiv.org/abs/1904.09251"
+        },
+        {
+          "title": "MIT Cheetah-Software: PositionVelocityEstimator.h",
+          "url": "https://github.com/mit-biomimetics/Cheetah-Software/blob/master/common/include/Controllers/PositionVelocityEstimator.h"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "激光雷达线数",
+      "name_en": "LiDAR Channels (Beams)",
+      "abbr": "",
+      "aliases": [
+        "线束",
+        "16 线 / 32 线 / 128 线",
+        "通道数",
+        "Beams / Lines",
+        "等效线数"
+      ],
+      "tier": 3,
+      "one_liner": "多线激光雷达竖直方向上激光通道的数量，决定点云上下方向的疏密。",
+      "explanation": "线数（channels）指多线激光雷达在竖直方向排布的激光收发通道数。传统机械旋转雷达把多路激光按不同俯仰角排成一列，整体水平旋转，每一路扫出一圈「扫描线」，所以 16 线雷达一帧里就是 16 圈环。线数越多，竖直分辨率越高，远处物体被打中的点越多，但价格、数据量和算力需求也越高。Velodyne 2007 年前后推出的 HDL-64E 旋转 64 路激光，每秒约一百万个点；Ouster OS1 最高 128 线、竖直视场 45°。固态或非重复扫描雷达没有固定的环，厂商常用「等效线数」描述点云密度，如览沃 Mid-360 标称 40 线点云密度。",
+      "example": "禾赛 JT128 是面向机器人的 128 线激光雷达：水平 360°、竖直 189° 视场，竖直角分辨率 0.74°，单回波每秒约 115 万点，重 265 克。",
+      "related": [
+        "激光雷达",
+        "固态激光雷达",
+        "视场角",
+        "点云",
+        "禾赛 JT128",
+        "览沃 Mid-360"
+      ],
+      "sources": [
+        {
+          "title": "Ouster OS1 Lidar Sensor",
+          "url": "https://ouster.com/products/hardware/os1-lidar-sensor"
+        },
+        {
+          "title": "Hesai JT128 产品页",
+          "url": "https://www.hesaitech.com/product/jt128/"
+        },
+        {
+          "title": "Wikipedia: Velodyne Lidar",
+          "url": "https://en.wikipedia.org/wiki/Velodyne_Lidar"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "激光惯性里程计",
+      "name_en": "LiDAR-Inertial Odometry",
+      "abbr": "LIO",
+      "aliases": [
+        "激光雷达-IMU 融合里程计",
+        "激光-惯性里程计",
+        "LiDAR-IMU 里程计"
+      ],
+      "tier": 3,
+      "one_liner": "把激光雷达点云和 IMU 读数融合，实时估计机器人位姿并建点云地图。",
+      "explanation": "激光惯性里程计把激光雷达和 IMU（惯性测量单元）融合起来估计自身运动，是激光 SLAM 的核心部分。两者互补：一帧点云要扫描一段时间（常见 10 Hz 即 0.1 秒），机器人在此期间的运动会让点云变形，高频的 IMU 能推算这段运动把点云校正回来（去畸变），并给配准提供初值；点云与地图配准又能纠正 IMU 积分的漂移。按融合方式分松耦合和紧耦合，目前主流是紧耦合。代表系统有 Tixiao Shan 等人 IROS 2020 的 LIO-SAM（因子图优化）和港大 MARS 实验室的 FAST-LIO / FAST-LIO2（迭代卡尔曼滤波），后者不提特征、直接用原始点配准，最高可达 100 Hz，也适配固态雷达。",
+      "example": "手持一台带 IMU 的激光雷达在楼里走一圈，FAST-LIO2 能实时输出轨迹和点云地图；论文测试中，传感器以最高约 1000°/s 的角速度快速转动时，位姿估计仍保持可靠。",
+      "related": [
+        "激光SLAM",
+        "FAST-LIO / FAST-LIO2",
+        "LIO-SAM",
+        "IMU 预积分",
+        "紧耦合 / 松耦合融合",
+        "视觉惯性里程计"
+      ],
+      "sources": [
+        {
+          "title": "FAST-LIO2: Fast Direct LiDAR-inertial Odometry (arXiv 2107.06829)",
+          "url": "https://arxiv.org/abs/2107.06829"
+        },
+        {
+          "title": "LIO-SAM: Tightly-coupled Lidar Inertial Odometry via Smoothing and Mapping (arXiv 2007.00258)",
+          "url": "https://arxiv.org/abs/2007.00258"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "蚂蚁灵波 LingBot-Depth",
+      "name_en": "LingBot-Depth (Masked Depth Modeling for Spatial Perception)",
+      "abbr": "",
+      "aliases": [
+        "LingBot-Depth",
+        "Masked Depth Modeling",
+        "掩码深度建模"
+      ],
+      "tier": 3,
+      "one_liner": "蚂蚁灵波开源的深度补全模型，用彩色图修补深度相机的空洞和噪声。",
+      "explanation": "LingBot-Depth 是蚂蚁集团旗下具身智能公司蚂蚁灵波（Robbyant）2026 年 1 月发布并开源的深度模型，论文为《Masked Depth Modeling for Spatial Perception》，GitHub 说明已被 ECCV 2026 接收。RGB-D 深度相机在透明、反光表面上常测不出深度，留下空洞和噪点。它把这些缺失区域当作天然的「掩码」：输入彩色图、原始深度和相机内参，用 ViT-Large 骨干融合两种模态，输出补全后的度量深度图和相机坐标系点云。训练用约 300 万对 RGB-D 数据（约 200 万真实、100 万合成）。官方称其深度补全误差比现有最好方法降低 40%–50%。代码、权重和数据集均已开源。",
+      "example": "官方抓取实验中，用 LingBot-Depth 修补后的深度去抓难测物体：透明收纳盒成功率从 0% 提到 50%，玻璃杯从 60% 提到 80%，钢杯从 65% 提到 85%。",
+      "related": [
+        "深度补全",
+        "深度相机",
+        "透明/反光物体感知",
+        "深度空洞",
+        "掩码自编码器",
+        "蚂蚁灵波"
+      ],
+      "sources": [
+        {
+          "title": "Masked Depth Modeling for Spatial Perception (arXiv 2601.17895)",
+          "url": "https://arxiv.org/abs/2601.17895"
+        },
+        {
+          "title": "GitHub: Robbyant/lingbot-depth",
+          "url": "https://github.com/Robbyant/lingbot-depth"
+        },
+        {
+          "title": "Robbyant 官网：LingBot-Depth",
+          "url": "https://technology.robbyant.com/lingbot-depth"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "LIO-SAM",
+      "name_en": "LIO-SAM (LiDAR Inertial Odometry via Smoothing and Mapping)",
+      "abbr": "",
+      "aliases": [
+        "LIO_SAM"
+      ],
+      "tier": 3,
+      "one_liner": "基于因子图优化的紧耦合激光惯性里程计与建图开源系统。",
+      "explanation": "LIO-SAM 是 Tixiao Shan、Brendan Englot、Daniela Rus 等人发表于 IROS 2020 的激光惯性 SLAM 系统，Shan 和 Englot 此前做过 LeGO-LOAM。它把定位建图写成因子图（把各种测量当作约束、联合优化一串位姿的图模型），可加入四类因子：IMU 预积分、激光里程计、GPS 和回环。IMU 预积分既给点云去畸变，也给配准提供初值。为保证实时，它只挑选关键帧，并把新关键帧与附近固定数量的历史关键帧组成的局部地图配准，而不是和全局地图匹配。后端基于 GTSAM 库。代码以 BSD-3 许可开源，有 ROS 1 版本和 ROS 2 分支。",
+      "example": "README 提示：LIO-SAM 只适用于能给出横滚、俯仰、偏航角的 9 轴 IMU，建议频率至少 200 Hz；用 Ouster 雷达时其内置 6 轴 IMU 不够，需要另配外置 9 轴 IMU。",
+      "related": [
+        "激光惯性里程计",
+        "因子图优化",
+        "IMU 预积分",
+        "GTSAM",
+        "回环检测",
+        "LOAM 系列激光里程计"
+      ],
+      "sources": [
+        {
+          "title": "LIO-SAM: Tightly-coupled Lidar Inertial Odometry via Smoothing and Mapping (IROS 2020, arXiv 2007.00258)",
+          "url": "https://arxiv.org/abs/2007.00258"
+        },
+        {
+          "title": "GitHub: TixiaoShan/LIO-SAM",
+          "url": "https://github.com/TixiaoShan/LIO-SAM"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "LOAM 系列激光里程计",
+      "name_en": "LOAM (LiDAR Odometry and Mapping) / LeGO-LOAM",
+      "abbr": "",
+      "aliases": [
+        "LOAM",
+        "LeGO-LOAM",
+        "A-LOAM",
+        "激光里程计与建图"
+      ],
+      "tier": 3,
+      "one_liner": "把激光 SLAM 拆成高频里程计和低频建图的经典方法，及其轻量化变体。",
+      "explanation": "LOAM 是卡内基梅隆大学 Ji Zhang 和 Sanjiv Singh 在 RSS 2014 提出的激光里程计与建图方法。核心是拆成两个频率相差约一个数量级的部分：里程计高频、粗略地估计雷达运动，建图低频地把点云精细配准进地图。它从每帧点云中按局部曲率挑出边缘点和平面点作为特征，只用这些点匹配，计算量小；不需要 IMU 也能做到低漂移，在 KITTI 里程计基准上精度接近离线批处理方法。2018 年 Tixiao Shan 和 Brendan Englot 在 IROS 发表的 LeGO-LOAM 面向地面车辆做了轻量化：先分割出地面点再提特征，再分两步求 6 自由度位姿，并加入基于 ICP 的回环。之后的 LIO-SAM 又紧耦合了 IMU。",
+      "example": "LeGO-LOAM 的原始配置面向 Clearpath Jackal 小车：一个水平安装的 Velodyne VLP-16 雷达加可选 IMU，实时输出 6 自由度位姿；README 也提醒，里程计漂移太大时它简单的 ICP 回环常会失败。",
+      "related": [
+        "激光SLAM",
+        "LIO-SAM",
+        "激光惯性里程计",
+        "迭代最近点",
+        "回环检测",
+        "FAST-LIO / FAST-LIO2"
+      ],
+      "sources": [
+        {
+          "title": "LOAM: Lidar Odometry and Mapping in Real-time (Zhang & Singh, RSS 2014)",
+          "url": "https://www.roboticsproceedings.org/rss10/p07.html"
+        },
+        {
+          "title": "GitHub: RobustFieldAutonomyLab/LeGO-LOAM",
+          "url": "https://github.com/RobustFieldAutonomyLab/LeGO-LOAM"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "回环检测",
+      "name_en": "Loop Closure Detection",
+      "abbr": "",
+      "aliases": [
+        "闭环检测",
+        "Loop Closure",
+        "回环",
+        "地点识别"
+      ],
+      "tier": 3,
+      "one_liner": "让机器人认出自己回到了到过的地方，用来消除 SLAM 的累积漂移。",
+      "explanation": "回环检测是 SLAM（同步定位与建图）中的一个环节：判断机器人当前看到的场景是不是以前到过的地方。里程计每一步都有小误差，走得越远累积漂移越大，绕一圈回到起点时地图会对不上。一旦确认回到了老地方，就在两次位姿之间加一条约束，交给后端的位姿图或因子图优化，把整条轨迹和地图拉回一致。视觉 SLAM 常用词袋模型比较图像特征，如 ORB-SLAM 系列所用的 DBoW2；激光 SLAM 常用 Scan Context 这类点云全局描述子找候选，再用 ICP 精确对齐。误检代价很大，一次错误回环可能让整张地图扭曲，所以通常还要做几何一致性校验。",
+      "example": "DBoW2 把图像的 ORB 或 BRIEF 特征转成词袋向量；据其 README，处理 BRIEF 特征每张图约 3 毫秒，可在数万张图的数据库里检索可能的回环候选。",
+      "related": [
+        "同步定位与建图",
+        "视觉位置识别",
+        "重定位",
+        "因子图优化",
+        "迭代最近点",
+        "SLAM 前端 / 后端"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Simultaneous localization and mapping（Loop closure 一节）",
+          "url": "https://en.wikipedia.org/wiki/Simultaneous_localization_and_mapping"
+        },
+        {
+          "title": "GitHub: dorian3d/DBoW2",
+          "url": "https://github.com/dorian3d/DBoW2"
+        },
+        {
+          "title": "GitHub: gisbi-kim/scancontext (Scan Context, IROS 2018)",
+          "url": "https://github.com/gisbi-kim/scancontext"
+        }
+      ],
+      "as_of": ""
+    }
+  ]
+}

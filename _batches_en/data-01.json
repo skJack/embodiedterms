@@ -1,0 +1,232 @@
+{
+ "batch": "data-01",
+ "terms": [
+  {
+   "key": "data-01#0",
+   "name_en": "Data Flywheel",
+   "aliases": [
+    "Data Closed Loop",
+    "Data Engine"
+   ],
+   "one_liner": "A self-reinforcing loop: deployment produces data, the data improves the model, and the better model gets deployed even more widely.",
+   "explanation": "A data flywheel is a self-reinforcing loop: a model is deployed, generates new data through real use — successes, failures, human corrections — and that data, once filtered and labeled, is used to improve the model. A better model can then take on more tasks and reach more deployments, which brings back still more data. NVIDIA defines it as a self-improving loop that keeps refining a model using data collected from its own interactions. The self-driving industry adopted this kind of approach early — Tesla calls its version the data engine. Robot data is expensive to collect, so companies generally want real-world deployment to help spread out that cost; but the flywheel can only start turning once a robot is already useful enough to be deployed in the real world.",
+   "example": "Physical Intelligence's π*0.6 uses a method called RECAP, which feeds a robot's own autonomous-execution data — from folding laundry, brewing espresso on a professional machine, and assembling boxes in real households — back into training, alongside expert teleoperation corrections. The paper reports throughput on the hardest tasks more than doubling, with the failure rate roughly cut in half.",
+   "related": [
+    "Deployment Data Backflow",
+    "Human Intervention Data",
+    "RL with Experience and Corrections via Advantage-conditioned Policies",
+    "Self-improvement",
+    "Human-in-the-Loop",
+    "Fleet Learning (Learning While Deploying)"
+   ]
+  },
+  {
+   "key": "data-01#1",
+   "name_en": "Data Glove",
+   "aliases": [
+    "Wired Glove",
+    "CyberGlove"
+   ],
+   "one_liner": "A wearable sensing glove that tracks each finger's bend and the hand's pose in real time.",
+   "explanation": "A data glove is a wearable input device that measures each finger joint's angle using bend sensors, an inertial measurement unit (IMU — a chip that senses angular velocity and acceleration), or electromagnetic sensing, usually paired with a tracker to also capture the whole hand's pose in space. It was originally used mainly for human-computer interaction, virtual reality, and animation; the 1977 Sayre Glove is considered the first one. In embodied AI it has two main uses: teleoperating a dexterous hand by mapping a human hand's motion onto the robot hand in real time, and collecting human hand-manipulation data directly, without any robot present, which is then converted through motion retargeting — translating human motion into robot joint commands — for training. Versions with force feedback can also relay the sensation of contact back to the operator.",
+   "example": "MANUS markets its Metagloves Pro for robot-training data collection and teleoperation. The DexCap system pairs an electromagnetic motion-capture glove with a SLAM camera — one that can compute its own position while moving — to track the wrist, giving a portable way to record human manipulation for dexterous hands to learn from through imitation learning.",
+   "related": [
+    "Motion Capture",
+    "Haptic Glove (Force-Feedback Glove)",
+    "Tactile Glove",
+    "Teleoperation",
+    "Motion Retargeting",
+    "Dexterous Hand"
+   ]
+  },
+  {
+   "key": "data-01#2",
+   "name_en": "Demonstration Data",
+   "aliases": [
+    "Demonstrations",
+    "Expert Demonstration",
+    "Demo Data"
+   ],
+   "one_liner": "The recorded observations and actions from a human performing a task, used as raw material for robot imitation learning.",
+   "explanation": "Demonstration data is the raw material of imitation learning: a human performs a task once, through teleoperation, kinesthetic teaching (physically guiding the robot's arm), or a handheld capture device, and the system records, at a fixed rate, each frame's observation — camera images, joint angles, and other proprioceptive state — together with the matching action. One complete run from start to finish is stored as a trajectory, usually called an episode in a dataset; an episode recorded while the robot executes on its own does not count as a demonstration. A policy network learns exactly this mapping: given this observation, do this action. Quality drives results directly — whether the motion is consistent, the camera stays fixed, and the object stays in view all matter. A single task can reach a usable policy from a few dozen demonstrations, while general-purpose VLA (vision-language-action) models need pretraining on thousands of hours of demonstrations across many tasks and scenes.",
+   "example": "In the ALOHA paper, most bimanual tasks used just 50 demonstrations (roughly 10 to 20 minutes of data per task); trained with the ACT algorithm, the task of inserting a battery into a remote control reached a 96% success rate. The LeRobot tutorials recommend recording at least 50 demonstrations for a beginner grasping task.",
+   "related": [
+    "Imitation Learning",
+    "Behavior Cloning",
+    "Teleoperation",
+    "Observation-Action Pair",
+    "Episode",
+    "Real-Robot Data"
+   ]
+  },
+  {
+   "key": "data-01#3",
+   "name_en": "Egocentric Video",
+   "aliases": [
+    "Ego",
+    "First-person Video",
+    "Egocentric View"
+   ],
+   "one_liner": "Video filmed from a head- or glasses-mounted camera, showing the wearer's own point of view with the hands in frame.",
+   "explanation": "Egocentric video is filmed by a camera worn on the head or on a pair of glasses, so the frame looks like what the wearer's own eyes would see, with the hands and whatever they're handling usually near the center — the counterpart to third-person (exocentric) video. It's useful for robotics because the viewpoint is close to a robot's head-mounted camera and shows hand-manipulation detail clearly. Notable datasets include Ego4D (released 2022, led by Meta with 13 universities, covering more than 3,670 hours of daily activity) and Apple's EgoDex, captured with the Vision Pro and annotated with 3D hand-joint positions (829 hours). This kind of video carries no robot action labels, so it first has to be converted — through hand-pose estimation, or through latent-action methods that infer an abstract action from a pair of consecutive frames — before it can be used to train a policy.",
+   "example": "EgoDex records 194 kinds of tabletop manipulation tasks with an Apple Vision Pro, saving the 3D position of every finger joint at the same time, so the recording can be used directly as a hand-motion trajectory.",
+   "related": [
+    "Exocentric Video",
+    "Human Video Data",
+    "Ego4D",
+    "EgoDex",
+    "Project Aria Glasses",
+    "Hand Pose Estimation"
+   ]
+  },
+  {
+   "key": "data-01#4",
+   "name_en": "Embodied AI Training Ground (Robot Data Collection Center)",
+   "aliases": [
+    "Data Factory",
+    "Data Collection Factory",
+    "Robot Training Ground"
+   ],
+   "one_liner": "A facility built to replicate real-world settings, where large numbers of robots are teleoperated to mass-produce training data.",
+   "explanation": "An embodied AI training ground — also called a data factory or data collection center — is a term common in China's robotics industry for a site that recreates real environments such as homes, supermarkets, factories, and restaurants at 1:1 scale. Data collectors teleoperate many robots there, running through tasks repeatedly to mass-produce real-robot data; the same site also serves as a place to test and evaluate models. It exists because robot data can't be scraped from the internet — it has to be collected one trajectory at a time — so standardizing equipment, scenes, collection procedures (SOPs), and quality checks is what makes volume and quality possible at all. AgiBot built roughly 4,000 square meters of collection space for AgiBot World, using 100 real robots to gather more than a million trajectories. Sites like this have been opening across China since 2025: that January, the state-backed National and Local Co-built Humanoid Robot Innovation Center opened a heterogeneous humanoid training ground in Shanghai — hosting robots from multiple vendors and models — with room in its first phase for over 100 humanoid robots to train at once.",
+   "example": "AgiBot World's collection site covers five categories — home, retail, industrial, dining, and office — spanning more than 100 real-world scenes in total, of which the industrial and retail scenes are replicated 1:1; every piece of data carries multi-view camera footage, depth, camera calibration, and sub-step language annotations.",
+   "related": [
+    "Real-Robot Data",
+    "Data Collector (Teleoperator)",
+    "Data Collection Standard Operating Procedure",
+    "AgiBot World",
+    "Teleoperation",
+    "Data Quality Inspection"
+   ]
+  },
+  {
+   "key": "data-01#5",
+   "name_en": "Human Video Data",
+   "aliases": [
+    "Human Video"
+   ],
+   "one_liner": "Video of people doing everyday tasks, collectable without any robot, used to teach robots to understand and copy manipulation.",
+   "explanation": "Human video data means video recording people performing all kinds of manipulation, including egocentric video, third-person (exocentric) video, and instructional videos pulled from the internet. Its biggest advantage is volume, low cost, and scene diversity, since collecting it doesn't depend on an expensive robot. The difficulty is that the video carries no action labels a robot can directly execute, and a human hand differs structurally from a robot hand or gripper — the embodiment gap. Common approaches: use hand-pose estimation to extract wrist and finger trajectories as actions; train a latent-action model to learn an abstract action from consecutive frames; or use the video only to pretrain visual representations and world models, then fine-tune with a small amount of real-robot data. NVIDIA's 2026 EgoScale pretrained a VLA (vision-language-action) model on more than 20,000 hours of action-annotated egocentric video, and found that data volume scales log-linearly with validation loss.",
+   "example": "EgoScale first pretrains on human video, then runs mid-training — a transitional stage between pretraining and task fine-tuning — on a small amount of paired human-robot data; on a 22-degree-of-freedom dexterous hand, its average success rate came out 54% higher than skipping the pretraining step.",
+   "related": [
+    "Egocentric Video",
+    "Internet Video Data",
+    "Action-free Video",
+    "Latent Action Pretraining",
+    "Embodiment Gap",
+    "Pretraining on Human Videos"
+   ]
+  },
+  {
+   "key": "data-01#6",
+   "name_en": "Leader-Follower Teleoperation",
+   "aliases": [
+    "Leader-Follower Arms",
+    "Isomorphic Leader Arm"
+   ],
+   "one_liner": "A human moves a leader arm, and the robot's follower arm copies each joint angle in real time.",
+   "explanation": "Leader-follower teleoperation is a common way to collect robot data: the leader arm is a hand-operated mechanical arm with the same kinematic structure as the robot's follower arm, or a scaled-down version of it, with encoders or servos at each joint. The operator moves the leader arm, and the system reads out each joint angle and sends it straight to the follower arm. Because it is a direct joint-to-joint mapping, there is no need to solve inverse kinematics (working backward from end-effector position to joint angles), so latency is low and the motion is intuitive, which suits collecting fine bimanual manipulation data. The trade-off is that each robot needs its own matching leader arm, and there is usually no force feedback. ALOHA uses a WidowX leader arm with a ViperX follower arm for bimanual teleoperation; Berkeley's GELLO uses 3D-printed parts and off-the-shelf motors, at a cost under $300.",
+   "example": "In LeRobot, teleoperate an SO-101 follower arm with an SO-101 leader arm, recording camera footage and joint angles as you go; once you've recorded 50 demonstrations, that's enough to train an ACT policy.",
+   "related": [
+    "Teleoperation",
+    "A Low-cost Open-source Hardware System for Bimanual Teleoperation",
+    "GELLO: A General, Low-Cost, and Intuitive Teleoperation Framework for Robot Manipulators",
+    "Bilateral Teleoperation",
+    "Demonstration Data",
+    "SO-100 / SO-101 Arm (LeRobot)"
+   ]
+  },
+  {
+   "key": "data-01#7",
+   "name_en": "Motion Capture",
+   "aliases": [
+    "MoCap"
+   ],
+   "one_liner": "Recording the motion of a person or object into a computer with high precision, using cameras or wearable sensors.",
+   "explanation": "Motion capture (mocap) is technology for recording human or object motion into a computer at high precision; it was first used heavily in film, game animation, and sports analysis. There are two main approaches. Optical mocap sticks reflective markers on the body and triangulates their positions with multiple infrared cameras, reaching millimeter-level accuracy or better — Vicon and OptiTrack are leading vendors. Inertial mocap instead straps IMUs (sensors that measure angular velocity and acceleration) to the body, needs no external cameras, and suits outdoor or large-scale use — Xsens is a leading example. There's also markerless mocap, which estimates pose from ordinary video alone. In embodied AI, mocap data, once passed through motion retargeting, can train whole-body motion tracking for humanoid robots, and is also used for teleoperation and to provide ground-truth pose for datasets.",
+   "example": "AMASS unifies 15 optical mocap datasets into the SMPL format — a human body mesh model that represents shape and pose with a small number of parameters — covering more than 300 subjects and over 10,000 motion sequences; it's commonly used to train humanoid robots' motion-tracking policies.",
+   "related": [
+    "Optical Motion Capture",
+    "Inertial Motion Capture",
+    "Markerless / Video-based Motion Capture",
+    "Motion Retargeting",
+    "AMASS (Archive of Motion Capture as Surface Shapes)",
+    "Data Glove"
+   ]
+  },
+  {
+   "key": "data-01#8",
+   "name_en": "Open X-Embodiment",
+   "aliases": [
+    "OXE",
+    "Open X",
+    "RT-X Dataset"
+   ],
+   "one_liner": "A Google-led open dataset pooling more than a million real-robot trajectories from 22 kinds of robots.",
+   "explanation": "Open X-Embodiment (OXE) is a cross-embodiment robot dataset released in October 2023 by Google DeepMind together with 21 other institutions. It consolidates 60 existing datasets from 34 labs into a unified RLDS format — a format Google proposed for storing robot data by episode — totaling more than 1 million real-robot trajectories, 22 robot embodiments, and 527 skills. Before this, each lab used its own data format and action definitions, making it hard to combine data for training. The team trained RT-1-X and RT-2-X on the pooled data: on robots that had less data of their own, RT-1-X's success rate was on average about 50% higher than a model trained only on that robot's own data, showing that mixing data from many kinds of robots helps them all. OXE went on to become the main pretraining data for open generalist policies such as Octo and OpenVLA.",
+   "example": "After training on OXE's mixed data, RT-2-X's success rate on an emergent-skills evaluation — skills absent from Google's own robot data, learned only from other robots' data — was roughly 3 times that of RT-2, which was trained only on Google's own data.",
+   "related": [
+    "Cross-Embodiment Data",
+    "RT-X (RT-1-X / RT-2-X, trained on Open X-Embodiment)",
+    "RLDS (Reinforcement Learning Datasets)",
+    "Octo: An Open-Source Generalist Robot Policy",
+    "OpenVLA: An Open-Source Vision-Language-Action Model",
+    "OXE Magic Soup (Octo / OpenVLA dataset mixture)"
+   ]
+  },
+  {
+   "key": "data-01#9",
+   "name_en": "Real-Robot Data",
+   "aliases": [
+    "Real-World Robot Data"
+   ],
+   "one_liner": "Data recorded from an actual robot physically performing tasks in the real world.",
+   "explanation": "Real-robot data refers to data recorded from an actual robot body performing tasks in the physical world, including camera footage, joint state, and action commands, usually collected through teleoperation, though it also includes data recovered when a robot acts autonomously. It carries no sim-to-real gap (the physical and visual mismatch between simulation and reality), and its actions can be replayed directly on the same model of robot, which is generally considered the highest-quality data available. Its downside is that it is expensive and slow: it requires buying robots, building scenes, and hiring data collectors to record data one demonstration at a time. The industry often describes this with a “data pyramid”: massive internet and human video data at the bottom, simulation and synthetic data in the middle, and a small amount of precious real-robot data at the top. Notable datasets include DROID, AgiBot World, and Open X-Embodiment.",
+   "example": "DROID was collected by 50 people across 13 institutions teleoperating Franka arms with Quest 2 headsets over 12 months, gathering 76,000 trajectories totaling 350 hours across 564 scenes.",
+   "related": [
+    "Teleoperation",
+    "Simulation Data",
+    "Data Pyramid",
+    "DROID (Distributed Robot Interaction Dataset)",
+    "AgiBot World",
+    "Real-Data Camp vs. Sim-Data Camp"
+   ]
+  },
+  {
+   "key": "data-01#10",
+   "name_en": "Simulation Data",
+   "aliases": [
+    "Sim Data"
+   ],
+   "one_liner": "Training data generated automatically by having a virtual robot perform tasks inside a physics simulator.",
+   "explanation": "Simulation data is generated inside a physics simulator such as Isaac Sim or MuJoCo: the scene, objects, and robot are all virtual, and a script, motion planner, or reinforcement-learning policy completes tasks on its own while images, depth, joint state, and actions are all recorded. The advantages are that it's cheap, runs at massive parallel scale, comes with perfectly accurate labels for free, and can randomize lighting, materials, and object placement — domain randomization — to cover long-tail situations that are hard to capture with a real robot. The main obstacle is the sim-to-real gap: simulated contact physics and rendered images never perfectly match reality, and deformable objects and fine-grained contact are especially hard to get right. A common approach is to pretrain at scale on simulation data first, then fine-tune with a small amount of real-robot data, or train on a mixture of both together.",
+   "example": "Teams such as Galbot pretrained GraspVLA using SynGrasp-1B, a billion-frame simulated grasping dataset (over 10,000 objects across 240 categories), for all of its action data, combined with internet image-text grounding data for joint pretraining; without using any real-robot data at all, it transferred zero-shot to real-world grasping.",
+   "related": [
+    "Simulator",
+    "Synthetic Data",
+    "Sim-to-Real Gap (Reality Gap)",
+    "Domain Randomization",
+    "Sim-to-Real Transfer",
+    "SynGrasp-1B"
+   ]
+  },
+  {
+   "key": "data-01#11",
+   "name_en": "Synthetic Data",
+   "aliases": [
+    "Generated Data"
+   ],
+   "one_liner": "Training data manufactured by computers, via simulation or generative models, instead of collected from the real world.",
+   "explanation": "Synthetic data is data produced by a computer rather than collected from reality — NVIDIA defines it as text, images, and video generated using computer simulation, generative AI models, or a combination of both. In embodied AI there are mainly three routes: rendering and executing tasks inside a simulator (simulation data); automatically transforming and expanding a small number of human demonstrations into many new ones, as in MimicGen; and directly generating videos of a robot working with a video-generation model or world model, then filling in pseudo action labels with an inverse dynamics model (a model that infers actions from before-and-after frames), as in NVIDIA's DreamGen. It helps relieve the scarcity of real-robot data, but whether the generated content is physically plausible and close to the real distribution ultimately still has to be checked with real-robot evaluation.",
+   "example": "MimicGen automatically expands fewer than 200 human demonstrations into more than 50,000, covering 18 tasks; DreamGen, using only teleoperation data from a single pick-and-place task, taught a humanoid robot 22 new skills across 10 new environments.",
+   "related": [
+    "Simulation Data",
+    "MimicGen",
+    "DreamGen: Unlocking Generalization in Robot Learning through Video World Models",
+    "Neural Trajectories",
+    "Pseudo Action Labels",
+    "Generative Data Augmentation"
+   ]
+  }
+ ]
+}

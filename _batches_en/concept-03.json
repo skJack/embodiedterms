@@ -1,0 +1,216 @@
+{
+ "batch": "concept-03",
+ "terms": [
+  {
+   "key": "concept-03#0",
+   "name_en": "Policy",
+   "aliases": [
+    "Policy Network"
+   ],
+   "one_liner": "The rule that decides what action to take next given the current observation — usually a neural network.",
+   "explanation": "Policy is a core concept in reinforcement learning and robot learning: the mapping from the current state or observation to an action, usually written π. A deterministic policy always gives the same action for the same input; a stochastic policy outputs a distribution over actions and samples from it. In embodied AI, a policy is usually a neural network: it takes in camera images, joint angles, and other proprioceptive state, sometimes with a language instruction added, and outputs an end-effector pose, target joint angles, or a walking velocity command. Policies are mainly trained through imitation learning (copying human demonstrations) and reinforcement learning (trial and error guided by reward); VLA models are, at their core, a large-scale form of policy too. Don't confuse this with “model” as used elsewhere in reinforcement learning — there, “model” alone usually means a dynamics model that predicts how the environment changes next (as in “model-based reinforcement learning”), while the policy is what chooses the action.",
+   "example": "Diffusion Policy, on the Push-T task, reads in a camera image and the end effector's current position, and at each step outputs a short upcoming segment of end-effector targets that push a T-shaped block toward the goal position.",
+   "related": [
+    "Visuomotor Policy",
+    "Imitation Learning",
+    "Reinforcement Learning",
+    "Observation",
+    "Action Space",
+    "Vision-Language-Action Model"
+   ]
+  },
+  {
+   "key": "concept-03#1",
+   "name_en": "Embodiment",
+   "aliases": [
+    "Robot Embodiment",
+    "Robot Body"
+   ],
+   "one_liner": "A robot's physical body: its specific combination of form, joints, sensors, and actuators.",
+   "explanation": "“Embodiment” (本体) is the term China's embodied-AI industry uses for a robot's physical “body”: its specific hardware form — single-arm, dual-arm, quadruped, or humanoid — how many degrees of freedom it has (roughly, how many joints move independently), which cameras and force sensors it carries, and whether its end effector is a gripper or a dexterous hand. Embodiment determines what a policy can see (its observation space) and what it can output (its action space); the same model usually can't be dropped onto a different embodiment without changes, a mismatch called the embodiment gap. The Open X-Embodiment dataset pools data from 22 embodiments specifically to study cross-embodiment transfer. In industry usage, an “embodiment vendor” (本体厂商) is a company that builds robot hardware, as distinct from a “brain company” that builds only the software models.",
+   "example": "A Franka arm and a Unitree G1 humanoid are two very different embodiments: the former is 7 joints plus a two-finger gripper, while the latter needs to coordinate more than twenty joints across its legs, waist, and both arms at once.",
+   "related": [
+    "Cross-Embodiment",
+    "Embodiment Gap",
+    "Embodiment-agnostic",
+    "Degrees of Freedom",
+    "Humanoid Robot",
+    "Embodiment Vendor"
+   ]
+  },
+  {
+   "key": "concept-03#2",
+   "name_en": "Robot Learning",
+   "aliases": [],
+   "one_liner": "Using machine learning to let robots acquire skills from data and interaction, instead of hand-written rules.",
+   "explanation": "Robot learning is the field at the intersection of machine learning and robotics: it studies how robots can acquire new skills or adapt to their environment through learning algorithms, rather than having engineers hand-code a control program line by line. The main approaches are imitation learning, learning from human demonstrations such as data collected via teleoperation; reinforcement learning, trial and error guided by reward in simulation or on real hardware; and, more recently, robot foundation models pretrained on large-scale data. The core challenges are that real-robot data is scarce and expensive, real-robot trial and error is risky, and there is a gap between simulation and reality. The field's dedicated venue is CoRL, the Conference on Robot Learning, and most model research in embodied AI falls under this umbrella.",
+   "example": "Collecting a few dozen towel-folding demonstrations via teleoperation and training an ACT policy on them lets a bimanual robot learn to fold towels on its own, without an engineer writing out the joint angles for every step.",
+   "related": [
+    "Imitation Learning",
+    "Reinforcement Learning",
+    "Policy",
+    "Sim-to-Real Transfer",
+    "Foundation Model",
+    "Embodied AI"
+   ]
+  },
+  {
+   "key": "concept-03#3",
+   "name_en": "Manipulation",
+   "aliases": [
+    "Robotic Manipulation"
+   ],
+   "one_liner": "A robot using its hand or a tool to contact an object and change its position, pose, or state.",
+   "explanation": "Manipulation means a robot using an arm, gripper, or dexterous hand to contact an object and change its position, orientation, or state — grasping, placing, opening a drawer, pouring water, folding clothes. Along with locomotion, it's one of embodied AI's two main capability areas: locomotion is about how the body moves, manipulation is about how the hands do work. MIT professor Russ Tedrake, in his course notes “Robotic Manipulation: Perception, Planning, and Control,” points out that manipulation is far more than pick-and-place: a hand has to constantly make and break contact, apply force, and switch rapidly between “sticking” and “sliding” friction states, which is already hard purely as a dynamics-and-control problem. Everyday tasks people find mundane — loading a dishwasher, folding laundry — remain extremely challenging for robots and sit at the frontier of robotics research. Common sub-areas include dexterous manipulation, bimanual manipulation, contact-rich manipulation, and manipulating deformable objects.",
+   "example": "Having a bimanual robot take dishes out of a dishwasher one at a time and put them away in a cabinet is a long-horizon manipulation task made up of many grasps and placements.",
+   "related": [
+    "Grasping",
+    "Dexterous Manipulation",
+    "Bimanual Manipulation",
+    "Contact-rich Manipulation",
+    "Mobile Manipulation",
+    "Locomotion"
+   ]
+  },
+  {
+   "key": "concept-03#4",
+   "name_en": "Spatial Intelligence",
+   "aliases": [
+    "Visual-Spatial Intelligence"
+   ],
+   "one_liner": "The ability to understand where objects are in 3D space, and to reason and act using that understanding.",
+   "explanation": "Spatial intelligence was first proposed by psychologist Howard Gardner as one of several “multiple intelligences” in his 1983 book Frames of Mind, describing the ability to picture and judge spatial relationships in one's head. In AI, the term has recently been heavily promoted by Fei-Fei Li, who co-founded World Labs; in a November 2025 essay she called spatial intelligence AI's next frontier, arguing that models need to perceive, generate, reason about, and interact with the three-dimensional world, not just understand language. In embodied AI, a robot judging “how far is the cup from the plate” or “will this fit in the cabinet” both depend on spatial intelligence; benchmarks such as VSI-Bench specifically test this ability in multimodal large models, and the results still lag noticeably behind humans.",
+   "example": "Told to “push the chair closest to the door under the table,” a robot first has to judge which chair is closest to the door in the 3D scene, then estimate whether there's enough room underneath.",
+   "related": [
+    "Spatial Reasoning",
+    "World Model",
+    "3D Vision",
+    "VSI-Bench",
+    "World Labs",
+    "Physical AI"
+   ]
+  },
+  {
+   "key": "concept-03#5",
+   "name_en": "Trajectory",
+   "aliases": [],
+   "one_liner": "A sequence of positions or states and actions over time; also a full recording of one demonstration.",
+   "explanation": "“Trajectory” has two common meanings in embodied AI. In robotics proper, a trajectory is a path plus a timing schedule, specifying which position or joint angles the robot should be at at each moment; the textbook Modern Robotics defines it as “a path plus time scaling,” and a controller's job is to track this trajectory. In reinforcement learning and in datasets, a trajectory refers to the sequence of states and actions produced by an agent interacting with the environment, τ = (s0, a0, s1, a1, …); one recorded teleoperation demonstration is one trajectory, and datasets such as Open X-Embodiment measure their scale in number of trajectories. A short segment of future actions a model outputs at once, an action chunk, is also often loosely called a short trajectory.",
+   "example": "The 150 end-effector poses and gripper-opening values recorded at 50 Hz over the 3 seconds a robot arm takes to pick up a cup from a table make up one trajectory.",
+   "related": [
+    "Episode",
+    "Trajectory Planning",
+    "Trajectory Tracking",
+    "Demonstration Data",
+    "Action Chunking",
+    "Path Planning"
+   ]
+  },
+  {
+   "key": "concept-03#6",
+   "name_en": "Vision-and-Language Navigation",
+   "aliases": [
+    "VLN"
+   ],
+   "one_liner": "Having an agent follow a natural-language route description and use vision to reach a destination in an unfamiliar space.",
+   "explanation": "Vision-and-language navigation (VLN) is an embodied task proposed by Peter Anderson and colleagues in a CVPR 2018 paper: an agent gets an instruction like “exit and turn right, pass the sofa, and stop at the kitchen doorway,” and has to navigate step by step to the endpoint in a previously unvisited indoor environment, using only first-person vision. The companion Room-to-Room (R2R) dataset is built from real Matterport3D house scans, covering 90 buildings and about 22,000 human-written instructions. It tests how well language understanding, visual perception, and spatial memory work together. In the original R2R, the agent could only jump between waypoints with pre-rendered panoramas; a 2020 successor, VLN-CE, changed this to moving through continuous 3D space using low-level actions like moving forward and turning, closer to how a real robot operates. Models that run on actual robots, such as NaVid and NaVILA, followed after that.",
+   "example": "Given the instruction “walk straight down the hallway, turn left through the second door into the bedroom, and stop by the bed,” the robot looks and moves step by step, and succeeds if it stops by the bed.",
+   "related": [
+    "Navigation",
+    "R2R / VLN-CE Benchmarks",
+    "Success weighted by Path Length (SPL)",
+    "Object-Goal Navigation",
+    "NaVILA",
+    "Vision-Language Model"
+   ]
+  },
+  {
+   "key": "concept-03#7",
+   "name_en": "Zero-shot",
+   "aliases": [
+    "Zero-shot Learning",
+    "Zero-shot Generalization"
+   ],
+   "one_liner": "A model handling a new task or environment directly, with no training examples for it at all.",
+   "explanation": "Zero-shot originated as a machine-learning concept: at test time, a model must recognize a category it never saw during training, transferring learned knowledge with the help of side information such as attributes or text descriptions; a 2009 NeurIPS paper by Mark Palatucci and colleagues introduced the term “zero-shot learning.” In the era of large models and embodied AI, the meaning has broadened to “no new data collection and no fine-tuning for a new task, object, or scene — the model is used as is.” A generalist policy opening a drawer in a kitchen it has never seen, for example, is called zero-shot generalization. It contrasts with few-shot, where a handful of examples are given, and is commonly used to measure a robot foundation model's generalization ability. When reading papers, note that some claims of “zero-shot” only mean the scene was unseen, while the type of task was actually seen during training.",
+   "example": "Robot Utility Models trains one policy per task for five task types, such as opening cabinets and opening drawers, then deploys them directly to unseen new environments with no further data collection or fine-tuning, reporting an average success rate of about 90%.",
+   "related": [
+    "Few-shot",
+    "Generalization",
+    "Out-of-Distribution",
+    "Open-vocabulary",
+    "Fine-tuning",
+    "Generalist Policy"
+   ]
+  },
+  {
+   "key": "concept-03#8",
+   "name_en": "Action Multimodality",
+   "aliases": [
+    "Multimodal Action Distribution",
+    "Mode Averaging"
+   ],
+   "one_liner": "When several different actions are all correct in the same situation, so the action distribution has more than one peak.",
+   "explanation": "Action multimodality means that, for the same observation, more than one action is reasonable — going around an obstacle by passing it on the left or on the right, for example. If human demonstrations contain both, the probability distribution over actions has two peaks, or modes. If a policy is trained by directly regressing a single action with mean-squared error, the model learns the average of the two peaks instead — a failure called mode averaging — which in this example might send the robot straight into the obstacle. The fix is to use a policy that can represent multimodal distributions: a Gaussian mixture model, discretizing actions into tokens and predicting them as a classification problem (as in BeT), or diffusion policies and flow matching. The Diffusion Policy paper lists handling multimodal action distributions as one of its main advantages, which is part of why so many VLA models now use a diffusion or flow-matching action head.",
+   "example": "In the Push-T task, demonstrators sometimes push the T-shaped block from the left and sometimes from the right. A policy trained by direct regression tends to learn the average of the two, while Diffusion Policy commits to one side and pushes through on each run.",
+   "related": [
+    "Diffusion Policy",
+    "Flow Matching",
+    "Gaussian Mixture Model",
+    "BeT / VQ-BeT",
+    "Behavior Cloning",
+    "Diffusion Action Head"
+   ]
+  },
+  {
+   "key": "concept-03#9",
+   "name_en": "Affordance",
+   "aliases": [],
+   "one_liner": "What an object or environment lets you do with it — a handle can be pulled, a button can be pressed.",
+   "explanation": "The concept of affordance was introduced by American psychologist James J. Gibson in 1966 and developed fully in his 1979 book The Ecological Approach to Visual Perception, describing the possibilities for action that an environment offers to an animal. It is relational: the same chair affords sitting to a person and affords jumping-onto to a cat. Don Norman brought the term into interaction design in 1988. In robotics, affordance answers “how can this object be interacted with, and from where” — a cup's handle affords grasping, for instance. Common approaches mark interactable regions on an image or point cloud, known as affordance detection, or, as in SayCan, use a value function to estimate whether a skill can succeed right now, which keeps a large model's plans limited to what the robot can actually do.",
+   "example": "Looking at a mug, an affordance model marks the handle as a “graspable” region and the rim as a “pourable-into” region, and the robot decides where to approach it from based on that.",
+   "related": [
+    "Affordance Detection",
+    "SayCan",
+    "Grasping",
+    "Articulated Object Manipulation",
+    "Embodied Perception",
+    "Language Grounding"
+   ]
+  },
+  {
+   "key": "concept-03#10",
+   "name_en": "Articulated Object Manipulation",
+   "aliases": [],
+   "one_liner": "Manipulating objects with movable joints, such as opening a cabinet door, pulling a drawer, or lifting a laptop lid.",
+   "explanation": "An articulated object is made of multiple parts connected by rotating or sliding joints — a cabinet door rotating on a hinge, a drawer sliding on rails, a laptop, a faucet, a refrigerator door. To manipulate one, a robot must not only find the handle but also infer the joint type, the location of the axis, and the direction of motion, then apply force along the constrained direction as it moves — otherwise it will get stuck or even break the handle off. This is a fundamental capability for household robots. Research commonly uses the SAPIEN simulator together with the PartNet-Mobility dataset of articulated objects; a notable example is Where2Act (ICCV 2021), which learned to predict where on an object it could push or pull through repeated interaction in simulation.",
+   "example": "Opening a microwave the robot has never seen before: it first recognizes the door handle, infers that the door rotates around a vertical axis on the left, then pulls the door open along the arc centered on that axis.",
+   "related": [
+    "Articulated Object",
+    "Articulation Estimation",
+    "PartNet-Mobility Dataset",
+    "SAPIEN",
+    "Affordance",
+    "Manipulation"
+   ]
+  },
+  {
+   "key": "concept-03#11",
+   "name_en": "Autonomous Driving",
+   "aliases": [
+    "Self-driving"
+   ],
+   "one_liner": "Letting a car perceive road conditions, make decisions, and control itself with little or no human input.",
+   "explanation": "Autonomous driving means a vehicle uses sensors such as cameras, lidar, and millimeter-wave radar, together with an onboard computer, to handle perception, decision-making, planning, and control on its own. SAE J3016, the standard from the Society of Automotive Engineers, defines six levels, L0 through L5. At L2, the system handles both steering and speed, but the driver must watch the road at all times. From L3 up, the system takes over driving under specific conditions and asks the driver to step in when needed. L4 allows fully driverless operation within a defined area, and L5 needs no human under any condition. In China, “智驾” (“smart driving”), the everyday term, usually refers to L2-level driver assistance. Autonomous driving can be seen as the first form of embodied AI to reach large-scale deployment, and it shares techniques with robotics more broadly, including end-to-end models, world models, simulation, and data flywheels — the industry often talks about “crossing over from autonomous driving into embodied AI.”",
+   "example": "Urban NOA (navigate-on-autopilot) can automatically follow traffic, change lanes, and go through intersections in a city, but the driver must stay ready to take over at any time — this is an L2-level system.",
+   "related": [
+    "End-to-end",
+    "World Model",
+    "Lidar",
+    "Levels of Autonomy",
+    "Autonomous-Driving-to-Embodied-AI Crossover",
+    "Embodied AI"
+   ]
+  }
+ ]
+}

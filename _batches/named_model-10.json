@@ -1,0 +1,197 @@
+{"category": "named_model", "batch": 10, "terms": [
+{
+"name_zh": "F3RM",
+"name_en": "Distilled Feature Fields Enable Few-Shot Language-Guided Manipulation",
+"abbr": "F3RM",
+"aliases": ["Feature Fields for Robotic Manipulation", "蒸馏特征场操作"],
+"tier": 3,
+"one_liner": "MIT 2023 年提出，把 CLIP 等 2D 特征蒸馏进 3D 场，少样本按语言指令抓放。",
+"explanation": "F3RM（Feature Fields for Robotic Manipulation）是 MIT CSAIL 的 William Shen、Ge Yang、Phillip Isola 等人提出的方法，发表于 CoRL 2023。CLIP、DINO 这类 2D 图像模型懂语义，却不知道物体在三维空间里的精确位置和形状，而机器人抓取离不开几何。F3RM 先对场景多角度拍照，训练神经辐射场（NeRF，从多视角照片重建三维场景的方法），同时把 CLIP 等模型的特征「蒸馏」进这个三维场，得到每个空间点都带语义特征的蒸馏特征场。机器人在这个场里优化夹爪位姿，只需少量示范就能学会 6 自由度抓取和放置，可用自由文本指定操作对象，也能迁移到没见过的物体。它和 LERF（把语言特征嵌入辐射场）属于同一思路，是「把 2D 基础模型知识搬到 3D 做操作」的代表作。",
+"example": "每个抓取任务只给两次示范（例如抓杯柄或抓杯口），机器人就能抓起颜色、大小不同的杯子；输入一句文字描述，就能在场景里挑出对应物体去抓。",
+"related": ["蒸馏特征场", "神经辐射场", "CLIP", "LERF", "开放词汇", "少样本"],
+"sources": [
+{"title": "Distilled Feature Fields Enable Few-Shot Language-Guided Manipulation (arXiv 2308.07931)", "url": "https://arxiv.org/abs/2308.07931"},
+{"title": "F3RM 项目主页", "url": "https://f3rm.github.io/"}
+],
+"as_of": "2023-11"
+},
+{
+"name_zh": "Dita",
+"name_en": "Dita: Scaling Diffusion Transformer for Generalist Vision-Language-Action Policy",
+"abbr": "",
+"aliases": ["RoboDita"],
+"tier": 3,
+"one_liner": "用同一个 Transformer 直接对整段动作去噪的开源通用 VLA 策略，约 3.3 亿参数。",
+"explanation": "Dita 是上海人工智能实验室、浙江大学、商汤、港中文、北大、清华等机构的研究者于 2025 年 3 月发布的通用机器人策略，收录于 ICCV 2025。不少扩散式 VLA 在大模型后面接一个小的扩散动作头（专门把噪声变成动作的小网络），动作只能看到压缩后的特征。Dita 把语言 token、历史图像的视觉 token 和带噪声的动作 token 拼进同一个因果 Transformer 里一起去噪（上下文条件化），让动作直接对齐原始视觉细节，更好地刻画动作增量和环境差异。模型在 Open X-Embodiment 跨本体数据上预训练，总参数约 3.34 亿（可训练约 2.21 亿），在 SimplerEnv、LIBERO、CALVIN、ManiSkill2 等仿真基准上达到或接近当时最好水平。代码开源，定位是轻量、易复现的扩散 VLA 基线。",
+"example": "换到一台新的真机和新场景时，只用每个任务 10 条示范、单个第三视角相机微调，Dita 就能完成多步长程任务，并能应对背景、干扰物摆放和光照的变化。",
+"related": ["扩散 Transformer", "视觉-语言-动作模型", "扩散动作头", "Open X-Embodiment 数据集", "因果注意力", "LIBERO"],
+"sources": [
+{"title": "Dita: Scaling Diffusion Transformer for Generalist Vision-Language-Action Policy (arXiv 2503.19757)", "url": "https://arxiv.org/abs/2503.19757"},
+{"title": "Dita 项目主页", "url": "https://robodita.github.io/"}
+],
+"as_of": "2025-09"
+},
+{
+"name_zh": "原力灵机 DM0",
+"name_en": "DM0: An Embodied-Native Vision-Language-Action Model towards Physical AI (Dexmal)",
+"abbr": "",
+"aliases": ["DM0.5", "Dexmal DM0"],
+"tier": 3,
+"one_liner": "原力灵机 2026 年开源的「具身原生」VLA，预训练阶段就混入驾驶和机器人数据。",
+"explanation": "DM0 是原力灵机（Dexmal）联合阶跃星辰于 2026 年 2 月发布并开源的视觉-语言-动作模型（VLA）。多数 VLA 先用只见过互联网图文的视觉语言模型，再拿机器人数据微调；DM0 主张「具身原生」，预训练时就把网页文本、自动驾驶场景和机器人交互日志一起训练（约 1.2 万亿 token）。训练分三段：预训练统一的 VLM（语言部分基于 Qwen3-1.7B），中训练在其上加一个流匹配动作专家（专门输出连续动作的子网络），后训练用混合策略精调。训练具身数据时，动作专家的梯度不回传给 VLM，以保住通用理解能力；还用空间思维链先推理空间关系再出动作。模型约 20 亿参数，统一支持操作和导航。2026 年 7 月原力灵机推出约 60 亿参数的后续版本 DM0.5，配套开源框架 OpenDM。",
+"example": "据论文报告，DM0 在 RoboChallenge Table30 真机基准上，专用设置平均成功率 62.0%、通用设置 37.3%，发布时两项均排第一。",
+"related": ["视觉-语言-动作模型", "动作专家", "流匹配", "中训练", "RoboChallenge", "Dexbotic"],
+"sources": [
+{"title": "DM0: An Embodied-Native Vision-Language-Action Model towards Physical AI (arXiv 2602.14974)", "url": "https://arxiv.org/abs/2602.14974"},
+{"title": "Dexmal/DM05 模型卡（Hugging Face）", "url": "https://huggingface.co/Dexmal/DM05"},
+{"title": "Dexbotic 代码仓库（GitHub）", "url": "https://github.com/Dexmal/dexbotic"}
+],
+"as_of": "2026-09"
+},
+{
+"name_zh": "Dobb·E",
+"name_en": "Dobb-E: An Open-Source, General Framework for Learning Household Robotic Manipulation",
+"abbr": "Dobb-E",
+"aliases": ["On Bringing Robots Home"],
+"tier": 3,
+"one_liner": "纽约大学与 Meta 2023 年开源的家务机器人框架，5 分钟示范教会新任务。",
+"explanation": "Dobb·E 是纽约大学 Lerrel Pinto 团队与 Meta 于 2023 年 11 月发布的开源家用机器人学习框架，论文题为 On Bringing Robots Home。真实家庭的光照、家具、物品千差万别，实验室训出的策略搬进家里常常失灵，而在家里采机器人数据又很贵。团队做了一个叫 Stick 的示范工具：25 美元的长柄取物夹加几个 3D 打印件和一部 iPhone，普通人拿着它干活就能录下演示。他们用它在纽约 22 户人家录了 13 小时数据（HoNY 数据集），用自监督学习预训练出视觉表征 HPR（基于 ResNet-34），再部署到商用移动机器人 Hello Robot Stretch 上，新任务只需少量示范加短时间微调。代码、数据、模型和硬件设计全部开源，是「手持夹爪采集」路线的早期代表，同团队后来又做了 Robot Utility Models。",
+"example": "在纽约地区 10 户家庭约 30 天的实验中，Dobb·E 共尝试 109 个家务任务，每个新任务只用 5 分钟示范加 15 分钟模型适配，整体成功率 81%。",
+"related": ["手持夹爪采集", "通用操作接口", "Hello Robot Stretch", "家务任务", "预训练视觉表征", "Robot Utility Models"],
+"sources": [
+{"title": "On Bringing Robots Home (arXiv 2311.16098)", "url": "https://arxiv.org/abs/2311.16098"},
+{"title": "Dobb·E 项目主页", "url": "https://dobb-e.com/"}
+],
+"as_of": "2023-11"
+},
+{
+"name_zh": "DreamDojo",
+"name_en": "DreamDojo: A Generalist Robot World Model from Large-Scale Human Videos",
+"abbr": "",
+"aliases": [],
+"tier": 3,
+"one_liner": "英伟达 2026 年发布的通用机器人世界模型，用约 4.4 万小时人类视频预训练。",
+"explanation": "DreamDojo 是英伟达牵头、联合 UC Berkeley、港科大、斯坦福等于 2026 年 2 月发布的通用机器人世界模型（能根据动作预测未来画面的模型）。机器人数据少且贵，人做事的视频很多却没有动作标签。DreamDojo 整理了约 4.47 万小时的第一人称人类视频（主体是自建的众包数据集 DreamDojo-HV，约 4.38 万小时，另含 EgoDex 和少量实验室数据），论文称是当时最大的世界模型预训练视频集；它用从视频中学出的连续潜在动作充当统一的「代理动作」，让模型先从无标签视频里学物体交互规律，再用机器人数据后训练，变成能接收真实动作指令的模拟器。模型基于 Cosmos-Predict2.5，有 2B 和 14B 两个版本，蒸馏后在 H100 上约 10.8 帧每秒实时生成，可用于策略评测、实时遥操作和基于模型的规划。",
+"example": "后训练后适配了傅利叶 GR-1、宇树 G1、智元和 YAM 等机器人：给定当前画面和一串动作，模型实时生成执行后的视频，可在不上真机的情况下评估策略好坏。",
+"related": ["世界模型", "潜在动作", "第一人称视频", "EgoDex 数据集", "Cosmos Predict", "世界模型评测"],
+"sources": [
+{"title": "DreamDojo: A Generalist Robot World Model from Large-Scale Human Videos (arXiv 2602.06949)", "url": "https://arxiv.org/abs/2602.06949"},
+{"title": "DreamDojo 项目主页", "url": "https://dreamdojo-world.github.io/"}
+],
+"as_of": "2026-02"
+},
+{
+"name_zh": "Dreamer 4",
+"name_en": "Dreamer 4: Training Agents Inside of Scalable World Models",
+"abbr": "",
+"aliases": ["Training Agents Inside of Scalable World Models"],
+"tier": 3,
+"one_liner": "谷歌 DeepMind 2025 年的世界模型智能体，只用离线数据在 Minecraft 里挖到钻石。",
+"explanation": "Dreamer 4 是谷歌 DeepMind 的 Danijar Hafner、Wilson Yan 和 Timothy Lillicrap 于 2025 年 9 月发布的智能体，是 Dreamer 系列（DreamerV3 等）的新一代。Dreamer 路线的核心是「想象中学习」：先学一个世界模型，再让策略在模型生成的虚拟经历里做强化学习，不必和真实环境反复交互。Dreamer 4 把世界模型做到约 20 亿参数（4 亿的视频分词器加 16 亿的动力学模型），用「捷径强制」（shortcut forcing）训练目标和高效 Transformer，实现单张 GPU 上的实时交互推理；它主要从无动作标签的视频学知识，只需少量带动作的数据就能学会动作条件化。它是首个纯靠离线数据就在 Minecraft 中拿到钻石的智能体。真机试错慢且不安全，这类在世界模型里训练的方法对机器人很有参考价值。",
+"example": "在 Minecraft 里挖到钻石需要从原始像素连续做出两万多次鼠标键盘操作；Dreamer 4 只用 2541 小时的离线玩家录像训练，有 0.7% 的回合拿到钻石，表现超过 OpenAI 的 VPT 离线智能体，所用数据少约 100 倍。",
+"related": ["世界模型", "想象中学习", "DreamerV3", "基于模型的强化学习", "VPT（视频预训练）", "离线强化学习"],
+"sources": [
+{"title": "Training Agents Inside of Scalable World Models (arXiv 2509.24527)", "url": "https://arxiv.org/abs/2509.24527"},
+{"title": "Dreamer 4 项目页（danijar.com）", "url": "https://danijar.com/project/dreamer4/"}
+],
+"as_of": "2025-09"
+},
+{
+"name_zh": "DreamGen（GR00T Dreams）",
+"name_en": "DreamGen: Unlocking Generalization in Robot Learning through Video World Models",
+"abbr": "",
+"aliases": ["GR00T Dreams", "GR00T-Dreams", "Isaac GR00T-Dreams"],
+"tier": 3,
+"one_liner": "英伟达 2025 年提出，用视频世界模型生成机器人视频并反推动作来造训练数据。",
+"explanation": "DreamGen 是英伟达 GEAR 实验室等于 2025 年 5 月提出的合成数据流程，开源实现叫 Isaac GR00T-Dreams 蓝图，同月在台北电脑展（Computex）发布。机器人学新动作通常要人遥操作采大量数据。DreamGen 分四步：先用目标机器人的数据微调图生视频模型（开源实现用 Cosmos-Predict2）；再给一张初始画面和一句语言指令，让模型生成机器人做新动作、身处新环境的逼真视频；然后用逆动力学模型或潜在动作模型从视频里反推伪动作标签；最后把这些「神经轨迹」和真实数据一起训练视觉运动策略。论文还提出 DreamGen Bench，发现视频生成质量越高，训出的策略越好。英伟达称用 GR00T-Dreams 在 36 小时内为 GR00T N1.5 生成了训练数据，人工采集约需三个月。",
+"example": "只用单一环境里一个抓取放置任务的遥操作数据，再加上 DreamGen 生成的视频，GR1 人形机器人学会了 22 种新动作，并能在 10 个没见过的环境里执行。",
+"related": ["神经轨迹", "视频生成模型", "逆动力学模型", "潜在动作模型", "GR00T N1 系列", "Cosmos Predict"],
+"sources": [
+{"title": "DreamGen: Unlocking Generalization in Robot Learning through Video World Models (arXiv 2505.12705)", "url": "https://arxiv.org/abs/2505.12705"},
+{"title": "DreamGen 项目主页（NVIDIA GEAR）", "url": "https://research.nvidia.com/labs/gear/dreamgen/"},
+{"title": "NVIDIA Computex 2025 新闻稿：GR00T N1.5 与 GR00T-Dreams", "url": "https://nvidianews.nvidia.com/news/nvidia-powers-humanoid-robot-industry-with-cloud-to-robot-computing-platforms-for-physical-ai"}
+],
+"as_of": "2025-05"
+},
+{
+"name_zh": "DreamVLA",
+"name_en": "DreamVLA: A Vision-Language-Action Model Dreamed with Comprehensive World Knowledge",
+"abbr": "",
+"aliases": [],
+"tier": 3,
+"one_liner": "先预测未来的动态区域、深度和语义特征，再据此生成动作的 VLA 模型。",
+"explanation": "DreamVLA 是上海交通大学、宁波东方理工大学、清华、北大、银河通用等机构于 2025 年 7 月提出的视觉-语言-动作模型（VLA），收录于 NeurIPS 2025。有些 VLA 会先「想象」下一帧完整画面再出动作，但整张图里大部分像素和任务无关。DreamVLA 只预测三类紧凑的「世界知识」：哪里会动（动态区域）、单目深度、高层语义（借助 DINOv2、SAM 的特征），再以它们为条件，用扩散 Transformer 生成未来一段动作，相当于先预测结果、再反推该怎么做（逆动力学思路）。为防三类信息在注意力里互相串扰，它用分块结构化注意力掩码把它们隔开。它是「VLA 融合世界模型式预测」这一方向的代表工作之一。",
+"example": "在 CALVIN ABC-D 长程任务基准上平均连续完成 4.44 个子任务，在真机操作任务上成功率 76.7%。",
+"related": ["视觉-语言-动作模型", "世界模型", "逆动力学模型", "扩散 Transformer", "注意力掩码", "CALVIN"],
+"sources": [
+{"title": "DreamVLA (arXiv 2507.04447)", "url": "https://arxiv.org/abs/2507.04447"},
+{"title": "DreamVLA 项目主页", "url": "https://zhangwenyao1.github.io/DreamVLA/"},
+{"title": "DreamVLA 代码仓库（GitHub）", "url": "https://github.com/Zhangwenyao1/DreamVLA"}
+],
+"as_of": "2025-09"
+},
+{
+"name_zh": "DreamWaQ",
+"name_en": "DreamWaQ: Learning Robust Quadrupedal Locomotion With Implicit Terrain Imagination via Deep Reinforcement Learning",
+"abbr": "",
+"aliases": [],
+"tier": 3,
+"one_liner": "KAIST 2023 年提出的四足盲走强化学习方法，只凭本体感知「想象」脚下地形。",
+"explanation": "DreamWaQ 是韩国科学技术院（KAIST）Hyun Myung 团队提出的四足机器人运动控制方法，发表于 ICRA 2023。很多复杂地形行走方案依赖相机或激光雷达，但这些传感器在恶劣天气和光照下可能失灵。DreamWaQ 只用本体感知（关节角度、角速度、机身姿态等身体自身信号）做盲走：它训练一个上下文辅助估计网络（CENet），根据最近几步观测估计机身速度，并用变分自编码器推出一个代表地形情况的隐变量，相当于「隐式想象」地形；策略再结合这些估计输出关节动作。训练在 Isaac Gym 中用 4096 个域随机化并行环境完成，采用非对称演员-评论家（评论家可看仿真里的特权信息，策略只看真机能拿到的观测），然后零样本迁移到真机。",
+"example": "在宇树 A1 四足机器人上，DreamWaQ 策略不借助任何外部感知，就能在户外一次长距离连续行走中通过台阶等复杂地形。",
+"related": ["盲走", "本体感知", "非对称演员-评论家", "特权信息", "变分自编码器", "宇树 A1"],
+"sources": [
+{"title": "DreamWaQ (arXiv 2301.10602)", "url": "https://arxiv.org/abs/2301.10602"}
+],
+"as_of": "2023-05"
+},
+{
+"name_zh": "DreamZero",
+"name_en": "DreamZero (World Action Models are Zero-shot Policies)",
+"abbr": "",
+"aliases": ["World Action Models are Zero-shot Policies"],
+"tier": 3,
+"one_liner": "英伟达 2026 年的世界动作模型，基于 14B 视频扩散模型同时预测画面和动作。",
+"explanation": "DreamZero 是英伟达研究团队（Jim Fan、Yuke Zhu 等参与）于 2026 年 2 月发布的世界动作模型（WAM，同时预测未来画面和动作的模型），论文题为 World Action Models are Zero-shot Policies。主流 VLA 以视觉语言模型为底座，擅长理解语义，但对物理动态了解有限。DreamZero 改用预训练视频扩散模型做底座（通义万相 Wan2.1 图生视频 14B），自回归地联合生成未来视频和机器人动作，把视频当作「世界如何变化」的稠密监督，因此能从多样、不重复的异构机器人数据里学习。论文称它对新任务、新环境的泛化比当时最好的 VLA 高出一倍以上；经模型和系统优化，在 GB200 上单次推理约 150 毫秒，实现 7Hz 闭环控制。团队表示开源模型权重和推理代码。",
+"example": "主要用智元 G1 约 500 小时遥操作数据训练，已见任务平均任务进度 62.2%（最佳 VLA 基线 27.4%）；只加 10–20 分钟其他机器人或人类的视频，未见任务表现相对提升 42% 以上；用 30 分钟玩耍数据即可适配新的 YAM 机器人。",
+"related": ["世界动作模型", "视频生成模型", "通义万相", "零样本", "跨本体", "Fast-WAM"],
+"sources": [
+{"title": "World Action Models are Zero-shot Policies (arXiv 2602.15922)", "url": "https://arxiv.org/abs/2602.15922"},
+{"title": "DreamZero 项目主页", "url": "https://dreamzero0.github.io/"}
+],
+"as_of": "2026-02"
+},
+{
+"name_zh": "DrEureka",
+"name_en": "DrEureka: Language Model Guided Sim-To-Real Transfer",
+"abbr": "",
+"aliases": [],
+"tier": 3,
+"one_liner": "让大语言模型自动写奖励函数和域随机化参数，把仿真策略迁移到真机。",
+"explanation": "DrEureka 是宾夕法尼亚大学、英伟达和得克萨斯大学奥斯汀分校于 2024 年 6 月提出的方法，发表于 RSS 2024，是同团队 Eureka（用大语言模型写奖励函数）的延伸。把仿真里训好的策略搬到真机，通常要人手反复调奖励函数和域随机化范围（训练时随机改摩擦、质量等物理参数，让策略扛得住真实世界的偏差）。DrEureka 分三步自动化：先让大语言模型生成带安全约束的奖励函数并在仿真中训练策略；再在不同物理参数下测试该策略，得出它仍能正常工作的参数范围（奖励感知物理先验，RAPP）；最后让大语言模型在这个范围内写出域随机化配置，训练最终策略后直接部署。仿真器用 Isaac Gym，策略只用本体感知输入。",
+"example": "在宇树 Go1 四足机器人上，DrEureka 训练出的策略能让机器狗站在瑜伽球上保持平衡并行走，训练过程无需人工反复调参；在四足前进行走和灵巧手转方块任务上，表现与人工设计的方案相当或更好。",
+"related": ["Eureka", "仿真到现实迁移", "域随机化", "奖励函数", "奖励工程", "大语言模型"],
+"sources": [
+{"title": "DrEureka: Language Model Guided Sim-To-Real Transfer (arXiv 2406.01967)", "url": "https://arxiv.org/abs/2406.01967"},
+{"title": "DrEureka 项目主页", "url": "https://eureka-research.github.io/dr-eureka/"},
+{"title": "DrEureka 代码仓库（GitHub）", "url": "https://github.com/eureka-research/DrEureka"}
+],
+"as_of": "2024-06"
+},
+{
+"name_zh": "DriveVLM（快慢双系统智驾）",
+"name_en": "DriveVLM: The Convergence of Autonomous Driving and Large Vision-Language Models",
+"abbr": "",
+"aliases": ["DriveVLM-Dual"],
+"tier": 3,
+"one_liner": "清华与理想汽车 2024 年提出：视觉语言模型慢思考、传统规划器快执行的智驾方案。",
+"explanation": "DriveVLM 是清华大学交叉信息研究院赵行团队与理想汽车于 2024 年 2 月提出的自动驾驶方法，发表于 CoRL 2024。传统自动驾驶流水线应对罕见、复杂的长尾场景能力有限。DriveVLM 用视觉语言模型（VLM，底座为 Qwen-VL）按思维链做三步：场景描述、场景分析、分层规划，最后给出行驶轨迹。但 VLM 空间定位不够精确、推理又慢，于是论文提出 DriveVLM-Dual：VLM 低频输出粗略参考轨迹（慢系统），传统感知与规划模块以高频把它细化成实际轨迹（快系统），两者异步协作。论文称该系统已部署到量产车上，在两颗 Orin X 芯片的车载平台上平均推理约 410 毫秒。这种分工与机器人领域的快慢双系统架构（如 Figure 的 Helix）思路一致。",
+"example": "遇到少见路况时，VLM 先描述场景、找出会影响本车的关键物体并分析其影响，再给出「减速、绕行」这类高层决策和粗略轨迹，由传统规划器实时细化成可执行轨迹。",
+"related": ["快慢双系统", "自动驾驶", "视觉语言模型", "思维链", "长尾问题", "通义千问 Qwen-VL"],
+"sources": [
+{"title": "DriveVLM (arXiv 2402.12289)", "url": "https://arxiv.org/abs/2402.12289"},
+{"title": "DriveVLM 项目主页", "url": "https://tsinghua-mars-lab.github.io/DriveVLM/"}
+],
+"as_of": "2024-11"
+}
+]}

@@ -1,0 +1,422 @@
+{
+  "category": "mechanics",
+  "batch": 3,
+  "terms": [
+    {
+      "name_zh": "解析逆解",
+      "name_en": "Analytical Inverse Kinematics",
+      "abbr": "",
+      "aliases": [
+        "闭式解",
+        "封闭解",
+        "Closed-form IK",
+        "解析逆运动学",
+        "Analytic IK"
+      ],
+      "tier": 2,
+      "one_liner": "事先推好公式，代入末端位姿就直接算出全部关节角的逆运动学解法。",
+      "explanation": "逆运动学（已知末端位姿求各关节角）有两类解法：数值法靠迭代逼近，解析法则事先推出公式，代入末端位姿一次算出所有关节角。解析解只对特定结构存在，典型条件是 6 轴臂的后三个关节轴交于一点（球形手腕），这时位置和姿态可以拆开分别求，PUMA 型臂就是这种结构。它的好处是快、稳定，而且能列出全部解：《Modern Robotics》指出一般 6R 串联臂最多有 16 组解，带偏置的 PUMA 型臂仅位置部分就有 4 组。缺点是换一种构型就得重新推导。工具 IKFast 能自动分析运动链并生成解析解的 C++ 代码，求解一次只需几微秒。",
+      "example": "PUMA 型 6 轴臂先由腕心位置解出前三个关节（肩左/右 × 肘上/下共 4 种组合），再由末端姿态解出后三个腕关节，腕部还可翻转；这类带球形手腕的臂对同一个末端位姿最多有 8 组解，控制器通常挑离当前关节角最近的一组执行。",
+      "related": [
+        "逆运动学",
+        "数值逆解",
+        "正运动学",
+        "球形手腕",
+        "IKFast",
+        "运动学冗余"
+      ],
+      "sources": [
+        {
+          "title": "Modern Robotics: Mechanics, Planning, and Control（Lynch & Park, 2017 预印本）第 6 章 Inverse Kinematics",
+          "url": "https://hades.mech.northwestern.edu/images/7/7f/MR.pdf"
+        },
+        {
+          "title": "Inverse kinematics - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Inverse_kinematics"
+        },
+        {
+          "title": "IKFast Kinematics Solver - MoveIt Documentation",
+          "url": "https://moveit.picknik.ai/main/doc/examples/ikfast/ikfast_tutorial.html"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "角动量",
+      "name_en": "Angular Momentum",
+      "abbr": "",
+      "aliases": [
+        "动量矩"
+      ],
+      "tier": 2,
+      "one_liner": "衡量物体转动「冲劲」的量，刚体绕轴时等于转动惯量乘角速度。",
+      "explanation": "角动量是线动量 p=mv 在转动上的对应量：质点绕某点的角动量 L = r × p（r 是从该点指向质点的位置矢量，× 为叉乘）；刚体绕固定轴转动时 L = Iω（I 是转动惯量，ω 是角速度），单位 kg·m²/s。它的变化率等于外力矩，dL/dt = τ；没有外力矩时角动量守恒，花样滑冰运动员收臂后越转越快就是这个道理。腿足和人形机器人常看整机绕质心的角动量：腾空时重力不产生绕质心的力矩，它保持不变，只能靠摆臂、收腿在身体各部分间重新分配；着地后才能由接触力改变。平衡、跳跃和空翻的规划都要考虑它。",
+      "example": "人形机器人做后空翻：必须在蹬地离开地面前获得足够的绕质心角动量；腾空后总角动量不变，只能收腿缩小转动惯量来加快翻转，落地前再伸腿减慢转速。",
+      "related": [
+        "转动惯量",
+        "质心动力学",
+        "质心动量矩阵",
+        "力矩",
+        "刚体动力学",
+        "平衡控制"
+      ],
+      "sources": [
+        {
+          "title": "Angular momentum - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Angular_momentum"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "对跖抓取",
+      "name_en": "Antipodal Grasp",
+      "abbr": "",
+      "aliases": [
+        "对径抓取",
+        "两指对抓",
+        "对跖点抓取"
+      ],
+      "tier": 2,
+      "one_liner": "两个接触点正面相对、连线落在两处摩擦锥内的两指夹持抓取。",
+      "explanation": "对跖（antipodal，意为「位于相对两端」）抓取指用两个接触点从相对方向夹住物体，且两点连线同时落在两处的摩擦锥（接触力不打滑时允许的方向范围）之内。据《Modern Robotics》，平面情形下满足这一条件的两个摩擦接触就构成力封闭，能抵抗任意方向的外力和力矩；三维中两个理想点接触挡不住绕两点连线的转动，实际靠指面的扭转摩擦补足。1993 年 Chen 与 Burdick 给出了在不规则物体上找对跖点对的算法。平行二指夹爪做的就是这种抓取，所以很多学习式抓取方法先在点云或深度图上采样对跖点对当候选，再用网络打分。",
+      "example": "Dex-Net 2.0（2017）在深度图上找对跖点对，生成几百个平行夹爪抓取候选，再用卷积网络 GQ-CNN 评估哪个最稳，在 ABB YuMi 上对已知物体的抓取成功率为 93%。",
+      "related": [
+        "力封闭",
+        "摩擦锥",
+        "二指夹爪",
+        "抓取位姿检测",
+        "Dex-Net",
+        "抓取质量指标"
+      ],
+      "sources": [
+        {
+          "title": "Modern Robotics（Lynch & Park, 2017 预印本）第 12 章 Grasping and Manipulation",
+          "url": "https://hades.mech.northwestern.edu/images/7/7f/MR.pdf"
+        },
+        {
+          "title": "Dex-Net 2.0: Deep Learning to Plan Robust Grasps with Synthetic Point Clouds and Analytic Grasp Metrics (arXiv 1703.09312)",
+          "url": "https://arxiv.org/abs/1703.09312"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "轴角",
+      "name_en": "Axis-Angle Representation",
+      "abbr": "",
+      "aliases": [
+        "旋转向量",
+        "Rotation Vector",
+        "rotvec",
+        "轴-角表示",
+        "Euler vector"
+      ],
+      "tier": 2,
+      "one_liner": "用「绕哪根轴转、转多少角度」来表示一次三维旋转。",
+      "explanation": "轴角表示用一个单位向量 e（旋转轴方向）和一个角度 θ（绕该轴转过的弧度）来描述三维旋转，依据是任何旋转都等价于绕某根固定轴的一次转动。把两者相乘得到三维的旋转向量 θe：方向是转轴，长度是转角，只用 3 个数，SciPy 里叫 rotvec。它和旋转矩阵之间用罗德里格斯公式互相换算，数学上就是 SO(3) 指数映射的坐标。缺点是不唯一：θ 加减 2π，或把轴和角同时取反，都表示同一个旋转，θ 接近 0 或 π 时换算要特殊处理。因为维度低、小角度时平滑，它常被用作机械臂末端姿态增量的动作表示。",
+      "example": "robosuite 的 OSC_POSE 控制器动作是 6 维（不含夹爪），后 3 维就是相对当前末端姿态的旋转增量，用轴角 (ax, ay, az) 表示；绕 z 轴转 90° 写作 (0, 0, 1.571)。",
+      "related": [
+        "旋转矩阵",
+        "四元数",
+        "欧拉角",
+        "罗德里格斯公式",
+        "指数映射",
+        "6D 旋转表示"
+      ],
+      "sources": [
+        {
+          "title": "Axis–angle representation - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Axis%E2%80%93angle_representation"
+        },
+        {
+          "title": "scipy.spatial.transform.Rotation.as_rotvec - SciPy Manual",
+          "url": "https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.transform.Rotation.as_rotvec.html"
+        },
+        {
+          "title": "Controllers - robosuite documentation",
+          "url": "https://robosuite.ai/docs/modules/controllers.html"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "机体坐标系",
+      "name_en": "Body Frame",
+      "abbr": "",
+      "aliases": [
+        "本体坐标系",
+        "机身坐标系",
+        "体坐标系",
+        "{b}"
+      ],
+      "tier": 2,
+      "one_liner": "固连在机器人身体上、随身体一起移动和转动的坐标系。",
+      "explanation": "机体坐标系（教材里常记作 {b}）是绑在刚体或机器人躯干上的坐标系，原点和三根轴随身体一起平移、转动；与之相对的是固定不动的世界坐标系。描述物体的位置和朝向，本质上就是给出机体系相对世界系的位姿；速度、力等量也都可以选在世界系或机体系里表达。腿足机器人的强化学习策略通常把观测放在机体系里：Isaac Lab 的 base_lin_vel、base_ang_vel 和 projected_gravity（重力方向在机体系中的投影，用来感知身体倾斜）都定义在机器人根坐标系下，这样策略不必关心机器人在世界里面朝哪边。",
+      "example": "让四足机器人「以 0.5 m/s 向前走」时，速度指令一般在机体系里给出，x 方向就是机身朝向的前方；无论机器人在世界里面朝东还是朝北，同一条指令都表示「往自己前面走」。",
+      "related": [
+        "世界坐标系",
+        "基坐标系",
+        "坐标变换",
+        "投影重力",
+        "位姿",
+        "速度指令跟踪"
+      ],
+      "sources": [
+        {
+          "title": "Modern Robotics（Lynch & Park, 2017 预印本）第 3 章 Rigid-Body Motions",
+          "url": "https://hades.mech.northwestern.edu/images/7/7f/MR.pdf"
+        },
+        {
+          "title": "isaaclab.envs.mdp API（base_lin_vel / projected_gravity 等观测）",
+          "url": "https://isaac-sim.github.io/IsaacLab/main/source/api/lab/isaaclab.envs.mdp.html"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "压力中心",
+      "name_en": "Center of Pressure",
+      "abbr": "CoP",
+      "aliases": [
+        "足底压力中心",
+        "压心",
+        "COP"
+      ],
+      "tier": 2,
+      "one_liner": "地面对脚底所有支撑力合成后的作用点，常用来判断是否站得稳。",
+      "explanation": "脚踩在地上时，脚底各处都受到地面的支撑力，压力中心就是把这些分布力合成为一个地面反作用力后所在的作用点。生物力学里用测力台测量它：人站立时它随身体微微晃动，走路时从脚跟移到脚尖。按定义它只能落在支撑多边形（所有着地点围成的凸区域）以内，移到边缘就意味着脚掌即将绕边缘翘起。它和零力矩点（ZMP）来源不同：CoP 由接触力算出，ZMP 由整机运动的加速度推算；但只有一个接触面或在平地行走时二者是同一点，所以传统人形步行控制常以「ZMP/CoP 保持在支撑多边形内」作为稳定判据，并用脚底的六维力传感器实时测 CoP。",
+      "example": "人站立时身体前倾，压力中心会从脚掌中部移向前脚掌；前倾太多它到达脚尖边缘后无法再前移，此时只能迈一步，否则就会向前摔倒。",
+      "related": [
+        "零力矩点",
+        "支撑多边形",
+        "地面反作用力",
+        "足底力传感器",
+        "质心",
+        "平衡控制"
+      ],
+      "sources": [
+        {
+          "title": "Center of pressure (terrestrial locomotion) - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Center_of_pressure_(terrestrial_locomotion)"
+        },
+        {
+          "title": "Zero-tilting moment point - Stéphane Caron",
+          "url": "https://scaron.info/robotics/zero-tilting-moment-point.html"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "柔顺性",
+      "name_en": "Compliance",
+      "abbr": "",
+      "aliases": [
+        "柔顺",
+        "顺应性",
+        "柔度"
+      ],
+      "tier": 2,
+      "one_liner": "机器人受外力时能顺势退让的程度，数值上是刚度的倒数。",
+      "explanation": "柔顺性在力学里是刚度的倒数：刚度 k 表示产生单位变形要多大的力（N/m），柔顺性 1/k 表示单位力能造成多大变形（m/N）。机器人领域用它描述手臂或关节受外力时是否会让位：纯位置控制的机械臂很「硬」，碰到桌面或人会产生很大的力；柔顺的机器人则会像弹簧一样退让。柔顺可以是被动的，来自机构本身的弹性，例如串联弹性驱动器、谐波减速器柔轮的扭转变形，或 Draper 实验室 1970 年代发明的远中心柔顺装置（RCC）；也可以是主动的，用阻抗控制、导纳控制在软件里模拟一根虚拟弹簧。插孔装配、擦桌子、与人协作这类接触任务都离不开它。",
+      "example": "轴孔装配时孔位稍有偏差，刚性手臂会让轴卡在孔边；在手腕和夹爪之间加一个 RCC，轴碰到孔口倒角后会被推着横向移动、自动对正滑进孔里。",
+      "related": [
+        "刚度",
+        "阻抗控制",
+        "导纳控制",
+        "柔顺控制",
+        "串联弹性驱动器",
+        "轴孔装配"
+      ],
+      "sources": [
+        {
+          "title": "Stiffness - Wikipedia（Compliance 为刚度的倒数）",
+          "url": "https://en.wikipedia.org/wiki/Stiffness"
+        },
+        {
+          "title": "Remote center compliance - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Remote_center_compliance"
+        },
+        {
+          "title": "Modern Robotics（Lynch & Park, 2017 预印本）第 11 章 Robot Control",
+          "url": "https://hades.mech.northwestern.edu/images/7/7f/MR.pdf"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "构型空间",
+      "name_en": "Configuration Space",
+      "abbr": "C-space",
+      "aliases": [
+        "位形空间",
+        "C空间",
+        "构型",
+        "Configuration",
+        "配置空间"
+      ],
+      "tier": 2,
+      "one_liner": "机器人所有可能姿态组成的空间，其中每个点对应一种完整姿态。",
+      "explanation": "构型（configuration）是能唯一确定机器人各部位位置的一组数，构型空间就是全部可能构型的集合，维数等于自由度数。例如平面上能平移和转动的物体是 3 维 (x, y, θ)，空间刚体是 6 维，n 个转动关节的固定基座机械臂是 n 维、直接用关节角作坐标。据《Modern Robotics》，Lozano-Pérez 在 1980 年的 MIT 报告中把它引入运动规划：把会与障碍物相撞的构型标成障碍区，其余叫自由空间，于是「让有形状的机器人绕开障碍」变成「让一个点在构型空间里找路」。RRT、PRM 等采样式规划器都在构型空间里工作。",
+      "example": "平面两连杆机械臂的构型空间由两个关节角 (θ1, θ2) 组成（严格说是一个环面）；桌上的杯子在这张图上会变成一块不规则禁区，规划路径就是在图上从起点连到终点并绕开禁区。",
+      "related": [
+        "自由度",
+        "关节空间",
+        "运动规划",
+        "基于采样的规划",
+        "碰撞检查",
+        "广义坐标"
+      ],
+      "sources": [
+        {
+          "title": "Modern Robotics（Lynch & Park, 2017 预印本）第 2 章 Configuration Space",
+          "url": "https://hades.mech.northwestern.edu/images/7/7f/MR.pdf"
+        },
+        {
+          "title": "Motion planning - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Motion_planning"
+        },
+        {
+          "title": "Configuration space (physics) - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Configuration_space_(physics)"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "接触力",
+      "name_en": "Contact Force",
+      "abbr": "",
+      "aliases": [],
+      "tier": 2,
+      "one_liner": "两个物体接触时相互施加的力，可拆成法向压力和切向摩擦力。",
+      "explanation": "接触力是两个物体因相互接触而产生的力，与重力、电磁力这类隔空作用的力相对。它通常分解成两部分：垂直于接触面的法向力（压紧力，只能推不能拉）和平行于接触面的切向力（摩擦力），后者的大小受摩擦系数和法向力限制，见库仑摩擦。机器人的走、抓、推、插都靠接触力完成：腿足机器人靠脚底的地面反作用力支撑和前进，夹爪靠指尖的法向力和摩擦力把物体提起来。物理引擎要在每个仿真步求解接触力；实物上则用六维力传感器、足底力传感器或触觉传感器测量；控制器里常把「接触力不超出摩擦锥」写成约束。",
+      "example": "在 Isaac Lab 里训练四足行走时，给每只脚挂一个接触传感器读取 net_forces_w（世界坐标下这只脚受到的总接触力）；读数接近零说明脚已离地，可以据此判断步态、设计奖励。",
+      "related": [
+        "法向力与切向力（剪切力）",
+        "库仑摩擦",
+        "摩擦锥",
+        "地面反作用力",
+        "接触模型",
+        "六维力传感器"
+      ],
+      "sources": [
+        {
+          "title": "Contact force - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Contact_force"
+        },
+        {
+          "title": "Contact Sensor - Isaac Lab Documentation",
+          "url": "https://isaac-sim.github.io/IsaacLab/main/source/overview/core-concepts/sensors/contact_sensor.html"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "库仑摩擦",
+      "name_en": "Coulomb Friction",
+      "abbr": "",
+      "aliases": [
+        "库仑摩擦模型",
+        "干摩擦",
+        "库仑摩擦定律",
+        "Coulomb friction model"
+      ],
+      "tier": 2,
+      "one_liner": "摩擦力不超过摩擦系数乘法向力、且与滑动速度无关的经典摩擦模型。",
+      "explanation": "库仑摩擦是描述两个干燥固体接触的经验定律：切向摩擦力 f_t ≤ μ·f_n，f_n 是法向压力，μ 是摩擦系数，常见在 0.1–1 之间。不滑动时，摩擦力可在这个上限内取任意值来阻止滑动；一旦滑动，摩擦力等于 μ·f_n、方向与滑动相反，且与滑动速度和名义接触面积无关。常再区分静摩擦系数 μs 和略小的动摩擦系数 μk。规律由 Amontons 于 1699 年总结、Coulomb 于 1785 年深入研究。它只是近似，却是抓取分析和物理引擎的基础：把 f_t ≤ μ·f_n 画成三维图形就是摩擦锥，判断会不会打滑就看接触力是否落在锥内。",
+      "example": "两指夹爪各用 10 N 压住杯子两侧，若 μ=0.5，每个接触点最多提供 5 N 摩擦力，合计 10 N，大约能提起重约 1 kg（重力约 9.8 N）的杯子；杯子再重就会从指间滑落。",
+      "related": [
+        "摩擦系数",
+        "摩擦锥",
+        "静摩擦与 Stribeck 效应",
+        "黏性摩擦",
+        "接触模型",
+        "打滑"
+      ],
+      "sources": [
+        {
+          "title": "Modern Robotics（Lynch & Park, 2017 预印本）12.2 节 Friction",
+          "url": "https://hades.mech.northwestern.edu/images/7/7f/MR.pdf"
+        },
+        {
+          "title": "Friction - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Friction"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "阻尼",
+      "name_en": "Damping",
+      "abbr": "",
+      "aliases": [
+        "阻尼系数",
+        "阻尼力",
+        "Damping Coefficient"
+      ],
+      "tier": 2,
+      "one_liner": "把运动或振动的能量逐渐耗散掉，让系统慢下来、稳下来的作用。",
+      "explanation": "阻尼指振动或运动系统里把能量耗散掉的作用，如流体黏滞、摩擦等。最常用的线性（黏性）模型是阻尼力 = −b·v，v 是速度，b 是阻尼系数，速度越快阻力越大。在质量-弹簧-阻尼系统 m·ẍ + b·ẋ + k·x = f 中（m 质量、k 刚度、f 外力），阻尼比 ζ 决定响应形态：ζ<1 欠阻尼，来回振荡；ζ=1 临界阻尼，最快回到平衡且不过冲；ζ>1 过阻尼，回得慢。机器人里 PD 控制的 D 增益相当于给关节加了虚拟阻尼器，Isaac Lab 等仿真器里的关节控制参数就直接叫 stiffness 和 damping；关节本身的机械阻尼也要辨识后写进仿真模型。",
+      "example": "腿足机器人关节常用 PD 控制 τ = kp·(q_des − q) + kd·(q̇_des − q̇)，kd 就是阻尼增益：取太小关节会抖动、过冲，取太大响应迟缓。《Modern Robotics》建议把增益选在临界阻尼 ζ=1 附近。",
+      "related": [
+        "阻尼比",
+        "刚度",
+        "质量-弹簧-阻尼系统",
+        "PD 控制",
+        "刚度与阻尼增益",
+        "阻抗控制"
+      ],
+      "sources": [
+        {
+          "title": "Damping - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Damping"
+        },
+        {
+          "title": "Modern Robotics（Lynch & Park, 2017 预印本）第 11 章 Robot Control",
+          "url": "https://hades.mech.northwestern.edu/images/7/7f/MR.pdf"
+        },
+        {
+          "title": "Actuators - Isaac Lab Documentation",
+          "url": "https://isaac-sim.github.io/IsaacLab/main/source/overview/core-concepts/actuators.html"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "DH参数",
+      "name_en": "Denavit-Hartenberg Parameters",
+      "abbr": "DH",
+      "aliases": [
+        "DH 参数法",
+        "D-H 参数",
+        "标准 DH",
+        "DH 约定",
+        "DH 参数表"
+      ],
+      "tier": 2,
+      "one_liner": "每个关节只用四个数描述相邻连杆坐标系关系的机械臂建模约定。",
+      "explanation": "DH 参数是 Denavit 和 Hartenberg 1955 年在《Journal of Applied Mechanics》上提出的约定：按固定规则给每个连杆绑一个坐标系，相邻坐标系之间的变换就只需 4 个数——沿前一 z 轴的偏移 d、绕前一 z 轴的转角 θ、两关节轴公垂线的长度 a（连杆长度）、绕公垂线的扭角 α。转动关节的 θ 就是关节变量，其余三个是常数。把各关节的 4×4 齐次变换矩阵依次相乘，就得到从基座到末端的正运动学。1981 年 Richard Paul 把它推广到机器人学。Craig 教材的「改进 DH」坐标系位置和变换顺序不同，两种参数表不能混用。",
+      "example": "优傲 UR5e 官方公布的标准 DH 参数：关节 1 的 d=0.1625 m、α=π/2；关节 2、3 的 a 分别为 −0.425 m 和 −0.3922 m（大臂、小臂长度）；关节 4–6 的 d 分别为 0.1333、0.0997、0.0996 m。代入公式就能由 6 个关节角算出末端位姿。",
+      "related": [
+        "改进 DH 参数",
+        "正运动学",
+        "齐次变换矩阵",
+        "指数积公式",
+        "统一机器人描述格式",
+        "连杆"
+      ],
+      "sources": [
+        {
+          "title": "Denavit–Hartenberg parameters - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Denavit%E2%80%93Hartenberg_parameters"
+        },
+        {
+          "title": "DH Parameters for calculations of kinematics and dynamics - Universal Robots",
+          "url": "https://www.universal-robots.com/articles/ur/application-installation/dh-parameters-for-calculations-of-kinematics-and-dynamics/"
+        }
+      ],
+      "as_of": ""
+    }
+  ]
+}

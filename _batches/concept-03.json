@@ -1,0 +1,404 @@
+{
+  "category": "concept",
+  "batch": 3,
+  "terms": [
+    {
+      "name_zh": "策略",
+      "name_en": "Policy",
+      "abbr": "",
+      "aliases": [
+        "控制策略",
+        "策略网络",
+        "Policy Network"
+      ],
+      "tier": 1,
+      "one_liner": "根据当前观测决定下一步做什么动作的规则，通常是一个神经网络。",
+      "explanation": "策略是强化学习和机器人学习的核心概念，指智能体从「当前状态或观测」到「动作」的映射，常记作 π。确定性策略对同一输入总给出同一个动作，随机策略则输出一个动作分布再从中采样。在具身智能里，策略通常是一个神经网络：输入相机画面、关节角等本体状态，有时再加一句语言指令，输出机械臂末端位姿、关节目标角或行走速度指令。训练策略主要靠模仿学习（照着人类演示学）和强化学习（靠奖励试错），VLA 模型本质上也是一种大规模策略。注意别和强化学习里的「模型」混淆：那里单说「模型」常指预测环境下一步怎么变化的动力学模型（如「基于模型的强化学习」），而策略负责选动作。",
+      "example": "扩散策略在 Push-T 任务里读入相机画面和末端当前位置，每次输出接下来一小段末端移动目标，控制机械臂把 T 形块推到指定位置。",
+      "related": [
+        "视觉运动策略",
+        "模仿学习",
+        "强化学习",
+        "观测",
+        "动作空间",
+        "视觉-语言-动作模型"
+      ],
+      "sources": [
+        {
+          "title": "OpenAI Spinning Up: Key Concepts in RL",
+          "url": "https://spinningup.openai.com/en/latest/spinningup/rl_intro.html"
+        },
+        {
+          "title": "Diffusion Policy: Visuomotor Policy Learning via Action Diffusion",
+          "url": "https://arxiv.org/abs/2303.04137"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "本体",
+      "name_en": "Robot Embodiment",
+      "abbr": "",
+      "aliases": [
+        "机器人本体",
+        "具身形态",
+        "Embodiment",
+        "Robot Body"
+      ],
+      "tier": 1,
+      "one_liner": "机器人的物理身体：形态、关节、传感器和执行器的具体组合。",
+      "explanation": "本体是国内具身智能圈对机器人「身体」的叫法，对应英文 embodiment，指一台机器人具体的硬件形态：是单臂、双臂、四足还是人形，有多少自由度（可粗略理解为能独立活动的关节数），装了哪些相机和力传感器，末端是夹爪还是灵巧手。本体决定了策略能看到什么（观测空间）、能输出什么（动作空间），同一个模型换一种本体往往不能直接用，这叫本体差异。Open X-Embodiment 数据集汇集了 22 种本体的数据，就是为了研究跨本体迁移。行业里「本体厂商」指造机器人硬件的公司，与只做模型的「大脑公司」相对。",
+      "example": "Franka 机械臂和宇树 G1 人形机器人是两种差别很大的本体：前者是 7 个关节加一个二指夹爪，后者要同时控制腿、腰和双臂的二十多个关节。",
+      "related": [
+        "跨本体",
+        "本体差异",
+        "本体无关",
+        "自由度",
+        "人形机器人",
+        "本体厂商"
+      ],
+      "sources": [
+        {
+          "title": "Open X-Embodiment: Robotic Learning Datasets and RT-X Models（项目页）",
+          "url": "https://robotics-transformer-x.github.io/"
+        },
+        {
+          "title": "Open X-Embodiment 论文（arXiv 2310.08864）",
+          "url": "https://arxiv.org/abs/2310.08864"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "机器人学习",
+      "name_en": "Robot Learning",
+      "abbr": "",
+      "aliases": [
+        "机器人学习方法"
+      ],
+      "tier": 1,
+      "one_liner": "用机器学习让机器人从数据和交互中习得技能，而不是靠手写规则。",
+      "explanation": "机器人学习是机器学习与机器人学的交叉领域，研究让机器人通过学习算法获得新技能或适应环境，而不是由工程师逐条编写控制程序。主要路线有模仿学习（从人类演示中学，比如遥操作采集的数据）、强化学习（在仿真或真机上靠奖励试错），以及近几年用大规模数据预训练的机器人基础模型。它要解决的核心难题是：真机数据少且贵、真机试错有风险、仿真和现实之间有差距。该领域的专门会议是 CoRL（Conference on Robot Learning），具身智能里的大部分模型研究都属于这个范畴。",
+      "example": "用遥操作采集几十条叠毛巾的演示，训练一个 ACT 策略，让双臂机器人自己学会叠毛巾，而不需要人写出每一步的关节角。",
+      "related": [
+        "模仿学习",
+        "强化学习",
+        "策略",
+        "仿真到现实迁移",
+        "基础模型",
+        "具身智能"
+      ],
+      "sources": [
+        {
+          "title": "Robot learning - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Robot_learning"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "操作",
+      "name_en": "Robotic Manipulation",
+      "abbr": "",
+      "aliases": [
+        "机器人操作",
+        "操控",
+        "操纵",
+        "Manipulation"
+      ],
+      "tier": 1,
+      "one_liner": "机器人用手或工具接触物体，改变它的位置、姿态或状态。",
+      "explanation": "操作指机器人用机械臂、夹爪或灵巧手接触物体并改变它的位置、姿态或状态，比如抓取、放置、开抽屉、倒水、叠衣服。它和「运动（移动）」是具身智能的两大能力方向：运动管身体怎么走，操作管手怎么干活。MIT 教授 Russ Tedrake 在讲义《Robotic Manipulation: Perception, Planning, and Control》中指出，操作远不止抓取放置：手要不断建立和断开接触、施加力、在「粘住」和「滑动」两种摩擦状态间快速切换，光这些在动力学和控制上就很难；装洗碗机、叠衣服这类人觉得平常的事，对机器人仍极具挑战，处在机器人研究的最前沿。常见细分有灵巧操作、双臂操作、接触丰富操作、柔性物体操作等。",
+      "example": "让双臂机器人把洗碗机里的碗逐个取出、放进橱柜，是一个包含多次抓取和放置的长程操作任务。",
+      "related": [
+        "抓取",
+        "灵巧操作",
+        "双臂操作",
+        "接触丰富操作",
+        "移动操作",
+        "运动（移动）"
+      ],
+      "sources": [
+        {
+          "title": "Russ Tedrake, Robotic Manipulation (MIT course notes), Ch.1 Introduction",
+          "url": "https://manipulation.csail.mit.edu/intro.html"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "空间智能",
+      "name_en": "Spatial Intelligence",
+      "abbr": "",
+      "aliases": [
+        "视觉空间智能",
+        "Visual-Spatial Intelligence"
+      ],
+      "tier": 1,
+      "one_liner": "理解三维空间中物体的位置、距离和形状，并据此推理和行动的能力。",
+      "explanation": "在心理学里，加德纳 1983 年在 Frames of Mind 一书中提出多元智能理论，空间智能是其中一种，指在脑中想象和判断空间关系的能力。AI 领域近年由李飞飞大力推广：她联合创立了 World Labs，2025 年 11 月发文称空间智能是 AI 的下一个前沿，认为模型除了懂语言，还要能感知、生成、推理并与三维世界交互。对具身智能来说，机器人判断「杯子离盘子多远」「这个柜子放不放得下」都依赖空间智能；VSI-Bench 等基准专门测多模态大模型的这类能力，结果显示仍明显不如人类。",
+      "example": "执行「把离门最近的那把椅子推到桌子下面」，机器人要先在三维场景里判断哪把椅子离门最近，再估计桌下空间够不够。",
+      "related": [
+        "空间推理",
+        "世界模型",
+        "3D视觉",
+        "VSI-Bench 视觉空间智能基准",
+        "World Labs",
+        "物理AI"
+      ],
+      "sources": [
+        {
+          "title": "Fei-Fei Li: From Words to Worlds: Spatial Intelligence is AI's Next Frontier",
+          "url": "https://drfeifei.substack.com/p/from-words-to-worlds-spatial-intelligence"
+        },
+        {
+          "title": "Theory of multiple intelligences - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Theory_of_multiple_intelligences"
+        },
+        {
+          "title": "Thinking in Space: How Multimodal Large Language Models See, Remember, and Recall Spaces",
+          "url": "https://arxiv.org/abs/2412.14171"
+        }
+      ],
+      "as_of": "2025-11"
+    },
+    {
+      "name_zh": "轨迹",
+      "name_en": "Trajectory",
+      "abbr": "",
+      "aliases": [
+        "运动轨迹"
+      ],
+      "tier": 1,
+      "one_liner": "随时间变化的一串位置或状态-动作序列，也指一条完整的演示记录。",
+      "explanation": "轨迹在具身智能里有两层常用含义。在机器人学里，轨迹是一条路径加上时间安排，规定机器人每个时刻应处在哪个位置或关节角，《Modern Robotics》教材把它定义为「路径 + 时间缩放」，控制器的任务就是跟踪这条轨迹。在强化学习和数据集里，轨迹指智能体与环境交互产生的状态、动作序列 τ=(s0, a0, s1, a1, …)，一条遥操作演示录下来就是一条轨迹，Open X-Embodiment 等数据集就用轨迹条数来计量规模。模型一次输出的一段未来动作（动作分块）也常被称作一小段轨迹。",
+      "example": "机械臂从桌上抓起杯子的 3 秒里，以 50Hz 记录下的 150 个末端位姿和夹爪开合值，就是一条轨迹。",
+      "related": [
+        "回合",
+        "轨迹规划",
+        "轨迹跟踪",
+        "演示数据",
+        "动作分块",
+        "路径规划"
+      ],
+      "sources": [
+        {
+          "title": "OpenAI Spinning Up: Key Concepts in RL（Trajectories）",
+          "url": "https://spinningup.openai.com/en/latest/spinningup/rl_intro.html"
+        },
+        {
+          "title": "Lynch & Park, Modern Robotics, Ch.9 Trajectory Generation（预印本 PDF）",
+          "url": "https://hades.mech.northwestern.edu/images/7/7f/MR.pdf"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "视觉语言导航",
+      "name_en": "Vision-and-Language Navigation",
+      "abbr": "VLN",
+      "aliases": [
+        "视觉-语言导航"
+      ],
+      "tier": 1,
+      "one_liner": "让智能体听懂自然语言路线描述，靠视觉在陌生环境里走到目的地。",
+      "explanation": "视觉语言导航是 Anderson 等人在 CVPR 2018 论文中提出的具身任务：智能体收到一段类似「出门右转，经过沙发后在厨房门口停下」的指令，只靠第一人称视觉，在没去过的室内环境里一步步走到终点。配套的 Room-to-Room（R2R）数据集基于 Matterport3D 真实房屋扫描，覆盖 90 栋建筑、约 2.2 万条人工撰写的指令。它考验语言理解、视觉感知和空间记忆的配合。原版 R2R 里智能体只能在预先拍好全景图的点位之间跳转，2020 年的 VLN-CE 改成在连续三维空间里用前进、转向等底层动作移动，更接近真机；之后又出现了能在真机上运行的 NaVid、NaVILA 等模型。",
+      "example": "指令「沿走廊直走，在第二扇门左转进卧室，停在床边」，机器人边看边走，最后停在床边算成功。",
+      "related": [
+        "导航",
+        "R2R / VLN-CE 视觉语言导航基准",
+        "路径长度加权成功率",
+        "物体目标导航",
+        "NaVILA",
+        "视觉语言模型"
+      ],
+      "sources": [
+        {
+          "title": "Vision-and-Language Navigation: Interpreting visually-grounded navigation instructions in real environments",
+          "url": "https://arxiv.org/abs/1711.07280"
+        },
+        {
+          "title": "Room-to-Room (R2R) 数据集主页",
+          "url": "https://bringmeaspoon.org/"
+        },
+        {
+          "title": "Beyond the Nav-Graph: Vision-and-Language Navigation in Continuous Environments (VLN-CE)",
+          "url": "https://arxiv.org/abs/2004.02857"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "零样本",
+      "name_en": "Zero-shot",
+      "abbr": "",
+      "aliases": [
+        "零样本泛化",
+        "零次学习",
+        "零样本学习",
+        "Zero-shot Learning",
+        "Zero-shot Generalization"
+      ],
+      "tier": 1,
+      "one_liner": "不给新任务或新环境任何训练样本，模型直接上手完成。",
+      "explanation": "零样本原本是机器学习里的概念：模型测试时要识别训练中从没见过的类别，靠属性、文字描述等辅助信息把已学知识迁移过去，2009 年 Palatucci 等人的 NIPS 论文使用了「zero-shot learning」这一说法。到了大模型和具身智能时代，含义扩展为「新任务、新物体或新场景不再采数据、不再微调，拿来就用」。例如通用策略在没见过的厨房里直接开抽屉，就叫零样本泛化。它与少样本（给几条示例）相对，常用来衡量机器人基础模型的泛化能力。读论文要留意：有的「零样本」只指场景没见过，任务类型训练时其实见过。",
+      "example": "Robot Utility Models 为开柜门、开抽屉等 5 类任务各训练一个策略，不再采数据也不微调，直接部署到没见过的新环境，报告平均成功率约 90%。",
+      "related": [
+        "少样本",
+        "泛化",
+        "分布外",
+        "开放词汇",
+        "微调",
+        "通用策略"
+      ],
+      "sources": [
+        {
+          "title": "Zero-shot learning - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Zero-shot_learning"
+        },
+        {
+          "title": "Robot Utility Models: General Policies for Zero-Shot Deployment in New Environments",
+          "url": "https://robotutilitymodels.com/"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "动作多峰性",
+      "name_en": "Action Multimodality",
+      "abbr": "",
+      "aliases": [
+        "多峰动作分布",
+        "动作多峰分布",
+        "动作多模态",
+        "动作多模态性",
+        "多模态动作分布",
+        "多峰分布",
+        "Multimodal Action Distribution",
+        "模式平均",
+        "Mode Averaging"
+      ],
+      "tier": 2,
+      "one_liner": "同一情境下有多种都正确的做法，动作分布出现多个「峰」。",
+      "explanation": "动作多峰性指在同一个观测下合理的动作不止一种，比如绕开障碍物可以从左走也可以从右走，人类演示里两种都有，动作的概率分布就有两个峰。如果用均方误差直接回归一个动作，模型会学到两个峰的平均值，也就是「模式平均」，结果可能径直撞向障碍物。解决办法是用能表达多峰分布的策略：高斯混合模型、把动作离散成 token 再分类（如 BeT），以及扩散策略和流匹配。扩散策略论文把「处理多峰动作分布」列为主要优势之一，这也是如今很多 VLA 采用扩散或流匹配动作头的原因之一。",
+      "example": "Push-T 任务里，演示者有时从左侧、有时从右侧推 T 形块；直接回归的策略容易学成两者的平均，扩散策略则在每次执行中只选定一侧推到底。",
+      "related": [
+        "扩散策略",
+        "流匹配",
+        "高斯混合模型",
+        "BeT / VQ-BeT",
+        "行为克隆",
+        "扩散动作头"
+      ],
+      "sources": [
+        {
+          "title": "Diffusion Policy 项目页（Columbia）",
+          "url": "https://diffusion-policy.cs.columbia.edu/"
+        },
+        {
+          "title": "Diffusion Policy: Visuomotor Policy Learning via Action Diffusion",
+          "url": "https://arxiv.org/abs/2303.04137"
+        },
+        {
+          "title": "Behavior Transformers: Cloning k Modes with One Stone",
+          "url": "https://arxiv.org/abs/2206.11251"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "可供性",
+      "name_en": "Affordance",
+      "abbr": "",
+      "aliases": [
+        "示能性",
+        "功能可供性"
+      ],
+      "tier": 2,
+      "one_liner": "物体或环境「允许你对它做什么」，比如把手能拉、按钮能按。",
+      "explanation": "可供性由美国心理学家詹姆斯·吉布森在 1966 年提出、1979 年在《视觉感知的生态学方法》中系统阐述，指环境为动物提供的行动可能性。它是相对的：同一把椅子对人是可坐的，对猫是可跳上去的。1988 年唐·诺曼把它引入交互设计。在机器人里，可供性回答「这个物体能怎么交互、从哪里下手」，例如杯柄可握、抽屉把手可拉。常见做法是在图像或点云上标出可交互区域（可供性检测），或像 SayCan 那样用价值函数估计某个技能此刻能否成功，把大模型的计划限制在机器人真能做到的范围内。",
+      "example": "看到一个马克杯，可供性模型会把杯柄标为「可抓握」区域、把杯口标为「可倒入」区域，机器人据此决定从哪里下手。",
+      "related": [
+        "可供性检测",
+        "SayCan",
+        "抓取",
+        "铰接物体操作",
+        "具身感知",
+        "语言接地"
+      ],
+      "sources": [
+        {
+          "title": "Affordance - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Affordance"
+        },
+        {
+          "title": "SayCan: Do As I Can, Not As I Say: Grounding Language in Robotic Affordances",
+          "url": "https://say-can.github.io/"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "铰接物体操作",
+      "name_en": "Articulated Object Manipulation",
+      "abbr": "",
+      "aliases": [
+        "关节物体操作",
+        "铰接体操作"
+      ],
+      "tier": 2,
+      "one_liner": "操作带活动关节部件的物体，如开柜门、拉抽屉、掀笔记本盖。",
+      "explanation": "铰接物体指由转动或滑动关节连起来的多个部件组成的物体，比如柜门（绕合页转动）、抽屉（沿导轨滑动）、笔记本电脑、水龙头、冰箱门。操作这类物体时，机器人不仅要找到把手，还要推断关节类型、转轴位置和运动方向，并在运动中顺着约束方向施力，否则会卡住甚至扯坏把手。它是家务机器人的基础能力。研究上常用 SAPIEN 仿真器及配套的 PartNet-Mobility 铰接物体数据集；代表工作如 ICCV 2021 的 Where2Act，它通过在仿真中反复交互，学会预测物体上哪里能推、哪里能拉。",
+      "example": "打开一个没见过的微波炉：先认出门把手，判断门绕左侧竖直轴转动，再沿以转轴为圆心的圆弧把门拉开。",
+      "related": [
+        "铰接物体",
+        "铰接结构估计",
+        "PartNet-Mobility 数据集",
+        "SAPIEN",
+        "可供性",
+        "操作"
+      ],
+      "sources": [
+        {
+          "title": "Where2Act: From Pixels to Actions for Articulated 3D Objects",
+          "url": "https://arxiv.org/abs/2101.02692"
+        },
+        {
+          "title": "SAPIEN: A SimulAted Part-based Interactive ENvironment",
+          "url": "https://arxiv.org/abs/2003.08515"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "自动驾驶",
+      "name_en": "Autonomous Driving",
+      "abbr": "",
+      "aliases": [
+        "智驾",
+        "智能驾驶",
+        "无人驾驶",
+        "Self-driving"
+      ],
+      "tier": 2,
+      "one_liner": "让汽车在少人或无人干预下自己感知路况、做决策并控制行驶。",
+      "explanation": "自动驾驶指车辆依靠摄像头、激光雷达、毫米波雷达等传感器和车载计算机，自主完成感知、决策规划和控制。美国汽车工程师学会的 SAE J3016 标准把它分为 L0 到 L5 六级：L2 系统同时管转向和速度，但驾驶员要全程盯着；L3 起系统在特定条件下接管驾驶，需要时请人接手；L4 在限定区域内可以完全无人；L5 在任何条件下都不需要人。国内常说的「智驾」多指 L2 级辅助驾驶。自动驾驶可看作最早规模化落地的具身智能，端到端模型、世界模型、仿真和数据闭环等技术两边相通，业内也常说「智驾转具身」。",
+      "example": "城市 NOA（领航辅助驾驶）能在城区自动跟车、变道、过路口，但驾驶员必须随时准备接管，属于 L2 级。",
+      "related": [
+        "端到端",
+        "世界模型",
+        "激光雷达",
+        "自主等级",
+        "智驾转具身",
+        "具身智能"
+      ],
+      "sources": [
+        {
+          "title": "Self-driving car - Wikipedia（含 SAE J3016 分级）",
+          "url": "https://en.wikipedia.org/wiki/Self-driving_car"
+        }
+      ],
+      "as_of": ""
+    }
+  ]
+}

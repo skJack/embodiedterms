@@ -1,0 +1,113 @@
+{
+  "batch": "concept-11",
+  "terms": [
+    {
+      "key": "concept-11#0",
+      "name_en": "Grasp Taxonomy",
+      "aliases": ["Power Grasp / Precision Grasp", "GRASP Taxonomy", "Grasp Classification"],
+      "one_liner": "A system for classifying the different ways a hand can grip an object, based on how it contacts it.",
+      "explanation": "Grasp taxonomy is a system for organizing the different ways a human hand can grip an object. In 1956, John Napier split grasps into two broad families: power grasps, where the palm and fingers wrap around an object together (like gripping a hammer handle), and precision grasps, which rely mainly on the fingertips (like pinching a needle). In 1989, Mark Cutkosky proposed a more detailed, hierarchical taxonomy for manufacturing tasks; in 2016, Thomas Feix and colleagues combined earlier work into the GRASP taxonomy, covering 33 distinct grasp types. In robotics, the taxonomy is used to test how many grasp types a dexterous hand can physically perform, to label grasp datasets by type, and to choose an appropriate grasp for a given task. Peking University's He Wang lab used it to build Dexonomy (RSS 2025), a synthetic dataset of dexterous-hand grasps covering 31 grasp types.",
+      "example": "Gripping a hammer to drive a nail is a power grasp; picking up a pill is a precision grasp. Papers on dexterous hands, such as RBO Hand 3, often demonstrate all 33 grasp types in the GRASP taxonomy to prove the hand's versatility.",
+      "related": ["Grasping", "Dexterous Hand", "Dexterous Manipulation", "Hand Synergies", "Task-Oriented Grasping", "Force Closure"]
+    },
+    {
+      "key": "concept-11#1",
+      "name_en": "Human-Robot Handover",
+      "aliases": ["Object Handover", "Robot-to-Human Handover", "Human-to-Robot Handover"],
+      "one_liner": "A robot passing an object to a person, or taking one from a person's hand.",
+      "explanation": "Human-robot handover covers two directions: the robot giving an object to a person, or the robot receiving one from a person. A 2020 survey by Ortenzi and colleagues splits the interaction into two phases: a pre-handover phase, where giver and receiver implicitly agree on where and when the exchange happens, and the physical transfer phase, which runs from the receiver first touching the object to the giver fully releasing it. The hard parts are predicting the human's motion, planning an arm trajectory, choosing a grasp position that is easy for the other party to take hold of, and judging when to let go from the forces felt — release too early and the object drops, too late and it gets yanked. It is one of the most common forms of physical interaction in home service, caregiving, and human-robot collaboration in factories.",
+      "example": "A caregiving robot hands a cup of water to an elderly person seated on a bed: it brings the cup close with the handle facing them, and releases its grip only once it feels them take hold and pull back.",
+      "related": ["Human-Robot Collaboration", "Physical Human-Robot Interaction", "Human-Robot Interaction", "Grasping", "Task-Oriented Grasping", "Force Control"]
+    },
+    {
+      "key": "concept-11#2",
+      "name_en": "Image-Goal Navigation",
+      "aliases": ["ImageNav", "Image Navigation", "ImageGoal Navigation"],
+      "one_liner": "Giving a robot a photo of a destination and letting it find its own way there in an unfamiliar space.",
+      "explanation": "Image-goal navigation is a benchmark task in embodied navigation: an agent is placed in a previously unseen indoor environment and given only a photo taken at the goal location, then must reach that spot using nothing but its own camera. Early work includes Zhu and colleagues' 2016 target-driven visual navigation, which also introduced the AI2-THOR simulator; platforms such as Habitat later turned the task into a standard benchmark. The original setup has two weaknesses: a randomly captured goal image can be as uninformative as a blank wall, and the goal photo must be taken with camera settings matching the robot's own camera. To address this, Krantz and colleagues proposed Instance-Image Navigation (InstanceImageNav) in 2022, where the goal image targets a specific object and can be taken with any camera, making it closer to real-world use.",
+      "example": "A user photographs a chair in their study on their phone and sends it to a home robot, which explores the house and stops next to that chair.",
+      "related": ["Navigation", "Object-Goal Navigation", "Point-Goal Navigation", "Vision-and-Language Navigation", "Habitat", "AI2-THOR"]
+    },
+    {
+      "key": "concept-11#3",
+      "name_en": "Intent Understanding",
+      "aliases": ["Implicit Instruction Following", "Intention Reasoning", "Implicit Instruction Understanding"],
+      "one_liner": "Figuring out what a person actually wants from a hint, without them naming the object or action directly.",
+      "explanation": "Intent understanding is a robot's ability to infer what a person really wants when an instruction does not directly name the target object or action. An explicit instruction is something like “hand me the sponge”; an implicit one is more like “I spilled my drink, can you help?”, which requires common-sense reasoning: a spill needs wiping, and wiping needs a sponge. Google's 2022 SayCan used a large language model to break statements like this down into executable steps. CoRL 2024's Reasoning Grasping went further, mapping indirect instructions directly onto grasp poses — inferring which object to grasp and where to grip it. A 2025 evaluation, RoboBench, found that implicit instruction understanding remains a clear weak point for multimodal large models used as a robot's “brain.”",
+      "example": "Told “I spilled my drink, can you help?”, SayCan plans: 1. locate the sponge, 2. pick up the sponge, 3. bring it to you, 4. done.",
+      "related": ["Instruction Following", "Embodied Reasoning", "SayCan", "Vision-Language Model", "LLM-based Task Planning", "Human-Robot Interaction"]
+    },
+    {
+      "key": "concept-11#4",
+      "name_en": "Language Corrections",
+      "aliases": ["Verbal Corrections", "Real-time Language Feedback"],
+      "one_liner": "A person telling a working robot how to fix what it's doing, in words, while it keeps working.",
+      "explanation": "Language corrections let a person adjust a robot's behavior in real time using natural language while it performs a task — saying things like “a little to the left” or “don't grab the cup yet.” Compared with re-demonstrating the task through teleoperation, speaking a correction is far cheaper and usable by non-experts. Google's 2022 Interactive Language trained a real-time policy that could follow roughly 87,000 distinct language instructions, letting a person watch and talk an arm through arranging blocks into a smiley face. Shi and colleagues' 2024 YAY Robot uses a hierarchical structure: a high-level policy issues language instructions, and a low-level policy executes them. A person's spoken corrections can change behavior on the spot and are also logged to keep training the high-level policy, without needing extra teleoperation data.",
+      "example": "A robot keeps missing the opening while packing a bag; a person says “a little to the left,” and it adjusts immediately. The correction is logged, so next time the high-level policy issues a similar instruction on its own.",
+      "related": ["Language-conditioned Policy", "Human-in-the-Loop", "Hierarchical Architecture", "Hi Robot", "RT-H", "Failure Recovery"]
+    },
+    {
+      "key": "concept-11#5",
+      "name_en": "Morphological Computation",
+      "aliases": ["Morphological Computing"],
+      "one_liner": "Letting a body's own shape and material handle part of the work a controller would otherwise have to compute.",
+      "explanation": "Morphological computation is an idea from embodied cognition and bio-inspired robotics: a body's shape, material elasticity, and mass distribution can themselves take on some of the work that would otherwise have to be handled by a controller, effectively offloading computation onto the body. The idea has been promoted mainly by embodied-cognition researchers such as Rolf Pfeifer. The classic example is Tad McGeer's passive dynamic walker from the late 1980s: with no motors and no controller, it walks down a gentle slope using only gravity and the natural swing of its legs. Soft grippers, which conform to an object's shape through material deformation alone, are another common example. Hoffmann and Müller caution that a softer, more complex body is not automatically easier to control, and that morphology and control method need to be balanced against each other.",
+      "example": "A passive dynamic walker has no motors at all — leg length, mass distribution, and gravity alone let it walk down a shallow slope. According to Wikipedia, a Cornell biped built on this principle has a cost of transport of around 0.20, close to a human's, versus about 3.23 for Honda's ASIMO.",
+      "related": ["Embodied Cognition", "Passive Dynamic Walking", "Soft Robot", "Compliance", "Morphology-Control Co-design", "Cost of Transport"]
+    },
+    {
+      "key": "concept-11#6",
+      "name_en": "Morphology-Control Co-design",
+      "aliases": ["Morphological Evolution", "Brain-Body Co-design", "Co-design of Morphology and Control"],
+      "one_liner": "Optimizing a robot's body and its control policy together, instead of fixing the body first.",
+      "explanation": "Morphology-control co-design means searching for a robot's body (number of limbs, limb lengths, joint layout, and so on) and the policy that controls it at the same time. The traditional approach fixes the body first and then writes or trains a controller for it; co-design argues that the best controller depends on the body, and the best body depends on the controller, so both should be optimized in a single loop. Karl Sims's 1994 SIGGRAPH paper “Evolving Virtual Creatures” used simulated evolution to co-evolve the morphology and neural controllers of virtual creatures. Stanford's Gupta and colleagues built on this with DERL (2021), which evolves the body while using reinforcement learning to train the controller; ICLR 2022's Transform2Act instead treats “changing the body” as just another action for the policy to learn.",
+      "example": "In DERL, virtual agents assembled from different limbs learn to walk and manipulate objects in simulation; the better-performing individuals are kept and have their body structure mutated, and after many generations, more stable, more energy-efficient, faster-learning morphologies emerge.",
+      "related": ["Morphological Computation", "Reinforcement Learning", "Robot Embodiment", "Simulator", "Soft Robot", "Embodied AI"]
+    },
+    {
+      "key": "concept-11#7",
+      "name_en": "Multi-robot Collaboration",
+      "aliases": ["Multi-Robot Coordination", "Multi-Robot Systems (MRS)"],
+      "one_liner": "Multiple robots dividing up work and coordinating to finish a task that one robot can't do alone or fast enough.",
+      "explanation": "Multi-robot collaboration studies how multiple robots, identical or different, divide tasks, coordinate paths, and avoid colliding with each other while working toward a shared goal. Core problems include task allocation, multi-agent path finding, and communication or information sharing; control can be centralized, with one scheduling system directing everything, or distributed, where each robot decides based on local information — swarm robotics is the extreme case of the latter. The most mature deployment is in warehouse logistics: Amazon says it has deployed around one million robots and uses a foundation model called DeepFleet to coordinate its fleet, expecting it to cut robot travel time by 10%. Since large language models emerged, some work has also had multiple robot arms negotiate how to divide a task through language dialogue, such as 2023's RoCo.",
+      "example": "In RoCo, two robot arms collaborate on a tabletop task: each arm's LLM agent discusses in natural language who handles which step, then generates waypoints for a motion planner to execute, renegotiating whenever feedback from the environment signals a collision.",
+      "related": ["Swarm Intelligence", "Multi-Agent Path Finding", "Multi-Agent Reinforcement Learning", "Fleet Management System (e.g. Open-RMF)", "Human-Robot Collaboration", "Task Planning"]
+    },
+    {
+      "key": "concept-11#8",
+      "name_en": "Non-prehensile Manipulation",
+      "aliases": ["Nonprehensile Manipulation"],
+      "one_liner": "Moving an object by pushing, poking, flipping, or throwing it, instead of gripping it firmly.",
+      "explanation": "Non-prehensile manipulation covers ways a robot changes an object's position or orientation without fully grasping it in a gripper or hand: pushing, sliding, poking, flipping, tossing, or propping it up. It is useful because some objects cannot be grasped at all — they're too large, too flat, flush against a wall, or blocked — and sometimes a push is simply faster than picking an object up and setting it down again. The difficulty is that how an object moves depends on friction and contact, which are hard to predict and control precisely. Mason, Lynch, and others did early work on the mechanics of pushing, and Ruggiero and colleagues published a survey of dynamic non-prehensile manipulation in RA-L in 2018. The Push-T benchmark, which asks a robot to push a T-shaped block to a target position, is a common testbed. The topic often comes up alongside extrinsic dexterity, where a robot uses the environment, such as a tabletop or wall, to help manipulate an object.",
+      "example": "A flat card lying on a table can't be pinched up directly, so a robot first pushes it to the table's edge until part of it overhangs, then grips it from the side. Zhou and Held (CoRL 2022) used reinforcement learning to make a simple gripper push objects against a wall to flip them upright before grasping, reaching a 78% success rate on a real robot.",
+      "related": ["Extrinsic Dexterity", "Contact-rich Manipulation", "Dynamic Manipulation", "Grasping", "Push-T", "Quasi-static Assumption"]
+    },
+    {
+      "key": "concept-11#9",
+      "name_en": "Object-centric Representation",
+      "aliases": ["Object-centric Learning"],
+      "one_liner": "Encoding a scene as a set of separate objects, instead of squeezing the whole image into one vector.",
+      "explanation": "Object-centric representation means decomposing an image or scene into individual objects, each represented by its own set of features, such as position, shape, and category, rather than compressing the whole frame into a single feature vector. A representative method is Slot Attention (Locatello and colleagues, NeurIPS 2020), where a number of “slots” compete through attention and each ends up binding to one object, unsupervised. In robot manipulation, this kind of representation lets a policy attend only to the objects relevant to the task, making it more robust to changes in background or added distractor objects. 2022's VIOLA builds object-level representations from object proposals produced by a pretrained vision model, then uses a Transformer policy to select the relevant objects; the paper reports a 45.8% improvement in success rate over the strongest baseline.",
+      "example": "A table holds a cup, a bowl, and a spoon; the policy first splits the scene into three object representations. When executing “put the spoon in the bowl,” it attends only to the spoon and bowl, unaffected even if the tablecloth changes color.",
+      "related": ["Representation Learning", "Compositional Generalization", "3D Scene Graph", "Distractor Objects", "Vision Encoder", "Keypoint Detection"]
+    },
+    {
+      "key": "concept-11#10",
+      "name_en": "Order Picking",
+      "aliases": ["Piece Picking"],
+      "one_liner": "Pulling the exact items an order calls for, one by one, off warehouse shelves or out of bins.",
+      "explanation": "Order picking is a core step in warehouse logistics: pulling the quantities of items a customer order specifies out of inventory, then consolidating them for shipping. It splits into pallet-level, case-level, and piece-level picking. Piece picking has to handle thousands of different SKUs (stock-keeping units, meaning distinct product listings) in wildly varying shapes, materials, and packaging, often including soft bags and transparent items, which makes it the hardest form to automate. Robotic solutions typically use 3D vision to identify an item and plan a grasp point, then lift it with a suction cup or gripper into the order bin. Amazon has run picking challenges to push the research forward (the first drew 26 teams) and has released its Sparrow and, later, the touch-sensing Vulcan picking robots — Vulcan is reported to handle around 75% of the product types in Amazon's warehouses.",
+      "example": "In an e-commerce warehouse, shelves are brought to a workstation by a mobile robot; a robot arm uses vision to identify a tube of toothpaste and a pack of tissues in a storage bin, then suction-picks each one into the same order's shipping box.",
+      "related": ["Bin Picking", "Pick-and-Place", "Sorting (Parcel / Item Sorting)", "Tote Handling (Material Handling)", "Amazon Vulcan", "Amazon Picking Challenge"]
+    },
+    {
+      "key": "concept-11#11",
+      "name_en": "Palletizing / Depalletizing",
+      "aliases": ["Palletization / Depalletization", "Mixed-Case Palletizing"],
+      "one_liner": "Stacking boxes or bags onto a pallet in a set pattern, or taking them back off one by one.",
+      "explanation": "Palletizing means stacking cartons, bagged goods, drums, and similar items onto a pallet in a defined pattern so a forklift can move the whole load at once; depalletizing is the reverse, taking items off a pallet one at a time and feeding them onto a conveyor. According to Wikipedia, the first mechanical palletizer appeared in 1948, and robotic palletizers emerged in the early 1980s. Palletizing a single uniform product is mature technology; the hard case is mixed-case palletizing, where boxes of different sizes need a stable stacking pattern worked out on the fly, similar to a 3D bin-packing problem. Depalletizing is also hard because boxes sit flush against each other and may be taped or wrapped in reflective film, requiring 3D vision to identify each box's position and boundaries. Vendors such as Mech-Mind offer vision-guided de/palletizing systems, and Boston Dynamics' Stretch can also stack the boxes it has unloaded onto a pallet.",
+      "example": "At a logistics center's inbound dock, a 3D camera photographs a pallet of mixed cartons; a robot identifies each one and unloads it onto a conveyor with a vacuum gripper. Mech-Mind states its de/palletizing solution can reach about 900 items per hour at its fastest.",
+      "related": ["Industrial Robot", "Tote Handling (Material Handling)", "Vacuum Suction Cup", "3D Vision-Guided Robotics", "Boston Dynamics Stretch", "Lights-Out Factory"]
+    }
+  ]
+}

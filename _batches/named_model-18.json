@@ -1,0 +1,393 @@
+{
+ "category": "named_model",
+ "batch": 18,
+ "terms": [
+  {
+   "name_zh": "Meta Motivo（人形行为基础模型）",
+   "name_en": "Meta Motivo (FB-CPR; Zero-Shot Whole-Body Humanoid Control via Behavioral Foundation Models)",
+   "abbr": "",
+   "aliases": [
+    "FB-CPR",
+    "Forward-Backward Representations with Conditional-Policy Regularization"
+   ],
+   "tier": 3,
+   "one_liner": "Meta 的仿真人形行为基础模型，不用再训练就能做动作跟踪、到达姿态和按奖励行动",
+   "explanation": "Meta FAIR 在 2024 年 12 月发布，论文发表于 ICLR 2025，官方称其为首个人形行为基础模型。它控制的是物理仿真（HumEnv 环境）里的虚拟人形角色，不是真实机器人。核心算法 FB-CPR 以前向-后向表示为基础，这是一种把状态、奖励和策略编码进同一个潜在空间的无监督强化学习方法；再加一个判别器，约束策略去贴近没有动作标签的动捕数据，让学到的动作既像人又能泛化。预训练完成后，给一段参考动作、一个目标姿态或一个奖励函数，都能直接得到对应策略，不需要额外训练或规划；对重力、风、外力推搡等变化也有一定鲁棒性。代码和参数量从 2450 万到 2.88 亿的几个模型均已开源。",
+   "example": "给同一个预训练模型分别输入一段动捕参考动作、一个目标站姿或一个「原地转圈」的奖励函数，它都能直接控制仿真人形完成，不需要针对每个任务重新训练。",
+   "related": [
+    "行为基础模型",
+    "无监督技能发现",
+    "运动跟踪",
+    "零样本",
+    "BFM-Zero",
+    "对抗运动先验"
+   ],
+   "sources": [
+    {
+     "title": "Zero-Shot Whole-Body Humanoid Control via Behavioral Foundation Models (arXiv 2504.11054)",
+     "url": "https://arxiv.org/abs/2504.11054"
+    },
+    {
+     "title": "Meta FAIR: Sharing new research, models, and datasets (2024-12-12)",
+     "url": "https://ai.meta.com/blog/meta-fair-updates-agents-robustness-safety-architecture/"
+    },
+    {
+     "title": "facebookresearch/metamotivo (GitHub)",
+     "url": "https://github.com/facebookresearch/metamotivo"
+    }
+   ],
+   "as_of": "2025-04"
+  },
+  {
+   "name_zh": "MimicPlay",
+   "name_en": "MimicPlay: Long-Horizon Imitation Learning by Watching Human Play",
+   "abbr": "",
+   "aliases": [],
+   "tier": 3,
+   "one_liner": "先看人手随意玩耍的视频学高层计划，再用少量遥操作数据学底层动作的模仿学习方法",
+   "explanation": "斯坦福、英伟达等机构的 Chen Wang、Linxi Fan、李飞飞、Yuke Zhu 等人 2023 年 2 月发布，是 CoRL 2023 的口头报告论文。长程任务（要连续完成多步的任务）如果全靠遥操作采数据，成本很高。MimicPlay 采用分层结构：高层从「人类玩耍数据」，即人用手在场景里随意摆弄物体的视频中，学一个潜在计划，表示给定目标图像时人手的 3D 轨迹应该怎么走；低层只用少量遥操作演示训练视觉运动策略，按这个计划输出机器人动作。人手视频便宜、跨本体可用，正好补足机器人数据的不足。在 14 个真实长程操作任务上，它的成功率、泛化能力和抗干扰能力都优于当时的基线方法。",
+   "example": "面对「打开微波炉、把碗放进去、再关上门」这样的多步任务，高层根据目标图像预测人手该怎么移动的 3D 轨迹，低层策略照着这条轨迹驱动机械臂一步步完成。",
+   "related": [
+    "模仿学习",
+    "长程任务",
+    "玩耍数据",
+    "人类视频数据",
+    "分层架构",
+    "视觉运动策略"
+   ],
+   "sources": [
+    {
+     "title": "MimicPlay: Long-Horizon Imitation Learning by Watching Human Play (arXiv 2302.12422)",
+     "url": "https://arxiv.org/abs/2302.12422"
+    },
+    {
+     "title": "MimicPlay project page",
+     "url": "https://mimic-play.github.io/"
+    }
+   ],
+   "as_of": "2023-10"
+  },
+  {
+   "name_zh": "小米 MiMo-Embodied",
+   "name_en": "MiMo-Embodied: X-Embodied Foundation Model (Xiaomi)",
+   "abbr": "",
+   "aliases": [
+    "MiMo-Embodied-7B"
+   ],
+   "tier": 3,
+   "one_liner": "小米开源的 7B 视觉语言模型，同时覆盖自动驾驶和具身智能的理解与规划",
+   "explanation": "小米具身智能团队 2025 年 11 月发布技术报告并开源的视觉语言模型（VLM），参数约 70 亿，权重在 Hugging Face 公开。出发点是：自动驾驶和室内机器人都需要空间理解与规划，却通常各训各的。MiMo-Embodied 把两类数据放进同一个模型，经过多阶段训练、精选数据以及思维链和强化学习微调，同时覆盖具身侧的可供性预测、任务规划、空间理解，和驾驶侧的环境感知、状态预测、驾驶规划。报告称它在 17 个具身基准和 12 个自动驾驶基准上达到或超过同类开源与闭源模型，并观察到两个领域之间存在正迁移，互相促进。它评测的是理解、推理和规划能力，本身不直接输出机器人的关节动作。",
+   "example": "给它一张厨房照片问「杯子该从哪里抓」，它能在图上指出可抓的位置；给它一段行车画面，它能描述周围车辆状态并给出下一步驾驶规划。",
+   "related": [
+    "视觉语言模型",
+    "具身推理",
+    "可供性",
+    "空间推理",
+    "自动驾驶",
+    "跨本体"
+   ],
+   "sources": [
+    {
+     "title": "MiMo-Embodied: X-Embodied Foundation Model Technical Report (arXiv 2511.16518)",
+     "url": "https://arxiv.org/abs/2511.16518"
+    },
+    {
+     "title": "XiaomiMiMo/MiMo-Embodied (GitHub)",
+     "url": "https://github.com/XiaomiMiMo/MiMo-Embodied"
+    }
+   ],
+   "as_of": "2026-04"
+  },
+  {
+   "name_zh": "面壁 MiniCPM-Robot 系列",
+   "name_en": "MiniCPM-Robot series (OpenBMB: MiniCPM-RobotManip / MiniCPM-RobotTrack)",
+   "abbr": "",
+   "aliases": [
+    "MiniCPM-RobotManip",
+    "MiniCPM-RobotTrack"
+   ],
+   "tier": 3,
+   "one_liner": "MiniCPM 的具身模型家族，主打小参数、能在端侧跑的操作模型和目标跟随模型",
+   "explanation": "面壁智能主导的 OpenBMB 开源社区在 2026 年 7 月开源的具身模型家族，首批两款。MiniCPM-RobotManip 是 15 亿参数的通用 VLA（视觉-语言-动作模型），一套权重覆盖多个任务；它用流式推理把历史画面留在上下文里，最多保留约 1 分钟视觉记忆，并沿用 MiniCPM-V 4.6 的视觉 token 压缩，每帧从 256 个压到 64 个。官方在 LIBERO、CALVIN、RoboTwin 2.0 等基准上报告的成绩接近或超过参数更大的 π0.5。MiniCPM-RobotTrack 基于 MiniCPM4-0.5B，约 9 亿参数，专做按语言指令跟随目标，能在宇树 Go2 机器狗的机载算力上以 5 帧/秒以上、约 180 毫秒端到端延迟纯视觉运行，官方称在 EVT-Bench 上为开源最好成绩。",
+   "example": "在宇树 Go2 EDU 上说一句「跟着那个人」，RobotTrack 只用机载相机和本地算力就能一路跟随，官方演示包括进电梯和穿过地下车库。",
+   "related": [
+    "视觉-语言-动作模型",
+    "端侧模型",
+    "具身视觉跟踪（目标跟随）",
+    "视觉 token 剪枝",
+    "宇树 Go2",
+    "π0.5"
+   ],
+   "sources": [
+    {
+     "title": "OpenBMB/MiniCPM-Robot (GitHub)",
+     "url": "https://github.com/OpenBMB/MiniCPM-Robot"
+    }
+   ],
+   "as_of": "2026-07"
+  },
+  {
+   "name_zh": "Mobility VLA",
+   "name_en": "Mobility VLA: Multimodal Instruction Navigation with Long-Context VLMs and Topological Graphs",
+   "abbr": "",
+   "aliases": [
+    "MINT (Multimodal Instruction Navigation with demonstration Tours)"
+   ],
+   "tier": 3,
+   "one_liner": "用长上下文 VLM 看懂一段导览视频，再按图文指令找到目的地的分层导航系统",
+   "explanation": "Google DeepMind 在 2024 年 7 月发布。它针对的任务叫 MINT（带演示导览的多模态指令导航）：先有人拿着相机把环境走一遍录成导览视频，之后用户可以用文字加图片下指令，比如拿着一样东西问「这个该还到哪」。系统分两层：高层用上下文长达 100 万 token 的 Gemini 1.5 Pro 读完整段导览视频和指令，找出目标所在的那一帧；低层用 COLMAP（一种从图像恢复相机位姿的工具）由视频建出拓扑图，即把地点当节点、可通行关系当边的地图，据此生成路点动作交给底盘执行。在 836 平方米、有人办公的真实办公室里，需推理类和多模态类指令的端到端成功率分别为 86% 和 90%。",
+   "example": "用户拿着一个充电器问「这个应该放回哪里」，机器人先在导览视频里找到放充电器的那张桌子，再沿拓扑图一路开过去。",
+   "related": [
+    "视觉语言导航",
+    "拓扑地图",
+    "分层架构",
+    "Gemini 系列（谷歌多模态大模型）",
+    "上下文长度",
+    "运动恢复结构"
+   ],
+   "sources": [
+    {
+     "title": "Mobility VLA (arXiv 2407.07775)",
+     "url": "https://arxiv.org/abs/2407.07775"
+    },
+    {
+     "title": "Mobility VLA (arXiv HTML full text)",
+     "url": "https://arxiv.org/html/2407.07775"
+    }
+   ],
+   "as_of": "2024-07"
+  },
+  {
+   "name_zh": "MOKA（标记式视觉提示操作）",
+   "name_en": "MOKA: Open-World Robotic Manipulation through Mark-Based Visual Prompting",
+   "abbr": "MOKA",
+   "aliases": [],
+   "tier": 3,
+   "one_liner": "在图上画标记让 GPT-4V 选关键点，再把关键点转成机械臂动作的免训练方法",
+   "explanation": "UC Berkeley 的 Fangchen Liu、Kuan Fang、Pieter Abbeel、Sergey Levine 在 2024 年 3 月发布，发表于 RSS 2024。视觉语言模型懂常识，却不会直接输出机器人动作。MOKA 把「该怎么操作」改写成看图答题：在相机图像上叠加候选点、网格、文字说明等标记（即视觉提示），让 GPT-4V 分层地选出抓取点、工具与物体接触的作用点、目标点以及中间路点，再把这些关键点换算成机械臂的运动。它不需要为新任务收集机器人数据，能处理用工具、柔性物体操作和物体重排等桌面任务；执行中收集到的成功经验还能作为上下文示例，或蒸馏成一个策略网络。它是用视觉提示把 VLM 接到机器人上的代表工作。",
+   "example": "指令是「用刷子把碎屑扫到一边」时，GPT-4V 在带标记的图上选出刷柄的抓取点、刷毛接触桌面的作用点和扫动方向上的路点，机器人按这些点依次执行。",
+   "related": [
+    "视觉提示（Set-of-Mark 标记提示）",
+    "可供性",
+    "视觉语言模型",
+    "零样本",
+    "工具使用",
+    "PIVOT（迭代视觉提示）"
+   ],
+   "sources": [
+    {
+     "title": "MOKA: Open-World Robotic Manipulation through Mark-Based Visual Prompting (arXiv 2403.03174)",
+     "url": "https://arxiv.org/abs/2403.03174"
+    },
+    {
+     "title": "MOKA project page",
+     "url": "https://moka-manipulation.github.io/"
+    }
+   ],
+   "as_of": "2024-09"
+  },
+  {
+   "name_zh": "Molmo",
+   "name_en": "Molmo (Ai2 open VLM with pointing)",
+   "abbr": "",
+   "aliases": [
+    "Molmo and PixMo",
+    "Molmo 2"
+   ],
+   "tier": 3,
+   "one_liner": "Ai2 连权重带训练数据一起开源的视觉语言模型，能在图上用「指点」回答问题",
+   "explanation": "艾伦人工智能研究所（Ai2）2024 年 9 月发布的开放视觉语言模型家族，有 MolmoE-1B、Molmo-7B-O、Molmo-7B-D 和 Molmo-72B 几档，视觉编码器用 CLIP，语言部分分别基于 OLMo、Qwen2 等。它有两个特点。一是连同训练数据集 PixMo 一起开放，且不靠蒸馏闭源模型得到数据，PixMo 的详细图像描述是让标注员口述后整理的。二是会「指点」：能直接输出图中物体的 2D 坐标点，用来计数、定位。指点对机器人很实用，可以告诉机器人抓哪里、放哪里，Ai2 后来的 MolmoAct 就是在 Molmo 上做出来的。2025 年 12 月发布的 Molmo 2 把能力扩展到视频理解、时空定位和目标跟踪。",
+   "example": "问 Molmo「图里有几个杯子」，它会先在每个杯子上各打一个点，再给出总数。",
+   "related": [
+    "视觉语言模型",
+    "指向（点预测）",
+    "MolmoAct",
+    "开放权重",
+    "艾伦人工智能研究所",
+    "CLIP"
+   ],
+   "sources": [
+    {
+     "title": "Molmo (Ai2 blog)",
+     "url": "https://allenai.org/blog/molmo"
+    },
+    {
+     "title": "Molmo and PixMo (arXiv 2409.17146)",
+     "url": "https://arxiv.org/abs/2409.17146"
+    },
+    {
+     "title": "Molmo 2 (Ai2 blog)",
+     "url": "https://allenai.org/blog/molmo2"
+    }
+   ],
+   "as_of": "2025-12"
+  },
+  {
+   "name_zh": "MolmoAct",
+   "name_en": "MolmoAct: Action Reasoning Models that can Reason in Space (Ai2)",
+   "abbr": "",
+   "aliases": [
+    "MolmoAct2",
+    "MolmoAct 2",
+    "Action Reasoning Model (ARM)"
+   ],
+   "tier": 3,
+   "one_liner": "Ai2 开源的「动作推理模型」，先推深度、画轨迹，再输出动作的 VLA",
+   "explanation": "Ai2 在 2025 年 8 月发布，基于自家的 Molmo 视觉语言模型，70 亿参数，模型、代码、数据和评测脚本全部开源。它把 VLA 的决策拆成三步：先输出带深度信息的感知 token 理解三维空间，再在图像上画出末端要走的路点轨迹，最后把轨迹解码成机械臂和夹爪的具体动作。因为计划轨迹直接叠在图像上，人能在执行前看到它打算怎么做，也可以在手机或平板上画出路径来引导它。发布时报告在 SimplerEnv 分布外任务上成功率 72.1%、LIBERO 上 86.6%。2026 年 5 月的 MolmoAct2 改用具身推理骨干 Molmo2-ER，接上流匹配动作专家，单次动作推理从约 6.7 秒降到 180 毫秒，并开放了 720 多小时的双臂 YAM 数据集。",
+   "example": "给指令「把枕头摆到沙发上」，MolmoAct 先在相机画面上画出一条从枕头到沙发的轨迹，用户确认或在平板上改画后，它再转成机械臂动作执行。",
+   "related": [
+    "视觉-语言-动作模型",
+    "Molmo",
+    "具身推理",
+    "动作思维链",
+    "流匹配",
+    "BimanualYAM 数据集"
+   ],
+   "sources": [
+    {
+     "title": "MolmoAct (Ai2 blog)",
+     "url": "https://allenai.org/blog/molmoact"
+    },
+    {
+     "title": "MolmoAct: Action Reasoning Models that can Reason in Space (arXiv 2508.07917)",
+     "url": "https://arxiv.org/abs/2508.07917"
+    },
+    {
+     "title": "MolmoAct 2 (Ai2 blog)",
+     "url": "https://allenai.org/blog/molmoact2"
+    }
+   ],
+   "as_of": "2026-05"
+  },
+  {
+   "name_zh": "运动策略网络",
+   "name_en": "Motion Policy Networks",
+   "abbr": "MπNets",
+   "aliases": [
+    "MPiNets"
+   ],
+   "tier": 3,
+   "one_liner": "从单个深度相机的点云直接生成无碰撞机械臂运动的神经运动规划器",
+   "explanation": "华盛顿大学与英伟达的 Adam Fishman、Byron Boots、Dieter Fox 等人 2022 年 10 月发布，发表于 CoRL 2022。经典运动规划（如 RRT 这类采样式规划）需要完整准确的环境模型，在杂乱场景里也算得慢。MπNets 用一个端到端神经网络替代：输入单个深度相机看到的场景点云和机器人当前状态，逐步输出朝目标位姿移动的关节运动，连起来就是一条平滑、避障的轨迹。训练数据全部在仿真里用经典规划工具（OMPL 和 Geometric Fabrics）自动生成，覆盖 50 多万个环境、300 多万个规划问题。结果比以往的神经规划器好 46%，比全局规划器快得多、能应对动态场景，只用仿真数据训练也能迁移到带噪声的真机局部点云。代码、权重和数据已开源。",
+   "example": "机械臂要把手伸进柜子的某一格取东西，MπNets 看一眼深度相机的点云，就能实时给出绕开柜板的关节轨迹，不需要先建完整地图再跑规划器。",
+   "related": [
+    "神经运动规划",
+    "运动规划",
+    "点云",
+    "避障",
+    "基于采样的规划",
+    "Geometric Fabrics"
+   ],
+   "sources": [
+    {
+     "title": "Motion Policy Networks (arXiv 2210.12209)",
+     "url": "https://arxiv.org/abs/2210.12209"
+    },
+    {
+     "title": "MπNets project page",
+     "url": "https://mpinets.github.io/"
+    },
+    {
+     "title": "NVlabs/motion-policy-networks (GitHub)",
+     "url": "https://github.com/NVlabs/motion-policy-networks"
+    }
+   ],
+   "as_of": "2022-10"
+  },
+  {
+   "name_zh": "Motus",
+   "name_en": "Motus: A Unified Latent Action World Model",
+   "abbr": "",
+   "aliases": [],
+   "tier": 3,
+   "one_liner": "把理解、视频生成和动作三个专家合成一个模型的潜在动作世界模型",
+   "explanation": "清华大学朱军团队联合北京大学、地平线在 2025 年 12 月发布，代码和权重以 Apache 2.0 开源。以往的方法常把理解、世界模型（预测未来画面）和控制拆成独立模型，难以共同利用大规模异构数据。Motus 用混合 Transformer（MoT）架构把理解专家、视频生成专家和动作专家连在一起，视频部分基于 Wan2.2-5B，理解部分基于 Qwen3-VL-2B，总计约 80 亿参数；再用类似 UniDiffuser 的调度，在世界模型、VLA、逆动力学模型、视频生成等模式之间切换。它用光流学出潜在动作，让没有动作标签的视频也能参与预训练，并配合三阶段训练和六层数据金字塔。在 RoboTwin 2.0 的 50 个任务上平均成功率约 87%，报告比 X-VLA 高 15%、比 π0.5 高 45%。",
+   "example": "同一个 Motus 模型：给当前画面和指令，直接输出动作（VLA 模式）；给画面和动作，预测接下来的视频（世界模型模式）；给前后画面，反推中间做了什么动作（逆动力学模式）。",
+   "related": [
+    "世界动作模型",
+    "潜在动作",
+    "混合 Transformer 架构",
+    "逆动力学模型",
+    "数据金字塔",
+    "RoboTwin"
+   ],
+   "sources": [
+    {
+     "title": "Motus: A Unified Latent Action World Model (arXiv 2512.13030)",
+     "url": "https://arxiv.org/abs/2512.13030"
+    },
+    {
+     "title": "thu-ml/Motus (GitHub)",
+     "url": "https://github.com/thu-ml/Motus"
+    },
+    {
+     "title": "Motus project page",
+     "url": "https://motus-robotics.github.io/motus"
+    }
+   ],
+   "as_of": "2025-12"
+  },
+  {
+   "name_zh": "MT-Opt",
+   "name_en": "MT-Opt: Continuous Multi-Task Robotic Reinforcement Learning at Scale",
+   "abbr": "",
+   "aliases": [],
+   "tier": 3,
+   "one_liner": "谷歌用 7 台真机采 9600 小时数据、同时学 12 个任务的多任务强化学习系统",
+   "explanation": "Robotics at Google 的 Dmitry Kalashnikov、Chelsea Finn、Sergey Levine、Karol Hausman 等人 2021 年 4 月发布，是 QT-Opt（谷歌基于 Q 学习的大规模抓取强化学习）的多任务扩展。团队用 7 台机器人在 57 天里连续采集约 9600 机器人小时、80 多万个回合的数据，同时学习挑拣特定物体、放入容器、摆齐、覆盖等 12 个真实任务。关键设计有两个：用多任务成功检测器自动判断任务是否完成并给奖励；把一个任务的回合共享给其他任务并重新平衡数据量，让数据少的任务借到常见任务的经验。稀有任务的平均成功率从单任务 QT-Opt 的 1% 提升到 50%，新任务在约一天内就能微调学会。它是谷歌在 RT-1 之前探索真机规模化学习的重要工作。",
+   "example": "要教机器人一个新任务「用毛巾盖住物体」，不用从头训练，在已学到的抓取等技能基础上补采约一天数据微调即可。",
+   "related": [
+    "QT-Opt",
+    "强化学习",
+    "多任务学习",
+    "成功检测器",
+    "真机强化学习",
+    "离线强化学习"
+   ],
+   "sources": [
+    {
+     "title": "MT-Opt (arXiv 2104.08212)",
+     "url": "https://arxiv.org/abs/2104.08212"
+    },
+    {
+     "title": "Multi-Task Robotic Reinforcement Learning at Scale (Google Research blog, 2021-04-19)",
+     "url": "https://research.google/blog/multi-task-robotic-reinforcement-learning-at-scale/"
+    },
+    {
+     "title": "MT-Opt project page",
+     "url": "https://karolhausman.github.io/mt-opt/"
+    }
+   ],
+   "as_of": "2021-04"
+  },
+  {
+   "name_zh": "MuZero",
+   "name_en": "MuZero (Mastering Atari, Go, Chess and Shogi by Planning with a Learned Model)",
+   "abbr": "MuZero",
+   "aliases": [],
+   "tier": 3,
+   "one_liner": "DeepMind 不给规则、靠学到的内部模型做树搜索就精通围棋和 Atari 的算法",
+   "explanation": "DeepMind 的 Julian Schrittwieser、David Silver 等人 2019 年 11 月发布预印本，2020 年 12 月发表于《自然》，是 AlphaGo、AlphaZero 的后继。AlphaZero 下棋时要知道规则才能在「脑中」推演，MuZero 不再需要规则：它学一个隐空间模型，只预测对决策最有用的三样东西，即奖励、策略和价值，而不去重建完整的画面，然后用蒙特卡洛树搜索在这个学到的模型里往前推演、挑选动作。它在围棋、国际象棋、将棋上达到 AlphaZero 的水平，并在 57 款 Atari 游戏上超过了当时所有算法。它是基于模型的强化学习的代表，体现了「世界模型只需为规划服务」的思路，常和 Dreamer 系列一起讨论。",
+   "example": "玩 Atari 游戏时，MuZero 从未被告知游戏规则，只看画面和得分，就在自己学到的内部模型里预演几步不同操作的后果，选预期回报最高的那一步。",
+   "related": [
+    "基于模型的强化学习",
+    "世界模型",
+    "蒙特卡洛树搜索",
+    "隐空间世界模型",
+    "价值函数",
+    "DreamerV3"
+   ],
+   "sources": [
+    {
+     "title": "Mastering Atari, Go, Chess and Shogi by Planning with a Learned Model (arXiv 1911.08265)",
+     "url": "https://arxiv.org/abs/1911.08265"
+    },
+    {
+     "title": "MuZero: Mastering Go, chess, shogi and Atari without rules (Google DeepMind blog)",
+     "url": "https://deepmind.google/discover/blog/muzero-mastering-go-chess-shogi-and-atari-without-rules/"
+    }
+   ],
+   "as_of": "2020-12"
+  }
+ ]
+}

@@ -1,0 +1,113 @@
+{
+  "batch": "mechanics-04",
+  "terms": [
+    {
+      "key": "mechanics-04#0",
+      "name_en": "Differential Drive Kinematics",
+      "aliases": ["Unicycle Model", "Differential Drive Model"],
+      "one_liner": "The equations relating the left and right wheel speeds of a two-wheeled base to its forward speed and turning rate.",
+      "explanation": "Differential drive is the most common mobile-base layout: an independently motor-driven wheel on the left and one on the right, plus caster wheels to keep it from tipping, steering purely by making the two wheels turn at different speeds, with no separate steering mechanism needed. Its kinematics comes down to just two equations: linear velocity v = (v_R + v_L)/2 and angular velocity ω = (v_R − v_L)/b, where v_R and v_L are the right and left wheel's linear speeds (wheel angular speed times wheel radius r) and b is the distance between the wheels. Run in reverse, a desired v and ω give the speed each wheel should turn at. This makes the chassis behave, in the plane, like a point that can only move forward and spin in place — the unicycle model — and it can't move directly sideways; a speed limitation like this is called a nonholonomic constraint. ROS's diff_drive_controller uses exactly these two equations to convert a cmd_vel command into left/right wheel commands, and to reconstruct odometry from wheel feedback.",
+      "example": "For a robot vacuum to turn left in place, the right wheel drives forward at speed u and the left wheel drives backward at the same speed u: v = 0, ω = 2u/b, so the body spins in place about the midpoint between the two wheels.",
+      "related": ["Nonholonomic Constraint", "Differential Drive", "Wheel Odometry", "cmd_vel Topic (Twist Message)", "Mobile Base", "Forward Kinematics"]
+    },
+    {
+      "key": "mechanics-04#1",
+      "name_en": "Differential Kinematics",
+      "aliases": ["Velocity Kinematics", "Differential Inverse Kinematics (Diff IK)"],
+      "one_liner": "The kinematics that relates joint velocities to end-effector velocity through the Jacobian matrix.",
+      "explanation": "Forward kinematics answers “where is the end effector given these joint angles”; differential kinematics answers “how fast does the end effector move given these joint speeds.” The bridge between them is the Jacobian matrix J(q), the partial derivative of forward kinematics with respect to joint angles q: V = J(q)·q̇, where V is the end effector's 6-dimensional spatial velocity (3D linear velocity plus 3D angular velocity) and q̇ is the vector of joint velocities. Running this backward is differential inverse kinematics: given a desired end-effector velocity V_d, the pseudoinverse (a generalization of “inverse” to non-square matrices) gives q̇ = J⁺V_d, which is then integrated into joint-angle commands, repeated every control cycle. It avoids having to solve a full analytical inverse-kinematics problem each time, which suits teleoperation and policies that output end-effector deltas well — but near a singular configuration (where J loses rank), the pseudoinverse can blow up, so practical implementations often use damped least squares instead, or frame the problem as a quadratic program with joint limits built in. Pink and mink are libraries built around this approach.",
+      "example": "During VR teleoperation, each control cycle converts the controller's displacement into a desired end-effector velocity, and q̇ = J⁺V_d gives the speed each of the 7 joints should turn at, so the arm's end effector smoothly tracks the operator's hand.",
+      "related": ["Jacobian Matrix", "Inverse Kinematics", "Jacobian Pseudoinverse", "Damped Least Squares", "Singular Configuration", "mink"]
+    },
+    {
+      "key": "mechanics-04#2",
+      "name_en": "Dynamic Stability",
+      "aliases": ["Dynamic Balance"],
+      "one_liner": "Balance where the center of mass can briefly leave the support region, recovered through continued motion and the next footstep.",
+      "explanation": "Legged robots can be “stable” in two different senses. Static stability requires the center of mass's ground projection to stay inside the support polygon (the convex region enclosed by the feet on the ground) at all times, so the robot wouldn't fall even if it froze at any instant — a hexapod that shuffles slowly on three legs at a time, alternating, walks this way. Dynamic stability relaxes that requirement: the center of mass can run outside the support region briefly, as long as the next footstep and adjustments to the ground forces keep the motion from diverging into a fall — this is how humans walk and run. Marc Raibert's hopping one-legged robots in the 1980s proved that a robot could stay upright through continuous hopping alone. Common ways to assess dynamic stability include the zero moment point (ZMP — the point where the foot's reaction force produces no horizontal moment, which must stay inside the support region) and the capture point (a footstep location that would bring the robot to a stop); modern humanoid locomotion controllers trained with reinforcement learning often learn dynamic balance directly in simulation instead.",
+      "example": "When a humanoid robot walks briskly, during single-support phase its center of mass has already tipped forward past the supporting foot; the next foot lands just in time to catch the body — that's dynamic stability. If it instead shifted its center of mass directly above the support foot before every step, that would be a static-stability gait, and much slower.",
+      "related": ["Static Stability", "Support Polygon", "Zero Moment Point (ZMP)", "Capture Point", "Inverted Pendulum Model", "Balance Control"]
+    },
+    {
+      "key": "mechanics-04#3",
+      "name_en": "Euler-Lagrange Equations",
+      "aliases": ["Lagrangian Dynamics", "Lagrangian Mechanics"],
+      "one_liner": "A way of deriving a robot's equations of motion from kinetic and potential energy, without analyzing constraint forces one by one.",
+      "explanation": "Lagrangian mechanics was developed by Joseph-Louis Lagrange, laid out fully in his 1788 book Mécanique analytique. The method starts by writing the Lagrangian L = T − V (T is kinetic energy, V is potential energy), then, for each generalized coordinate q_i (such as a joint angle), writes an equation d/dt(∂L/∂q̇_i) − ∂L/∂q_i = τ_i, where τ_i is the generalized force acting on that coordinate (such as a motor torque). The advantage is that it only requires computing energy — the constraint forces between joints cancel out automatically — and the number of equations equals the number of degrees of freedom. For a robot arm, this works out to the standard form M(q)q̈ + C(q,q̇)q̇ + g(q) = τ: M is the mass matrix, the C term captures Coriolis and centrifugal forces, and g is the gravity term. This set of equations underlies torque control, gravity compensation, model predictive control, and physics simulation; deriving it by hand suits a two- or three-joint textbook example, while real robots compute it numerically with algorithms like the recursive Newton-Euler algorithm.",
+      "example": "A simple pendulum: length l, mass m, angle θ, kinetic energy T = ½ml²θ̇², potential energy V = −mgl·cosθ. Substituting into the equation gives ml²θ̈ + mgl·sinθ = τ — the familiar pendulum equation.",
+      "related": ["Newton-Euler Equations", "Generalized Coordinates", "Mass Matrix", "Coriolis and Centrifugal Terms", "Forward Dynamics", "Inverse Dynamics"]
+    },
+    {
+      "key": "mechanics-04#4",
+      "name_en": "Flight Phase (Aerial Phase)",
+      "aliases": ["Aerial Phase", "Flight Period"],
+      "one_liner": "The part of a gait where every foot is off the ground at once and the body is airborne.",
+      "explanation": "Legged locomotion breaks down over time into phases: a foot bearing weight on the ground is in stance phase, a foot swinging through the air is in swing phase, and if there's a stretch where no foot touches the ground at all, that's the flight phase. It's the key distinction between walking and running: in walking, at least one foot is on the ground at all times, while running includes a flight phase. For a robot, gravity is the only force acting during flight, so the center of mass follows a parabolic arc, and the controller can no longer use ground forces to change the robot's overall momentum — it can only adjust leg posture to prepare for landing, and must then absorb an impact the instant it touches down, which is why running, jumping, and parkour are so much harder than walking. Raibert's hopping robots split each cycle into a stance phase and a flight phase with separate control, choosing a foot placement by swinging the leg during flight; quadruped bounding and galloping gaits, and humanoid running and flips, all include a flight phase.",
+      "example": "In a humanoid robot's jog, the brief moment after one foot pushes off the ground and before the other foot lands is the flight phase — the only thing the policy can do during it is adjust the swinging leg's posture to prepare for the next landing.",
+      "related": ["Stance Phase / Swing Phase", "Gait", "Gait Cycle and Duty Factor", "Spring-Loaded Inverted Pendulum (SLIP)", "Bounding Gait", "Galloping Gait"]
+    },
+    {
+      "key": "mechanics-04#5",
+      "name_en": "Floating Base",
+      "aliases": ["Free Joint", "Free-Flyer Joint"],
+      "one_liner": "A robot whose torso isn't bolted to the ground and instead has its own 6 degrees of freedom of free motion.",
+      "explanation": "An arm bolted to a table has a fixed base — the base doesn't move, so joint angles alone describe its configuration. A humanoid's, quadruped's, or drone's torso (the base) isn't attached to the world, so on top of its joints, 6 more degrees of freedom are needed to describe the torso's own position and orientation in space — this is what's meant by a floating base. Modeling it usually means inserting a virtual “free joint” between the world and the torso: MuJoCo calls it a free joint, with position given by 7 numbers (3D position plus a 4D unit quaternion) and velocity given by 6 numbers (3D linear velocity plus 3D angular velocity). The difficulty is that these 6 degrees of freedom have no motor driving them directly — the torso can only be pushed indirectly through the feet's contact forces with the ground, which makes it underactuated. As a result, controlling a floating-base robot is inseparable from contact forces, friction cones, and state estimation, and the torso's pose has to be estimated from an IMU and leg odometry.",
+      "example": "In the Unitree G1 model from the MuJoCo Menagerie, the root body pelvis carries a freejoint named floating_base_joint, so the first 7 values of qpos are the pelvis position and quaternion, with the individual joint angles following after.",
+      "related": ["Generalized Coordinates", "Underactuation", "Centroidal Dynamics", "Whole-Body Control", "State Estimation", "MJCF"]
+    },
+    {
+      "key": "mechanics-04#6",
+      "name_en": "Force Closure",
+      "aliases": [],
+      "one_liner": "A grasp where friction at the contact points can resist an external force or torque in any direction, so the object can't be pulled free.",
+      "explanation": "Force closure is the classic criterion in grasp mechanics for judging whether a grip is secure. Each contact point, thanks to friction, can apply force within a friction cone; stacking up all the force and torque (together called a wrench, 6 dimensions total) that every contact point can jointly produce, if the result covers the entire 6-dimensional space, the grasp is said to have force closure — no matter which direction an external push or twist comes from, the fingers can adjust their force to counteract it. Its counterpart is form closure, which pins the object down purely through contact geometry, without relying on friction, and usually needs more contact points. Force closure depends on the friction coefficient: the same fingertip positions might achieve it gripping a dry cardboard box but fail on an oily glass. It's the starting point for classical grasp planning and grasp quality metrics; for the planar case, a two-finger grasp achieves force closure exactly when the line connecting the two contact points falls inside both friction cones.",
+      "example": "A two-finger gripper holding a block, with the two contact faces parallel and their normals pointing directly at each other (an antipodal grasp): as long as the line between the two points falls inside both friction cones, the block can't be pulled up or pushed sideways out of the grip — force closure, in the planar sense.",
+      "related": ["Form Closure", "Friction Cone", "Wrench", "Antipodal Grasp", "Grasp Quality Metric", "Grasp Matrix"]
+    },
+    {
+      "key": "mechanics-04#7",
+      "name_en": "Forward Dynamics",
+      "aliases": [],
+      "one_liner": "Computing a robot's current acceleration, and hence its next motion, from its current state and the torques applied to it.",
+      "explanation": "Dynamics studies the relationship between force and motion, and splits into forward and inverse directions. Forward dynamics starts from known joint positions q, velocities q̇, and applied torques τ, and solves for acceleration q̈: from M(q)q̈ + c(q,q̇) = τ, q̈ = M⁻¹(τ − c), where M is the mass matrix and c lumps together the Coriolis, centrifugal, and gravity terms. Integrating q̈ forward over time steps produces the robot's future trajectory — exactly what a physics simulator does at every step, with engines like MuJoCo and Isaac Sim also solving for contact forces and friction on top of this. Inverse dynamics runs the opposite direction — given a desired motion, find the torques needed to produce it — and is mostly used in control. The classic efficient algorithm for forward dynamics is Roy Featherstone's articulated-body algorithm. Note that this differs from a “forward dynamics model” in machine learning, which refers to a neural network trained to predict the next state.",
+      "example": "In MuJoCo, if you apply zero torque to every joint of an arm and repeatedly call mj_step, the simulator computes the acceleration due to gravity via forward dynamics, and the arm sags and swings naturally under its own weight.",
+      "related": ["Inverse Dynamics", "Euler-Lagrange Equations", "Mass Matrix", "Articulated-Body Algorithm", "Physics Engine", "Learned Forward Dynamics Model"]
+    },
+    {
+      "key": "mechanics-04#8",
+      "name_en": "Friction Coefficient (Coefficient of Friction)",
+      "aliases": ["μ", "Coefficient of Friction (CoF)"],
+      "one_liner": "The ratio of maximum friction force to normal force, determining how easily a contact surface slips.",
+      "explanation": "By Coulomb's law of friction, the friction force f between two contacting surfaces never exceeds the friction coefficient μ times the normal force N (the force pressing the surfaces together): f ≤ μN. μ is a dimensionless number that depends on the two materials and their surface condition, is largely independent of contact area, and can only be measured experimentally. There are two kinds: the static friction coefficient μ_s sets the largest tangential force an object can resist before it starts sliding, and the kinetic friction coefficient μ_k applies once it's already sliding; μ_s is usually larger than μ_k. Common dry materials fall mostly between 0.3 and 0.6; rubber on concrete is about 0.6–0.85; ice on ice is only 0.02–0.09. In robotics, μ determines how much grip force a gripper needs to avoid dropping something, and how much horizontal force a foot can push against the ground with before slipping; MuJoCo assigns each contact separate sliding, torsional, and rolling friction parameters, and μ is commonly randomized during training to narrow the sim-to-real gap.",
+      "example": "A two-finger gripper holds a 0.5 kg cup, with normal force N per finger and μ = 0.5: total friction from both sides is 2×0.5×N, and supporting the roughly 4.9 N of weight needs N of at least about 4.9 N. Swap in a smooth cup surface with μ = 0.25, and the required grip force doubles to about 9.8 N.",
+      "related": ["Coulomb Friction", "Friction Cone", "Normal Force vs. Tangential (Shear) Force", "Slip", "Stiction and the Stribeck Effect", "Dynamics Randomization"]
+    },
+    {
+      "key": "mechanics-04#9",
+      "name_en": "Friction Cone",
+      "aliases": [],
+      "one_liner": "The cone-shaped set of every force a contact point can apply on an object without slipping.",
+      "explanation": "Under Coulomb's law of friction, a contact force's component tangential to the surface can't exceed its normal component (perpendicular to the surface) times the friction coefficient μ: √(f_x² + f_y²) ≤ μ·f_z, where f_z is the normal force and f_x, f_y are the two tangential components. Every force satisfying that inequality forms, in 3D, exactly a cone centered on the contact normal, with half-angle θ satisfying tanθ = μ. A force inside the cone won't slip; one outside it will. The friction cone is a basic constraint in contact computation: grasp analysis uses it to check force closure, model predictive control and whole-body control for legged robots require each foot's ground reaction force to stay inside its cone, and physics engines use it to constrain contact forces too. Because a cone is a nonlinear constraint, optimization commonly approximates it with a polyhedral cone (a friction pyramid) to get linear inequalities instead; MuJoCo offers both a pyramidal and an elliptical cone option.",
+      "example": "A quadruped robot walking on ground with μ around 0.6 has its controller cap each foot's horizontal force at 0.6 times its vertical force. On slippery tile, μ drops and the cone narrows, so the robot has to shorten its stride and reduce the horizontal push-off force.",
+      "related": ["Friction Coefficient", "Coulomb Friction", "Friction Pyramid", "Force Closure", "Ground Reaction Force", "Contact Force Optimization"]
+    },
+    {
+      "key": "mechanics-04#10",
+      "name_en": "Generalized Coordinates",
+      "aliases": ["Generalized Velocities", "qpos / qvel", "Joint State (joint_states)"],
+      "one_liner": "The smallest set of independent variables — such as each joint's angle — that uniquely describes a robot's overall configuration.",
+      "explanation": "Describing a multi-link robot could mean recording every link's position and orientation in space, but those are heavily redundant because the joints constrain them. Generalized coordinates instead use only the minimal set of independent parameters that uniquely fixes the configuration — for a serial arm, that's simply the joint angles q, and the count usually equals the number of degrees of freedom. Their time derivative q̇ is called the generalized velocity; the force paired with each coordinate, the one that does work along that coordinate, is the generalized force — for a revolute joint, that's just the joint torque. The Euler-Lagrange equations, the mass matrix, and most simulators all operate in generalized coordinates. In code, this looks like: MuJoCo stores position and velocity as qpos and qvel, and when a free joint or ball joint is present, orientation is stored as a quaternion, so the position dimension nq can exceed the velocity dimension nv; ROS's sensor_msgs/JointState message (usually published on a topic called /joint_states) publishes position, velocity, and effort arrays keyed by joint name, and is also where “joint state” comes from in many robot datasets.",
+      "example": "For a 7-DoF arm bolted to a table, q is simply its 7 joint angles. For the Unitree Go2 quadruped in MuJoCo, qpos is 7 (torso position plus quaternion) + 12 (leg joints) = 19-dimensional, and qvel is 6 + 12 = 18-dimensional.",
+      "related": ["Degrees of Freedom (DoF)", "Configuration Space", "Euler-Lagrange Equations", "Floating Base", "Joint Space", "Proprioception"]
+    },
+    {
+      "key": "mechanics-04#11",
+      "name_en": "Gimbal Lock",
+      "aliases": ["Gimbal Lock Singularity"],
+      "one_liner": "When representing rotation with Euler angles, one angle reaching 90° makes two rotation axes coincide, losing a degree of freedom.",
+      "explanation": "Gimbal lock was originally a mechanical problem: when a three-ring nested gimbal reaches a certain angle, two of its rotation axes become parallel, and the mounted platform loses its ability to rotate in one direction. The same phenomenon shows up mathematically when orientation is represented with Euler angles or roll-pitch-yaw angles: when pitch reaches ±90°, yaw and roll end up rotating about the same axis, so adjusting either one has the same effect, and certain small rotations nearby can't be expressed as a small change in the angles at all — interpolation and differentiation both develop discontinuities near this point. The inertial measurement platform on Apollo 11 was limited by exactly this: by design, the platform would lock once pitch neared 85°, requiring the crew to manually steer the spacecraft away from that attitude. The standard fix in robotics is to store and compute orientation with quaternions, rotation matrices, or a 6D rotation representation, and reserve Euler angles for human-readable display only; a policy trained to regress Euler angles directly can also learn discontinuous actions near these singular points.",
+      "example": "Controlling an arm's end-effector orientation with roll-pitch-yaw angles, setting pitch to 90° reveals that adjusting yaw and adjusting roll both rotate the gripper about the same axis — achieving a small rotation in the other direction requires all three angles to jump by a large amount at once.",
+      "related": ["Euler Angles", "Roll-Pitch-Yaw (RPY)", "Quaternion", "6D Rotation Representation", "Rotation Matrix", "Singular Configuration"]
+    }
+  ]
+}

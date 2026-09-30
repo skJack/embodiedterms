@@ -1,0 +1,205 @@
+{
+  "category": "control",
+  "batch": 9,
+  "terms": [
+    {
+      "name_zh": "接触力优化",
+      "name_en": "Contact Force Optimization (Force Distribution)",
+      "abbr": "",
+      "aliases": ["力分配", "地面反力分配", "接触力分配", "Force Distribution", "Ground Reaction Force Distribution"],
+      "tier": 3,
+      "one_liner": "已知机身需要的总力和力矩，求每只脚或每根手指各出多大力。",
+      "explanation": "接触力优化也叫力分配：机器人同时有多个接触点受力时（四足站立、双手抱箱、多指抓取），先由上层控制器算出机身需要的总力和总力矩（合称力旋量），再解一个优化问题把它分给各接触点。以四脚着地为例，每只脚 3 个力分量共 12 个未知数，平衡方程只有 6 个，解有无穷多组，所以要加目标来挑：尽量贴合期望力旋量、力尽量小；同时满足约束：切向力不超过摩擦系数乘法向力（摩擦锥，常线性化成摩擦金字塔）、法向力在上下限之间、腾空脚的力为零。它通常是每个控制周期解一次的二次规划，解出的力再经足端雅可比转置换成关节力矩。它只看当前一瞬间；凸 MPC 相当于把同一问题沿时间展开，全身控制则进一步纳入完整动力学。",
+      "example": "MIT Cheetah 开源代码里的 BalanceController：给定期望的机身线加速度和角加速度，求 4 只脚共 12 个力分量，约束是线性化的摩擦锥和每只脚的法向力上下限（腾空脚上下限直接设为 0），用 qpOASES 求解并用上一次的解热启动；文件注释写明方法参考了 Focchi 等人 2016 年关于陡坡行走的论文。",
+      "related": ["二次规划", "摩擦锥", "摩擦金字塔", "地面反作用力", "凸 MPC", "全身控制"],
+      "sources": [
+        {"title": "MIT Cheetah-Software: BalanceController.cpp（接触力 QP，qpOASES）", "url": "https://raw.githubusercontent.com/mit-biomimetics/Cheetah-Software/master/user/MIT_Controller/Controllers/BalanceController/BalanceController.cpp"},
+        {"title": "Kim et al., Highly Dynamic Quadruped Locomotion via Whole-Body Impulse Control and Model Predictive Control (arXiv:1909.06586)", "url": "https://arxiv.org/abs/1909.06586"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "接触时序（步态调度器）",
+      "name_en": "Contact Schedule / Gait Scheduler",
+      "abbr": "",
+      "aliases": ["接触时序", "步态调度器", "步态调度", "接触序列", "Contact Sequence", "Gait Schedule"],
+      "tier": 3,
+      "one_liner": "事先规定每条腿何时着地、何时抬起的时间表，供 MPC 等控制器使用。",
+      "explanation": "接触时序是一张时间表，写明未来一段时间里每只脚（或手）哪些时刻着地、哪些时刻腾空；负责生成它的模块叫步态调度器。常见的是相位式调度：一个步态周期内每条腿只用两个参数描述，即相位偏移（何时开始着地）和支撑时长（着地占周期多少）。改偏移就换步态：对角腿同相是小跑，前两腿、后两腿各成一对是跳跃，四腿同相是弹跳；改周期长短就改步频，步态类型不变。它的作用是把「什么时候接触」预先定下来，MPC 只需决定接触力大小，问题就能保持凸、算得快。代价是时序不能自己调整：脚提前或推迟触地时要靠接触估计修正，接触隐式方法则把时序也交给优化器决定。",
+      "example": "MIT Cheetah 开源代码把一个步态周期分成 10 段，腿序为右前、左前、右后、左后：小跑写成偏移 (0,5,5,0)、支撑时长 (5,5,5,5)，即对角两条腿同时着地、各支撑半个周期；弹跳写成偏移全为 0、支撑 4 段。每次调用 MPC 前，调度器把这张「10 段 × 4 条腿」的 0/1 接触表交给 MPC。",
+      "related": ["步态", "支撑相 / 摆动相", "步态规划", "凸 MPC", "接触估计", "接触隐式轨迹优化"],
+      "sources": [
+        {"title": "Kim et al., Highly Dynamic Quadruped Locomotion via Whole-Body Impulse Control and MPC（III-B Gait Scheduler）", "url": "https://arxiv.org/abs/1909.06586"},
+        {"title": "MIT Cheetah-Software: Gait.cpp（OffsetDurationGait 与 MPC 接触表）", "url": "https://raw.githubusercontent.com/mit-biomimetics/Cheetah-Software/master/user/MIT_Controller/Controllers/convexMPC/Gait.cpp"},
+        {"title": "MIT Cheetah-Software: ConvexMPCLocomotion.cpp（小跑、跳跃、弹跳、疾驰的步态定义）", "url": "https://raw.githubusercontent.com/mit-biomimetics/Cheetah-Software/master/user/MIT_Controller/Controllers/convexMPC/ConvexMPCLocomotion.cpp"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "接触隐式轨迹优化",
+      "name_en": "Contact-Implicit Trajectory Optimization",
+      "abbr": "",
+      "aliases": ["接触隐式优化", "接触隐式 MPC", "Contact-implicit MPC", "CI-MPC", "Through-contact Trajectory Optimization"],
+      "tier": 3,
+      "one_liner": "不预先规定接触顺序，让优化器自己决定何时、何处与环境接触。",
+      "explanation": "传统轨迹优化把「脚着地」「手碰到物体」当成离散模式，要先人工指定模式顺序（先左脚再右脚），再在每段内优化。对多指操作这类接触频繁变化的任务，这个顺序根本没法事先写。MIT 的 Posa、Cantu 与 Tedrake 提出的直接法（2012 年 WAFR 初版，2014 年发表于 IJRR）把接触力也设为决策变量，用互补约束描述接触：距离 φ ≥ 0、法向力 λ ≥ 0 且 φ·λ = 0，意思是「不接触就没有力，有力就必须贴着」，再用序列二次规划求解，接触时序和轨迹一并得出。这套约束来自物理引擎里的线性互补问题。代价是问题非凸、难收敛，常需松弛或平滑处理；后来又发展出可在线运行的接触隐式 MPC。",
+      "example": "Posa 等人用同一套方法规划了手指转动固定轴物体、简单抓取与操作、Spring Flamingo 平面行走和 FastRunner 双足高速奔跑，全程没有指定接触顺序；Le Cleac'h 等人 2021 年提出的快速接触隐式 MPC 在四足机器人真机上实时生成了非周期动作。",
+      "related": ["轨迹优化", "线性互补问题", "序列二次规划", "直接配点法", "多接触规划", "接触时序（步态调度器）"],
+      "sources": [
+        {"title": "Posa, Cantu, Tedrake: A Direct Method for Trajectory Optimization of Rigid Bodies Through Contact", "url": "https://groups.csail.mit.edu/robotics-center/public_papers/Posa13.pdf"},
+        {"title": "Le Cleac'h et al., Fast Contact-Implicit Model-Predictive Control (arXiv:2107.05616)", "url": "https://arxiv.org/abs/2107.05616"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "控制带宽",
+      "name_en": "Control Bandwidth",
+      "abbr": "",
+      "aliases": ["闭环带宽", "-3 dB 带宽", "Closed-loop Bandwidth", "力控带宽", "电流环带宽"],
+      "tier": 3,
+      "one_liner": "闭环系统能跟得上的最高信号频率，通常取增益下降 3 dB 处。",
+      "explanation": "给闭环控制系统输入不同频率的正弦指令：低频时输出能完整跟上，频率越高，输出幅值越小、滞后越大；幅值降到低频时约 70.7%（即 −3 dB）的那个频率就是闭环带宽。带宽越高，系统响应越快，也越能压住快速扰动。它和控制频率不是一回事：控制频率是每秒算几次指令，带宽是系统实际能跟上多快的变化，前者通常要比后者高出好几倍，带宽才有保证。串级控制里内环带宽要明显高于外环，比如电流环快于速度环、速度环快于位置环。腿足机器人落地接触时间很短，需要高带宽的力控；弹性元件、低刚度传动和通信延迟都会限制能达到的带宽。",
+      "example": "一阶系统 G(s)=1/(τs+1)，τ=16 毫秒时带宽为 1/τ=62.5 rad/s，约 10 Hz：给它 2 Hz 的正弦指令几乎完整跟上，30 Hz 时幅值只剩约三成。实际机器人里，MIT Cheetah 奔跑时单次触地可短到约 85 毫秒，其本体感受式执行器就把「高带宽力控」列为设计目标。",
+      "related": ["控制频率", "控制延迟", "串级控制", "本体感受式执行器", "力控", "阶跃响应指标（超调 / 调节时间 / 稳态误差）"],
+      "sources": [
+        {"title": "MathWorks: bandwidth（增益首次低于直流值 70.79%，即 −3 dB 的频率）", "url": "https://www.mathworks.com/help/control/ref/dynamicsystem.bandwidth.html"},
+        {"title": "Wikipedia: Bandwidth (signal processing)", "url": "https://en.wikipedia.org/wiki/Bandwidth_(signal_processing)"},
+        {"title": "Wensing et al., Proprioceptive Actuator Design in the MIT Cheetah: Impact Mitigation and High-Bandwidth Physical Interaction (IEEE T-RO 2017)", "url": "https://ieeexplore.ieee.org/document/7827048"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "控制障碍函数",
+      "name_en": "Control Barrier Function",
+      "abbr": "CBF",
+      "aliases": ["控制屏障函数", "CBF-QP", "障碍函数", "Barrier Function"],
+      "tier": 3,
+      "one_liner": "把「别越界」写成约束，只在快要不安全时才最小限度地改动控制指令。",
+      "explanation": "控制障碍函数用一个函数 h(x) 定义安全集：h(x) ≥ 0 就算安全（x 是系统状态，如位置和速度）。核心条件是 ḣ ≥ −α·h（α 为正的系数）：离边界越近、h 越小，允许 h 继续减小的速度就越慢，贴到边界时就不能再往外走，状态因此一直留在安全集里。Ames、Tabuada 等人把它和二次规划结合（arXiv 2016 年，期刊版发表于 IEEE TAC）：在满足该条件的控制量里找离原指令 u_des 最近的一个，即 CBF-QP。因为只在必要时改指令，它常被当作安全滤波器，套在遥操作或学习得到的策略外面。它和控制李雅普诺夫函数正好相对：CLF 保证「收敛到目标」，CBF 保证「不离开安全区」；比起人工势场法，它能给出形式化的安全保证。",
+      "example": "一维小车以 ẋ = u 向 x = 5 米处的墙移动，取 h = 5 − x、α = 2，条件化为 u ≤ 2(5 − x)。在 x = 4 时速度上限是 2 m/s，原指令 1 m/s 不受影响；到 x = 4.9 时上限降到 0.2 m/s，CBF-QP 就把指令压到 0.2 m/s。车越靠近墙越慢，始终撞不上。",
+      "related": ["控制李雅普诺夫函数", "安全滤波器", "二次规划", "HJ 可达性分析", "安全强化学习", "人工势场法"],
+      "sources": [
+        {"title": "Ames et al., Control Barrier Functions: Theory and Applications (arXiv:1903.11199)", "url": "https://arxiv.org/abs/1903.11199"},
+        {"title": "Ames, Xu, Grizzle, Tabuada: Control Barrier Function Based Quadratic Programs for Safety Critical Systems (arXiv:1609.06408)", "url": "https://arxiv.org/abs/1609.06408"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "控制李雅普诺夫函数",
+      "name_en": "Control Lyapunov Function",
+      "abbr": "CLF",
+      "aliases": ["控制李亚普诺夫函数", "控制 Lyapunov 函数", "CLF-QP"],
+      "tier": 3,
+      "one_liner": "一个类似能量的函数：只要总能选出控制让它下降，系统就能被稳到目标。",
+      "explanation": "李雅普诺夫函数 V(x) 类似系统的「能量」：在目标点为 0，其他地方为正。普通李雅普诺夫函数用来分析一个设计好的闭环是否稳定；控制李雅普诺夫函数面向还没定控制律、带输入 u 的系统：若在每个非目标状态都存在某个 u 使 V̇ < 0，系统就能被镇定到目标。这一理论在 1980 年代由 Artstein 和 Sontag 提出并发展，Sontag 还给出了直接由 CLF 构造控制律的通用公式。机器人中常用 CLF-QP：每个控制周期求一个满足 V̇ ≤ −λV（按指数速度收敛）且力矩尽量小的 u，方便同时加上力矩上限、摩擦锥等约束。Ames 等人把它用于双足行走；它也常和控制障碍函数放进同一个二次规划，安全约束为硬约束，收敛约束加松弛变量作软约束。",
+      "example": "一阶系统 ẋ = u，取 V = x²/2，则 V̇ = x·u。要求 V̇ ≤ −V（即 λ = 1）：在 x = 2 时条件化为 2u ≤ −2，即 u ≤ −1。CLF-QP 在满足条件的 u 里挑绝对值最小的 u = −1，状态随之按指数速度收敛到 0。",
+      "related": ["李雅普诺夫稳定性", "控制障碍函数", "二次规划", "混合零动态", "反馈线性化", "最优控制"],
+      "sources": [
+        {"title": "Wikipedia: Control-Lyapunov function", "url": "https://en.wikipedia.org/wiki/Control-Lyapunov_function"},
+        {"title": "Ames, Galloway, Sreenath, Grizzle: Rapidly Exponentially Stabilizing Control Lyapunov Functions and Hybrid Zero Dynamics (IEEE TAC 2014)", "url": "https://ieeexplore.ieee.org/document/6709752"},
+        {"title": "Ames et al., Control Barrier Functions: Theory and Applications（CLF-CBF-QP 一节）", "url": "https://arxiv.org/abs/1903.11199"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "凸 MPC",
+      "name_en": "Convex MPC",
+      "abbr": "",
+      "aliases": ["凸模型预测控制", "基于单刚体模型的凸MPC", "Convex MPC (MIT Cheetah 3)", "单刚体 MPC"],
+      "tier": 3,
+      "one_liner": "把腿足机器人简化成单刚体，让 MPC 变成能快速求到全局最优的二次规划。",
+      "explanation": "凸 MPC 一般指 MIT 仿生机器人实验室 Di Carlo、Wensing、Kim 等人 2018 年在 IROS 发表的四足控制方法。模型预测控制要在每个周期求解带动力学约束的优化，全身模型非线性、太慢；他们把机器人看成一个被地面反力推动的单刚体（忽略腿的质量），再做三点近似：横滚和俯仰角小、状态接近指令轨迹（用指令偏航角和预定落脚点做线性化）、忽略与角速度相关的非线性项。每只脚何时着地由步态调度器事先给定，决策变量只剩地面反力，加上摩擦锥约束，就成了凸二次规划：一定能求到全局最优，且解得很快。它输出未来一段时间的反力，再由关节力矩控制或全身控制执行。大角度翻滚等情形下近似会失效，这时要用非线性 MPC。",
+      "example": "在 Cheetah 3 上，预测时域最长 0.5 秒的反力规划不到 1 毫秒解完，以 20–30 Hz 运行，用同一组增益实现了站立、小跑、飞行小跑、弹跳、跳跃、踱步、三足步态和三维疾驰，前进速度达 3 m/s；2019 年移植到 Mini Cheetah 后与 500 Hz 的全身冲量控制（WBIC）配合，跑到 3.7 m/s。",
+      "related": ["模型预测控制", "单刚体动力学模型", "非线性模型预测控制", "接触力优化", "接触时序（步态调度器）", "全身控制"],
+      "sources": [
+        {"title": "Di Carlo et al., Dynamic Locomotion in the MIT Cheetah 3 Through Convex Model-Predictive Control (IROS 2018)", "url": "https://dspace.mit.edu/handle/1721.1/138000"},
+        {"title": "Kim et al., Highly Dynamic Quadruped Locomotion via Whole-Body Impulse Control and Model Predictive Control (arXiv:1909.06586)", "url": "https://arxiv.org/abs/1909.06586"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "CHOMP",
+      "name_en": "Covariant Hamiltonian Optimization for Motion Planning",
+      "abbr": "CHOMP",
+      "aliases": ["协变哈密顿运动规划优化", "CHOMP 规划器"],
+      "tier": 3,
+      "one_liner": "用梯度下降把初始轨迹推离障碍物、同时保持平滑的轨迹优化规划器。",
+      "explanation": "CHOMP 由 CMU 的 Ratliff、Zucker、Bagnell 与 Srinivasa 在 2009 年 ICRA 提出，扩展版 2013 年发表于 IJRR。它把轨迹离散成一串路点，代价分两项：平滑项（用差分算出的速度、加速度的平方和），障碍项（把机器人近似成一串小球，查环境的符号距离场，离障碍越近代价越高）。「协变」指梯度更新前先乘上平滑度量矩阵的逆，让一次修改平滑地分摊到整条轨迹，而不是把单个路点硬拽走；名字里的「哈密顿」指用哈密顿蒙特卡洛加随机扰动以跳出局部最优。它不要求初始轨迹无碰撞，从穿过障碍物的直线出发也能收敛。缺点是会陷入局部最优，偶尔直接穿过薄障碍，因此常用 OMPL 等采样规划器先给一条无碰撞初值。它与 STOMP、TrajOpt 同属基于优化的运动规划。",
+      "example": "原论文在 Barrett WAM 机械臂上做操作规划，也用它为 LittleDog 四足机器人生成行走轨迹。MoveIt 集成了 CHOMP，可通过 smoothness_cost_weight 和 obstacle_cost_weight 两个参数调节平滑与避障的权重。",
+      "related": ["轨迹优化", "STOMP", "TrajOpt", "符号距离场", "MoveIt", "路径平滑"],
+      "sources": [
+        {"title": "Ratliff, Zucker, Bagnell, Srinivasa: CHOMP: Gradient Optimization Techniques for Efficient Motion Planning (ICRA 2009)", "url": "https://publications.ri.cmu.edu/storage/publications/pub_files/2009/5/icra09-chomp.pdf"},
+        {"title": "Zucker et al., CHOMP: Covariant Hamiltonian Optimization for Motion Planning (IJRR 2013)", "url": "https://publications.ri.cmu.edu/chomp-covariant-hamiltonian-optimization-for-motion-planning/"},
+        {"title": "MoveIt: CHOMP Planner 教程", "url": "https://moveit.picknik.ai/main/doc/how_to_guides/chomp_planner/chomp_planner_tutorial.html"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "覆盖路径规划",
+      "name_en": "Coverage Path Planning",
+      "abbr": "CPP",
+      "aliases": ["全覆盖路径规划", "完全覆盖路径规划", "覆盖规划", "Complete Coverage Path Planning"],
+      "tier": 3,
+      "one_liner": "规划一条让机器人（或它的工具）扫过整片区域每一处的路径。",
+      "explanation": "普通路径规划只管从 A 到 B；覆盖路径规划要求机器人的作业范围（吸口、割刀、喷头）扫过目标区域里所有无障碍的地方，同时尽量减少重复覆盖、转弯次数和总时间。经典方法有三类：单元分解，最常用的是 Choset 与 Pignon 1998 年提出的牛耕式（boustrophedon）分解，按障碍把区域切成若干块，每块内像犁地一样来回平行走；栅格法，把地图划成格子逐格访问；以及螺旋式等。按是否事先知道地图，又分离线和在线两类。Galceran 与 Carreras 2013 年在 Robotics and Autonomous Systems 上的综述对这些方法做了系统梳理。典型应用有扫地机器人、割草机器人、农机、喷洒无人机，以及机械臂对曲面的喷涂和打磨。",
+      "example": "面向农机的开源库 Fields2Cover 把规划拆成地头生成、作业条带生成、条带排序和最终路径四步；Nav2 的 opennav_coverage 基于它开发，支持牛耕式、蛇形、螺旋等条带顺序，可让 ROS 2 机器人直接执行全覆盖任务。",
+      "related": ["路径规划", "全局规划与局部规划", "占据栅格地图", "扫地机器人", "Nav2", "多智能体路径规划"],
+      "sources": [
+        {"title": "Mier et al., Fields2Cover: An Open-Source Coverage Path Planning Library for Unmanned Agricultural Vehicles (arXiv:2210.07838)", "url": "https://arxiv.org/abs/2210.07838"},
+        {"title": "open-navigation/opennav_coverage（Nav2 全覆盖任务服务器）", "url": "https://github.com/open-navigation/opennav_coverage"},
+        {"title": "Choset & Pignon: Coverage Path Planning: The Boustrophedon Cellular Decomposition (1998)", "url": "https://publications.ri.cmu.edu/coverage-path-planning-the-boustrophedon-cellular-decomposition/"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "交叉熵方法",
+      "name_en": "Cross-Entropy Method",
+      "abbr": "CEM",
+      "aliases": ["交叉熵法", "CEM 规划", "CEM 优化"],
+      "tier": 3,
+      "one_liner": "反复「采样一批、留下最好的、据此更新分布」的无梯度优化方法。",
+      "explanation": "交叉熵方法由 Rubinstein 在 1990 年代末提出，最初用于估计罕见事件的概率，后来成为通用的随机优化方法。流程是：从一个分布（通常是高斯）采样一批候选解，逐个打分，保留最好的一小部分（叫精英样本），用精英样本的均值和方差重新拟合分布，再采样；迭代几轮后分布就集中到好解附近。它不需要梯度、容易并行，适合目标是仿真器或神经网络这类黑箱的情况。机器人里常见两种用法：一是作为采样式 MPC，对未来一串动作做 CEM，只执行第一步再重新规划；二是在连续动作空间里找让 Q 函数最大的动作。它和 MPPI 的区别在于：CEM 只用精英样本且等权平均，MPPI 按代价的指数权重使用全部样本。",
+      "example": "PlaNet 在学到的世界模型里用 CEM 规划：时域 12 步，每轮采样 1000 条动作序列、保留最好的 100 条，迭代 10 轮；QT-Opt 用 CEM 在 Q 函数上找最佳抓取动作，每轮采样 64 个、保留 6 个，迭代 2 轮，训练时算目标值和真机执行时选动作都靠它。",
+      "related": ["采样式 MPC", "模型预测路径积分控制", "模型预测控制", "基于模型的强化学习", "PlaNet", "QT-Opt"],
+      "sources": [
+        {"title": "Wikipedia: Cross-entropy method", "url": "https://en.wikipedia.org/wiki/Cross-entropy_method"},
+        {"title": "Hafner et al., Learning Latent Dynamics for Planning from Pixels (PlaNet, arXiv:1811.04551)", "url": "https://arxiv.org/abs/1811.04551"},
+        {"title": "Kalashnikov et al., QT-Opt: Scalable Deep Reinforcement Learning for Vision-Based Robotic Manipulation (arXiv:1806.10293)", "url": "https://arxiv.org/abs/1806.10293"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "三次样条插值",
+      "name_en": "Cubic Spline Interpolation",
+      "abbr": "",
+      "aliases": ["三次样条", "三次样条曲线", "Cubic Spline"],
+      "tier": 3,
+      "one_liner": "用分段三次多项式把一串路点连成位置、速度都连续的平滑曲线。",
+      "explanation": "三次样条插值是数值分析里的经典方法：给定一串路点，每两个相邻路点之间用一段三次多项式 q(t) = a₀ + a₁t + a₂t² + a₃t³ 连接，要求相邻两段在连接处位置和速度（一阶导）连续；标准三次样条还要求加速度（二阶导）连续，再配上端点条件，例如自然样条令两端二阶导为零，夹持样条指定两端速度。比起用一个高次多项式穿过所有点，它不会出现龙格现象那种剧烈振荡。机器人里常用它把规划器或策略给出的稀疏路点插值成控制器每个周期需要的密集指令。若只给定每段首末的位置和速度，段与段之间的加速度可能跳变，对应很大的加加速度，引起冲击，这时会改用五次多项式。",
+      "example": "关节在 2 秒内从 0 转到 1 弧度、起止速度都为 0，单段三次多项式为 q(t) = 3(t/2)² − 2(t/2)³，中点 t = 1 秒时速度最大，为 0.75 rad/s。ROS 2 的 joint_trajectory_controller 按路点信息选插值方式：只给位置时线性插值，给位置和速度时用三次样条，再给加速度时用五次样条。",
+      "related": ["轨迹插值", "五次多项式插值", "路点", "时间参数化", "最小加加速度轨迹", "加加速度"],
+      "sources": [
+        {"title": "Wikipedia: Spline interpolation", "url": "https://en.wikipedia.org/wiki/Spline_interpolation"},
+        {"title": "ros2_control: joint_trajectory_controller 轨迹表示与插值", "url": "https://control.ros.org/master/doc/ros2_controllers/joint_trajectory_controller/doc/trajectory.html"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "周期同步位置 / 速度 / 力矩模式（CSP / CSV / CST）",
+      "name_en": "Cyclic Synchronous Position / Velocity / Torque Modes (CiA 402)",
+      "abbr": "CSP / CSV / CST",
+      "aliases": ["CSP", "CSV", "CST", "循环同步位置模式", "循环同步速度模式", "循环同步力矩模式", "周期同步位置模式"],
+      "tier": 3,
+      "one_liner": "CiA 402 里主站每个通信周期发一次位置、速度或力矩设定值的三种模式。",
+      "explanation": "CiA 402 是 CAN in Automation 制定的 CANopen 电机驱动器行规（对应国际标准 IEC 61800-7-201），也通过 CoE 方式用在 EtherCAT 上，规定了驱动器的状态机和一组工作模式，用对象 0x6060 选择。周期同步模式的编号是 8、9、10：CSP 下主站每个周期发目标位置，驱动器内部闭合位置、速度、电流三个环；CSV 只发目标速度，位置环放在主站；CST 只发目标力矩，驱动器只管电流（力矩）环，其余都由主站计算。和轨迹位置模式（PP，编号 1）不同，这三种模式下轨迹由主站自己插补，驱动器不再生成轨迹，所以要求通信周期固定、各轴严格同步。机器人做阻抗控制、全身控制或让强化学习策略直接输出力矩时多用 CST；传统工业轨迹跟踪多用 CSP。",
+      "example": "假设用 EtherCAT 以 1 kHz 控制人形机器人的关节模组：驱动器设为 CST（0x6060 写 10）时，上位机每毫秒算出一个力矩写给驱动器；设为 CSP（写 8）时，每毫秒写一个插补好的目标位置。ROS 2 的 ethercat_driver_ros2 的 CiA 402 插件就支持在 8、9、10 等模式间切换。腿足圈常见的 MIT 模式则是另一套 CAN 私有协议，一条指令同时带目标位置、速度、刚度、阻尼和前馈力矩。",
+      "related": ["CANopen / CiA 402 驱动协议", "EtherCAT 总线", "电机驱动器", "力矩控制", "串级控制", "MIT 模式"],
+      "sources": [
+        {"title": "CAN in Automation: CiA 402 series – CANopen device profile for drives and motion control", "url": "https://www.can-cia.org/can-knowledge/cia-402-series-canopen-device-profile-for-drives-and-motion-control"},
+        {"title": "ethercat_driver_ros2: Configuring a CiA402 drive（0x6060，模式 8/9/10）", "url": "https://icube-robotics.github.io/ethercat_driver_ros2/user_guide/config_cia402_drive.html"},
+        {"title": "ros2_canopen: canopen_402_driver OperationMode 枚举", "url": "https://raw.githubusercontent.com/ros-industrial/ros2_canopen/master/canopen_402_driver/include/canopen_402_driver/base.hpp"}
+      ],
+      "as_of": ""
+    }
+  ]
+}

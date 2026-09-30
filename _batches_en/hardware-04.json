@@ -1,0 +1,113 @@
+{
+  "batch": "hardware-04",
+  "terms": [
+    {
+      "key": "hardware-04#0",
+      "name_en": "Franka Hand",
+      "aliases": ["Panda Gripper", "Franka Emika Hand"],
+      "one_liner": "The standard two-finger parallel electric gripper that ships with Franka robot arms.",
+      "explanation": "Franka Hand is the electric two-finger parallel gripper made by Germany's Franka Robotics (formerly Franka Emika) for its Panda and FR3 robot arms; the two fingers translate toward and away from each other to open and close. Official specs list an 80 mm stroke, 70 N continuous grip force (140 N max), and a weight of about 0.7 kg; the fingertips are swappable, and researchers often 3D-print custom fingertips for different objects. Because Franka arms are extremely common in academic labs, this gripper and its simulated model have become the default end effector (the part mounted at the arm's tip that touches objects) in a huge share of manipulation papers and benchmarks. It is controlled through libfranka, which handles opening, closing, and grip force.",
+      "example": "In simulation benchmarks like robosuite and LIBERO, the Panda arm's default gripper is modeled on the Franka Hand.",
+      "related": ["Two-Finger Gripper", "Electric Gripper", "Franka Arm (Panda / FR3)", "End Effector", "libfranka", "Robotiq 2F-85 Gripper"]
+    },
+    {
+      "key": "hardware-04#1",
+      "name_en": "Gear Ratio",
+      "aliases": ["Transmission Ratio", "Reduction Ratio"],
+      "one_liner": "How many turns a motor makes for one turn of the output shaft.",
+      "explanation": "Gear ratio is the ratio of input speed to output speed through a reducer (a gear mechanism that converts a motor's high speed into lower speed with more torque). A 10:1 ratio means the motor turns 10 times for every 1 turn of the output, ideally multiplying torque about tenfold while cutting speed to a tenth. Robot motors spin fast but produce little torque on their own, so a reducer is needed to drive the joint. Gear ratio is a core design trade-off: a high ratio gives strong, precise joints but makes them “stiff” and hard to backdrive (push from the outside), because the motor rotor's inertia is amplified at the output by the square of the ratio (reflected inertia); a low ratio has the opposite effect. Industrial arms typically use harmonic or RV reducers with high ratios, while legged robots often use quasi-direct-drive joints with low gear ratios.",
+      "example": "The joint actuators on MIT's Mini Cheetah use only a 6:1 planetary reduction, trading torque for good backdrivability and impact resistance.",
+      "related": ["Reducer/Gearbox", "Harmonic Drive", "Planetary Gearbox", "Backdrivability", "Reflected Inertia", "Quasi-Direct Drive"]
+    },
+    {
+      "key": "hardware-04#2",
+      "name_en": "GPU Memory (VRAM)",
+      "aliases": ["VRAM", "Video RAM"],
+      "one_liner": "The high-speed memory built into a graphics card that limits how big a model and batch can be.",
+      "explanation": "GPU memory (VRAM) is the dedicated high-speed memory built into a graphics card. Model parameters, gradients, optimizer state, intermediate activations, and input data all have to fit in it for the GPU to compute anything. How much VRAM you have directly sets the largest model you can train or run, and the largest batch size (how many samples you feed in at once) you can use. Training needs far more VRAM than inference, because it also has to store gradients and optimizer state. Common fixes when you run out include lower numerical precision (e.g., BF16, INT8 quantization), LoRA (which trains only a small number of parameters), gradient checkpointing, and splitting the model across multiple GPUs. For embodied AI, VRAM determines whether a VLA (vision-language-action) model can be fine-tuned on a lab's GPUs, and whether it can be squeezed onto an onboard chip on the robot itself.",
+      "example": "The openpi documentation gives these reference numbers: inference for π0 needs over 8 GB of VRAM, LoRA fine-tuning needs roughly 22.5 GB or more, and full fine-tuning needs roughly 70 GB or more.",
+      "related": ["Parameter Count", "Low-Rank Adaptation (LoRA)", "Post-Training Quantization", "Gradient Checkpointing (Activation Recomputation)", "Batch Size", "On-Device Deployment"]
+    },
+    {
+      "key": "hardware-04#3",
+      "name_en": "Host Computer",
+      "aliases": ["Main Control Computer", "Upper Computer"],
+      "one_liner": "The computer that issues commands and does high-level computing, while a lower-level controller executes them.",
+      "explanation": "“Host computer” (上位机, literally “upper-position computer”) is common engineering shorthand in China's robotics industry for the computer in a robot system that handles high-level decision-making, the user interface, and data processing — usually a PC, industrial PC, or a board like an NVIDIA Jetson. It sends target positions, velocities, and other commands over Ethernet, USB, or CAN bus to the “lower-level controller” (下位机: a microcontroller or motor driver that directly drives motors and reads sensors), and receives status data back. This split lets compute-heavy tasks without hard real-time requirements — vision, planning, running a neural-network policy — run on the host computer, while tight, high-frequency control loops (current loop, position loop) stay on the lower-level controller. In embodied AI work, the VLA model usually runs on the host computer; “host computer software” also often refers to the debugging or GUI program running on this machine.",
+      "example": "A GPU-equipped PC running a policy model that sends target joint positions to a Unitree G1 over Ethernet via the Unitree SDK is acting as the host computer.",
+      "related": ["Lower-Level Controller", "Industrial PC", "Main Controller", "Robot Controller", "Qt (GUI framework often used for host-computer software)", "Software Development Kit (SDK)"]
+    },
+    {
+      "key": "hardware-04#4",
+      "name_en": "Hot-Swappable Battery",
+      "aliases": ["Quick-Swap Battery", "Quick-Release Battery"],
+      "one_liner": "A battery that can be swapped for a charged one quickly, without powering down or removing screws.",
+      "explanation": "A hot-swappable battery can be pulled out and replaced with a charged one while the device stays powered, or with only a brief pause, usually via a latch or rail mechanism that needs no tools. Strictly, true “hot-swapping” means the system never loses power during the swap (for example, by cycling between two batteries or using a built-in backup supply); many robots marketed as having a “quick-swap battery” are really only fast to remove and install, and still have to be powered off during the swap, so the two should be distinguished. Humanoid and quadruped robots typically run for only one to a few hours per charge, so fast battery swaps are what let them keep working, or keep collecting data, continuously — making this a small but important engineering detail in moving robots from demos to real deployment. A further step is having the robot dock and swap its own battery autonomously.",
+      "example": "Robots such as the Unitree G1 use quick-release batteries, so operators can swap batteries and keep working during data collection.",
+      "related": ["Battery Life", "Battery Management System (BMS)", "Autonomous Battery Swapping", "Autonomous Recharging", "Humanoid Robot"]
+    },
+    {
+      "key": "hardware-04#5",
+      "name_en": "Hydraulic Actuation",
+      "aliases": ["Hydraulic Actuator", "Hydraulic Drive"],
+      "one_liner": "Driving a joint with pressurized fluid that pushes a cylinder or hydraulic motor.",
+      "explanation": "Hydraulic actuation uses a pump to pressurize hydraulic oil, which valves route to a hydraulic cylinder or hydraulic motor, converting fluid pressure into the force or torque that drives a joint. Its advantages are high power density and strong, shock-resistant force output; its downsides are the need for a pump, hoses, and valves, which make the system heavy, noisy, prone to leaks, and expensive to maintain, with more complex control as well. Early high-dynamic legged robots were mostly hydraulic — the best-known examples are Boston Dynamics' BigDog and the original hydraulic version of Atlas. As electric motors and reducers improved, humanoid robots have largely shifted to electric actuation; Boston Dynamics itself retired the hydraulic Atlas in 2024 in favor of an all-electric version. Hydraulics are still used in heavy-duty construction machinery and some large legged robots.",
+      "example": "Boston Dynamics' hydraulic Atlas used hydraulic actuation to perform parkour and backflips, before being replaced by the electric Atlas in 2024.",
+      "related": ["Hydraulic Atlas", "Electro-Hydrostatic Actuator (EHA)", "Pneumatic Actuation", "Actuator", "Power Density", "Boston Dynamics BigDog"]
+    },
+    {
+      "key": "hardware-04#6",
+      "name_en": "Industrial PC",
+      "aliases": ["IPC", "Industrial Computer", "Industrial Control Computer"],
+      "one_liner": "A computer hardened for harsh environments such as factory floors.",
+      "explanation": "An industrial PC (IPC) is a computer built to industrial standards; internally it's much like a regular PC (usually x86 hardware running Windows or Linux), but its enclosure, cooling, power supply, and ports are ruggedized — commonly fanless cooling, wide input-voltage tolerance, dust and vibration resistance, and a wide operating-temperature range, plus multiple serial ports, CAN bus, and Ethernet ports for industrial use, so it can run continuously for long stretches. On a robot, it often serves as the host computer or the core of the robot controller, running ROS, motion planning, vision, or acting as an EtherCAT master. Compared with embedded AI boards like NVIDIA's Jetson line, an industrial PC is more general-purpose and more expandable, but is usually larger and draws more power.",
+      "example": "An AGV/AMR chassis carries a fanless industrial PC running ROS navigation, which controls motor drivers over a CAN bus.",
+      "related": ["Host Computer", "Lower-Level Controller", "Robot Controller", "PLC (Programmable Logic Controller)", "EtherCAT Master", "NVIDIA Jetson"]
+    },
+    {
+      "key": "hardware-04#7",
+      "name_en": "Inspire RH56 Dexterous Hand",
+      "aliases": ["Inspire Hand", "RH56DFX"],
+      "one_liner": "A five-fingered dexterous hand from Inspire Robotics, with 6 motors driving 12 joints.",
+      "explanation": "The RH56 is a line of five-fingered, humanlike dexterous hands made by Beijing-based Inspire Robotics; the RH56DFX is the commonly used model. It has 6 actuated degrees of freedom driving 12 joints in total: each finger is curled by a built-in miniature linear servo actuator (a small electric cylinder) acting through a linkage, the thumb has an extra side-to-side motion, and the remaining joints are coupled mechanically through the linkages. Official specs list a per-finger fingertip force of about 10 N (about 15 N for the thumb), built-in position and force feedback, self-locking when powered off, and RS485 or CAN communication. It is moderately priced and reliable, and is widely mounted on humanoid robots such as Unitree's H1 and G1 for teleoperation and imitation learning, making it one of the most common dexterous hands in labs both in China and abroad.",
+      "example": "Open-TeleVision uses an Apple Vision Pro to teleoperate a Unitree H1 fitted with Inspire dexterous hands to collect data.",
+      "related": ["Dexterous Hand", "Inspire Robotics", "Linear Actuator (Electric Cylinder)", "Linkage Transmission", "Unitree H1", "Open-TeleVision"]
+    },
+    {
+      "key": "hardware-04#8",
+      "name_en": "Joint Zero Calibration (Homing)",
+      "aliases": ["Homing", "Zero-Point Calibration"],
+      "one_liner": "Telling a robot exactly where “zero degrees” is for each of its joints.",
+      "explanation": "Joint zero calibration is the process of establishing how each joint's encoder reading maps to the joint's true physical angle: the joint is moved to a known reference pose (a mechanical hard stop, a calibration fixture, or a specified zero posture), the encoder reading at that pose is recorded as an offset, and every later angle is computed relative to that zero point. Incremental encoders lose track of position when powered off, so the robot must be “homed” at startup; absolute encoders remember position but still need recalibrating after reassembly or after a motor or reducer is replaced. If the zero point is off, forward kinematics will compute the wrong end-effector position, and a policy trained on one robot may fail when moved to another — so this step is typically done first after any hardware change.",
+      "example": "Before first use, LeRobot's SO-101 arm requires running a calibrate command that moves each joint to a middle position and through its full range to record the zero point and joint limits.",
+      "related": ["Encoder", "Absolute Encoder", "Incremental Encoder", "Kinematic Calibration", "Forward Kinematics", "SO-100 / SO-101 Arm"]
+    },
+    {
+      "key": "hardware-04#9",
+      "name_en": "LEAP Hand",
+      "aliases": ["Low-Cost, Efficient, Anthropomorphic Hand", "LEAP Hand v2"],
+      "one_liner": "An open-source, low-cost, 16-DOF anthropomorphic dexterous hand from Carnegie Mellon.",
+      "explanation": "LEAP Hand was introduced by Kenneth Shaw, Ananye Agarwal, and Deepak Pathak at Carnegie Mellon University, presented at RSS 2023. It's a four-fingered, humanlike hand with 16 degrees of freedom, with each joint driven directly by Dynamixel servo motors; all parts are off-the-shelf or 3D-printed, and the paper reports it can be built for about $2,000 in around 4 hours — roughly an eighth the cost of the Allegro Hand — with a knuckle design meant to stay dexterous across the full range of finger poses. The hardware, simulation model, and software are all open source, making it easy for researchers to use for teleoperation, learning from human videos, and sim-to-real transfer. The team later released a v2 series, including a version with a hybrid rigid-soft shell.",
+      "example": "Researchers have used a webcam to estimate human hand pose and retarget it onto a LEAP Hand for teleoperated data collection.",
+      "related": ["Dexterous Hand", "Allegro Hand", "Dynamixel Servo", "Open-Source Hardware", "Motion Retargeting", "CMU Robotics Institute"]
+    },
+    {
+      "key": "hardware-04#10",
+      "name_en": "Linear Actuator (Electric Cylinder)",
+      "aliases": ["Electric Cylinder", "Linear Drive"],
+      "one_liner": "An actuator that pushes or pulls in a straight line instead of rotating.",
+      "explanation": "A linear actuator produces straight-line motion. The most common type in robotics is the electric cylinder: a motor turns a lead screw or ball screw (or a planetary roller screw), which converts that rotation into linear motion, extending or retracting a rod. It's usually not used directly as a joint itself; instead it's mounted like a muscle on a linkage, so its push and pull produces joint rotation — for example at a humanoid's knee, ankle, or waist, or in the tiny electric cylinders that curl fingers in a dexterous hand. Advantages are high force output, self-locking ability, and high stiffness, and it's easy to place away from the joint itself; downsides are that speed and backdrivability are usually worse than a rotary joint module, and the mechanism is more complex. It's one of the two main actuator layouts discussed for humanoid robots, alongside rotary actuators.",
+      "example": "Each finger of the Inspire RH56 dexterous hand is curled by a miniature electric cylinder acting through a linkage.",
+      "related": ["Rotary Actuator", "Planetary Roller Screw", "Ball Screw", "Actuator", "Linkage Transmission", "Parallel Ankle Joint"]
+    },
+    {
+      "key": "hardware-04#11",
+      "name_en": "Linkage Transmission",
+      "aliases": ["Linkage Drive"],
+      "one_liner": "Using rigid, hinged rods to transmit power from a motor to a joint.",
+      "explanation": "A linkage transmission connects several rigid rods with hinges (a common example is the four-bar linkage) to carry motion from a motor or electric cylinder to a joint some distance away, with the rod lengths engineered to produce the desired motion relationship. Its advantages are high stiffness and the ability to handle large forces, and it lets designers place heavy motors closer to the torso to reduce the mass at the limb's far end. Its downsides are that the range of motion is limited by the geometry of the rods, and the mechanism takes up space. On humanoid robots, linkages are common in parallel ankle and knee joints; in dexterous hands, linkage drive and tendon drive are the two dominant approaches — linkages are sturdier and easier to maintain, while tendons are lighter and more flexible.",
+      "example": "In many humanoid robots, the ankle places two motors in the shin and uses two linkages to push and pull the foot plate for pitch and roll motion.",
+      "related": ["Four-Bar Linkage", "Tendon Drive", "Parallel Ankle Joint", "Dexterous Hand", "Linear Actuator (Electric Cylinder)", "Parallel Mechanism"]
+    }
+  ]
+}

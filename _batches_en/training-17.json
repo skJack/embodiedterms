@@ -1,0 +1,113 @@
+{
+  "batch": "training-17",
+  "terms": [
+    {
+      "key": "training-17#0",
+      "name_en": "Success Detector",
+      "aliases": ["Success Classifier", "Reward Classifier"],
+      "one_liner": "A model that judges whether a robot completed a task in a given episode, often used to give reward in RL.",
+      "explanation": "A success detector takes an observation, usually a camera image, sometimes with the task instruction, and outputs success or failure, or a probability of success. Reinforcement learning, automatic data collection, and automatic evaluation all need to know whether a task got done, and the real world has no simulator-style ground truth for that, so people either watch it themselves or train a model to watch it. Two approaches are common: training a binary classifier for a single task, as HIL-SERL does, teleoperating roughly 200 successful and 1,000 failed examples per task; or directly querying a vision-language model, as in DeepMind's 2023 SuccessVQA, which reframes the judgment as the visual question “did the task complete?” and fine-tunes it on Flamingo. It provides a sparse reward, and misjudgments can be exploited by the policy, a failure mode called reward hacking.",
+      "example": "HIL-SERL trains a binary classifier per task on wrist and side-camera images to judge success, and only gives positive reward when it judges success; the paper reports the classifier's accuracy on held-out evaluation generally exceeds 95%.",
+      "related": ["Reward Model", "VLM-as-Reward", "Sparse Reward", "Progress Reward Model", "Real-World Reinforcement Learning", "HIL-SERL"]
+    },
+    {
+      "key": "training-17#1",
+      "name_en": "Symmetry Augmentation",
+      "aliases": ["Mirror Loss", "Mirror-Symmetry Augmentation", "Symmetry Loss"],
+      "one_liner": "Using a robot's left-right symmetry, by mirroring data or adding a loss term, to make its learned motion symmetric.",
+      "explanation": "Most legged and humanoid robots are left-right symmetric, and an ideal policy should satisfy: mirror the state left-to-right, and the output should be exactly the mirror of the original action. Reinforcement learning from scratch, however, often learns an asymmetric gait, for instance dragging one leg. Two fixes are common. The mirror loss, proposed by Yu, Turk, and Liu at SIGGRAPH 2018, adds a term to the loss function penalizing the difference between the policy's output on a mirrored state and the mirror of its original output. Symmetry data augmentation instead mirrors every collected sample and trains on both copies. ETH's Mittal and colleagues compared the two at ICRA 2024 and found that data augmentation converges faster and reaches higher return within PPO. The rsl_rl library now has both options built in.",
+      "example": "Mittal and colleagues used symmetry data augmentation to train an ANYmal quadruped to climb boxes; it reached higher return than a plain PPO baseline with no symmetry handling, varied less across random seeds, and was deployed on the real robot.",
+      "related": ["Data Augmentation", "RL-based Locomotion Control", "Proximal Policy Optimization", "RSL RL", "Legged Locomotion", "Loss Function"]
+    },
+    {
+      "key": "training-17#2",
+      "name_en": "Tactile Representation Learning",
+      "aliases": ["Touch Representation Learning", "Tactile Pretraining"],
+      "one_liner": "Encoding raw tactile-sensor readings into general-purpose features that downstream tasks like slip detection can reuse.",
+      "explanation": "Tactile representation learning studies how to encode raw signals from tactile sensors, such as the gel-deformation images captured by vision-based tactile sensors like GelSight or DIGIT, into compact features that downstream tasks such as slip detection, force estimation, and precision insertion can use directly. The difficulty is that tactile data is scarce, labels are even scarcer, and different sensors image very differently, so switching sensors often means retraining from scratch. Recent work borrows self-supervised learning from vision: Meta's Sparsh (CoRL 2024) pretrains on more than 460,000 tactile images using masking and self-distillation; MIT's T3 uses a shared Transformer with sensor-specific encoders; and AnyTouch (ICLR 2025) learns a unified representation across four sensor types. This is foundational to visuo-tactile fusion and tactile VLAs.",
+      "example": "Sparsh is pretrained with self-supervision on more than 460,000 unlabeled visuo-tactile images; on the six tasks of the authors' own TacBench, the paper reports it beats models trained end-to-end per task and per sensor by 95.1% on average.",
+      "related": ["Vision-Based Tactile Sensor", "Self-Supervised Learning", "Sparsh", "AnyTouch", "Visuo-Tactile Fusion", "Representation Learning"]
+    },
+    {
+      "key": "training-17#3",
+      "name_en": "Target Network",
+      "aliases": ["Target Q-Network"],
+      "one_liner": "A slowly updated copy of the main network, used only to compute training targets, making Q-learning more stable.",
+      "explanation": "In temporal-difference methods like Q-learning, the training target is immediate reward plus the discounted Q-value of the next state, and that Q-value is computed by the very same network being trained, effectively chasing a target that moves as you move, which is prone to diverge with neural networks. DeepMind's 2015 DQN paper, published in Nature, introduced the target network: a copy of the main network dedicated to computing targets, synchronized only every fixed number of steps. Continuous-control algorithms such as DDPG, TD3, and SAC switched to soft updates instead, nudging the target network's parameters toward the main network's a little every step, called Polyak averaging, with a coefficient close to 1. Together with experience replay, it is a standard component of off-policy deep reinforcement learning; the TD3 paper also analyzes its relationship to Q-value overestimation.",
+      "example": "In OpenAI's Spinning Up documentation, DDPG's target network is soft-updated as φ_targ ← ρ·φ_targ + (1−ρ)·φ, with an example ρ of 0.995, while DQN-style algorithms instead copy the whole main network over every fixed number of steps.",
+      "related": ["Deep Q-Network", "Q-Function (Action-Value Function)", "Temporal Difference Learning", "Experience Replay", "Overestimation Bias", "Soft Actor-Critic"]
+    },
+    {
+      "key": "training-17#4",
+      "name_en": "Teacher Forcing",
+      "aliases": [],
+      "one_liner": "Training a sequence model by feeding it the real previous step at every step, instead of its own prediction.",
+      "explanation": "Teacher forcing is the standard way to train autoregressive sequence models, named by Williams and Zipser in 1989: when predicting step t, the input uses the real first t−1 steps from the data, not the model's own generated output. This lets every step's loss be computed in parallel, so training is fast and stable, and it's how large language models and VLAs that discretize actions into tokens, such as RT-2 and OpenVLA, are trained. The cost is a mismatch between training and inference: at inference the model can only keep conditioning on its own output, so small early errors accumulate, a problem called exposure bias. Scheduled sampling (2015) gradually mixes in the model's own predictions during training; Self Forcing (2025), in video generation, instead unrolls the model autoregressively during training itself.",
+      "example": "When training OpenVLA, each action is discretized into 7 tokens, and the k-th token is predicted conditioned on the true first k−1 tokens; at deployment, though, it can only keep decoding after the tokens it just generated itself.",
+      "related": ["Next-Token Prediction", "Autoregressive Decoding", "Exposure Bias", "Self Forcing", "Diffusion Forcing", "Compounding Error"]
+    },
+    {
+      "key": "training-17#5",
+      "name_en": "Terrain Curriculum",
+      "aliases": ["Game-inspired Curriculum"],
+      "one_liner": "In legged reinforcement learning, a training schedule that gradually moves a robot onto harder terrain as it improves.",
+      "explanation": "Terrain curriculum is curriculum learning applied specifically to legged locomotion. Training from scratch directly on steep slopes or stairs makes the robot fall almost constantly, yielding little useful learning signal; training only on flat ground never teaches it complex terrain either. ETH's Rudin and colleagues proposed a “game-inspired” curriculum in 2021's legged_gym: terrain is arranged in a grid of rising difficulty, and after each episode, if the robot walked past half the length of its tile it moves up a level, if it didn't even cover half the commanded distance it moves down a level, and reaching the hardest level sends it back to a random earlier one to avoid forgetting easy terrain. Thousands of parallel environments each move up and down independently, so overall difficulty automatically tracks the policy's skill. Isaac Lab's velocity-tracking task follows the same rule.",
+      "example": "legged_gym by default splits terrain into 10 difficulty levels across 20 columns, with types including smooth slopes, rough slopes, stairs up, stairs down, and discrete obstacles; a robot starts at a random level between 0 and 5, then moves up or down based on how far it walks each episode.",
+      "related": ["Curriculum Learning", "RL-based Locomotion Control", "legged_gym", "Massively Parallel Reinforcement Learning", "Rough-terrain Locomotion", "Heightfield Terrain"]
+    },
+    {
+      "key": "training-17#6",
+      "name_en": "Test-Time Training",
+      "aliases": ["TTT", "Test-Time Adaptation", "TTA"],
+      "one_liner": "Given new data at deployment, taking a few self-supervised update steps on it before predicting with the updated model.",
+      "explanation": "Test-time training was proposed by Sun and colleagues at ICML 2020: the model is trained with an auxiliary self-supervised task alongside its main one, for instance predicting how much an image was rotated, and at test time, given a new sample, it first takes a few gradient steps on that auxiliary task before making its real prediction, to cope with a mismatch between training and test distributions. A related idea, test-time adaptation, such as Tent (ICLR 2021), instead just minimizes prediction entropy on the test data and adjusts only the normalization layers' parameters. Embodied AI uses this to let a policy keep adapting on-site after deployment: EVOLVE-VLA uses automatically estimated task progress as feedback to keep a VLA learning at test time, and TTT-Parkour first scans and reconstructs unfamiliar terrain, then quickly fine-tunes a humanoid parkour policy on the reconstruction.",
+      "example": "TTT-Parkour (2026) uses an RGB-D camera to scan and reconstruct unfamiliar obstacles such as wedges and narrow beams, then fine-tunes a humanoid robot's parkour policy on the reconstructed terrain; the paper reports most terrain takes under 10 minutes from capture through reconstruction to test-time training.",
+      "related": ["Out-of-Distribution", "Domain Adaptation", "Self-Supervised Learning", "Inference-Time Compute", "Continual Learning", "Rapid Motor Adaptation"]
+    },
+    {
+      "key": "training-17#7",
+      "name_en": "Time-Contrastive Networks",
+      "aliases": ["TCN", "Time-Contrastive Learning"],
+      "one_liner": "Self-supervised video representation learning: pull same-moment multi-view frames together, push nearby-but-different moments apart.",
+      "explanation": "Time-Contrastive Networks were proposed by Pierre Sermanet and colleagues at Google Brain in 2017 (ICRA 2018), an early landmark in learning visual representations from unlabeled video. The multi-view version uses several cameras filming the same process at once: frames from different viewpoints at the same moment are pulled together in feature space, while frames from the same viewpoint that look similar but sit at different points in the task are pushed apart, trained with a triplet loss. The resulting features are insensitive to viewpoint and lighting, yet can still distinguish task-relevant state, such as how far a cup has tilted. The paper used it to let a robot imitate pouring water and human poses from a single third-person human video, treating feature distance to the demonstration as a reinforcement-learning reward. Later robot visual pretraining such as R3M also used time-contrastive learning as one of its objectives.",
+      "example": "A robot watches a third-person video of a person pouring water, uses the distance between its own footage and the demonstration in TCN feature space as a reward, and learns the pouring motion through reinforcement learning.",
+      "related": ["Contrastive Learning", "Self-Supervised Learning", "R3M", "Representation Learning", "Imitation from Observation", "Pre-trained Visual Representation"]
+    },
+    {
+      "key": "training-17#8",
+      "name_en": "Trust Region Policy Optimization",
+      "aliases": ["TRPO"],
+      "one_liner": "A policy-gradient algorithm that bounds the KL divergence between old and new policy at every update; PPO's predecessor.",
+      "explanation": "Trust region policy optimization was proposed by Schulman, Levine, Abbeel, and colleagues at ICML 2015. An ordinary policy-gradient step can, if too large, cause performance to collapse, and even a small change in parameters can shift the action distribution a great deal. TRPO instead puts the constraint on the policy's distribution: it maximizes a surrogate objective within a “trust region” where the average KL divergence between old and new policy stays under a threshold, which in theory guarantees monotonic improvement. In practice it uses conjugate gradient to find an approximate second-order update direction, then a backtracking line search to check the constraint and the improvement. It is an on-policy algorithm and fairly involved to implement; PPO, proposed by the same authors in 2017, approximates the same constraint far more simply and has become the mainstream choice for robot reinforcement learning.",
+      "example": "In OpenAI's Spinning Up implementation of TRPO, each iteration first computes an update direction with conjugate gradient, then keeps shrinking the step size by a backtracking factor until the new policy stays within the KL limit and improves the surrogate objective.",
+      "related": ["Proximal Policy Optimization", "Policy Gradient", "KL Divergence", "On-Policy", "Generalized Advantage Estimation", "Reinforcement Learning"]
+    },
+    {
+      "key": "training-17#9",
+      "name_en": "Unsupervised Skill Discovery",
+      "aliases": ["DIAYN", "Reward-Free Skill Learning"],
+      "one_liner": "With no task reward, letting an agent practice into a set of distinguishable skills it can call on later.",
+      "explanation": "Unsupervised skill discovery lets an agent spontaneously learn a variety of different behaviors with no external reward at all. The best known method, DIAYN (“Diversity is All You Need”), was proposed by Eysenbach, Levine, and colleagues in 2018: the policy is given a skill number as input, and a discriminator is trained at the same time to guess which skill was used just from the states reached, so the intrinsic reward rises the more accurately it can be guessed, plus a max-entropy term to encourage varied actions; underneath, this maximizes the mutual information between skill and state. Simulated robots have spontaneously learned to walk, hop, and more this way. Skills can serve as a pretraining initialization, or be composed by a higher-level policy to solve sparse-reward tasks. METRA (ICLR 2024) instead learns skills in a latent space that preserves temporal distance, easing the weak-exploration problem that mutual-information methods tend to have.",
+      "example": "Sharma and colleagues (2020) turned the skill-discovery algorithm DADS into an off-policy version and, with no reward and no demonstrations at all, had a real quadruped robot learn distinct gaits and headings, then chained them together with model-predictive control to perform navigation.",
+      "related": ["Intrinsic Motivation", "Hierarchical Reinforcement Learning", "Exploration vs. Exploitation", "Behavior Foundation Model", "BFM-Zero", "Entropy Regularization"]
+    },
+    {
+      "key": "training-17#10",
+      "name_en": "Update-to-Data Ratio",
+      "aliases": ["UTD", "UTD Ratio", "Replay Ratio"],
+      "one_liner": "How many gradient updates are done per step of environment data collected; higher saves data but costs more compute.",
+      "explanation": "The update-to-data ratio, in off-policy reinforcement learning, is how many gradient updates the network does for every one step of interaction added to the experience replay buffer. Standard SAC usually uses 1. Real-robot RL collects data slowly and expensively while compute is comparatively cheap, so there is an incentive to raise this ratio and squeeze more learning out of the same batch of data. But raising it naively tends to make the Q-function overfit and overestimate, hurting training. REDQ (ICLR 2021) used an ensemble of Q-networks to let a model-free algorithm run stably at a UTD far above 1 for the first time; DroQ instead used dropout and layer normalization for a cheaper version. Real-robot RL frameworks such as SERL rely on a high UTD for sample efficiency, and split data collection and training into two separate threads.",
+      "example": "“A Walk in the Park” (2022) built on SAC for a Unitree A1 quadruped, adding layer normalization and raising the UTD to 20, that is, 20 critic updates per step of data collected, learning to walk from about 20 minutes of real-robot training.",
+      "related": ["Sample Efficiency", "Experience Replay", "Off-Policy", "Real-World Reinforcement Learning", "SERL", "Overestimation Bias"]
+    },
+    {
+      "key": "training-17#11",
+      "name_en": "Value-Guided Sampling",
+      "aliases": ["Value-Guided Policy Reranking", "Value-Guided Policy Steering"],
+      "one_liner": "Sampling several candidate actions from a policy, then using a value function to score and pick the best one.",
+      "explanation": "Value-guided sampling improves a policy at inference time without touching its weights: at every step, sample several candidate actions from the policy, then score them with a separately trained value function, the Q-function, either taking the highest-scoring one or sampling via softmax over the scores. The representative work is Sergey Levine's group's V-GPS (CoRL 2024): it trains a language-conditioned Q-function with offline RL methods such as Cal-QL on the Bridge and RT-1 datasets, and uses it to rerank five different generalist policies, including Octo and OpenVLA, improving results across 12 tasks. Generalist policies are trained on data of mixed quality, so a value function's job is to pick out the actions that are actually good. This belongs to the same family of inference-time-compute techniques as best-of-N sampling and RoboMonkey's VLM-based action verification.",
+      "example": "In V-GPS's real-robot experiments, 50 candidate actions are sampled from the generalist policy at every step, and the Q-function picks the highest-scoring one to execute; the paper reports a relative improvement of 82.8% in average success rate across 6 tasks on a WidowX arm.",
+      "related": ["Inference-Time Compute", "Best-of-N Sampling", "V-GPS", "Q-Function (Action-Value Function)", "Offline Reinforcement Learning", "RoboMonkey"]
+    }
+  ]
+}

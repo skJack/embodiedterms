@@ -1,0 +1,113 @@
+{
+  "batch": "perception-14",
+  "terms": [
+    {
+      "key": "perception-14#0",
+      "name_en": "Error-State Kalman Filter",
+      "aliases": ["ESKF", "ES-EKF"],
+      "one_liner": "A Kalman filter formulation that estimates the difference between a nominal state and the true state, rather than the state itself.",
+      "explanation": "The error-state Kalman filter is a way of writing the extended Kalman filter (EKF, which applies a Kalman filter after locally linearizing a nonlinear system), commonly used to fuse an IMU (inertial measurement unit) with a camera, lidar, or GPS. It splits the state into two parts: a “nominal state” integrated at high frequency from IMU readings, and a small “error state.” The filter only estimates the error; after each measurement update, the error is folded back into the nominal state and reset to zero. The benefit is that the error stays small, so linearization is more accurate; attitude error can be represented with a 3-dimensional rotation vector, avoiding the covariance singularity that comes from a quaternion using 4 numbers to represent 3 degrees of freedom. Joan Solà’s 2017 lecture notes are the most frequently cited reference for the derivation.",
+      "example": "PX4 flight controller’s EKF2 estimator fuses IMU, GPS, magnetometer, and other data; the official documentation states it uses an “error-state” formulation so that rotational uncertainty can be represented as a 3D vector.",
+      "related": ["Kalman Filter", "Extended Kalman Filter", "Inertial Measurement Unit", "IMU Preintegration", "Quaternion", "Multi-Sensor Fusion"]
+    },
+    {
+      "key": "perception-14#1",
+      "name_en": "Event Camera",
+      "aliases": ["Dynamic Vision Sensor", "DVS", "Neuromorphic Camera", "Silicon Retina"],
+      "one_liner": "A camera where each pixel independently outputs an “event” only when brightness changes, instead of capturing full frames.",
+      "explanation": "An event camera is a biologically inspired vision sensor, also called a dynamic vision sensor (DVS) or neuromorphic camera. An ordinary camera outputs a complete image at a fixed frame rate; each pixel in an event camera works independently and asynchronously, firing an event only when its brightness changes past a threshold, with each event carrying the pixel coordinates, a timestamp, and whether it got brighter or darker (polarity). A 2020 survey by Gallego and colleagues in TPAMI summarizes its advantages: microsecond-level time resolution, a dynamic range around 140 dB (versus about 60 dB for ordinary cameras), low power, and almost no motion blur. The tradeoff is that a static scene produces almost no output, and there is no color or absolute brightness information, so it needs dedicated processing algorithms. It suits high-speed motion and scenes with dramatic lighting changes, such as drone obstacle avoidance, high-speed grasping, and visual odometry.",
+      "example": "Researchers at the University of Zurich and ETH Zurich (ICRA 2023) mounted an event camera on a quadruped robot to catch thrown objects, catching items flying in from 4 meters away at up to 15 m/s with an 83% success rate, running the algorithm at 100 Hz on a Jetson Orin.",
+      "related": ["RGB Camera", "Global Shutter / Rolling Shutter", "Visual Odometry", "Optical Flow", "Exteroception", "Multi-Sensor Fusion"]
+    },
+    {
+      "key": "perception-14#2",
+      "name_en": "Exteroception",
+      "aliases": ["Exteroceptive Sensing", "Environment Perception"],
+      "one_liner": "A robot’s sensing of its surrounding environment using sensors like cameras and lidar.",
+      "explanation": "Exteroception comes from physiology, referring to an organism’s ability to sense stimuli from outside the body — sight, hearing, skin touch — as opposed to proprioception, which senses the body’s own limb position and motion. Robotics keeps this same distinction: cameras, depth cameras, lidar, ultrasonic sensors, and tactile sensors that measure the environment fall under exteroception, while joint encoders, IMUs, and motor current that measure the robot’s own state fall under proprioception. Exteroception lets a robot see steps, obstacles, and target objects ahead of time, but it is vulnerable to lighting, occlusion, reflections, and noise; proprioception is stable, but it can only sense terrain once contact has already happened. Legged robots therefore often fuse the two: adjusting gait ahead of time when exteroceptive information is reliable, and falling back on proprioception when it isn’t.",
+      "example": "ETH Zurich’s legged locomotion work (Science Robotics 2022) end-to-end fuses exteroception and proprioception with an attention-based recurrent encoder, letting the robot adjust its gait before making contact with terrain, and it completed an Alpine hiking trail within the time recommended for human hikers.",
+      "related": ["Proprioception", "Multi-Sensor Fusion", "Perceptive Locomotion", "Blind Locomotion", "State Estimation", "Lidar"]
+    },
+    {
+      "key": "perception-14#3",
+      "name_en": "Extrinsic Contact Sensing",
+      "aliases": ["Extrinsic Contact Estimation", "Tool-Environment Contact Sensing"],
+      "one_liner": "The perception task of inferring where and how an object held in the hand is making contact with the outside environment.",
+      "explanation": "When a robot holds an object to do work, there are two kinds of contact: contact between the fingers and the object is called intrinsic contact, while contact between the held object and the environment — a tabletop, the wall of a hole — is called extrinsic contact. Extrinsic contact happens outside the hand, is often occluded, and can’t be felt by the fingers directly, so it has to be inferred indirectly. In an ICRA 2021 paper, MIT’s Ma, Dong, and Rodriguez used a distributed tactile sensor to track the object’s tiny relative motion inside the hand, and combined this with rigid-body constraints like non-penetration and friction to estimate the location of a point or line contact, arguing that distributed tactile sensing suits this better than looking only at the net force from a six-axis force sensor. Later work also infers contact location from touch, vision, or even sound using neural networks. This is crucial for contact-rich tasks like peg-in-hole assembly and tool use: knowing where contact happened is what tells the robot which way to adjust.",
+      "example": "Higuera and colleagues’ NCF-v2 infers the contact between a held object and the environment from gripper tactile sensing; plugged into an insertion policy, it raised the success rate of placing a cup into a saucer by 33% and made execution 1.36 times faster, and raised the success rate of placing a bowl on a rack by 13%.",
+      "related": ["Contact Detection", "Tactile Sensor", "Peg-in-Hole Assembly", "Contact-Rich Manipulation", "Tool Use", "Extrinsic Dexterity"]
+    },
+    {
+      "key": "perception-14#4",
+      "name_en": "Eye Tracking / Gaze Estimation",
+      "aliases": ["Gaze Tracking"],
+      "one_liner": "Measures the movement of a person’s eyes and estimates where they are looking right now.",
+      "explanation": "Eye tracking measures the eyeball’s movement relative to the head, while gaze estimation goes a step further and computes where the line of sight lands — where the person is actually looking. The dominant method shines infrared light on the eye and uses a camera to capture both the pupil center and the corneal reflection at the same time, computing gaze direction from their relative position; another approach uses a neural network to regress gaze directly from an ordinary image. In embodied AI it has two main uses: recording a demonstrator’s gaze point while collecting demonstration data, as an extra signal for “where in the frame to pay attention,” helping a policy concentrate computation on the key region; and judging a person’s intent and the object of their attention during human-robot interaction. Head-worn devices like Meta’s Project Aria glasses have a built-in eye-tracking camera, so gaze information can be recorded alongside first-person data.",
+      "example": "Kim and colleagues (RA-L 2021) recorded an operator’s gaze point during teleoperation; the resulting trained policy used high-resolution image detail near the gaze point and lower resolution at the periphery, and completed a high-precision task like robotic needle threading.",
+      "related": ["Egocentric Video", "Project Aria Glasses", "Human-Robot Interaction", "Intent Understanding (Implicit Instruction)", "Imitation Learning", "Active Perception"]
+    },
+    {
+      "key": "perception-14#5",
+      "name_en": "Factor Graph Optimization",
+      "aliases": ["Factor Graph", "Graph Optimization"],
+      "one_liner": "Draws every measurement constraint as a “variable-factor” graph, then finds the most likely state by least squares.",
+      "explanation": "A factor graph is a bipartite graph: one type of node holds the variables being estimated, such as a robot’s pose at each moment or a landmark’s 3D coordinates; the other type of node holds factors, each representing a probabilistic constraint from a measurement or a prior — for example, the IMU gives the relative motion between two frames, or a camera gives an observation of a landmark. Finding the maximum a posteriori estimate — the most likely state given all observations — is equivalent to minimizing the sum of squared errors over all factors, which can be solved with nonlinear least-squares methods like Gauss-Newton or Levenberg-Marquardt, sped up by exploiting the graph’s sparsity. A 2017 survey by Frank Dellaert and Michael Kaess systematically lays out this framework, and Georgia Tech’s open-source GTSAM is a commonly used implementation. It is the dominant formulation for the back end of modern SLAM and multi-sensor fusion systems — adding a new sensor just means adding a new type of factor.",
+      "example": "LIO-SAM (IROS 2020) adds lidar odometry, IMU preintegration, and loop closure all as factors into the same factor graph, jointly optimizing the robot’s trajectory and using the optimization result to estimate IMU bias.",
+      "related": ["Simultaneous Localization and Mapping", "GTSAM", "Bundle Adjustment", "IMU Preintegration", "Loop Closure", "Multi-Sensor Fusion"]
+    },
+    {
+      "key": "perception-14#6",
+      "name_en": "Farthest Point Sampling",
+      "aliases": ["FPS", "Furthest Point Sampling"],
+      "one_liner": "Repeatedly picks the point farthest from the already-selected set, downsampling a point cloud evenly to a fixed number of points.",
+      "explanation": "Farthest point sampling is a point-cloud downsampling algorithm: starting from one chosen point, it repeatedly picks the remaining point whose distance to the nearest already-selected point is the largest, until the desired number of points is reached. Compared with random sampling, it covers an entire object or scene more evenly with the same number of points, and is less likely to lose structure in sparse regions; the drawback is that it requires point-by-point iteration, making it slower than random sampling or voxel downsampling on large point clouds, and its result depends on the starting point. PointNet++ (NeurIPS 2017) uses it to pick the center point of each local region at every layer, and many later point-cloud networks have followed this practice. When a robot policy takes a point cloud as input, the table and background are usually cropped out first, and then farthest point sampling brings the count down to a few hundred to a few thousand points to control compute.",
+      "example": "The 3D Diffusion Policy DP3 (RSS 2024) first crops the point cloud produced by a depth camera, then uses farthest point sampling to bring it down to 512 or 1,024 points, which the authors say is enough for both simulated and real-robot tasks.",
+      "related": ["Point Cloud", "PointNet", "Point Cloud Filtering and Downsampling", "3D Diffusion Policy", "Point Cloud Encoder", "Depth Camera"]
+    },
+    {
+      "key": "perception-14#7",
+      "name_en": "Fast Point Feature Histograms",
+      "aliases": ["FPFH", "FPFH Descriptor"],
+      "one_liner": "A hand-crafted feature that describes each point’s local shape using a histogram of normal-vector geometric relationships in its neighborhood.",
+      "explanation": "FPFH was proposed by Radu Rusu, Nico Blodow, and Michael Beetz at ICRA 2009, as a faster version of PFH (Point Feature Histograms). The process estimates a normal vector for every point, then computes several angular relationships between it and its neighboring points, summarized into a histogram as the descriptor. PFH computes relationships between every pair of points in a neighborhood, with complexity O(nk²); FPFH only computes relationships between the center point and each neighbor, then combines neighbors’ results weighted by distance, bringing complexity down to O(nk) with little loss of discriminative power. The default implementations in both PCL and Open3D are 33-dimensional. It requires no training, and its most typical use is global point cloud registration: FPFH first finds correspondences between two point clouds, RANSAC solves for a rough pose, and ICP then refines it.",
+      "example": "Open3D’s global registration tutorial first voxel-downsamples two point clouds and estimates normals, computes 33-dimensional FPFH features, uses RANSAC to solve for an initial pose, and then refines it with ICP.",
+      "related": ["Point Cloud Registration", "Normal Estimation", "Iterative Closest Point", "Random Sample Consensus", "Point Cloud Library", "Open3D"]
+    },
+    {
+      "key": "perception-14#8",
+      "name_en": "Feature Matching",
+      "aliases": ["Keypoint Matching", "Correspondence Matching"],
+      "one_liner": "Finds pairs of feature points across two images that correspond to the same physical point.",
+      "explanation": "Feature matching finds pairs of features between two images (or two point clouds) that correspond to the same physical point. The classic pipeline: extract feature points and descriptors on each image (such as SIFT or ORB); find nearest neighbors by descriptor distance, using Euclidean distance for floating-point descriptors and Hamming distance for binary descriptors like ORB’s; then apply the ratio test proposed by David Lowe to discard ambiguous matches — if the distance ratio between the nearest and second-nearest neighbor is too close to 1, the match is dropped; finally, fit a geometric model with RANSAC to reject outliers that don’t fit. Recently, SuperGlue and LightGlue use attention networks to learn matching directly, and are more reliable under large viewpoint and lighting changes. Matching results underlie camera pose estimation, triangulation, visual SLAM, and structure from motion.",
+      "example": "ETH Zurich’s LightGlue (ICCV 2023) improves on SuperGlue by adaptively stopping computation early based on how easy or hard an image pair is, matching noticeably faster when two images overlap a lot and look similar.",
+      "related": ["Feature Points", "Random Sample Consensus", "SuperPoint / LightGlue", "Structure from Motion", "Visual SLAM", "Epipolar Geometry"]
+    },
+    {
+      "key": "perception-14#9",
+      "name_en": "Feature Points",
+      "aliases": ["SIFT", "ORB", "Local Features", "Keypoints"],
+      "one_liner": "Corners, blobs, and other points in an image that can be reliably found again, together with a vector describing their surroundings.",
+      "explanation": "Feature points are points in an image with distinctive texture that can be found again reliably even under a change of viewpoint or lighting — corners and blobs are typical examples. A feature point has two parts: a location (sometimes with a scale and orientation too), and a descriptor — a vector summarizing the appearance of the small patch around it, used to compare against other images. SIFT was proposed by David Lowe in 1999, with the full paper published in 2004; it’s robust to scaling, rotation, and lighting changes, with a 128-dimensional floating-point descriptor, and its patent expired in 2020. ORB was proposed by Rublee and colleagues in 2011, combining FAST corner detection with an improved binary BRIEF descriptor, making it much faster than SIFT and well suited to real-time systems. Feature points underlie visual SLAM, structure from motion, and image stitching, and the deep-learning era has also produced learned feature points like SuperPoint.",
+      "example": "ORB-SLAM (IEEE T-RO 2015) uses the same set of ORB features across all four of its stages: tracking, mapping, relocalization, and loop closure.",
+      "related": ["Feature Matching", "Visual SLAM", "ORB-SLAM3", "SuperPoint / LightGlue", "Keypoint Detection", "Structure from Motion"]
+    },
+    {
+      "key": "perception-14#10",
+      "name_en": "Feed-Forward 3D Reconstruction",
+      "aliases": ["3D Reconstruction Foundation Model"],
+      "one_liner": "A 3D reconstruction approach that outputs camera parameters, depth, and a point cloud directly from images in a single network forward pass.",
+      "explanation": "Traditional 3D reconstruction follows a structure from motion (SfM) plus multi-view stereo (MVS) pipeline: match feature points, estimate camera poses, then iteratively refine everything with bundle adjustment — a process with many steps that takes a long time and easily fails with little texture or few viewpoints. Feed-forward 3D reconstruction instead uses a large network (usually a Transformer) trained on large-scale 3D data; given one or more images, a single forward pass directly outputs a point map (a 3D coordinate for every pixel), depth, and camera intrinsics and extrinsics. Landmark examples include Naver’s DUSt3R (CVPR 2024, needing no prior camera calibration), Meta and Oxford’s VGGT (CVPR 2025 best paper), π³, and MapAnything. For robotics, this lets scene geometry be recovered quickly from ordinary RGB images, useful for mapping, pose estimation, or feeding 3D input to a policy.",
+      "example": "VGGT takes anywhere from one to several hundred photos of the same scene and, according to the paper, can directly predict camera parameters, depth maps, point maps, and 3D point trajectories in under a second, with no post-hoc optimization like bundle adjustment needed.",
+      "related": ["DUSt3R", "VGGT", "π³ (Pi3)", "MapAnything", "Point Map", "Structure from Motion"]
+    },
+    {
+      "key": "perception-14#11",
+      "name_en": "Flying Pixels",
+      "aliases": ["Flying Points", "Mixed Pixels"],
+      "one_liner": "Erroneous depth points at object edges in a depth map, floating between the foreground and background.",
+      "explanation": "Flying pixels are a common artifact in depth data at object outlines: edge pixels that should belong to either the foreground or the background instead get a depth value somewhere in between, which, once converted to a point cloud, becomes a scatter of points floating in midair — like a veil trailing off the object’s edge. In ToF (time-of-flight) depth cameras, this happens because a single pixel receives light reflected back from both the foreground and background at once, measuring a mixed signal; Microsoft’s Azure Kinect documentation classifies this kind of edge pixel as a multipath problem and marks it invalid. In stereo matching and depth-estimation networks, regression output gets smoothed across sharp depth discontinuities, which also produces flying pixels. Flying pixels cause errors in grasp poses and collision checking, and a common fix is filtering out suspicious edge points based on depth gradient or neighborhood consistency.",
+      "example": "Pixel-Perfect Depth (NeurIPS 2025) points out that generative depth models which compress a depth map into a latent space with a VAE first introduce flying pixels at edges and fine detail, so it instead does diffusion generation directly in pixel space, producing a point cloud with almost no flying pixels.",
+      "related": ["Depth Camera", "Time of Flight", "Depth Map", "Point Cloud", "Depth Holes (Missing Depth)", "Monocular Depth Estimation"]
+    }
+  ]
+}

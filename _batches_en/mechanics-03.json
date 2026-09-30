@@ -1,0 +1,113 @@
+{
+  "batch": "mechanics-03",
+  "terms": [
+    {
+      "key": "mechanics-03#0",
+      "name_en": "Analytical Inverse Kinematics",
+      "aliases": ["Closed-Form IK", "Analytic IK"],
+      "one_liner": "An inverse-kinematics method that plugs a target end-effector pose into pre-derived formulas to get all joint angles directly.",
+      "explanation": "Inverse kinematics — finding joint angles from a target end-effector pose — has two solving approaches. Numerical methods iterate toward an answer; analytical methods derive formulas ahead of time and plug in the target pose to get every joint angle in one shot. Closed-form solutions only exist for specific arm geometries; the classic enabling condition for a 6-axis arm is that the last three joint axes all intersect at a single point (a spherical wrist), which lets position and orientation be solved separately — this is exactly the PUMA-style arm layout. The benefit is speed, numerical stability, and the ability to enumerate every solution: Modern Robotics notes that a general 6R serial arm has at most 16 solutions, while a PUMA-style arm with offsets has 4 solutions just for the position sub-problem. The downside is that a different arm geometry requires re-deriving everything from scratch. The tool IKFast can automatically analyze a kinematic chain and generate C++ code for its analytical solution, solving in just a few microseconds per call.",
+      "example": "A PUMA-style 6-axis arm first solves the first three joints from the wrist-center position (shoulder left/right times elbow up/down gives 4 combinations), then solves the last three wrist joints from the end-effector orientation, with the wrist able to flip as well; an arm with this spherical-wrist layout has up to 8 solutions for a given end-effector pose, and the controller typically picks whichever is closest to the current joint angles.",
+      "related": ["Inverse Kinematics", "Numerical IK", "Forward Kinematics", "Spherical Wrist", "IKFast", "Kinematic Redundancy"]
+    },
+    {
+      "key": "mechanics-03#1",
+      "name_en": "Angular Momentum",
+      "aliases": ["Moment of Momentum"],
+      "one_liner": "A measure of an object's rotational “oomph”; for a rigid body spinning about an axis, it equals moment of inertia times angular velocity.",
+      "explanation": "Angular momentum is the rotational counterpart of linear momentum, p = mv. For a point mass, angular momentum about some point is L = r × p, where r is the position vector from that point to the mass and × is the cross product; for a rigid body spinning about a fixed axis, L = Iω, where I is the moment of inertia and ω is angular velocity, measured in kg·m²/s. Its rate of change equals the external torque, dL/dt = τ; with no external torque, angular momentum is conserved — this is why a figure skater spins faster after pulling their arms in. Legged and humanoid robots often track whole-body angular momentum about the center of mass: while airborne, gravity produces no torque about the center of mass, so this quantity stays constant, and the robot can only redistribute it among body parts by swinging its arms or tucking its legs; once a foot touches down, contact forces can change it. Planning for balance, jumping, and flips all has to account for it.",
+      "example": "For a humanoid robot doing a backflip: it must build up enough angular momentum about its center of mass before its feet leave the ground. Once airborne, total angular momentum stays fixed, so tucking the legs shrinks the moment of inertia to spin faster, and extending them again before landing slows the rotation back down.",
+      "related": ["Moment of Inertia", "Centroidal Dynamics", "Centroidal Momentum Matrix", "Torque", "Rigid-Body Dynamics", "Balance Control"]
+    },
+    {
+      "key": "mechanics-03#2",
+      "name_en": "Antipodal Grasp",
+      "aliases": ["Antipodal Grasping", "Two-Finger Opposed Grasp"],
+      "one_liner": "A two-finger grasp where the contact points face each other and their connecting line lies inside both friction cones.",
+      "explanation": "An antipodal grasp — “antipodal” meaning “located at opposite ends” — grips an object with two contact points from opposing directions, such that the line connecting them falls inside both points' friction cones (the range of directions a contact force can push without slipping). According to Modern Robotics, in the planar case, two frictional contacts meeting this condition form a force closure, able to resist an external force or torque in any direction; in 3D, two ideal point contacts can't resist rotation about the line connecting them, which in practice is handled by the twisting friction of the finger pads. Chen and Burdick gave an algorithm in 1993 for finding antipodal point pairs on irregular objects. This is exactly the grasp a parallel-jaw two-finger gripper performs, which is why many learned grasping methods first sample candidate antipodal point pairs from a point cloud or depth image, then score them with a network.",
+      "example": "Dex-Net 2.0 (2017) finds antipodal point pairs in a depth image, generates hundreds of candidate parallel-jaw grasps, and scores them with a convolutional network called GQ-CNN, reaching a 93% grasp success rate on known objects with an ABB YuMi arm.",
+      "related": ["Force Closure", "Friction Cone", "Two-Finger Gripper", "Grasp Pose Detection", "Dex-Net", "Grasp Quality Metric"]
+    },
+    {
+      "key": "mechanics-03#3",
+      "name_en": "Axis-Angle Representation",
+      "aliases": ["Rotation Vector", "rotvec", "Euler Vector"],
+      "one_liner": "Representing a 3D rotation by which axis it turns around and by how large an angle.",
+      "explanation": "Axis-angle representation describes a 3D rotation with a unit vector e (the rotation axis direction) and an angle θ (the rotation about that axis, in radians), based on the fact that every rotation is equivalent to a single turn about some fixed axis. Multiplying the two together gives the 3D rotation vector θe: its direction is the rotation axis and its length is the rotation angle, so it packs everything into just 3 numbers — SciPy calls this rotvec. It converts to and from a rotation matrix using Rodrigues' rotation formula, and mathematically it's just the coordinates of the SO(3) exponential map. Its downside is non-uniqueness: adding or subtracting 2π from θ, or flipping the sign of both the axis and the angle, represent the exact same rotation, and the conversion needs special handling when θ is near 0 or π. Because it's low-dimensional and smooth for small angles, it's a common action representation for end-effector orientation deltas in robot arm control.",
+      "example": "robosuite's OSC_POSE controller takes a 6-dimensional action (excluding the gripper); the last 3 values are a rotation delta relative to the current end-effector orientation, given in axis-angle form (ax, ay, az) — a 90° rotation about z is written (0, 0, 1.571).",
+      "related": ["Rotation Matrix", "Quaternion", "Euler Angles", "Rodrigues' Rotation Formula", "Exponential Map", "6D Rotation Representation"]
+    },
+    {
+      "key": "mechanics-03#4",
+      "name_en": "Body Frame",
+      "aliases": ["Robot Body Frame"],
+      "one_liner": "A coordinate frame fixed to a robot's own body, moving and rotating along with it.",
+      "explanation": "The body frame — often written {b} in textbooks — is a coordinate frame attached to a rigid body or a robot's torso, with its origin and three axes translating and rotating right along with the body; its counterpart is the fixed world frame. Describing an object's position and orientation is, at bottom, just giving the body frame's pose relative to the world frame; quantities like velocity and force can likewise be expressed in either the world frame or the body frame. Reinforcement-learning policies for legged robots usually put observations in the body frame: in Isaac Lab, base_lin_vel, base_ang_vel, and projected_gravity (the direction of gravity projected into the body frame, used to sense body tilt) are all defined relative to the robot's root frame, so the policy never has to care which way the robot happens to be facing in the world.",
+      "example": "Commanding a quadruped robot to “walk forward at 0.5 m/s” gives that velocity in the body frame, where x means forward relative to the body's own facing direction — whether the robot is actually facing east or north in the world, the same command always means “walk toward your own front.”",
+      "related": ["World Frame", "Base Frame", "Coordinate Transformation", "Projected Gravity", "Pose", "Velocity Command Tracking"]
+    },
+    {
+      "key": "mechanics-03#5",
+      "name_en": "Center of Pressure (CoP)",
+      "aliases": ["CoP", "Center of Foot Pressure"],
+      "one_liner": "The single point where the ground's total supporting force on a foot effectively acts, used to judge balance.",
+      "explanation": "When a foot presses on the ground, the ground pushes back at every point of contact; the center of pressure is the single point where all of that distributed force can be combined into one equivalent ground reaction force. Biomechanics researchers measure it with a force plate — while standing, it drifts slightly as the body sways, and while walking, it travels from heel to toe. By definition, it can only fall inside the support polygon (the convex region enclosed by all the ground-contact points); once it reaches the edge, the foot is about to start tipping over that edge. It comes from a different source than the zero moment point (ZMP): CoP is computed from contact forces, while ZMP is derived from the whole robot's motion and acceleration — but the two coincide whenever there's a single contact surface or the robot is walking on flat ground, which is why classical humanoid walking control often uses “keep the ZMP/CoP inside the support polygon” as its stability criterion, measuring CoP in real time with a six-axis force sensor in the foot.",
+      "example": "As a standing person leans forward, their center of pressure shifts from the middle of the foot toward the toes; lean too far and, once it reaches the edge of the toes, it can't move forward any further — the only options left are to take a step or fall forward.",
+      "related": ["Zero Moment Point (ZMP)", "Support Polygon", "Ground Reaction Force", "Foot Force Sensor", "Center of Mass (CoM)", "Balance Control"]
+    },
+    {
+      "key": "mechanics-03#6",
+      "name_en": "Compliance",
+      "aliases": [],
+      "one_liner": "How readily a robot yields to an external force; numerically, the inverse of stiffness.",
+      "explanation": "In mechanics, compliance is the inverse of stiffness: stiffness k is how much force it takes to produce a unit of deformation (N/m), and compliance 1/k is how much deformation a unit of force produces (m/N). In robotics, it describes whether an arm or joint gives way under an external push: a purely position-controlled arm is “stiff” and generates a large force if it hits a table or a person, while a compliant robot yields like a spring instead. Compliance can be passive, built into the mechanism's own elasticity — a series elastic actuator, the twisting flex of a harmonic reducer's flexspline, or the remote center compliance (RCC) device invented at Draper Laboratory in the 1970s — or active, where impedance control or admittance control simulates a virtual spring in software. Contact-rich tasks like peg-in-hole assembly, wiping a table, and working alongside people all depend on it.",
+      "example": "During peg-in-hole assembly, a slight misalignment will jam a rigid arm's peg against the edge of the hole; adding an RCC device between the wrist and the gripper lets the peg, once it touches the hole's chamfered edge, get pushed sideways and slide itself into alignment automatically.",
+      "related": ["Stiffness", "Impedance Control", "Admittance Control", "Compliance Control", "Series Elastic Actuator (SEA)", "Peg-in-Hole Assembly"]
+    },
+    {
+      "key": "mechanics-03#7",
+      "name_en": "Configuration Space (C-Space)",
+      "aliases": ["C-Space"],
+      "one_liner": "The space of every possible pose a robot can be in, where each point represents one complete configuration.",
+      "explanation": "A configuration is a set of numbers that uniquely pins down the position of every part of a robot; configuration space is the set of all possible configurations, with dimensionality equal to the number of degrees of freedom. For example, an object that can translate and rotate in a plane has a 3-dimensional configuration space (x, y, θ); a rigid body in 3D space has 6; a fixed-base arm with n revolute joints has an n-dimensional configuration space, using the joint angles directly as coordinates. According to Modern Robotics, Tomás Lozano-Pérez introduced this idea to motion planning in a 1980 MIT report: configurations that would collide with an obstacle are marked as obstacle regions, and everything else is called free space, which turns “steer a robot with a physical shape around obstacles” into “find a path for a single point through configuration space.” Sampling-based planners like RRT and PRM both operate in configuration space.",
+      "example": "A planar two-link arm's configuration space consists of the two joint angles (θ1, θ2) — strictly speaking, a torus. A cup on a table becomes an irregularly shaped forbidden region on this space; planning a path means connecting a start point to a goal point on it while going around that region.",
+      "related": ["Degrees of Freedom (DoF)", "Joint Space", "Motion Planning", "Sampling-Based Planning", "Collision Checking", "Generalized Coordinates"]
+    },
+    {
+      "key": "mechanics-03#8",
+      "name_en": "Contact Force",
+      "aliases": [],
+      "one_liner": "The force two objects exert on each other when touching, split into a normal (pressing) part and a tangential (friction) part.",
+      "explanation": "Contact force is the force that arises between two objects because they're physically touching, as opposed to action-at-a-distance forces like gravity or electromagnetism. It's usually split into two components: a normal force perpendicular to the contact surface (a pushing force only — it can press but never pull), and a tangential force parallel to the surface (friction), whose magnitude is limited by the friction coefficient and the normal force, as described by Coulomb friction. A robot's walking, grasping, pushing, and inserting all happen through contact forces: a legged robot supports itself and moves forward using the ground reaction force at its feet, and a gripper lifts an object using the normal force and friction at its fingertips. A physics engine has to solve for contact forces at every simulation step; on a real robot, they're measured with six-axis force sensors, foot force sensors, or tactile sensors, and controllers commonly write “the contact force must stay inside the friction cone” as a constraint.",
+      "example": "When training quadruped walking in Isaac Lab, each foot gets a contact sensor reading net_forces_w — the total contact force on that foot in world coordinates. A reading near zero means the foot has left the ground, which is used to infer gait phase and shape reward terms.",
+      "related": ["Normal Force vs. Tangential (Shear) Force", "Coulomb Friction", "Friction Cone", "Ground Reaction Force", "Contact Model", "Six-Axis Force/Torque Sensor"]
+    },
+    {
+      "key": "mechanics-03#9",
+      "name_en": "Coulomb Friction",
+      "aliases": ["Coulomb Friction Model", "Dry Friction"],
+      "one_liner": "The classic friction model where friction force never exceeds the friction coefficient times normal force, independent of sliding speed.",
+      "explanation": "Coulomb friction is the empirical law describing contact between two dry solid surfaces: the tangential friction force f_t ≤ μ·f_n, where f_n is the normal (pressing) force and μ is the friction coefficient, commonly between 0.1 and 1. While not sliding, friction can take on any value up to that limit in whichever direction resists sliding; once sliding starts, friction equals μ·f_n exactly, points opposite the direction of sliding, and is independent of sliding speed or the nominal contact area. It's common to distinguish a static friction coefficient μs from a slightly smaller kinetic friction coefficient μk. The rule was first summarized by Guillaume Amontons in 1699 and studied in depth by Charles-Augustin de Coulomb in 1785. It's only an approximation, but it underlies both grasp analysis and physics engines: plotting f_t ≤ μ·f_n in 3D gives exactly the friction cone, and whether a contact will slip is just a matter of checking whether the contact force falls inside that cone.",
+      "example": "A two-finger gripper presses a cup from both sides with 10 N each. If μ = 0.5, each contact point provides at most 5 N of friction, 10 N total — enough to lift a roughly 1 kg cup (about 9.8 N of weight); anything heavier slips out from between the fingers.",
+      "related": ["Friction Coefficient", "Friction Cone", "Stiction and the Stribeck Effect", "Viscous Friction", "Contact Model", "Slip"]
+    },
+    {
+      "key": "mechanics-03#10",
+      "name_en": "Damping",
+      "aliases": ["Damping Coefficient"],
+      "one_liner": "The effect that gradually dissipates a moving or vibrating system's energy, settling it down and slowing it to rest.",
+      "explanation": "Damping refers to whatever dissipates energy in an oscillating or moving system — fluid viscosity, friction, and so on. The most common linear (viscous) model gives a damping force of −b·v, where v is velocity and b is the damping coefficient: the faster the motion, the greater the resistance. In a mass-spring-damper system, m·ẍ + b·ẋ + k·x = f (m is mass, k is stiffness, f is the external force), the damping ratio ζ determines the shape of the response: ζ < 1 is underdamped, oscillating back and forth; ζ = 1 is critically damped, returning to equilibrium fastest with no overshoot; ζ > 1 is overdamped, returning slowly. In robotics, the D gain in PD control acts like adding a virtual damper to a joint — simulators like Isaac Lab even name their joint control parameters stiffness and damping directly — and a joint's own mechanical damping also needs to be identified and written into the simulation model.",
+      "example": "Legged robots commonly use PD control at the joint, τ = kp·(q_des − q) + kd·(q̇_des − q̇), where kd is the damping gain: too small and the joint shakes and overshoots, too large and the response becomes sluggish. Modern Robotics recommends choosing gains near critical damping, ζ = 1.",
+      "related": ["Damping Ratio", "Stiffness", "Mass-Spring-Damper System", "PD Control", "Stiffness and Damping Gains", "Impedance Control"]
+    },
+    {
+      "key": "mechanics-03#11",
+      "name_en": "Denavit-Hartenberg (DH) Parameters",
+      "aliases": ["DH Parameters", "Standard DH", "DH Convention"],
+      "one_liner": "A convention for modeling an arm where just four numbers per joint describe the transform between neighboring link frames.",
+      "explanation": "DH parameters are a convention introduced by Jacques Denavit and Richard Hartenberg in a 1955 paper in the Journal of Applied Mechanics: following a fixed rule, each link gets its own coordinate frame, and the transform between neighboring frames then needs only 4 numbers — the offset d along the previous z-axis, the rotation angle θ about the previous z-axis, the length a of the common perpendicular between the two joint axes (the link length), and the twist angle α about that common perpendicular. For a revolute joint, θ is the joint variable and the other three are fixed constants. Multiplying each joint's 4×4 homogeneous transformation matrix together in sequence gives the forward kinematics from base to end effector. Richard Paul extended the convention to robotics broadly in 1981. The “modified DH” convention used in John Craig's textbook places the frames and orders the transforms differently, so the two parameter tables are not interchangeable.",
+      "example": "Universal Robots' official standard DH parameters for the UR5e: joint 1 has d = 0.1625 m and α = π/2; joints 2 and 3 have a = −0.425 m and −0.3922 m (the upper-arm and forearm lengths); joints 4–6 have d = 0.1333, 0.0997, and 0.0996 m. Plugging these into the formula computes the end-effector pose from the 6 joint angles.",
+      "related": ["Modified DH Parameters", "Forward Kinematics", "Homogeneous Transformation Matrix", "Product of Exponentials", "URDF (Unified Robot Description Format)", "Link"]
+    }
+  ]
+}

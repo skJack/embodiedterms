@@ -1,0 +1,113 @@
+{
+  "batch": "robot-02",
+  "terms": [
+    {
+      "key": "robot-02#0",
+      "name_en": "6-Axis Robot Arm",
+      "aliases": ["6-DoF Robot Arm", "Six-Axis Robot Arm"],
+      "one_liner": "A robot arm with six rotating joints in series, able to reach any position and orientation.",
+      "explanation": "A 6-axis robot arm is built from six rotating joints connected in series, the most common configuration for industrial and collaborative robot arms. An object's pose in space, meaning its x/y/z position plus three rotation angles, has exactly 6 degrees of freedom, so six joints are, in principle, enough for the end effector, such as a gripper or welding torch mounted on the wrist, to reach any pose within the workspace. A common design puts the first three axes at the base to set position and the last three in a spherical wrist to set orientation, which is why most 6-axis arms have a closed-form solution for inverse kinematics, meaning computing joint angles from a target pose. Representative products include the UR5e, xArm6, and AgileX PiPER; in embodied-AI research it is often used as a single-arm manipulation platform. Lacking a redundant joint, it is less flexible than a 7-DoF arm when facing singular configurations or needing to reach around obstacles.",
+      "example": "The UR5e is a 6-axis collaborative arm with a 5 kg payload, commonly used for pick-and-place experiments.",
+      "related": ["Robotic Arm (Manipulator)", "Degrees of Freedom", "Inverse Kinematics", "Spherical Wrist", "7-DoF Robot Arm", "Universal Robots UR5e"]
+    },
+    {
+      "key": "robot-02#1",
+      "name_en": "7-DoF Robot Arm",
+      "aliases": ["7-Axis Robot Arm", "Redundant Manipulator"],
+      "one_liner": "A robot arm with one more joint than a 6-axis arm, letting the same hand pose be reached many ways.",
+      "explanation": "A 7-DoF robot arm has 7 joints in series, one more than the 6 needed to fix an end effector's pose, which is called kinematic redundancy. The benefit is that infinitely many joint-angle combinations produce the same end-effector pose, so the controller can adjust the elbow position within the null space, meaning the part of joint motion that doesn't change the end-effector pose, to avoid obstacles, singular configurations, and joint limits, while also moving in a way closer to a human arm, since a human shoulder, elbow, and wrist together also have roughly 7 degrees of freedom. The tradeoff is that inverse kinematics no longer has a unique solution, requiring an extra parameter such as the arm angle, or numerical optimization, to pick one. Representative products include the Franka Panda/FR3, KUKA LBR iiwa, and Kinova Gen3; humanoid robots such as AgiBot's Expedition A2 also use 7-DoF arms.",
+      "example": "The DROID dataset was collected at multiple labs using Franka Panda 7-DoF robot arms.",
+      "related": ["Kinematic Redundancy", "Null Space", "Arm Angle / Swivel Angle", "6-Axis Robot Arm", "Franka Emika Panda / Franka Research 3", "KUKA LBR iiwa"]
+    },
+    {
+      "key": "robot-02#2",
+      "name_en": "AgiBot Expedition A2 Series",
+      "aliases": ["Expedition A2", "AgiBot A2", "A2-W", "A2 Ultra", "A2 Lite"],
+      "one_liner": "AgiBot's 2024 Expedition humanoid line, including a bipedal version and a wheeled version, A2-W.",
+      "explanation": "Expedition A2 is a humanoid robot series released by AgiBot in August 2024, aimed at interactive service and industrial settings. The bipedal A2 is a full-size humanoid, reportedly about 1.7–1.75 meters tall, with 7 degrees of freedom in each arm and an optional dexterous hand; A2-W pairs the same upper body with a wheeled base for factory material handling, and is not simply an A2 with wheels bolted on. The line was later split further into configurations such as A2 Ultra and A2 Lite. In November 2025, an A2 walked from Suzhou to Shanghai, covering about 106 km over three days and setting a Guinness World Record. Together with the Genie G series and Lingxi X series, the A2 series forms AgiBot's humanoid product line, commonly seen on showroom reception and tour-guide duty and in factory pilots.",
+      "example": "In November 2025, an Expedition A2 walked from Suzhou to Shanghai over three days, covering about 106 km, and earned a Guinness World Record.",
+      "related": ["AgiBot", "Humanoid Robot", "Wheeled Humanoid Robot", "AgiBot A3", "AgiBot Genie G1", "7-DoF Robot Arm"]
+    },
+    {
+      "key": "robot-02#3",
+      "name_en": "Agility Robotics Digit",
+      "aliases": ["Digit", "Digit 4", "Digit 5"],
+      "one_liner": "Agility Robotics' reverse-jointed bipedal humanoid, built mainly to carry totes in warehouses.",
+      "explanation": "Digit is a bipedal humanoid robot developed by the American company Agility Robotics. Its legs carry over the reverse-jointed design, bending backward like a bird's, from its predecessor Cassie, and its upper body adds two arms and a simplified end effector, used mainly to carry totes, meaning plastic storage bins, around warehouses. The previous generation of Digit stood about 1.75 meters tall with roughly a 16 kg payload, and has already been deployed on a pay-per-use, robot-as-a-service basis at logistics companies such as GXO, with Agility also building a dedicated RoboFab factory to produce it. Digit 5, released on September 15, 2026, is built around “safe collaboration”: an array of sensors plus an independent safety controller monitor nearby people and automatically slow down, steer around, or stop when someone gets too close, aiming to work alongside human workers without safety fencing. The company said that, as of May 2026, multi-year orders had exceeded $300 million, with early deliveries planned for the first half of 2027 and full-scale supply by the end of that year.",
+      "example": "Digit moves totes from shelves to conveyor belts inside a GXO warehouse, making it one of the earlier humanoid robots deployed commercially on a paid basis.",
+      "related": ["Agility Robotics", "Bipedal Robot", "Agility Robotics Cassie", "RoboFab", "Tote Handling (Material Handling)", "Robot-as-a-Service"]
+    },
+    {
+      "key": "robot-02#4",
+      "name_en": "Apptronik Apollo",
+      "aliases": ["Apollo", "Apollo 2"],
+      "one_liner": "A general-purpose humanoid robot from the US company Apptronik, aimed at logistics and manufacturing.",
+      "explanation": "Apollo is the humanoid robot the Texas-based company Apptronik released in 2023: about 1.73 meters tall, roughly 73 kg, with a payload of about 25 kg, designed for carrying boxes and totes in warehouses and factories, with a swappable battery. Apptronik grew out of a robotics lab at the University of Texas at Austin, and Apollo uses in-house electric actuators. Apollo 2, released in June 2026, comes in both bipedal and wheeled-base configurations and is positioned as a training and data platform, reportedly with 35 degrees of freedom, 12 of them in the hands; fleets running at the company's Robot Park site and at customer locations continuously collect real-world data, feeding a partnership with Google DeepMind to train the Gemini Robotics model family. The company reportedly designated Apollo 3 as its first fully commercial product, targeted for 2027.",
+      "example": "Apptronik partnered with Mercedes-Benz to pilot Apollo carrying parts totes at one of its factories.",
+      "related": ["Apptronik", "Humanoid Robot", "Gemini Robotics", "Google DeepMind", "Wheeled Humanoid Robot", "Tote Handling (Material Handling)"]
+    },
+    {
+      "key": "robot-02#5",
+      "name_en": "Bipedal Robot",
+      "aliases": ["Biped", "Two-legged Robot"],
+      "one_liner": "A robot that moves on two legs, the most typical lower-body form for a humanoid.",
+      "explanation": "A bipedal robot moves on two legs, and can be either a full humanoid or just a pair of legs, as with Agility's Cassie. Two legs give a small support base, and walking often passes through phases with only one foot on the ground, making the robot inherently unstable and requiring continuous balance control. Traditional methods plan gaits around the zero moment point, a reference point that predicts whether the foot will tip over, and an inverted pendulum model; Honda's ASIMO is the classic example. In recent years the mainstream approach has shifted to training walking policies with reinforcement learning in simulation, then transferring them to the real robot. The benefit is that a biped can climb stairs, step over obstacles, and enter environments built for humans, at the cost of higher energy use, cost, and fall risk than a wheeled base. Unitree's G1, Agility's Digit, and Booster's T1 are all bipedal robots.",
+      "example": "Honda's ASIMO planned its gait around the zero moment point; Unitree's G1, by contrast, walks using a policy trained with reinforcement learning in simulation.",
+      "related": ["Bipedal Locomotion", "Humanoid Robot", "Legged Robot", "Zero Moment Point", "Inverted Pendulum Model", "Agility Robotics Cassie"]
+    },
+    {
+      "key": "robot-02#6",
+      "name_en": "Booster Robotics T1",
+      "aliases": ["Booster T1", "T1"],
+      "one_liner": "Booster Robotics' 1.2-meter small humanoid, aimed at developers and robot soccer.",
+      "explanation": "Booster T1 is the small bipedal humanoid robot from Booster Robotics, standing about 1.2 meters tall and weighing about 30 kg, with 23 degrees of freedom in the base configuration and optional grippers or dexterous hands, powered by an NVIDIA Jetson AGX Orin (up to roughly 200 TOPS of compute). The company positions it as “built for developers,” with an open SDK for reinforcement-learning locomotion control and higher-level algorithm research. It is best known for robot soccer: in July 2025, Tsinghua University's Hyperdog team used the T1 to win the humanoid adult-size division at the RoboCup World Cup in Brazil. Its small size, lower damage from falls, and lower price than full-size humanoids make it popular with universities and labs doing locomotion and embodied-AI research.",
+      "example": "At the 2025 RoboCup World Cup in Brazil, Tsinghua University's Hyperdog team won the humanoid adult-size division using the Booster T1.",
+      "related": ["Booster Robotics", "Small-size Humanoid Robot", "Bipedal Robot", "RoboCup", "NVIDIA Jetson Orin", "Booster Robotics K1"]
+    },
+    {
+      "key": "robot-02#7",
+      "name_en": "Collaborative Robot",
+      "aliases": ["Cobot", "Collaborative Arm"],
+      "one_liner": "A lightweight robot arm designed to share workspace with people, without a safety fence.",
+      "explanation": "A collaborative robot, or cobot, is a robot designed to work in the same space as people, most commonly a lightweight 6- or 7-axis arm with a payload from a few kilograms up to twenty or thirty. Traditional industrial robots must be kept behind safety fencing; cobots instead reduce the risk of hurting someone through power and force limiting, collision detection, meaning they stop instantly if joint current or torque sensors notice an unexpected contact, and speed-and-separation monitoring, with the relevant requirements set out in ISO 10218 and ISO/TS 15066. They typically support kinesthetic teaching, where a person drags the arm by hand to record a motion, which makes them easy to deploy and a common platform in small and mid-sized factory automation and in embodied-AI labs. Representative brands include Universal Robots' UR series, Franka, Dobot, JAKA, and Flexiv. Whether a setup actually counts as “collaborative” depends on a full risk assessment of the application, not just on swapping in a cobot arm.",
+      "example": "The UR5e has a 5 kg payload and can be hand-guided directly through kinesthetic teaching, making it one of the most common collaborative arms in research.",
+      "related": ["Industrial Robot", "Human-Robot Collaboration", "ISO/TS 15066", "Power and Force Limiting", "Kinesthetic Teaching", "Universal Robots"]
+    },
+    {
+      "key": "robot-02#8",
+      "name_en": "Desktop Robot Arm",
+      "aliases": ["Desktop Robotic Arm", "Low-cost Robot Arm"],
+      "one_liner": "A small, inexpensive robot arm that sits directly on a desk, used for teaching and data collection.",
+      "explanation": "A desktop robot arm is small and light enough to sit directly on an office desk, usually with a payload of a few hundred grams to a kilogram or two, priced far below industrial arms. Early examples were mainly for education and makers, such as Dobot Magician and Elephant Robotics' myCobot. After 2024, the open-source SO-100/SO-101 from the Hugging Face LeRobot community, servo-driven and 3D-printed, with a single arm's parts reportedly costing on the order of $100, turned it into a popular entry point into embodied AI: one arm used as a leader, moved by hand, and a follower arm that copies it, is enough to teleoperate and collect demonstration data, which can then train policies such as ACT or SmolVLA. Its precision, stiffness, and payload are all limited, making it suited to algorithm validation rather than industrial work.",
+      "example": "The SO-101 is assembled from Feetech STS3215 servos and 3D-printed parts; a leader-follower pair is enough to teleoperate and collect data to train an ACT policy.",
+      "related": ["SO-100 / SO-101 Arm (LeRobot)", "LeRobot (Hugging Face)", "Leader-Follower Teleoperation", "Elephant Robotics myCobot", "Dobot Magician", "Open-source Hardware"]
+    },
+    {
+      "key": "robot-02#9",
+      "name_en": "Dual-arm Robot",
+      "aliases": ["Bimanual Robot"],
+      "one_liner": "A robot with two arms, able to coordinate them the way a person uses both hands.",
+      "explanation": "A dual-arm robot has two robot arms that can coordinate to complete a task together, whether mounted as a fixed tabletop platform or attached to a mobile base or humanoid torso. Many everyday tasks can't be done with one hand, such as folding laundry, unscrewing a bottle cap, or holding something steady while inserting a part; this kind of bimanual manipulation requires the two arms to coordinate in time and space, doubling the action space, and is a major challenge in imitation learning and VLA research. Early examples include Rethink Robotics' Baxter and ABB's YuMi; the most common platform in embodied-AI research today is Stanford's ALOHA, which uses two pairs of low-cost leader-follower arms for teleoperation, along with its derivative, AgileX's Cobot Magic. Models such as RDT-1B and π0 are trained on large amounts of this kind of bimanual data.",
+      "example": "Mobile ALOHA mounts an ALOHA bimanual setup on a mobile base, and with only about 50 demonstrations per task, learns tasks such as stir-frying shrimp.",
+      "related": ["Bimanual Manipulation", "ALOHA", "Mobile ALOHA", "AgileX Cobot Magic", "ABB YuMi", "Rethink Robotics Baxter"]
+    },
+    {
+      "key": "robot-02#10",
+      "name_en": "Figure 02",
+      "aliases": ["F.02", "Figure 2"],
+      "one_liner": "Figure AI's second-generation humanoid robot, released in 2024 and piloted in a BMW factory.",
+      "explanation": "Figure 02 is the second-generation general-purpose humanoid robot the US company Figure AI released in August 2024, succeeding Figure 01. Published specs: about 1.68 meters tall, roughly 70 kg, 16 degrees of freedom in each hand, and 6 cameras across the body; the company says its battery capacity is 50% higher than the previous generation and its onboard compute 3 times higher, with all cabling routed internally. It was piloted doing body-panel handling and placement at BMW's Spartanburg factory, and it was also the first robot to run Figure's own VLA model, Helix, released in February 2025 with a fast-slow dual-system design; demo videos showed two Figure 02 units collaborating to put away groceries and sorting packages on a logistics line. After Figure 03 launched in October 2025, Figure 02 became the previous generation.",
+      "example": "In February 2025, Figure used Helix to control two Figure 02 units at once, putting groceries away in a fridge together on voice command.",
+      "related": ["Figure AI", "Figure Helix", "Figure 01", "Figure 03", "Humanoid Robot", "Dual-System Architecture"]
+    },
+    {
+      "key": "robot-02#11",
+      "name_en": "Fourier GR-1",
+      "aliases": ["GR-1", "GR1"],
+      "one_liner": "Fourier's 2023 full-size humanoid robot, one of the earlier mass-delivered humanoid platforms in China.",
+      "explanation": "GR-1 is the general-purpose humanoid robot Shanghai-based Fourier, formerly Fourier Intelligence, which started out making rehabilitation robots, released in July 2023: about 1.65 meters tall, roughly 55 kg, with about 40 degrees of freedom across the body. Its joints use Fourier's own FSA integrated actuators, a joint actuator module that packages the motor, reducer, drive electronics, and encoder together; the company states a maximum payload of about 50 kg and a walking speed of about 5 km/h. It was one of the earlier humanoid platforms in China to open presales and ship in volume to universities and research institutions, and a number of humanoid manipulation studies, including iDP3, have run experiments on it. Fourier later released successor models, GR-2 and GR-3.",
+      "example": "The iDP3 (Improved 3D Diffusion Policy) paper used a Fourier GR-1 for its humanoid bimanual manipulation experiments.",
+      "related": ["Fourier", "Full-size Humanoid Robot", "Fourier GR-2", "Fourier GR-3", "Joint Actuator Module", "iDP3"]
+    }
+  ]
+}

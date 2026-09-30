@@ -1,0 +1,410 @@
+{
+ "category": "sim",
+ "batch": 4,
+ "terms": [
+  {
+   "name_zh": "Elo 评分",
+   "name_en": "Elo Rating (Bradley-Terry Model)",
+   "abbr": "",
+   "aliases": [
+    "Bradley-Terry 模型",
+    "BT 模型",
+    "Elo Rating System"
+   ],
+   "tier": 2,
+   "one_liner": "用两两对比的胜负结果，估算每个选手或策略相对实力的打分方法。",
+   "explanation": "Elo 评分由物理学教授、国际象棋大师 Arpad Elo 为棋手排名设计，1960 年被美国棋协采用。每个选手有一个分数，分差决定预期胜率；每局结束后按「实际结果 − 预期结果」乘以系数 K 调整分数。数学上它是 Bradley-Terry 模型的特例，BT 模型把 A 胜 B 的概率写成两者能力差的 sigmoid。具身领域用它解决「不同实验室、不同任务的成功率没法直接比」的问题：让两个策略在同一任务上成对比较，汇总大量胜负就能排出榜单。RoboArena 发现任务难度不一会让普通 Elo 排名失真，改用加入任务难度参数的 BT 模型。",
+   "example": "RoboArena 让各地评测者在自选任务上双盲比较两个策略、判断哪个做得更好，再用改进的 Bradley-Terry 模型把 600 多次真机对比汇总成 7 个通用策略的排名。",
+   "related": [
+    "双盲成对比较",
+    "RoboArena",
+    "真机评测",
+    "成功率",
+    "基准测试"
+   ],
+   "sources": [
+    {
+     "title": "RoboArena: Distributed Real-World Evaluation of Generalist Robot Policies (arXiv 2506.18123)",
+     "url": "https://arxiv.org/abs/2506.18123"
+    },
+    {
+     "title": "Elo rating system - Wikipedia",
+     "url": "https://en.wikipedia.org/wiki/Elo_rating_system"
+    }
+   ],
+   "as_of": "2025-11"
+  },
+  {
+   "name_zh": "弗雷歇初始距离",
+   "name_en": "Fréchet Inception Distance",
+   "abbr": "FID",
+   "aliases": [
+    "弗雷歇 Inception 距离",
+    "FID 分数"
+   ],
+   "tier": 2,
+   "one_liner": "衡量一批生成图像与真实图像在整体分布上有多接近的指标，越低越好。",
+   "explanation": "FID 由 Heusel 等人在 NeurIPS 2017 的论文中提出，用来评价 GAN 等生成模型的出图质量。做法是把一批真实图像和一批生成图像都送进预训练的 Inception v3（一个图像分类网络），取最后池化层的 2048 维特征，各自拟合成多元高斯分布，再算两个高斯之间的 Fréchet 距离。它比的是整体分布而非逐张像素，能同时反映画质和多样性，数值越低越好，0 表示完全一致。局限是依赖 Inception 特征，和人眼判断不总一致，样本太少时有偏差。它的视频版叫 FVD。具身领域评测世界模型、视频生成模型的生成画面时，常把 FID、FVD 和 PSNR 等一起报告。",
+   "example": "评测一个机器人视频世界模型时，拿它生成的若干帧操作画面和同场景真实录像帧各取数千张，送进 Inception v3 算 FID；分数越低，说明生成画面整体越像真实数据。",
+   "related": [
+    "弗雷歇视频距离",
+    "PSNR / SSIM / LPIPS 图像相似度指标",
+    "视频生成模型",
+    "世界模型评测",
+    "生成对抗网络",
+    "生成模型"
+   ],
+   "sources": [
+    {
+     "title": "GANs Trained by a Two Time-Scale Update Rule Converge to a Local Nash Equilibrium (arXiv 1706.08500)",
+     "url": "https://arxiv.org/abs/1706.08500"
+    },
+    {
+     "title": "Fréchet inception distance - Wikipedia",
+     "url": "https://en.wikipedia.org/wiki/Fr%C3%A9chet_inception_distance"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "高斯泼溅仿真",
+   "name_en": "Gaussian Splatting-based Simulation",
+   "abbr": "",
+   "aliases": [
+    "3DGS 仿真",
+    "GS 仿真",
+    "高斯泼溅模拟器"
+   ],
+   "tier": 2,
+   "one_liner": "用 3D 高斯泼溅重建真实场景来渲染画面，再配合物理引擎算运动的仿真方式。",
+   "explanation": "高斯泼溅仿真是把 3D 高斯泼溅（3DGS，Kerbl 等人 2023 年提出，用大量带颜色的 3D 高斯点表示场景，可实时渲染出照片级画面）接进机器人仿真的做法。通常先用手机或相机拍一圈真实场景重建出 3DGS，再把其中的物体、机器人和物理引擎里的碰撞体对齐：物理引擎算运动，3DGS 负责渲染相机画面。它针对的是传统仿真画面「一眼假」带来的视觉虚实差距，让仿真里训练的视觉策略更容易零样本上真机，也可用来做可复现的闭环评测。代表工作有 SplatSim、RoboGSim、Real2Render2Real，智元 Genie Sim 3.0 也加入了 3DGS 场景重建。高斯点本身不带物理属性，仍需另配碰撞体和动力学模型。",
+   "example": "SplatSim 用高斯泼溅渲染替换仿真器原来的网格渲染，只用仿真数据训练的 RGB 操作策略零样本部署到真机，平均成功率 86.25%，而用真机数据训练的是 97.5%。",
+   "related": [
+    "3D高斯泼溅",
+    "真-仿-真闭环",
+    "虚实差距",
+    "数字孪生",
+    "RoboGSim",
+    "Real2Render2Real（R2R2R）"
+   ],
+   "sources": [
+    {
+     "title": "SplatSim: Zero-Shot Sim2Real Transfer of RGB Manipulation Policies Using Gaussian Splatting (arXiv 2409.10161)",
+     "url": "https://arxiv.org/abs/2409.10161"
+    },
+    {
+     "title": "RoboGSim: A Real2Sim2Real Robotic Gaussian Splatting Simulator (arXiv 2411.11839)",
+     "url": "https://arxiv.org/abs/2411.11839"
+    },
+    {
+     "title": "3D Gaussian Splatting for Real-Time Radiance Field Rendering (arXiv 2308.04079)",
+     "url": "https://arxiv.org/abs/2308.04079"
+    }
+   ],
+   "as_of": "2026-01"
+  },
+  {
+   "name_zh": "Gazebo",
+   "name_en": "Gazebo",
+   "abbr": "",
+   "aliases": [
+    "Gazebo Classic",
+    "Gazebo Sim",
+    "Ignition Gazebo"
+   ],
+   "tier": 2,
+   "one_liner": "ROS 生态里最常用的开源机器人仿真器，由 Open Robotics 维护。",
+   "explanation": "Gazebo 是开源的 3D 机器人仿真器，2002 年起作为 Player 项目的一部分开发，2011 年在 Willow Garage 支持下独立，2012 年起由开源机器人基金会（OSRF，2018 年更名 Open Robotics）维护，和 ROS 同出一源。它能模拟机器人、相机、激光雷达、IMU 等传感器和环境，常用来在上真机前联调导航、建图、控制代码，也用于 DARPA 机器人挑战赛等比赛。2017 年起的重写版一度叫 Ignition，2022 年因商标问题改回 Gazebo，旧版改称 Gazebo Classic，已于 2025 年 1 月停止维护；截至 2026 年当前长期支持版是 Gazebo Jetty。它偏向软件联调，不以大规模 GPU 并行训练见长，强化学习训练多改用 Isaac Lab、MuJoCo 等。",
+   "example": "用 ROS 2 做移动机器人时，常先在 Gazebo 里加载机器人的 URDF 模型和一个仓库场景，跑通 Nav2 导航和 SLAM 建图，再把同一套 ROS 节点部署到真机。",
+   "related": [
+    "机器人操作系统",
+    "ROS 2",
+    "仿真器",
+    "统一机器人描述格式",
+    "SDFormat 仿真描述格式",
+    "Nav2"
+   ],
+   "sources": [
+    {
+     "title": "Gazebo (simulator) - Wikipedia",
+     "url": "https://en.wikipedia.org/wiki/Gazebo_(simulator)"
+    },
+    {
+     "title": "Gazebo Docs: Getting Started",
+     "url": "https://gazebosim.org/docs/latest/getstarted/"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "泛化与鲁棒性评测",
+   "name_en": "Generalization / Robustness Evaluation (Perturbation Test)",
+   "abbr": "",
+   "aliases": [
+    "扰动测试",
+    "分布外评测",
+    "OOD Evaluation",
+    "鲁棒性基准"
+   ],
+   "tier": 2,
+   "one_liner": "故意改变光照、位置、物体、指令等条件，测策略离开训练环境后还剩几成本事。",
+   "explanation": "泛化与鲁棒性评测不只报告策略在训练同分布条件下的成功率，而是系统地施加扰动：换物体颜色和形状、加干扰物、改光照和背景、挪相机视角、改机器人初始姿态、改写语言指令、加传感器噪声等，再看成功率掉多少。它回答的问题是：高分到底是学会了任务，还是只记住了训练场景。常见做法是按维度逐一施加扰动以定位弱点，也会把多种扰动叠加。代表基准有 The Colosseum、LIBERO-Plus、LIBERO-PRO，SimplerEnv 的变体聚合也属于这一思路。这类评测常显示，标准基准上接近满分的模型在轻度扰动下成功率大幅下降。",
+   "example": "LIBERO-Plus 在 LIBERO 上从物体布局、相机视角、机器人初始状态、语言指令、光照、背景纹理、传感器噪声 7 个维度加扰动，发现部分 VLA 成功率会从 95% 跌到 30% 以下，而且模型常常忽略语言指令。",
+   "related": [
+    "泛化",
+    "鲁棒性",
+    "分布外",
+    "干扰物",
+    "LIBERO-Plus",
+    "The Colosseum"
+   ],
+   "sources": [
+    {
+     "title": "THE COLOSSEUM: A Benchmark for Evaluating Generalization for Robotic Manipulation (arXiv 2402.08191)",
+     "url": "https://arxiv.org/abs/2402.08191"
+    },
+    {
+     "title": "LIBERO-Plus: In-depth Robustness Analysis of Vision-Language-Action Models (arXiv 2510.13626)",
+     "url": "https://arxiv.org/abs/2510.13626"
+    }
+   ],
+   "as_of": "2025-12"
+  },
+  {
+   "name_zh": "生成式仿真",
+   "name_en": "Generative Simulation",
+   "abbr": "",
+   "aliases": [
+    "仿真场景自动生成",
+    "仿真任务自动生成"
+   ],
+   "tier": 2,
+   "one_liner": "用大模型自动生成仿真任务、场景和训练监督，批量产出机器人训练数据。",
+   "explanation": "生成式仿真是 Zhou Xian 等人在 2023 年论文中提出的思路：与其让大模型直接输出机器人动作，不如用语言模型、图像和 3D 生成模型等基础模型，全自动地生成多样的任务、场景和训练监督（如奖励函数、演示轨迹），在仿真里大规模学技能。它针对的问题是人工搭场景、设计任务和奖励太慢，数据多样性上不去。典型流程是：大模型先提出任务，再检索或生成 3D 资产摆成场景，然后把任务拆成子步骤，选用强化学习或运动规划等方法生成数据、学出策略。代表工作有 RoboGen、GenSim、Holodeck。它和程序化生成（按手写规则随机造场景）的区别在于由基础模型驱动。",
+   "example": "RoboGen 的循环是：大模型先提出要学的任务和技能，再挑选相关物体资产、按合理空间关系摆成仿真场景，然后把任务拆成子任务，自行选择学习方法、生成训练监督并学出策略，全程无需人工设计。",
+   "related": [
+    "程序化生成",
+    "合成数据",
+    "仿真数据",
+    "RoboGen",
+    "Holodeck 语言生成三维环境",
+    "Genesis"
+   ],
+   "sources": [
+    {
+     "title": "Towards Generalist Robots: A Promising Paradigm via Generative Simulation (arXiv 2305.10455)",
+     "url": "https://arxiv.org/abs/2305.10455"
+    },
+    {
+     "title": "RoboGen: Towards Unleashing Infinite Data for Automated Robot Learning via Generative Simulation (arXiv 2311.01455)",
+     "url": "https://arxiv.org/abs/2311.01455"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "Genesis",
+   "name_en": "Genesis Simulator",
+   "abbr": "",
+   "aliases": [
+    "Genesis World",
+    "Genesis 仿真平台",
+    "Genesis-Embodied-AI"
+   ],
+   "tier": 2,
+   "one_liner": "2024 年底开源的多物理场 GPU 仿真平台，主打速度快、刚体软体流体统一模拟。",
+   "explanation": "Genesis（现名 Genesis World）是 2024 年 12 月以学术项目形式开源的物理仿真平台，面向机器人和具身智能，采用 Apache 2.0 协议，现由 Genesis AI 公司支持开发，GitHub 星标超过 3 万。它把刚体、有限元（FEM，算软体变形）、物质点法（MPM，算沙土等颗粒）、PBD/SPH 粒子（算布料、流体）等求解器统一到同一个场景里，配有照片级渲染器 Nyx，用 Python 编写，由从 Taichi 分叉出的编译器 Quadrants 编译到 CUDA、Metal 等后端。官方称其吞吐量可达 Isaac Gym/Sim/Lab、MuJoCo MJX 等 GPU 仿真器的 10–80 倍。常用于大规模并行强化学习，如四足、人形的运动控制训练。",
+   "example": "官方示例里就有用 Genesis 同时并行数千个宇树 Go2 环境、用 PPO 训练行走策略的脚本，单张 GPU 即可跑完训练。",
+   "related": [
+    "GPU 并行仿真",
+    "物理引擎",
+    "物质点法",
+    "Isaac Lab",
+    "MuJoCo",
+    "生成式仿真"
+   ],
+   "sources": [
+    {
+     "title": "Genesis-Embodied-AI/Genesis (GitHub)",
+     "url": "https://github.com/Genesis-Embodied-AI/Genesis"
+    },
+    {
+     "title": "Genesis World Docs: What is Genesis",
+     "url": "https://genesis-world.readthedocs.io/en/latest/user_guide/overview/what_is_genesis.html"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "智元 Genie Sim",
+   "name_en": "Genie Sim (AgiBot)",
+   "abbr": "",
+   "aliases": [
+    "Genie Sim",
+    "Genie Sim Benchmark",
+    "Genie Sim 3.0"
+   ],
+   "tier": 2,
+   "one_liner": "智元机器人开源的具身仿真平台，集场景生成、数据合成和评测基准于一体。",
+   "explanation": "Genie Sim 是智元机器人（AgiBot）开源的机器人操作仿真平台，基于英伟达 Isaac Sim 构建，代码采用 MPL 2.0 协议。2025 年发布 2.x 版本，2026 年 1 月发布 Genie Sim 3.0 并公开技术报告，之后更新到 3.2。它把几件事放在一起：用大模型把自然语言描述转成仿真场景的生成器；用 3D 高斯泼溅从真实场景重建仿真资产；覆盖 200 多个任务、10 万多个场景、用视觉语言模型自动打分的评测基准；以及开源的 1 万多小时合成数据。目标是用仿真数据替代部分真机数据来训练策略，官方报告了零样本仿真到真机迁移的结果。",
+   "example": "开发者写一句「在超市货架前摆几排饮料瓶」这样的描述，Genie Sim 的生成器会检索资产、输出 .usda 场景文件，再用智元精灵 G2 的机器人模型在该场景里采集合成数据或跑评测。",
+   "related": [
+    "智元机器人",
+    "Isaac Sim",
+    "仿真评测",
+    "合成数据",
+    "高斯泼溅仿真",
+    "生成式仿真"
+   ],
+   "sources": [
+    {
+     "title": "AgibotTech/genie_sim (GitHub)",
+     "url": "https://github.com/AgibotTech/genie_sim"
+    },
+    {
+     "title": "Genie Sim 3.0: A High-Fidelity Comprehensive Simulation Platform for Humanoid Robot (arXiv 2601.02078)",
+     "url": "https://arxiv.org/abs/2601.02078"
+    }
+   ],
+   "as_of": "2026-08"
+  },
+  {
+   "name_zh": "GPU 并行仿真",
+   "name_en": "GPU-Accelerated Parallel Simulation",
+   "abbr": "",
+   "aliases": [
+    "大规模并行仿真",
+    "Massively Parallel Simulation",
+    "GPU 加速仿真"
+   ],
+   "tier": 2,
+   "one_liner": "在一张 GPU 上同时跑成千上万个仿真环境，把机器人训练从几天缩到几分钟。",
+   "explanation": "GPU 并行仿真指把物理仿真也放到 GPU 上，同时推进成千上万个互相独立的仿真环境，并让仿真状态直接以张量形式交给 PyTorch 等框架训练网络，省去 CPU 和 GPU 之间来回拷数据。2021 年英伟达的 Isaac Gym 把这条路线推向主流，论文称比「CPU 仿真 + GPU 训练」的传统做法快 2–3 个数量级。最直接的受益者是强化学习：采样变便宜后，足式行走、灵巧手操作等策略能在单卡上几十分钟内训出来。当前常用平台有 Isaac Lab、MuJoCo MJX 与 MuJoCo Warp、Genesis、ManiSkill3、Brax 等。代价是场景要写成批量化形式，复杂接触和高质量渲染会明显拖慢速度。",
+   "example": "ETH 的 Rudin 等人在单块 GPU 上并行模拟数千台 ANYmal 四足机器人，平地行走策略不到 4 分钟训完，崎岖地形约 20 分钟，并成功迁移到真机。",
+   "related": [
+    "并行环境",
+    "Isaac Gym",
+    "Isaac Lab",
+    "大规模并行强化学习",
+    "MJX",
+    "legged_gym"
+   ],
+   "sources": [
+    {
+     "title": "Isaac Gym: High Performance GPU-Based Physics Simulation For Robot Learning (arXiv 2108.10470)",
+     "url": "https://arxiv.org/abs/2108.10470"
+    },
+    {
+     "title": "Learning to Walk in Minutes Using Massively Parallel Deep Reinforcement Learning (arXiv 2109.11978)",
+     "url": "https://arxiv.org/abs/2109.11978"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "Habitat",
+   "name_en": "Habitat (Habitat-Sim / Habitat-Lab)",
+   "abbr": "",
+   "aliases": [
+    "Habitat-Sim",
+    "Habitat-Lab",
+    "Habitat 3.0",
+    "AI Habitat"
+   ],
+   "tier": 2,
+   "one_liner": "Meta 开源的具身智能仿真平台，主要用于室内导航、物体重排和人机协作任务。",
+   "explanation": "Habitat 是 Meta（原 Facebook AI Research）联合多所高校开发的开源具身智能仿真平台，首篇论文发表于 ICCV 2019。它分两层：Habitat-Sim 是高速 3D 仿真器，能加载 Matterport3D、HM3D、Gibson、Replica 等真实室内扫描场景，单 GPU 多进程渲染可超过每秒 1 万帧；Habitat-Lab 是上层库，用来定义任务、配置智能体、训练和评测。2021 年的 Habitat 2.0 加入物理交互和家居重排任务，2023 年的 Habitat 3.0 加入人形化身和真人在环，支持社交导航与人机协作重排。它是视觉导航研究的主要平台之一，每年举办 Habitat Challenge，要求提交代码在没见过的场景里评测。",
+   "example": "点目标导航任务里，智能体被放进 HM3D 中一套没见过的公寓扫描场景，只知道目标相对起点的坐标，要靠相机画面和深度图自己走到目标点。",
+   "related": [
+    "点目标导航",
+    "物体目标导航",
+    "HM3D 数据集",
+    "社交导航",
+    "物体重排",
+    "Matterport3D 数据集"
+   ],
+   "sources": [
+    {
+     "title": "AI Habitat 官网",
+     "url": "https://aihabitat.org/"
+    },
+    {
+     "title": "Habitat: A Platform for Embodied AI Research (arXiv 1904.01201)",
+     "url": "https://arxiv.org/abs/1904.01201"
+    },
+    {
+     "title": "Habitat 3.0: A Co-Habitat for Humans, Avatars and Robots (arXiv 2310.13724)",
+     "url": "https://arxiv.org/abs/2310.13724"
+    }
+   ],
+   "as_of": "2023-10"
+  },
+  {
+   "name_zh": "穿模",
+   "name_en": "Interpenetration",
+   "abbr": "",
+   "aliases": [
+    "穿透",
+    "Penetration",
+    "Clipping"
+   ],
+   "tier": 2,
+   "one_liner": "仿真或动画里本该挡住的两个物体互相穿进对方体内的错误现象。",
+   "explanation": "穿模原是游戏和动画圈的说法，指模型互相穿插；在机器人仿真里指两个碰撞体交叠，比如手指插进桌面、脚陷进地面。物理引擎本身允许少量穿透：MuJoCo 用软接触模型，按穿透深度产生接触力；PhysX 也把穿透当作负距离，逐步加大接触力把物体推开。问题在于穿得太深，常见原因有步长太大、求解器迭代不够、碰撞体太薄或太粗糙、物体太快（整个穿过去叫隧穿）。穿模会让接触力和抓取结果失真，策略甚至学会利用穿透「作弊」，上真机就失效。对策包括减小步长、加子步和迭代次数、用凸分解做碰撞体、开启连续碰撞检测。动捕数据里脚穿地面也叫穿模。",
+   "example": "在仿真里训练抓取时，如果杯子的碰撞体是很薄的空心网格，手指可能直接穿进杯壁，仿真里算「抓住了」，真机上却抓不起来；改用凸分解后的碰撞体并增加求解器迭代次数通常能缓解。",
+   "related": [
+    "碰撞体",
+    "软接触",
+    "连续碰撞检测（隧穿问题）",
+    "仿真步长",
+    "凸分解",
+    "求解器迭代次数"
+   ],
+   "sources": [
+    {
+     "title": "MuJoCo Documentation: Computation (Soft contacts)",
+     "url": "https://mujoco.readthedocs.io/en/stable/computation/index.html"
+    },
+    {
+     "title": "NVIDIA PhysX 5 Docs: Advanced Collision Detection",
+     "url": "https://nvidia-omniverse.github.io/PhysX/physx/5.4.1/docs/AdvancedCollisionDetection.html"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "干预率",
+   "name_en": "Intervention Rate",
+   "abbr": "",
+   "aliases": [
+    "接管率",
+    "人工干预率",
+    "Takeover Rate",
+    "Disengagement Rate"
+   ],
+   "tier": 2,
+   "one_liner": "策略自主运行时需要人出手接管或纠正的频率，越低说明越能独立干活。",
+   "explanation": "干预率是衡量自主程度的指标，指机器人或自动驾驶系统运行时，人需要接管或纠正的比例，常按每回合、每小时或每公里统计，也可换算成两次干预之间平均隔多久（平均干预间隔）。它来自自动驾驶里的「接管」概念，在机器人部署中同样关键：成功率只看结果，干预率反映为了成功要搭上多少人力，直接决定一个人能同时看管几台机器。人在回路方法（如 HG-DAgger、Sirius）让人在出错或危险时接管，接管片段再作为纠偏数据回流训练，所以随部署轮次推进干预率应当下降。报告时要说明什么情况算一次干预，否则不同团队的数字没法比。",
+   "example": "Sirius 让人在机器人出错时远程接管，并把接管数据加进训练；随着部署轮次增加，所需人工干预明显减少，到第 3 轮机器人大部分时间都能自主运行。",
+   "related": [
+    "平均干预间隔",
+    "人在回路",
+    "人工门控 DAgger",
+    "干预数据",
+    "远程接管（人工兜底）",
+    "自主等级"
+   ],
+   "sources": [
+    {
+     "title": "HG-DAgger: Interactive Imitation Learning with Human Experts (arXiv 1810.02890)",
+     "url": "https://arxiv.org/abs/1810.02890"
+    },
+    {
+     "title": "Sirius: Robot Learning on the Job (project page)",
+     "url": "https://ut-austin-rpl.github.io/sirius/"
+    }
+   ],
+   "as_of": ""
+  }
+ ]
+}

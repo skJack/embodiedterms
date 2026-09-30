@@ -1,0 +1,113 @@
+{
+  "batch": "sim-16",
+  "terms": [
+    {
+      "key": "sim-16#0",
+      "name_en": "RoboGSim: A Real2Sim2Real Robotic Gaussian Splatting Simulator",
+      "aliases": [],
+      "one_liner": "A robot simulator that reconstructs real scenes with 3D Gaussian Splatting and couples them to a physics engine.",
+      "explanation": "RoboGSim is a paper and system released in November 2024, with authors from the Harbin Institute of Technology (Shenzhen), the Institute of Computing Technology at the Chinese Academy of Sciences, Megvii, and Zhejiang University. It combines 3D Gaussian Splatting (a 3D representation that reconstructs a scene as a large number of colored ellipsoids and renders results close to photographs) with the Isaac Sim physics engine, and is made up of four parts: a Gaussian reconstructor, a digital-twin builder, a scene composer, and an interactive engine. It first reconstructs a real tabletop scene into simulation, then inside simulation swaps camera viewpoints, objects, trajectories, and backgrounds to synthesize new data, and finally deploys back to a real robot — that is, Real2Sim2Real. The paper reports that a policy trained purely on data synthesized this way can run zero-shot on a real robot, matching the performance of a policy trained on real-robot data, and doing better still under new viewpoints and new scenes. It can also serve as a closed-loop evaluation environment for testing VLA models.",
+      "example": "First film a lab bench with a camera, reconstruct the tabletop and robot arm inside RoboGSim, then swap in new camera viewpoints to batch-generate pick-and-place trajectories, and use that synthetic data to train a policy that deploys directly to the real arm.",
+      "related": ["Gaussian Splatting-based Simulation", "Real-to-Sim-to-Real", "3D Gaussian Splatting", "Digital Twin", "Sim-to-Real Transfer", "NVIDIA Isaac Sim"]
+    },
+    {
+      "key": "sim-16#1",
+      "name_en": "robot_lab (RL extension library based on Isaac Lab)",
+      "aliases": [],
+      "one_liner": "An open-source library extending Isaac Lab with ready-made reinforcement-learning training environments for many legged and humanoid robots.",
+      "explanation": "robot_lab is an open-source project (Apache 2.0 license) maintained by developer Ziqi Fan on GitHub, positioned as an extension library for Isaac Lab (NVIDIA's Isaac Sim-based robot-learning framework): rather than modifying Isaac Lab itself, it keeps robot models and training tasks in a separate directory so they can be developed independently. It ships with more than 25 robots, covering quadrupeds such as ANYmal D, Unitree Go2/A1/B2, and DEEP Robotics Lite3; wheeled-leg robots such as Go2W and B2W; and humanoids such as Unitree G1/H1, Fourier GR1, and Booster T1. Training mainly uses RSL-RL (ETH's open-source PPO implementation), with experimental extras such as AMP motion imitation and BeyondMimic motion tracking. As of September 2026, the latest release is v2.3.2, matching Isaac Lab 2.3. It suits newcomers who want to train locomotion policies for an off-the-shelf robot directly on Isaac Lab without writing an environment from scratch.",
+      "example": "After installing Isaac Lab, pick robot_lab's velocity-tracking task for the Unitree Go2, train a walking policy with RSL-RL across thousands of parallel environments, then export the policy for sim-to-sim validation or deployment to the real robot.",
+      "related": ["NVIDIA Isaac Lab", "legged_gym (Isaac Gym Environments for Legged Robots)", "unitree_rl_gym (Unitree RL Gym)", "RSL RL", "RL-based Locomotion Control", "Massively Parallel Reinforcement Learning"]
+    },
+    {
+      "key": "sim-16#2",
+      "name_en": "RobotArena Infinity (RobotArena ∞: Scalable Robot Benchmarking via Real-to-Sim Translation)",
+      "aliases": ["RobotArena Infinity", "RobotArena ∞"],
+      "one_liner": "A benchmark that auto-converts real robot videos into simulated scenes, then ranks VLA models by scoring and human voting.",
+      "explanation": "RobotArena ∞ is a robot-policy evaluation framework released in October 2025 by Katerina Fragkiadaki's group at Carnegie Mellon University. Real-robot evaluation is labor-intensive, slow, unsafe, and hard to reproduce, so this framework instead takes real manipulation videos from public datasets such as BridgeData V2, DROID, and RH20T and, using object segmentation, single-image-to-3D generation, and background inpainting models together with camera calibration and system identification, automatically converts them into digital-twin scenes inside the Genesis simulator, where different VLA models can then execute. Scoring runs two ways: a vision-language model gives a per-frame task-progress score, and crowd reviewers watch two execution videos double-blind and vote for the better one, with results aggregated into an Elo-style ranking using a Bradley-Terry model. It also systematically swaps backgrounds, changes colors, and moves objects to test robustness. The paper evaluated 6 policies — Octo, CogACT, π0, and X-VLA among them — and collected more than 8,500 human preference comparisons.",
+      "example": "Convert a real tabletop-manipulation video from DROID into a Genesis scene, let π0 and Octo each execute the same instruction inside it, have crowd reviewers watch both replays double-blind and vote for the better one to feed the leaderboard, then swap the background and rerun to see if the ranking changes.",
+      "related": ["Simulation-based Evaluation", "Real-to-Sim", "Double-blind Pairwise Comparison", "Elo Rating (Bradley-Terry Model)", "Digital Twin", "RoboArena"]
+    },
+    {
+      "key": "sim-16#3",
+      "name_en": "RoboVerse (MetaSim): Towards a Unified Platform, Dataset and Benchmark for Scalable and Generalizable Robot Learning",
+      "aliases": ["MetaSim"],
+      "one_liner": "A robot-learning platform unifying many simulators behind one interface, with a bundled synthetic dataset and benchmark.",
+      "explanation": "RoboVerse is an open-source project released in April 2025, with authors including Berkeley's Pieter Abbeel and Jitendra Malik among researchers from multiple institutions; the paper was accepted at RSS 2025, and the code is Apache 2.0 licensed. Its foundation is called MetaSim: a simulator-agnostic middleware layer that unifies backends such as Isaac Lab, Isaac Gym, MuJoCo, SAPIEN, PyBullet, Genesis, and CoppeliaSim behind the same configuration format and API, handling environment launch, asset loading, and physics stepping. This lets the same task, robots, and assets switch between different simulators, easing the problem that each simulator's formats are mutually incompatible and benchmarks are hard to compare directly. On top of this, RoboVerse pulls together tasks and data from existing benchmarks such as LIBERO, ManiSkill, RLBench, Meta-World, and robosuite, and provides a synthetic dataset, a unified evaluation protocol, and training pipelines for imitation learning, reinforcement learning, and VLA models.",
+      "example": "Write a grasping task's configuration once in MetaSim, then just by switching the simulation-backend parameter, run that same task with the same robots and assets in both MuJoCo and Isaac Lab, and compare how the policy performs across the two.",
+      "related": ["Simulator", "Sim-to-Sim Transfer", "NVIDIA Isaac Lab", "MuJoCo (Multi-Joint dynamics with Contact)", "SAPIEN (SimulAted Part-based Interactive ENvironment)", "Benchmark"]
+    },
+    {
+      "key": "sim-16#4",
+      "name_en": "SAPIEN (SimulAted Part-based Interactive ENvironment)",
+      "aliases": [],
+      "one_liner": "A UC San Diego robot simulation platform specialized for interacting with articulated objects like drawers and cabinet doors.",
+      "explanation": "SAPIEN, short for SimulAted Part-based Interactive ENvironment, is a robot simulation environment proposed in 2020 by Hao Su's group at UC San Diego together with collaborators including Stanford, with the paper appearing at CVPR 2020. Its physics runs on NVIDIA PhysX, its rendering is based on Vulkan, and later versions added ray-traced rendering; starting with version 3.0 it supports PhysX 5's GPU-parallel simulation. Its distinguishing feature is the PartNet-Mobility dataset released alongside the paper: a large collection of articulated objects with joint annotations — drawers that pull open, cabinet doors that swing open, faucets, and the like — well suited to research on part-level perception and interaction, such as a robot opening a door or pulling out a drawer. The widely used ManiSkill family of manipulation benchmarks is built on top of SAPIEN.",
+      "example": "Load a cabinet model from PartNet-Mobility into SAPIEN and have a robot arm learn to locate the handle, grasp it, and pull the cabinet door open.",
+      "related": ["ManiSkill (ManiSkill3)", "PartNet-Mobility", "Articulated Object", "Articulated Object Manipulation", "NVIDIA PhysX", "Simulator"]
+    },
+    {
+      "key": "sim-16#5",
+      "name_en": "Signed Distance Field / Function",
+      "aliases": ["SDF", "Signed Distance Function"],
+      "one_liner": "A function over space giving each point's distance to the nearest object surface, signed to distinguish inside from outside.",
+      "explanation": "A signed distance field is a function defined over space: given any point, it returns the distance to the nearest object surface, with a sign distinguishing whether the point is inside or outside the object (robotics and graphics usually take positive outside and negative inside, though some mathematical literature uses the opposite convention); the object's surface is exactly where the function equals 0. Its gradient has magnitude 1 everywhere, and points in the direction that moves away from the surface fastest. These two properties make it useful throughout embodied AI: a simulator can query it directly for penetration depth and contact normals during collision detection; motion planning uses it to compute how far a robot is from an obstacle and which way to steer to avoid it; and 3D reconstruction and neural implicit representations often represent an object's surface as an SDF. Note that the same abbreviation SDFormat refers to Gazebo's scene-description file format, an unrelated thing.",
+      "example": "When planning an arm's trajectory, first build a signed distance field for the table and obstacles, then query the SDF value at sampled points on each link; if it's below a safety margin, push the trajectory away along the gradient direction — this is how optimization-based planners like CHOMP avoid obstacles.",
+      "related": ["Truncated Signed Distance Function", "Euclidean Signed Distance Field", "Collision Detection", "Collision Checking", "Covariant Hamiltonian Optimization for Motion Planning", "Implicit vs. Explicit 3D Representation"]
+    },
+    {
+      "key": "sim-16#6",
+      "name_en": "SimReady Assets",
+      "aliases": ["SimReady"],
+      "one_liner": "An NVIDIA 3D-asset specification: models ship with physics, materials, and semantic labels already attached, ready to drop into simulation.",
+      "explanation": "SimReady is a set of 3D asset conventions NVIDIA promotes within its Omniverse ecosystem. An ordinary 3D model usually has only geometry and textures, so dropping it into a simulator still requires manually adding mass, collision shapes, friction, and other parameters. SimReady assets instead require the model to be carried as OpenUSD (Universal Scene Description, a 3D scene file format), packaged together with physical properties based on USD Physics, physically based materials, semantic labels for machine learning use, and non-visual attributes relevant to sensor simulation. An asset built this way can be dragged into a simulator like Isaac Sim and immediately take part in collisions and grasping, and the synthetic images it renders already come with annotations. NVIDIA positions it as a general standard for digital twins of factories, warehouses, and data centers, and for training robotics and autonomous-driving systems.",
+      "example": "Building a warehouse scene in Isaac Sim, drag in SimReady cardboard boxes and shelving — they already carry mass, collision shapes, and semantic categories, so they can immediately be used to train a picking policy and to batch-generate synthetic images with segmentation labels.",
+      "related": ["Simulation Assets", "Universal Scene Description (OpenUSD)", "NVIDIA Isaac Sim", "NVIDIA Omniverse", "Digital Twin", "Synthetic Data"]
+    },
+    {
+      "key": "sim-16#7",
+      "name_en": "Simulation Throughput (Steps / Frames Per Second)",
+      "aliases": ["Simulation FPS", "Steps Per Second"],
+      "one_liner": "How many environment steps or frames a simulator produces per second, which sets how fast data can be generated and training can run.",
+      "explanation": "Simulation throughput refers to how much interaction data a simulator produces per unit time, usually expressed as steps per second or frames per second (FPS); in GPU-parallel simulation, it is typically reported as the summed steps across thousands of parallel environments. Reinforcement learning often needs hundreds of millions of steps of interaction, so throughput directly determines whether a training run takes days or minutes. NVIDIA's 2021 Isaac Gym put both physics simulation and the neural network on the GPU with no data crossing to the CPU, reporting speedups of 2 to 3 orders of magnitude over the older “CPU simulation plus GPU training” approach. The main factors affecting throughput are the number of parallel environments, the complexity of the model and its contacts, the simulation timestep and number of substeps, solver iteration count, and whether camera images are rendered (rendering is usually much slower). It differs from real-time factor, which measures how much faster a single environment runs than real time. When comparing numbers across papers, check whether they use the same task, the same hardware, and rendering or not.",
+      "example": "ETH's legged_gym simulates thousands of ANYmal quadrupeds on a single GPU at once, finishing a flat-ground walking policy in under 4 minutes and a rough-terrain one in about 20; ManiSkill3 reports over 30,000 frames per second with rendering enabled on its benchmark environments.",
+      "related": ["GPU-Accelerated Parallel Simulation", "Vectorized Environments", "Real-Time Factor", "Massively Parallel Reinforcement Learning", "Batched / Tiled Rendering", "Sample Efficiency"]
+    },
+    {
+      "key": "sim-16#8",
+      "name_en": "Smoothed Particle Hydrodynamics",
+      "aliases": ["SPH"],
+      "one_liner": "A meshless simulation method that breaks a fluid into particles and computes motion by weighting over nearby particles.",
+      "explanation": "Smoothed Particle Hydrodynamics was proposed by Gingold, Monaghan, and Lucy in 1977, originally to model galaxy and star formation in astrophysics. Rather than dividing space into a grid, it treats a fluid as a swarm of particles that move with the material (a Lagrangian method, meaning it follows material points rather than fixed locations): each particle's density, pressure, and other physical quantities are computed as a weighted sum over neighboring particles within a “smoothing length,” using a kernel function, and the resulting forces then drive the particle forward. Because it needs no mesh, it is naturally suited to free surfaces, splashing, pouring, and other flows with drastic shape changes, and it is also widely used for fluid effects in computer graphics and games. In embodied AI it is used when a robot needs to learn to pour water or scoop liquid — the Genesis simulator, for example, has a built-in SPH solver. The cost is that computation grows heavy as particle counts rise, and precisely maintaining a liquid's incompressibility is not easy.",
+      "example": "In Genesis, represent the water in a cup as SPH particles and train a robot arm to pour it into another cup, penalizing the policy for how many particles spill out.",
+      "related": ["Fluid Simulation", "Position-Based Dynamics", "Material Point Method", "Finite Element Method", "Genesis Simulator", "Deformable-Body Simulation"]
+    },
+    {
+      "key": "sim-16#9",
+      "name_en": "Soft Contact Model",
+      "aliases": ["Soft Contact", "Compliant Constraint"],
+      "one_liner": "A contact model that allows a small amount of interpenetration and generates contact force like a spring-damper.",
+      "explanation": "Soft contact is a family of contact-modeling approaches used in physics engines. The classical hard-contact approach requires that bodies never interpenetrate at all, describing this with a complementarity condition (contact force can only exist when bodies are not separating, and separation implies zero contact force), which is difficult to solve and prone to numerical instability. Soft contact relaxes this requirement: it allows a small amount of penetration and treats contact as a spring-and-damper constraint, where force grows with penetration depth. MuJoCo is the leading example — it drops the strict complementarity condition from the linear complementarity problem and instead formulates contact as a convex optimization problem, tuned with two parameter groups: solref (a time constant and damping ratio, defaulting to 0.02 and 1) and solimp (constraint impedance, which controls how soft the contact is). The benefits are stable solving, smooth results, and a unique inverse-dynamics solution; the cost is that poorly chosen parameters cause visible interpenetration or bounciness, so sim-to-real transfer work often has to tune these parameters to match real materials.",
+      "example": "In MuJoCo, increasing the time constant of solref for a gripper fingertip's contact makes the contact softer and allows deeper penetration, smoothing out how contact force changes during a grasp; setting the time constant smaller than the simulation timestep tends to make contact unstable.",
+      "related": ["Contact Model", "Linear Complementarity Problem", "MuJoCo (Multi-Joint dynamics with Contact)", "Interpenetration", "Projected Gauss-Seidel", "Simulation Timestep"]
+    },
+    {
+      "key": "sim-16#10",
+      "name_en": "SoftGym: Benchmarking Deep Reinforcement Learning for Deformable Object Manipulation",
+      "aliases": [],
+      "one_liner": "A deformable-object manipulation benchmark built on NVIDIA FleX, covering cloth, rope, and liquid tasks.",
+      "explanation": "SoftGym is an open-source benchmark from Xingyu Lin and colleagues in David Held's group at Carnegie Mellon University, published at CoRL 2020, built specifically to evaluate reinforcement learning on deformable-object manipulation. Earlier RL benchmarks were mostly rigid-body or low-dimensional state tasks, whereas cloth, rope, and liquids have extremely high-dimensional state that is only partially observable — a completely different level of difficulty. SoftGym is built on NVIDIA's FleX particle physics engine (accessed through the Python interface PyFleX) and provides a standard OpenAI Gym interface. Tasks come in two tiers: medium difficulty includes transporting water, pouring water, straightening a rope, spreading cloth flat, and folding cloth; hard includes precise water pouring, folding a wrinkled cloth, dropping and then folding cloth, and shaping a rope into a specified form. The paper's experiments show existing algorithms still struggle noticeably on these tasks, especially when only given image observations. Because it depends on older CUDA and system versions, the authors recommend installing it via Docker.",
+      "example": "In SoftGym's FoldCloth task, an agent sees only an overhead camera image and controls two grasp points to fold a flat piece of cloth in half, rewarded by how well the two halves align.",
+      "related": ["Deformable Object Manipulation", "Garment Manipulation", "Cloth Simulation", "Fluid Simulation", "Position-Based Dynamics", "Benchmark"]
+    },
+    {
+      "key": "sim-16#11",
+      "name_en": "Solver Iteration Count (Position / Velocity Iterations)",
+      "aliases": ["Position Iterations", "Velocity Iterations", "solver_position_iteration_count"],
+      "one_liner": "How many rounds a physics engine spends per step correcting contact and joint constraints; more rounds means more accuracy but less speed.",
+      "explanation": "Every time a physics engine advances one simulation step, it has to satisfy all contact and joint constraints at once, usually approximated round by round with an iterative method like Gauss-Seidel; the number of rounds is the solver iteration count. In NVIDIA PhysX (the physics core behind Isaac Sim / Isaac Lab), iterations split into position iterations, which correct penetration and joint misalignment, and velocity iterations, which correct velocity error, defaulting to 4 position iterations and 1 velocity iteration. NVIDIA's documentation says more iterations give more accurate results, but generally only bodies with many joints or low tolerance for joint error need it raised noticeably. PhysX also offers both PGS and TGS solvers, with TGS converging better at a slightly higher per-iteration cost. Too few iterations commonly shows up as loose or jittery joints and interpenetrating bodies, while raising the count slows down simulation throughput. Together with the simulation timestep and substep count, this is one of the parameters most often adjusted when tuning simulation stability.",
+      "example": "Isaac Lab's built-in Franka arm configuration sets solver_position_iteration_count to 8 and solver_velocity_iteration_count to 0, more position iterations than PhysX's default of 4; each object can set its own values, and the scene simulates at the maximum across all objects, clamped between 1 and 255.",
+      "related": ["Constraint Solver", "Projected Gauss-Seidel", "Simulation Timestep", "Substeps", "Simulation Instability (Blow-up)", "NVIDIA PhysX"]
+    }
+  ]
+}

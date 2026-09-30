@@ -1,0 +1,388 @@
+{
+ "category": "sim",
+ "batch": 13,
+ "terms": [
+  {
+   "name_zh": "LIBERO-Plus",
+   "name_en": "LIBERO-Plus: In-depth Robustness Analysis of Vision-Language-Action Models",
+   "abbr": "",
+   "aliases": [],
+   "tier": 3,
+   "one_liner": "在 LIBERO 上加 7 类扰动、专门检验 VLA 鲁棒性的评测基准。",
+   "explanation": "LIBERO-Plus 是 2025 年 10 月由复旦大学、新加坡国立大学、同济大学等团队发布的操作评测基准，在流行的 LIBERO 仿真基准上加入 7 类受控扰动：物体摆放、相机视角、机器人初始姿态、语言指令、光照、背景纹理和传感器噪声，共 10030 个任务变体，用来检验 VLA（视觉-语言-动作模型）的高分是真本事还是记住了训练场景。结果显示，视角或初始姿态稍变，成功率就可能从 95% 掉到 30% 以下；模型对语言扰动反而不敏感，因为它们常常根本不看指令。仓库可直接替换原版 LIBERO，也开源了带扰动的训练数据。",
+   "example": "OpenVLA 在原版 LIBERO 上成功率 76.5%，换相机视角后跌到 1.1%；把 OpenVLA-OFT 的指令换成空白，它在 object 任务组上的成功率几乎不变。",
+   "related": [
+    "LIBERO",
+    "LIBERO-PRO",
+    "泛化与鲁棒性评测",
+    "鲁棒性",
+    "视觉-语言-动作模型",
+    "OpenVLA-OFT"
+   ],
+   "sources": [
+    {
+     "title": "LIBERO-Plus: In-depth Robustness Analysis of Vision-Language-Action Models (arXiv 2510.13626)",
+     "url": "https://arxiv.org/abs/2510.13626"
+    },
+    {
+     "title": "LIBERO-plus GitHub 仓库",
+     "url": "https://github.com/sylvestf/LIBERO-plus"
+    }
+   ],
+   "as_of": "2025-10"
+  },
+  {
+   "name_zh": "LIBERO-PRO",
+   "name_en": "LIBERO-PRO: Towards Robust and Fair Evaluation of Vision-Language-Action Models Beyond Memorization",
+   "abbr": "",
+   "aliases": [],
+   "tier": 3,
+   "one_liner": "给 LIBERO 加物体、位置、指令、环境扰动，检验 VLA 是否在死记硬背。",
+   "explanation": "LIBERO-PRO 是 2025 年 10 月由华中科技大学、哈佛、MIT、理海大学等团队发布的扩展评测基准。作者指出，LIBERO 的训练和测试场景几乎相同，模型记住动作序列和桌面布局就能拿高分，分数虚高，也难以公平比较。LIBERO-PRO 在操作物体、初始状态、任务指令和环境四个维度上加入合理扰动，可自由组合。结果显示，标准设定下成功率超过 90% 的模型，在泛化设定下可跌到 0%：目标物被换成无关物品时仍照常去抓，指令被改乱甚至换成乱码时动作几乎不变。它与 LIBERO-Plus 同期出现，都说明 LIBERO 已接近基准饱和。",
+   "example": "项目主页公布：OpenVLA 在原任务上成功率 0.98，物体位置扰动后为 0.00；π0.5 从 0.97 降到 0.38。",
+   "related": [
+    "LIBERO",
+    "LIBERO-Plus",
+    "基准饱和",
+    "泛化与鲁棒性评测",
+    "分布外",
+    "刷榜"
+   ],
+   "sources": [
+    {
+     "title": "LIBERO-PRO: Towards Robust and Fair Evaluation of VLA Models Beyond Memorization (arXiv 2510.03827)",
+     "url": "https://arxiv.org/abs/2510.03827"
+    },
+    {
+     "title": "LIBERO-PRO GitHub 仓库",
+     "url": "https://github.com/Zxy-MLlab/LIBERO-PRO"
+    }
+   ],
+   "as_of": "2025-10"
+  },
+  {
+   "name_zh": "线性互补问题",
+   "name_en": "Linear Complementarity Problem",
+   "abbr": "LCP",
+   "aliases": [],
+   "tier": 3,
+   "one_liner": "求两组非负变量「一个为正另一个就为零」的数学问题，经典接触力求解就归结为它。",
+   "explanation": "线性互补问题由 Cottle 和 Dantzig 在 1968 年提出：给定矩阵 M 和向量 q，找非负向量 z 和 w，使 w = Mz + q，并且 z 与 w 对应分量中至少有一个为零（互补条件）。放到仿真里，它正好描述接触：两个物体之间要么有间隙、接触力为零，要么贴在一起、接触力为正，两者不会同时为正，物理引擎每一步都要解出满足这类条件的接触力。ODE 的接触与摩擦模型就基于 Dantzig 的 LCP 求解器，游戏引擎常用投影高斯-赛德尔等迭代法近似求解。MuJoCo 则指出带摩擦的 LCP 属 NP 难问题，改用放松互补条件的凸软接触模型。",
+   "example": "箱子静放在桌上时，法向间隙为 0、支持力为正；箱子被抬离桌面后，间隙为正、支持力变为 0。求解器每一步解的就是这组互补条件。",
+   "related": [
+    "接触模型",
+    "约束求解器",
+    "投影高斯-赛德尔求解器",
+    "库仑摩擦",
+    "软接触",
+    "物理引擎"
+   ],
+   "sources": [
+    {
+     "title": "Linear complementarity problem - Wikipedia",
+     "url": "https://en.wikipedia.org/wiki/Linear_complementarity_problem"
+    },
+    {
+     "title": "MuJoCo Documentation: Computation",
+     "url": "https://mujoco.readthedocs.io/en/stable/computation/index.html"
+    },
+    {
+     "title": "ODE Manual",
+     "url": "http://ode.org/wiki/index.php/Manual"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "LocoMuJoCo",
+   "name_en": "LocoMuJoCo (Imitation Learning Benchmark for Whole-Body Locomotion)",
+   "abbr": "",
+   "aliases": [],
+   "tier": 3,
+   "one_liner": "基于 MuJoCo 的全身运动模仿学习基准，含人形、四足和人体肌骨模型。",
+   "explanation": "LocoMuJoCo 是德国达姆施塔特工业大学 Jan Peters 课题组（Firas Al-Hafez 等）2023 年发布的开源基准，专门评测运动（locomotion）方向的模仿学习算法。此前的运动基准多是简化的玩具任务，它提供四足、人形机器人和人体肌骨模型，配套真实动捕数据、专家数据和次优数据。后续版本改用 JAX，支持 MJX 和 MuJoCo Warp 并行仿真；当前含 12 个人形和 4 个四足环境，把 AMASS、LAFAN1 等 2.2 万多条动捕数据重定向到各款人形上，附带 PPO、GAIL、AMP、DeepMimic 等基线和域随机化接口。",
+   "example": "用 ImitationFactory 创建宇树 H1 环境，载入 LAFAN1 中的跳舞、走路片段，再用自带的 AMP 算法训练策略模仿这些动作。",
+   "related": [
+    "MuJoCo",
+    "MJX",
+    "模仿学习",
+    "动作重定向",
+    "AMASS 人体动捕数据集",
+    "对抗运动先验"
+   ],
+   "sources": [
+    {
+     "title": "LocoMuJoCo: A Comprehensive Imitation Learning Benchmark for Locomotion (arXiv 2311.02496)",
+     "url": "https://arxiv.org/abs/2311.02496"
+    },
+    {
+     "title": "loco-mujoco GitHub 仓库",
+     "url": "https://github.com/robfiras/loco-mujoco"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "物质点法",
+   "name_en": "Material Point Method",
+   "abbr": "MPM",
+   "aliases": [
+    "物质点方法"
+   ],
+   "tier": 3,
+   "one_liner": "用粒子携带材料状态、借背景网格计算受力的连续体仿真方法。",
+   "explanation": "物质点法是一种欧拉-拉格朗日混合的数值方法：把物体离散成大量「物质点」，粒子携带质量、速度、应力等全部状态；每一步把信息映射到固定的背景网格上求解动量方程，再把结果传回粒子。它源于 1957 年 Harlow 提出的质点网格法（PIC），1993 年起由 Sulsky 等人发展成现在的形式。与有限元法相比，它不用反复重划网格，适合雪、沙、泥、橡皮泥这类大变形、会断裂或流动的材料，迪士尼《冰雪奇缘》的雪就用它模拟；代价是内存和计算开销大。具身智能里它用于柔性物体操作仿真，Genesis 等仿真器内置了 MPM 求解器。",
+   "example": "PlasticineLab 基准用可微的 MLS-MPM（移动最小二乘物质点法）模拟橡皮泥，让智能体学习把橡皮泥捏成目标形状。",
+   "related": [
+    "软体仿真",
+    "有限元法",
+    "光滑粒子流体动力学",
+    "可微仿真",
+    "Genesis",
+    "柔性物体操作"
+   ],
+   "sources": [
+    {
+     "title": "Material point method - Wikipedia",
+     "url": "https://en.wikipedia.org/wiki/Material_point_method"
+    },
+    {
+     "title": "PlasticineLab: A Soft-Body Manipulation Benchmark with Differentiable Physics (arXiv 2104.03311)",
+     "url": "https://arxiv.org/abs/2104.03311"
+    },
+    {
+     "title": "Genesis 文档：What is Genesis",
+     "url": "https://genesis-world.readthedocs.io/en/latest/user_guide/overview/what_is_genesis.html"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "平均最大排名违背",
+   "name_en": "Mean Maximum Rank Violation",
+   "abbr": "MMRV",
+   "aliases": [],
+   "tier": 3,
+   "one_liner": "衡量仿真评测给策略排的名次是否与真机一致的指标，越低越好。",
+   "explanation": "MMRV 由 2024 年的 SIMPLER（SimplerEnv）论文提出。作者认为仿真评测不必复现真机成功率的绝对值，关键是把策略的好坏排对。计算方法：任取两个策略，若仿真里的高低顺序与真机相反，就记一次「排名违背」，大小等于两者真机成功率之差；每个策略取它最严重的一次违背，再对所有策略求平均，取值 0 到 1。这样，真机上本就差不多的两个策略被排反只算小错，差距大的被排反才算大错。它通常和皮尔逊相关系数一起报告：后者只衡量线性关系，而且在策略水平接近时容易被真机评测的噪声带偏。",
+   "example": "SIMPLER 论文给 6 个谷歌机器人策略排名：按验证集动作 MSE 排，平均 MMRV 为 0.375；用 SIMPLER「视觉匹配」仿真评测排，降到 0.056。",
+   "related": [
+    "SimplerEnv",
+    "仿真-真机相关性",
+    "视觉匹配",
+    "变体聚合",
+    "仿真评测",
+    "真机评测"
+   ],
+   "sources": [
+    {
+     "title": "Evaluating Real-World Robot Manipulation Policies in Simulation (SIMPLER, arXiv 2405.05941)",
+     "url": "https://arxiv.org/abs/2405.05941"
+    }
+   ],
+   "as_of": "2024-05"
+  },
+  {
+   "name_zh": "平均关节位置误差",
+   "name_en": "Mean Per-Joint Position Error",
+   "abbr": "MPJPE",
+   "aliases": [
+    "平均每关节位置误差"
+   ],
+   "tier": 3,
+   "one_liner": "预测关节位置与真值的平均距离，衡量姿态估计或动作跟踪有多准。",
+   "explanation": "MPJPE 原是 3D 人体姿态估计的标准指标，在 Human3.6M 等数据集上广泛使用：每一帧算出每个关节预测 3D 位置与真值之间的欧氏距离，再对所有关节和帧取平均，单位通常是毫米，越低越好。常见变体有三种：先把根节点（骨盆）对齐再算的根相对 MPJPE，只看局部姿态；不对齐直接算的全局 MPJPE（g-MPJPE），还能反映整体位置漂移；先做刚体对齐再算的 PA-MPJPE。到了人形机器人领域，PHC、ASAP 等运动跟踪工作用它衡量机器人在仿真或真机上复现参考动作的精度，通常和成功率、速度误差、加速度误差一起报告。",
+   "example": "PHC 在 AMASS 测试集上同时报告根相对 MPJPE 和全局 MPJPE（单位 mm），并把关节平均偏离参考动作超过 0.5 米记为跟踪失败。",
+   "related": [
+    "运动跟踪",
+    "人体姿态估计",
+    "动作重定向",
+    "PHC",
+    "ASAP",
+    "AMASS 人体动捕数据集"
+   ],
+   "sources": [
+    {
+     "title": "Perpetual Humanoid Control for Real-time Simulated Avatars (PHC, arXiv 2305.06456)",
+     "url": "https://arxiv.org/abs/2305.06456"
+    },
+    {
+     "title": "A simple yet effective baseline for 3d human pose estimation (arXiv 1705.03098)",
+     "url": "https://arxiv.org/abs/1705.03098"
+    },
+    {
+     "title": "Human3.6M Dataset",
+     "url": "http://vision.imar.ro/human3.6m/description.php"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "平均干预间隔",
+   "name_en": "Mean Time Between Interventions",
+   "abbr": "MTBI",
+   "aliases": [
+    "Mean Time Between Intervention"
+   ],
+   "tier": 3,
+   "one_liner": "机器人连续工作时，平均隔多久需要人来干预一次。",
+   "explanation": "MTBI 衡量机器人在长时间连续运行中的可靠性：总运行时间除以期间人工干预的次数，数值越大越好。干预一般包括人工急停、手动复位、帮机器人摆正物体，或任务超时后由人接管。它借鉴了工业可靠性里的平均无故障时间（MTBF）。学术论文常用的单次成功率是在人工精心复位后测得的，看不出长时间运行中状态逐渐漂移、偶发卡住等问题，也把速度和准确率混成一个数。因此面向落地的团队开始在不复位的连续运行协议下报告 MTBI，并和每小时完成任务数一起衡量效率与可靠性。",
+   "example": "Habilis-β 论文做 1 小时连续运行评测：在真实人形机器人物流流程中，它的 MTBI 为 137.4 秒，对照的 π0.5 为 46.1 秒。",
+   "related": [
+    "干预率",
+    "平均无故障时间",
+    "成功率",
+    "真机评测",
+    "全自主",
+    "远程接管（人工兜底）"
+   ],
+   "sources": [
+    {
+     "title": "Habilis-β: A Fast-Motion and Long-Lasting On-Device Vision-Language-Action Model (arXiv 2602.18813)",
+     "url": "https://arxiv.org/abs/2602.18813"
+    },
+    {
+     "title": "Mean time between failures - Wikipedia",
+     "url": "https://en.wikipedia.org/wiki/Mean_time_between_failures"
+    }
+   ],
+   "as_of": "2026-02"
+  },
+  {
+   "name_zh": "MIKASA-Robo",
+   "name_en": "MIKASA-Robo",
+   "abbr": "",
+   "aliases": [
+    "MIKASA-Robo-VLA"
+   ],
+   "tier": 3,
+   "one_liner": "专测机器人记忆能力的桌面操作基准，任务要求记住被遮挡或已消失的信息。",
+   "explanation": "MIKASA-Robo 是 Cherepanov、Panov 等人 2025 年 2 月提出的记忆密集型操作基准，属于 MIKASA（记忆密集技能评测套件）的一部分，论文发表于 ICLR 2026。很多真实任务是部分可观测的：物体会被挡住，关键信息只出现一瞬，只看当前画面的策略就无从下手。它基于 ManiSkill3 构建，首版含 32 个任务。后来扩展为面向 VLA 的 MIKASA-Robo-VLA：任务增至 90 个，覆盖 10 类记忆，每个任务配语言指令，并在 Hugging Face 开放 2.25 万条轨迹，可用来检验 MemoryVLA 这类带记忆的模型。",
+   "example": "ShellGameTouch 任务：前 5 步能看到红球在三个位置之一，随后三处都被杯子盖住，机器人要碰到藏着球的那只杯子。",
+   "related": [
+    "具身记忆",
+    "记忆增强 VLA",
+    "部分可观测马尔可夫决策过程",
+    "ManiSkill",
+    "MemoryVLA",
+    "基准测试"
+   ],
+   "sources": [
+    {
+     "title": "Memory, Benchmark & Robots: A Benchmark for Solving Complex Tasks with Reinforcement Learning (arXiv 2502.10550)",
+     "url": "https://arxiv.org/abs/2502.10550"
+    },
+    {
+     "title": "MIKASA-Robo GitHub 仓库",
+     "url": "https://github.com/CognitiveAISystems/MIKASA-Robo"
+    },
+    {
+     "title": "MIKASA-Robo-VLA Documentation",
+     "url": "https://mikasarobo.github.io/"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "Minecraft 环境（MineDojo / MineRL）",
+   "name_en": "Minecraft Environments (MineDojo / MineRL)",
+   "abbr": "",
+   "aliases": [
+    "我的世界环境",
+    "MineDojo",
+    "MineRL"
+   ],
+   "tier": 3,
+   "one_liner": "基于游戏《我的世界》搭建的开放世界智能体训练与评测平台。",
+   "explanation": "《我的世界》（Minecraft）是开放世界沙盒游戏，任务链长、目标开放，常要多步合成物品，因此常被用作智能体的虚拟试验场。MineRL 由卡内基梅隆大学等团队 2019 年推出，提供 Gym 风格环境和 6000 多万个人类演示状态-动作对，并在 NeurIPS 办竞赛，经典任务是从零挖到钻石。MineDojo 由英伟达、加州理工、斯坦福等团队 2022 年发布，含数千个用语言描述的开放任务和由 73 万个 YouTube 视频、维基页面、Reddit 帖子组成的知识库，用视频-语言模型 MineCLIP 充当奖励函数，获 NeurIPS 2022 杰出论文奖。",
+   "example": "Voyager 让 GPT-4 在 MineDojo 环境里自动写代码、积累技能库，不断解锁新的工具和物品。",
+   "related": [
+    "VPT（视频预训练）",
+    "Voyager",
+    "DreamerV3",
+    "开放世界",
+    "长程任务",
+    "奖励函数"
+   ],
+   "sources": [
+    {
+     "title": "MineDojo 官网",
+     "url": "https://minedojo.org/"
+    },
+    {
+     "title": "MineDojo: Building Open-Ended Embodied Agents with Internet-Scale Knowledge (arXiv 2206.08853)",
+     "url": "https://arxiv.org/abs/2206.08853"
+    },
+    {
+     "title": "MineRL: A Large-Scale Dataset of Minecraft Demonstrations (arXiv 1907.13440)",
+     "url": "https://arxiv.org/abs/1907.13440"
+    }
+   ],
+   "as_of": "2022-11"
+  },
+  {
+   "name_zh": "mjlab",
+   "name_en": "mjlab",
+   "abbr": "",
+   "aliases": [],
+   "tier": 3,
+   "one_liner": "用 Isaac Lab 式接口加 MuJoCo Warp 物理的轻量 GPU 机器人学习框架。",
+   "explanation": "mjlab 是 Kevin Zakka、Koushil Sreenath、Pieter Abbeel 等人开发的开源框架，论文于 2026 年 1 月发布。它沿用 Isaac Lab 的「管理器式」接口：把观测、奖励、随机事件等写成可组合的模块来拼环境；物理后端换成 MuJoCo 的 GPU 版本 MuJoCo Warp，可并行仿真数千个环境。好处是一条命令即可安装、依赖少，还能直接访问 MuJoCo 原生数据结构。它自带速度跟踪、动作模仿和操作三类参考任务，常用于人形、四足的强化学习运控。训练需要英伟达 GPU，macOS 只能做评估。",
+   "example": "运行 uv run train Mjlab-Velocity-Flat-Unitree-G1 --env.scene.num-envs 4096，在 4096 个并行环境里训练宇树 G1 按速度指令行走。",
+   "related": [
+    "MuJoCo Warp",
+    "Isaac Lab",
+    "MuJoCo Playground",
+    "GPU 并行仿真",
+    "强化学习运控",
+    "宇树 G1"
+   ],
+   "sources": [
+    {
+     "title": "mjlab: A Lightweight Framework for GPU-Accelerated Robot Learning (arXiv 2601.22074)",
+     "url": "https://arxiv.org/abs/2601.22074"
+    },
+    {
+     "title": "mjlab GitHub 仓库",
+     "url": "https://github.com/mujocolab/mjlab"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "MolmoSpaces",
+   "name_en": "MolmoSpaces (MolmoSpaces-Bench)",
+   "abbr": "",
+   "aliases": [
+    "MolmoSpaces-Bench"
+   ],
+   "tier": 3,
+   "one_liner": "艾伦人工智能研究所开放的大规模室内仿真场景与机器人评测生态。",
+   "explanation": "MolmoSpaces 是艾伦人工智能研究所（Ai2）2026 年 2 月发布的开放生态，用来大规模生成数据、训练和评测机器人策略。它收录 23 万多个室内场景（来自 iTHOR、ProcTHOR、Holodeck 等）和 13 万个带标注的物体模型，其中 4.8 万个可操作物体配有 4200 万个稳定抓取位姿。场景不绑定仿真器，支持 MuJoCo、ManiSkill 和 Isaac。配套的 MolmoSpaces-Bench 含 8 项任务，覆盖桌面与移动操作、导航和跨房间长程任务；论文报告其仿真成绩与真机成绩高度相关（R = 0.96），并发现策略对指令措辞、初始关节位置和相机遮挡很敏感。",
+   "example": "Ai2 的 MolmoBot 在 MolmoSpaces 中程序化生成 180 万条仿真轨迹，不用真机数据直接部署到 Franka FR3，桌面抓放真机成功率 79.2%，对照的 π0.5 为 39.2%。",
+   "related": [
+    "艾伦人工智能研究所",
+    "仿真评测",
+    "仿真-真机相关性",
+    "ProcTHOR",
+    "Objaverse 3D 资产库",
+    "移动操作"
+   ],
+   "sources": [
+    {
+     "title": "MolmoSpaces: A Large-Scale Open Ecosystem for Robot Navigation and Manipulation (arXiv 2602.11337)",
+     "url": "https://arxiv.org/abs/2602.11337"
+    },
+    {
+     "title": "Ai2 Blog: MolmoSpaces",
+     "url": "https://allenai.org/blog/molmospaces"
+    },
+    {
+     "title": "MolmoBot: Large-Scale Simulation Enables Zero-Shot Manipulation (arXiv 2603.16861)",
+     "url": "https://arxiv.org/abs/2603.16861"
+    }
+   ],
+   "as_of": "2026-03"
+  }
+ ]
+}

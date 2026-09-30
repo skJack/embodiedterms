@@ -1,0 +1,113 @@
+{
+  "batch": "training-08",
+  "terms": [
+    {
+      "key": "training-08#0",
+      "name_en": "Reward Model",
+      "aliases": ["RM", "Learned Reward Model"],
+      "one_liner": "A trained scoring network that outputs a reward telling how good a given behavior or outcome is.",
+      "explanation": "A reward model is a trained neural network: it takes a piece of behavior — a robot trajectory video, a large model's answer — as input and outputs a reward score, standing in for a hand-written reward function. A landmark example is Christiano and colleagues' 2017 work, which trained a reward model from human preferences between pairs of trajectories, teaching a simulated robot new behaviors from roughly an hour of human feedback; OpenAI's InstructGPT (2022) put this inside the RLHF (reinforcement learning from human feedback) pipeline, making it a standard step in post-training large models. Many robot tasks resist a precise, hand-written reward (was the shirt actually folded neatly?), and a reward model gives reinforcement learning, failure detection, and data filtering a usable signal instead. Common forms include success detectors, progress reward models, and simply having a VLM score the outcome; the risk is that a policy learns to exploit the model's blind spots — reward hacking.",
+      "example": "Robometer (RSS 2026) trains on RBM-1M, a dataset of over 1 million trajectories including many failures and suboptimal attempts, learning both “task progress at each frame” and “which of two trajectories on the same task is better” at once, producing a general-purpose reward model usable across many robots.",
+      "related": ["Reward Function", "Reinforcement Learning from Human Feedback", "Progress Reward Model", "Success Detector", "VLM as Reward Model", "Reward Hacking"]
+    },
+    {
+      "key": "training-08#1",
+      "name_en": "Reward Shaping",
+      "aliases": ["Potential-based Reward Shaping"],
+      "one_liner": "Adding intermediate guidance rewards on top of a task's original reward, so the agent learns the task faster.",
+      "explanation": "Reward shaping means adding extra reward for intermediate progress on top of the task's own reward (for instance, only +1 on success), such as scoring higher the closer a robot arm gets to its target. It mainly addresses the problem that under a sparse reward, an agent can go a very long time with no feedback and simply fail to learn. The risk is that shaping it wrong changes what the “optimal behavior” actually is: a classic example is a simulated cyclist that learned to circle endlessly near a goal because getting closer was rewarded and moving away wasn't penalized. Ng, Harada, and Russell proved in a 1999 ICML paper that as long as the extra reward is written as the difference of a potential function, F = γΦ(s′) − Φ(s) (Φ scores each state, γ is the discount factor), the optimal policy is provably unchanged — this is called potential-based reward shaping. In embodied AI, a legged-locomotion reward is usually a weighted combination of velocity tracking, posture, energy use, and foot airtime, which is essentially a large amount of hand-tuned shaping; projects like Eureka try to have a large model write this kind of reward code automatically.",
+      "example": "Training a robot arm to push a block to a target: the raw reward gives +1 only when the block arrives; after shaping, each step also rewards “how much closer did the gripper get to the block” and “how much closer did the block get to the target,” giving the policy a learning signal from early in training.",
+      "related": ["Sparse Reward", "Dense Reward", "Reward Function", "Reward Engineering", "Reward Hacking", "Eureka"]
+    },
+    {
+      "key": "training-08#2",
+      "name_en": "Sample Efficiency",
+      "aliases": ["Data Efficiency"],
+      "one_liner": "How much data or environment interaction is needed to reach a given performance level; using less means being more efficient.",
+      "explanation": "Sample efficiency measures how many samples a learning algorithm needs to reach a certain level of performance: in reinforcement learning, this means the number of steps of interaction with the environment; in imitation learning, the number of demonstrations. It matters enormously in robotics. In simulation it can be offset with GPU parallelism — Rudin and colleagues (2021), for instance, ran thousands of ANYmal quadrupeds at once on a single GPU, training flat-ground walking in under 4 minutes. A real robot can only act step by step, with wear and the cost of manually resetting the scene on top, so real-robot reinforcement learning must use highly sample-efficient methods. Common ways to improve it include off-policy algorithms with experience replay that reuse old data repeatedly, adding human demonstrations or corrections, model-based reinforcement learning that trains partly “in imagination,” and using pretrained visual representations. On-policy PPO is generally less sample-efficient and suits large-scale parallel simulation, while off-policy methods like SAC use samples more sparingly and are common on real robots.",
+      "example": "UC Berkeley's SERL uses off-policy reinforcement learning on a real robot, learning tasks like PCB insertion and cable routing in 25–50 minutes of training on average per task; its successor HIL-SERL adds human correction and reaches near-perfect success in 1–2.5 hours.",
+      "related": ["Off-Policy", "Experience Replay", "Real-World Reinforcement Learning", "Model-Based Reinforcement Learning", "Massively Parallel Reinforcement Learning", "SERL"]
+    },
+    {
+      "key": "training-08#3",
+      "name_en": "Self-Supervised Learning",
+      "aliases": ["SSL", "Self-Supervised Pretraining"],
+      "one_liner": "Training a model on “questions and answers” constructed from the data itself, with no human labeling needed.",
+      "explanation": "Self-supervised learning is training where the supervisory signal comes from the data itself rather than human labels: part of the input is hidden, and the model is trained to predict it from the rest. Yann LeCun and colleagues called it the “dark matter” of intelligence and championed it heavily. Common forms include masking out words in text for the model to fill in (BERT; GPT's next-token prediction is also often grouped under this umbrella), masking out 75% of an image's patches and reconstructing them (MAE, masked autoencoders), and pulling representations of different views of the same content closer together (contrastive learning). It solves the problem that human labeling is expensive and caps how much data can be used, and it underlies the pretraining of today's large models. In embodied AI, since robot data with action labels is scarce, researchers often first self-supervise a visual representation or a world model on huge amounts of human video, then fine-tune it with a small amount of robot data.",
+      "example": "Meta's V-JEPA 2 first self-supervises on over 1 million hours of internet video, then trains an action-conditioned world model, V-JEPA 2-AC, on fewer than 62 hours of unlabeled DROID robot video, letting a Franka arm in labs it never trained on do pick-and-place by planning against an image goal, with no task-specific training.",
+      "related": ["Contrastive Learning", "Masked Autoencoder", "Pretraining", "Representation Learning", "Next-Token Prediction", "V-JEPA 2"]
+    },
+    {
+      "key": "training-08#4",
+      "name_en": "Soft Actor-Critic",
+      "aliases": ["SAC", "Maximum Entropy Actor-Critic"],
+      "one_liner": "An off-policy reinforcement-learning algorithm that pursues high return while also encouraging the policy to stay somewhat random.",
+      "explanation": "SAC was introduced by UC Berkeley's Tuomas Haarnoja, Sergey Levine, and colleagues in 2018 (ICML 2018). It's an actor-critic method: the “actor” is the policy network that outputs actions, and the “critic” is a Q-function estimating how good an action is. Its core idea is the maximum-entropy objective: maximize return while also keeping the policy's entropy — how random it is — as high as reasonably possible, which encourages exploration and avoids collapsing onto a suboptimal solution too early; the degree of randomness is set by a temperature coefficient α, which later versions can tune automatically. It's off-policy, able to reuse old data from an experience-replay buffer repeatedly, which gives it good sample efficiency and low sensitivity to hyperparameters, though it applies only to continuous action spaces. Implementation-wise, it trains two Q-networks and takes the smaller estimate, to counter Q-value overestimation. SAC is a common foundation for real-robot reinforcement learning; the RLPD algorithm used by SERL and HIL-SERL is itself a refinement built on SAC.",
+      "example": "The SAC extension paper applies it directly on real hardware: a Minitaur quadruped learns to walk in about 2 hours, a Sawyer arm learns to stack blocks in about 2 hours, and a dexterous hand learns to turn a valve directly from images in about 20 hours.",
+      "related": ["Off-Policy", "Entropy Regularization", "Q-Function", "Experience Replay", "Twin Delayed DDPG", "SERL"]
+    },
+    {
+      "key": "training-08#5",
+      "name_en": "Sparse Reward",
+      "aliases": ["Binary Reward", "Success Reward"],
+      "one_liner": "A reward given only at a few key moments, such as task completion, with zero reward the rest of the time.",
+      "explanation": "Sparse reward means the environment gives zero reward almost all the time, with a signal only when the goal is reached — the most typical form is a binary reward: 1 for success, 0 otherwise. The upside is that it's simple to define and hard to game, since it directly reflects whether the task was actually completed; the difficulty is that an agent exploring randomly rarely stumbles into success by chance, so it can go a long time with no learning signal at all, and this gets worse as tasks get longer. Common countermeasures include reward shaping to add intermediate hints (the opposite approach is called dense reward), using human demonstrations to supply examples of success, hindsight experience replay (HER, which relabels a failed trajectory's actual endpoint as the goal, turning it into a “success” example), and curriculum learning from easy to hard. Real-robot reinforcement learning often trains a success detector to generate this kind of 0/1 reward automatically.",
+      "example": "HIL-SERL collects about 200 success images and 1,000 failure images per task through teleoperation and trains a binary classifier as the reward: a positive reward is given only when the classifier judges the task complete, and 0 otherwise; the classifier's accuracy on held-out data is typically above 95%.",
+      "related": ["Dense Reward", "Reward Shaping", "Hindsight Experience Replay", "Success Detector", "Exploration vs. Exploitation", "HIL-SERL"]
+    },
+    {
+      "key": "training-08#6",
+      "name_en": "Supervised Fine-Tuning",
+      "aliases": ["SFT"],
+      "one_liner": "Continuing supervised training on a pretrained model using paired input–correct-answer data, to teach it a specific behavior.",
+      "explanation": "Supervised fine-tuning takes a pretrained model and keeps training it on a curated, high-quality labeled dataset to teach it some specific behavior; the training objective is simply to make its output match the given answer as closely as possible (cross-entropy for language output, often L1 or mean squared error for continuous actions). The term became popular through OpenAI's InstructGPT (2022): first run SFT on human-written example answers, then train a reward model and run RLHF — the now-classic three-step recipe for post-training a large model. In robotics, SFT usually means fine-tuning a foundation model like a VLA on teleoperation demonstrations for a specific robot and set of tasks, which is essentially behavior cloning. It's simple and stable, but it only imitates the demonstrations, so it tends to err on states the demonstrations never showed — which is why SFT is often followed by RL fine-tuning.",
+      "example": "Stanford's OpenVLA-OFT improves on how OpenVLA is fine-tuned — parallel decoding, action chunking, and continuous action output with L1 regression — raising the success rate on the LIBERO simulation benchmark from 76.5% to 97.1% while increasing action-generation throughput 26-fold.",
+      "related": ["Fine-tuning", "Behavior Cloning", "Post-training", "Instruction Tuning", "RL Fine-tuning", "Reinforcement Learning from Human Feedback"]
+    },
+    {
+      "key": "training-08#7",
+      "name_en": "Teacher-Student Distillation",
+      "aliases": ["Teacher-Student Training", "Privileged Teacher Distillation"],
+      "one_liner": "Training a teacher policy that can see privileged information first, then having a student that only uses real sensors imitate it.",
+      "explanation": "Teacher-student distillation grows out of knowledge distillation (introduced by Hinton and colleagues in 2015, which trains a small model on a large model's output as soft labels). In robotics it's usually done in two steps: first train a teacher policy in simulation, where it can read privileged information a real robot can't access directly, such as exact terrain height, friction coefficients, and object poses, which makes it much easier to train well with reinforcement learning; then train a student policy that only receives observations a real robot actually has — joint states, IMU readings, camera images — learning by imitating the teacher's actions or intermediate representations, often with DAgger-style online correction. This separates “hard-to-learn decisions” from “hard-to-learn perception,” and it's one of the mainstream routes to sim-to-real transfer. Notable examples include Learning by Cheating (2019) in autonomous driving and ETH's 2020 blind quadruped locomotion controller.",
+      "example": "ETH's Lee and colleagues (Science Robotics 2020) let the teacher read privileged terrain information in simulation while the student imitates it using only proprioceptive signals; the resulting ANYmal quadruped deploys zero-shot to mud, snow, rubble, dense vegetation, and swift-flowing water it never saw during training.",
+      "related": ["Knowledge Distillation", "Privileged Information", "Policy Distillation", "Asymmetric Actor-Critic", "Sim-to-Real Transfer", "DAgger (Dataset Aggregation)"]
+    },
+    {
+      "key": "training-08#8",
+      "name_en": "Temporal-Difference Learning",
+      "aliases": ["TD Learning", "TD Error"],
+      "one_liner": "Updating a value estimate using “this step's reward plus the estimated value of the next state,” without waiting for the episode to end.",
+      "explanation": "Temporal-difference (TD) learning was systematically introduced by Richard Sutton in a 1988 paper and is the core method for estimating a value function (how much total return follows from a given state or action) in reinforcement learning. It doesn't need to wait for an episode to finish to get the true return; instead it updates after every single step, treating “the reward r actually received, plus the discounted estimated value of the next state, γV(s′)” as a target, calling the gap between that target and the current estimate V(s) the TD error, and nudging V(s) toward the target by that amount. This “using an estimate to update an estimate” approach is called bootstrapping, and it has lower variance than Monte Carlo methods, which wait for the full episode, letting it learn while still acting — at the cost of introducing some bias. Q-learning, DQN, and the critic networks in SAC and TD3 are all trained with TD targets; the early landmark system TD-Gammon used it to reach expert-level backgammon play.",
+      "example": "A robot arm takes one step and gets a reward of 0; the critic estimates the next state's value at 0.8, and with discount factor γ = 0.99, the TD target is 0 + 0.99 × 0.8 = 0.792. If the current state's estimated value is 0.5, the TD error is 0.292, and the network nudges its estimate toward 0.792.",
+      "related": ["Value Function", "Bellman Equation", "Bootstrapping", "Q-Learning", "Monte Carlo Methods (Monte Carlo Return)", "Generalized Advantage Estimation"]
+    },
+    {
+      "key": "training-08#9",
+      "name_en": "Training from Scratch",
+      "aliases": ["Random Initialization Training", "From Scratch"],
+      "one_liner": "Training a model directly on the target data with randomly initialized parameters, borrowing no pretrained weights at all.",
+      "explanation": "Training from scratch means starting a network's weights from random values and training only on data for the current task, as opposed to loading a pretrained model and fine-tuning it. The benefit is not being constrained by the pretraining data's distribution or the pretrained model's architecture, and a simpler pipeline; the downside is needing more data and training time, and being more prone to overfitting when data is scarce. Kaiming He and colleagues' 2018 paper “Rethinking ImageNet Pre-training” found that for object detection, training from scratch for long enough can match ImageNet pretraining, showing that one of pretraining's main benefits is simply faster convergence. Because robot data is scarce, papers often use training from scratch as a baseline, to measure how much benefit a pretrained representation or large-scale pretraining actually provides — though pretraining isn't always better: Diffusion Policy's visual encoder, for instance, is an un-pretrained ResNet-18 trained end-to-end from scratch.",
+      "example": "The R3M paper compares across 12 simulated manipulation tasks: a visual representation pretrained on Ego4D human video beats a visual encoder trained from scratch by more than 20 percentage points in success rate.",
+      "related": ["Pretraining", "Fine-tuning", "Baseline Method", "Overfitting", "Transfer Learning", "Pretrained Visual Representation"]
+    },
+    {
+      "key": "training-08#10",
+      "name_en": "Training-free",
+      "aliases": ["No-training Method"],
+      "one_liner": "Completing a new task by combining off-the-shelf models or algorithms, without updating any model parameters at all.",
+      "explanation": "Training-free means a method applied to a new task makes no gradient updates whatsoever: it calls already-trained foundation models — large language models, vision-language models, segmentation or pose-estimation models — directly, chaining them together with prompting, code generation, search, or an optimization solver. Its appeal is not needing to collect robot data at all; switching tasks only means changing the instruction, which suits data-scarce embodied settings — its limitation is that performance is capped by the off-the-shelf models' own abilities and by how the intermediate representation is designed, and it usually struggles with fine, contact-rich motion. It isn't quite the same as zero-shot: zero-shot emphasizes not having seen samples of the target task, though the underlying model may well have been specially trained; training-free emphasizes that the whole method does no training at all. Papers also use the term for plug-and-play inference speedups, such as training-free visual-token pruning.",
+      "example": "Stanford's VoxPoser has a large language model write code that calls a vision-language model, turning instructions like “hang the towel on the rack” or “close the top drawer” into a 3D value map, which a motion planner then turns into a trajectory; the paper states explicitly that the whole pipeline involves no additional training.",
+      "related": ["Zero-shot", "Foundation Model", "VoxPoser", "ReKep", "Code as Policies", "Visual Token Pruning"]
+    },
+    {
+      "key": "training-08#11",
+      "name_en": "Transfer Learning",
+      "aliases": ["Knowledge Transfer"],
+      "one_liner": "Using knowledge learned on one task or domain to help learn another, related task.",
+      "explanation": "Transfer learning means applying a model or representation learned on a source task (usually data-rich) to a target task (usually data-scarce), most commonly by pretraining and then fine-tuning. Related research traces back to Bozinovski and colleagues' 1976 neural-network work; Yosinski and colleagues (2014) found that a network's lower layers learn more general features while higher layers grow more task-specific, and that initializing with transferred weights improves generalization even after further fine-tuning. Transfer isn't automatically beneficial: when the source and target are too dissimilar, it can actually hurt performance, called negative transfer. Embodied AI relies on transfer almost everywhere: turning an internet-pretrained VLM into a VLA, sim-to-real transfer, cross-embodiment transfer, and transferring from human video to a robot; domain adaptation is one sub-area of it.",
+      "example": "Google DeepMind's RT-2 fine-tunes a vision-language model pretrained on web-scale image-text data together with robot trajectory data, writing actions as text tokens; the model can carry out instructions absent from its training data, such as “pick up the extinct animal,” performing about twice as well as baselines like RT-1 on generalization tests.",
+      "related": ["Pretraining", "Fine-tuning", "Domain Adaptation", "Sim-to-Real Transfer", "Positive / Negative Transfer", "RT-2"]
+    }
+  ]
+}

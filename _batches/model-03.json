@@ -1,0 +1,434 @@
+{
+ "category": "model",
+ "batch": 3,
+ "terms": [
+  {
+   "name_zh": "视觉-语言-动作模型",
+   "name_en": "Vision-Language-Action Model",
+   "abbr": "VLA",
+   "aliases": [
+    "视觉语言动作模型",
+    "VLA 模型",
+    "Vision-Language-Action Models"
+   ],
+   "tier": 1,
+   "one_liner": "看图、听懂语言指令，直接输出机器人动作的大模型。",
+   "explanation": "视觉-语言-动作模型以相机图像和自然语言指令为输入，直接输出机器人控制动作，通常由预训练的视觉语言模型（VLM，能看图回答问题的大模型）再用机器人数据训练而来。这个名字来自谷歌 DeepMind 2023 年 7 月的 RT-2 论文：它把动作写成文本 token，和网页图文数据一起训练，让机器人借用互联网知识处理没见过的物体和指令。之后有开源的 OpenVLA（7B 参数，用 97 万条机器人演示训练），以及 Physical Intelligence 的 π0（用流匹配生成连续动作块）。各家的主要差别在动作怎么输出：离散 token、扩散或流匹配动作头，或两者混合。",
+   "example": "给 OpenVLA 一张桌面照片和指令「把茄子放进锅里」，它输出 7 个动作 token，解码成机械臂末端的位移、旋转和夹爪开合。",
+   "related": [
+    "视觉语言模型",
+    "RT-2",
+    "OpenVLA",
+    "π0",
+    "动作分词器",
+    "动作专家"
+   ],
+   "sources": [
+    {
+     "title": "RT-2: Vision-Language-Action Models Transfer Web Knowledge to Robotic Control (arXiv:2307.15818)",
+     "url": "https://arxiv.org/abs/2307.15818"
+    },
+    {
+     "title": "OpenVLA: An Open-Source Vision-Language-Action Model (arXiv:2406.09246)",
+     "url": "https://arxiv.org/abs/2406.09246"
+    },
+    {
+     "title": "π0: A Vision-Language-Action Flow Model for General Robot Control (arXiv:2410.24164)",
+     "url": "https://arxiv.org/abs/2410.24164"
+    }
+   ],
+   "as_of": "2024-10"
+  },
+  {
+   "name_zh": "世界模型",
+   "name_en": "World Model",
+   "abbr": "WM",
+   "aliases": [
+    "World Models",
+    "世界模拟器"
+   ],
+   "tier": 1,
+   "one_liner": "能预测「做了某个动作之后，世界会变成什么样」的模型。",
+   "explanation": "世界模型指学会「环境会怎么变化」的模型：给定当前状态或画面和一个动作，预测下一步的状态或画面。2018 年 Ha 与 Schmidhuber 的论文《World Models》让这个词流行起来：先用变分自编码器把游戏画面压成低维向量，再用循环网络预测下一步，智能体可以在模型生成的「梦境」里学策略，再迁移回真实游戏。如今它既指只在隐空间（压缩后的特征）里预测的模型，如服务强化学习的 DreamerV3、用于机器人规划的 Meta V-JEPA 2，也指谷歌 DeepMind Genie 3、英伟达 Cosmos 这类直接生成视频画面的大模型。在具身智能里，世界模型用来生成合成训练数据、在「想象」中评估策略和做规划，减少真机试错。",
+   "example": "Genie 3（2025 年 8 月发布）根据一句文字描述生成一个 720p、24 帧/秒的场景，用户按方向键移动时实时生成后续画面，并能记住约一分钟前看到的内容。",
+   "related": [
+    "隐空间世界模型",
+    "世界基础模型",
+    "世界动作模型",
+    "Cosmos",
+    "Genie 3",
+    "基于模型的强化学习"
+   ],
+   "sources": [
+    {
+     "title": "World Models (Ha & Schmidhuber, arXiv:1803.10122)",
+     "url": "https://arxiv.org/abs/1803.10122"
+    },
+    {
+     "title": "Genie 3: A new frontier for world models (Google DeepMind)",
+     "url": "https://deepmind.google/blog/genie-3-a-new-frontier-for-world-models/"
+    },
+    {
+     "title": "What Are World Models? (NVIDIA Glossary)",
+     "url": "https://www.nvidia.com/en-us/glossary/world-models/"
+    },
+    {
+     "title": "V-JEPA 2: Self-Supervised Video Models Enable Understanding, Prediction and Planning (arXiv:2506.09985)",
+     "url": "https://arxiv.org/abs/2506.09985"
+    }
+   ],
+   "as_of": "2025-08"
+  },
+  {
+   "name_zh": "分箱离散化",
+   "name_en": "Action Binning / Discretization",
+   "abbr": "",
+   "aliases": [
+    "动作离散化",
+    "分桶",
+    "动作分箱",
+    "Action Binning"
+   ],
+   "tier": 2,
+   "one_liner": "把每个连续动作维度等分成若干区间，用区间编号当离散 token。",
+   "explanation": "分箱离散化是把连续机器人动作变成离散符号的最简单办法：对每个动作维度（如末端 x 方向位移、夹爪开合）划定取值范围，等分成若干个「箱」，用数值落入的箱编号代表它。RT-2 把每维分成 256 个箱，再把箱编号对应到语言模型词表里的 token，动作就能像文字一样被预测。OpenVLA 沿用 256 箱，但用训练数据的第 1 和第 99 百分位代替最小、最大值来定范围，避免个别离群值把区间撑大、降低精度。缺点是每个时间步、每个维度都要一个 token，高频控制时 token 多且相邻 token 高度相关，模型难学，FAST 等压缩式动作分词器就是为此提出的。",
+   "example": "若 x 方向位移的范围是 -2 到 2 厘米，分成 256 箱后每箱宽约 0.016 厘米，0.5 厘米就记为第 160 号箱。",
+   "related": [
+    "动作分词器",
+    "动作表示",
+    "离散余弦变换",
+    "RT-2",
+    "OpenVLA",
+    "π0-FAST"
+   ],
+   "sources": [
+    {
+     "title": "OpenVLA: An Open-Source Vision-Language-Action Model (arXiv:2406.09246)",
+     "url": "https://arxiv.org/html/2406.09246"
+    },
+    {
+     "title": "RT-2: Vision-Language-Action Models Transfer Web Knowledge to Robotic Control (arXiv:2307.15818)",
+     "url": "https://arxiv.org/abs/2307.15818"
+    },
+    {
+     "title": "FAST: Efficient Action Tokenization for Vision-Language-Action Models (arXiv:2501.09747)",
+     "url": "https://arxiv.org/abs/2501.09747"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "动作视界",
+   "name_en": "Action Horizon",
+   "abbr": "",
+   "aliases": [
+    "预测视界",
+    "执行视界",
+    "观测视界",
+    "Prediction Horizon",
+    "Execution Horizon",
+    "Observation Horizon"
+   ],
+   "tier": 2,
+   "one_liner": "策略每次看几步历史、预测几步动作、实际执行几步。",
+   "explanation": "动作视界描述策略在时间上「看多远、做多远」。扩散策略（Diffusion Policy，2023）论文把它拆成三个量：观测视界 To 是输入最近几步的观测，预测视界 Tp 是一次生成多少步动作，执行视界 Ta 是其中真正发给机器人、中途不重新规划的步数。执行完 Ta 步再用新观测重新预测，这种做法叫滚动时域控制。Ta 越长，动作越连贯、推理次数越少，但对突发变化反应越慢；越短则越灵敏，却容易抖动。该论文发现多数任务执行 8 步最好，开源代码默认 To=2、Tp=16、Ta=8。VLA 里说的动作块长度（chunk size）大致对应预测视界。",
+   "example": "π0 一次预测 50 步动作：在 50Hz 的机器人上只执行前 25 步（0.5 秒）就用新画面重新推理，在 20Hz 的 UR5e 上每执行 16 步重推一次。",
+   "related": [
+    "动作分块",
+    "时序集成",
+    "扩散策略",
+    "异步推理",
+    "闭环",
+    "实时动作分块"
+   ],
+   "sources": [
+    {
+     "title": "Diffusion Policy: Visuomotor Policy Learning via Action Diffusion (arXiv:2303.04137)",
+     "url": "https://arxiv.org/html/2303.04137v5"
+    },
+    {
+     "title": "diffusion_policy 训练配置 train_diffusion_unet_image_workspace.yaml (GitHub)",
+     "url": "https://github.com/real-stanford/diffusion_policy/blob/main/diffusion_policy/config/train_diffusion_unet_image_workspace.yaml"
+    },
+    {
+     "title": "π0: A Vision-Language-Action Flow Model for General Robot Control (arXiv:2410.24164)",
+     "url": "https://arxiv.org/html/2410.24164"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "动作表示",
+   "name_en": "Action Representation",
+   "abbr": "",
+   "aliases": [
+    "动作参数化",
+    "Action Parameterization"
+   ],
+   "tier": 2,
+   "one_liner": "用什么量、相对什么坐标、什么格式来描述机器人要做的动作。",
+   "explanation": "动作表示指策略输出的动作用什么形式来写，是搭机器人学习系统时最先要定的事之一。它包含几层选择：控制什么量（关节角度、末端执行器位姿，还是速度、力矩）；相对于什么（全局绝对坐标、相对上一步的增量，还是相对当前位姿的一整段轨迹）；旋转怎么写（欧拉角、四元数，或被证明对神经网络更连续、更好学的 6D 表示）；以及输出格式（连续数值、离散 token，或潜在动作、轨迹点等更抽象的中间表示）。同一个模型换一种动作表示，成功率可能差很多，所以论文里通常会专门说明并做对比。",
+   "example": "UMI 论文在摆杯子任务上对比：相对当前末端位姿的整段轨迹成功 20/20，逐步增量 16/20（误差会累积），全局绝对坐标只有 5/20。",
+   "related": [
+    "动作空间",
+    "增量动作 / 绝对动作",
+    "6D 旋转表示",
+    "动作分词器",
+    "潜在动作",
+    "末端位姿"
+   ],
+   "sources": [
+    {
+     "title": "Universal Manipulation Interface (UMI, arXiv:2402.10329)",
+     "url": "https://arxiv.org/abs/2402.10329"
+    },
+    {
+     "title": "On the Continuity of Rotation Representations in Neural Networks (arXiv:1812.07035)",
+     "url": "https://arxiv.org/abs/1812.07035"
+    },
+    {
+     "title": "A Survey on Vision-Language-Action Models: An Action Tokenization Perspective (arXiv:2507.01925)",
+     "url": "https://arxiv.org/abs/2507.01925"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "动作分词器",
+   "name_en": "Action Tokenizer",
+   "abbr": "",
+   "aliases": [
+    "动作 tokenizer",
+    "动作 token",
+    "动作 token 化",
+    "Action Tokenization",
+    "Action Token"
+   ],
+   "tier": 2,
+   "one_liner": "把连续动作编码成离散 token、推理时再解码回动作的模块。",
+   "explanation": "动作分词器把连续动作（通常是一段动作块）转成离散 token，推理时再解码回可执行的动作，让 VLA 能用「预测下一个 token」的方式输出动作。最简单的是逐维分箱（RT-2、OpenVLA 每维 256 箱），但高频数据里相邻时刻的动作几乎一样，分箱会产生大量冗余 token，模型难学。Physical Intelligence 等 2025 年 1 月提出的 FAST 先对每个动作维度做离散余弦变换（DCT，把信号转到频域），量化后再用字节对编码（BPE）压缩，配合 π0 训练时间最多缩短到约五分之一。另一类做法用向量量化（VQ）学一个动作码本。",
+   "example": "叠 T 恤任务中 1 秒、50Hz 的动作，逐维分箱需要 700 个 token，FAST 压缩后只要 53 个。",
+   "related": [
+    "分箱离散化",
+    "离散余弦变换",
+    "字节对编码",
+    "向量量化",
+    "π0-FAST",
+    "动作表示"
+   ],
+   "sources": [
+    {
+     "title": "FAST: Efficient Action Tokenization for Vision-Language-Action Models (arXiv:2501.09747)",
+     "url": "https://arxiv.org/html/2501.09747"
+    },
+    {
+     "title": "OpenVLA: An Open-Source Vision-Language-Action Model (arXiv:2406.09246)",
+     "url": "https://arxiv.org/html/2406.09246"
+    }
+   ],
+   "as_of": "2025-01"
+  },
+  {
+   "name_zh": "激活函数",
+   "name_en": "Activation Function (ReLU / GELU / SiLU / SwiGLU)",
+   "abbr": "",
+   "aliases": [
+    "激励函数",
+    "非线性激活"
+   ],
+   "tier": 2,
+   "one_liner": "接在每层线性变换后的非线性函数，让网络能拟合复杂关系。",
+   "explanation": "激活函数接在神经网络每层线性变换之后；没有它，多层叠起来仍等价于一次线性变换。常见几种：ReLU 把负数置零、正数原样输出，计算便宜，是卷积网络时代的默认选择；GELU（Hendrycks 与 Gimpel，2016）定义为 x·Φ(x)，Φ 是标准正态分布的累积分布函数，BERT、ViT 等 Transformer 常用；SiLU（也叫 Swish）是 x·sigmoid(x)；SwiGLU（Shazeer，2020）是门控线性单元的变体，把两路线性投影逐元素相乘、其中一路先过 Swish。LLaMA 就在 Transformer 前馈层（FFN）里用 SwiGLU 替换了 ReLU。",
+   "example": "输入 -1、0.5、2 时，ReLU 输出 0、0.5、2；GELU 输出约 -0.16、0.35、1.95，负数不再被一刀切成 0。",
+   "related": [
+    "多层感知机",
+    "Transformer",
+    "神经网络",
+    "归一化层（层归一化 / RMSNorm / 批归一化）",
+    "梯度消失 / 梯度爆炸",
+    "Llama"
+   ],
+   "sources": [
+    {
+     "title": "Gaussian Error Linear Units (GELUs) (arXiv:1606.08415)",
+     "url": "https://arxiv.org/abs/1606.08415"
+    },
+    {
+     "title": "GLU Variants Improve Transformer (arXiv:2002.05202)",
+     "url": "https://arxiv.org/abs/2002.05202"
+    },
+    {
+     "title": "LLaMA: Open and Efficient Foundation Language Models (arXiv:2302.13971)",
+     "url": "https://arxiv.org/abs/2302.13971"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "异步推理",
+   "name_en": "Asynchronous Inference",
+   "abbr": "",
+   "aliases": [
+    "异步执行",
+    "Async Inference"
+   ],
+   "tier": 2,
+   "one_liner": "机器人边执行当前动作块，模型边算下一块，不停下来等。",
+   "explanation": "异步推理把「模型算动作」和「机器人执行动作」拆成并行的两部分。同步推理时，机器人执行完一个动作块就得停下来等模型算出下一块，模型越大停顿越明显。异步做法是队列还剩一定比例时就把最新观测发给模型，让下一块在当前块用完前算好，重叠部分按规则合并。Hugging Face 在 2025 年 6 月随 SmolVLA 推出这套机制，LeRobot 里分成跑模型的 PolicyServer 和控制机器人的 RobotClient 两端。难点在块与块的衔接：新块基于稍早的观测算出，直接切换会让动作跳变；Physical Intelligence 提出的实时动作分块（RTC）专门处理这个问题。",
+   "example": "在 LeRobot 中设每次输出 50 步动作、阈值 0.5：队列里剩不到 25 步时，客户端就把新画面发给服务器，重叠部分按加权平均合并。",
+   "related": [
+    "推理延迟",
+    "动作分块",
+    "实时动作分块",
+    "策略服务器",
+    "SmolVLA",
+    "LeRobot"
+   ],
+   "sources": [
+    {
+     "title": "Asynchronous Inference (LeRobot 文档)",
+     "url": "https://huggingface.co/docs/lerobot/async"
+    },
+    {
+     "title": "SmolVLA: A Vision-Language-Action Model for Affordable and Efficient Robotics (arXiv:2506.01844)",
+     "url": "https://arxiv.org/abs/2506.01844"
+    },
+    {
+     "title": "Real-Time Execution of Action Chunking Flow Policies (arXiv:2506.07339)",
+     "url": "https://arxiv.org/abs/2506.07339"
+    }
+   ],
+   "as_of": "2025-06"
+  },
+  {
+   "name_zh": "自编码器",
+   "name_en": "Autoencoder",
+   "abbr": "AE",
+   "aliases": [
+    "自动编码器"
+   ],
+   "tier": 2,
+   "one_liner": "先把输入压成短向量、再还原回来，借此学到数据要点的网络。",
+   "explanation": "自编码器由编码器和解码器组成：编码器把输入（如一张图片）压缩成低维向量，解码器再从这个向量重建输入，训练目标是让重建结果尽量接近原输入，不需要人工标注。中间向量比输入小，网络被迫只保留最关键的信息，因此常用于降维和特征学习。这个思路在神经网络领域已有几十年历史（LeCun 1987 等）。常见变体有：变分自编码器（VAE）让中间向量服从概率分布，从而能生成新样本；掩码自编码器（MAE）遮住部分输入再重建，用于视觉预训练；VQ-VAE 把向量换成码本里的离散编号。具身智能里，潜在扩散模型、视频分词器、潜在动作模型都靠它把高维数据压进潜在空间再处理。",
+   "example": "《World Models》用卷积 VAE 把赛车游戏的每帧画面压成 32 维向量，后面的预测模型只在这 32 个数上工作。",
+   "related": [
+    "变分自编码器",
+    "条件变分自编码器",
+    "掩码自编码器",
+    "向量量化变分自编码器",
+    "潜在空间",
+    "潜在扩散模型"
+   ],
+   "sources": [
+    {
+     "title": "Deep Learning, Chapter 14: Autoencoders (Goodfellow, Bengio, Courville)",
+     "url": "https://www.deeplearningbook.org/contents/autoencoders.html"
+    },
+    {
+     "title": "World Models (Ha & Schmidhuber, interactive article)",
+     "url": "https://worldmodels.github.io/"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "因果注意力",
+   "name_en": "Causal Attention",
+   "abbr": "",
+   "aliases": [
+    "因果掩码",
+    "掩码自注意力",
+    "Causal Mask",
+    "Masked Self-Attention"
+   ],
+   "tier": 2,
+   "one_liner": "每个位置只能看自己和前面的内容，看不到后面的注意力。",
+   "explanation": "因果注意力是在自注意力里加一个掩码，把「未来位置」的注意力分数设为负无穷，让每个 token 只能关注自己和前面的 token。它来自 2017 年 Transformer 原论文的解码器，用来保证自回归：训练时一次喂入整段序列，预测第 i 个位置也只依赖前面的内容。GPT、Llama 等仅解码器语言模型都用它，基于它们的 VLA 逐个生成动作 token 时也是。与之相对的是双向注意力，所有位置互相可见，BERT、ViT 用的就是这种。两者也常混用：π0 用分块因果掩码，把输入分成图像和语言、机器人状态、带噪动作三块，块内互相可见，每块只能看自己和前面的块。",
+   "example": "序列「拿 起 杯 子」中，模型计算「杯」时只能关注「拿」「起」「杯」三个位置，「子」被掩码挡住。",
+   "related": [
+    "自注意力",
+    "注意力掩码",
+    "仅解码器架构",
+    "自回归解码",
+    "KV 缓存",
+    "Transformer"
+   ],
+   "sources": [
+    {
+     "title": "Attention Is All You Need (arXiv:1706.03762)",
+     "url": "https://arxiv.org/abs/1706.03762"
+    },
+    {
+     "title": "π0: A Vision-Language-Action Flow Model for General Robot Control (arXiv:2410.24164)",
+     "url": "https://arxiv.org/html/2410.24164"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "思维链",
+   "name_en": "Chain-of-Thought",
+   "abbr": "CoT",
+   "aliases": [
+    "思维链推理",
+    "思维链提示",
+    "Chain-of-Thought Prompting"
+   ],
+   "tier": 2,
+   "one_liner": "让模型先一步步写出中间推理过程，再给最终答案。",
+   "explanation": "思维链指模型在给出答案前，先生成一串中间推理步骤。2022 年谷歌 Wei 等人提出「思维链提示」：只要在提示里放几个带推理过程的示例，大模型就会模仿着分步思考；用 8 个这样的示例提示 5400 亿参数的 PaLM，就在数学应用题基准 GSM8K 上取得当时最好成绩。后来它从提示技巧变成训练目标，OpenAI o1、DeepSeek-R1 等推理模型用强化学习训练出更长的思考过程。机器人领域把它引入 VLA：具身思维链（ECoT，2024）先让模型写出任务计划、子任务、动作描述和物体检测框，再输出动作，使 OpenVLA 在泛化任务上的成功率绝对提升 28%。",
+   "example": "收到「把勺子放到毛巾上」，ECoT 类模型先写出计划（抓勺子→移到毛巾上方→松开）、当前子任务和勺子的检测框，最后才输出动作 token。",
+   "related": [
+    "具身思维链",
+    "视觉思维链",
+    "推理（思考）",
+    "具身推理",
+    "CoT-VLA",
+    "大语言模型"
+   ],
+   "sources": [
+    {
+     "title": "Chain-of-Thought Prompting Elicits Reasoning in Large Language Models (arXiv:2201.11903)",
+     "url": "https://arxiv.org/abs/2201.11903"
+    },
+    {
+     "title": "Robotic Control via Embodied Chain-of-Thought Reasoning (arXiv:2407.08693)",
+     "url": "https://arxiv.org/abs/2407.08693"
+    }
+   ],
+   "as_of": "2025-01"
+  },
+  {
+   "name_zh": "条件变分自编码器",
+   "name_en": "Conditional Variational Autoencoder",
+   "abbr": "CVAE",
+   "aliases": [
+    "条件 VAE",
+    "Conditional VAE"
+   ],
+   "tier": 2,
+   "one_liner": "给定条件时学习输出分布的 VAE，同一输入能生成多种合理结果。",
+   "explanation": "条件变分自编码器是变分自编码器（VAE）的扩展：编码器和解码器都额外接收一个条件（如当前观测），学的是「给定条件时输出的分布」，而不是单一答案。它由 Sohn、Lee、Yan 在 NeurIPS 2015 提出，最初用于图像分割这类结构化输出预测。训练时编码器看到真实输出，把它的「风格」压成隐变量 z，解码器根据条件和 z 重建输出；推理时改从先验里取 z。模仿学习用它应对演示的多样性：同一场景下人可能走不同轨迹，普通回归会把几种做法平均成一个错误动作。ACT（2023）的做法是：编码器输入关节位置和目标动作序列得到 z，测试时丢掉编码器，把 z 设为先验均值 0。",
+   "example": "ACT 用 CVAE 一次预测 100 步的动作块，只用约 10 分钟演示数据，就在低成本双臂上完成精细任务，成功率 80%–90%。",
+   "related": [
+    "变分自编码器",
+    "ACT",
+    "动作多峰性",
+    "动作分块",
+    "生成模型",
+    "自编码器"
+   ],
+   "sources": [
+    {
+     "title": "Learning Structured Output Representation using Deep Conditional Generative Models (NeurIPS 2015)",
+     "url": "https://papers.nips.cc/paper_files/paper/2015/hash/8d55a249e6baa5c06772297520da2051-Abstract.html"
+    },
+    {
+     "title": "Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware (ACT, arXiv:2304.13705)",
+     "url": "https://arxiv.org/html/2304.13705"
+    }
+   ],
+   "as_of": ""
+  }
+ ]
+}

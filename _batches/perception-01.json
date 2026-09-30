@@ -1,0 +1,205 @@
+{
+  "category": "perception",
+  "batch": 1,
+  "terms": [
+    {
+      "name_zh": "相机外参",
+      "name_en": "Camera Extrinsics",
+      "abbr": "",
+      "aliases": ["外参", "外参矩阵", "相机位姿", "Extrinsic Parameters"],
+      "tier": 1,
+      "one_liner": "描述相机在空间中放在哪、朝向哪的旋转加平移参数。",
+      "explanation": "相机外参由一个 3×3 旋转矩阵 R 和一个平移向量 t 组成，常合写成 4×4 齐次变换矩阵，说明相机相对世界坐标系或机器人基坐标系的位置和朝向。OpenCV 的约定是外参把世界坐标系下的点变换到相机坐标系；不少机器人代码库存的却是反方向的「相机位姿」（相机到世界），用别人的数据前要先确认方向。外参一般用标定板配合 PnP 或手眼标定求得，相机被碰歪后就得重标。有了外参，才能把多台相机的点云拼到同一个坐标系，或把相机里看到的物体位置换算成机械臂能用的坐标。",
+      "example": "DROID 数据集用两台外部 ZED 2 相机加一台腕部 ZED Mini 采集，共覆盖 1417 个相机视角，并随数据附带每个视角的内参和外参标定结果。",
+      "related": ["相机内参", "手眼标定", "齐次变换矩阵", "坐标变换", "PnP（透视n点）", "相机标定"],
+      "sources": [
+        {"title": "OpenCV calib3d.hpp：针孔相机模型与外参 R、t 的定义", "url": "https://raw.githubusercontent.com/opencv/opencv/4.x/modules/calib3d/include/opencv2/calib3d.hpp"},
+        {"title": "Wikipedia: Camera resectioning", "url": "https://en.wikipedia.org/wiki/Camera_resectioning"},
+        {"title": "DROID: A Large-Scale In-the-Wild Robot Manipulation Dataset", "url": "https://droid-dataset.github.io/"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "相机内参",
+      "name_en": "Camera Intrinsics",
+      "abbr": "",
+      "aliases": ["内参", "内参矩阵", "K 矩阵", "焦距与主点", "Intrinsic Parameters"],
+      "tier": 1,
+      "one_liner": "描述相机自身成像方式的参数，决定三维点落在图像哪个像素上。",
+      "explanation": "相机内参通常写成 3×3 矩阵 K，包含以像素为单位的焦距 fx、fy 和主点 cx、cy（光轴与成像平面的交点，一般接近图像中心），镜头畸变系数通常另外单列。它描述相机坐标系下的三维点怎样投影到像素上，只取决于相机和镜头本身，与拍什么无关，焦距不变就能一直复用。内参可以用棋盘格标定（张正友标定法）求得，RealSense 等深度相机出厂已标好，能从 SDK 直接读出。常见的坑：图像缩放或裁剪后再送进模型，内参也要按同样的比例和偏移修改，否则反投影出的点云会错位。",
+      "example": "640×480 图像，fx=fy=600、cx=320、cy=240；像素 (420, 240) 处深度 1 米，则该点在相机坐标系下 X=(420−320)×1/600≈0.17 米、Y=0、Z=1 米。",
+      "related": ["相机外参", "针孔相机模型", "镜头畸变", "投影与反投影", "相机标定", "标定板"],
+      "sources": [
+        {"title": "OpenCV calib3d.hpp：camera intrinsic matrix（fx、fy、cx、cy）", "url": "https://raw.githubusercontent.com/opencv/opencv/4.x/modules/calib3d/include/opencv2/calib3d.hpp"},
+        {"title": "RealSense SDK rs_types.h：rs2_intrinsics 结构体", "url": "https://github.com/realsenseai/librealsense/blob/master/include/librealsense2/h/rs_types.h"},
+        {"title": "Wikipedia: Camera resectioning", "url": "https://en.wikipedia.org/wiki/Camera_resectioning"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "计算机视觉",
+      "name_en": "Computer Vision",
+      "abbr": "CV",
+      "aliases": ["机器视觉（广义）", "CV"],
+      "tier": 1,
+      "one_liner": "让计算机从图像和视频中提取有用信息、理解场景的学科。",
+      "explanation": "计算机视觉研究怎样让计算机从单张图像或视频序列中自动提取、分析和理解信息，典型任务有图像分类、目标检测、分割、跟踪、位姿估计和三维重建。它起步于 20 世纪 60 年代末的人工智能实验室，1966 年还有人以为给计算机接上相机、让它「描述看到了什么」只需一个本科生暑期项目，结果这个问题研究了半个多世纪。深度学习兴起后，卷积网络、视觉 Transformer 以及 CLIP、DINOv2、SAM 这类视觉基础模型成为主流。具身智能里，相机是机器人获取外部信息的主要来源，VLA 的视觉编码器大多直接沿用计算机视觉领域预训练好的模型。",
+      "example": "机器人收拾桌子前，先用目标检测找到杯子，用分割抠出杯子轮廓，再结合深度图算出它的三维位置，这几步都属于计算机视觉。",
+      "related": ["目标检测", "语义分割", "3D视觉", "视觉基础模型", "深度估计", "视觉编码器"],
+      "sources": [
+        {"title": "Wikipedia: Computer vision", "url": "https://en.wikipedia.org/wiki/Computer_vision"},
+        {"title": "Richard Szeliski, Computer Vision: Algorithms and Applications (2nd ed., 2022)", "url": "https://szeliski.org/Book/"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "深度相机",
+      "name_en": "Depth Camera (RGB-D Camera)",
+      "abbr": "RGB-D",
+      "aliases": ["RGB-D 相机", "RGBD 相机", "3D 相机", "距离相机", "Range Camera"],
+      "tier": 1,
+      "one_liner": "除了彩色图像，还能给出每个像素到相机距离的相机。",
+      "explanation": "深度相机也叫 RGB-D 相机，在普通彩色图（RGB）之外同时输出一张深度图（D）。主流测距原理有三类：双目立体，用两颗镜头看同一点的视差按三角关系算距离，常加红外投射器往场景打随机纹理，帮白墙这类无纹理表面完成匹配，叫主动双目；结构光，投射已知图案，根据图案变形算深度；飞行时间（ToF），测光发出到返回的时间。它比激光雷达便宜、体积小，近距离精度高，但距离越远误差越大，透明和镜面物体容易测不准。机器人上常装在头部或手腕，用来生成点云、做抓取和避障，常见品牌有 RealSense、奥比中光、ZED 等。",
+      "example": "RealSense D435i 属于主动双目方案，官方标称理想工作距离 0.3–3 米、2 米处误差小于 2%，在桌面操作和移动机器人研究里很常用。",
+      "related": ["深度图", "主动双目", "结构光", "飞行时间法", "点云", "RealSense 深度相机（D435i / D405）"],
+      "sources": [
+        {"title": "Wikipedia: Range imaging（深度相机的几类原理）", "url": "https://en.wikipedia.org/wiki/Range_imaging"},
+        {"title": "RealSense 白皮书：Projectors for D400 series（主动双目与红外投射器）", "url": "https://dev.realsenseai.com/docs/projectors"},
+        {"title": "RealSense D435i 产品页", "url": "https://www.realsenseai.com/stereo-depth-cameras/depth-camera-d435i/"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "深度图",
+      "name_en": "Depth Map",
+      "abbr": "",
+      "aliases": ["深度图像", "Depth Image", "距离图像", "Range Image"],
+      "tier": 1,
+      "one_liner": "每个像素存的不是颜色，而是该点离相机有多远的图像。",
+      "explanation": "深度图是单通道图像，每个像素值表示对应场景点到相机的距离，一般指沿相机光轴（Z 轴）方向的距离，而不是到镜头的直线距离。它可以由深度相机直接测出，也可以用 Depth Anything 这类单目深度估计模型从普通彩色图预测，后者有的只给相对远近，有的能给出以米为单位的度量深度。实际存储常用 16 位整数，乘以深度单位才得到米。深度图配合相机内参可以逐像素反投影成点云。常见问题有测不到的空洞（值为 0）、物体边缘的飞点，以及深度图和彩色图视角不一致，需要先对齐再一起用。",
+      "example": "若深度单位是 1 毫米，深度图里某像素值为 850，就表示该点沿光轴离相机 0.85 米；值为 0 通常表示这里没测到。",
+      "related": ["深度相机", "点云", "投影与反投影", "深度空洞", "单目深度估计", "深度与彩色对齐"],
+      "sources": [
+        {"title": "Wikipedia: Depth map", "url": "https://en.wikipedia.org/wiki/Depth_map"},
+        {"title": "RealSense SDK 文档：Depth from Stereo（视差转深度与深度单位）", "url": "https://github.com/realsenseai/librealsense/blob/master/doc/depth-from-stereo.md"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "手眼标定",
+      "name_en": "Hand-Eye Calibration",
+      "abbr": "",
+      "aliases": ["AX=XB", "相机-机械臂标定", "手眼矩阵标定"],
+      "tier": 1,
+      "one_liner": "求出相机和机械臂之间那个固定坐标变换的标定过程。",
+      "explanation": "手眼标定求的是「眼」（相机）和「手」（机械臂）之间固定不变的变换，分两种配置：眼在手上，相机装在末端，求相机相对末端法兰的位姿；眼在手外，相机固定在旁边，求相机相对机器人基座的位姿。做法是让机械臂换多个姿态，每次同时记录末端位姿和相机看到的标定板位姿，问题可写成 AX=XB，X 就是要求的变换。Tsai-Lenz（1989）等经典解法都已在 OpenCV 的 calibrateHandEye 里实现。至少要两次旋转轴不平行的运动，即至少 3 个姿态，实际应多采一些。标定不准，相机看到的物体换算到机械臂坐标就会偏，抓取直接失败。",
+      "example": "腕部相机标定：机械臂带着相机从十几个角度拍一块固定的 ChArUco 标定板，用正运动学读末端位姿、用 PnP 算标定板相对相机的位姿，再调用 OpenCV 的 calibrateHandEye 解出相机相对法兰的变换。",
+      "related": ["眼在手上", "眼在手外", "相机外参", "标定板", "齐次变换矩阵", "腕部相机"],
+      "sources": [
+        {"title": "OpenCV calib3d.hpp：calibrateHandEye 与 AX=XB 说明", "url": "https://raw.githubusercontent.com/opencv/opencv/4.x/modules/calib3d/include/opencv2/calib3d.hpp"},
+        {"title": "Wikipedia: Hand eye calibration problem", "url": "https://en.wikipedia.org/wiki/Hand_eye_calibration_problem"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "惯性测量单元",
+      "name_en": "Inertial Measurement Unit",
+      "abbr": "IMU",
+      "aliases": ["陀螺仪 + 加速度计", "六轴 IMU", "九轴 IMU", "惯性传感器", "惯导（口语）"],
+      "tier": 1,
+      "one_liner": "用加速度计和陀螺仪测量物体加速度和转动快慢的传感器。",
+      "explanation": "惯性测量单元（IMU）由加速度计和陀螺仪组成，分别测三个方向的加速度（静止时读到的就是重力，所以能判断哪边朝下）和绕三个轴的角速度，合称六轴；再加三轴磁力计就是九轴。手机、无人机、VR 头显里都有它。对机器人来说，IMU 给出机身朝向（尤其是重力方向）和转动速度，是足式和人形机器人保持平衡的基本输入。它的读数带零偏和噪声，积分算角度和位置时误差会随时间累积（漂移），所以常和相机、激光雷达或腿式里程计融合使用。口语里有人把 IMU 叫「惯导」，严格说惯性导航系统是在 IMU 读数上再积分解算出位置、速度的整套系统。",
+      "example": "宇树开源的 unitree_rl_gym 里，G1 行走策略的观测前 6 维就是 IMU 陀螺仪测的机身角速度，加上由 IMU 姿态四元数算出的投影重力方向。",
+      "related": ["传感器漂移（零漂）", "投影重力", "状态估计", "视觉惯性里程计", "本体感知", "相机-IMU联合标定"],
+      "sources": [
+        {"title": "Wikipedia: Inertial measurement unit", "url": "https://en.wikipedia.org/wiki/Inertial_measurement_unit"},
+        {"title": "unitree_rl_gym deploy_real.py（IMU 角速度与投影重力作为观测）", "url": "https://github.com/unitreerobotics/unitree_rl_gym/blob/main/deploy/deploy_real/deploy_real.py"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "激光雷达",
+      "name_en": "LiDAR (Light Detection and Ranging)",
+      "abbr": "LiDAR",
+      "aliases": ["3D 激光雷达", "Lidar", "光学雷达", "激光扫描仪"],
+      "tier": 1,
+      "one_liner": "发射激光并测回波时间来测距，扫出周围三维点云的传感器。",
+      "explanation": "激光雷达向外发射激光，测量光打到物体再反射回来所用的时间来算距离，再通过旋转或扫描覆盖大片视场，输出周围环境的三维点云。第一台类似系统由休斯飞机公司在 1961 年、激光发明后不久做出。按结构可分为整体旋转的机械式、靠转镜或微振镜扫描的半固态式和没有运动部件的纯固态式，按线束可分为只扫一个平面的 2D 单线雷达和多线的 3D 雷达。和深度相机比，激光雷达测得远、远处精度高、受环境光影响小，室外阳光下也能稳定工作，但点比较稀疏、没有颜色、价格更高。在机器人上主要用于 SLAM 建图定位、导航避障和地形感知，自动驾驶汽车、四足和人形机器人上都很常见。",
+      "example": "览沃（Livox）Mid-360 是移动机器人上常见的 3D 激光雷达，水平 360°、垂直 59° 视场，对 10% 反射率的目标能测到 40 米，最近可测 0.1 米。",
+      "related": ["点云", "激光雷达线数", "固态激光雷达", "激光SLAM", "飞行时间法", "览沃 Mid-360"],
+      "sources": [
+        {"title": "Wikipedia: Lidar", "url": "https://en.wikipedia.org/wiki/Lidar"},
+        {"title": "Livox Mid-360 产品页", "url": "https://www.livoxtech.com/mid-360"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "目标检测",
+      "name_en": "Object Detection",
+      "abbr": "",
+      "aliases": ["物体检测", "物体识别与定位"],
+      "tier": 1,
+      "one_liner": "在图像里找出物体是什么、在哪里，并用方框标出来的任务。",
+      "explanation": "目标检测是计算机视觉的基础任务：输入一张图，输出其中每个物体的类别、边界框（包住物体的矩形框）和置信度。早期代表是基于手工特征的 Viola-Jones 人脸检测；深度学习后出现 R-CNN 系列两阶段检测器，以及 2015 年提出的 YOLO，它把检测直接当成对边界框和类别概率的回归问题，能实时运行。评估时用交并比（IoU，两框重叠面积占合并面积的比例）判断预测框是否对上，再汇总成 mAP（各类别平均精度的均值）。传统检测器只认识训练时见过的类别，Grounding DINO 这类开放词汇检测器可以用任意文字描述去找物体。机器人里，检测常是模块化流程的第一步：先框出目标，再分割、估位姿、规划抓取。",
+      "example": "用户说「把红色杯子拿给我」，系统先把「red cup」输入 Grounding DINO 得到边界框，再交给 SAM 抠出掩码，结合深度图算出杯子的三维位置，交给机械臂去抓。",
+      "related": ["检测框（边界框）", "开放词汇检测", "YOLO", "Grounding DINO", "交并比", "实例分割"],
+      "sources": [
+        {"title": "Wikipedia: Object detection", "url": "https://en.wikipedia.org/wiki/Object_detection"},
+        {"title": "You Only Look Once: Unified, Real-Time Object Detection (arXiv 1506.02640)", "url": "https://arxiv.org/abs/1506.02640"},
+        {"title": "Grounding DINO (arXiv 2303.05499)", "url": "https://arxiv.org/abs/2303.05499"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "点云",
+      "name_en": "Point Cloud",
+      "abbr": "",
+      "aliases": ["3D 点云", "PCD", "三维点云"],
+      "tier": 1,
+      "one_liner": "由大量三维坐标点组成、用来表示物体或场景形状的数据。",
+      "explanation": "点云是三维空间中一组离散点的集合，每个点有 X、Y、Z 坐标，还可以附带颜色、法向量、时间戳等信息。它通常来自激光雷达、深度相机（深度图配合内参反投影）或多视角三维重建。点云无序、稀疏、点数不固定，不能直接套用处理图片的卷积网络，于是有了 PointNet 等专门的点云网络。常见处理包括体素降采样或最远点采样（减少点数）、用 ICP（迭代最近点）把两片点云对齐（配准）、分割出目标物体；开源库 PCL 定义了常用的 PCD 文件格式。具身智能里，3D 扩散策略（DP3）以单视角点云作为策略输入，AnyGrasp 等抓取检测方法也直接在点云上预测抓取位姿。",
+      "example": "一张 640×480 的深度图最多能反投影出 30 多万个点，做 3D 策略时通常先裁掉桌面以外的区域，再用最远点采样降到几百到几千个点送进编码器。",
+      "related": ["深度图", "点云编码器", "最远点采样", "迭代最近点", "PointNet", "3D 扩散策略"],
+      "sources": [
+        {"title": "Wikipedia: Point cloud", "url": "https://en.wikipedia.org/wiki/Point_cloud"},
+        {"title": "PCL 文档：The PCD (Point Cloud Data) file format", "url": "https://pointclouds.org/documentation/tutorials/pcd_file_format.html"},
+        {"title": "3D Diffusion Policy 项目页", "url": "https://3d-diffusion-policy.github.io/"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "本体感知",
+      "name_en": "Proprioception",
+      "abbr": "",
+      "aliases": ["本体感觉", "本体感受", "本体状态", "机器人本体状态感知", "Proprioceptive State"],
+      "tier": 1,
+      "one_liner": "机器人对自身关节位置、速度、受力和姿态的感知，不看外部环境。",
+      "explanation": "本体感知原是生理学术语，指对自身肢体位置、运动和用力的感觉，1906 年英国生理学家谢灵顿（Sherrington）在著作中使用了这个词，与感知外部世界的外部感知相对。机器人里指对自身状态的测量：编码器给出关节角和速度，电机电流或力矩传感器给出受力，IMU 给出机身姿态和角速度，夹爪开合宽度也常算在内。这类数据维度低、噪声小、频率高，几乎所有策略都会用。比如 π0 的观测由多路图像、语言指令和关节角组成的本体状态构成，本体状态经线性层投影后和其他 token 一起送入模型。只靠本体感知、不用相机的足式行走叫盲走。",
+      "example": "宇树 unitree_rl_gym 的 G1 行走策略，观测里的 IMU 角速度、投影重力、各关节相对默认姿态的角度和关节速度都属于本体感知，另外再拼上速度指令、上一步动作和步态相位；机身线速度真机上难以直接测准，只放在仿真训练才有的特权观测里。",
+      "related": ["外部感知", "编码器", "状态编码器", "状态估计", "盲走", "惯性测量单元"],
+      "sources": [
+        {"title": "Wikipedia: Proprioception", "url": "https://en.wikipedia.org/wiki/Proprioception"},
+        {"title": "π0: A Vision-Language-Action Flow Model for General Robot Control (arXiv 2410.24164)", "url": "https://arxiv.org/html/2410.24164v1"},
+        {"title": "unitree_rl_gym g1_env.py（G1 策略观测定义）", "url": "https://github.com/unitreerobotics/unitree_rl_gym/blob/main/legged_gym/envs/g1/g1_env.py"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "RealSense 深度相机（D435i / D405）",
+      "name_en": "RealSense Depth Camera (D435i / D405)",
+      "abbr": "",
+      "aliases": ["英特尔实感", "Intel RealSense", "英特尔 RealSense", "RealSense", "RealSense, Inc.", "D435", "D435i", "D455", "D405", "D555"],
+      "tier": 1,
+      "one_liner": "原英特尔旗下的双目深度相机系列，机器人研究和产品里很常用。",
+      "explanation": "RealSense 起源于英特尔 2014 年的 3D 相机项目，D400 系列用双目加板载芯片直接算出深度图。2025 年 7 月 11 日从英特尔分拆为独立公司，完成 5000 万美元 A 轮融资；2026 年 9 月 22 日，机器视觉公司康耐视（Cognex）宣布以约 5 亿美元现金收购它，预计当年第四季度完成交割。具身圈最常见两款：D435i 是带红外投射器和 IMU 的主动双目相机，理想距离 0.3–3 米，常装在头部或当第三视角；D405 专为 7–50 厘米近距离设计，常装在手腕上。开源的 RealSense SDK 提供驱动、深度滤波和 ROS 2 接口。",
+      "example": "ALOHA 2 双臂平台把初代用的消费级网络摄像头换成了 RealSense D405，理由是视场更大、带深度、全局快门，体积也更小。",
+      "related": ["深度相机", "主动双目", "惯性测量单元", "RealSense SDK", "奥比中光 Gemini 330 系列", "腕部相机"],
+      "sources": [
+        {"title": "PR Newswire: Cognex to Acquire RealSense（2026-09-22）", "url": "https://www.prnewswire.com/news-releases/cognex-to-acquire-realsense-expanding-machine-vision-leadership-into-high-growth-robotic-perception-market-302885738.html"},
+        {"title": "RealSense completes spin-out from Intel, raises $50 million", "url": "https://www.realsenseai.com/cn/news-insights/news/realsense-completes-spin-out-from-intel-raises-50-million-to-accelerate-ai-powered-vision-for-robotics-and-biometrics/"},
+        {"title": "RealSense D435i 产品页", "url": "https://www.realsenseai.com/stereo-depth-cameras/depth-camera-d435i/"}
+      ],
+      "as_of": "2026-09"
+    }
+  ]
+}

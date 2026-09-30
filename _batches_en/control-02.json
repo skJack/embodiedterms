@@ -1,0 +1,234 @@
+{
+ "batch": "control-02",
+ "terms": [
+  {
+   "key": "control-02#0",
+   "name_en": "Proportional-Integral-Derivative Control",
+   "aliases": [
+    "PID",
+    "PID Control",
+    "PID Controller"
+   ],
+   "one_liner": "A classic feedback controller that combines the current error, its accumulated history, and its rate of change into one output.",
+   "explanation": "PID control is the most widely used feedback control method; Minorsky gave it a formal control law in 1922 while studying automatic steering for U.S. Navy ships. The control output is u = Kp·e + Ki·∫e dt + Kd·de/dt, where e is the target value minus the measured value (the error), and Kp, Ki, Kd are three gains to be tuned. The proportional term responds to the current error; the integral term accumulates past error, eliminating the steady-state error that proportional action alone would leave behind; the derivative term looks at how fast the error is changing, providing damping that reduces overshoot but can also amplify measurement noise. Dropping the integral term gives PD control, and dropping the derivative term gives PI control. PID shows up in joint motors, camera gimbals, and drone attitude loops; reinforcement-learning locomotion policies typically output only target joint angles, which a lower-level PD controller converts into torque. When the motor's output is already saturated at its limit but the integral term keeps accumulating anyway, the result is pronounced overshoot — a problem called integral windup, which needs anti-windup handling.",
+   "example": "A robot arm joint needs to reach 30° and is currently at 25°: the P term pushes based on the 5° error; if gravity keeps it stuck at 29.5° short of the target, the I term keeps accumulating that 0.5° gap until it's closed; as the joint nears the target, the D term sees the error shrinking fast and eases off early, preventing overshoot past 30°.",
+   "related": [
+    "PD Control",
+    "Cascade Control (Position / Velocity / Current Loops)",
+    "Stiffness and Damping Gains",
+    "Integral Windup and Anti-Windup",
+    "Step-Response Metrics (Overshoot / Settling Time / Steady-State Error)",
+    "Position Control"
+   ]
+  },
+  {
+   "key": "control-02#1",
+   "name_en": "Whole-Body Control",
+   "aliases": [
+    "WBC",
+    "Whole-Body Controller"
+   ],
+   "one_liner": "Computes commands for all of a humanoid's or legged robot's joints together, so several tasks are accomplished at once.",
+   "explanation": "Whole-body control means computing commands for every joint of a floating-base robot (one whose body isn't fixed to the ground, such as a humanoid or quadruped) together, rather than controlling the legs and arms separately. The classic framework comes from a 2005 paper by Sentis and Khatib: things like the center of mass, hands, feet, joint limits, and contacts are written as “tasks” or constraints and given priorities — higher-priority tasks (such as staying within joint limits or not falling) must be satisfied, while lower-priority ones use whatever redundant freedom remains to do as well as possible; in practice this is usually formulated as a quadratic program (QP) or a hierarchy of QPs, solved every control cycle. It matters because reaching out with one hand shifts a humanoid's center of mass, so the legs and torso have to compensate at the same time. Learned whole-body control took off around 2024 — HOVER (ICRA 2025), for example, uses a single neural-network policy to unify navigation, mobile manipulation, and tabletop manipulation, among other control modes. A higher-level VLA or a teleoperator supplies the goal, and WBC turns it into whole-body joint commands.",
+   "example": "A humanoid bends down to pick up a box with one hand: WBC simultaneously satisfies “hand reaches the box,” “center-of-mass projection stays within the foot-support region,” and “joints stay within limits,” so it automatically bends at the waist and knees while swinging the other arm back for counterweight.",
+   "related": [
+    "Learned Whole-Body Control",
+    "Task Priority",
+    "Hierarchical Quadratic Programming",
+    "Null-Space Control",
+    "Operational Space Control",
+    "HOVER"
+   ]
+  },
+  {
+   "key": "control-02#2",
+   "name_en": "A* Search",
+   "aliases": [
+    "A*",
+    "A-Star"
+   ],
+   "one_liner": "A shortest-path search algorithm that expands whichever node has the lowest cost so far plus estimated cost to the goal.",
+   "explanation": "A* is a search algorithm for finding the shortest path on a graph or grid map, proposed in 1968 by Hart, Nilsson, and Raphael at the Stanford Research Institute for the Shakey mobile robot project. At each step it expands the node with the smallest f(n) = g(n) + h(n): g(n) is the actual cost already spent getting from the start to node n, and h(n) is an estimate of the cost from n to the goal (the heuristic function, such as straight-line distance). As long as h never overestimates the true remaining cost (called admissible), A* is guaranteed to find the shortest path; when h is always zero, it degenerates into Dijkstra's algorithm, which searches outward evenly in all directions. It's commonly used for global path planning in mobile robots and in game pathfinding; a robot arm's high-dimensional joint space usually calls for sampling-based planners like RRT instead. A variant that accounts for a vehicle's turning constraints is called hybrid A*.",
+   "example": "A vacuuming robot navigating from the living room to the bedroom on an occupancy grid with 5 cm cells: each step costs 1, h is taken as the straight-line distance from the current cell to the bedroom, and A* finds the shortest route around occupied cells, which is then handed to a local planner to follow.",
+   "related": [
+    "Dijkstra's Algorithm",
+    "Hybrid A*",
+    "Path Planning",
+    "Costmap",
+    "Global Planning and Local Planning",
+    "Rapidly-exploring Random Tree (RRT)"
+   ]
+  },
+  {
+   "key": "control-02#3",
+   "name_en": "Action Smoothing",
+   "aliases": [
+    "Low-Pass Filtering",
+    "Action Filtering",
+    "Action Smoothness Regularization"
+   ],
+   "one_liner": "Filtering or penalizing a policy's output actions to remove high-frequency jitter, so joint motion stays smooth.",
+   "explanation": "Action smoothing is a common step when deploying a learned policy. A neural network outputs an action independently at every step, so adjacent steps can jump around, making motors jitter back and forth, waste power, and heat up. There are three common fixes. One is filtering the action before sending it out, letting only low-frequency changes through — the simplest is an exponential moving average, y_t = α·x_t + (1−α)·y_{t−1}, where x is the policy's newly output action and y is the action actually sent, with smaller α giving more smoothing. Another is adding a penalty during training, such as the action_rate term in legged_gym's default reward, which penalizes the difference between consecutive actions; the CAPS method (ICRA 2021) adds both temporal and spatial smoothness regularization, and its authors report nearly an 80% reduction in power use on a quadrotor. A third is predicting a whole chunk of actions at once (action chunking), then temporally ensembling or interpolating them. The cost is that filtering introduces delay (phase lag), making the robot slower to react to disturbances, so α has to be tuned as a tradeoff between smoothness and responsiveness.",
+   "example": "A quadruped's reinforcement-learning policy outputs target joint angles at 50 Hz; deployed on the real robot, its legs show noticeable high-frequency jitter. Adding a first-order low-pass filter noticeably reduces the jitter, but the robot also reacts a bit more slowly when pushed, requiring α to be re-tuned.",
+   "related": [
+    "Action Chunking",
+    "Temporal Ensembling",
+    "Control Frequency",
+    "Jerk",
+    "Real-Time Chunking (RTC)",
+    "PD Control"
+   ]
+  },
+  {
+   "key": "control-02#4",
+   "name_en": "Admittance Control",
+   "aliases": [
+    "Admittance Controller"
+   ],
+   "one_liner": "Measures the external force applied, computes the resulting motion from a set mass-damper-spring relationship, and hands that to the position loop.",
+   "explanation": "Admittance control is an interaction-control method that makes a robot yield to external force, and it's theoretically grounded in the duality between impedance and admittance from Hogan's 1985 paper on impedance control. Its input is force and its output is motion: a wrist-mounted six-axis force-torque sensor measures the external force F, and the controller computes how the robot should move from F = M·a + D·v + K·(x − x_d) (M, D, K are the virtual mass, damping, and stiffness, and x_d is the originally intended target position), then hands the corrected position or velocity command off to the robot's own built-in position loop. Impedance control runs in the opposite direction: it takes a position deviation as input and outputs a force or torque, which requires the joints to be able to control torque directly. Admittance control is therefore well suited to industrial arms that only expose a position interface, have high gear ratios, and are inherently stiff — but it can oscillate against very stiff environments. ROS 2's ros2_controllers package includes an admittance_controller, which can be used for zero-force dragging.",
+   "example": "Mount a six-axis force-torque sensor on an industrial arm's end effector, turn on admittance control, and set the stiffness K to zero: pushing the end effector by hand moves the robot along with the push, and it settles to a stop under the damping term once released — one way of implementing hand-guided teaching.",
+   "related": [
+    "Impedance Control",
+    "Compliance Control",
+    "Six-Axis Force-Torque Sensor",
+    "Zero-Force Dragging",
+    "Force Control",
+    "Position Control"
+   ]
+  },
+  {
+   "key": "control-02#5",
+   "name_en": "Artificial Potential Field",
+   "aliases": [
+    "APF",
+    "Potential Field Method"
+   ],
+   "one_liner": "The goal generates an attractive force and obstacles generate repulsive forces; the robot moves along the combined force in real time.",
+   "explanation": "The artificial potential field method was introduced by Khatib in papers at ICRA 1985 and IJRR 1986 for real-time obstacle avoidance in robot arms and mobile robots, and was first implemented on a PUMA 560 arm. It treats space as a potential-energy map: potential is lowest at the goal, which produces an attractive force, and it's high near obstacles, which produces a repulsive force (usually only within a limited range). At every control cycle, the robot computes the direction of steepest potential decrease (the negative gradient, i.e. the combined-force direction) and takes a small step that way. Its advantages are very low computational cost, the ability to update in real time from sensor data, and the ability to handle moving obstacles; its main drawback is getting stuck in local minima — when the attractive and repulsive forces happen to cancel out, the robot stalls or oscillates in place — and it doesn't guarantee the shortest path. It's therefore mostly used as a local obstacle-avoidance layer alongside global planners like A* or RRT; later reactive methods such as Riemannian motion policies follow a similar idea.",
+   "example": "A mobile robot needs to pass through a narrow doorway, with a repulsive field on each side of the frame and an attractive field from the goal beyond it; if the doorway is narrow enough, the two side repulsive forces combined can cancel out the attraction, and the robot stalls in front of the door — a local minimum.",
+   "related": [
+    "Obstacle Avoidance",
+    "Path Planning",
+    "Rapidly-exploring Random Tree (RRT)",
+    "A* Search",
+    "Riemannian Motion Policy",
+    "Control Barrier Function"
+   ]
+  },
+  {
+   "key": "control-02#6",
+   "name_en": "Balance Control",
+   "aliases": [
+    "Balance Maintenance",
+    "Postural Balance Control"
+   ],
+   "one_liner": "Keeps a legged or humanoid robot from falling over while standing, walking, or being pushed.",
+   "explanation": "Balance control is the most fundamental capability of a legged robot: keeping the body from tipping over under gravity and ground-reaction forces. Traditional methods rely on simplified models: the zero moment point (ZMP, introduced by Vukobratović in 1968) is the point where the ground-reaction force produces no horizontal moment, and as long as it stays inside the support polygon (the region enclosed by the feet on the ground), the robot won't tip over the edge of its feet — early humanoids such as Honda's ASIMO planned their gaits this way; Pratt and colleagues introduced the capture point in 2006, answering where the foot should land after a push in order to stop. In response to a disturbance, robots can recover, roughly in order of increasing push strength, with ankle adjustments, hip swinging, or stepping. Today's humanoids and quadrupeds mostly use reinforcement learning: the robot is randomly pushed in simulation and the policy learns on its own to stay upright and to step to recover, then transfers to the real machine. In whole-body control, balance is usually the highest-priority task.",
+   "example": "A standing humanoid gets pushed from the side by a person: if the push is light, the ankles alone pull the center of mass back; if it's too strong for the ankles to handle, the robot steps sideways, planting its foot near the capture point to regain balance.",
+   "related": [
+    "Zero Moment Point",
+    "Capture Point",
+    "Push Recovery",
+    "Support Polygon",
+    "Linear Inverted Pendulum Model",
+    "Ankle Strategy / Hip Strategy / Stepping Strategy"
+   ]
+  },
+  {
+   "key": "control-02#7",
+   "name_en": "Behavior Tree",
+   "aliases": [
+    "BT",
+    "Behaviour Tree"
+   ],
+   "one_liner": "A tree-structured way of organizing actions and conditions to decide what a robot should do next.",
+   "explanation": "A behavior tree is a way of organizing how a robot or game character switches among multiple tasks. It first became popular in the game industry (Damian Isla's 2005 GDC talk on Halo 2's AI is often credited with popularizing it) before spreading into robotics. A root node periodically sends a 'tick' signal down the tree, and each node returns success, failure, or running. Leaves are action nodes (such as 'grab the cup') and condition nodes (such as 'is the cup in view'); a sequence node runs its children left to right and fails as soon as one fails; a fallback (selector) node tries its children left to right and succeeds as soon as one succeeds, which is well suited to writing 'try A first, and if that fails, do B as a fallback.' Compared with a finite state machine, it doesn't require writing a transition for every pair of states, and adding or removing subtrees is easier. ROS 2's Nav2 navigation framework uses a behavior tree to orchestrate navigation and recovery actions, commonly implemented with the C++ library BehaviorTree.CPP.",
+   "example": "A water-delivery robot's root node is a sequence: 'navigate to the table' → 'detect the cup' → a fallback node (try 'grab the cup,' and if that fails, 'reposition and retry the grab') → 'hand it to the user.' If some step returns running, the next tick simply continues that same step.",
+   "related": [
+    "Finite State Machine",
+    "BehaviorTree.CPP",
+    "Nav2",
+    "Task Planning",
+    "Atomic Skill",
+    "Failure Recovery"
+   ]
+  },
+  {
+   "key": "control-02#8",
+   "name_en": "Cascade Control",
+   "aliases": [
+    "Position/Velocity/Current Loops",
+    "Three-Loop Control",
+    "Cascaded Control"
+   ],
+   "one_liner": "Nests several feedback loops, where the outer loop's output becomes the inner loop's target — like position over velocity over current.",
+   "explanation": "Cascade control nests several feedback loops together, with the output of the outer loop serving as the target value for the inner loop. The most typical example, in a motor or joint module, is three loops: the outermost position loop compares the target angle against the encoder reading and outputs a target velocity; the middle velocity loop outputs a target current; and the innermost current loop regulates the winding voltage, with motor current roughly proportional to output torque. In the open-source driver ODrive, for example, the position loop is proportional control, while the velocity and current loops are both PI control; skipping the position loop gives velocity mode, and keeping only the current loop gives torque mode. The design principle is that each inner loop runs much faster than the loop outside it, so disturbances like a sudden load change or a power fluctuation get suppressed by the inner loop first, letting the outer loop treat the inner loop as close to an ideal actuator. What robotics calls position control, velocity control, and torque control essentially just names which of these three loops the command enters at; joint interfaces like MIT mode instead combine the PD terms for position and velocity with a feedforward torque into a single torque command.",
+   "example": "A joint module receives 'turn to 90°': the position loop computes 'turn at 2 rad/s,' the velocity loop computes 'need 3 A of current,' and the current loop adjusts voltage to hold the current at 3 A; if the load suddenly increases, the current and velocity loops absorb the disturbance first, and the position loop barely notices.",
+   "related": [
+    "PID Control",
+    "Position Control",
+    "Velocity Control",
+    "Torque Control",
+    "Field-Oriented Control",
+    "MIT Mode"
+   ]
+  },
+  {
+   "key": "control-02#9",
+   "name_en": "Collision Checking",
+   "aliases": [
+    "Collision Query"
+   ],
+   "one_liner": "During planning, querying whether a given pose or path segment would make the robot hit itself or the environment.",
+   "explanation": "Collision checking is a geometric query used in motion planning: given a set of joint angles (a configuration), forward kinematics first computes where every link is located in space, and then the query determines whether those geometric shapes intersect environmental obstacles or other parts of the robot itself; it can also return the closest distance and contact point. Sampling-based planners like RRT and PRM call it for every sampled point and every connecting edge, so it often accounts for a large share of total planning time. To keep it fast, a coarse pass is usually done first with bounding-volume hierarchies, followed by exact checks between convex shapes using an algorithm such as GJK. The open-source library FCL supports collision, distance, and continuous collision-detection queries; MoveIt checks both self-collision and environment collision, using an 'allowed collision matrix' to ignore link pairs that are always in contact by design. Three related but distinct concepts are worth separating: collision checking happens before execution, on the robot model; collision detection inside a physics engine is used for simulating contact; and collision detection for robot safety notices unexpected impacts during real-robot motion.",
+   "example": "A robot arm needs to place a cup inside a cabinet; RRT samples a set of joint angles and runs collision checking on it: the forearm's capsule shape intersects the cabinet door's box shape, so that sample is discarded; the straight-line connection between two valid samples also has to be checked point by point at small steps.",
+   "related": [
+    "Self-Collision Detection",
+    "Collision Detection (Physics Engine)",
+    "FCL",
+    "MoveIt",
+    "Sampling-Based Planning",
+    "Bounding Volume"
+   ]
+  },
+  {
+   "key": "control-02#10",
+   "name_en": "Collision Detection (Robot Safety)",
+   "aliases": [
+    "Collision Protection",
+    "Sensorless Collision Detection"
+   ],
+   "one_liner": "Detecting, in real time while the robot moves, that it has hit a person or object, and immediately stopping or yielding.",
+   "explanation": "Collision detection, in this safety sense, is a real-time robot function: the moment the body unexpectedly hits a person or object, the controller must notice as fast as possible and respond, such as stopping, backing off, or switching into a compliant mode. Most collaborative robots don't rely on skin-like sensors, using only proprioception instead: a dynamics model predicts the joint torque normal motion should require, that prediction is compared against the actual torque measured from motor current or joint torque sensors, and a difference beyond some threshold is flagged as a collision. The generalized momentum observer used by De Luca, Haddadin, and colleagues is the classic method; their 2017 survey in IEEE Transactions on Robotics breaks the process into detection, isolation (which link was hit), and identification (how large the impact force was). A manufacturer's 'collision sensitivity' setting is exactly this threshold: set it too low and the robot stops on false alarms; set it too high and a real collision hits harder before it's caught. Franka's libfranka, for example, lets each joint have separate 'contact' and 'collision' thresholds, and the robot stops moving once the collision threshold is exceeded.",
+   "example": "A collaborative arm's elbow bumps into a nearby worker's shoulder while carrying something; the joint's measured torque spikes above the model's prediction and crosses the threshold, triggering a stop — the worker feels only a gentle nudge — after which the error has to be cleared before operation can resume.",
+   "related": [
+    "Momentum Observer",
+    "Collision Reaction",
+    "Power and Force Limiting",
+    "Protective Stop",
+    "Joint Torque Sensor",
+    "ISO/TS 15066 Collaborative Robot Safety Standard"
+   ]
+  },
+  {
+   "key": "control-02#11",
+   "name_en": "Compliance Control",
+   "aliases": [
+    "Compliant Control",
+    "Active Compliance Control"
+   ],
+   "one_liner": "Control methods that let a robot yield to some set degree instead of fighting back when it contacts the environment.",
+   "explanation": "Compliance control is the umbrella term for methods that let a robot yield to external force by a designed amount when it contacts the environment. A purely position-controlled arm is very stiff: in a peg-in-hole task, even a small misalignment can jam the parts or crush them. Compliance comes in two forms. Passive compliance comes from the mechanical structure itself — such as a remote center compliance (RCC) device mounted on the wrist, or the spring inside a series elastic actuator — and needs no sensing or computation, but once its characteristics are built in, they can't be changed. Active compliance comes from measuring force or torque and feeding it back through control, commonly in the form of impedance control (making the robot behave like a mass-spring-damper system with tunable parameters), admittance control (correcting a position command after measuring force), or hybrid force/position control (controlling force along some directions and position along others), with parameters that can be adjusted per task. Hogan pointed out in 1985 that controlling position alone or force alone isn't enough — what should be controlled is the dynamic relationship between the two — and this is the theoretical basis for active compliance. Sanding, assembly, wiping, and human-robot collaboration all depend on it.",
+   "example": "During peg-in-hole assembly, the robot arm keeps position control along the insertion direction but lowers the stiffness in the perpendicular directions: if the peg catches the edge of the hole, it gets pushed sideways and slides on into the hole, instead of jamming or crushing the part.",
+   "related": [
+    "Impedance Control",
+    "Admittance Control",
+    "Hybrid Force/Position Control",
+    "Compliance",
+    "Remote Center Compliance (RCC)",
+    "Series Elastic Actuator"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,197 @@
+{"category": "control", "batch": 17, "terms": [
+{
+  "name_zh": "任务优先级",
+  "name_en": "Task Prioritization",
+  "abbr": "",
+  "aliases": ["多任务优先级控制", "Prioritized task control", "Task-priority control", "任务优先级冗余控制"],
+  "tier": 3,
+  "one_liner": "机器人同时做多件事时按重要性排序，低优先级任务不能干扰高优先级任务。",
+  "explanation": "冗余机器人（关节数多于任务需要的自由度，如 7 轴臂、人形机器人）常要同时满足多个目标：手到达目标、保持平衡、避开关节限位、姿态自然。任务优先级方法把这些任务排成层级：1987 年 Nakamura 等提出基于雅可比伪逆的任务优先级冗余控制，1991 年 Siciliano 与 Slotine 推广到任意多个任务。核心公式是 q̇ = J₁⁺ẋ₁ + (I − J₁⁺J₁)q̇₀：J₁ 是主任务的雅可比矩阵（把关节速度映射成任务速度），J₁⁺ 是它的伪逆，(I − J₁⁺J₁) 把次要任务想要的关节速度 q̇₀ 投影到主任务的零空间，保证它不改变主任务的结果。它和「加权求和」不同：加权法让各任务互相妥协，优先级法保证高层严格优先。现代全身控制多用分层二次规划实现，还能处理不等式约束。",
+  "example": "人形机器人伸手取杯子：第一优先级让质心留在支撑区内不摔倒，第二优先级让手到达杯子，第三优先级让关节靠近舒适姿态；手的目标和平衡冲突时，控制器牺牲一部分手的精度，而不动平衡。",
+  "related": ["零空间", "零空间控制", "运动学冗余", "雅可比伪逆", "分层二次规划", "全身控制"],
+  "sources": [
+    {"title": "Nakamura, Hanafusa, Yoshikawa: Task-Priority Based Redundancy Control of Robot Manipulators (IJRR 1987)", "url": "https://doi.org/10.1177/027836498700600201"},
+    {"title": "Siciliano, Slotine: A general framework for managing multiple tasks in highly redundant robotic systems (ICAR 1991)", "url": "https://doi.org/10.1109/icar.1991.240390"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "时间参数化",
+  "name_en": "Time Parameterization",
+  "abbr": "",
+  "aliases": ["轨迹时间参数化", "Trajectory Time Parameterization", "轨迹重定时", "Retiming"],
+  "tier": 3,
+  "one_liner": "给只有几何形状的路径配上时间表，决定每个点何时到达、速度多大。",
+  "explanation": "很多运动规划器（如 MoveIt 调用的 OMPL 采样式规划器）只输出一串没有时间的关节路点，也就是纯几何路径 q(s)，s 是从 0 到 1 的路径进度。时间参数化就是再找一个函数 s(t)，给每个路点配上时间戳、速度和加速度，机器人才能真正执行。由链式法则 q̇ = q′(s)·ṡ、q̈ = q′(s)·s̈ + q″(s)·ṡ²，关节速度、加速度的上限都能换算成对 ṡ、s̈ 的约束。它只决定「走多快」，不改「走哪条路」，这是它和轨迹优化的区别。常见算法有迭代抛物线法、时间最优轨迹生成 TOTG（Kunz 与 Stilman，RSS 2012）、TOPP-RA，以及限制加加速度的 Ruckig。MoveIt 当前默认用 TOTG，并提供 0–1 的速度、加速度缩放因子来整体放慢。",
+  "example": "用 MoveIt 规划机械臂从 A 到 B，OMPL 返回一串没有时间的关节路点；TOTG 按 joint_limits.yaml 里的速度、加速度上限给它们配上时间戳。把速度缩放因子设为 0.1，关节速度上限就按原来的 10% 计算。",
+  "related": ["时间最优路径参数化", "TOPP-RA", "Ruckig", "轨迹规划", "梯形速度曲线", "MoveIt"],
+  "sources": [
+    {"title": "MoveIt Documentation: Time Parameterization", "url": "https://moveit.picknik.ai/main/doc/examples/time_parameterization/time_parameterization_tutorial.html"},
+    {"title": "Kunz, Stilman: Time-Optimal Trajectory Generation for Path Following with Bounded Acceleration and Velocity (RSS 2012)", "url": "https://www.roboticsproceedings.org/rss08/p27.html"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "时间最优路径参数化",
+  "name_en": "Time-Optimal Path Parameterization",
+  "abbr": "TOPP",
+  "aliases": ["时间最优路径跟踪", "Time-Optimal Path Tracking", "最短时间轨迹规划"],
+  "tier": 3,
+  "one_liner": "路径固定不变，求在速度、加速度、力矩限制下走完它的最快时间表。",
+  "explanation": "TOPP 是时间参数化里追求「最快」的版本：给定一条几何路径 q(s)，求使总时间 T = ∫ds/ṡ 最小的 s(t)（ṡ 是沿路径前进的速度），同时满足关节速度、加速度、力矩等约束。经典做法是 1985 年 Bobrow、Dubowsky、Gibson 等提出的数值积分法：在 (s, ṡ) 相平面上交替按最大加速、最大减速积分，找到切换点，结果是「一会儿全力加速、一会儿全力减速」的 bang-bang 形态。它算得快，但切换点难找、实现容易出数值问题；另一类凸优化法稳但慢。2018 年 Hung Pham 与 Quang-Cuong Pham 在 IEEE T-RO 发表 TOPP-RA，在路径的离散点上逐个解小线性规划，求可达集与可控集，兼顾了速度和稳健，开源库 toppra 很常用。工业机械臂压缩节拍、快速搬运时常靠它。",
+  "example": "机械臂沿一条固定的焊缝路径移动：把路径离散成若干点，TOPP-RA 逐点算出最多能走多快，直线段贴着速度上限走，拐弯处因为加速度约束自动减速。",
+  "related": ["时间参数化", "TOPP-RA", "轨迹规划", "梯形速度曲线", "凸优化", "关节限位"],
+  "sources": [
+    {"title": "Pham, Pham: A New Approach to Time-Optimal Path Parameterization based on Reachability Analysis (arXiv:1707.07239, IEEE T-RO 2018)", "url": "https://arxiv.org/abs/1707.07239"},
+    {"title": "Bobrow, Dubowsky, Gibson: Time-Optimal Control of Robotic Manipulators Along Specified Paths (IJRR 1985)", "url": "https://doi.org/10.1177/027836498500400301"},
+    {"title": "toppra: Time-Optimal Path Parameterization library (GitHub)", "url": "https://github.com/hungpham2511/toppra"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "时间弹性带",
+  "name_en": "Timed Elastic Band",
+  "abbr": "TEB",
+  "aliases": ["teb_local_planner", "TEB 局部规划器", "时变弹性带"],
+  "tier": 3,
+  "one_liner": "把局部轨迹当作带时间间隔的「橡皮筋」实时优化的移动机器人局部规划方法。",
+  "explanation": "TEB 由德国多特蒙德工业大学的 Christoph Rösmann 等在 2012 年提出，开源实现 teb_local_planner 是 ROS 导航栈里常用的局部规划插件。它继承了 1993 年 Quinlan 与 Khatib 的「弹性带」思路：把全局路径看成一条会被障碍物推开、又会自己拉紧的橡皮筋。TEB 的改动是在相邻位姿之间加入时间间隔 ΔT，于是能同时优化总耗时、与障碍物的距离，以及速度、加速度、最小转弯半径等运动学与动力学约束。每项目标只牵涉相邻几个位姿，问题很稀疏，用 g2o 图优化库可以实时求解。后续版本会在拓扑不同的多条路线（从障碍左边绕或右边绕）上并行优化再择优，并支持阿克曼转向的类车机器人。和动态窗口法只采样下一时刻速度不同，TEB 显式规划一整段带时间的轨迹，在窄通道和类车底盘上更好用。",
+  "example": "阿克曼底盘的巡检小车在走廊里遇到障碍：TEB 同时优化「从左绕」和「从右绕」两条候选轨迹，选出耗时更短且满足最小转弯半径的那条，每个控制周期再按新的代价地图重新优化。",
+  "related": ["全局规划与局部规划", "动态窗口法", "代价地图", "轨迹优化", "阿克曼底盘", "Nav2"],
+  "sources": [
+    {"title": "teb_local_planner README（rst-tu-dortmund, GitHub）", "url": "https://github.com/rst-tu-dortmund/teb_local_planner"},
+    {"title": "Quinlan, Khatib: Elastic bands: connecting path planning and control (ICRA 1993)", "url": "https://doi.org/10.1109/robot.1993.291936"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "TrajOpt",
+  "name_en": "TrajOpt (Sequential Convex Trajectory Optimization)",
+  "abbr": "",
+  "aliases": ["序列凸优化轨迹规划", "trajopt_ros", "Tesseract TrajOpt"],
+  "tier": 3,
+  "one_liner": "用序列凸优化求局部最优、无碰撞机器人轨迹的运动规划方法和开源库。",
+  "explanation": "TrajOpt 由 UC Berkeley 的 John Schulman、Pieter Abbeel 等在 RSS 2013 提出，2014 年扩展版发表于 IJRR。它把运动规划写成轨迹优化：决策变量是一串关节路点，目标是路径短而平滑，约束是关节限位和不碰撞。碰撞约束是非凸的，TrajOpt 用序列凸优化处理：每轮在当前轨迹附近把代价和约束线性化成凸的二次规划，在信赖域里求解，反复迭代。碰撞用有符号距离（穿透时为负）加铰链惩罚表示，惩罚不够就在外层循环加大系数；它还把相邻两个时刻机器人形状的凸包拿来检查，保证连续时间内也不会「穿过」薄障碍。论文中它比 OMPL 的采样式规划器和 CHOMP 更快、解出的问题更多。缺点是只保证局部最优，初始轨迹太差时可能失败。现在 ROS-Industrial 旗下的 Tesseract 项目维护着它的 C++ 版本。",
+  "example": "让 7 轴机械臂把手伸进书架隔层取物：先给一条关节空间直线插值的初始轨迹（会穿过隔板），TrajOpt 迭代把碰撞的路点推离隔板，同时保持轨迹平滑。",
+  "related": ["轨迹优化", "序列二次规划", "CHOMP", "STOMP", "碰撞检查", "OMPL"],
+  "sources": [
+    {"title": "Schulman et al.: Finding Locally Optimal, Collision-Free Trajectories with Sequential Convex Optimization (RSS 2013)", "url": "https://www.roboticsproceedings.org/rss09/p31.html"},
+    {"title": "TrajOpt documentation (UC Berkeley RLL)", "url": "https://rll.berkeley.edu/trajopt/doc/sphinx_build/html/"},
+    {"title": "tesseract-robotics/trajopt (GitHub)", "url": "https://github.com/tesseract-robotics/trajopt"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "梯形速度曲线",
+  "name_en": "Trapezoidal Velocity Profile",
+  "abbr": "",
+  "aliases": ["梯形加减速", "梯形速度规划", "T 型速度曲线", "Trapezoidal Profile"],
+  "tier": 3,
+  "one_liner": "匀加速、匀速、匀减速三段组成的速度规划，速度-时间图呈梯形。",
+  "explanation": "梯形速度曲线是电机和机械臂点到点运动里最基础的速度规划：先以恒定加速度 a 从 0 加速到最大速度 v_max，匀速巡航，再以同样大小的加速度减速到 0，速度-时间图像是梯形。加速段用时 t_a = v_max / a，走过 v_max²/(2a) 的距离；如果总距离 L 小于 v_max²/a，来不及加到最大速度，就退化成三角形，峰值速度为 √(aL)。它计算简单，工业机械臂的 MoveJ、MoveL 等指令和许多驱动器都用它。缺点是加速度在各段交界处突变，加加速度（jerk，加速度的变化率）理论上无穷大，会激起振动和冲击；要求更平稳时改用 S 型速度曲线或最小加加速度轨迹。多关节同步运动时，通常先算最慢关节需要的时间，再让其他关节按比例放慢，保证同时到达。",
+  "example": "让一个直线轴移动 L = 1 m，限速 v_max = 0.5 m/s、加速度 a = 1 m/s²：加速 0.5 s（走 0.125 m），匀速 1.5 s（走 0.75 m），减速 0.5 s（走 0.125 m），共 2.5 s。",
+  "related": ["S 型速度曲线", "最小加加速度轨迹", "加加速度", "关节运动与直线运动（MoveJ / MoveL）", "时间参数化", "轨迹插值"],
+  "sources": [
+    {"title": "MATLAB Robotics System Toolbox: trapveltraj（Generate trajectories with trapezoidal velocity profiles）", "url": "https://www.mathworks.com/help/robotics/ref/trapveltraj.html"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "变阻抗控制",
+  "name_en": "Variable Impedance Control",
+  "abbr": "VIC",
+  "aliases": ["可变阻抗控制", "时变阻抗控制"],
+  "tier": 3,
+  "one_liner": "让阻抗控制的刚度、阻尼随任务阶段或感知实时变化，该硬时硬、该软时软。",
+  "explanation": "阻抗控制让机器人末端表现得像弹簧加阻尼器：F = K(x_d − x) + D(ẋ_d − ẋ)，x_d 是期望位置，x 是实际位置，K 是刚度（越大越「硬」），D 是阻尼。普通阻抗控制的 K、D 固定；变阻抗控制让它们随时间、任务阶段或力觉反馈改变，思路来自人类会主动调节手臂刚度。这样能兼顾精度和安全：自由空间里调硬以准确跟踪，接触时调软以免顶坏物体。难点是刚度随时间变化可能向系统注入能量、破坏稳定，常用无源性理论和「能量罐」加以约束。K、D 可以手工设计、从示教中学，也可以作为强化学习的动作输出：2019 年的 VICES 让策略同时输出末端运动和阻抗增益，在擦拭、开门等接触丰富任务上比固定阻抗更省样本、更安全。Abu-Dakka 与 Saveriano 2020 年写过系统综述。",
+  "example": "轴孔装配：机械臂搬运销钉时用高刚度快速定位；销钉碰到孔口后调低横向刚度，让它顺着倒角滑进孔里，插入方向保持较高刚度继续推进。",
+  "related": ["阻抗控制", "柔顺控制", "导纳控制", "笛卡尔阻抗控制", "力感知策略 / 柔顺策略学习", "轴孔装配"],
+  "sources": [
+    {"title": "Abu-Dakka, Saveriano: Variable Impedance Control and Learning—A Review (Frontiers in Robotics and AI, 2020)", "url": "https://www.frontiersin.org/articles/10.3389/frobt.2020.590681/full"},
+    {"title": "Martín-Martín et al.: Variable Impedance Control in End-Effector Space: An Action Space for RL in Contact-Rich Tasks (arXiv:1906.08880)", "url": "https://arxiv.org/abs/1906.08880"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "速度障碍法 / ORCA",
+  "name_en": "Velocity Obstacles / Optimal Reciprocal Collision Avoidance",
+  "abbr": "",
+  "aliases": ["速度障碍", "Velocity Obstacle", "VO", "互惠速度障碍", "RVO", "ORCA", "最优互惠避碰", "RVO2"],
+  "tier": 3,
+  "one_liner": "在速度空间里划出「会撞」的速度集合，选一个不撞且最接近期望的速度。",
+  "explanation": "速度障碍（VO）由 Fiorini 与 Shiller 提出，1998 年发表于 IJRR：假设障碍物保持当前速度，把本机器人所有会在未来某时刻与它相撞的速度收集起来，在速度空间里形成一个锥形区域，只要选锥外的速度就不会撞。多个机器人都这么做时，双方会同时躲开、又同时回来，来回摆动。2008 年 van den Berg 等提出互惠速度障碍（RVO），假设对方也会躲；之后 van den Berg、Guy、Lin、Manocha 提出 ORCA（最优互惠避碰，论文 2011 年正式出版），规定每一对智能体各承担一半避让责任，把每个邻居的约束写成速度空间里的一个半平面，再解一个低维线性规划，选出离期望速度最近的可行速度。它不需要通信，能实时处理上千个智能体，开源库 RVO2 被用于人群仿真、游戏和多机器人导航。它只考虑速度和几何形状，不处理复杂动力学。",
+  "example": "仓库里几台 AMR 在交叉口相遇：每台各自按 ORCA 计算，对每个邻居只让出一半的避让量，结果都略微偏转、减速后错开通过，不需要中央调度。",
+  "related": ["避障", "社交导航", "多智能体路径规划", "多机器人协作", "动态窗口法", "自主移动机器人"],
+  "sources": [
+    {"title": "Fiorini, Shiller: Motion Planning in Dynamic Environments Using Velocity Obstacles (IJRR 1998)", "url": "https://doi.org/10.1177/027836499801700706"},
+    {"title": "ORCA: Optimal Reciprocal Collision Avoidance（UNC GAMMA 项目页）", "url": "https://gamma.cs.unc.edu/ORCA/"},
+    {"title": "RVO2 Library: Reciprocal Collision Avoidance for Real-Time Multi-Agent Simulation", "url": "https://gamma.cs.unc.edu/RVO2/"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "虚拟模型控制",
+  "name_en": "Virtual Model Control",
+  "abbr": "VMC",
+  "aliases": ["Virtual Model Control", "虚拟弹簧阻尼控制"],
+  "tier": 3,
+  "one_liner": "在机器人身上假想挂上弹簧阻尼器，把它们产生的力换算成关节力矩来控制。",
+  "explanation": "虚拟模型控制由 MIT 腿足实验室的 Jerry Pratt 等提出，2001 年发表于 IJRR，最早用于平面双足机器人行走。做法是：在机器人身体和某个参考点之间假想挂上弹簧、阻尼器等「虚拟构件」，比如在躯干上挂一个把它拉到目标高度的弹簧，按弹簧阻尼公式算出虚拟力 F，再用雅可比转置 τ = Jᵀ F 换算成支撑腿各关节的力矩 τ（J 是关节速度到身体速度的映射矩阵）。它不需要完整的动力学模型，也不用解逆运动学，参数有直观的物理含义，调起来像调弹簧软硬。论文里的机器人只靠脚底接触检测，就能在事先不知道坡度的情况下走过斜坡和起伏地面。它忽略了腿本身的惯性，属于准静态近似，动作越激烈误差越大。后来也常用于四足、轮足机器人的腿部力控。",
+  "example": "双足机器人在支撑相：躯干上挂一个竖直虚拟弹簧阻尼器维持身高，一个扭簧维持躯干直立，一个水平阻尼器控制前进速度；三个虚拟力经 τ = Jᵀ F 换成髋、膝、踝的力矩。",
+  "related": ["雅可比转置法", "阻抗控制", "力矩控制", "双足行走", "全身控制", "Raibert 启发式"],
+  "sources": [
+    {"title": "Pratt, Chew, Torres, Dilworth, Pratt: Virtual Model Control: An Intuitive Approach for Bipedal Locomotion (IJRR 2001)", "url": "https://doi.org/10.1177/02783640122067309"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "视觉预见 / 基于学习模型的规划",
+  "name_en": "Visual Foresight / Planning with Learned (World) Models",
+  "abbr": "",
+  "aliases": ["Visual Foresight", "Visual MPC", "视觉模型预测控制", "Planning with Learned World Models"],
+  "tier": 3,
+  "one_liner": "先学会预测「做这个动作后画面会变成什么样」，再在想象里挑最好的动作。",
+  "explanation": "视觉预见由 UC Berkeley 的 Chelsea Finn 与 Sergey Levine 在 ICRA 2017 提出（Deep Visual Foresight），2018 年 Ebert、Finn 等整理成完整框架。它分两步：先用机器人自主推动物体收集的无标注数据，训练一个以动作为条件的视频预测模型，输入当前画面和一串候选动作，输出未来几帧画面；再做视觉模型预测控制（MPC）：采样大量候选动作序列（常用交叉熵方法迭代优化），让模型「想象」结果，按离目标有多近打分，只执行最优序列的第一步，然后重新规划。目标可以是「把某个像素移到某处」、一张目标图片或一个分类器。它不需要奖励函数和人工标注，能用在没见过的物体上。这就是今天「世界模型 + 规划」路线的前身：DINO-WM、V-JEPA 2-AC 等把预测从像素搬到预训练特征空间，仍用 MPC 选动作。",
+  "example": "在机器人相机画面上点出桌面某个物体上的一个像素，再指定它该去的位置；机器人在想象中试推大量动作序列，选出预测中把该像素推得最近的那组，执行一步后重新规划。",
+  "related": ["世界模型", "视频预测模型", "模型预测控制", "交叉熵方法", "DINO-WM", "V-JEPA 2"],
+  "sources": [
+    {"title": "Finn, Levine: Deep Visual Foresight for Planning Robot Motion (arXiv:1610.00696, ICRA 2017)", "url": "https://arxiv.org/abs/1610.00696"},
+    {"title": "Ebert et al.: Visual Foresight: Model-Based Deep RL for Vision-Based Robotic Control (arXiv:1812.00568)", "url": "https://arxiv.org/abs/1812.00568"},
+    {"title": "DINO-WM: World Models on Pre-trained Visual Features enable Zero-shot Planning (arXiv:2411.04983)", "url": "https://arxiv.org/abs/2411.04983"}
+  ],
+  "as_of": "2025-06"
+},
+{
+  "name_zh": "看门狗",
+  "name_en": "Watchdog",
+  "abbr": "",
+  "aliases": ["通信超时保护", "Watchdog timer", "WDT", "看门狗定时器"],
+  "tier": 3,
+  "one_liner": "要求程序定时「报平安」，超时没收到就判定出错，让机器人进入安全状态。",
+  "explanation": "看门狗原本是嵌入式系统里的硬件或软件定时器：程序正常运行时要周期性地「喂狗」（kick，重置计时），一旦程序卡死、崩溃没能按时喂狗，计时器超时就触发纠正动作，通常是把输出置于安全状态（关电机、断高压）再重启。在机器人里，它最常见的用途是通信超时保护：上位机或策略进程必须以不低于某个频率发送指令，超时就刹停、进入阻尼模式或保护性停止，防止网络断开、程序崩溃时机器人按最后一条指令继续动。例如 ur_rtde 库提供 setWatchdog 和 kickWatchdog 接口，默认要求至少 10 Hz 的更新，否则关闭控制；ROS 2 的差速底盘控制器 diff_drive_controller 有 cmd_vel_timeout 参数，默认 0.5 秒收不到新速度指令就视为过期。把学习到的策略部署到真机时，底层一般都要配好看门狗。",
+  "example": "用笔记本通过 Wi-Fi 遥控移动底盘，信号突然中断；底盘控制器 0.5 秒没收到新的 cmd_vel，旧指令被判为过期，底盘停下，而不是继续按最后的前进速度走。",
+  "related": ["急停", "保护性停止", "阻尼模式", "实时控制", "控制延迟", "功能安全"],
+  "sources": [
+    {"title": "Wikipedia: Watchdog timer", "url": "https://en.wikipedia.org/wiki/Watchdog_timer"},
+    {"title": "ur_rtde: rtde_control_interface.h（setWatchdog / kickWatchdog）", "url": "https://gitlab.com/sdurobotics/ur_rtde/-/raw/master/include/ur_rtde/rtde_control_interface.h"},
+    {"title": "ros2_controllers: diff_drive_controller（cmd_vel_timeout）", "url": "https://control.ros.org/rolling/doc/ros2_controllers/diff_drive_controller/doc/userdoc.html"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "ZMP 预观控制",
+  "name_en": "ZMP Preview Control",
+  "abbr": "",
+  "aliases": ["预见控制", "预观控制", "Kajita 预观控制", "Preview control of ZMP"],
+  "tier": 3,
+  "one_liner": "参考未来一段 ZMP 目标轨迹，提前算好质心怎么动，生成双足稳定步态。",
+  "explanation": "ZMP 预观控制由日本产业技术综合研究所（AIST）的梶田秀司（Shuuji Kajita）等在 ICRA 2003 提出，是人形机器人行走模式生成的经典方法。零力矩点（ZMP）是地面反作用力的合力矩水平分量为零的点，它留在支撑多边形（脚底接触区域）内，脚就不会翻。先按落脚点排出 ZMP 参考轨迹，问题变成：质心怎么走，实际 ZMP 才能跟上参考？论文用「小车-桌子模型」，ZMP 与质心满足 p = x − (z_c/g)·ẍ，p 是 ZMP 位置，x 是质心水平位置，z_c 是恒定的质心高度，g 是重力加速度。质心加速度只能靠 ZMP 与质心的偏差产生，质心必须提前动起来，只看当前参考来不及，所以要「预观」。控制器以质心加加速度为输入，最小化 ZMP 跟踪误差，并对预观窗口内的未来参考 ZMP 加权前馈；增益可离线算好，在线计算很轻。后来的 ZMP 模型预测控制在此基础上加入了约束。",
+  "example": "双足机器人走四步：先按落脚点排出阶梯状的 ZMP 参考（每步跳到新支撑脚中心），预观控制器看到下一级台阶，让质心提前向下一只支撑脚平滑侧移，实际 ZMP 始终留在脚底范围内。",
+  "related": ["零力矩点", "小车-桌子模型", "线性倒立摆模型", "步态规划", "模型预测控制", "支撑多边形"],
+  "sources": [
+    {"title": "Kajita et al.: Biped walking pattern generation by using preview control of zero-moment point (ICRA 2003)", "url": "https://doi.org/10.1109/robot.2003.1241826"},
+    {"title": "Stéphane Caron: Linear inverted pendulum model", "url": "https://scaron.info/robotics/linear-inverted-pendulum-model.html"}
+  ],
+  "as_of": ""
+}
+]}

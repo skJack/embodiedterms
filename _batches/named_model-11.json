@@ -1,0 +1,200 @@
+{
+  "category": "named_model",
+  "batch": 11,
+  "terms": [
+    {
+      "name_zh": "DYNA-1",
+      "name_en": "DYNA-1 (Dynamism v1, Dyna Robotics)",
+      "abbr": "",
+      "aliases": ["Dyna-1", "Dynamism v1", "DYNA-1 基座模型"],
+      "tier": 3,
+      "one_liner": "Dyna Robotics 2025 年发布的第一代机器人基础模型，主打长时间自主叠餐巾。",
+      "explanation": "DYNA-1 是美国创业公司 Dyna Robotics 于 2025 年 6 月发布的第一个具身基础模型，官方全称 Dynamism v1。它主打商业场景里的连续作业：在餐厅叠餐巾任务上，官方报告 24 小时无人干预自主运行、成功率 99.4%，共叠 850 多条，速度约为人类的 60%。核心做法是把自研的奖励模型（给机器人表现打分的模型）放进训练回路，让机器人自己探索、自己纠错，并在部署中持续产生新数据。2025 年 11 月官方又称，其预训练基座不做后训练就能在没见过的环境里叠衣服、分拣包裹，用约 1 小时演示即可学会新任务。模型架构细节未公开。",
+      "example": "官方博客记录：第 1 周机器人只能连续叠 5 分钟餐巾，到第 6 周已能不间断跑满 24 小时；DYNA-1 随后在付费客户处部署叠餐巾。",
+      "related": ["Dyna Robotics", "Dyna DYNA-2", "奖励模型", "真机强化学习", "数据飞轮", "具身大模型"],
+      "sources": [
+        {"title": "Dynamism v1 (DYNA-1) Model: A Breakthrough in Performance and Production-Ready Embodied AI (Dyna Robotics, 2025-06)", "url": "https://www.dyna.co/research/dyna-1"},
+        {"title": "DYNA-1 Pre-Training: Zero-Shot Dexterity Is Here (Dyna Robotics, 2025-11)", "url": "https://www.dyna.co/research/pre-training"}
+      ],
+      "as_of": "2025-11"
+    },
+    {
+      "name_zh": "Dyna DYNA-2",
+      "name_en": "DYNA-2 (Dyna Robotics world-action model pre-trained on 1M hours of egocentric human video)",
+      "abbr": "",
+      "aliases": ["Dyna-2", "DYNA-2"],
+      "tier": 3,
+      "one_liner": "Dyna Robotics 2026 年的世界动作模型，用百万小时人类第一人称视频预训练。",
+      "explanation": "DYNA-2 是 Dyna Robotics 于 2026 年 8 月发布的第二代模型，属于世界动作模型（同时预测未来画面和未来动作）。它以视频扩散模型为骨干，用混合 Transformer 让视频流和动作流分开处理，按流匹配训练，可联合或单独去噪未来视频与动作。预训练数据是 100 多万小时头戴式第一人称人类视频，内容是做饭、收拾、叠衣、装配等日常操作。官方称观察到从人类数据到机器人的缩放规律：人类预训练数据从 1 千小时逐档加到 100 万小时，14 个真机任务的平均归一化表现（相对可达上限）依次为 20%、28%、45%、53%。在官方分层系统里它是 System 1，上接负责推理的 DYNA-VLM。",
+      "example": "官方数据：叠餐巾时 DYNA-1 每小时约 35 条、合格率 75%，DYNA-2 提到每小时 95 条、合格率 93%；客户鼎泰丰正把 Dyna 的机器人从试点门店推广到旗下门店和中央厨房。",
+      "related": ["DYNA-1", "世界动作模型", "第一人称视频", "人类视频预训练", "缩放定律", "Dyna Robotics"],
+      "sources": [
+        {"title": "Dyna-2: A 1-Million-Hour Scaling Law for World-Action Models (Dyna Robotics, 2026-08)", "url": "https://www.dyna.co/dyna-2"},
+        {"title": "Not Just a Model, But a Product (Dyna Robotics, 2026-08)", "url": "https://www.dyna.co/research/scaling-customer-deployments"},
+        {"title": "Dyna Robotics 官网", "url": "https://www.dyna.co/"}
+      ],
+      "as_of": "2026-08"
+    },
+    {
+      "name_zh": "EgoScale",
+      "name_en": "EgoScale: Scaling Dexterous Manipulation with Diverse Egocentric Human Data",
+      "abbr": "",
+      "aliases": [],
+      "tier": 3,
+      "one_liner": "英伟达 2026 年的工作：用 2 万小时第一人称人类视频预训练灵巧手 VLA。",
+      "explanation": "EgoScale 是英伟达 GEAR 实验室联合 UC 伯克利、马里兰大学于 2026 年 2 月发布的论文，想回答人类视频能否大规模教会机器人用多指灵巧手干活。做法分三步：先从 20,854 小时带动作标注的第一人称人类视频里提取手腕运动，并把人手姿态重定向到 22 自由度 Sharpa 灵巧手的关节空间，预训练一个结构与 GR00T N1 相近的流匹配 VLA；再用少量「人和机器人在相同场景做相同动作」的对齐数据做中训练；最后在具体任务上后训练。论文发现人类数据量与验证损失呈对数线性的缩放关系，相比不用人类预训练，平均成功率提升 54%。",
+      "example": "在装了 22 自由度 Sharpa 灵巧手的星海图 R1 Pro 上，只给 1 条机器人演示，叠衬衫的平均成功率最高达到 88%；换到三指手的宇树 G1 上，人类预训练仍带来 30% 以上的绝对提升。",
+      "related": ["第一人称视频", "人类视频预训练", "灵巧操作", "缩放定律", "中训练", "GR00T N1 系列"],
+      "sources": [
+        {"title": "EgoScale: Scaling Dexterous Manipulation with Diverse Egocentric Human Data (arXiv 2602.16710)", "url": "https://arxiv.org/abs/2602.16710"},
+        {"title": "EgoScale 项目页（NVIDIA GEAR）", "url": "https://research.nvidia.com/labs/gear/egoscale/"}
+      ],
+      "as_of": "2026-02"
+    },
+    {
+      "name_zh": "EgoVLA",
+      "name_en": "EgoVLA: Learning Vision-Language-Action Models from Egocentric Human Videos",
+      "abbr": "EgoVLA",
+      "aliases": [],
+      "tier": 3,
+      "one_liner": "用第一人称人类视频预训练的 VLA，把人手动作换算成人形机器人动作。",
+      "explanation": "EgoVLA 是 UC 圣地亚哥联合 UIUC、MIT、英伟达等于 2025 年 7 月发布的论文。动机是真机数据离不开机器人硬件、规模有限，而人类第一人称视频量大、场景丰富。它以 NVILA-2B 视觉语言模型为骨干，先在约 50 万个人类视频图像-动作对上学习预测人的手腕位姿和 MANO 手部参数（一种参数化人手模型）；再把机器人手也换算到同一个 MANO 动作空间，用少量机器人演示微调。部署时手腕位姿经逆运动学转成手臂关节角，手指由一个小 MLP 映射到灵巧手关节。",
+      "example": "在作者基于 Isaac Lab 搭的 Ego Humanoid Manipulation Benchmark 里（仿真中的宇树 H1 加因时灵巧手，共 12 个任务），用人类视频预训练过的 EgoVLA 明显好于只用机器人数据训练的基线，长程任务和精细操作任务提升尤其大。",
+      "related": ["第一人称视频", "人类视频预训练", "MANO 手部模型", "动作重定向", "视觉-语言-动作模型", "EgoScale"],
+      "sources": [
+        {"title": "EgoVLA: Learning Vision-Language-Action Models from Egocentric Human Videos (arXiv 2507.12440)", "url": "https://arxiv.org/abs/2507.12440"},
+        {"title": "EgoVLA 项目页", "url": "https://rchalyang.github.io/EgoVLA/"}
+      ],
+      "as_of": "2025-07"
+    },
+    {
+      "name_zh": "Embodied-R1",
+      "name_en": "Embodied-R1: Reinforced Embodied Reasoning for General Robotic Manipulation",
+      "abbr": "",
+      "aliases": ["Embodied R1"],
+      "tier": 3,
+      "one_liner": "天津大学的 3B 具身推理模型，以「指向」为中间表示，用强化微调训练。",
+      "explanation": "Embodied-R1 是天津大学团队 2025 年 8 月发布的工作，已被 ICLR 2026 接收。作者把「看得懂却做不到」称为 seeing-to-doing gap，提出用「指向」（在图上输出点、区域或一串轨迹点）作为与机器人本体无关的中间表示，定义了指代定位、区域定位、功能部位定位和视觉轨迹生成四种能力。模型基于 Qwen2.5-VL-3B，在自建的 Embodied-Points-200K 数据上做两阶段强化微调：用 GRPO 算法，按任务设计可自动判分的奖励。模型输出的点和轨迹再交给运动规划等底层模块去执行。权重和数据集已开源。",
+      "example": "不做任何任务专门微调，Embodied-R1 在 SimplerEnv 仿真中成功率 56.2%，在 8 个 xArm 真机任务上达到 87.5%，论文称比强基线提升 62%。",
+      "related": ["具身推理模型", "指向（点预测）", "强化学习微调", "组相对策略优化", "中间表示", "可供性"],
+      "sources": [
+        {"title": "Embodied-R1: Reinforced Embodied Reasoning for General Robotic Manipulation (arXiv 2508.13998)", "url": "https://arxiv.org/abs/2508.13998"},
+        {"title": "Embodied-R1 GitHub 仓库", "url": "https://github.com/pickxiguapi/Embodied-R1"}
+      ],
+      "as_of": "2026-03"
+    },
+    {
+      "name_zh": "EmbodiedGPT",
+      "name_en": "EmbodiedGPT: Vision-Language Pre-Training via Embodied Chain of Thought",
+      "abbr": "EmbodiedGPT",
+      "aliases": [],
+      "tier": 3,
+      "one_liner": "2023 年港大与上海 AI Lab 的具身多模态模型，用思维链生成分步计划。",
+      "explanation": "EmbodiedGPT 由香港大学、上海人工智能实验室等于 2023 年 5 月发布，发表于 NeurIPS 2023，是大模型用于具身规划的早期代表作之一。作者从 Ego4D 第一人称视频里挑选片段，用思维链的形式标注成一步步的子目标，构建了规划数据集 EgoCOT；再用前缀微调把一个 7B 语言模型适配到这类数据上，让它看图后输出分步计划。关键设计是把语言模型生成的规划当作查询，从图像中提取与任务相关的特征交给底层策略网络，把高层规划和低层控制连成闭环。",
+      "example": "在 Franka Kitchen 和 Meta-World 仿真控制任务上，EmbodiedGPT 的成功率分别是用 Ego4D 微调的 BLIP-2 基线的 1.6 倍和 1.3 倍。",
+      "related": ["具身思维链", "思维链", "第一人称视频", "Ego4D 数据集", "大模型任务规划", "Franka Kitchen"],
+      "sources": [
+        {"title": "EmbodiedGPT: Vision-Language Pre-Training via Embodied Chain of Thought (arXiv 2305.15021)", "url": "https://arxiv.org/abs/2305.15021"},
+        {"title": "NeurIPS 2023 论文页", "url": "https://papers.nips.cc/paper_files/paper/2023/hash/4ec43957eda1126ad4887995d05fae3b-Abstract-Conference.html"}
+      ],
+      "as_of": "2023-12"
+    },
+    {
+      "name_zh": "端到端视觉运动策略（引导策略搜索）",
+      "name_en": "End-to-End Training of Deep Visuomotor Policies (Guided Policy Search)",
+      "abbr": "GPS",
+      "aliases": ["引导策略搜索", "Guided Policy Search", "Levine et al. 2016"],
+      "tier": 3,
+      "one_liner": "伯克利 2015 年的代表作：用卷积网络直接从相机图像输出机械臂关节力矩。",
+      "explanation": "这篇论文由 UC 伯克利的 Sergey Levine、Chelsea Finn、Trevor Darrell 和 Pieter Abbeel 于 2015 年 4 月放出，2016 年发表于 JMLR。当时机器人多把感知和控制分开设计，论文要验证两者放进一个网络联合训练是否更好。策略是约 9.2 万参数的卷积网络，输入单目图像和关节状态，以 20Hz 输出 7 自由度手臂的关节力矩。训练用引导策略搜索：训练时已知物体位置，先用轨迹优化找出好动作，再用监督学习让只看图像的策略去模仿，把强化学习转成监督学习。文中提出的空间 Softmax 层后来被许多视觉运动策略沿用。",
+      "example": "PR2 机器人学会了把衣架挂上衣杆、把积木塞进形状分类盒、用玩具锤的羊角卡住钉子、拧瓶盖，目标位置全靠摄像头判断；每个策略总训练 3 到 4 小时，真机执行只占约 15 分钟。",
+      "related": ["视觉运动策略", "端到端", "空间 Softmax", "轨迹优化", "强化学习", "模仿学习"],
+      "sources": [
+        {"title": "End-to-End Training of Deep Visuomotor Policies (arXiv 1504.00702)", "url": "https://arxiv.org/abs/1504.00702"},
+        {"title": "JMLR 17(39):1-40, 2016", "url": "https://www.jmlr.org/papers/v17/15-522.html"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "EnerVerse",
+      "name_en": "EnerVerse: Envisioning Embodied Future Space for Robotics Manipulation",
+      "abbr": "",
+      "aliases": ["EnerVerse-A", "EnerVerse-D"],
+      "tier": 3,
+      "one_liner": "智元等提出的生成式机器人模型：先用视频扩散预测未来多视角画面，再出动作。",
+      "explanation": "EnerVerse 由智元机器人与上海人工智能实验室等团队于 2025 年 1 月发布，后被 NeurIPS 2025 接收。思路是先预测未来、再决定动作：用自回归视频扩散模型根据指令逐段生成未来的「具身空间」画面，并用稀疏上下文记忆支撑长任务。为表达三维场景，作者提出 Free Anchor Views（自由锚定视角），即按任务灵活选取的多视角视频表示。EnerVerse-A 是接在生成模型后的策略头，把预测出的 4D 表示转成机器人动作；EnerVerse-D 是把生成模型与 4D 高斯泼溅结合的数据引擎，用来自动造数据、缩小仿真与真实的差距。",
+      "example": "给出一条操作指令后，模型先生成几个视角下机器人完成任务的未来视频片段，策略头再据此输出动作；论文报告约 280 毫秒可输出一段 8 步动作。",
+      "related": ["视频预测模型", "世界模型", "智元 Genie Envisioner 世界模型", "3D高斯泼溅", "多视角", "视频预测策略"],
+      "sources": [
+        {"title": "EnerVerse: Envisioning Embodied Future Space for Robotics Manipulation (arXiv 2501.01895)", "url": "https://arxiv.org/abs/2501.01895"},
+        {"title": "EnerVerse 项目页", "url": "https://sites.google.com/view/enerverse"}
+      ],
+      "as_of": "2025-11"
+    },
+    {
+      "name_zh": "EO-1（EmbodiedOneVision）",
+      "name_en": "EO-1: An Open Unified Embodied Foundation Model for General Robot Control",
+      "abbr": "EO-1",
+      "aliases": ["EmbodiedOneVision", "EO1", "EO-Robotics"],
+      "tier": 3,
+      "one_liner": "上海 AI Lab 开源的 3B 统一具身模型，同一网络既做推理问答又输出动作。",
+      "explanation": "EO-1 由上海人工智能实验室主导、智元提供真机支持，2025 年 8 月发布，权重、训练代码和数据全部开源。它以 Qwen2.5-VL-3B 为底座，是一个仅解码器的 Transformer：文字用自回归逐 token 生成，动作用流匹配去噪生成连续值，两种方式在同一模型里协同训练。配套数据集 EO-Data1.5M 含 150 万条「图像-文字-动作」交错样本，覆盖物理常识、任务推理、空间理解和操作轨迹，让模型在同一段上下文里边推理边动作。官方称它在 ERQA、LIBERO、SimplerEnv 和自建 EO-Bench 上超过当时的开源模型。",
+      "example": "真机测试覆盖 Franka、WidowX 250、智元 G-1 和 LeRobot SO100 四种机器人，任务包括长程灵巧操作和需要先推理再动手的任务。",
+      "related": ["视觉-语言-动作模型", "自回归-扩散混合架构", "流匹配", "具身推理", "上海人工智能实验室", "LeRobot"],
+      "sources": [
+        {"title": "EO-1: An Open Unified Embodied Foundation Model for General Robot Control (arXiv 2508.21112)", "url": "https://arxiv.org/abs/2508.21112"},
+        {"title": "EO-1 GitHub 仓库", "url": "https://github.com/EO-Robotics/EO1"},
+        {"title": "EO-1 项目页", "url": "https://eo-robotics.ai/eo-1"}
+      ],
+      "as_of": "2026-02"
+    },
+    {
+      "name_zh": "星动纪元 ERA-42",
+      "name_en": "ERA-42 (Robot Era end-to-end native robot model)",
+      "abbr": "",
+      "aliases": ["ERA-42", "ERA42", "星动纪元端到端 VLA 具身模型"],
+      "tier": 3,
+      "one_liner": "星动纪元 2024 年底发布的端到端 VLA 具身模型，驱动其灵巧手和人形机器人。",
+      "explanation": "ERA-42 是北京星动纪元的具身大模型，官网称「端到端 VLA 具身模型」。星动纪元 2023 年 8 月成立，创始人是清华交叉信息研究院助理教授陈建宇，清华持股。按官网时间线，ERA-42 于 2024 年 12 月发布，首版在单臂加五指灵巧手上演示；2025 年 3 月迁移到双臂，7 月用同一个模型驱动全尺寸人形机器人 L7 全身 55 个自由度。官网列出的技术积累包括视频预测策略 VPP、UP-VLA、在线强化学习 iRe-VLA、可控世界模型 Ctrl-World 等论文。官方称已具备 100 种灵巧操作技能，在物流、制造、商业服务中落地；结构和参数量未完整公开。",
+      "example": "星动纪元的仓储方案里，机器人基于 ERA-42 走完「下单—出库—拣选—扫码—装箱」流程，用 12 自由度 XHAND1 灵巧手抓取异形药盒并翻面扫码。",
+      "related": ["星动纪元", "视觉-语言-动作模型", "视频预测策略", "Ctrl-World", "星动纪元 XHAND1 灵巧手", "星动纪元 L7"],
+      "sources": [
+        {"title": "星动纪元官网 · ERA-42 模型页", "url": "https://www.robotera.com/model"},
+        {"title": "星动纪元官网 · 关于我们", "url": "https://www.robotera.com/about/us"}
+      ],
+      "as_of": "2025-11"
+    },
+    {
+      "name_zh": "ExBody2",
+      "name_en": "ExBody2: Advanced Expressive Humanoid Whole-Body Control",
+      "abbr": "ExBody2",
+      "aliases": ["Exbody2", "Advanced Expressive Whole-Body Control"],
+      "tier": 3,
+      "one_liner": "UCSD 等提出的人形全身动作跟踪方法，让宇树 G1 能走、蹲、跳舞。",
+      "explanation": "ExBody2 由 UC 圣地亚哥王小龙组联合 UC 伯克利、MIT 于 2024 年 12 月发布，是 ExBody 的升级版。ExBody 只让上半身模仿动作，ExBody2 改成全身跟踪，主要做了三件事：一是自动筛数据，先用基础策略把 CMU 动捕数据跑一遍，按跟踪误差剔除机器人做不到的动作，在可行性与多样性之间取平衡；二是教师-学生蒸馏，教师策略在仿真里使用特权信息（真机拿不到的状态），再蒸馏成只用机载观测的学生策略；三是在局部坐标系里跟踪关键点，并与整体速度跟踪解耦。作者还发现，先训通用策略再针对某类动作微调，精度更高。",
+      "example": "在宇树 G1 上，ExBody2 能跟着参考动作跳恰恰舞；针对舞蹈数据微调出的专用策略，关节跟踪误差明显低于通用策略和从零训练的策略。",
+      "related": ["ExBody", "运动跟踪", "全身控制", "教师-学生蒸馏", "特权信息", "OmniH2O"],
+      "sources": [
+        {"title": "ExBody2: Advanced Expressive Humanoid Whole-Body Control (arXiv 2412.13196)", "url": "https://arxiv.org/abs/2412.13196"},
+        {"title": "ExBody2 项目页", "url": "https://exbody2.github.io/"}
+      ],
+      "as_of": "2025-03"
+    },
+    {
+      "name_zh": "ExBody",
+      "name_en": "Expressive Whole-Body Control for Humanoid Robots",
+      "abbr": "ExBody",
+      "aliases": ["Exbody", "Expressive Whole-Body Control", "表现力全身控制"],
+      "tier": 3,
+      "one_liner": "UCSD 2024 年提出：人形机器人上身模仿人类动作，双腿只负责稳稳跟速度。",
+      "explanation": "ExBody 由 UC 圣地亚哥王小龙团队于 2024 年 2 月发布，发表于 RSS 2024，是较早把大规模人类动捕数据用于真实人形机器人全身控制的工作之一。难点在于人和机器人的自由度、力量差别很大，让整台机器人逐帧模仿人容易摔。ExBody 的办法是分工：上半身模仿参考动作的关节角和关键点，双腿不要求逐帧模仿，只需稳健地跟随参考动作给出的整体速度和朝向。数据取自 CMU 动捕库约 780 段片段，重定向到 19 自由度的宇树 H1 上，在 Isaac Gym 中用大规模并行强化学习训练后迁移到真机。后续的 ExBody2 等工作常拿它作对比基线。",
+      "example": "真机上，H1 能一边走一边做出不同风格的动作，比如模仿僵尸走、和人击掌握手，甚至和人一起跳舞。",
+      "related": ["ExBody2", "运动跟踪", "全身控制", "动作重定向", "宇树 H1", "大规模并行强化学习"],
+      "sources": [
+        {"title": "Expressive Whole-Body Control for Humanoid Robots (arXiv 2402.16796)", "url": "https://arxiv.org/abs/2402.16796"},
+        {"title": "ExBody 项目页", "url": "https://expressive-humanoid.github.io/"}
+      ],
+      "as_of": "2024-07"
+    }
+  ]
+}

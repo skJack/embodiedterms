@@ -1,0 +1,234 @@
+{
+ "batch": "perception-02",
+ "terms": [
+  {
+   "key": "perception-02#0",
+   "name_en": "RGB Camera",
+   "aliases": [
+    "Color Camera",
+    "Monocular Camera"
+   ],
+   "one_liner": "An ordinary camera that outputs color images, recording red, green, and blue brightness at every pixel.",
+   "explanation": "An RGB camera is simply the most common kind of color camera: its image sensor is covered by a color filter array, most commonly the Bayer filter patented by Kodak engineer Bryce Bayer in 1976, in which half the pixels sense green and a quarter each sense red and blue; a demosaicing algorithm then interpolates a full R, G, B value for every pixel. RGB cameras are cheap, high-resolution, and information-rich, making them the main input for most imitation-learning policies and VLA models. Their limitation is that a single RGB (monocular) camera only captures a 2D projection of the 3D world and has no direct sense of how far away things are; getting depth requires a depth camera, a stereo camera, or a monocular depth estimation model. Other factors to weigh when mounting one include field of view, frame rate, and whether it uses a global shutter (the whole frame exposed at once) or a rolling shutter (exposed row by row, which can skew fast-moving subjects).",
+   "example": "The original ALOHA dual-arm platform is fitted with 4 ordinary webcams: two mounted on the wrists, one facing forward, and one overhead looking down. ACT, a policy that uses only these color images plus joint angles — no depth — learned to open a semi-transparent condiment cup and insert a battery from about 10 minutes of demonstrations, reaching 80–90% success.",
+   "related": [
+    "Depth Camera (RGB-D Camera)",
+    "Stereo Camera",
+    "Wrist Camera",
+    "Monocular Depth Estimation",
+    "Camera Intrinsics",
+    "Global Shutter / Rolling Shutter"
+   ]
+  },
+  {
+   "key": "perception-02#1",
+   "name_en": "Rotary Encoder",
+   "aliases": [
+    "Joint Encoder",
+    "Angle Encoder"
+   ],
+   "one_liner": "A position sensor mounted on a motor or joint that converts shaft angle into an electrical signal.",
+   "explanation": "A rotary encoder is an electromechanical device that converts a shaft's angular position or amount of rotation into an analog or digital signal; a robot has at least one on every joint, telling the controller ‘how many degrees have I turned right now.’ There are two output types: incremental encoders only report how much they've turned, usually via two channels A and B offset by 90° in phase to determine direction, and they lose absolute position when power is cut, needing a homing routine afterward; absolute encoders directly report the current angle and keep it through a power loss. The underlying principle can be optical, magnetic, capacitive, or inductive, with resolution given as pulses per revolution or in bits. Joint modules often mount one encoder on the motor side and another at the reducer's output — a dual-encoder setup — so the true output-side angle is measured directly, canceling out the error introduced by gear backlash (the small play between gear teeth). The joint-angle information in a policy's proprioceptive input comes from encoder readings like these.",
+   "example": "A 14-bit absolute magnetic encoder divides a full turn into 2^14 = 16,384 parts, giving an angular resolution of about 360° ÷ 16,384 ≈ 0.022°.",
+   "related": [
+    "Absolute Encoder",
+    "Incremental Encoder",
+    "Magnetic Encoder",
+    "Dual Encoder",
+    "Proprioception",
+    "Joint Module / Actuator Module"
+   ]
+  },
+  {
+   "key": "perception-02#2",
+   "name_en": "Simultaneous Localization and Mapping",
+   "aliases": [
+    "SLAM"
+   ],
+   "one_liner": "A robot building a map of an unfamiliar environment while simultaneously figuring out where it is on that map.",
+   "explanation": "Simultaneous localization and mapping refers to a robot, on entering an unfamiliar environment, building a map of it while also estimating its own pose within that map at the same time. The difficulty is that the two problems depend on each other: localization needs a map, but mapping needs to know where you are. The field traces back to Randall Smith and Peter Cheeseman's 1986 work on spatial uncertainty and to Hugh Durrant-Whyte's group's research in the early 1990s; the acronym SLAM itself first appeared in a survey paper at the 1995 International Symposium on Robotics Research (ISRR). Classic solutions include the extended Kalman filter, particle filters, and graph optimization; approaches are also grouped by sensor, into lidar SLAM, visual SLAM, and so on, with open-source implementations including Google's Cartographer and ORB-SLAM3. It underlies navigation in robot vacuums, warehouse AMRs, and AR headsets.",
+   "example": "A robot vacuum entering a new home for the first time uses its lidar to scan out a floor plan while moving, simultaneously computing its own coordinates on that map in real time; subsequent cleaning runs then plan their routes using this map.",
+   "related": [
+    "Visual SLAM",
+    "LiDAR SLAM",
+    "Loop Closure Detection",
+    "Visual-Inertial Odometry (VIO)",
+    "Occupancy Grid Map",
+    "Adaptive Monte Carlo Localization (AMCL)"
+   ]
+  },
+  {
+   "key": "perception-02#3",
+   "name_en": "Six-Axis Force/Torque Sensor",
+   "aliases": [
+    "F/T Sensor",
+    "Force/Torque Sensor",
+    "Multi-Axis Force Sensor"
+   ],
+   "one_liner": "A sensor that measures force along three axes and torque around three axes at once, often mounted on an arm's wrist.",
+   "explanation": "A six-axis force/torque (F/T) sensor measures six quantities at once: the forces Fx, Fy, Fz along the x, y, and z axes, and the torques Tx, Ty, Tz around those same axes. A common design bonds strain gauges to a metal elastic body; the tiny deformation under load changes electrical resistance, which is converted through a Wheatstone bridge and calibration into the six components, though capacitive designs also exist. On a robot arm it usually sits between the wrist flange and the gripper, telling the controller how hard, and in which direction, the end-effector is being pushed or twisted — the basis for force control, impedance control, peg-in-hole assembly, sanding, kinesthetic teaching, and collision detection. Representative vendors include ATI and Robotiq, and in China, Sunrise Instruments and Kunwei Technology. Some arms skip this sensor entirely and instead estimate end-effector force indirectly from torque sensors on each joint.",
+   "example": "The Robotiq FT 300-S mounts between a collaborative arm's wrist and gripper, rated for ±300 N of force and ±30 N·m of torque, outputting data at 100 Hz, and is commonly used for peg-in-hole assembly and surface finishing.",
+   "related": [
+    "Strain Gauge",
+    "Force Control",
+    "Impedance Control",
+    "Peg-in-Hole Assembly",
+    "Cross-Axis Coupling",
+    "Joint Torque Sensor"
+   ]
+  },
+  {
+   "key": "perception-02#4",
+   "name_en": "Stereo Camera",
+   "aliases": [
+    "Stereo Vision",
+    "Passive Stereo"
+   ],
+   "one_liner": "Two side-by-side cameras that shoot the same scene at once, computing distance from how much the two images differ.",
+   "explanation": "A stereo camera mounts two cameras side by side at a fixed separation, called the baseline, mimicking human eyes. The same physical point appears at a slightly different horizontal position in the left and right images — the disparity — and after calibration and epipolar rectification, stereo matching finds corresponding points and computes depth as Z = f·B/d, where f is focal length, B is the baseline, and d is the disparity: a larger disparity means closer, and a longer baseline gives more accurate readings at range. Stereo that relies only on ambient light is called passive stereo, and it struggles on textureless surfaces such as white walls or smooth tabletops where matching fails; active stereo cameras such as the RealSense D435 and D455 add an infrared speckle projector to work around this. Recent work also uses deep networks for the matching step, such as FoundationStereo. Stereo cameras commonly serve as a robot's head- or wrist-mounted depth sensor.",
+   "example": "A stereo camera with a 700-pixel focal length and a 0.12-meter baseline observes a 42-pixel disparity at some point, giving a depth of Z = 700 × 0.12 ÷ 42 = 2 meters. Stereolabs' ZED 2i has a baseline of 120 mm.",
+   "related": [
+    "Disparity",
+    "Stereo Matching",
+    "Baseline",
+    "Active Stereo",
+    "Depth Camera (RGB-D Camera)",
+    "FoundationStereo"
+   ]
+  },
+  {
+   "key": "perception-02#5",
+   "name_en": "Tactile Sensor",
+   "aliases": [
+    "Tactile Sensing"
+   ],
+   "one_liner": "A sensor that lets a robot feel contact, measuring pressure distribution, contact location, shear force, and slip.",
+   "explanation": "A tactile sensor measures the information generated when a robot contacts an object, including pressure distribution, contact location, normal and shear force, vibration, and slip; some also sense texture and temperature. Common principles include piezoresistive, capacitive, piezoelectric, and magnetic sensing, as well as vision-based tactile sensing, where a small camera behind a transparent elastomer photographs how the surface deforms at the point of contact — representative examples are GelSight, which originated at MIT, and DIGIT, a low-cost open-source sensor from Facebook AI and collaborators published in 2020. A camera can't see the small patch where a finger meets an object, and it can't measure weight, softness, or friction — exactly the information needed for tasks like twisting off a bottle cap, inserting a cable, or gently squeezing an egg. Tactile data is commonly fed into a policy as tactile images or arrays of individual sensing elements (taxels), alongside vision.",
+   "example": "In the DIGIT paper, researchers equipped a multi-fingered robotic hand with DIGIT sensors and trained a neural-network controller on the tactile signal to roll a glass marble around in the hand's palm.",
+   "related": [
+    "Vision-Based Tactile Sensor",
+    "Electronic Skin",
+    "GelSight",
+    "DIGIT",
+    "Slip Detection",
+    "Visuo-Tactile Fusion"
+   ]
+  },
+  {
+   "key": "perception-02#6",
+   "name_en": "Wrist Camera",
+   "aliases": [
+    "Wrist-Mounted Camera",
+    "Eye-in-Hand Camera"
+   ],
+   "one_liner": "A camera mounted on a robot arm's wrist or gripper that moves with the hand, giving a close-up view of the workspace.",
+   "explanation": "A wrist camera is fixed near the gripper on a robot arm's end effector, moving together with the hand. This is the ‘eye-in-hand’ configuration described in visual servoing, where the camera moves with the hand and sees the hand's position relative to the target; the opposite is a fixed, third-person camera in the environment, called ‘eye-to-hand.’ The advantage of a wrist camera is that it sees the final few centimeters of a grasp or insertion most clearly, is less likely to be blocked by the arm itself, and shows the object's position directly in relation to the gripper — so imitation-learning and VLA data collection almost always includes one, feeding into the policy alongside one or two third-person cameras. Its drawback is that its viewpoint changes drastically with the arm's motion, it has no global view, and a depth camera can become inaccurate at very close range. Using its images for geometric calculations first requires hand-eye calibration.",
+   "example": "The DROID dataset mounts 3 cameras on each Franka arm: 2 adjustable-position external ZED 2 stereo cameras, plus 1 ZED Mini on the wrist.",
+   "related": [
+    "Eye-in-Hand",
+    "Third-Person Camera",
+    "Head Camera",
+    "Hand-Eye Calibration",
+    "Multi-View",
+    "Occlusion"
+   ]
+  },
+  {
+   "key": "perception-02#7",
+   "name_en": "2D LiDAR",
+   "aliases": [
+    "Single-Line Laser Scanner",
+    "Laser Scanner",
+    "Planar LiDAR"
+   ],
+   "one_liner": "A spinning laser rangefinder that scans one horizontal plane, measuring the distance to obstacles all around.",
+   "explanation": "A 2D lidar, also called a single-line lidar, has just one laser beam for ranging, spun by a motor or a rotating mirror to sweep out a horizontal plane; each revolution outputs a series of angle-and-distance readings that, plotted together, trace an outline of the surroundings. Ranging is done by time-of-flight (d = c·t / 2, where c is the speed of light and t is the round-trip time), though cheaper units use triangulation instead. Being cheap, low in data volume, and stable in precision, 2D lidars are common in robot vacuums, warehouse AMRs, and AGVs, used for 2D lidar SLAM, AMCL localization, and obstacle avoidance; ROS represents their data with the LaserScan message. Their limitation is that they only see the single plane at their mounting height, so obstacles like tabletops or overhead bars that sit outside that plane get missed, requiring a depth camera or a multi-line lidar to fill the gap.",
+   "example": "The Slamtec RPLIDAR A1 performs a 360° scan, ranging more than 8,000 times per second at an adjustable 2–10 Hz scan rate using triangulation, and is officially positioned for SLAM mapping, robot navigation, and robot vacuums.",
+   "related": [
+    "LiDAR",
+    "LiDAR SLAM",
+    "Adaptive Monte Carlo Localization (AMCL)",
+    "Occupancy Grid Map",
+    "Costmap",
+    "Robot Vacuum"
+   ]
+  },
+  {
+   "key": "perception-02#8",
+   "name_en": "3D Gaussian Splatting",
+   "aliases": [
+    "3DGS",
+    "Gaussian Splatting",
+    "GS"
+   ],
+   "one_liner": "Representing a scene as many colored 3D Gaussian ellipsoids that can be rendered from any new viewpoint in real time.",
+   "explanation": "3D Gaussian splatting was proposed by Bernhard Kerbl and colleagues at Inria and other institutions, published at SIGGRAPH 2023. It represents a scene as a large number of 3D Gaussian distributions — imaginable as semi-transparent colored ellipsoids — each with its own position, shape and orientation, opacity, and color that can vary with viewing angle. The method first runs structure-from-motion on a set of multi-view photos to recover camera poses and a sparse point cloud for initialization, then uses differentiable rasterization to repeatedly compare a rendered image against the real photos and optimize the Gaussians accordingly. The paper reports real-time novel-view synthesis at 1080p, no less than 30 frames per second, much faster than neural radiance fields (NeRF). In embodied AI it's often used to bring real scenes into simulation, to perform Gaussian-splatting SLAM, or to render novel views for data augmentation.",
+   "example": "Walking around a table taking photos, then using COLMAP to recover the camera poses and a sparse point cloud and training 3DGS on them, lets you view that table from any angle in real time on a computer.",
+   "related": [
+    "Neural Radiance Fields (NeRF)",
+    "Novel View Synthesis",
+    "Structure from Motion (SfM)",
+    "Gaussian Splatting Simulation",
+    "Gaussian Splatting SLAM",
+    "Real-to-Sim"
+   ]
+  },
+  {
+   "key": "perception-02#9",
+   "name_en": "3D Vision",
+   "aliases": [
+    "3D Perception"
+   ],
+   "one_liner": "The umbrella term for techniques that recover an object's or scene's 3D geometry from images or sensor data.",
+   "explanation": "3D vision is the branch of computer vision that studies 3D geometry, with the goal of recovering depth, point clouds, meshes, and object poses — in short, where things are and what shape they have. It splits into two families by how the data is captured: active methods emit their own signal to measure distance, such as structured light, time-of-flight cameras, and lidar; passive methods use only an ordinary camera, relying on stereo disparity, multi-view structure from motion, or neural-network monocular depth estimation. Common tasks include depth estimation, 3D reconstruction, point cloud segmentation and registration, 6D pose estimation, and 3D object detection. A robot reaching for, avoiding, or placing an object needs precise distance information that a plain 2D image can't provide, which is why grasp planning, 3D Diffusion Policy, and 3D VLA models all depend on 3D vision; feed-forward reconstruction models such as DUSt3R and VGGT have made it substantially easier to use.",
+   "example": "Before an arm grasps a cup, a depth camera turns the scene into a point cloud, an algorithm segments out the cup within that point cloud and estimates the position and orientation of its handle, and that result is converted into the 3D coordinates the gripper needs to reach.",
+   "related": [
+    "Point Cloud",
+    "Depth Camera (RGB-D Camera)",
+    "Stereo Camera",
+    "6D Object Pose Estimation",
+    "Feed-Forward 3D Reconstruction",
+    "3D VLA"
+   ]
+  },
+  {
+   "key": "perception-02#10",
+   "name_en": "6D Object Pose Estimation",
+   "aliases": [
+    "6DoF Pose Estimation",
+    "Object Pose Estimation"
+   ],
+   "one_liner": "Computing an object's 3D position and 3D orientation relative to the camera — six degrees of freedom in total.",
+   "explanation": "6D pose estimation takes an RGB or RGB-D image and solves for a rigid object's 3 translations and 3 rotations relative to the camera — usually output as a rotation matrix plus a translation vector. Methods are grouped by how much is known about the object beforehand: instance-level (the specific object and its CAD model have been seen before), category-level (only that it belongs to a class such as ‘cup’), and methods for novel objects, which further split into model-based (given a CAD model) and model-free (given only reference images). The BOP benchmark has organized evaluations for this task since 2018. NVIDIA's FoundationPose, from 2023, handles both familiar and novel objects within one framework and can also track a pose continuously over time. Grasping, assembly, and AR all rely on it: knowing where an object is and which way it faces is what lets a system compute where a gripper needs to go.",
+   "example": "A drill with a known CAD model sits on a table. A pose estimation model computes its position and orientation in the camera's frame from an RGB-D image, and combining that with the hand-eye calibration result gives the target pose the arm needs to grasp the handle.",
+   "related": [
+    "Pose",
+    "FoundationPose",
+    "BOP Benchmark",
+    "Category-Level Pose Estimation",
+    "Pose Tracking",
+    "ADD / ADD-S Pose Error Metric"
+   ]
+  },
+  {
+   "key": "perception-02#11",
+   "name_en": "Adaptive Monte Carlo Localization",
+   "aliases": [
+    "AMCL",
+    "KLD-Sampling Monte Carlo Localization",
+    "nav2_amcl"
+   ],
+   "one_liner": "A ROS localization module that estimates a robot's position on a known map using particle filtering and laser scans.",
+   "explanation": "AMCL is the 2D localization package in the ROS navigation stack, implementing Dieter Fox's adaptive (KLD-sampling) Monte Carlo localization; the ROS 1 version is credited to Brian Gerkey, and Nav2 ported it over largely unchanged as nav2_amcl. Monte Carlo localization itself was proposed by Frank Dellaert, Dieter Fox, Wolfram Burgard, and Sebastian Thrun in 1999, and represents the robot's possible positions with a set of particles: as the robot moves, the particles are pushed forward according to odometry plus noise, and each new laser scan gives higher weight to particles that agree with the map; resampling by weight then lets the particles gradually converge on the true position. ‘Adaptive’ refers to the particle count automatically growing or shrinking with the level of uncertainty. AMCL only handles localization — the map itself must already have been built with SLAM.",
+   "example": "After a warehouse AMR powers on, the operator roughly marks its initial position in RViz using ‘2D Pose Estimate.’ As the robot starts moving, AMCL's particle cloud gradually shrinks from a broad spread into a tight cluster, and the position locks in.",
+   "related": [
+    "Particle Filter",
+    "Simultaneous Localization and Mapping",
+    "2D LiDAR",
+    "Wheel Odometry",
+    "Occupancy Grid Map",
+    "Nav2"
+   ]
+  }
+ ]
+}

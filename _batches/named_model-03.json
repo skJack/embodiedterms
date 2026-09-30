@@ -1,0 +1,205 @@
+{
+  "category": "named_model",
+  "batch": 3,
+  "terms": [
+    {
+      "name_zh": "Genie 3",
+      "name_en": "Genie 3 (Google DeepMind real-time interactive world model)",
+      "abbr": "",
+      "aliases": ["Genie3"],
+      "tier": 2,
+      "one_liner": "谷歌 DeepMind 2025 年发布的实时可交互世界模型，一句话生成能边走边看的虚拟世界。",
+      "explanation": "Genie 3 是谷歌 DeepMind 2025 年 8 月 5 日发布的通用世界模型。给一段文字描述，它就生成一个可以实时操控漫游的动态世界：720p、每秒 24 帧，能保持几分钟的一致性，视觉记忆最远回溯约 1 分钟。画面逐帧自回归生成，每一帧都要参考不断变长的历史轨迹和用户操作；它还支持「可提示世界事件」，用文字改天气、加入新物体或角色。这让它可以当作训练和评估智能体的环境，而不必为每个任务手工搭仿真场景。局限是智能体能做的动作有限、单次交互只有几分钟。发布时只对少数研究者和创作者开放；2026 年 1 月 29 日谷歌以 Project Genie 向 AI Ultra 订阅用户开放体验（单次限 60 秒），Waymo 也在它基础上做了自动驾驶世界模型。",
+      "example": "DeepMind 把 SIMA 智能体放进 Genie 3 生成的世界并给它设定目标。智能体只发送前进、转向等导航动作；Genie 3 并不知道目标是什么，只根据这些动作模拟接下来的画面，一致性足够长，智能体就能完成更长的动作序列。",
+      "related": ["世界模型", "可交互世界模型", "Genie（初代）", "Genie 2", "Waymo 世界模型", "自回归视频生成"],
+      "sources": [
+        {"title": "Genie 3: A new frontier for world models (Google DeepMind blog)", "url": "https://deepmind.google/discover/blog/genie-3-a-new-frontier-for-world-models/"},
+        {"title": "Genie (world model) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Genie_(world_model)"}
+      ],
+      "as_of": "2026-01"
+    },
+    {
+      "name_zh": "智元 GO-1（启元大模型）",
+      "name_en": "Genie Operator-1 (AgiBot GO-1)",
+      "abbr": "GO-1",
+      "aliases": ["启元大模型", "Genie Operator-1", "GO-1 Air"],
+      "tier": 2,
+      "one_liner": "智元机器人 2025 年发布的通用具身基座模型，用「潜在动作」让人类视频也能参与训练。",
+      "explanation": "GO-1 是智元机器人（AgiBot）2025 年 3 月 10 日随 AgiBot World 数据集技术报告一起发布的通用操作策略，中文名启元大模型。它提出 ViLLA（视觉-语言-潜在动作）框架，分三段：潜在动作模型把相邻画面的变化压成离散的潜在动作 token，可以在 Ego4D 这类没有动作标签的人类视频上学；潜在规划器以 InternVL2.5-2B 视觉语言模型为骨干，根据图像和指令预测这些 token；动作专家再用扩散目标输出连续的高频动作。论文称在 AgiBot World（100 台机器人采集的 100 多万条轨迹）上预训练，比用 Open X-Embodiment 平均提升 30%；GO-1 在复杂真机任务上成功率超过 60%，比 RDT 高 32%。模型 2025 年 9 月开源，同时放出去掉潜在规划器的轻量版 GO-1 Air，后继是 2026 年的 GO-2。",
+      "example": "开源的 GO-1 权重放在 Hugging Face 上，官方说明推理约需 7GB 显存，全参数微调（批大小 16）约需 70GB 显存。",
+      "related": ["ViLLA 架构", "潜在动作", "AgiBot World 数据集", "智元 GO-2（Genie Operator-2）", "动作专家", "智元机器人"],
+      "sources": [
+        {"title": "AgiBot World Colosseo: A Large-scale Manipulation Platform for Scalable and Intelligent Embodied Systems (arXiv 2503.06669)", "url": "https://arxiv.org/abs/2503.06669"},
+        {"title": "OpenDriveLab/AgiBot-World（GitHub，含 GO-1 / GO-1 Air 开源说明）", "url": "https://github.com/OpenDriveLab/AgiBot-World"}
+      ],
+      "as_of": "2025-09"
+    },
+    {
+      "name_zh": "Gemini 系列（谷歌多模态大模型）",
+      "name_en": "Google Gemini (multimodal LLM family)",
+      "abbr": "",
+      "aliases": ["Gemini", "谷歌 Gemini"],
+      "tier": 2,
+      "one_liner": "谷歌 DeepMind 的原生多模态大模型系列，也是 Gemini Robotics 等机器人模型的底座。",
+      "explanation": "Gemini 是谷歌 DeepMind 开发的多模态大模型系列，接替 LaMDA 和 PaLM 2。首版 Gemini 1.0 于 2023 年 12 月发布，分 Ultra、Pro、Nano 三档。它从训练开始就同时处理文字、图像、音频、视频和代码，而不是先训好语言模型再外接视觉模块，这种做法常被称为「原生多模态」。之后迭代很快：2024 年的 1.5（超长上下文），2024 年底到 2025 年的 2.0、2.5，2025 年 11 月的 Gemini 3，截至 2026 年 9 月已更新到 3.x 系列的多个版本。在具身智能里它有两种用法：一是直接调用它看图理解场景、拆解任务、做高层规划；二是当底座训练机器人模型，谷歌 2025 年 3 月发布的 Gemini Robotics（VLA）和 Gemini Robotics-ER（具身推理）都建立在 Gemini 2.0 之上。",
+      "example": "Gemini Robotics 在 Gemini 2.0 的基础上把「物理动作」加为新的输出模态：模型看到相机画面、听到指令后，直接输出控制机器人的动作。",
+      "related": ["多模态大语言模型", "原生多模态", "Gemini Robotics", "Gemini Robotics-ER", "谷歌 DeepMind", "视觉语言模型"],
+      "sources": [
+        {"title": "Gemini: A Family of Highly Capable Multimodal Models (arXiv 2312.11805)", "url": "https://arxiv.org/abs/2312.11805"},
+        {"title": "Gemini (language model) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Gemini_(language_model)"},
+        {"title": "Gemini Robotics brings AI into the physical world (Google DeepMind blog)", "url": "https://deepmind.google/discover/blog/gemini-robotics-brings-ai-into-the-physical-world/"}
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "HIL-SERL",
+      "name_en": "Human-in-the-Loop Sample-Efficient Robotic Reinforcement Learning (Precise and Dexterous Robotic Manipulation via Human-in-the-Loop RL)",
+      "abbr": "HIL-SERL",
+      "aliases": ["人在回路样本高效机器人强化学习"],
+      "tier": 2,
+      "one_liner": "伯克利的真机强化学习系统，人随时接管纠正，1 到 2.5 小时练成精细操作。",
+      "explanation": "HIL-SERL 是 UC Berkeley 的 Jianlan Luo、Charles Xu、Jeffrey Wu 和 Sergey Levine 提出的真机视觉强化学习系统，2024 年 10 月上线 arXiv，2025 年 8 月登上 Science Robotics 封面。它建立在同组开源的 SERL 软件栈上：先遥操作采一些成功和失败样本，训练一个二分类奖励判别器当稀疏奖励；再采少量演示放进回放池；在线训练用基于 RLPD 的异策略算法（能反复利用旧数据），操作员可随时用 SpaceMouse 等设备接管纠正，纠正数据也拿来学。真机强化学习通常太慢、太不稳定，HIL-SERL 靠预训练视觉骨干、演示加人工纠正和安全的底层控制器，把训练缩短到 1 到 2.5 小时，多数任务成功率接近 100%，平均比模仿学习基线高约 2 倍、执行快 1.8 倍。",
+      "example": "论文任务包括抽叠叠乐（机械臂甩鞭子把一块积木从塔里抽出）、在锅里给物体翻面，以及装配主板、宜家搁架、汽车仪表盘和同步带等精密装配。",
+      "related": ["SERL", "人在回路", "真机强化学习", "人工门控 DAgger", "奖励模型", "强化学习微调"],
+      "sources": [
+        {"title": "Precise and Dexterous Robotic Manipulation via Human-in-the-Loop Reinforcement Learning (arXiv 2410.21845)", "url": "https://arxiv.org/abs/2410.21845"},
+        {"title": "HIL-SERL 项目主页", "url": "https://hil-serl.github.io/"},
+        {"title": "Jianlan Luo 个人主页（HIL-SERL 发表于 Science Robotics 2025）", "url": "https://people.eecs.berkeley.edu/~jianlanluo/"}
+      ],
+      "as_of": "2025-08"
+    },
+    {
+      "name_zh": "HumanPlus",
+      "name_en": "HumanPlus: Humanoid Shadowing and Imitation from Humans",
+      "abbr": "",
+      "aliases": [],
+      "tier": 2,
+      "one_liner": "斯坦福 2024 年的人形系统：靠一个 RGB 相机让机器人实时模仿人，再从中学会自主技能。",
+      "explanation": "HumanPlus 是斯坦福大学 Zipeng Fu、Qingqing Zhao、Qi Wu、Gordon Wetzstein 和 Chelsea Finn 于 2024 年 6 月提出的人形机器人数据采集与学习系统，发表于 CoRL 2024 并入围最佳论文前 6。硬件以宇树 H1 为基础，加两只因时 6 自由度灵巧手，全身共 33 个自由度。做法分两步：先在仿真里用强化学习、以 AMASS 约 40 小时人体动作数据训练底层控制器 Humanoid Shadowing Transformer，部署后只需一个 RGB 相机估计操作者的身体和手部姿态，机器人就能实时「影子跟随」；再用这种方式遥操作采集演示，训练基于 ACT 改进的 Humanoid Imitation Transformer，靠头部双目 RGB 相机的第一视角画面自主完成任务。它说明全身遥操作不一定需要昂贵的动捕设备。",
+      "example": "穿鞋后站起来走路：每个任务最多用 40 条影子跟随采集的演示，训练后机器人自主完成，成功率 60%；从仓库货架卸货的成功率为 90%，打字为 80%。",
+      "related": ["人形机器人", "全身遥操作", "宇树 H1", "ACT", "AMASS 人体动捕数据集", "OmniH2O"],
+      "sources": [
+        {"title": "HumanPlus: Humanoid Shadowing and Imitation from Humans (arXiv 2406.10454)", "url": "https://arxiv.org/abs/2406.10454"},
+        {"title": "HumanPlus 项目主页", "url": "https://humanoid-ai.github.io/"}
+      ],
+      "as_of": "2024-11"
+    },
+    {
+      "name_zh": "LAPA",
+      "name_en": "LAPA: Latent Action Pretraining from Videos",
+      "abbr": "LAPA",
+      "aliases": ["Latent Action Pretraining for general Action models", "潜在动作预训练"],
+      "tier": 2,
+      "one_liner": "用没有动作标签的视频预训练 VLA：先学潜在动作，再用少量真机数据映射成真实动作。",
+      "explanation": "LAPA 由 KAIST、华盛顿大学、微软研究院、英伟达和艾伦人工智能研究所的研究者于 2024 年 10 月提出，发表于 ICLR 2025。VLA 预训练通常需要人工遥操作采来的动作标签，数据来源和规模都受限；LAPA 想直接利用网上大量没有动作标签的视频。它分三步：先用 VQ-VAE 式目标训练一个量化模型，把前后两帧之间的变化编码成离散的潜在动作；再让视觉语言模型（7B 的 LWM）根据画面和任务描述预测这些潜在动作，完成预训练；最后在少量真机数据上微调，把潜在动作映射成真实机器人动作。论文称它在需要语言理解和泛化的真机任务上比用真实动作标签训练的 OpenVLA 高 6.22%，预训练效率高 30 倍以上。",
+      "example": "只用 Something-Something V2 里约 22 万条人类日常操作视频做潜在动作预训练，再在少量机器人轨迹上微调，效果就超过了用 Bridge 机器人数据预训练的 OpenVLA。",
+      "related": ["潜在动作", "潜在动作预训练", "潜在动作模型", "向量量化变分自编码器", "无动作标签视频", "OpenVLA"],
+      "sources": [
+        {"title": "Latent Action Pretraining from Videos (arXiv 2410.11758)", "url": "https://arxiv.org/abs/2410.11758"},
+        {"title": "LAPA 项目主页", "url": "https://latentactionpretraining.github.io/"}
+      ],
+      "as_of": "2025-04"
+    },
+    {
+      "name_zh": "LLaVA（视觉指令微调架构）",
+      "name_en": "LLaVA (Large Language and Vision Assistant, Visual Instruction Tuning)",
+      "abbr": "LLaVA",
+      "aliases": ["Large Language and Vision Assistant", "视觉指令微调", "LLaVA-1.5"],
+      "tier": 2,
+      "one_liner": "2023 年的开源多模态模型：视觉编码器经投影层接入大语言模型，再用指令数据微调。",
+      "explanation": "LLaVA 由威斯康星大学麦迪逊分校、微软研究院和哥伦比亚大学的 Haotian Liu、Chunyuan Li 等人于 2023 年 4 月提出，论文《Visual Instruction Tuning》是 NeurIPS 2023 口头报告。结构很简单：CLIP ViT-L/14 视觉编码器提取图像特征，经一个投影层（把视觉特征变换到语言模型的词向量空间）送进 Vicuna 大语言模型。训练分两阶段：先冻结语言模型，只训投影层做特征对齐；再端到端微调。关键在数据：用纯文本 GPT-4 生成 15.8 万条图文指令数据，含对话、细节描述和复杂推理三类。2023 年 10 月的 LLaVA-1.5 把投影层换成两层 MLP，只用公开数据、单台 8 卡 A100 约一天训完，在 11 个基准上达到当时最佳。「视觉编码器 + 投影层 + 大语言模型 + 指令微调」成为之后多数开源 VLM 的通用做法，很多 VLA 也是在这类 VLM 上加动作输出。",
+      "example": "生成训练数据时 GPT-4 看不到图，只拿到图片的文字描述和物体框坐标，据此写出关于这张图的多轮问答和推理题；再把这些问答配上原图，用来训练 LLaVA。",
+      "related": ["视觉语言模型", "多模态大语言模型", "指令微调", "投影层", "CLIP", "Prismatic VLM"],
+      "sources": [
+        {"title": "Visual Instruction Tuning (arXiv 2304.08485)", "url": "https://arxiv.org/abs/2304.08485"},
+        {"title": "Improved Baselines with Visual Instruction Tuning (LLaVA-1.5, arXiv 2310.03744)", "url": "https://arxiv.org/abs/2310.03744"},
+        {"title": "LLaVA 项目主页", "url": "https://llava-vl.github.io/"}
+      ],
+      "as_of": "2023-10"
+    },
+    {
+      "name_zh": "Cosmos",
+      "name_en": "NVIDIA Cosmos World Foundation Models",
+      "abbr": "",
+      "aliases": ["Cosmos 世界基础模型", "Cosmos WFM", "NVIDIA Cosmos"],
+      "tier": 2,
+      "one_liner": "英伟达的开放世界基础模型平台，用视频生成模型给机器人和自动驾驶造数据、做预演。",
+      "explanation": "Cosmos 是英伟达 2025 年 1 月 6 日在 CES 发布的世界基础模型平台。世界基础模型（WFM）指先在海量视频上预训练、学会「世界接下来会怎么变化」的通用模型，再针对具体机器人或自动驾驶场景后训练。平台包括视频筛选流水线（从约 2000 万小时原始视频中切出约 1 亿个片段）、视频分词器 Cosmos Tokenizer、扩散式和自回归式两类预训练模型及后训练示例，以开放权重发布。之后分出几条产品线：Cosmos Predict 预测未来画面，Cosmos Transfer 按分割图、深度图等结构化输入生成逼真视频，Cosmos Reason 用多模态大模型做物理常识和具身推理。2026 年 6 月的 Cosmos 3 把语言、图像、视频、音频和动作放进同一个混合 Transformer 模型，分 Edge、Nano（16B）、Super（64B）等规格，按 Linux 基金会 OpenMDW-1.1 许可开放。",
+      "example": "Cosmos Transfer 的一个用途是仿真到现实：把仿真器渲染出的分割图、深度图、边缘图当条件，生成看起来像真实拍摄的视频，用来扩充机器人和自动驾驶的训练数据。",
+      "related": ["世界基础模型", "Cosmos Predict", "Cosmos Transfer", "Cosmos Reason", "Cosmos 3", "英伟达"],
+      "sources": [
+        {"title": "Cosmos World Foundation Model Platform for Physical AI (arXiv 2501.03575)", "url": "https://arxiv.org/abs/2501.03575"},
+        {"title": "NVIDIA Launches Cosmos World Foundation Model Platform to Accelerate Physical AI Development (NVIDIA Newsroom, 2025-01-06)", "url": "https://nvidianews.nvidia.com/news/nvidia-launches-cosmos-world-foundation-model-platform-to-accelerate-physical-ai-development"},
+        {"title": "Cosmos 3: Omnimodal World Models for Physical AI (arXiv 2606.02800)", "url": "https://arxiv.org/abs/2606.02800"}
+      ],
+      "as_of": "2026-06"
+    },
+    {
+      "name_zh": "GR00T N2",
+      "name_en": "NVIDIA Isaac GR00T N2",
+      "abbr": "",
+      "aliases": ["Isaac GR00T N2"],
+      "tier": 2,
+      "one_liner": "英伟达 2026 年预告的下一代机器人基础模型，从 VLA 改为世界动作模型架构。",
+      "explanation": "GR00T N2 是英伟达 2026 年 3 月 16 日在 GTC 2026 上预告的下一代通用机器人基础模型，接替 GR00T N1 系列（N1、N1.5、N1.6、N1.7）。N1 系列走 VLA 路线：视觉语言模型负责理解画面和指令，扩散式动作头输出动作。按官方新闻稿，N2「基于 DreamZero 研究」，改用世界动作模型（WAM）架构：以预训练视频生成模型为底座，同时预测未来画面和机器人动作，从视频里学物理动态，而不只是语义。英伟达称它在新环境中完成新任务的成功率是领先 VLA 的两倍多，发布时在 MolmoSpaces 和 RoboArena 两个通用策略评测上排名第一。官方计划 2026 年底前推出；截至 2026 年 9 月，英伟达在 Hugging Face 上公开的最新 GR00T 权重仍是 N1.7 系列。",
+      "example": "它的研究基础 DreamZero 以一个 140 亿参数的自回归视频扩散模型为底座，经优化后能以 7Hz 实时闭环控制机器人；换到新机器人只需约 30 分钟的玩耍数据就能适配。",
+      "related": ["GR00T N1 系列", "DreamZero", "世界动作模型", "视觉-语言-动作模型", "RoboArena", "英伟达"],
+      "sources": [
+        {"title": "NVIDIA and Global Robotics Leaders Take Physical AI to the Real World (NVIDIA Newsroom, 2026-03-16)", "url": "https://nvidianews.nvidia.com/news/nvidia-and-global-robotics-leaders-take-physical-ai-to-the-real-world"},
+        {"title": "World Action Models are Zero-shot Policies (DreamZero, arXiv 2602.15922)", "url": "https://arxiv.org/abs/2602.15922"},
+        {"title": "NVIDIA/Isaac-GR00T GitHub 仓库", "url": "https://github.com/NVIDIA/Isaac-GR00T"}
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "Octo",
+      "name_en": "Octo: An Open-Source Generalist Robot Policy",
+      "abbr": "",
+      "aliases": ["Octo-Small", "Octo-Base"],
+      "tier": 2,
+      "one_liner": "2024 年开源的通用机器人策略，在 80 万条跨本体轨迹上预训练，可快速微调到新机器人。",
+      "explanation": "Octo 由 UC Berkeley、斯坦福、CMU 和 Google DeepMind 研究者组成的 Octo Model Team 于 2024 年 5 月发布，发表于 RSS 2024。它是基于 Transformer 的通用策略，在 Open X-Embodiment（多家机构汇集的跨本体机器人数据集）的 25 个子数据集、约 80 万条轨迹上预训练，有 Octo-Small（2700 万参数）和 Octo-Base（9300 万参数）两个版本。任务可以用语言指令，也可以用一张目标图像指定；Transformer 主干读入任务和观测 token，再由扩散动作头输出连续动作，能表达多峰的动作分布。它的重点是开放和好改：代码、权重、训练流程全部公开，输入输出模块化，在消费级 GPU 上几小时就能微调到新的传感器和动作空间。在 6 个微调评测场景上平均比次优基线高 52%，后来常被 OpenVLA 等工作拿来做对比基线。",
+      "example": "在「Berkeley Bimanual」任务里，只在单臂数据上预训练的 Octo 被微调到由两条 ViperX 机械臂组成的 ALOHA 双臂平台：右手从桌上拿起记号笔、左手拔下笔帽，动作空间也换成了关节位置控制。",
+      "related": ["Open X-Embodiment 数据集", "通用策略", "扩散动作头", "跨本体", "OpenVLA", "RT-X"],
+      "sources": [
+        {"title": "Octo: An Open-Source Generalist Robot Policy (arXiv 2405.12213)", "url": "https://arxiv.org/abs/2405.12213"},
+        {"title": "Octo 项目主页", "url": "https://octo-models.github.io/"},
+        {"title": "RSS 2024 论文页（Robotics: Science and Systems XX, p090）", "url": "https://www.roboticsproceedings.org/rss20/p090.html"}
+      ],
+      "as_of": "2024-07"
+    },
+    {
+      "name_zh": "OmniH2O",
+      "name_en": "OmniH2O: Universal and Dexterous Human-to-Humanoid Whole-Body Teleoperation and Learning",
+      "abbr": "",
+      "aliases": ["Omni Human-to-Humanoid"],
+      "tier": 2,
+      "one_liner": "CMU 2024 年的人形全身遥操作系统，VR、相机、语音、GPT-4o 都能统一驱动机器人。",
+      "explanation": "OmniH2O 是卡内基梅隆大学和上海交通大学的 Tairan He、Zhengyi Luo、Guanya Shi 等人 2024 年 6 月提出的人形机器人全身遥操作与学习系统，发表于 CoRL 2024，是同组 H2O 的升级版。核心设计是把「运动学位姿」（身体关键部位的位置和朝向）当作统一控制接口：无论指令来自 VR 头显、RGB 相机、语音还是 GPT-4o，都先转成目标位姿，再交给同一个全身控制策略跟踪。该策略在仿真里用强化学习训练：先对 AMASS 人体动作数据做大规模重定向和扩充，训练使用特权信息（只有仿真里才拿得到的完整状态）的教师策略，再蒸馏成只用稀疏传感器输入、能上真机的学生策略。平台是配灵巧手的宇树 H1。团队还发布了首个人形全身控制数据集 OmniH2O-6（6 个日常任务），并用扩散策略从中学出自主技能。",
+      "example": "自主打拳：把机器人头部相机的画面交给 GPT-4o，提示词规定看到蓝色靶子出左拳、红色靶子出右拳、没有靶子就不动，GPT-4o 每次只回答 A、B 或 C，OmniH2O 的全身策略再把选中的动作做出来。",
+      "related": ["H2O（人到人形）", "全身遥操作", "教师-学生蒸馏", "特权信息", "动作重定向", "HumanPlus"],
+      "sources": [
+        {"title": "OmniH2O: Universal and Dexterous Human-to-Humanoid Whole-Body Teleoperation and Learning (arXiv 2406.08858)", "url": "https://arxiv.org/abs/2406.08858"},
+        {"title": "OmniH2O 项目主页", "url": "https://omni.human2humanoid.com/"}
+      ],
+      "as_of": "2024-11"
+    },
+    {
+      "name_zh": "GPT 系列（GPT-4o / GPT-5）",
+      "name_en": "OpenAI GPT Series (Generative Pre-trained Transformer)",
+      "abbr": "GPT",
+      "aliases": ["生成式预训练 Transformer", "GPT-4o", "GPT-5"],
+      "tier": 2,
+      "one_liner": "OpenAI 的大语言模型系列，GPT-4o 起能直接处理图像和语音，常被机器人拿来做高层规划。",
+      "explanation": "GPT 是「生成式预训练 Transformer」的缩写，这里指 OpenAI 自 2018 年起发布的大语言模型系列：先在海量文本上做下一个 token 预测的预训练，再做微调和对齐。GPT-1（2018 年，1.17 亿参数）、GPT-2（2019 年，15 亿）、GPT-3（2020 年，1750 亿）一路验证了规模越大能力越强；GPT-4（2023 年 3 月）开始接受图像输入；GPT-4o（2024 年 5 月，o 取 omni「全能」之意）能处理和生成文字、图像、音频；GPT-5 于 2025 年 8 月 7 日发布，之后有 5.1、5.2 等迭代；GPT-6 于 2026 年 9 月发布，9 月 4 日先向付费用户开放 Astra 版，9 月 22 日又推出 Sol 和 Luna 两个版本。它们都是闭源模型，只能通过 ChatGPT 或 API 调用。具身智能里常把它当外挂的「大脑」：看图理解场景、把指令拆成步骤、写控制代码或挑选动作原语，再交给底层控制器执行，它本身不直接输出关节动作。",
+      "example": "ReKep 先用 DINOv2 在图上标出带编号的候选关键点，再把标注图和语言指令交给 GPT-4o，让它写出若干 Python 约束函数，描述各阶段关键点之间应满足的关系，最后由优化器求出机械臂末端的运动轨迹。",
+      "related": ["大语言模型", "多模态大语言模型", "OpenAI", "Transformer", "下一个 token 预测", "ReKep"],
+      "sources": [
+        {"title": "Products and applications of OpenAI - Text generation（GPT-n 系列发布表，Wikipedia）", "url": "https://en.wikipedia.org/wiki/Products_and_applications_of_OpenAI"},
+        {"title": "GPT-4o - Wikipedia", "url": "https://en.wikipedia.org/wiki/GPT-4o"},
+        {"title": "GPT-6 - Wikipedia", "url": "https://en.wikipedia.org/wiki/GPT-6"}
+      ],
+      "as_of": "2026-09"
+    }
+  ]
+}

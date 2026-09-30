@@ -1,0 +1,14 @@
+{
+  "batch": "training-18",
+  "terms": [
+    {
+      "key": "training-18#0",
+      "name_en": "VLM-as-Reward",
+      "aliases": ["VLM Reward", "VLM Reward Model", "VLM-RM", "Vision-Language Models as Reward Models"],
+      "one_liner": "Having a vision-language model watch footage against a task description and score the robot's performance as a reward.",
+      "explanation": "This approach uses a vision-language model, a large model that can both look at images and read text, as a reinforcement-learning reward model: given a task description and footage the robot captured, it judges how well the robot is doing. Representative work includes 2023's VLM-RM, which uses CLIP's image-text similarity as the reward; RoboCLIP, which compares an agent's video to a demonstration video; and ICML 2024's RL-VLM-F, which has a VLM give a preference between two images and then learns a reward function from those preferences. It targets the problem that reward functions are hard to hand-write: a task like folding clothes is very hard to define “success” for with a formula. Its limitations are that VLMs are weak at spatial reasoning and give noisy scores, so a policy can learn to exploit the gaps, a failure mode called reward hacking. It is commonly used for RL fine-tuning, success detection, and data filtering.",
+      "example": "VLM-RM used only a single English sentence describing a target pose, with CLIP's similarity between that sentence and a rendered simulation frame as the reward, and taught a simulated humanoid to kneel, do a split, and sit in lotus position with no hand-written reward function at all; the paper also found that a bigger VLM makes a better reward model.",
+      "related": ["Reward Model", "Vision-Language Model", "CLIP", "Success Detector", "Progress Reward Model", "Generative Value Learning"]
+    }
+  ]
+}

@@ -1,0 +1,204 @@
+{
+  "category": "sim",
+  "batch": 12,
+  "terms": [
+    {
+      "name_zh": "Gym MuJoCo 连续控制任务",
+      "name_en": "Gym/Gymnasium MuJoCo Tasks (HalfCheetah, Hopper, Walker2d, Ant, Humanoid)",
+      "abbr": "",
+      "aliases": ["Gymnasium MuJoCo 环境", "MuJoCo 运动控制任务", "HalfCheetah / Hopper / Walker2d"],
+      "tier": 3,
+      "one_liner": "Gymnasium 里基于 MuJoCo 的一组经典连续控制环境，强化学习论文的常用考题。",
+      "explanation": "最早随 OpenAI Gym 发布、现由 Farama 基金会的 Gymnasium 维护的一组 MuJoCo 物理仿真环境，共 11 个，最常用的是 HalfCheetah（二维猎豹奔跑）、Hopper（单腿跳）、Walker2d（二维双足行走）、Ant（四足）和 Humanoid（人形）。动作是连续的关节力矩，奖励大致是「往前越快越好，减去动作能耗」，一回合最多 1000 步。SAC、TD3、PPO 等强化学习算法都拿它们报分，D4RL 离线数据集也基于其中几个。它们只考运动控制，不涉及视觉和真机细节，适合入门和对比算法。当前推荐 v5 版（需 mujoco≥2.3.3），不同版本的分数不能直接比。",
+      "example": "HalfCheetah-v5：动作是 6 个关节的力矩（6 维），观测是 17 维关节位置和速度；没有摔倒终止，跑满 1000 步截断，得分 = 前进速度奖励 − 控制代价。",
+      "related": ["MuJoCo", "Gymnasium", "D4RL", "软演员-评论家", "近端策略优化", "DeepMind 控制套件"],
+      "sources": [
+        {"title": "Gymnasium Documentation: MuJoCo environments", "url": "https://gymnasium.farama.org/environments/mujoco/"},
+        {"title": "Gymnasium Documentation: Half Cheetah", "url": "https://gymnasium.farama.org/environments/mujoco/half_cheetah/"}
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "硬件在环 / 软件在环仿真",
+      "name_en": "Hardware-in-the-Loop / Software-in-the-Loop Simulation",
+      "abbr": "HIL / SIL",
+      "aliases": ["HITL / SITL", "半实物仿真", "硬件在回路", "软件在回路"],
+      "tier": 3,
+      "one_liner": "把真控制器或真控制代码接到仿真的被控对象上测试，是上真机前的验证手段。",
+      "explanation": "两种来自汽车、航空等嵌入式工程的测试方法。软件在环（SIL）：控制程序直接在电脑上运行，和仿真出来的机器人、传感器对接；硬件在环（HIL）：控制程序跑在真实的控制器板子上，通过真实的 I/O 信号或通信总线连到实时运行的仿真模型，控制器以为自己在控制真机。MathWorks 把它们和模型在环（MIL）、处理器在环（PIL）排成一条逐级逼近实物的测试链。好处是危险工况和边界情况可以在仿真里反复测，不怕摔坏机器。机器人里常见做法是让同一套控制代码既能连仿真也能连真机，只改通信配置，如 PX4 无人机的 SITL / HITL、宇树的 unitree_mujoco。",
+      "example": "unitree_mujoco 使用和真机相同的 DDS 通信：用宇树 SDK 写的控制程序在仿真里用本地回环网卡和域 ID 1 调试，换成连接机器人的网卡和域 ID 0 就能直接驱动真机。",
+      "related": ["仿真到现实迁移", "仿真到仿真迁移", "数字孪生", "实时控制", "PX4 / ArduPilot", "宇树 SDK"],
+      "sources": [
+        {"title": "MathWorks: What Is Hardware-in-the-Loop (HIL)?", "url": "https://www.mathworks.com/discovery/hardware-in-the-loop-hil.html"},
+        {"title": "PX4 User Guide: Simulation (SITL / HITL)", "url": "https://docs.px4.io/main/en/simulation/"},
+        {"title": "unitreerobotics/unitree_mujoco (GitHub)", "url": "https://github.com/unitreerobotics/unitree_mujoco"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "无头模式",
+      "name_en": "Headless Mode",
+      "abbr": "",
+      "aliases": ["--headless", "无界面运行", "无头渲染"],
+      "tier": 3,
+      "one_liner": "不开图形窗口运行仿真器，常用于在服务器上批量训练和采集数据。",
+      "explanation": "指程序在没有图形界面（GUI）的情况下运行。在具身智能里主要指把 Isaac Sim / Isaac Lab、MuJoCo 等仿真器放到没有显示器的 GPU 服务器上跑：不弹窗口、不实时显示画面，省下开销，让训练和数据生成更快。Isaac Lab 的脚本加 --headless 参数即可，官方文档的解释就是「以无界面模式启动」；如果环境里有相机要出图，还需加 --enable_cameras，走离屏渲染。MuJoCo 系工具用环境变量 MUJOCO_GL=egl 在 GPU 上做无窗口渲染，osmesa 则是纯 CPU 软件渲染。注意无头不等于不渲染，只是不显示；想远程看画面可用 Isaac Lab 的 livestream 功能或录视频。",
+      "example": "在服务器上运行 python scripts/reinforcement_learning/rsl_rl/train.py --task=Isaac-Cartpole-v0 --headless，不开窗口训练倒立摆。",
+      "related": ["Isaac Lab", "Isaac Sim", "MuJoCo", "批量渲染", "GPU 并行仿真", "仿真吞吐量"],
+      "sources": [
+        {"title": "Isaac Lab API: isaaclab.app (AppLauncher)", "url": "https://isaac-sim.github.io/IsaacLab/main/source/api/lab/isaaclab.app.html"},
+        {"title": "google-deepmind/dm_control README: Rendering", "url": "https://github.com/google-deepmind/dm_control"}
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "高度场地形",
+      "name_en": "Heightfield Terrain",
+      "abbr": "",
+      "aliases": ["高度图地形", "hfield", "Height Map Terrain"],
+      "tier": 3,
+      "one_liner": "用二维网格存每个点的地面高度来表示起伏地形，足式机器人训练最常用。",
+      "explanation": "高度场（height field）是一张二维高程矩阵：地面被划成网格，每个格子只存一个高度值，像一张灰度图，越白越高。仿真器用它低成本地表示坡道、台阶、碎石等起伏地形。MuJoCo 的 hfield 资产可以从 PNG 或二进制文件读入，也可以运行时按传感器数据生成，碰撞检测时把它当作一堆三棱柱处理；Isaac Lab 则把高度场转换成三角网格，内置随机起伏、金字塔坡、台阶、离散障碍、波浪、踏石等地形，每种都带难度参数，便于配合地形课程由易到难训练。局限是一个平面位置只能有一个高度，表示不了悬空结构或洞穴。",
+      "example": "Isaac Lab 的金字塔台阶地形（pyramid stairs）：难度参数越大台阶越高，训练四足行走时常和随机起伏地形混在一起，按地形课程逐级加难。",
+      "related": ["地形课程", "复杂地形行走", "高程图", "高度扫描", "legged_gym", "MuJoCo"],
+      "sources": [
+        {"title": "MuJoCo XML Reference: asset/hfield", "url": "https://mujoco.readthedocs.io/en/stable/XMLreference.html#asset-hfield"},
+        {"title": "Isaac Lab API: isaaclab.terrains", "url": "https://isaac-sim.github.io/IsaacLab/main/source/api/lab/isaaclab.terrains.html"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "Holodeck 语言生成三维环境",
+      "name_en": "Holodeck: Language Guided Generation of 3D Embodied AI Environments",
+      "abbr": "",
+      "aliases": ["Holodeck"],
+      "tier": 3,
+      "one_liner": "输入一句话描述，用 GPT-4 和 Objaverse 资产自动生成可交互的三维室内场景。",
+      "explanation": "Holodeck 是宾夕法尼亚大学、斯坦福、华盛顿大学和艾伦人工智能研究所（Ai2）合作的工作，发表于 CVPR 2024。具身智能体需要大量多样的训练场景，但手工搭三维房间成本很高。Holodeck 让用户输入「养猫研究员的公寓」这类描述，由 GPT-4 提供常识：房间布局、墙地材质、门窗、该放哪些物体，并写出物体之间的空间关系约束（如某把椅子在桌子旁边），再由优化算法求解摆放位置；物体从 Objaverse 三维资产库中检索。生成的场景基于 AI2-THOR 加载使用。论文实验中，在 Holodeck 场景上训练的物体目标导航智能体，面对音乐室、托儿所等新场景类型时零样本泛化更好。",
+      "example": "输入「apartment for a researcher with a cat」，Holodeck 自动规划房间、选墙地材质、从 Objaverse 挑家具并按约束摆好，生成的场景可直接在 AI2-THOR 中加载。",
+      "related": ["AI2-THOR", "ProcTHOR", "Objaverse 3D 资产库", "生成式仿真", "程序化生成", "物体目标导航"],
+      "sources": [
+        {"title": "Holodeck: Language Guided Generation of 3D Embodied AI Environments (arXiv 2312.09067)", "url": "https://arxiv.org/abs/2312.09067"},
+        {"title": "allenai/Holodeck (GitHub)", "url": "https://github.com/allenai/Holodeck"},
+        {"title": "Holodeck project page", "url": "https://yueyang.ai/holodeck/"}
+      ],
+      "as_of": "2024-06"
+    },
+    {
+      "name_zh": "Humanoid-Gym",
+      "name_en": "Humanoid-Gym: Reinforcement Learning for Humanoid Robot with Zero-Shot Sim2Real Transfer",
+      "abbr": "",
+      "aliases": ["humanoid-gym"],
+      "tier": 3,
+      "one_liner": "星动纪元开源的人形机器人强化学习行走训练框架，主打零样本仿真到真机。",
+      "explanation": "Humanoid-Gym 是星动纪元（RobotEra）团队 2024 年开源的强化学习框架，论文作者为 Xinyang Gu、Yen-Jen Wang 和陈建宇（清华叉院），收录于 ICRA 2024 敏捷机器人研讨会。它基于英伟达 Isaac Gym 大规模并行训练人形机器人的行走策略（算法为 PPO），代码借用了 legged_gym 和 rsl_rl。特色是提供从 Isaac Gym 到 MuJoCo 的 sim2sim 流程：换一个物理引擎再测一遍，能提前暴露只在单一仿真器里才成立的策略，提高上真机的成功率。作者在 1.2 米高的 XBot-S 和 1.65 米高的 XBot-L 两款人形机器人上验证了零样本迁移到真实环境。它也常被当作给其他人形机器人入门强化学习行走的起点。",
+      "example": "先在 Isaac Gym 里用 PPO 训练 XBot-L 的行走策略，再放进 MuJoCo 跑 sim2sim 检查是否依然稳定，通过后部署到真机。",
+      "related": ["legged_gym", "Isaac Gym", "仿真到仿真迁移", "仿真到现实迁移", "星动纪元", "强化学习运控"],
+      "sources": [
+        {"title": "Humanoid-Gym (arXiv 2404.05695)", "url": "https://arxiv.org/abs/2404.05695"},
+        {"title": "roboterax/humanoid-gym (GitHub)", "url": "https://github.com/roboterax/humanoid-gym"}
+      ],
+      "as_of": "2024-04"
+    },
+    {
+      "name_zh": "HumanoidBench",
+      "name_en": "HumanoidBench: Simulated Humanoid Benchmark for Whole-Body Locomotion and Manipulation",
+      "abbr": "",
+      "aliases": ["humanoid-bench"],
+      "tier": 3,
+      "one_liner": "伯克利等推出的仿真人形机器人基准，含 27 个全身运动与操作任务。",
+      "explanation": "HumanoidBench 由 UC 伯克利和延世大学的研究者（Carmelo Sferrazza、Pieter Abbeel 等）提出，发表于 RSS 2024。人形机器人硬件贵、易损，算法研究难以大规模展开。它在 MuJoCo 中搭建了一台装有两只 Shadow 灵巧手的宇树 H1，设计 27 个全身控制任务：12 个运动类（走、跑、跨栏、爬行、上楼梯等）和 15 个操作类（开柜门、开门、推、投篮、插入等）。代码库还提供不带手的 H1、宇树 G1 等变体，以及 DreamerV3、TD-MPC2、SAC、PPO 基线。论文发现当时最强的强化学习算法在多数任务上表现不佳，而先学好走路、伸手等底层技能再做分层控制的方法表现更好。",
+      "example": "同一台带双手的 H1，既要完成 walk、hurdle、stair 等运动任务，也要完成 cabinet、door、basketball、insert 等操作任务，用同一套算法分别训练和打分。",
+      "related": ["人形机器人", "宇树 H1", "Shadow 灵巧手", "MuJoCo", "全身控制", "TD-MPC2"],
+      "sources": [
+        {"title": "HumanoidBench (arXiv 2403.10506)", "url": "https://arxiv.org/abs/2403.10506"},
+        {"title": "HumanoidBench project page", "url": "https://humanoid-bench.github.io/"},
+        {"title": "Robotics: Science and Systems XX (2024) proceedings", "url": "https://www.roboticsproceedings.org/rss20/p061.html"}
+      ],
+      "as_of": "2024-07"
+    },
+    {
+      "name_zh": "iGibson",
+      "name_en": "iGibson (Interactive Gibson)",
+      "abbr": "",
+      "aliases": ["iGibson 1.0", "iGibson 2.0"],
+      "tier": 3,
+      "one_liner": "斯坦福推出的室内交互式仿真平台，用于家庭场景中的导航与移动操作研究。",
+      "explanation": "iGibson 由斯坦福视觉与学习实验室（李飞飞、Silvio Savarese 等）开发，是早期 Gibson 环境的可交互版本。1.0 版（IROS 2021）提供 15 套按真实住宅重建的全交互场景、共 108 个房间，家具、柜门、抽屉等刚体和铰接物体都能被机器人推动或打开，可输出 RGB、深度、分割、激光雷达等传感信号，物理基于 Bullet 引擎，还自带运动规划器。2.0 版（CoRL 2021）加入温度、湿度、清洁度、切开等物体状态，并支持用 VR 采集人类示范，用于 BEHAVIOR 家务任务基准。之后斯坦福的 BEHAVIOR-1K 改用基于英伟达 Isaac Sim 的 OmniGibson，新项目多转向后者。",
+      "example": "在 iGibson 的住宅场景里让移动机器人导航到厨房、打开柜门，并用自带的运动规划器生成无碰撞的手臂轨迹。",
+      "related": ["OmniGibson", "BEHAVIOR-1K", "Habitat", "AI2-THOR", "移动操作", "PyBullet"],
+      "sources": [
+        {"title": "iGibson project page (Stanford SVL)", "url": "https://svl.stanford.edu/igibson/"},
+        {"title": "iGibson 1.0 (arXiv 2012.02924)", "url": "https://arxiv.org/abs/2012.02924"},
+        {"title": "BEHAVIOR (Stanford) — OmniGibson on Isaac Sim", "url": "https://behavior.stanford.edu/"}
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "增量势接触",
+      "name_en": "Incremental Potential Contact",
+      "abbr": "IPC",
+      "aliases": ["IPC 接触算法", "障碍势接触"],
+      "tier": 3,
+      "one_liner": "用障碍势能保证物体永不相互穿透的接触仿真算法，擅长软体大变形接触。",
+      "explanation": "IPC 由宾夕法尼亚大学、Adobe 研究院和纽约大学的 Minchen Li 等人提出，发表于 SIGGRAPH 2020（ACM TOG）。传统物理引擎常允许物体先穿进去一点再推开，时间步一大就容易穿模或数值爆炸。IPC 把每个隐式时间步写成一个优化问题，在物体距离趋近零时加入急剧增大的障碍势能（barrier），配合结合连续碰撞检测的线搜索，保证整条轨迹无相交、网格单元不翻转，且不受材料、步长和变形程度影响，也支持摩擦。代价是计算量大，速度远不如 MuJoCo 这类刚体引擎。后续有面向布料和杆件的 C-IPC、刚体版 rigid-ipc，以及可嵌入其他仿真器的 IPC Toolkit。",
+      "example": "论文演示中，IPC 在单个时间步处理多达约 49.8 万个接触、230 万个四面体的场景，时间步从 2×10⁻⁵ 秒到 2 秒都保持无穿透。",
+      "related": ["接触模型", "穿模", "连续碰撞检测（隧穿问题）", "软体仿真", "有限元法", "布料仿真"],
+      "sources": [
+        {"title": "Incremental Potential Contact project page", "url": "https://ipc-sim.github.io/"},
+        {"title": "ipc-sim (GitHub organization)", "url": "https://github.com/ipc-sim"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "Infinigen 程序化世界生成",
+      "name_en": "Infinigen (Infinite Photorealistic Worlds using Procedural Generation; Infinigen Indoors / Infinigen-Articulated)",
+      "abbr": "",
+      "aliases": ["Infinigen", "Infinigen Indoors", "Infinigen-Articulated", "Infinigen-Sim"],
+      "tier": 3,
+      "one_liner": "普林斯顿开源的程序化三维世界生成器，所有资产都由随机数学规则从零生成。",
+      "explanation": "Infinigen 由普林斯顿视觉与学习实验室（邓嘉团队）开发，基于 Blender，以 BSD 协议开源。初版（CVPR 2023）生成自然户外场景：地形、植物、动物以及火、云、雨雪等现象，每个资产的形状和纹理都由随机化数学规则从零生成，不用任何外部素材，因此能无限变化，并自动输出深度、光流、分割、法向等标注。Infinigen Indoors（CVPR 2024）扩展到室内，用约束描述语言和求解器摆放家具、电器等，并可导出到 Omniverse 等实时仿真器训练具身智能体。Infinigen-Articulated（又称 Infinigen-Sim，2025）进一步程序化生成带关节、仿真就绪的物体，可导出 URDF、MJCF、USD 给 MuJoCo、Isaac 使用。",
+      "example": "同一套室内生成规则换一个随机种子，就得到布局、家具形状和材质都不同的新房间，并附带像素级深度和分割真值，可直接做视觉训练数据。",
+      "related": ["程序化生成", "合成数据", "仿真资产", "铰接物体", "Blender", "生成式仿真"],
+      "sources": [
+        {"title": "Infinigen official site", "url": "https://infinigen.org/"},
+        {"title": "Infinite Photorealistic Worlds using Procedural Generation (arXiv 2306.09310)", "url": "https://arxiv.org/abs/2306.09310"},
+        {"title": "princeton-vl/infinigen (GitHub)", "url": "https://github.com/princeton-vl/infinigen"}
+      ],
+      "as_of": "2025-05"
+    },
+    {
+      "name_zh": "InternUtopia",
+      "name_en": "InternUtopia (formerly GRUtopia)",
+      "abbr": "",
+      "aliases": ["GRUtopia", "桃源", "浦源·桃源"],
+      "tier": 3,
+      "one_liner": "上海人工智能实验室基于 Isaac Sim 的城市级具身智能仿真平台，原名 GRUtopia。",
+      "explanation": "InternUtopia 由上海人工智能实验室开发，前身为 GRUtopia，中文名「浦源·桃源」，2024 年 7 月在世界人工智能大会发布并公开论文，2025 年 2 月推出 2.0 版，同年 7 月随 2.2.0 版改为现名。它构建在英伟达 Isaac Sim 之上，由三部分组成：GRScenes 场景库，约 10 万个精细标注的可交互场景，覆盖 89 类，从家庭延伸到超市、医院等服务场所；GRResidents，由大语言模型驱动的虚拟居民（NPC），可与机器人对话、生成任务；GRBench 基准，侧重足式机器人，含物体导航、社交导航和移动操作三类任务。平台还支持 VR 遥操作和手部动捕控制，与 InternNav、InternManip 等配套使用。",
+      "example": "在 GRBench 的社交导航任务中，机器人可以向 GRResidents 驱动的虚拟居民询问目标物体的信息，再走到对应位置。",
+      "related": ["Isaac Sim", "上海人工智能实验室", "社交导航", "移动操作", "物体目标导航", "上海AI实验室 InternVLA 系列"],
+      "sources": [
+        {"title": "InternRobotics/InternUtopia (GitHub)", "url": "https://github.com/InternRobotics/InternUtopia"},
+        {"title": "GRUtopia: Dream General Robots in a City at Scale (arXiv 2407.10943)", "url": "https://arxiv.org/abs/2407.10943"},
+        {"title": "百度百科：浦源·桃源", "url": "https://baike.baidu.com/item/%E6%B5%A6%E6%BA%90%C2%B7%E6%A1%83%E6%BA%90"}
+      ],
+      "as_of": "2025-07"
+    },
+    {
+      "name_zh": "LeIsaac",
+      "name_en": "LeIsaac",
+      "abbr": "",
+      "aliases": ["leisaac"],
+      "tier": 3,
+      "one_liner": "光轮智能开源的 Isaac Lab 遥操作采数框架，把 SO-101 机械臂接进 LeRobot 流程。",
+      "explanation": "LeIsaac 由光轮智能（Lightwheel）开源，采用 Apache-2.0 协议。它在英伟达 Isaac Lab 里放入仿真的 SO-101 机械臂（单臂或双臂），让用户用真实的 SO-101 主臂（Leader）遥操作仿真里的从臂，也支持键盘、手柄；除人工遥操作外，还能用状态机脚本自动生成演示轨迹。采到的 HDF5 数据可转换成 LeRobot 数据集格式，用于微调 GR00T N1.5 / N1.6 等策略并部署到真机。它也是 LeRobot EnvHub 官方的仿真模仿学习环境，可一行代码加载摘橘子、举方块、收拾玩具桌、双臂叠布等任务，没有本地 GPU 时还能在云端运行。",
+      "example": "用 LeRobot 的 make_env 加载 LightwheelAI/leisaac_env 中的 so101_pick_orange 任务：把三个橘子放进盘子，再让机械臂回到初始姿态。",
+      "related": ["Isaac Lab", "LeRobot", "EnvHub", "SO-100 / SO-101 机械臂", "光轮智能", "GR00T N1 系列"],
+      "sources": [
+        {"title": "LightwheelAI/leisaac (GitHub)", "url": "https://github.com/LightwheelAI/leisaac"},
+        {"title": "Hugging Face LeRobot Docs: LeIsaac × LeRobot EnvHub", "url": "https://huggingface.co/docs/lerobot/envhub_leisaac"}
+      ],
+      "as_of": "2026-09"
+    }
+  ]
+}

@@ -1,0 +1,229 @@
+{
+ "batch": "mechanics-02",
+ "terms": [
+  {
+   "key": "mechanics-02#0",
+   "name_en": "Link",
+   "aliases": [
+    "Robot Link"
+   ],
+   "one_liner": "One of the rigid segments of a robot's body that joints connect together.",
+   "explanation": "A link is the basic structural unit of a robot's mechanical body: a robot is a series of links strung together by joints (connections that allow relative motion), with motors driving the joints to move the links. For modeling purposes, a link is usually treated as a rigid body — one that doesn't deform under load. In a robot description file such as URDF, each link tag records that segment's visual mesh, a simplified shape used for collision checking, and its mass and moment of inertia; the joint tags record which two links a joint connects and its axis of rotation. Forward kinematics works by starting at the base and multiplying coordinate transforms link by link, joint by joint, all the way to the tip, to compute where the end effector is. Link length directly determines how far an arm can reach.",
+   "example": "A serial arm with n joints has n+1 links, including the base — a 6-axis arm has 7 links. A human's upper arm and forearm are effectively two links, connected by the elbow joint.",
+   "related": [
+    "Revolute Joint",
+    "Prismatic Joint",
+    "Kinematic Chain",
+    "Rigid Body",
+    "URDF (Unified Robot Description Format)",
+    "Degrees of Freedom (DoF)"
+   ]
+  },
+  {
+   "key": "mechanics-02#1",
+   "name_en": "Payload",
+   "aliases": [
+    "Rated Payload",
+    "Payload Capacity"
+   ],
+   "one_liner": "The maximum mass a robot's end effector can reliably carry while working, usually given in kilograms.",
+   "explanation": "Payload is a core spec on a robot's datasheet: the maximum mass an arm's end effector can reliably carry at normal working speed and acceleration, usually given in kilograms. Two details are easy to miss. First, any tool mounted at the tip — gripper, camera, force sensor — counts against this figure too, so it eats into the margin left for the object actually being grasped. Second, manufacturer numbers usually assume the payload's center of mass sits close to the end flange (the mounting face at the tip of the arm); the farther off-center it sits, the more torque it produces, and the less mass the arm can actually handle. Dividing payload by the robot's own weight gives the payload-to-weight ratio, a common way to compare how lightweight a design is. Humanoid robots often quote separate numbers for single-arm payload and whole-body carrying capacity.",
+   "example": "Franka Research 3's official specs list a 3 kg payload and an 855 mm reach; once a gripper is mounted at the tip, the gripper's own weight has to be subtracted from that 3 kg before figuring out how much the robot can actually pick up.",
+   "related": [
+    "Payload-to-Weight Ratio",
+    "End Effector",
+    "Torque",
+    "Peak Torque",
+    "Workspace",
+    "Robot Arm"
+   ]
+  },
+  {
+   "key": "mechanics-02#2",
+   "name_en": "Pose",
+   "aliases": [
+    "6-DoF Pose",
+    "6D Pose"
+   ],
+   "one_liner": "An object's position plus orientation in space — six degrees of freedom in 3D.",
+   "explanation": "Pose is shorthand for “position plus orientation.” In 3D space, position takes three coordinates — x, y, z — and orientation adds three more rotational degrees of freedom, giving the 6D pose (or 6-DoF pose) that comes up constantly in robotics. A pose is always relative to some coordinate frame — the same cup has different numeric values in the camera frame versus the world frame. Orientation can be stored as a rotation matrix, a quaternion, or Euler angles, and position and rotation are often combined into a single 4×4 homogeneous transformation matrix. A robot typically has to estimate an object's pose before it can grasp it, arm control commonly targets an end-effector pose, and the actions a VLA model outputs are also often an end-effector pose or a delta to one.",
+   "example": "ROS's geometry_msgs/Pose message has two parts, position (x, y, z, in meters) and orientation (a quaternion x, y, z, w) — together, exactly one pose.",
+   "related": [
+    "End-Effector Pose",
+    "Coordinate Frame",
+    "Rotation Matrix",
+    "Quaternion",
+    "Homogeneous Transformation Matrix",
+    "6D Pose Estimation"
+   ]
+  },
+  {
+   "key": "mechanics-02#3",
+   "name_en": "Quaternion",
+   "aliases": [
+    "Unit Quaternion"
+   ],
+   "one_liner": "A four-number representation of 3D rotation, the most common orientation format in robotics software.",
+   "explanation": "Quaternions were introduced by William Rowan Hamilton in 1843, in the form w + xi + yj + zk. A unit quaternion — one with length 1 — can represent a 3D rotation: rotating by angle θ about a unit axis u corresponds to q = (cos(θ/2), u·sin(θ/2)), where the first term is the real part w and the remaining three are the imaginary parts x, y, z. Unlike Euler angles, quaternions have no gimbal lock (the loss of a rotational degree of freedom at certain angles), and compared with a 9-number rotation matrix they're more compact and interpolate smoothly — both ROS and MuJoCo store orientation this way. One catch: q and −q represent the exact same rotation. Component ordering also varies between tools — MuJoCo uses wxyz, ROS messages use xyzw — and mixing the two up is a common bug.",
+   "example": "A 90° rotation about the z-axis: θ/2 = 45°, which in wxyz order is (0.707, 0, 0, 0.707); filled into a ROS Quaternion message, that becomes x=0, y=0, z=0.707, w=0.707.",
+   "related": [
+    "Rotation Matrix",
+    "Euler Angles",
+    "Gimbal Lock",
+    "Quaternion Double Cover",
+    "Spherical Linear Interpolation (Slerp)",
+    "Quaternion Component Order (wxyz vs. xyzw)"
+   ]
+  },
+  {
+   "key": "mechanics-02#4",
+   "name_en": "Revolute Joint",
+   "aliases": [
+    "Hinge Joint",
+    "R Joint"
+   ],
+   "one_liner": "A joint that only lets two links rotate relative to each other about a fixed axis, giving 1 degree of freedom.",
+   "explanation": "A revolute joint — often labeled R, and also called a hinge joint — connects two links and only lets them rotate relative to each other about a shared axis, with no sliding, so it contributes exactly 1 degree of freedom. It's the most common joint in arms and humanoid robots: a motor drives the output side through a reducer, and an encoder measures the rotation angle, which is what's meant by the joint angle. Its counterpart is the prismatic joint (P), which only allows translation along an axis. In URDF, a joint of type “revolute” must specify its axis direction and limits — upper and lower angle bounds in radians, maximum torque, and maximum velocity; a joint with no angle limit that can spin forever, like a wheel, is typed “continuous” instead. What people call a “6-axis arm” is usually six revolute joints chained in series.",
+   "example": "A door hinge is a revolute joint. All 7 joints on a Franka Research 3 are revolute; the values q1 through q7 the controller reads out are each joint's rotation angle, in radians.",
+   "related": [
+    "Link",
+    "Prismatic Joint",
+    "Ball Joint (Spherical Joint)",
+    "Joint Limits",
+    "Degrees of Freedom (DoF)",
+    "Encoder"
+   ]
+  },
+  {
+   "key": "mechanics-02#5",
+   "name_en": "Roll-Pitch-Yaw (RPY)",
+   "aliases": [
+    "RPY",
+    "RPY Angles"
+   ],
+   "one_liner": "Orientation described by three rotation angles about the x, y, and z axes: roll, pitch, and yaw.",
+   "explanation": "This naming comes from aviation and maritime navigation: roll is tilting about the front-to-back axis, pitch is tipping the nose up or down about the side-to-side axis, and yaw is turning about the vertical axis. ROS's REP 103 convention points a body's x-axis forward, y-axis left, and z-axis up; RPY means rotating in sequence about the fixed frame's x, y, and z axes by angles γ, β, and α, giving the rotation matrix R = Rz(α)·Ry(β)·Rx(γ) — where Rz(α) is a rotation of α about z — which comes out identical to Z-Y-X Euler angles. RPY is intuitive and easy to tune by hand, and it's exactly what URDF's rpy attribute uses. The downside is that roll and yaw become coupled when pitch nears ±90° (gimbal lock), and the angles jump discontinuously near ±180°, which is why code usually stores orientation as a quaternion internally instead.",
+   "example": "A humanoid robot's IMU (inertial measurement unit) commonly reports roll, pitch, and yaw directly: a sudden jump in roll or pitch means the body is tipping sideways or pitching forward, and yaw tells you which way the body is facing.",
+   "related": [
+    "Euler Angles",
+    "Gimbal Lock",
+    "Intrinsic vs. Extrinsic Rotation",
+    "Rotation Matrix",
+    "Quaternion",
+    "Inertial Measurement Unit (IMU)"
+   ]
+  },
+  {
+   "key": "mechanics-02#6",
+   "name_en": "Rotation Matrix",
+   "aliases": [
+    "Direction Cosine Matrix (DCM)"
+   ],
+   "one_liner": "A 3×3 orthogonal matrix that represents a 3D rotation; multiplying it by a vector rotates that vector.",
+   "explanation": "The rotation matrix is the most basic way to describe 3D orientation. The three columns of the 3×3 matrix R are the directions — as unit vectors, in the reference frame — of the object's own x, y, and z axes; each entry equals the cosine of the angle between two axes, which is why it's also called the direction cosine matrix. It must satisfy RᵀR = I (the columns are mutually perpendicular and unit length) and det R = 1; the set of all matrices meeting this condition forms the special orthogonal group SO(3). Of its 9 numbers, only 3 are independent — there's redundancy — but unlike Euler angles it has no singular points, and the math is simple: rotating a vector is just R times that vector, chaining two rotations is just matrix multiplication (order matters), and inverting a rotation is just a transpose. A rotation matrix plus a translation gives the 4×4 homogeneous transformation matrix.",
+   "example": "The rotation matrix for a rotation of θ about the z-axis is [[cosθ, −sinθ, 0], [sinθ, cosθ, 0], [0, 0, 1]]; at θ = 90°, the vector (1, 0, 0), originally pointing along x, rotates to (0, 1, 0).",
+   "related": [
+    "Special Orthogonal Group SO(3)",
+    "Homogeneous Transformation Matrix",
+    "Quaternion",
+    "Axis-Angle",
+    "6D Rotation Representation",
+    "Coordinate Transformation"
+   ]
+  },
+  {
+   "key": "mechanics-02#7",
+   "name_en": "Task Space",
+   "aliases": [
+    "Cartesian Space",
+    "Operational Space"
+   ],
+   "one_liner": "The space that directly describes what a task cares about, usually the end effector's position and orientation.",
+   "explanation": "Task space is the counterpart to joint space. Joint space describes a robot by its joint angles; task space directly describes whatever the task actually cares about, which by default means the end effector's — the gripper or tool's — position and orientation. Per Lynch and Park's textbook Modern Robotics, how task space is defined depends on the task, not the robot: drawing on paper only needs a flat 2D coordinate, while manipulating a rigid body needs a full 6D pose. Because it's commonly expressed in Cartesian xyz coordinates, it's also called Cartesian space; Oussama Khatib introduced operational-space control in 1980, with the landmark paper following in 1987, and called it operational space. Converting joint angles to task space uses forward kinematics; the reverse uses inverse kinematics. Some VLA models define their actions in task space, others work directly in joint space.",
+   "example": "OpenVLA outputs a 3D end-effector translation, 3D rotation, and 1D gripper open/close value — a task-space action. ACT on the ALOHA platform instead outputs a 14-dimensional joint target across both arms directly — a joint-space action.",
+   "related": [
+    "Joint Space",
+    "Workspace",
+    "End-Effector Pose",
+    "Inverse Kinematics",
+    "Operational Space Control",
+    "Jacobian Matrix"
+   ]
+  },
+  {
+   "key": "mechanics-02#8",
+   "name_en": "Torque",
+   "aliases": [
+    "Moment of Force"
+   ],
+   "one_liner": "The turning effect of a force on an object, equal to force times lever arm, measured in newton-meters.",
+   "explanation": "Torque describes the effect a force has in rotating an object about a point or axis; it's also called the moment of force. It's defined as τ = r × F, where r is the vector from the rotation axis to the point where the force is applied and F is the force; its magnitude is τ = rF·sinθ, where θ is the angle between r and F, and r·sinθ is the lever arm — the perpendicular distance from the axis to the force's line of action — measured in newton-meters (N·m). The longer the lever arm, the more torque the same force produces. The rotational counterpart of Newton's second law is τ = Iα, where I is the moment of inertia and α is angular acceleration. In a robot, every rotary joint's motor outputs torque around its own axis: the torque needed to overcome gravity, inertia, and contact forces at each joint drives the choice of motor and reducer, joint-module datasheets list rated and peak torque, and torque control means sending a torque command directly to each joint.",
+   "example": "An arm extended horizontally, holding a 1 kg object 0.5 m from the shoulder joint, requires the shoulder to produce roughly 1 × 9.8 × 0.5 ≈ 4.9 N·m of torque from that object alone, not counting the arm's own weight.",
+   "related": [
+    "Wrench",
+    "Torque Control",
+    "Joint Torque Sensor",
+    "Peak Torque",
+    "Gravity Compensation",
+    "Moment of Inertia"
+   ]
+  },
+  {
+   "key": "mechanics-02#9",
+   "name_en": "Workspace",
+   "aliases": [
+    "Reachable Workspace",
+    "Work Envelope"
+   ],
+   "one_liner": "The region of positions, and sometimes orientations, that a robot's end effector can reach.",
+   "explanation": "The workspace is the set of positions — sometimes including orientations — that a robot's end effector can reach, determined by its link lengths, joint types, and joint limits, independent of any particular task; industrial-robot datasheets often draw it as a side-view and top-view outline. Per Modern Robotics, every point in the workspace can be reached by at least one joint configuration, while a point in task space isn't necessarily reachable at all. Textbooks often split it further: the reachable workspace is every point the end effector can reach in at least one orientation, while the dexterous workspace is every point it can reach in any orientation. The dexterous workspace is only a subset of the reachable one, and the two terms shouldn't be used interchangeably. Before placing a robot next to a table, choosing a camera's field of view, or generating a simulated task, it's standard practice to first confirm the target actually falls inside the workspace.",
+   "example": "A planar two-link arm where both links have length L has a disk-shaped end-effector workspace of radius 2L, assuming the joints are unconstrained and can each turn a full revolution. Franka Research 3 has an 855 mm reach, so it simply can't grasp anything noticeably farther from its base than that.",
+   "related": [
+    "Task Space",
+    "Configuration Space",
+    "Reach (Working Radius)",
+    "Reachability Map / Inverse Reachability Map",
+    "Singular Configuration",
+    "Joint Limits"
+   ]
+  },
+  {
+   "key": "mechanics-02#10",
+   "name_en": "World Frame",
+   "aliases": [
+    "Space Frame",
+    "Fixed Frame"
+   ],
+   "one_liner": "The single, unmoving reference frame shared by an entire scene, to which all other positions can be converted.",
+   "explanation": "The world frame is a reference frame fixed in the environment, independent of the robot's own motion; Modern Robotics calls it the fixed frame or space frame {s}, and it might be anchored to a corner of a room or to a tabletop. A robot system also has a base frame (fixed to the robot's base), a body frame (moving with the robot's body), camera frames, and more; each sensor's readings start out in its own local frame and have to go through a coordinate transformation into a shared reference frame — usually the world frame — before they can be planned against together. Simulators typically have an explicit world root node, such as MuJoCo's worldbody; ROS's REP 105 defines map as the frame fixed to the world, with z pointing up. For an arm bolted to a fixed base, code often just treats the base frame as the world frame directly.",
+   "example": "For tabletop grasping, the world frame's origin is set on the tabletop with z pointing up: once the camera sees the cup, its coordinates are converted from the camera frame to the world frame using the camera's extrinsics, and the arm plans its grasp from there.",
+   "related": [
+    "Coordinate Frame",
+    "Base Frame",
+    "Body Frame",
+    "Camera Extrinsics",
+    "Coordinate Transformation",
+    "REP 105 Frame Conventions (map / odom / base_link)"
+   ]
+  },
+  {
+   "key": "mechanics-02#11",
+   "name_en": "6D Rotation Representation",
+   "aliases": [
+    "rotation_6d",
+    "Continuous 6D Rotation Representation"
+   ],
+   "one_liner": "Representing a rotation with the first two columns of its rotation matrix — 6 numbers — a format well suited to neural-network learning.",
+   "explanation": "The 6D rotation representation was introduced by Zhou et al. in their CVPR 2019 paper “On the Continuity of Rotation Representations in Neural Networks.” They showed that 3D rotations have no continuous representation in Euclidean spaces of 4 dimensions or fewer — Euler angles and quaternions both have discontinuities (for instance, q and −q represent the same rotation), which causes larger errors when a network regresses these targets directly — while a continuous representation does exist in 5 or 6 dimensions. The method keeps only the first two columns of the rotation matrix. To recover a full rotation, the first column is normalized, the component of the second column along the first is subtracted off and the result is normalized, and the third column is taken as the cross product of the two — a process similar to Gram-Schmidt orthogonalization. It's a common choice in robot learning for representing end-effector orientation, whether as an action or an observation.",
+   "example": "Diffusion Policy's official code uses a RotationTransformer that by default converts axis-angle rotations to rotation_6d for handling end-effector orientation.",
+   "related": [
+    "Rotation Matrix",
+    "Quaternion",
+    "Euler Angles",
+    "9D Rotation Representation",
+    "Action Representation",
+    "Diffusion Policy"
+   ]
+  }
+ ]
+}

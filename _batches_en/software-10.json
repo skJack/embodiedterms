@@ -1,0 +1,113 @@
+{
+  "batch": "software-10",
+  "terms": [
+    {
+      "key": "software-10#0",
+      "name_en": "FishROS One-Click Installer",
+      "aliases": ["fishros", "Xiaoyu one-click install"],
+      "one_liner": "A one-line install script from the Chinese ROS community FishROS that sets up ROS and its environment.",
+      "explanation": "The FishROS one-click installer is an open-source install script maintained by “FishROS” (鱼香ROS), a Chinese-language ROS community whose author goes by “Xiaoyu” (小鱼). Newcomers installing ROS on Ubuntu commonly get stuck on steps like blocked software sources, expired keys, or a failed rosdep initialization (rosdep being the tool that auto-installs dependencies); this script bundles switching to domestic mirror sources, installing any ROS 1 or ROS 2 distribution, installing the domestic rosdepc, configuring Docker, and more, into an interactive menu — just pick a number and follow the prompts. It's one of the most common shortcuts for getting started with ROS within China, though it's still worth reading through the official installation steps afterward, so there's somewhere to start troubleshooting if something goes wrong later.",
+      "example": "On a fresh Ubuntu 22.04 install, run wget http://fishros.com/install -O fishros && . fishros, then pick “one-click install ROS” from the menu and select the Humble desktop version.",
+      "related": ["Robot Operating System", "ROS 2", "ROS Distribution", "rosdep", "Ubuntu Linux", "Package Mirror Sources in China (pip / conda / apt / Docker mirrors)"]
+    },
+    {
+      "key": "software-10#1",
+      "name_en": "FlashAttention",
+      "aliases": ["FlashAttention-2", "FlashAttention-3"],
+      "one_liner": "A GPU implementation of attention that reorders computation around memory hierarchy, giving identical results faster and with less memory.",
+      "explanation": "FlashAttention was introduced by Tri Dao and others in 2022 as a GPU implementation of the attention mechanism that produces results numerically identical to standard attention — it's exact, not an approximation. A standard implementation has to write the full N×N attention matrix to GPU memory and read it back, and for long sequences that memory traffic becomes the bottleneck. FlashAttention instead splits Q, K, and V into small blocks, computes them inside the GPU's fast on-chip cache, and writes back only the final result, never materializing the full attention matrix — so memory use grows linearly with sequence length, and speed improves noticeably too. It was followed by FlashAttention-2 and, for the Hopper architecture, FlashAttention-3. Long-sequence models like VLAs and video world models rely on it heavily for both training and inference, and PyTorch's scaled_dot_product_attention has a similar backend built in.",
+      "example": "Setting attn_implementation=“flash_attention_2” in Hugging Face Transformers when training a VLA allows a larger batch size or more image tokens within the same amount of GPU memory.",
+      "related": ["Attention Mechanism", "Transformer", "Operator (Kernel)", "CUDA", "Inference Latency", "Mixed-Precision Training"]
+    },
+    {
+      "key": "software-10#2",
+      "name_en": "Fleet Management System (e.g. Open-RMF)",
+      "aliases": ["robot fleet scheduling system", "Open-RMF"],
+      "one_liner": "Upper-level software that assigns tasks, plans routes, and prevents conflicts across a whole fleet of robots.",
+      "explanation": "A fleet management system oversees a group of robots: it receives tasks and decides which robot to send, plans each one's route, prevents collisions and deadlocks at hallways and intersections, and coordinates shared infrastructure such as elevators, automatic doors, and charging stations. Warehouse AGV/AMR (automated guided vehicle / autonomous mobile robot) vendors typically each have their own proprietary scheduling system, which makes it hard to manage a mixed fleet of different brands together. Open-RMF (Robotics Middleware Framework), led by Open Robotics, is an open-source, ROS 2–based framework that provides traffic scheduling, task allocation, facility interfaces, and adapters for different robot brands, letting heterogeneous robots operate together in settings like hospitals and office buildings. It sits one level above single-robot navigation systems such as Nav2.",
+      "example": "A hospital's medicine-delivery robots and cleaning robots come from different manufacturers; Open-RMF coordinates them so they share elevators and don't collide in the same hallway.",
+      "related": ["Multi-Robot Collaboration", "Autonomous Mobile Robot (AMR)", "Automated Guided Vehicle (AGV)", "Multi-Agent Path Finding", "ROS 2", "ROS 2 Navigation Stack (Nav2)"]
+    },
+    {
+      "key": "software-10#3",
+      "name_en": "Flexible Collision Library (FCL)",
+      "aliases": ["hpp-fcl", "Coal"],
+      "one_liner": "The most widely used open-source C++ collision-checking and distance-computation library in robot motion planning.",
+      "explanation": "FCL is an open-source C++ library presented by Jia Pan, Sachin Chitta, and Dinesh Manocha at ICRA 2012, used to test whether two geometric shapes collide and to compute the closest distance and penetration depth between them, supporting spheres, boxes, cylinders, convex shapes, triangle meshes, and octree maps. Motion planning has to run collision checks against thousands of candidate poses, so speed and robustness directly determine how fast planning runs; FCL speeds this up with a bounding-volume hierarchy (a coarse rejection pass followed by finer computation). MoveIt uses it as its default collision checker. A fork maintained by the LAAS/INRIA team in France, hpp-fcl, made performance improvements and was later renamed Coal, and now serves as Pinocchio's collision backend.",
+      "example": "When MoveIt plans a path for an arm to go around a water cup on a table, every candidate set of joint angles is checked by FCL for intersection between the arm mesh and the cup or the table.",
+      "related": ["Collision Checking", "Bounding Volume", "GJK Algorithm", "MoveIt Motion Planning Framework", "Pinocchio", "Open Motion Planning Library (OMPL)"]
+    },
+    {
+      "key": "software-10#4",
+      "name_en": "Foxglove Studio",
+      "aliases": ["Foxglove"],
+      "one_liner": "A robot data visualization tool that replays rosbags and shows curves, point clouds, and images in one view.",
+      "explanation": "Foxglove is a robot data visualization and debugging tool from the company Foxglove, available as both a web app and a desktop app. It can connect to a running ROS 1 or ROS 2 system, and can also open recorded rosbag and MCAP files (MCAP being a robot logging format that Foxglove itself helped launch), showing camera footage, 3D point clouds, the TF coordinate tree, joint curves, and logs all in one interface at once. Compared with RViz, it doesn't require ROS to be installed locally, and its layouts can be saved and shared, which makes it convenient for a team reviewing data together. It started out as the open-source Foxglove Studio; reportedly, starting in 2024 it became closed-source and was simply renamed Foxglove, with usage limits on the free tier — Rerun and PlotJuggler are open-source alternatives.",
+      "example": "After a real-robot policy run fails, drag the recorded MCAP file into Foxglove and compare the wrist-camera footage against the joint-torque curves to pinpoint the moment of failure.",
+      "related": ["RViz / RViz2", "ROS Bag", "MCAP (log file format)", "Rerun", "PlotJuggler", "ROS 2"]
+    },
+    {
+      "key": "software-10#5",
+      "name_en": "FreeRTOS",
+      "aliases": [],
+      "one_liner": "A small open-source real-time operating system kernel that runs on microcontrollers.",
+      "explanation": "FreeRTOS is an open-source real-time operating system (RTOS — an OS that guarantees tasks respond within a set deadline) kernel first released by Richard Barry around 2003, taken over by Amazon Web Services (AWS) in 2017, and released under the MIT license. It's extremely small, able to run on microcontrollers with only tens of kilobytes of memory, and provides basic facilities like task scheduling, queues, semaphores, and timers, letting a developer split motor control, sensor reading, and communication into several tasks that run by priority. Lower-level boards on a robot — motor driver boards, IMU boards, dexterous-hand controller boards — commonly run it; Espressif's official ESP32 development framework is also built on FreeRTOS, and micro-ROS supports it as well.",
+      "example": "On an STM32 joint driver board, FreeRTOS sets up three tasks: a 1 kHz current-loop task, a CAN-communication task for receiving commands, and a low-priority temperature-monitoring task.",
+      "related": ["Real-Time Operating System (RTOS)", "Microcontroller Unit (MCU)", "STM32", "micro-ROS", "Embedded System", "RT-Thread"]
+    },
+    {
+      "key": "software-10#6",
+      "name_en": "Fully Sharded Data Parallel (FSDP)",
+      "aliases": ["FSDP2", "fully_shard"],
+      "one_liner": "A data-parallel training method that splits a model's parameters, gradients, and optimizer state across multiple GPUs.",
+      "explanation": "FSDP is PyTorch's built-in distributed training approach, based on the idea behind Microsoft DeepSpeed's ZeRO-3. In ordinary distributed data parallel (DDP), every GPU stores a full copy of the model parameters, gradients, and optimizer state, so once a model gets large enough it simply doesn't fit on one GPU. FSDP shards all three across the available GPUs; before each layer's forward and backward pass, the full parameters for that layer are temporarily gathered from the other GPUs and released again right after, so each GPU only needs to hold a fraction of the total at any moment, making it possible to train models far larger than a single GPU's capacity — at the cost of more inter-GPU communication. Full-parameter fine-tuning of a multi-billion-parameter VLA or video world model commonly uses FSDP or DeepSpeed; newer PyTorch versions recommend the per-layer FSDP2 (fully_shard) interface.",
+      "example": "Full-parameter fine-tuning a roughly 3-billion-parameter VLA on 8 GPUs with 80GB each runs out of memory under DDP, but switching to FSDP makes it fit.",
+      "related": ["Distributed Data Parallel (DDP)", "DeepSpeed", "Distributed Training (data parallelism / model parallelism)", "PyTorch", "Full-Parameter Fine-tuning", "Mixed-Precision Training"]
+    },
+    {
+      "key": "software-10#7",
+      "name_en": "g2o (General Graph Optimization)",
+      "aliases": [],
+      "one_liner": "A C++ library for solving graph-structured optimization problems like SLAM pose graphs and bundle adjustment.",
+      "explanation": "g2o is an open-source C++ framework presented at ICRA 2011 by Rainer Kümmerle, Giorgio Grisetti, Kurt Konolige, Wolfram Burgard, and others, built specifically to solve nonlinear least-squares problems that can be drawn as a graph: nodes are the quantities being estimated (such as camera poses or map points), and edges are the observation constraints between them. SLAM's (simultaneous localization and mapping) back-end optimization and bundle adjustment both fall into this category; g2o exploits the sparse structure of these problems to solve them efficiently and lets users define custom node and edge types. The ORB-SLAM series uses g2o for its back end. GTSAM and Ceres Solver are tools in the same category.",
+      "example": "After ORB-SLAM3 detects a loop closure, it uses g2o to optimize the whole pose graph, spreading the accumulated drift back out across the entire trajectory.",
+      "related": ["Factor Graph Optimization", "Bundle Adjustment", "Simultaneous Localization and Mapping (SLAM)", "GTSAM (Georgia Tech Smoothing and Mapping)", "Ceres Solver", "ORB-SLAM3"]
+    },
+    {
+      "key": "software-10#8",
+      "name_en": "Gemini Robotics SDK",
+      "aliases": [],
+      "one_liner": "Google DeepMind's development kit for evaluating and fine-tuning its Gemini Robotics models.",
+      "explanation": "The Gemini Robotics SDK is a software development kit Google DeepMind released in June 2025 alongside Gemini Robotics On-Device (a VLA model that can run locally on a robot), initially made available to select developers through a trusted-tester program. It lets developers evaluate the model on their own tasks, test it inside MuJoCo physics simulation, and adapt it to a new task or a new robot using a small number of demonstrations (the official materials mention roughly 50–100). This means Gemini Robotics is moving beyond papers and demos toward being something outside teams can build on, though access is still controlled rather than freely downloadable.",
+      "example": "",
+      "related": ["Gemini Robotics On-Device", "Gemini Robotics", "Software Development Kit (SDK)", "MuJoCo (Multi-Joint dynamics with Contact)", "Fine-tuning", "Google DeepMind"]
+    },
+    {
+      "key": "software-10#9",
+      "name_en": "GTSAM (Georgia Tech Smoothing and Mapping)",
+      "aliases": [],
+      "one_liner": "A factor-graph optimization library from Georgia Tech, a common backend for SLAM and sensor fusion.",
+      "explanation": "GTSAM is an open-source C++ library (BSD-licensed, with Python and MATLAB bindings) developed by Frank Dellaert's team at Georgia Tech. It represents an estimation problem as a factor graph: variables are the unknowns being estimated, such as poses and velocities, and factors are the constraints coming from sensor measurements, with nonlinear optimization then finding the most likely solution. Its distinguishing feature is the iSAM2 incremental solver, which, when a new measurement arrives, updates only the parts of the solution it affects, making it well suited to real-time SLAM; it also has built-in support for common factors like IMU preintegration. Lidar-inertial SLAM systems such as LIO-SAM use it as their back end. It's in the same category as g2o and Ceres Solver, though GTSAM leans more toward probabilistic modeling.",
+      "example": "LIO-SAM feeds lidar odometry, IMU preintegration, GPS, and loop-closure constraints into GTSAM as factors, using iSAM2 to optimize the robot's trajectory in real time.",
+      "related": ["Factor Graph Optimization", "Simultaneous Localization and Mapping (SLAM)", "IMU Preintegration", "g2o (General Graph Optimization)", "Ceres Solver", "LIO-SAM"]
+    },
+    {
+      "key": "software-10#10",
+      "name_en": "Google Cartographer",
+      "aliases": ["cartographer_ros"],
+      "one_liner": "Google's open-source real-time lidar SLAM system, supporting both 2D and 3D mapping.",
+      "explanation": "Cartographer is a real-time SLAM (simultaneous localization and mapping) system Google open-sourced in 2016, described in the accompanying paper by Hess et al., “Real-Time Loop Closure in 2D LIDAR SLAM.” It uses lidar (optionally combined with an IMU and odometry) to build local submaps, localizes through scan matching, and uses branch-and-bound search for loop-closure detection to eliminate the drift that accumulates over long runs, supporting both 2D and 3D. It connects to ROS through cartographer_ros, and was once one of the most common lidar mapping choices for cleaning robots, service robots, and ROS teaching. According to community feedback, the project has seen fewer updates in recent years, and ROS 2 users have often moved to SLAM Toolbox instead.",
+      "example": "Drive a TurtleBot fitted with a 2D lidar around an office once, run Cartographer to produce an occupancy grid map, and hand that map to Nav2 for navigation.",
+      "related": ["Lidar SLAM", "Simultaneous Localization and Mapping (SLAM)", "Occupancy Grid Map", "Loop Closure Detection", "2D Lidar", "Common ROS SLAM Packages (GMapping / SLAM Toolbox / RTAB-Map)"]
+    },
+    {
+      "key": "software-10#11",
+      "name_en": "GR00T-WholeBodyControl",
+      "aliases": ["GR00T WBC", "GR00T whole-body control platform"],
+      "one_liner": "NVIDIA's open-source codebase for training, evaluating, and deploying whole-body controllers for humanoid robots.",
+      "explanation": "GR00T-WholeBodyControl is a codebase NVIDIA open-sourced on GitHub (under NVlabs), providing model weights for humanoid whole-body controllers along with training, evaluation, and deployment scripts. Whole-body control means coordinating the legs, torso, and arms together, so a robot keeps its balance while walking and manipulating objects at the same time. According to the repository, it includes the decoupled whole-body controller used by GR00T N1.5 and N1.6 on the Unitree G1 (a reinforcement-learning policy handling lower-body walking and balance, with inverse kinematics tracking hand targets for the upper body), as well as controllers like SONIC that are based on large-scale motion tracking. Within the GR00T system, it sits at the “cerebellum” layer: the upper-level VLA supplies a goal, and this layer converts it into joint commands.",
+      "example": "GR00T N1.6 outputs a walking-velocity command and target poses for both hands on a Unitree G1, and the decoupled controller in this codebase converts them into whole-body joint commands.",
+      "related": ["Whole-Body Control", "Decoupled Whole-Body Control", "NVIDIA GR00T N1 series", "SONIC", "Unitree G1", "NVIDIA GEAR Lab"]
+    }
+  ]
+}

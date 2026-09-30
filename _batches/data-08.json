@@ -1,0 +1,198 @@
+{"category": "data", "batch": 8, "terms": [
+{
+"name_zh": "数据质检",
+"name_en": "Data Quality Inspection",
+"abbr": "",
+"aliases": ["数据质量检查", "数据质量评价"],
+"tier": 3,
+"one_liner": "训练前逐条检查采到的机器人数据能不能用，把坏数据挑出来。",
+"explanation": "数据质检是采集之后、标注和训练之前，逐条判定机器人数据是否合格的环节。常查的有：相机是否丢帧、各传感器时间戳是否对齐、关节和动作记录是否完整、轨迹有无异常跳变、任务是否真的完成、语言标注和画面是否对得上。一般先用规则脚本自动筛，再人工抽检复核。模仿学习会把坏演示一起学进去，所以质检直接影响模型效果。2026 年 7 月工信部批准发布行业标准 YD/T 6771-2026（中国信通院牵头起草），从完整性、一致性、真实性等八个维度评价具身智能数据集，定于 2026 年 11 月 1 日实施。",
+"example": "一条遥操作叠衣服的数据，腕部相机中途丢帧、夹爪开合时刻和画面对不上，质检脚本把它标为不合格，这条数据就不会进训练集。",
+"related": ["数据清洗", "数据筛选", "有效数据", "采集 SOP", "多传感器时间同步（时间戳对齐）", "失败数据"],
+"sources": [
+{"title": "首个具身智能数据集质量标准发布（人民邮电报，数字中国建设峰会网站转载）", "url": "https://www.szzg.gov.cn/2026/xwzx/szkx/202608/t20260804_5354035.htm"},
+{"title": "具身智能迈向2.0：数据采集从训练场走向真实世界（科学网转澎湃新闻）", "url": "https://news.sciencenet.cn/htmlnews/2026/9/570778.shtm"}
+],
+"as_of": "2026-08"
+},
+{
+"name_zh": "数据检索",
+"name_en": "Data Retrieval (Retrieval-based Data Selection)",
+"abbr": "",
+"aliases": ["检索式数据选择"],
+"tier": 3,
+"one_liner": "拿少量目标任务演示去大数据集里找相似片段，合起来训练策略。",
+"explanation": "数据检索是一类挑训练数据的方法：先为目标任务采几条演示，再用它们去大规模已有机器人数据集里找视觉或动作上相似的轨迹或片段，把找到的数据和目标演示合在一起训练。它针对的问题是：所有数据一股脑混着训，不相关的数据可能互相干扰（负迁移）；只用几条演示又不够。代表工作有斯坦福的 Behavior Retrieval（2023）、华盛顿大学的 STRAP（ICLR 2025，按子轨迹检索，用视觉基础模型特征加动态时间规整做匹配）、斯坦福的 IWR（CoRL 2025，用重要性权重修正检索偏差）。它和数据筛选、数据配比解决的是同一类问题。",
+"example": "要教机器人「拿起杯子放进抽屉再关上」，只采了少量演示；STRAP 从大规模离线数据集里检索出含「拿杯子」「开关抽屉」的子片段，和这些演示一起训练策略。",
+"related": ["数据筛选", "数据配比", "少样本", "正迁移 / 负迁移", "Open X-Embodiment 数据集", "行为克隆"],
+"sources": [
+{"title": "Behavior Retrieval: Few-Shot Imitation Learning by Querying Unlabeled Datasets (arXiv)", "url": "https://arxiv.org/abs/2304.08742"},
+{"title": "STRAP: Robot Sub-Trajectory Retrieval for Augmented Policy Learning (arXiv)", "url": "https://arxiv.org/abs/2412.15182"},
+{"title": "Data Retrieval with Importance Weights for Few-Shot Imitation Learning (arXiv)", "url": "https://arxiv.org/abs/2509.01657"}
+],
+"as_of": "2025-09"
+},
+{
+"name_zh": "DemoGen",
+"name_en": "DemoGen: Synthetic Demonstration Generation for Data-Efficient Visuomotor Policy Learning",
+"abbr": "",
+"aliases": [],
+"tier": 3,
+"one_liner": "把 1 条真机演示自动改编成物体在新位置下的大量合成演示。",
+"explanation": "DemoGen 是清华大学许华哲团队（与上海期智研究院、上海 AI Lab 合作）提出的合成演示生成方法，发表于 RSS 2025。模仿学习策略的空间泛化差，物体换个位置就可能失败，而在每个位置都人工采演示成本很高。DemoGen 每个任务只需 1 条人工演示：把轨迹拆成空中移动段和接触操作段，物体挪到新位置后，接触段跟着物体一起变换，移动段用运动规划重新连接；观测直接对点云做 3D 编辑，把物体和末端对应的点一起挪过去，不需要仿真器，也不用真机重采。论文中生成整套数据约 22 秒，MimicGen 方式约需 83.7 小时。训练时配合以点云为输入的 3D 扩散策略（DP3）。",
+"example": "在开罐子（Jar-Opening）任务上只采 1 条演示，用 DemoGen 生成不同物体位置的演示后，论文报告策略在分布外位置上也能 100% 成功。",
+"related": ["MimicGen", "DexMimicGen", "3D 扩散策略", "合成数据", "位置泛化（空间泛化）", "点云"],
+"sources": [
+{"title": "DemoGen 项目主页", "url": "https://demo-generation.github.io"},
+{"title": "DemoGen: Synthetic Demonstration Generation for Data-Efficient Visuomotor Policy Learning (arXiv)", "url": "https://arxiv.org/abs/2502.16932"}
+],
+"as_of": "2025-06"
+},
+{
+"name_zh": "数据回流",
+"name_en": "Deployment Data Backflow",
+"abbr": "",
+"aliases": ["部署数据回流"],
+"tier": 3,
+"one_liner": "把机器人实际部署中产生的数据送回训练，更新模型后再部署。",
+"explanation": "数据回流是国内具身智能行业的常用说法，指机器人在真实场景干活时产生的数据（自主执行的轨迹、失败案例、人工接管和纠正的片段）被记录下来，经回传、清洗、标注后加入训练，模型更新后再部署，循环往复。它是「数据飞轮」转起来的关键一环：训练场里的遥操作数据分布有限，真实现场的错误最能暴露模型短板。中国信通院《具身智能发展报告（2025年）》提出，要尽快让机器人跨过「演示」阶段、在实际应用中形成持续的数据回流。难点在成本：如果每台机器人都要一名操作员全程看守接管，就很难商业化。",
+"example": "Physical Intelligence 训练 π*0.6 时，把机器人做意式咖啡、叠衣服、组装纸箱时自主执行的数据和人工纠错数据一起用 RECAP 方法继续训练，官方称部分最难任务的吞吐量提升一倍以上、失败率约降一半。",
+"related": ["数据飞轮", "干预数据", "纠偏数据", "机群学习 / 部署中学习", "RECAP", "π*0.6"],
+"sources": [
+{"title": "中国信通院《具身智能发展报告（2025年）》", "url": "http://www.caict.ac.cn/kxyj/qwfb/bps/202601/P020260130541978285206.pdf"},
+{"title": "具身智能迈向2.0：数据采集从训练场走向真实世界（科学网转澎湃新闻）", "url": "https://news.sciencenet.cn/htmlnews/2026/9/570778.shtm"},
+{"title": "π*0.6: a VLA That Learns From Experience (arXiv)", "url": "https://arxiv.org/abs/2511.14759"}
+],
+"as_of": "2026-09"
+},
+{
+"name_zh": "dex-retargeting",
+"name_en": "dex-retargeting (AnyTeleop hand retargeting library)",
+"abbr": "",
+"aliases": ["dex_retargeting"],
+"tier": 3,
+"one_liner": "把人手关键点姿态换算成各种机器人灵巧手关节角的开源工具库。",
+"explanation": "dex-retargeting 是从 AnyTeleop 项目（加州大学圣迭戈分校与英伟达，RSS 2023）拆出来的开源 Python 库，MIT 许可，可 pip 安装。人手和机器人手的手指数量、长度、关节都不一样，关节角不能直接照抄，需要重定向：输入 MediaPipe 或 MANO 手部模型给出的人手关键点，通过优化求机器人手的关节角，让指尖位置或指尖之间的向量尽量一致。库里有向量重定向（适合视频实时遥操作）、位置重定向（适合离线转换手物交互数据集）和 DexPilot 三种方式，配套模型库收录了 Allegro、Shadow、LEAP、Inspire 等手。很多灵巧手遥操作和人手采集项目用它把人手动作转成机器人动作。",
+"example": "官方示例用位置重定向，把 DexYCB 数据集里人手抓物体的 MANO 姿态离线转换成 Allegro、Shadow 等机器人手的抓取轨迹。",
+"related": ["AnyTeleop", "动作重定向", "MANO 手部模型", "灵巧手", "MediaPipe（手部/人体关键点）", "DexYCB 数据集"],
+"sources": [
+{"title": "dex-retargeting GitHub 仓库", "url": "https://github.com/dexsuite/dex-retargeting"},
+{"title": "AnyTeleop: A General Vision-Based Dexterous Robot Arm-Hand Teleoperation System (arXiv)", "url": "https://arxiv.org/abs/2307.04577"}
+],
+"as_of": "2026-09"
+},
+{
+"name_zh": "DexCap",
+"name_en": "DexCap: Scalable and Portable Mocap Data Collection System for Dexterous Manipulation",
+"abbr": "",
+"aliases": [],
+"tier": 3,
+"one_liner": "斯坦福的穿戴式手部动捕系统，用人手采数据教机器人灵巧手。",
+"explanation": "DexCap 是斯坦福李飞飞团队（第一作者 Chen Wang）提出的便携式手部动作捕捉采集系统，发表于 RSS 2024，配套提出从人手数据学策略的算法 DexIL。遥操作采灵巧手数据慢、贵，还得有机器人在场；DexCap 让人戴上设备直接用自己的手干活：Rokoko 电磁场动捕手套测手指相对手掌的位置，不怕被物体遮挡；胸前支架装一台 RGB-D 激光雷达相机和三台 SLAM 追踪相机，记录手腕位姿和场景点云；背包里的迷你电脑和充电宝支持约 40 分钟采集。DexIL 用逆运动学把人手动作转成 LEAP 机器人手的动作，再用点云模仿学习训练策略，部署时还可让人介入纠正。",
+"example": "论文展示了只用约 30 分钟人手动捕数据、不做任何遥操作训练出的策略，以及双手泡茶、用剪刀剪东西等任务。",
+"related": ["动作捕捉", "数据手套", "无本体采集", "DexUMI", "LEAP Hand", "人在回路"],
+"sources": [
+{"title": "DexCap 项目主页", "url": "https://dex-cap.github.io"},
+{"title": "DexCap (arXiv)", "url": "https://arxiv.org/abs/2403.07788"},
+{"title": "DexCap GitHub 仓库（RSS 2024）", "url": "https://github.com/j96w/DexCap"}
+],
+"as_of": "2024-03"
+},
+{
+"name_zh": "DexGraspNet 数据集",
+"name_en": "DexGraspNet: A Large-Scale Robotic Dexterous Grasp Dataset for General Objects Based on Simulation",
+"abbr": "",
+"aliases": ["DexGraspNet"],
+"tier": 3,
+"one_liner": "北大发布的仿真合成灵巧手抓取数据集，含 5355 个物体上的 132 万个抓取。",
+"explanation": "DexGraspNet 是北京大学王鹤团队与北京通用人工智能研究院、清华大学合作发布的大规模灵巧手抓取数据集，发表于 ICRA 2023。二指夹爪抓取已有大数据集，灵巧手抓取却一直缺数据。作者用加速的可微力封闭估计器（力封闭：手指接触力能抵抗任意方向的外力）批量合成抓取姿态，为 Shadow 灵巧手在 5355 个物体、133 个以上类别上生成 132 万个抓取，每个物体 200 个以上，全部经 Isaac Gym 仿真验证。它主要用来训练和评测灵巧抓取生成算法。2024 年团队又发布 DexGraspNet 2.0，扩展到 8270 个杂乱场景、4.27 亿个抓取，并实现真机零样本迁移。",
+"example": "训练一个输入物体点云、输出 Shadow 手抓取姿态的生成模型，用 DexGraspNet 的抓取作为监督数据。",
+"related": ["灵巧操作", "力封闭", "Shadow 灵巧手", "Isaac Gym", "合成数据", "抓取位姿检测"],
+"sources": [
+{"title": "DexGraspNet 项目主页", "url": "https://pku-epic.github.io/DexGraspNet/"},
+{"title": "DexGraspNet (arXiv)", "url": "https://arxiv.org/abs/2210.02697"},
+{"title": "DexGraspNet 2.0 (arXiv)", "url": "https://arxiv.org/abs/2410.23004"}
+],
+"as_of": "2024-10"
+},
+{
+"name_zh": "DexMimicGen",
+"name_en": "DexMimicGen: Automated Data Generation for Bimanual Dexterous Manipulation via Imitation Learning",
+"abbr": "",
+"aliases": [],
+"tier": 3,
+"one_liner": "英伟达的自动数据生成系统，把几十条演示扩增成上万条双臂灵巧手数据。",
+"explanation": "DexMimicGen 是英伟达研究院与得克萨斯大学奥斯汀分校、加州大学圣迭戈分校提出的自动数据生成系统，发表于 ICRA 2025，是 MimicGen 在双臂灵巧手（如人形机器人上半身）上的扩展。MimicGen 的思路是：把少量人工演示按物体切成子任务片段，物体位置变了就把片段跟着变换后在仿真里重放，只保留成功的轨迹。双臂任务里两只手有时各干各的、有时要同步配合、有时有先后顺序，DexMimicGen 为此加入按手臂分别切分子任务、同步和顺序约束。论文从 60 条人工演示生成约 2.1 万条演示，覆盖 9 个任务，并用真-仿-真流程在真机易拉罐分拣任务上做了验证。",
+"example": "从 60 条人工遥操作演示出发，在 robosuite 等仿真环境里自动生成约 2.1 万条双臂灵巧手演示，再用行为克隆训练策略。",
+"related": ["MimicGen", "DemoGen", "双臂操作", "真-仿-真闭环", "合成数据", "行为克隆"],
+"sources": [
+{"title": "DexMimicGen 项目主页", "url": "https://dexmimicgen.github.io"},
+{"title": "DexMimicGen (arXiv)", "url": "https://arxiv.org/abs/2410.24185"}
+],
+"as_of": "2024-10"
+},
+{
+"name_zh": "DEXOP 数据采集装置",
+"name_en": "DEXOP: A Device for Robotic Transfer of Dexterous Human Manipulation",
+"abbr": "",
+"aliases": ["DEXOP"],
+"tier": 3,
+"one_liner": "MIT 的被动手部外骨骼，人手直接带动机器人手采集视觉和触觉数据。",
+"explanation": "DEXOP 是 MIT Improbable AI 实验室（方浩树、Pulkit Agrawal 等）2025 年 9 月公开的灵巧手数据采集装置。作者提出一种叫 perioperation 的采集范式：记录人的真实操作，同时让数据尽量能直接迁移到机器人上。DEXOP 是被动式手部外骨骼，人的手指通过机械结构连到一只机器人手的手指上，人手怎么动，机器人手就摆出同样的姿态；机器人手上装着相机和触觉传感器，所以采到的就是机器人自己的视觉和触觉数据。和遥操作相比，操作者能通过手指直接感到接触力，动作更自然，更快也更准。论文报告，按单位采集时间算，用 DEXOP 数据训练的策略表现明显好于遥操作数据。",
+"example": "操作者戴着 DEXOP 做接触丰富的灵巧任务，机器人手上的相机和触觉传感器同步记录，这些数据直接用来训练同一只机器人手的策略。",
+"related": ["外骨骼", "触觉数据", "无本体采集", "DexUMI", "遥操作", "接触丰富操作"],
+"sources": [
+{"title": "DEXOP 项目主页", "url": "https://dex-op.github.io"},
+{"title": "DEXOP (arXiv)", "url": "https://arxiv.org/abs/2509.04441"}
+],
+"as_of": "2025-09"
+},
+{
+"name_zh": "DexUMI",
+"name_en": "DexUMI: Using Human Hand as the Universal Manipulation Interface for Dexterous Manipulation",
+"abbr": "",
+"aliases": [],
+"tier": 3,
+"one_liner": "用可穿戴外骨骼让人手直接采灵巧手数据，并把画面里的人手换成机器人手。",
+"explanation": "DexUMI 是斯坦福宋舒然团队与哥伦比亚大学、英伟达等 2025 年提出的灵巧手数据采集与策略学习框架，入围 CoRL 2025 最佳论文候选。它把 UMI（通用操作接口，用手持夹爪采数据）的思路推广到多指灵巧手，用人手当采集接口，并从两方面缩小人手和机器人手的本体差异。硬件上，为目标机器人手专门设计可穿戴外骨骼，把人手动作限制在机器人手做得到的范围内，人也能直接感到接触；手腕位姿用 iPhone 记录，腕下装广角相机，外骨骼带触觉传感器。软件上，把画面里的人手和外骨骼抠掉、补全背景，再贴上同姿态的机器人手图像，让训练画面和部署时一致。在 Inspire 和 XHand 两种手上平均成功率 86%。",
+"example": "在一项取茶叶的任务中，论文报告 DexUMI 的采集效率约为传统遥操作的 3.2 倍。",
+"related": ["通用操作接口", "外骨骼", "本体差异", "DexCap", "灵巧手", "DEXOP 数据采集装置"],
+"sources": [
+{"title": "DexUMI 项目主页", "url": "https://dex-umi.github.io"},
+{"title": "DexUMI (arXiv)", "url": "https://arxiv.org/abs/2505.21864"}
+],
+"as_of": "2025-05"
+},
+{
+"name_zh": "DexWild",
+"name_en": "DexWild: Dexterous Human Interactions for In-the-Wild Robot Policies",
+"abbr": "",
+"aliases": ["DexWild-System"],
+"tier": 3,
+"one_liner": "CMU 的便携手部采集系统，让普通人在各种真实场景用手采灵巧操作数据。",
+"explanation": "DexWild 是卡内基梅隆大学 Deepak Pathak 团队提出的灵巧操作数据采集与训练方案，发表于 RSS 2025。遥操作数据质量高但贵，很难覆盖足够多的环境；DexWild 让普通人戴上低成本便携设备 DexWild-System，用自己的手在真实场景里采数据：动捕手套测手指姿态，手套上的标记由一台追踪相机定位手腕，手掌上两台相机拍局部画面，画面里几乎看不到手本身，方便跨本体使用。10 名未受训练的采集者在 93 个环境中采了 9290 条演示，速度约为遥操作的 4.6 倍。人手数据和少量机器人数据协同训练后，策略在没见过的环境中成功率 68.5%，约为只用机器人数据的 4 倍。",
+"example": "叠衣服任务用约 1124 条人手演示加 290 条机器人演示协同训练；训练用的是 LEAP 手加 xArm，还能零样本迁移到 Franka 机械臂上。",
+"related": ["野外数据", "协同训练", "数据手套", "跨本体", "LEAP Hand", "无本体采集"],
+"sources": [
+{"title": "DexWild 项目主页", "url": "https://dexwild.github.io"},
+{"title": "DexWild (arXiv)", "url": "https://arxiv.org/abs/2505.07813"}
+],
+"as_of": "2025-05"
+},
+{
+"name_zh": "DexYCB 数据集",
+"name_en": "DexYCB: A Benchmark for Capturing Hand Grasping of Objects",
+"abbr": "",
+"aliases": ["DexYCB"],
+"tier": 3,
+"one_liner": "英伟达发布的人手抓物体多视角数据集，带手和物体的三维位姿标注。",
+"explanation": "DexYCB 是英伟达与华盛顿大学发布的真实人手抓取物体数据集，发表于 CVPR 2021。作者用 8 台同步的 RealSense D415 深度相机从多个角度拍摄 10 名受试者抓起 20 个 YCB 物体（YCB 是机器人研究常用的标准日用品集），共 1000 段序列、约 58 万帧 RGB-D 图像；人手姿态用 MANO 参数化手部模型标注，物体给出 6D 位姿（三维位置加三维朝向）。它被用作 2D 检测、6D 物体位姿估计、3D 手部姿态估计的基准，还提出了人把物体递给机器人时生成安全抓取的评测。在具身领域，它常被当作人手抓取示范的来源，经动作重定向转成机器人灵巧手的轨迹。",
+"example": "用 dex-retargeting 的位置重定向，把 DexYCB 里人手抓物体的 MANO 姿态转换成 Allegro、Shadow 等机器人手的抓取轨迹。",
+"related": ["YCB 物体集", "MANO 手部模型", "手部姿态估计", "6D位姿估计", "人机物体交接", "dex-retargeting"],
+"sources": [
+{"title": "DexYCB 项目主页", "url": "https://dex-ycb.github.io"},
+{"title": "DexYCB: A Benchmark for Capturing Hand Grasping of Objects (arXiv)", "url": "https://arxiv.org/abs/2104.04631"}
+],
+"as_of": "2021-04"
+}
+]}

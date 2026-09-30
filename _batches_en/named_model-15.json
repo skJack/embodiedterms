@@ -1,0 +1,228 @@
+{
+  "batch": "named_model-15",
+  "terms": [
+    {
+      "key": "named_model-15#0",
+      "name_en": "HORA",
+      "aliases": [
+        "In-Hand Object Rotation via Rapid Motor Adaptation"
+      ],
+      "one_liner": "A reinforcement-learning method that uses only fingertip and joint proprioception to keep rotating a variety of objects in-hand.",
+      "explanation": "HORA was released in October 2022 by Haozhi Qi, Jitendra Malik, and colleagues at UC Berkeley and Meta AI, published at CoRL 2022. The goal is to have the Allegro four-fingered dexterous hand rotate an object continuously about one axis using only its fingertips. The method follows Rapid Motor Adaptation (RMA): first, a base policy is trained with reinforcement learning in simulation, with access to privileged information such as the object's size, mass, and friction; then an adaptation module is trained to infer those same object properties using only a recent history of joint proprioception. The policy is trained in simulation on cylinders alone, yet deploys to the real robot with no fine-tuning, rotating objects that vary in size, shape, and weight; a stable “finger gait” emerges naturally during training. It is a representative example of sim-to-real transfer for in-hand manipulation.",
+      "example": "A policy that only ever saw cylinders in simulation, once deployed on a real Allegro hand, can rotate everyday objects of varying shapes and weights without using a camera at all.",
+      "related": [
+        "Rapid Motor Adaptation",
+        "In-Hand Manipulation",
+        "Dexterous Manipulation",
+        "Privileged Information",
+        "Sim-to-Real Transfer",
+        "Allegro Hand"
+      ]
+    },
+    {
+      "key": "named_model-15#1",
+      "name_en": "HoST (Humanoid Standing-up)",
+      "aliases": [
+        "Learning Humanoid Standing-up Control across Diverse Postures"
+      ],
+      "one_liner": "A control framework that uses reinforcement learning to learn, from scratch, how a humanoid can stand up from many different postures.",
+      "explanation": "HoST was released in February 2025 by Shanghai AI Lab (Jiangmiao Pang's group) together with Shanghai Jiao Tong University, the University of Hong Kong, Zhejiang University, and CUHK, published at RSS 2025 and nominated for best systems paper. It addresses how a humanoid robot gets itself back up after falling: earlier methods either ran only in simulation and ignored real motor limits, or relied on standing-up trajectories hand-designed for a specific ground surface. HoST learns from scratch with reinforcement learning across a variety of simulated terrains, using no reference motion at all; it uses multiple value networks (critics), each evaluating a different group of rewards, paired with curriculum learning, plus smoothness regularization and an implicit velocity cap to prevent jitter and overly forceful motion on the real robot. Once trained, it was deployed directly to a Unitree G1, able to stand up from postures like lying down or leaning against a wall in a variety of indoor and outdoor settings, and is a representative work in fall-recovery research.",
+      "example": "Whether a Unitree G1 is lying on the ground or leaning against a wall, the HoST policy can control it to stand up on its own, with no human support or overhead rig needed.",
+      "related": [
+        "Fall Recovery",
+        "RL-based Locomotion Control",
+        "Curriculum Learning",
+        "Sim-to-Real Transfer",
+        "Unitree G1",
+        "Shanghai AI Lab"
+      ]
+    },
+    {
+      "key": "named_model-15#2",
+      "name_en": "HOVER",
+      "aliases": [
+        "Versatile Neural Whole-Body Controller for Humanoid Robots"
+      ],
+      "one_liner": "A versatile neural whole-body controller from NVIDIA and others where one policy works across many different command modes.",
+      "explanation": "HOVER was released in October 2024 by NVIDIA (Linxi Fan, Yuke Zhu, and others) together with CMU, UC Berkeley, UT Austin, and UCSD, published at ICRA 2025. Navigation, loco-manipulation, and tabletop manipulation each need a different control interface for a humanoid: navigation cares about torso (root) velocity, while tabletop manipulation cares about upper-body joint positions. Previously, each interface was usually trained as its own separate, non-interchangeable policy. HOVER first trains a teacher whole-body motion-tracking policy that imitates AMASS human motion data in simulation, then distills it into a student policy; during training, mode masks and sparse masks are applied separately to upper- and lower-body commands, letting the same policy switch among the command modes used by H2O, OmniH2O, ExBody, and HumanPlus with no retraining needed. The code is open-sourced on Isaac Lab, and it was deployed on a real Unitree H1.",
+      "example": "The same HOVER policy can either take just torso-velocity commands to make the H1 walk, or switch to a VR teleoperation mode that tracks only the head and hand positions.",
+      "related": [
+        "Whole-Body Control",
+        "Learning-Based Whole-Body Control",
+        "Policy Distillation",
+        "Motion Tracking",
+        "OmniH2O",
+        "NVIDIA GEAR Lab"
+      ]
+    },
+    {
+      "key": "named_model-15#3",
+      "name_en": "HugWBC",
+      "aliases": [
+        "A Unified and General Humanoid Whole-Body Controller for Versatile Locomotion"
+      ],
+      "one_liner": "A whole-body controller where one policy lets a humanoid walk, run, jump, and hop, with adjustable step frequency and foot-lift height.",
+      "explanation": "HugWBC was released in February 2025 by Shanghai Jiao Tong University (Weinan Zhang's group) together with Shanghai AI Lab (Jiangmiao Pang) and others, published at RSS 2025. Most humanoid walking controllers only know one fixed gait, with no adjustable parameters and little room to extend. HugWBC designs a unified command space: besides velocity, it can also specify gait (walk/run, jumping, standing, hopping on one foot), step frequency, foot-lift height, body height, waist rotation, and body pitch. Training adds a symmetry loss, and uses “intervention training” to let the upper body be taken over by an external signal, such as teleoperation, which supports walking and manipulating at the same time. The policy is trained in Isaac Gym and deployed on a Unitree H1, with code open-sourced.",
+      "example": "A remote control makes the H1 walk at a specified step frequency and foot-lift height, while the operator simultaneously takes over its arms through teleoperation to carry a box.",
+      "related": [
+        "Whole-Body Control",
+        "Learning-Based Whole-Body Control",
+        "Gait",
+        "Loco-Manipulation",
+        "Unitree H1",
+        "HOVER"
+      ]
+    },
+    {
+      "key": "named_model-15#4",
+      "name_en": "Humanoid Locomotion as Next Token Prediction",
+      "aliases": [],
+      "one_liner": "Treats a humanoid robot's walking control as a language-model-style “predict the next token” problem, learned with a causal Transformer.",
+      "explanation": "This was released in February 2024 by Ilija Radosavovic, Koushil Sreenath, Jitendra Malik, and colleagues at UC Berkeley. It frames real humanoid robot control as a problem similar to language modeling: a causal Transformer autoregressively predicts a sensorimotor trajectory made of observations and actions, where each token predicts the next token of the same modality. This lets data lacking action labels — such as action trajectories extracted from human video — also participate in training. The data comes from simulated trajectories generated by existing neural-network policies and model-based controllers, human motion-capture data, and YouTube videos of humans. The model was deployed on Agility Robotics' full-size humanoid Digit, walking zero-shot on the streets of San Francisco; using just 27 hours of walking data is also enough to transfer to the real robot, and it generalizes to a backward-walking command that was never in the training data.",
+      "example": "There is no backward-walking command in the training data, yet once deployed, the model can still make Digit walk backward on command.",
+      "related": [
+        "Next-Token Prediction",
+        "Autoregressive Decoding",
+        "Action-Label-Free Video",
+        "Bipedal Walking",
+        "Agility Digit",
+        "Real-World Humanoid RL Locomotion"
+      ]
+    },
+    {
+      "key": "named_model-15#5",
+      "name_en": "Humanoid Parkour Learning",
+      "aliases": [],
+      "one_liner": "An end-to-end parkour policy that lets a humanoid jump onto platforms, cross gaps, and clear hurdles using just its head depth camera.",
+      "explanation": "This was released in June 2024 by Ziwen Zhuang, Shenzhe Yao, and Hang Zhao at the Shanghai Qi Zhi Institute, ShanghaiTech University, and Tsinghua University, published at CoRL 2024, and is the humanoid counterpart of the same group's quadruped work, Robot Parkour Learning. It needs no human motion reference at all, training a vision-based, end-to-end whole-body control policy with reinforcement learning: first, flat-ground walking is trained on terrain with fractal noise (the noise naturally encourages the robot to lift its feet), then a “privileged” parkour policy that reads ground-truth terrain directly is trained across 10 obstacle types, and finally that's distilled with DAgger into a student policy that only sees images from a head-mounted depth camera. Deployed on a Unitree H1, it can jump onto a 0.42 m platform, cross a 0.8 m gap, run outdoors at 1.8 m/s, and autonomously choose which parkour move to use when given only a steering command.",
+      "example": "The operator only uses a joystick to steer; when the H1 sees a platform ahead, it decides on its own to jump up onto it.",
+      "related": [
+        "Parkour",
+        "Perceptive Locomotion",
+        "Teacher-Student Distillation",
+        "DAgger (Dataset Aggregation)",
+        "Unitree H1",
+        "Robot Parkour Learning"
+      ]
+    },
+    {
+      "key": "named_model-15#6",
+      "name_en": "HunyuanWorld (Tencent)",
+      "aliases": [
+        "HunyuanWorld 1.0",
+        "HunyuanWorld-Voyager",
+        "HY-World",
+        "WorldPlay"
+      ],
+      "one_liner": "Tencent Hunyuan's open-source 3D world-generation series that turns text or an image into an explorable 3D scene.",
+      "explanation": "HunyuanWorld is an open-source world-generation model series from Tencent's Hunyuan team. HunyuanWorld 1.0, from July 2025, uses a 360° panorama as an intermediate representation, layering the scene semantically and reconstructing it into an exportable 3D mesh, generating an explorable 3D world from a single sentence or image; Voyager, from September 2025, is an RGB-D video diffusion model that generates geometrically consistent color and depth video along a camera path the user provides, yielding a 3D point cloud directly. Later releases followed: 1.1 (WorldMirror, reconstruction from video or multi-view images), 1.5 (WorldPlay, December 2025, a real-time interactive world model), and HY-World 2.0 (April 2026). For embodied AI, it's used mainly to mass-produce simulation scenes and assets — it leans toward “generating a 3D environment,” a different focus from a world model that predicts the consequences of a robot's actions.",
+      "example": "Given the prompt “a seaside town of wooden cabins,” HunyuanWorld 1.0 generates an explorable 360° 3D scene with an exportable mesh, ready to import into a game engine or simulator.",
+      "related": [
+        "World Model",
+        "Interactive World Model",
+        "Generative Simulation",
+        "Marble (World Labs 3D world generation model)",
+        "Genie 3",
+        "Spatial Intelligence"
+      ]
+    },
+    {
+      "key": "named_model-15#7",
+      "name_en": "Tencent HY-Embodied (Hunyuan Embodied)",
+      "aliases": [
+        "HY-Embodied-0.5",
+        "HY-Embodied-0.5-X",
+        "Hy-Embodied-0.5-VLA",
+        "HY-VLA-0.5",
+        "Hy-Embodied-VLM-1.0"
+      ],
+      "one_liner": "An open-source embodied foundation model series from Tencent Robotics X and the Hunyuan team, including both an embodied VLM and a VLA.",
+      "explanation": "This is an open-source embodied foundation model family from Tencent's Robotics X Lab and its Hunyuan vision team. HY-Embodied-0.5, from April 2026, is a vision-language model built for robots, strengthening spatial and temporal perception and embodied reasoning, using a Mixture-of-Transformers (MoT) architecture, with a 2B-active (4B total) on-device version and a 32B version — the MoT-2B was open-sourced. The same month's 0.5-X continues post-training on top of it, focused on task planning and risk judgment. June's Hy-Embodied-0.5-VLA adds a flow-matching action expert on this backbone, trained on more than 10,000 hours of bimanual data collected with the company's own fingertip UMI device, with over 2,000 hours of that open-sourced; in July, a MoE-architecture VLM-1.0 followed (about 3B active / 30B total parameters). The project page sits on Tencent's Tairos embodied-AI open platform.",
+      "example": "Hy-Embodied-0.5-VLA reports success rates of 90.9% (Clean) and 90.1% (Randomized) on the RoboTwin 2.0 simulation benchmark.",
+      "related": [
+        "Embodied Foundation Model",
+        "Vision-Language Model",
+        "Vision-Language-Action Model",
+        "Mixture-of-Transformers",
+        "Universal Manipulation Interface",
+        "Tencent Tairos Embodied AI Open Platform"
+      ]
+    },
+    {
+      "key": "named_model-15#8",
+      "name_en": "HIM",
+      "aliases": [
+        "Hybrid Internal Model",
+        "HIMLoco",
+        "Learning Agile Legged Locomotion with Simulated Robot Response"
+      ],
+      "one_liner": "A legged-locomotion method that uses only proprioception, inferring terrain and disturbances from the robot's own response.",
+      "explanation": "HIM was released in December 2023 by Shanghai AI Lab's OpenRobotLab (Jiangmiao Pang's group), published at ICLR 2024, with its code repository named HIMLoco. A legged robot's sensors only ever give incomplete, noisy observations, and external state such as ground friction and terrain height is hard to estimate directly. HIM borrows the idea of internal model control from classical control theory, treating this external state as a disturbance to be inferred from the robot's own response: a “hybrid internal embedding” represents both explicit body velocity and implicit stability information at once, and contrastive learning is used to pull it close to the robot's actual next-moment state. It needs only proprioception from joint encoders and the IMU, skipping the usual two-stage teacher-student imitation process; the paper reports that training for about an hour on a single RTX 4090 is enough to let a quadruped handle a variety of terrains and external-force disturbances.",
+      "example": "A quadruped relying only on joint encoders and the IMU can keep walking under terrain and external shoves it never saw during training.",
+      "related": [
+        "Legged Locomotion",
+        "Proprioception",
+        "Blind Locomotion",
+        "Contrastive Learning",
+        "Rapid Motor Adaptation",
+        "Shanghai AI Lab"
+      ]
+    },
+    {
+      "key": "named_model-15#9",
+      "name_en": "HybridVLA",
+      "aliases": [
+        "Hybrid-VLA",
+        "Collaborative Diffusion and Autoregression in a Unified Vision-Language-Action Model"
+      ],
+      "one_liner": "A VLA that predicts actions both by diffusion and autoregressively, inside the same large language model.",
+      "explanation": "HybridVLA was released in March 2025 by Shanghang Zhang's group at Peking University, together with the Beijing Academy of Artificial Intelligence, CUHK, and Fudan University. Autoregressive VLA models discretize actions into tokens, which lets them inherit a vision-language model's reasoning ability, but discretization breaks the continuity of actions and hurts fine motor control; diffusion VLA models instead attach a separate diffusion head to output continuous actions, but only use the features a VLM extracts, without benefiting from token-by-token generative reasoning. HybridVLA embeds diffusion denoising directly into a large language model's next-token-prediction process, so one model produces both a diffusion action and an autoregressive action at once, which are then adaptively fused through “collaborative action ensembling.” The model is built on Prismatic 7B (a LLaMA-2 backbone); the paper reports average success rates 14% and 19% higher than the previous best methods on simulation and real-robot tasks, respectively.",
+      "example": "At every step, the same HybridVLA model produces two action predictions, one diffusion-based and one autoregressive, which are fused before being handed to the robot arm to execute.",
+      "related": [
+        "Vision-Language-Action Model",
+        "Autoregressive-Diffusion Hybrid Architecture",
+        "Diffusion Action Head",
+        "Action Binning / Discretization",
+        "CogACT",
+        "OpenVLA"
+      ]
+    },
+    {
+      "key": "named_model-15#10",
+      "name_en": "iDP3",
+      "aliases": [
+        "Improved 3D Diffusion Policy",
+        "Generalizable Humanoid Manipulation with 3D Diffusion Policies"
+      ],
+      "one_liner": "An improved 3D Diffusion Policy that lets a humanoid trained on data from a single scene generalize to new scenes.",
+      "explanation": "iDP3 was released in October 2024 by Yanjie Ze, Jiajun Wu, and colleagues at Stanford, together with Simon Fraser University, UPenn, UIUC, and CMU, published at IROS 2025, an improved version of 3D Diffusion Policy (DP3). The original DP3 processes point clouds in world coordinates, which requires camera calibration and cropping the point cloud by segmentation — not a good fit for a humanoid whose head camera moves along with its body. iDP3 switches to an “egocentric” 3D point cloud in camera coordinates instead, eliminating the need for calibration and segmentation, while also scaling up the input point-cloud size, improving the vision encoder, and lengthening the action-prediction horizon. The accompanying system includes upper-body teleoperation based on an Apple Vision Pro, and a 25-degree-of-freedom Fourier GR1 humanoid platform (with a RealSense L515 depth camera) mounted on a height-adjustable cart. Using data collected from just a single scene, the robot can complete tasks in many new scenes using only its onboard compute.",
+      "example": "A policy trained only on demonstration data collected in one scene can, once deployed, perform the same kind of manipulation in other real-world scenes it has never seen.",
+      "related": [
+        "3D Diffusion Policy (DP3)",
+        "Diffusion Policy",
+        "Point Cloud",
+        "Humanoid Robot",
+        "Fourier GR-1",
+        "VR Teleoperation"
+      ]
+    },
+    {
+      "key": "named_model-15#11",
+      "name_en": "Inner Monologue",
+      "aliases": [
+        "Embodied Reasoning through Planning with Language Models"
+      ],
+      "one_liner": "Feeds environment feedback back into a large language model as text, letting the robot adjust its plan as it goes.",
+      "explanation": "Inner Monologue was released in July 2022 by Wenlong Huang, Fei Xia, Brian Ichter, and colleagues at Robotics at Google, published at CoRL 2022. At the time, work such as SayCan already used large language models to break a high-level instruction into a sequence of skills, but the plan was fixed once made, and the model had no way of knowing when something went wrong during execution. Inner Monologue needs no extra training: it writes several kinds of feedback back into the LLM's prompt in natural language — whether a skill succeeded (success detection), what's in the scene (passive or active scene description), and any additional human instructions — forming an “inner monologue” that the LLM uses to decide its next step, retry, or revise the plan. Across three settings — simulated and real tabletop object rearrangement, and long-horizon mobile manipulation in a real kitchen — this closed-loop language feedback clearly raised the instruction-completion rate. It is an early representative example of using an LLM for closed-loop robot planning.",
+      "example": "For example, when the robot's grasp fails, a success detector writes back “action failed”; reading this, the LLM schedules a re-grasp attempt instead of just moving on to the next step.",
+      "related": [
+        "SayCan",
+        "LLM-based Task Planning",
+        "Success Detector",
+        "Closed-Loop",
+        "Long-Horizon Task",
+        "Code as Policies"
+      ]
+    }
+  ]
+}

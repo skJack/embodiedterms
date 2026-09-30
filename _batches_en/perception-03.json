@@ -1,0 +1,113 @@
+{
+  "batch": "perception-03",
+  "terms": [
+    {
+      "key": "perception-03#0",
+      "name_en": "AnyGrasp",
+      "aliases": ["AnyGrasp SDK"],
+      "one_liner": "A general-purpose grasp-detection model from Shanghai Jiao Tong University that outputs many usable grasp poses directly from a point cloud.",
+      "explanation": "AnyGrasp is a grasp-perception system from Cewu Lu's team (MVIG) at Shanghai Jiao Tong University, with the paper published in IEEE Transactions on Robotics (2023). Given a point cloud from a depth camera, it outputs a dense set of 7-degree-of-freedom grasp poses across the scene — gripper position, orientation, and opening width — each with a score. It's fairly robust to depth noise and can match the same grasp across consecutive frames, letting it track a moving object. The paper reports a single-arm system completing more than 900 grasps per hour. AnyGrasp is often used as a ready-made grasping module plugged into a larger system — OK-Robot, for instance, uses it to decide how to grasp. An SDK is released on GitHub, though the core library requires a machine-specific license.",
+      "example": "Shooting a single RGB-D frame of a cluttered tabletop, AnyGrasp returns hundreds of candidate grasps; the target object's segmentation mask filters out any that don't land on the target, and the highest-scoring remaining grasp is sent to the arm to execute.",
+      "related": ["Grasp Pose Detection", "Bin Picking", "GraspNet-1Billion Dataset", "Contact-GraspNet", "OK-Robot", "Point Cloud"]
+    },
+    {
+      "key": "perception-03#1",
+      "name_en": "AprilTag",
+      "aliases": ["Visual Fiducial Marker", "Fiducial Marker", "AprilTag 3"],
+      "one_liner": "A printable black-and-white square marker that a camera can detect to compute the marker's ID and 6D pose.",
+      "explanation": "AprilTag is a visual fiducial marker system proposed by Edwin Olson's team (the APRIL lab) at the University of Michigan, presented at ICRA 2011, and it looks like a simplified QR code. It only encodes a single ID number rather than large amounts of data, but the detector reliably finds its four corners, and combining those with the camera's intrinsics and the tag's known physical size, PnP gives its 6D pose relative to the camera. In robotics it's commonly used for hand-eye calibration, providing ground-truth poses for objects or worktables, and aligning the extrinsics of multiple cameras. The current open-source version, AprilTag 3 (a C implementation under the BSD license), offers several tag families such as tag36h11 and tagStandard41h12, and can also detect ArUco markers.",
+      "example": "Pasting tag36h11 markers at the four corners of a worktable lets a fixed third-person camera detect them and solve for the table's pose relative to the camera, which is then used to bring several cameras into one shared coordinate frame.",
+      "related": ["ArUco Marker", "Hand-Eye Calibration", "PnP (Perspective-n-Point)", "Camera Extrinsics", "6D Object Pose Estimation", "Calibration Board (Checkerboard / ChArUco)"]
+    },
+    {
+      "key": "perception-03#2",
+      "name_en": "Bounding Box",
+      "aliases": ["BBox", "Detection Box"],
+      "one_liner": "The rectangle an object detector draws around an object, given as a few coordinates marking its location in the image.",
+      "explanation": "A bounding box is the most common output of an object detector: a rectangle enclosing an object, usually paired with a class label and a confidence score. Two representations are common — top-left plus bottom-right corners (x1, y1, x2, y2), or center plus width and height (cx, cy, w, h) — and different datasets follow different conventions, so mixing them up is a common bug. How well a predicted box matches the ground truth is judged with intersection over union (IoU), and duplicate boxes are removed with non-maximum suppression. Extended forms include rotated boxes with an added angle and 3D bounding boxes. In embodied AI, a bounding box is often an intermediate result: an open-vocabulary detector finds a box from text first, and it's then handed to SAM for a mask or used to crop a region for grasping. This is a different concept from the ‘bounding box’ used for collision checking in physics engines.",
+      "example": "Given the instruction ‘pick up the red cup,’ Grounding DINO returns a box with a confidence around 0.6; downstream modules then only segment and search for grasp points within that box.",
+      "related": ["Object Detection", "Intersection over Union (IoU)", "Non-Maximum Suppression (NMS)", "3D Object Detection", "Grounding DINO", "Mask"]
+    },
+    {
+      "key": "perception-03#3",
+      "name_en": "Calibration Board",
+      "aliases": ["Checkerboard", "ChArUco Board", "Calibration Target", "Dot-Array Calibration Board"],
+      "one_liner": "A flat board printed with a pattern of precisely known size, used to give a camera calibration accurate reference points.",
+      "explanation": "A calibration board is a flat target with a printed pattern of precisely known dimensions, used for camera calibration and hand-eye calibration. The most common type is the black-and-white checkerboard: it detects the internal corners where squares meet, achieving sub-pixel precision, but usually requires the whole board to be visible in frame. A dot-array board uses circle centers as its features instead. A ChArUco board embeds ArUco markers into the checkerboard's white squares, using the markers to identify each corner individually, so it still works when partially occluded or only partly in view, while keeping the checkerboard's corner-detection precision; OpenCV has built-in support for it. In practice, using one well requires an accurately printed size, a flat board (often mounted on aluminum or glass), and shots taken from multiple angles and distances so the detected corners cover the whole frame.",
+      "example": "Generate a ChArUco board with OpenCV, print it, and mount it on a flat aluminum plate, measuring the square edge length precisely. Hand-hold the camera and shoot from a dozen or more different angles, then feed the images to the calibration function to solve for intrinsics and distortion.",
+      "related": ["Camera Calibration", "Hand-Eye Calibration", "ArUco Marker", "AprilTag", "Camera Intrinsics", "Lens Distortion"]
+    },
+    {
+      "key": "perception-03#4",
+      "name_en": "Camera Calibration",
+      "aliases": ["Intrinsic Calibration", "Zhang's Calibration Method"],
+      "one_liner": "Estimating a camera's intrinsics, distortion coefficients, and extrinsics so pixels and 3D coordinates can convert into each other.",
+      "explanation": "Camera calibration is the process of estimating a camera's imaging parameters: its intrinsics (focal length, and the principal point where the optical axis meets the image), its lens distortion coefficients (radial and tangential), and its extrinsics (rotation and translation relative to some reference frame). The most widely used method is Zhang Zhengyou's, published in IEEE TPAMI in 2000: it shoots a planar calibration board from at least two different poses, computes a closed-form solution first, and then refines it with maximum-likelihood optimization. Calibration quality is judged by reprojection error — reprojecting 3D points back onto the image using the estimated parameters and comparing the pixel distance to the points actually detected. Without accurate intrinsics and extrinsics, a robot can't turn a depth map into a point cloud or map vision results into arm coordinates; depth cameras usually ship with factory-calibrated intrinsics, but the relationship between the camera and the arm still has to be calibrated separately.",
+      "example": "Processing twenty-some checkerboard photos with OpenCV's calibrateCamera gives fx, fy (focal length in pixels), the principal point cx, cy, and a set of distortion coefficients, along with an average reprojection error — the smaller that number, the better the calibration.",
+      "related": ["Camera Intrinsics", "Camera Extrinsics", "Lens Distortion", "Calibration Board (Checkerboard / ChArUco)", "Hand-Eye Calibration", "Pinhole Camera Model"]
+    },
+    {
+      "key": "perception-03#5",
+      "name_en": "Camera Coordinate Frame",
+      "aliases": ["Camera Frame", "Camera Optical Frame"],
+      "one_liner": "A 3D coordinate frame centered on the camera's optical center, with the z axis along the optical axis, used to locate objects relative to the camera.",
+      "explanation": "The camera coordinate frame has its origin at the camera's optical center; by computer vision convention, the z axis points forward along the optical axis, x points to the image's right, and y points down. Point clouds back-projected from a depth map, and tag poses solved by PnP, are both initially expressed in this frame, and must be multiplied by the camera's extrinsics (the camera-to-base or camera-to-world transform) before they can be used in a robot arm's base frame. A common pitfall is mismatched conventions: ROS's REP 103 defines a robot's body frame as x-forward, y-left, z-up, while a camera's ‘optical frame’ (named with an _optical suffix) is z-forward, x-right, y-down — the two differ by a fixed rotation. Graphics libraries like OpenGL use yet another convention, with the camera frame's z pointing backward and y pointing up. Mixing these up scrambles a point cloud's orientation entirely.",
+      "example": "RealSense's ROS driver publishes both camera_link (x-forward) and a frame with an _optical suffix. A point cloud message's frame_id is the latter, so treating it as x-forward directly will get the orientation wrong.",
+      "related": ["Coordinate Frame", "Camera Extrinsics", "Projection / Back-Projection", "Right-Handed Coordinate Frame and Axis Convention", "TF Transform Tree", "Pinhole Camera Model"]
+    },
+    {
+      "key": "perception-03#6",
+      "name_en": "Contact Detection",
+      "aliases": ["Contact Sensing"],
+      "one_liner": "Determining whether, when, and where a robot has touched an object or its environment.",
+      "explanation": "Contact detection determines whether, when, and where a robot part — a finger, gripper, tool, or the body itself — has touched an object or the environment. Signals come mainly from three sources: a change in a tactile sensor's or electronic skin's reading; a sudden jump in the force or torque read by a wrist F/T sensor; or, when no dedicated sensor is available, the residual between motor current or joint torque and what a dynamics model predicts. Vision alone is often unreliable here, since the hand frequently blocks the object right at the moment of contact. Contact detection is the trigger condition for many manipulation routines — close the gripper until contact then stop, lower until the table is touched then release, judge whether an assembly step is complete. Fixed thresholds are prone to misjudging in home settings, so some work instead fuses sound with force signals, or uses a learned detector. A legged robot's judgment of whether a foot has touched the ground is usually given its own separate name, contact estimation.",
+      "example": "While lowering an arm slowly to place a cup, the wrist force sensor reads a sudden jump in vertical force past a threshold, which is taken to mean the cup's base has touched the table, and the gripper opens immediately.",
+      "related": ["Tactile Sensor", "Six-Axis Force/Torque Sensor", "Slip Detection", "Extrinsic Contact Sensing", "Sensorless Force Estimation", "Contact Estimation"]
+    },
+    {
+      "key": "perception-03#7",
+      "name_en": "Depth Anything",
+      "aliases": ["Depth Anything V1", "Depth Anything V2"],
+      "one_liner": "A monocular depth estimation foundation model from HKU and TikTok that produces a depth map from a single photo.",
+      "explanation": "Depth Anything is a series of monocular depth estimation models from research teams at the University of Hong Kong and TikTok. V1 (CVPR 2024) was trained on about 1.5 million labeled images plus about 62 million unlabeled images via pseudo-labeling, giving it strong generalization, and it outputs relative depth. V2 (NeurIPS 2024) instead trains a large teacher model on synthetic data and then trains a student model on large-scale pseudo-labeled real images, producing sharper detail; it comes in several sizes from about 25 million to 1.3 billion parameters, plus a metric-depth fine-tuned version. The Small version is licensed under Apache 2.0, while the larger versions are restricted to non-commercial use. In robotics it's often used to supplement depth cameras, providing depth priors for 3D perception, navigation, and data generation. A successor, Depth Anything 3, has since been released.",
+      "example": "Running Depth Anything V2-Small on a wrist camera's RGB frame gives per-pixel relative depth; fitting a scale and offset to a small number of points actually measured by a depth camera then recovers metric depth in meters.",
+      "related": ["Monocular Depth Estimation", "Metric Depth / Relative Depth", "Depth Estimation", "Depth Anything 3", "Prompt Depth Anything", "Vision Foundation Model"]
+    },
+    {
+      "key": "perception-03#8",
+      "name_en": "Depth Estimation",
+      "aliases": ["Depth Prediction"],
+      "one_liner": "Inferring how far every pixel in an image is from the camera, producing a depth map.",
+      "explanation": "Depth estimation is the task of inferring, from an image, the distance from the camera to each point in the scene, usually producing a depth map the same size as the image. Roughly three approaches exist: binocular stereo matching, which computes distance by triangulation from the disparity between two cameras; active ranging, such as structured light, time-of-flight depth cameras, and lidar; and monocular depth estimation, where a neural network infers depth from a single image. Monocular estimation has an inherent scale ambiguity, so early models mostly gave only relative depth; MiDaS (TPAMI 2020) improved cross-scene generalization by training on a mix of multiple datasets, and more recent models such as Depth Pro and Metric3D can output metric depth in meters directly. For robots, depth is the foundation for turning pixels into point clouds and for grasping and obstacle avoidance; learned methods can also patch the holes that depth cameras leave on transparent or reflective objects.",
+      "example": "Photographing a glass cup with a depth camera leaves a large chunk of the cup's body with missing depth. Using a learned model to estimate depth from the RGB image instead fills in that hole, producing a complete point cloud usable for grasp detection.",
+      "related": ["Monocular Depth Estimation", "Stereo Matching", "Depth Camera (RGB-D Camera)", "Metric Depth / Relative Depth", "Depth Completion", "Depth Anything (V1 / V2)"]
+    },
+    {
+      "key": "perception-03#9",
+      "name_en": "DIGIT",
+      "aliases": ["Meta DIGIT", "DIGIT Tactile Sensor"],
+      "one_liner": "Meta's open-source, fingertip-sized, low-cost vision-based tactile sensor that reads contact from a camera watching a gel deform.",
+      "explanation": "DIGIT is a vision-based tactile sensor open-sourced by Facebook AI Research (now Meta FAIR) and published in IEEE Robotics and Automation Letters in 2020. It works like GelSight: an internal camera shoots through a layer of elastic gel, and when an object presses against it, the gel's deformation is captured in an image that records the shape and texture of the contact area, forming a ‘tactile image.’ It's small, cheap, and easy to manufacture, making it well suited to the fingertips of a multi-fingered dexterous hand — the paper demonstrates it being used to roll a glass marble around in a hand. In 2021, Meta announced a partnership with GelSight to mass-produce it, and open-sourced the tactile library PyTouch and the simulator TACTO alongside it; a newer generation is called Digit 360. Note that it shares its name only, with no other connection, with Digit, the humanoid robot made by Agility Robotics.",
+      "example": "Mounting one DIGIT on each of a gripper's two fingers: during a grasp, the position of the contact region in the tactile image shows whether the object is held straight, and the gel's shear deformation gives early warning that the object is about to slip.",
+      "related": ["Vision-Based Tactile Sensor", "GelSight", "Digit 360", "TACTO", "Tactile Image", "Agility Robotics Digit Humanoid"]
+    },
+    {
+      "key": "perception-03#10",
+      "name_en": "Electronic Skin",
+      "aliases": ["E-Skin", "Robot Skin", "Flexible Tactile Sensor"],
+      "one_liner": "A soft, bendable, large-area tactile sensing layer applied to a robot's surface, mimicking human skin.",
+      "explanation": "Electronic skin refers to a flexible, stretchable, large-area sensing layer that conforms to curved surfaces, mimicking human or animal skin in sensing pressure, temperature, and strain; some materials can even self-heal. Common sensing principles are piezoresistive, capacitive, piezoelectric, and magnetic, built from large arrays of individual sensing elements (taxels). The field originated in flexible-electronics and materials research and is also used in prosthetics and wearable health monitoring. On a robot, electronic skin can cover the palm, an arm, or even the entire body, sensing contact location, human-robot collisions, and grip pressure distribution — things a fingertip-sized vision-based tactile sensor simply can't do. The difficulties are wear resistance, wiring and cross-talk between elements, and keeping the taxels consistent and calibrated. A representative example is ReSkin (CoRL 2021), from Meta and Carnegie Mellon University, which uses magnetic sensing so the skin's surface layer can be swapped out and replaced.",
+      "example": "Applying a layer of piezoresistive electronic skin to a dexterous hand's palm and reading out each taxel's pressure during a grasp produces a pressure-distribution map showing which region of the palm the object presses on, and how hard.",
+      "related": ["Tactile Sensor", "Piezoresistive Tactile Sensing", "Capacitive Tactile Sensing", "Taxel", "ReSkin / AnySkin", "Vision-Based Tactile Sensor"]
+    },
+    {
+      "key": "perception-03#11",
+      "name_en": "Eye-in-Hand",
+      "aliases": ["Camera Mounted on End-Effector"],
+      "one_liner": "A camera-mounting scheme where the camera is fixed to the robot arm's end-effector and moves along with it.",
+      "explanation": "Eye-in-hand is a camera-mounting configuration in a hand-eye system: the camera is fixed to the arm's end-effector or gripper and moves along with it; the opposite configuration, with the camera fixed in the environment, is called ‘eye-to-hand.’ Its advantage is a close-up view of the target that's less likely to be blocked by the arm itself, which suits fine alignment and visual servoing. Its drawback is a narrow field of view with no global picture, and every observation has to be converted into the base frame by multiplying the end-effector pose (from forward kinematics) by a one-time-calibrated camera-to-end-effector transform. That transform comes from hand-eye calibration, classically formulated as AX = XB. The wrist camera used in learned policies is this configuration, and its images are often fed in alongside third-person cameras — the DROID platform, for example, mounts a ZED Mini stereo camera on each Franka arm's wrist.",
+      "example": "During a grasp, a fixed third-person camera first roughly localizes the object; once the arm gets close, the system switches to the wrist camera's close-up view to fine-tune the gripper's position before closing it.",
+      "related": ["Eye-to-Hand", "Hand-Eye Calibration", "Wrist Camera", "Visual Servoing", "Third-Person Camera", "Forward Kinematics"]
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "batch": "perception-06",
+  "terms": [
+    {
+      "key": "perception-06#0",
+      "name_en": "Multi-Sensor Fusion",
+      "aliases": ["Sensor Fusion", "Early Fusion / Late Fusion"],
+      "one_liner": "Combining data from a camera, lidar, IMU, and other sensors to get an estimate more accurate and stable than any one alone.",
+      "explanation": "Multi-sensor fusion combines data from a camera, lidar, an IMU (which measures acceleration and angular velocity), joint encoders, tactile sensors, and more to jointly estimate the same quantity, reducing the uncertainty below what any single sensor could give alone. Fusion is commonly grouped by the stage at which it happens: data-level (or early fusion, merging raw data directly), feature-level (extracting features from each sensor separately and merging those), and decision-level (or late fusion, where each sensor gives its own result and the results are voted or weighted together). The classic approach uses probabilistic estimators from the Kalman-filter family, though neural networks that learn how to fuse the data directly are now also common. Fusion matters because every sensor has blind spots: cameras struggle in the dark and with glare, IMUs drift, and lidar carries no color. Robot state estimation, SLAM, and self-driving perception all depend on it, with the prerequisite that the sensors have already been calibrated and time-synchronized.",
+      "example": "A quadruped estimating its own velocity: the IMU gives high-frequency acceleration and angular velocity, joint encoders combined with foot-contact detection give a leg-odometry estimate, and the two are merged with an extended Kalman filter to reduce the drift either source alone would have.",
+      "related": ["Multimodal Perception", "Kalman Filter", "Extended Kalman Filter (EKF)", "Tightly-Coupled / Loosely-Coupled Fusion", "Visual-Inertial Odometry (VIO)", "Multi-Sensor Time Synchronization"]
+    },
+    {
+      "key": "perception-06#1",
+      "name_en": "Multi-Sensor Time Synchronization",
+      "aliases": ["Timestamp Alignment", "Hardware Synchronization", "Hard Sync / Soft Sync"],
+      "one_liner": "Making sure data from different sensors used together actually comes from the same moment in time, not slightly different ones.",
+      "explanation": "A robot's camera, depth camera, lidar, IMU, and joint encoders each run on their own clock and sample rate. Time synchronization ensures that the different pieces of data used together in a computation actually come from the same instant. It works on two levels: hardware synchronization, where a trigger line makes multiple devices expose at the same moment, or PTP (the IEEE 1588 Precision Time Protocol, which can achieve sub-microsecond accuracy on a local network) lets devices share a single clock; and software alignment, where every piece of data gets a timestamp and is then paired or interpolated by timestamp — ROS's message_filters package, for instance, offers exact-match and approximate-match policies for this. Even a gap of a few tens of milliseconds can misalign a point cloud and an image when the robot is moving quickly, degrading the accuracy of visual-inertial odometry, and it can likewise misalign the observation-action pairs collected for training, making a trained policy's actions lag behind what it sees. It's a prerequisite for multi-sensor fusion, calibration, and data collection generally.",
+      "example": "During dual-arm teleoperation data collection, several cameras output frames at 30 Hz while joint states are reported at a higher frequency. When saving the data, each image's timestamp must be matched to the closest joint reading, or the action labels end up offset from the images.",
+      "related": ["Multi-Sensor Fusion", "Precision Time Protocol (PTP)", "Camera-IMU Extrinsic Calibration", "Observation-Action Pair", "Visual-Inertial Odometry (VIO)", "rosbag"]
+    },
+    {
+      "key": "perception-06#2",
+      "name_en": "Multi-View",
+      "aliases": ["Multi-Camera"],
+      "one_liner": "Observing the same scene from multiple cameras or multiple angles at once.",
+      "explanation": "Multi-view refers to observing the same scene from two or more positions, whether that's several cameras shooting at once or a single camera moving while it shoots. It mainly shows up in two places: 3D vision, where images from different angles are used for triangulation, multi-view stereo reconstruction, or training a NeRF; and robot learning, where a robot commonly feeds a head camera, a wrist camera (close to the gripper), and a fixed third-person camera into the policy together. The benefit is reduced occlusion and depth information that a single image can't provide; research has also found that adding a wrist view improves training efficiency and generalization to new scenes. The cost is more overhead for calibration, synchronization, and compute, and every camera's intrinsics and extrinsics need to be recorded.",
+      "example": "The DROID dataset's collection rig pairs two adjustable-position ZED 2 stereo cameras with one wrist-mounted ZED Mini, collecting 76,000 trajectories in total across 1,417 camera viewpoints.",
+      "related": ["Wrist Camera", "Head Camera", "Third-Person Camera", "Multi-View Stereo (MVS)", "Occlusion", "Camera Extrinsics"]
+    },
+    {
+      "key": "perception-06#3",
+      "name_en": "Multimodal Perception",
+      "aliases": ["Multi-Sensory Perception"],
+      "one_liner": "Understanding a scene and task using vision together with touch, force, sound, and other senses at once.",
+      "explanation": "Multimodal perception means a robot understands a scene and its task progress using not just vision but simultaneously touch, force and torque, sound, proprioception (sensing of its own state, such as joint angle and motor current), and even language instructions. Different modalities are good at different things: a 2022 paper, See, Hear, and Feel, summarizes it as vision seeing the global picture but often getting occluded, sound catching key moments that aren't visible, and touch providing precise local geometry. The difficulty is that modalities differ hugely in frequency, dimensionality, and noise characteristics, requiring a separate encoder for each one before they can be combined through concatenation, attention, or similar mechanisms, and data collection is also more involved. Multiple studies show that contact-rich manipulation tasks like peg insertion and pouring are more stable when touch and force are added rather than relying on vision alone.",
+      "example": "See, Hear, and Feel (CoRL 2022) has an arm use a camera, a contact microphone, and a vision-based tactile sensor together to do dense packing and pouring, fusing the three signals with self-attention, and outperforming setups that use only one or two modalities.",
+      "related": ["Multi-Sensor Fusion", "Visuo-Tactile Fusion", "Proprioception", "Tactile Sensor", "Contact-Rich Manipulation", "Vision-Tactile-Language-Action Model (VTLA)"]
+    },
+    {
+      "key": "perception-06#4",
+      "name_en": "Neural Radiance Fields",
+      "aliases": ["NeRF", "Radiance Field"],
+      "one_liner": "A neural network that memorizes the color and density of every point in a scene, letting it render any new viewpoint.",
+      "explanation": "Neural radiance fields were proposed by Ben Mildenhall and colleagues at ECCV 2020. A NeRF represents an entire scene with a multi-layer perceptron: given a spatial position (x, y, z) and a viewing direction, it outputs the volume density and color at that point, and volume rendering along each camera ray then synthesizes an image. Training needs only photos with known camera poses, since the rendering process is differentiable — comparing the rendered image against a real photo and minimizing the error is enough to optimize the network. NeRF was originally used for novel view synthesis and later applied to 3D reconstruction and robotics: Dex-NeRF uses it to recover the geometry of transparent objects that depth cameras can't measure accurately, for grasping; LERF and F3RM embed CLIP-like semantic features into a radiance field, making it possible to find objects in a 3D scene using language. Its drawback is that it needs to be optimized separately for every scene and renders slowly; 3D Gaussian splatting, from 2023, renders much faster, and many projects have since switched to it.",
+      "example": "Dex-NeRF (CoRL 2021) photographed transparent glassware from multiple angles to train a NeRF, rendered depth from it, and handed that to Dex-Net for grasp planning, reaching 90 to 100 percent grasp success on an ABB YuMi.",
+      "related": ["3D Gaussian Splatting", "Novel View Synthesis", "Distilled Feature Field", "LERF", "F3RM", "Multi-Layer Perceptron (MLP)"]
+    },
+    {
+      "key": "perception-06#5",
+      "name_en": "Object Tracking",
+      "aliases": ["Multi-Object Tracking", "MOT", "Single-Object Tracking", "Visual Tracking"],
+      "one_liner": "Continuously finding the same object across video frames and keeping its identity consistent over time.",
+      "explanation": "Object tracking locates the same object frame by frame through a video, deciding whether ‘the object in this frame is the same one as in the last frame.’ Single-object tracking follows one object given its box in the first frame; multi-object tracking (MOT) tracks many objects at once while keeping each one's own identity. A common recipe is ‘detect then associate’: run a detector every frame, predict each object's motion with a Kalman filter, and match the new detections to existing tracks with the Hungarian algorithm — SORT, from 2016, does exactly this. The difficulty lies in occlusion, changes in appearance, fast motion, and similar-looking objects getting confused with one another. Robots use tracking to keep a lock on an object they intend to grasp, to follow a pedestrian, or to track the object a hand is manipulating in a human video; video segmentation models such as SAM 2 can also track objects in the form of masks.",
+      "example": "On a sorting line, packages keep moving on the conveyor belt. The system detects each package every frame and uses tracking to maintain its ID, so the arm can grab the correct one at the right moment.",
+      "related": ["Object Detection", "Kalman Filter", "Video Object Segmentation", "Any-Point Tracking", "Embodied Visual Tracking (Target Following)", "Pose Tracking"]
+    },
+    {
+      "key": "perception-06#6",
+      "name_en": "Occlusion",
+      "aliases": ["Self-Occlusion", "Mutual Occlusion"],
+      "one_liner": "A target being partly or fully blocked from a sensor's view by something else, including the robot's own body.",
+      "explanation": "Occlusion means part or all of a target is blocked by something else, so a sensor can't see it fully. Three scenarios are common in robotics: objects blocking each other (cluttered parts), the robot blocking its own view (the arm reaching in front of an object, or a dexterous hand's fingers blocking an object in the palm — called self-occlusion), and, during manipulation, the hand and the object blocking each other. Occlusion causes missing or wrong values in detection, segmentation, pose estimation, and depth, and a blocked object can effectively ‘disappear’ from a policy's input, leading to misjudgment. Because the location, size, and proportion of occlusion all vary unpredictably, it's one of the main reasons detection models still fall short of human performance. Common countermeasures include multiple camera views, a wrist camera, actively moving the viewpoint (active perception), adding touch or sound, or having the model complete or remember the blocked part.",
+      "example": "An arm relying only on a top-down camera to grasp a cup has its own arm block the cup right as the end-effector gets close, so the policy loses sight of the cup's position; adding a wrist camera fills in that missing view.",
+      "related": ["Multi-View", "Wrist Camera", "Active Perception", "Point Cloud Completion / Shape Completion", "Visuo-Tactile Fusion", "Object Tracking"]
+    },
+    {
+      "key": "perception-06#7",
+      "name_en": "Occupancy Grid Map",
+      "aliases": ["Occupancy Grid", "Grid Map"],
+      "one_liner": "A map that divides the environment into cells, each storing the probability that it's blocked by an obstacle.",
+      "explanation": "The occupancy grid map was proposed by Hans Moravec and Alberto Elfes in 1985, and is one of the most common map forms in mobile robotics. It divides a plane (or a volume) into uniform cells, each storing the probability of being occupied, usually classified for use into free, occupied, and unknown. Each lidar or depth-camera frame updates the cells one by one through a binary Bayes filter, commonly implemented using log-odds to make the updates easy to accumulate. The classic algorithm assumes the robot's pose is already known, so it's commonly paired with SLAM. Path planning and obstacle avoidance can compute directly on top of it: ROS's nav_msgs/OccupancyGrid message is exactly this kind of map, with −1 marking unknown cells. A 3D version exists as octree-based maps such as OctoMap, and self-driving perception's occupancy networks instead predict 3D occupancy directly with a neural network.",
+      "example": "A robot vacuum builds a planar grid map with its lidar while moving: walls and furniture get marked occupied, floor it has already crossed gets marked free, and unexplored areas stay unknown; it then plans its cleaning route over the free cells.",
+      "related": ["Simultaneous Localization and Mapping", "Costmap", "Octree Map (OctoMap)", "Occupancy Network", "Path Planning", "LiDAR SLAM"]
+    },
+    {
+      "key": "perception-06#8",
+      "name_en": "Open-Vocabulary Object Detection",
+      "aliases": ["OVD", "Open-Set Detection", "Text-Guided Detection"],
+      "one_liner": "Detecting whatever object a piece of text names, instead of being limited to a fixed list of trained classes.",
+      "explanation": "Traditional detectors only recognize the fixed set of classes they saw box-labeled at training time (COCO's 80, for instance). Open-vocabulary detection instead lets a detector accept an arbitrary text description and box classes it never saw with box labels during training. The setting was formally proposed by Alireza Zareian and colleagues at CVPR 2021: box annotations from a small set of base classes are combined with vision-language alignment learned from large-scale image-text pairs to detect new classes. OWL-ViT, Grounding DINO, and YOLO-World all followed this path afterward, with Grounding DINO reaching 52.5 AP in zero-shot detection without any COCO training. This is very practical for robots: if a user says ‘bring me the blue mug,’ the system can box it directly from that sentence. Strictly speaking, ‘open-set detection’ originally meant recognizing unseen objects as simply ‘unknown,’ but the term is now often used interchangeably with open-vocabulary detection.",
+      "example": "In the Grounded-SAM pipeline, Grounding DINO first boxes the target using the text ‘banana,’ then the box is handed to SAM to get a pixel-level mask, and the robot computes a grasp point from that.",
+      "related": ["Open-Vocabulary", "Grounding DINO", "OWL-ViT / OWLv2", "YOLO-World", "Grounded-SAM", "Object Detection"]
+    },
+    {
+      "key": "perception-06#9",
+      "name_en": "Optical Flow",
+      "aliases": ["Dense Optical Flow", "Sparse Optical Flow"],
+      "one_liner": "How far, and in which direction, every pixel appears to move between two consecutive video frames.",
+      "explanation": "Optical flow describes the apparent motion of the brightness pattern in an image when the camera and the scene move relative to each other, and the result is usually a 2D displacement field the same size as the image. Classic methods rely on a ‘brightness constancy’ assumption — the same point keeps the same brightness across adjacent frames — but one equation can't solve for two unknowns (the aperture problem), so the 1981 Lucas-Kanade method assumes a small local window moves consistently, while Horn-Schunck instead adds a global smoothness constraint. The deep-learning-era representative is RAFT (ECCV 2020), which estimates dense optical flow using correlation volumes between all pairs of pixels plus recurrent iteration. Flow computed at only a few feature points is called sparse; flow computed at every pixel is called dense. Robots use optical flow for visual odometry, obstacle avoidance, and motion segmentation, and it's also used as an intermediate action representation: some manipulation policies first predict how points on an object will move, then convert that prediction into a robot action.",
+      "example": "As a drone flies forward, objects ahead appear to expand outward in the frame, with closer objects showing larger optical flow — this can be used to judge whether a collision is imminent.",
+      "related": ["RAFT Optical Flow", "Scene Flow", "Any-Point Tracking", "Visual Odometry", "Event Camera", "Feature Matching"]
+    },
+    {
+      "key": "perception-06#10",
+      "name_en": "ORB-SLAM3",
+      "aliases": ["ORB_SLAM3", "ORB-SLAM Family"],
+      "one_liner": "A classic open-source visual SLAM system from the University of Zaragoza, supporting monocular, stereo, RGB-D, and IMU input.",
+      "explanation": "ORB-SLAM3 is an open-source SLAM (simultaneous localization and mapping) library from Juan D. Tardós and José M. M. Montiel's team at the University of Zaragoza in Spain, with the paper published in IEEE Transactions on Robotics in 2021. It uses ORB feature points (a corner feature that's fast to compute) for tracking and mapping, supports monocular, stereo, and RGB-D cameras with either pinhole or fisheye lenses, and can be tightly coupled with an IMU. Its multi-map system, called Atlas, lets it start a new map whenever tracking is lost and automatically merges maps when the robot returns to a previously mapped area. The paper reports an average error of 3.6 cm for stereo-plus-IMU on the EuRoC drone dataset. The code is open-sourced under GPLv3 and is often used as a visual SLAM baseline and teaching tool; it builds a sparse feature-point map that isn't directly usable for obstacle avoidance, and like other feature-based methods it can still lose tracking in low-texture scenes or under drastic lighting changes.",
+      "example": "Running ORB-SLAM3's stereo-plus-IMU or RGB-D mode on a mobile robot equipped with an IMU-carrying depth camera (such as a RealSense D435i) gives a real-time camera trajectory, used as the pose source for navigation or data collection.",
+      "related": ["Simultaneous Localization and Mapping", "Visual SLAM", "Visual-Inertial Odometry (VIO)", "Feature Point", "Loop Closure Detection", "Bundle Adjustment"]
+    },
+    {
+      "key": "perception-06#11",
+      "name_en": "Orbbec Gemini 330 Series",
+      "aliases": ["Gemini 335", "Gemini 335L", "Gemini 336", "Gemini 336L", "Gemini 335Lg"],
+      "one_liner": "A stereo depth camera series from Orbbec that works indoors and out, commonly mounted on robots.",
+      "explanation": "The Gemini 330 series is a family of stereo depth cameras from Orbbec, released on April 30, 2024, with the first models being the Gemini 335 and 335L, followed later by the 336, 336L, and the GMSL2-interface 335Lg. It uses a hybrid of active and passive stereo: it can do passive matching using ambient light alone, but also has an IR projector to add texture onto surfaces that otherwise lack it. Depth is computed onboard by Orbbec's own MX6800 chip, a single USB cable handles both power and data, it has a built-in IMU, and it supports hardware-triggered synchronization. The 335 has a 50 mm baseline with a best range of 0.26–3 meters; the 335L has a 95 mm baseline with a best range of 0.25–6 meters and is IP65-rated; the 336 adds an infrared-only filter, suited to strong light and reflective scenes. It was integrated into NVIDIA's Isaac Perceptor in June 2024, and according to an Orbbec press release from March 2026, Honor's first humanoid robot uses this camera series.",
+      "example": "Orbbec's development kit, paired with NVIDIA Isaac Perceptor, hardware-synchronizes 4 Gemini 335L units to stitch together 360-degree depth perception around an autonomous mobile robot (AMR).",
+      "related": ["Depth Camera (RGB-D Camera)", "Active Stereo", "Stereo Camera", "RealSense Depth Camera (D435i / D405)", "Orbbec", "Inertial Measurement Unit"]
+    }
+  ]
+}

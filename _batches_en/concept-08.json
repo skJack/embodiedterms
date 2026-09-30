@@ -1,0 +1,222 @@
+{
+  "batch": "concept-08",
+  "terms": [
+    {
+      "key": "concept-08#0",
+      "name_en": "Rough-terrain Locomotion",
+      "aliases": [],
+      "one_liner": "A legged robot's ability to move stably over uneven ground such as stairs, gravel, grass, or snow.",
+      "explanation": "Rough-terrain locomotion means a legged robot walks without falling over uneven, or even deformable, ground such as stairs, slopes, gravel, mud, and snow. Traditional approaches relied on hand-built models and manual tuning, and tended to fail as soon as the terrain changed. In 2020, a team at ETH Zurich used reinforcement learning to train an ANYmal quadruped in simulation: a “teacher” policy that could see the true terrain learned to walk first, then was distilled into a “student” policy that relies only on proprioception, internal body sensors such as joint angles and the IMU, which was deployed directly outdoors. A 2022 follow-up added external perception such as depth sensing, and reported completing about an hour-long Alpine hiking route in a time comparable to the human-recommended time. Rough-terrain locomotion is now a basic test of legged control, and it commonly appears alongside terrain curricula and domain randomization.",
+      "example": "In a 2022 Science Robotics paper, an ANYmal quadruped, using a policy that fused depth perception with proprioception, completed a roughly hour-long Alpine hiking route.",
+      "related": [
+        "Legged Locomotion",
+        "Perceptive Locomotion",
+        "Blind Locomotion",
+        "Terrain Curriculum",
+        "Teacher-Student Distillation",
+        "Sim-to-Real Transfer"
+      ]
+    },
+    {
+      "key": "concept-08#1",
+      "name_en": "Scene Generalization",
+      "aliases": [
+        "Environment Generalization"
+      ],
+      "one_liner": "A policy still completing its task when moved into a room, table, lighting, or background it never saw in training.",
+      "explanation": "This is one dimension of generalization: whether a trained robot policy still succeeds once it is moved to an environment absent from training — a new room, a new tabletop texture, different lighting, a shifted camera position, or a cluttered background. Robot data is mostly collected in a handful of labs, so a model can easily end up memorizing the scene's appearance itself and fail the moment the kitchen changes, making this a key metric for whether a robot can actually enter a user's home. Tianhe Yu, Chelsea Finn, and colleagues (2023) broke the contributing factors into 11 categories, including lighting and camera pose, and tested each separately; Physical Intelligence's π0.5 (2025) uses “tidying a kitchen and bedroom in an entirely new home” as its main evaluation. Common countermeasures include collecting data from a larger and more diverse set of environments, data augmentation, and co-training with web data.",
+      "example": "π0.5 completes long-horizon tasks such as tidying a kitchen and organizing a bedroom in real homes that never appeared in its training data.",
+      "related": [
+        "Generalization",
+        "Object Generalization",
+        "Task Generalization",
+        "Visual Generalization",
+        "Out-of-Distribution",
+        "Data Diversity"
+      ]
+    },
+    {
+      "key": "concept-08#2",
+      "name_en": "Sense-Plan-Act",
+      "aliases": [
+        "SPA",
+        "Hierarchical Paradigm"
+      ],
+      "one_liner": "The classic control loop where a robot senses, models, plans its next move, then acts, and repeats.",
+      "explanation": "This is the classic three-step process in traditional robotics: use sensors to perceive the environment and update an internal world model, plan the next action on top of that model, then hand it off to the actuators to execute, and repeat. A landmark example is Shakey the Robot at Stanford Research Institute (SRI) in the 1960s–70s, which used the STRIPS planner and A* search to break an instruction down into executable steps. The drawback is that it depends on an accurate world model, is computationally slow, and breaks down easily when the environment changes. In the mid-1980s, Rodney Brooks proposed the subsumption architecture, which builds no global model and lets perception drive behavior directly; hybrid architectures combining both approaches appeared later. Today's modular robotics pipelines still follow this basic idea, while end-to-end VLA models instead use a single network to map observations directly to actions.",
+      "example": "Given the instruction 'push the block off the platform,' Shakey first identifies the platform and a ramp, then plans the steps 'push the ramp into place, climb onto the platform, push the block,' and finally executes them one by one.",
+      "related": [
+        "Perception-Action Loop",
+        "Subsumption Architecture (Behavior-based Robotics)",
+        "Hierarchical Architecture",
+        "End-to-end",
+        "Task Planning",
+        "World Model"
+      ]
+    },
+    {
+      "key": "concept-08#3",
+      "name_en": "Skill Primitive",
+      "aliases": [
+        "Action Primitive"
+      ],
+      "one_liner": "The smallest reusable unit of action, such as grasp, place, or open drawer, combined to complete complex tasks.",
+      "explanation": "This approach breaks a robot's abilities into a set of basic actions that can be called and trained separately — “grasp,” “place,” “push,” “open drawer,” “move to a location.” Each skill primitive usually takes parameters, such as which object to grasp or where to place it, and is called in sequence by a higher-level planner or large model to assemble a long-horizon task. The benefit is that each skill is easy to train and validate on its own, and can be reused across tasks; the cost is that anything outside the skill library simply cannot be done, and the transitions between skills are a common source of errors. A landmark example is Google's SayCan (2022), which has a large language model pick the next step from a pretrained skill library and uses each skill's value function to judge whether it is feasible right now; RAPS (2021) instead treats hand-defined, parameterized primitives as the action space for reinforcement learning, to improve exploration and learning efficiency.",
+      "example": "“Put the soda in the fridge” can be broken into: navigate to the table, grasp the soda, navigate to the fridge, open the fridge door, place the soda, close the door — each step is a skill primitive.",
+      "related": [
+        "Long-horizon Task",
+        "Hierarchical Architecture",
+        "Motion Primitive",
+        "SayCan",
+        "LLM-based Task Planning",
+        "Dynamic Movement Primitives"
+      ]
+    },
+    {
+      "key": "concept-08#4",
+      "name_en": "Sorting",
+      "aliases": [
+        "Parcel Sorting",
+        "Item Sorting",
+        "Sortation"
+      ],
+      "one_liner": "Identifying items on a conveyor or in a bin and routing each one to a different destination by type or address.",
+      "explanation": "Sorting is a fundamental operation in logistics and manufacturing: identify an item, by reading a barcode or recognizing its category or appearance, then route it to the corresponding chute, bin, or conveyor. Traditional sortation relies on fixed equipment such as cross-belt or tilt-tray sorters combined with barcode scanning, and works well for regular boxes; irregularly shaped soft packages and mixed, jumbled items still rely heavily on manual labor. Robotic sorting must first pick a single item out of clutter, then decide where it goes and place it, involving visual recognition, grasp planning, and choosing between a suction cup or a gripper. It is one of the deployment scenarios embodied-AI companies most often showcase — Amazon's Sparrow, for example, can identify and pick individual items in a warehouse, and in February 2025 Figure demonstrated a humanoid robot moving packages from one conveyor to another and turning each shipping label to face the scanner.",
+      "example": "Figure's humanoid robot, using its Helix model, picks boxes and soft packages one at a time off a logistics line, reorients each shipping label, and places the item on another conveyor to be scanned.",
+      "related": [
+        "Bin Picking",
+        "Order Picking",
+        "Pick-and-Place",
+        "Tote Handling",
+        "Real-world Deployment",
+        "Vacuum Gripper"
+      ]
+    },
+    {
+      "key": "concept-08#5",
+      "name_en": "Spatial Reasoning",
+      "aliases": [
+        "Spatial Understanding"
+      ],
+      "one_liner": "The ability to judge an object's position, distance, size, orientation, and relation to other objects.",
+      "explanation": "Spatial reasoning means a model answers questions like “is the cup to the left of the plate” or “how far apart are these two objects” based on an image or video, covering relative direction, metric distance, size comparison, and viewpoint changes. It is a prerequisite for a robot to ground a language instruction in an actual position and action. Multimodal large models are good at recognizing “what” something is but generally weaker at “where” and “how far.” Google's SpatialVLM (2024) used an automated pipeline to generate 2 billion spatial question-answer pairs with metric information from 10 million real images to train a VLM; “Thinking in Space” (2024, by Fei-Fei Li, Saining Xie, and colleagues) proposed VSI-Bench, with more than 5,000 questions, and found that current models fall clearly short of humans, while having a model first explicitly draw a “cognitive map” improves its distance judgments.",
+      "example": "Given the instruction “put the red cup closest to you on the right side of the bowl,” a model first has to estimate each cup's distance from the robot, then work out which region of the image corresponds to the right side of the bowl.",
+      "related": [
+        "Spatial Intelligence",
+        "Embodied Reasoning",
+        "SpatialVLM",
+        "VSI-Bench",
+        "Vision-Language Model",
+        "3D Visual Grounding"
+      ]
+    },
+    {
+      "key": "concept-08#6",
+      "name_en": "Specialist Policy",
+      "aliases": [
+        "Single-task Policy"
+      ],
+      "one_liner": "A policy trained only for a single robot, a single task, or a single setting — the counterpart to a generalist policy.",
+      "explanation": "A specialist policy is a control policy trained from scratch on data collected specifically for one robot, one task, or even one particular environment. This used to be how robot learning was mostly done: switch to a different robot or task, and you collect new data and train a new model from scratch. It tends to perform well on its own task and needs relatively little data, but it transfers poorly. The Open X-Embodiment comparison (2023) showed that in low-data settings, RT-1-X, trained on mixed data from 22 robots, outperformed the original single-dataset methods by about 50% on average. The common approach now is to pretrain a generalist policy first, then fine-tune it into a specialist policy with a small amount of task-specific data. Note that “expert policy” in imitation learning has a different meaning, referring to the expert that provides the demonstrations.",
+      "example": "Training an ACT policy from scratch using only “unscrew the bottle cap” demonstrations collected on one particular ALOHA robot: it works on that robot for that task, but switching to folding clothes or to a different arm requires collecting new data and retraining.",
+      "related": [
+        "Generalist Policy",
+        "Policy",
+        "Fine-tuning",
+        "Cross-Embodiment",
+        "RT-X",
+        "Open X-Embodiment Dataset"
+      ]
+    },
+    {
+      "key": "concept-08#7",
+      "name_en": "State Space",
+      "aliases": [
+        "State"
+      ],
+      "one_liner": "The set of all possible states of a system; for a robot, usually made up of joint angles, pose, velocity, and similar quantities.",
+      "explanation": "In reinforcement learning and control, a state is a set of quantities that describes a system's current situation well enough to predict how it will change next, and the state space is the collection of all possible states. A Markov Decision Process (MDP, the standard mathematical framework for reinforcement learning) writes this as S, which can be discrete, such as squares on a chessboard, or continuous, a vector of real numbers. A robot's state typically includes joint angles and angular velocities, end-effector pose, gripper opening, and the positions of nearby objects. A real robot often cannot access the full state and can only obtain an “observation” through cameras and sensors, in which case the problem becomes a Partially Observable MDP. In VLA papers, “state” usually refers to the robot's own joint values, fed into the model alongside images. Note this is unrelated to “state space models” such as Mamba.",
+      "example": "For a 7-degree-of-freedom robot arm with a parallel gripper, the proprioceptive state might be 7 joint angles, 7 joint angular velocities, and 1 gripper opening value — a 15-dimensional real vector in total.",
+      "related": [
+        "Observation",
+        "Action Space",
+        "Markov Decision Process",
+        "Partially Observable Markov Decision Process",
+        "Proprioception",
+        "State Space Model"
+      ]
+    },
+    {
+      "key": "concept-08#8",
+      "name_en": "Structured vs. Unstructured Environment",
+      "aliases": [
+        "Structured Environment",
+        "Unstructured Environment"
+      ],
+      "one_liner": "In a structured environment, objects and workflow are fixed and predictable; an unstructured one is cluttered and cannot be specified in advance.",
+      "explanation": "This is a pair of terms describing how predictable a robot's working environment is. A structured environment is a place like a factory production line: the position, orientation, and timing of each workpiece are all designed in advance, so the robot can simply repeat a fixed program — this is where traditional industrial robots mostly work. An unstructured environment is a home, a store, or the outdoors: objects are placed however people like and get moved around, lighting and ground conditions vary widely, and people are moving through the space, so no fixed sequence of actions can be hard-coded in advance. One of the central problems embodied AI wants to solve is moving robots from structured into unstructured environments, which requires perception, generalization, and real-time decision-making rather than relying purely on taught, programmed motions. In between the two sits the “semi-structured” setting, such as a warehouse's shelving area.",
+      "example": "On an auto welding line, every car body stops at exactly the same position — a structured environment; the dishes and utensils on a home kitchen counter are arranged differently every day, with people walking around nearby — an unstructured environment.",
+      "related": [
+        "Industrial Robot",
+        "Teach-and-Playback Programming",
+        "Scene Generalization",
+        "Open-world",
+        "General-purpose Robot",
+        "Service Robot"
+      ]
+    },
+    {
+      "key": "concept-08#9",
+      "name_en": "Tabletop Manipulation",
+      "aliases": [],
+      "one_liner": "A robot arm fixed beside a table grasping, pushing, and arranging objects on its surface.",
+      "explanation": "Tabletop manipulation is the most common experimental setup in robot manipulation research: one or two arms are fixed beside a table, cameras look at the tabletop from above, the side, or the wrist, and the task is to grasp, place, push, stack, arrange, or fold objects on the surface. It rules out mobility and navigation altogether, and the setup is easy to build and easy to reproduce, so a large number of datasets and benchmarks are built around it. CLIPort (2021), for example, uses one multi-task policy to cover 10 simulated and 9 real tabletop tasks; Google's Language-Table dataset collected nearly 600,000 language-annotated trajectories of pushing blocks around a table. The drawback is that it is fairly removed from a real home and has a small workspace, so recent research has increasingly expanded into mobile manipulation and whole-body manipulation.",
+      "example": "Several colored blocks are scattered on a table and the user says, “arrange the blocks into a smiley face”; the arm pushes each block into position one at a time (a task from Language-Table).",
+      "related": [
+        "Manipulation",
+        "Pick-and-Place",
+        "Object Rearrangement",
+        "Mobile Manipulation",
+        "CLIPort",
+        "Language-Table Dataset"
+      ]
+    },
+    {
+      "key": "concept-08#10",
+      "name_en": "Task Generalization",
+      "aliases": [
+        "Cross-task Generalization"
+      ],
+      "one_liner": "A policy's ability to complete a new task or new instruction that never appeared during training.",
+      "explanation": "This dimension of generalization asks whether a model can perform a task absent from its training data — for instance, having only learned “put the apple in the bowl” and “open the drawer,” can it complete “put the apple in the drawer”? It is usually harder than switching objects or scenes, since it requires recombining learned actions in a new way and understanding new semantics. Google's BC-Z (2022), after training on more than 100 tasks, reached an average 44% success rate on 24 entirely new tasks with zero demonstrations; RT-Trajectory (2023) points out that a policy conditioned only on language struggles to transfer from pick-and-place to a motion as different as folding, and instead conditions on a rough sketched trajectory. VLA models, drawing on a large model's semantic knowledge, are also hoped to improve this kind of generalization.",
+      "example": "A robot arm that has only ever learned “put the apple in the bowl” and “open the drawer” is asked to “put the apple in the drawer” — a task combination absent from its training data; succeeding at it demonstrates task generalization.",
+      "related": [
+        "Generalization",
+        "Zero-shot",
+        "Compositional Generalization",
+        "Semantic Generalization",
+        "RT-Trajectory",
+        "Instruction Following"
+      ]
+    },
+    {
+      "key": "concept-08#11",
+      "name_en": "Teach-and-Playback Programming",
+      "aliases": [
+        "Teach and Playback",
+        "Teach Pendant Programming"
+      ],
+      "one_liner": "A human first guides the robot through a motion and records its positions, and the robot then repeats exactly what was recorded.",
+      "explanation": "This is the dominant way traditional industrial robots are programmed: an operator uses a teach pendant, a handheld programming device with an emergency stop and an enabling switch, to jog the robot, or physically guides the arm by hand, recording a sequence of key positions and paths; afterward, the robot “plays back” this recording over and over. Unimate, the first industrial robot, which went into service at a General Motors plant in 1961, worked exactly this way, storing taught joint positions on a magnetic drum and replaying them. This method is simple, reliable, and highly repeatable, well suited to fixed-position repetitive work such as welding, spraying, and material handling — but the robot merely reproduces a trajectory without understanding the task, so it has to be re-taught whenever a workpiece's position changes. Imitation learning in embodied AI also starts from human demonstrations, but the difference is that it learns a policy that can adjust its actions based on observations, rather than mechanically replaying a fixed recording.",
+      "example": "In an auto-welding shop, an engineer uses a teach pendant to move the welding gun to each weld point on a car body one by one and saves the sequence; from then on, every car body that arrives is welded by the robot following that same recorded program.",
+      "related": [
+        "Teach Pendant",
+        "Hand-guided Teaching",
+        "Industrial Robot",
+        "Imitation Learning",
+        "Structured vs. Unstructured Environment",
+        "Offline Programming"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,444 @@
+{
+  "category": "mechanics",
+  "batch": 7,
+  "terms": [
+    {
+      "name_zh": "准静态假设",
+      "name_en": "Quasi-static Assumption",
+      "abbr": "",
+      "aliases": [
+        "准静态近似",
+        "准静态模型",
+        "Quasistatic Approximation"
+      ],
+      "tier": 2,
+      "one_liner": "假设运动足够慢，忽略惯性力，每一刻都按力平衡来分析。",
+      "explanation": "准静态假设是机器人操作分析里常用的简化：物体的速度和加速度都很小，惯性力（质量乘加速度那一项）可以忽略，于是每一时刻外力与接触力都处于平衡，动力学方程退化成静力平衡，即所有力与力矩之和为零。Lynch 与 Park 的教材《Modern Robotics》在抓取与操作一章就用它分析托、夹、推等任务。好处是不必对动力学做时间积分，只需判断每个接触是黏住还是打滑、接触力是否落在摩擦锥（摩擦力允许的范围）内，慢速推物体、插装和抓取稳定性分析大多基于它。代价是动作一快就失效：甩、抛、快速翻转这类动态操作必须回到完整的刚体动力学。",
+      "example": "「米尺把戏」：用两根食指水平托住一根长尺，慢慢把两指并拢，尺子会先在一根手指上滑、再在两根上一起滑，质心始终留在两指之间，尺子不会掉；按准静态力平衡就能预测哪根手指打滑。手指动得太快时这个分析不再成立，尺子会掉。",
+      "related": [
+        "静力学",
+        "刚体动力学",
+        "库仑摩擦",
+        "摩擦锥",
+        "非抓取操作",
+        "打滑"
+      ],
+      "sources": [
+        {
+          "title": "Modern Robotics: Mechanics, Planning, and Control (Lynch & Park), Ch.12 Grasping and Manipulation",
+          "url": "http://hades.mech.northwestern.edu/images/7/7f/MR.pdf"
+        },
+        {
+          "title": "Robotic Manipulation (Russ Tedrake, MIT): Force Control",
+          "url": "https://manipulation.csail.mit.edu/force.html"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "四元数分量顺序约定（wxyz / xyzw）",
+      "name_en": "Quaternion Component Order Convention (scalar-first wxyz vs scalar-last xyzw; Hamilton vs JPL)",
+      "abbr": "",
+      "aliases": [
+        "标量在前 / 标量在后",
+        "Scalar-first / Scalar-last",
+        "wxyz",
+        "xyzw",
+        "Hamilton 约定",
+        "JPL 约定"
+      ],
+      "tier": 2,
+      "one_liner": "四元数的实部 w 放第一位还是最后一位，各软件库并不统一。",
+      "explanation": "单位四元数用四个数表示旋转：实部 w 和虚部 x、y、z。分量顺序约定指存储时 w 放最前（wxyz，标量在前）还是最后（xyzw，标量在后），各软件并不统一：ROS 消息和 SciPy 默认 xyzw，MuJoCo 和 Isaac Sim Core 用 wxyz；Isaac Lab 2.x 用 wxyz，3.0 改为 xyzw 以对齐 Warp、PhysX 和 Newton。更深一层是 Hamilton 与 JPL 约定：据 Solà 的综述，Hamilton 定义 ij=k（右手），JPL 定义 ji=k（左手），同一组数字在两者下代表互逆的旋转；机器人领域多用 Hamilton，航天领域多用 JPL。拼接不同来源的数据时顺序弄错，程序照常运行但姿态全错，是新手常踩的坑。",
+      "example": "「不旋转」在 wxyz 下写作 (1, 0, 0, 0)，在 xyzw 下写作 (0, 0, 0, 1)。若把 ROS 录下的 (0, 0, 0, 1) 按 wxyz 读进 MuJoCo，会被当成绕 z 轴转 180° 的姿态，机器人一开场就朝反方向。",
+      "related": [
+        "四元数",
+        "四元数双倍覆盖",
+        "右手坐标系与轴向约定",
+        "坐标变换",
+        "MuJoCo",
+        "Isaac Lab"
+      ],
+      "sources": [
+        {
+          "title": "Joan Solà, Quaternion kinematics for the error-state Kalman filter (arXiv:1711.02508)",
+          "url": "https://arxiv.org/abs/1711.02508"
+        },
+        {
+          "title": "Isaac Lab: Migrating to Isaac Lab 3.0 (Quaternion Format)",
+          "url": "https://github.com/isaac-sim/IsaacLab/blob/develop/docs/source/migration/migrating_to_isaaclab_3-0.rst"
+        },
+        {
+          "title": "SciPy: Rotation.from_quat",
+          "url": "https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.transform.Rotation.from_quat.html"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "臂展（工作半径）",
+      "name_en": "Reach (Arm Reach / Working Radius)",
+      "abbr": "",
+      "aliases": [
+        "工作半径",
+        "最大臂展",
+        "Arm Reach",
+        "Working Radius",
+        "Max Reach"
+      ],
+      "tier": 2,
+      "one_liner": "机械臂伸展开时从底座中心能够到的最远距离，是选型基本参数。",
+      "explanation": "臂展是机械臂规格书上的基本参数，一般指从底座旋转中心到手腕中心或法兰（末端安装工具的接口）的最大距离，具体测量点以各厂商规格书为准。它大致给出工作空间（末端能到达的全部位置）的外边界：臂展 0.85 m 的臂，大约能覆盖以底座为中心、半径 0.85 m 的范围。但臂展不等于好用的范围：手臂接近伸直时会靠近奇异位形（末端在某些方向上动不了的姿态），灵活度下降、末端朝向受限；实际还要算上夹爪长度和负载带来的力矩限制。做桌面操作或移动操作时，臂展决定了桌子能多深、底盘要停多近，也常用来比较人形机器人手臂和人手臂的尺寸。",
+      "example": "Franka Research 3 官网标注臂展 855 mm、负载 3 kg、7 个自由度；把它装在桌边，桌子远端约 1 米处的物体大概率够不着，需要移动底座或把物体挪近。",
+      "related": [
+        "工作空间",
+        "机械臂",
+        "负载",
+        "奇异位形",
+        "可达性地图 / 逆可达性地图",
+        "自由度"
+      ],
+      "sources": [
+        {
+          "title": "Franka Robotics: Franka Research 3",
+          "url": "https://franka.de/franka-research-3"
+        },
+        {
+          "title": "Modern Robotics (Lynch & Park), Ch.2 Task Space and Workspace",
+          "url": "http://hades.mech.northwestern.edu/images/7/7f/MR.pdf"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "右手坐标系与轴向约定",
+      "name_en": "Right-handed Frame & Axis Conventions (ROS REP 103: x forward / y left / z up; Z-up vs Y-up; camera optical frame)",
+      "abbr": "",
+      "aliases": [
+        "右手定则",
+        "REP 103",
+        "Z-up / Y-up",
+        "相机光学坐标系",
+        "Camera Optical Frame",
+        "ENU"
+      ],
+      "tier": 2,
+      "one_liner": "约定 x、y、z 怎么排、哪个轴朝上；各软件不统一，换算出错很常见。",
+      "explanation": "右手坐标系指 x、y、z 满足右手定则：右手拇指、食指、中指分别指向 x、y、z，即 x 叉乘 y 得 z；绕某轴的正向转动，是右手握轴、拇指指向正方向时四指弯曲的方向。ROS 的 REP 103（2010 年起草）规定本体坐标系 x 朝前、y 朝左、z 朝上，地理坐标用东-北-天（ENU）；相机另设带 _optical 后缀的光学坐标系，z 朝前、x 朝右、y 朝下。另一个分歧是哪个轴朝上：ROS、MuJoCo、Isaac Sim 默认 Z 朝上，glTF 规定 Y 朝上；USD 相机 -Z 朝前、+Y 朝上，与 ROS 光学系差一个绕 x 轴 180° 的旋转。导入网格、动捕数据或点云前不对齐这些约定，就会出现模型躺倒、左右镜像、点云倒置。",
+      "example": "深度相机给出的点云在光学坐标系里 z 朝前；若直接当成本体坐标系（x 朝前、z 朝上）使用，桌上的物体会像被转了 90° 一样立到空中，必须先乘一个固定旋转，把 camera_optical 系转到 camera_link 系。",
+      "related": [
+        "坐标系",
+        "坐标变换",
+        "相机坐标系",
+        "TF 坐标树",
+        "REP 105 坐标系约定（map / odom / base_link）",
+        "四元数分量顺序约定（wxyz / xyzw）"
+      ],
+      "sources": [
+        {
+          "title": "REP 103: Standard Units of Measure and Coordinate Conventions",
+          "url": "https://github.com/ros-infrastructure/rep/blob/master/rep-0103.rst"
+        },
+        {
+          "title": "Isaac Sim Documentation: Conventions Reference",
+          "url": "https://docs.isaacsim.omniverse.nvidia.com/latest/reference_material/reference_conventions.html"
+        },
+        {
+          "title": "glTF 2.0 Specification: Coordinate System and Units",
+          "url": "https://github.com/KhronosGroup/glTF/blob/main/specification/2.0/Specification.adoc"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "刚体",
+      "name_en": "Rigid Body",
+      "abbr": "",
+      "aliases": [
+        "刚性物体"
+      ],
+      "tier": 2,
+      "one_liner": "受力后内部任意两点距离都不变、完全不变形的理想化物体。",
+      "explanation": "刚体是经典力学的理想化模型：无论受多大的力，物体内部任意两点之间的距离都保持不变，也就是完全不变形。现实中没有真正的刚体，但金属连杆、杯子、积木这类形变很小的物体都可以这样近似。这样做的好处是描述极简：三维空间里一个刚体的状态只需 6 个数，3 个表示参考点（通常取质心）的位置，3 个表示朝向（可用旋转矩阵、四元数或欧拉角），即 6 个自由度。机器人学的建模几乎都建立在它上面：机械臂的每根连杆、被抓取的物体、MuJoCo 或 Isaac Sim 里的 body 都按刚体处理；布料、绳子、面团这类会明显变形的物体则需要软体仿真。",
+      "example": "仿真里夹爪夹起一个方块，只要记录它的 3 维位置加 1 个四元数（共 7 个数，对应 6 个自由度）就完全确定了它的位姿；一件 T 恤却需要成百上千个网格顶点才能描述。",
+      "related": [
+        "刚体动力学",
+        "位姿",
+        "自由度",
+        "连杆",
+        "刚体仿真",
+        "软体仿真"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Rigid body",
+          "url": "https://en.wikipedia.org/wiki/Rigid_body"
+        },
+        {
+          "title": "Modern Robotics (Lynch & Park), Ch.2 Degrees of Freedom of a Rigid Body",
+          "url": "http://hades.mech.northwestern.edu/images/7/7f/MR.pdf"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "刚体动力学",
+      "name_en": "Rigid Body Dynamics",
+      "abbr": "",
+      "aliases": [
+        "多刚体动力学",
+        "Rigid-Body Dynamics"
+      ],
+      "tier": 2,
+      "one_liner": "研究力和力矩如何让一个或多个相连刚体产生加速与转动。",
+      "explanation": "刚体动力学研究一个或多个用关节相连的刚体，在外力和力矩作用下如何运动。单个刚体遵循牛顿-欧拉方程：F=ma 管平移（F 为合力，m 为质量，a 为质心加速度），τ=Iα+ω×(Iω) 管转动（τ 为合力矩，I 为惯性张量，α 为角加速度，ω 为角速度）。机械臂这类多刚体系统通常写成 M(q)q̈+c(q,q̇)+g(q)=τ：q 是关节角，M 是质量矩阵，c 是科里奥利力与离心力项，g 是重力项，τ 是关节力矩。已知力矩求运动叫正动力学，物理仿真器每一步都在算；已知运动求力矩叫逆动力学，用于力矩控制和重力补偿。Featherstone 的《Rigid Body Dynamics Algorithms》是标准参考，MuJoCo 的相关算法即基于它。",
+      "example": "机械臂端着水杯静止不动时 q̇ 和 q̈ 都为零，方程只剩 g(q)=τ，算出的就是各关节为抵消重力需要输出的力矩，这就是重力补偿。",
+      "related": [
+        "牛顿-欧拉方程",
+        "拉格朗日方程",
+        "质量矩阵",
+        "正动力学",
+        "逆动力学",
+        "物理引擎"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Rigid body dynamics",
+          "url": "https://en.wikipedia.org/wiki/Rigid_body_dynamics"
+        },
+        {
+          "title": "Modern Robotics (Lynch & Park), Ch.8 Dynamics of Open Chains",
+          "url": "http://hades.mech.northwestern.edu/images/7/7f/MR.pdf"
+        },
+        {
+          "title": "MuJoCo Documentation: Computation",
+          "url": "https://mujoco.readthedocs.io/en/stable/computation/index.html"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "串联机构",
+      "name_en": "Serial Mechanism",
+      "abbr": "",
+      "aliases": [
+        "串联机器人",
+        "Serial Manipulator",
+        "开链机构",
+        "Open-chain Mechanism",
+        "串联机械臂"
+      ],
+      "tier": 2,
+      "one_liner": "连杆用关节首尾依次相连、从底座到末端不形成闭环的机构。",
+      "explanation": "串联机构又叫开链机构，指一串连杆（刚性杆件）用关节首尾依次相连，从固定底座一直延伸到末端执行器，中间不形成闭环。每个关节一般各由一个电机驱动，末端位姿是沿链逐个叠加各关节变换的结果，所以正运动学（由关节角算末端位姿）有唯一解，逆运动学则可能多解。六轴工业臂、七自由度协作臂、SCARA 以及人形机器人的单条手臂都是串联结构。优点是工作空间相对占地大、结构直观；缺点是误差和变形沿链逐级累积，远端电机的重量要由近端关节扛着，刚度和负载能力不如并联机构（多条支链同时连到末端、形成闭环，如 Delta 机器人和 Stewart 平台）。",
+      "example": "UR5e 的六个关节依次是底座、肩、肘和三个腕关节，一个接一个串起来，是典型的串联机构；而人双脚站在地上时，从地面经一条腿、腰、另一条腿回到地面构成闭环，就属于闭链机构。",
+      "related": [
+        "并联机构",
+        "运动链",
+        "连杆",
+        "正运动学",
+        "机械臂",
+        "六轴机械臂"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Serial manipulator",
+          "url": "https://en.wikipedia.org/wiki/Serial_manipulator"
+        },
+        {
+          "title": "Modern Robotics (Lynch & Park), Ch.2 Configuration Space",
+          "url": "http://hades.mech.northwestern.edu/images/7/7f/MR.pdf"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "打滑",
+      "name_en": "Slip",
+      "abbr": "",
+      "aliases": [
+        "滑移",
+        "滑动",
+        "Sliding",
+        "Slippage",
+        "脚底打滑",
+        "Foot Slip"
+      ],
+      "tier": 2,
+      "one_liner": "接触面之间出现相对滑动，通常因切向力超过摩擦力上限。",
+      "explanation": "打滑指两个接触的物体在接触点出现相对滑动，与之相对的状态叫黏着（接触点相对静止）。按最常用的库仑摩擦模型，切向摩擦力 f_t 须满足 f_t ≤ μf_n（μ 是摩擦系数，f_n 是法向压力）；所需的切向力一旦超过这个上限，接触就由黏着转为滑动，此时摩擦力等于 μf_n、方向与滑动方向相反，几何上相当于接触力跑出了摩擦锥。操作中，抓取打滑会让物体从手里滑落或转动，对策是加大握力或用触觉传感器做滑移检测；腿足机器人里支撑脚打滑容易摔倒，强化学习训练常对着地脚的水平速度加惩罚。有意控制的滑动也是技能，比如推着物体在桌面滑动、让物体在指间滑转。",
+      "example": "两指夹爪竖直夹起 0.5 kg 的杯子，约 4.9 N 的重力由两个接触点的摩擦力分担；若 μ=0.5，每根手指至少要压出约 4.9 N 的法向力（2×0.5×4.9≈4.9 N），否则杯子会往下滑。Humanoid-Gym 的 foot_slip 奖励项就是在脚接触地面时惩罚脚的水平速度。",
+      "related": [
+        "库仑摩擦",
+        "摩擦锥",
+        "摩擦系数",
+        "滑移检测",
+        "力封闭",
+        "支撑相 / 摆动相"
+      ],
+      "sources": [
+        {
+          "title": "Modern Robotics (Lynch & Park), Ch.12.2 Contact Forces and Friction",
+          "url": "http://hades.mech.northwestern.edu/images/7/7f/MR.pdf"
+        },
+        {
+          "title": "Humanoid-Gym: humanoid_env.py (_reward_foot_slip)",
+          "url": "https://github.com/roboterax/humanoid-gym/blob/main/humanoid/envs/custom/humanoid_env.py"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "特殊正交群 SO(3)",
+      "name_en": "Special Orthogonal Group SO(3)",
+      "abbr": "SO(3)",
+      "aliases": [
+        "三维旋转群",
+        "SO3",
+        "特殊欧氏群 SE(3)",
+        "Special Euclidean Group SE(3)",
+        "特殊欧几里得群",
+        "SE3",
+        "刚体运动群",
+        "李代数",
+        "Lie Algebra",
+        "so(3)",
+        "se(3)"
+      ],
+      "tier": 2,
+      "one_liner": "三维空间所有旋转构成的集合，元素是行列式为 1 的正交矩阵。",
+      "explanation": "SO(3) 是三维空间中所有旋转构成的群，元素是满足 RᵀR=I（Rᵀ 为转置，I 为单位阵，即正交）且 det R=1（行列式为 1，排除镜像）的 3×3 旋转矩阵。两个旋转相乘仍是旋转，但顺序不能交换。它是一个 3 维的弯曲空间（流形）而非普通向量空间，旋转不能直接相加或取平均，这正是四元数、6D 表示、球面插值等方法存在的原因。把平移也并进来就得到特殊欧氏群 SE(3)，即用 4×4 齐次变换矩阵表示的刚体位姿，共 6 个自由度。二者都是李群，在单位元处的切空间叫李代数 so(3)、se(3)；so(3) 就是 3×3 反对称矩阵，与三维角速度向量一一对应，经指数映射可变回旋转。",
+      "example": "机械臂末端位姿是 SE(3) 中的一个 4×4 矩阵：左上 3×3 是 SO(3) 旋转，右上一列是位置。神经网络直接回归 9 个数得到的矩阵一般不满足 RᵀR=I，需要用 SVD 或 Gram-Schmidt 正交化投影回 SO(3)。",
+      "related": [
+        "旋转矩阵",
+        "李群",
+        "指数映射",
+        "反对称矩阵",
+        "齐次变换矩阵",
+        "6D 旋转表示"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: 3D rotation group",
+          "url": "https://en.wikipedia.org/wiki/3D_rotation_group"
+        },
+        {
+          "title": "Modern Robotics (Lynch & Park), Ch.3 Rigid-Body Motions (Definitions 3.1, 3.13)",
+          "url": "http://hades.mech.northwestern.edu/images/7/7f/MR.pdf"
+        },
+        {
+          "title": "Wikipedia: Euclidean group",
+          "url": "https://en.wikipedia.org/wiki/Euclidean_group"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "球关节",
+      "name_en": "Spherical Joint",
+      "abbr": "",
+      "aliases": [
+        "球铰",
+        "Ball Joint",
+        "球窝关节",
+        "Ball-and-Socket Joint",
+        "S 副"
+      ],
+      "tier": 2,
+      "one_liner": "允许绕一个固定点向任意方向转动、但不能平移的三自由度关节。",
+      "explanation": "球关节又叫球铰或球窝关节：一个构件的球头嵌在另一个构件的球窝里，两者可绕球心向任意方向转动，但不能相对平移，因此有 3 个转动自由度，功能类似人的肩关节和髋关节，机构学里常记作 S。Stewart 平台等并联机构的支链里大量使用被动球铰。真实机械臂很少用单个电机驱动球关节，而是用三个轴线交于一点的转动关节来等效，例如球形手腕。仿真里，MuJoCo 提供 ball 类型关节，用单位四元数表示转角，所以 qpos 占 4 个数、qvel 占 3 个数；ROS 的 URDF 没有球关节类型，通常用三个转动关节串起来近似。",
+      "example": "在 MuJoCo 里给人形机器人的肩部设一个 ball 关节，用一个四元数就能描述上臂朝向；导出成 URDF 给 ROS 用时，需要拆成肩部俯仰、横滚、偏航三个 revolute 关节。",
+      "related": [
+        "转动关节",
+        "球形手腕",
+        "并联机构",
+        "自由度",
+        "MuJoCo",
+        "统一机器人描述格式"
+      ],
+      "sources": [
+        {
+          "title": "Modern Robotics (Lynch & Park), Ch.2.2 Joints",
+          "url": "http://hades.mech.northwestern.edu/images/7/7f/MR.pdf"
+        },
+        {
+          "title": "MuJoCo XML Reference: body/joint type",
+          "url": "https://mujoco.readthedocs.io/en/stable/XMLreference.html#body-joint"
+        },
+        {
+          "title": "urdfdom_headers: joint.hpp (URDF joint types)",
+          "url": "https://github.com/ros/urdfdom_headers/blob/rolling/include/urdf_model/joint.hpp"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "球面线性插值",
+      "name_en": "Spherical Linear Interpolation",
+      "abbr": "SLERP",
+      "aliases": [
+        "Slerp",
+        "四元数插值",
+        "Quaternion Slerp"
+      ],
+      "tier": 2,
+      "one_liner": "在两个旋转之间沿最短弧、以恒定角速度平滑过渡的插值方法。",
+      "explanation": "球面线性插值（Slerp）用来在两个旋转之间生成中间旋转，由 Ken Shoemake 在 1985 年的 SIGGRAPH 论文中引入计算机图形学。把单位四元数看作四维单位球面上的点，Slerp 沿连接两点的大圆弧前进：slerp(q₀,q₁;t) = [sin((1−t)Ω)/sinΩ]·q₀ + [sin(tΩ)/sinΩ]·q₁，其中 t 从 0 到 1 表示进度，Ω 是两个四元数之间的夹角。结果是绕固定轴、角速度恒定的转动。直接对四元数或欧拉角做线性插值会转速不均甚至绕远路；又因为 q 和 −q 表示同一个旋转，实现时若两者点积为负要先把一端取反，保证走短弧。机器人里常用于末端姿态轨迹插值、把低频策略输出插成高频控制指令、动捕数据重采样。",
+      "example": "策略以 10 Hz 输出末端目标姿态、底层控制器以 500 Hz 运行时，可以用 SciPy 的 Slerp 类在相邻两个姿态之间插出 50 个中间姿态，让末端匀速转过去。",
+      "related": [
+        "四元数",
+        "四元数双倍覆盖",
+        "轨迹插值",
+        "特殊正交群 SO(3)",
+        "旋转测地距离",
+        "欧拉角"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Slerp",
+          "url": "https://en.wikipedia.org/wiki/Slerp"
+        },
+        {
+          "title": "SciPy: scipy.spatial.transform.Slerp",
+          "url": "https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.transform.Slerp.html"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "支撑相 / 摆动相",
+      "name_en": "Stance Phase / Swing Phase",
+      "abbr": "",
+      "aliases": [
+        "支撑期",
+        "摆动期",
+        "站立相",
+        "Stance",
+        "Swing"
+      ],
+      "tier": 2,
+      "one_liner": "步态中脚着地承重的阶段叫支撑相，脚离地前摆的阶段叫摆动相。",
+      "explanation": "支撑相和摆动相是描述步态的基本概念，对人和腿足机器人都适用：某条腿的脚与地面接触、承担体重并推动身体前进的阶段叫支撑相；脚离地、向前摆到下一个落脚点的阶段叫摆动相，两者合起来是这条腿的一个步态周期。成年人正常步行约 60% 时间处于支撑相、40% 处于摆动相，两脚同时着地的时段叫双支撑期；跑步时则会出现两脚都离地的腾空相。支撑相占周期的比例叫占空比，四足的对角小跑等不同步态，本质就是各条腿的支撑相怎样错开。控制上两段任务不同：支撑腿要产生地面反作用力、维持平衡且不能打滑，摆动腿要抬脚避障、选落脚点，所以 MPC 和强化学习运控都要知道每条腿当前处于哪一相。",
+      "example": "Humanoid-Gym 用一个正弦相位时钟生成每只脚的支撑掩码：正弦值为正时左脚处于支撑相，为负时右脚处于支撑相，接近零时两脚都算支撑（双支撑期）；奖励函数据此要求该着地的脚着地、该摆动的脚离地。",
+      "related": [
+        "步态",
+        "步态周期与占空比",
+        "双支撑期",
+        "腾空相",
+        "接触时序（步态调度器）",
+        "足端轨迹规划"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Gait (human)",
+          "url": "https://en.wikipedia.org/wiki/Gait_(human)"
+        },
+        {
+          "title": "Humanoid-Gym: humanoid_env.py (_get_gait_phase)",
+          "url": "https://github.com/roboterax/humanoid-gym/blob/main/humanoid/envs/custom/humanoid_env.py"
+        }
+      ],
+      "as_of": ""
+    }
+  ]
+}

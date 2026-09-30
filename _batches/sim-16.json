@@ -1,0 +1,195 @@
+{"category": "sim", "batch": 16, "terms": [
+{
+  "name_zh": "RoboGSim",
+  "name_en": "RoboGSim: A Real2Sim2Real Robotic Gaussian Splatting Simulator",
+  "abbr": "",
+  "aliases": [],
+  "tier": 3,
+  "one_liner": "用 3D 高斯泼溅重建真实场景、再接上物理引擎的机器人仿真器",
+  "explanation": "RoboGSim 是 2024 年 11 月发布的论文与系统，作者来自哈工大（深圳）、中科院计算所、旷视科技和浙江大学。它把 3D 高斯泼溅（用大量彩色椭球来重建场景、渲染效果接近照片的三维表示）和 Isaac Sim 物理引擎结合，由高斯重建器、数字孪生构建器、场景组合器和交互引擎四部分组成：先把真实桌面场景重建进仿真，再在仿真里换视角、换物体、换轨迹、换场景合成新数据，最后用到真机上，即 Real2Sim2Real。论文报告，只用它合成的数据训练的策略能零样本在真机上运行，效果与用真机数据相当，在新视角、新场景下还更好。它也可作为闭环评测环境，用来测试 VLA 模型。",
+  "example": "先用相机拍一段实验台视频，在 RoboGSim 里重建出桌面和机械臂，再换成新的相机视角批量生成抓取-放置轨迹，用这些合成数据训练策略后直接部署到真实机械臂。",
+  "related": ["高斯泼溅仿真", "真-仿-真闭环", "3D高斯泼溅", "数字孪生", "仿真到现实迁移", "Isaac Sim"],
+  "sources": [
+    {"title": "arXiv 2411.11839 - RoboGSim: A Real2Sim2Real Robotic Gaussian Splatting Simulator", "url": "https://arxiv.org/abs/2411.11839"},
+    {"title": "RoboGSim 项目主页", "url": "https://robogsim.github.io/"}
+  ],
+  "as_of": "2025-08"
+},
+{
+  "name_zh": "robot_lab（Isaac Lab 强化学习扩展库）",
+  "name_en": "robot_lab (RL extension library based on Isaac Lab)",
+  "abbr": "",
+  "aliases": [],
+  "tier": 3,
+  "one_liner": "基于 Isaac Lab 的开源库，内置多款四足、轮足和人形机器人的强化学习训练环境",
+  "explanation": "robot_lab 是开发者 Ziqi Fan 在 GitHub 上维护的开源项目（Apache 2.0 许可），定位是 Isaac Lab（英伟达基于 Isaac Sim 的机器人学习框架）的扩展库：不改 Isaac Lab 本体，而是在独立目录里放机器人模型和训练任务，方便单独开发。它内置 25 款以上机器人，覆盖 ANYmal D、宇树 Go2/A1/B2、云深处 Lite3 等四足，Go2W、B2W 等轮足，以及宇树 G1/H1、傅利叶 GR1、加速进化 T1 等人形。训练主要用 RSL-RL（ETH 开源的 PPO 实现），另有 AMP 动作模仿、BeyondMimic 动作跟踪等实验性功能。截至 2026 年 9 月，最新发布版为 v2.3.2，对应 Isaac Lab 2.3。适合想在 Isaac Lab 上直接训练现成机器人运动策略、不想从零写环境的新人。",
+  "example": "装好 Isaac Lab 后，直接选用 robot_lab 里宇树 Go2 的速度指令跟踪任务，在数千个并行环境中用 RSL-RL 训练行走策略，再导出策略做仿真到仿真验证或上真机。",
+  "related": ["Isaac Lab", "legged_gym", "unitree_rl_gym", "rsl_rl", "强化学习运控", "大规模并行强化学习"],
+  "sources": [
+    {"title": "GitHub - fan-ziqi/robot_lab", "url": "https://github.com/fan-ziqi/robot_lab"},
+    {"title": "robot_lab Releases", "url": "https://github.com/fan-ziqi/robot_lab/releases"}
+  ],
+  "as_of": "2026-09"
+},
+{
+  "name_zh": "RobotArena ∞",
+  "name_en": "RobotArena Infinity (RobotArena ∞: Scalable Robot Benchmarking via Real-to-Sim Translation)",
+  "abbr": "",
+  "aliases": ["RobotArena Infinity"],
+  "tier": 3,
+  "one_liner": "把真实机器人视频自动转成仿真场景，再靠打分和人类投票给 VLA 排名的评测基准",
+  "explanation": "RobotArena ∞ 是卡内基梅隆大学 Katerina Fragkiadaki 组 2025 年 10 月发布的机器人策略评测框架。真机评测费人、慢、不安全且难复现，它的做法是把 BridgeData V2、DROID、RH20T 等公开数据集里的真实操作视频，借助物体分割、单图生成 3D、背景修补等生成模型，加上相机标定和系统辨识，自动转成 Genesis 仿真器里的数字孪生场景，再让不同的 VLA 模型在里面执行。打分有两路：视觉语言模型按帧给出任务进度分；众包评审双盲观看两段执行视频选出更好的一方，再用 Bradley-Terry 模型汇总成 Elo 式排名。它还会系统地换背景、改颜色、挪物体位置来测鲁棒性。论文评测了 Octo、CogACT、π0、X-VLA 等 6 个策略，收集了 8500 多对人类偏好。",
+  "example": "把 DROID 里一段真实桌面操作视频转成 Genesis 场景，让 π0 和 Octo 分别在其中执行同一指令，众包评审双盲比较两段回放后投票，结果计入排行榜；再把背景换掉重跑一遍，看排名是否变化。",
+  "related": ["仿真评测", "现实到仿真", "双盲成对比较", "Elo 评分", "数字孪生", "RoboArena"],
+  "sources": [
+    {"title": "arXiv 2510.23571 - RobotArena ∞: Scalable Robot Benchmarking via Real-to-Sim Translation", "url": "https://arxiv.org/abs/2510.23571"},
+    {"title": "RobotArena ∞ 论文 HTML 版", "url": "https://arxiv.org/html/2510.23571"}
+  ],
+  "as_of": "2026-03"
+},
+{
+  "name_zh": "RoboVerse",
+  "name_en": "RoboVerse (MetaSim): Towards a Unified Platform, Dataset and Benchmark for Scalable and Generalizable Robot Learning",
+  "abbr": "",
+  "aliases": ["MetaSim"],
+  "tier": 3,
+  "one_liner": "用统一接口打通多款仿真器的机器人学习平台，附带合成数据集和评测基准",
+  "explanation": "RoboVerse 是 2025 年 4 月发布的开源项目，作者包括伯克利的 Pieter Abbeel、Jitendra Malik 等多家机构的研究者，论文被 RSS 2025 接收，代码采用 Apache 2.0 许可。它的底座叫 MetaSim：一层与具体仿真器无关的中间件，把 Isaac Lab、Isaac Gym、MuJoCo、SAPIEN、PyBullet、Genesis、CoppeliaSim 等后端统一成同一套配置和 API，负责启动环境、加载资产和推进物理步进。这样同一个任务、同一批机器人和资产可以在不同仿真器之间切换，缓解各家仿真器格式互不兼容、基准难以横向比较的问题。在此之上，RoboVerse 汇集了 LIBERO、ManiSkill、RLBench、Meta-World、robosuite 等已有基准的任务和数据，提供合成数据集、统一评测协议，以及模仿学习、强化学习和 VLA 训练流程。",
+  "example": "在 MetaSim 里写好一个抓取任务的配置，通过切换仿真后端参数，把同一任务分别放到 MuJoCo 和 Isaac Lab 上运行，比较策略在两个仿真器下的表现差异。",
+  "related": ["仿真器", "仿真到仿真迁移", "Isaac Lab", "MuJoCo", "SAPIEN", "基准测试"],
+  "sources": [
+    {"title": "arXiv 2504.18904 - RoboVerse", "url": "https://arxiv.org/abs/2504.18904"},
+    {"title": "GitHub - RoboVerseOrg/RoboVerse", "url": "https://github.com/RoboVerseOrg/RoboVerse"},
+    {"title": "RoboVerse 文档站", "url": "https://roboverse.wiki/"}
+  ],
+  "as_of": "2026-09"
+},
+{
+  "name_zh": "SAPIEN",
+  "name_en": "SAPIEN (SimulAted Part-based Interactive ENvironment)",
+  "abbr": "",
+  "aliases": [],
+  "tier": 3,
+  "one_liner": "UCSD 开发的机器人仿真平台，擅长抽屉、柜门这类带可动部件的铰接物体交互",
+  "explanation": "SAPIEN 全称 SimulAted Part-based Interactive ENvironment，是加州大学圣迭戈分校苏昊（Hao Su）组与斯坦福等合作者在 2020 年提出的机器人仿真环境，论文发表于 CVPR 2020。它的物理部分基于英伟达 PhysX，渲染基于 Vulkan，后续版本加入了光线追踪渲染，3.0 版起支持 PhysX 5 的 GPU 并行仿真。它的特色是随论文发布的 PartNet-Mobility 数据集：大量带关节标注的铰接物体（能拉开的抽屉、能转开的柜门、水龙头等），适合研究零件级的感知和交互，比如机器人开门、拉抽屉。常用的 ManiSkill 系列操作基准就建立在 SAPIEN 之上。",
+  "example": "在 SAPIEN 中加载 PartNet-Mobility 里的一个柜子模型，让机械臂学习识别把手位置、抓住把手并把柜门拉开。",
+  "related": ["ManiSkill", "PartNet-Mobility 数据集", "铰接物体", "铰接物体操作", "PhysX", "仿真器"],
+  "sources": [
+    {"title": "arXiv 2003.08515 - SAPIEN: A SimulAted Part-based Interactive ENvironment", "url": "https://arxiv.org/abs/2003.08515"},
+    {"title": "GitHub - haosulab/SAPIEN", "url": "https://github.com/haosulab/SAPIEN"}
+  ],
+  "as_of": "2026-09"
+},
+{
+  "name_zh": "符号距离场",
+  "name_en": "Signed Distance Field / Function",
+  "abbr": "SDF",
+  "aliases": ["有符号距离场", "符号距离函数", "Signed Distance Function"],
+  "tier": 3,
+  "one_liner": "给出空间每一点到物体表面的距离、并用正负号区分内外的函数",
+  "explanation": "符号距离场是定义在空间上的一个函数：给任意一点，返回它到最近物体表面的距离，并用正负号区分在物体内部还是外部（机器人和图形学里常用外正内负，数学文献里也有相反约定），物体表面就是函数值为 0 的位置。它的梯度模长处处为 1，梯度方向就是离开表面最快的方向。这两个性质让它在具身智能里很好用：仿真器可以直接用它查穿透深度和接触法向来做碰撞检测；运动规划用它算机器人离障碍物还有多远、该往哪边避让；三维重建和神经隐式表示也常把物体表面表示成一个 SDF。注意，同名缩写的 SDFormat 是 Gazebo 的场景描述文件格式，和这里不是一回事。",
+  "example": "规划机械臂轨迹时，先把桌面和障碍物建成符号距离场，查询每个连杆上采样点的 SDF 值，若小于安全距离就沿梯度方向把轨迹推开，CHOMP 等优化式规划器就是这样避障的。",
+  "related": ["截断符号距离函数", "欧氏符号距离场", "碰撞检测（物理引擎）", "碰撞检查", "CHOMP", "隐式表示 / 显式表示"],
+  "sources": [
+    {"title": "Wikipedia - Signed distance function", "url": "https://en.wikipedia.org/wiki/Signed_distance_function"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "SimReady 资产",
+  "name_en": "SimReady Assets",
+  "abbr": "",
+  "aliases": ["仿真就绪资产", "SimReady"],
+  "tier": 3,
+  "one_liner": "英伟达提出的 3D 资产规范：模型自带物理、材质和语义标注，放进仿真即可用",
+  "explanation": "SimReady 是英伟达在 Omniverse 生态里推动的一套 3D 资产规范。普通 3D 模型往往只有外形和贴图，放进仿真器还得人工补质量、碰撞形状、摩擦等参数；SimReady 资产要求以 OpenUSD（通用场景描述，一种三维场景文件格式）为载体，同时带上基于 USD Physics 的物理属性、基于物理的材质、供机器学习使用的语义标签，以及与传感器仿真相关的非可视属性。这样的资产拖进 Isaac Sim 等仿真器就能直接参与碰撞和抓取，渲染出的合成图像也自带标注。英伟达把它定位为面向工厂、仓库、数据中心数字孪生以及机器人和自动驾驶训练的通用标准。",
+  "example": "在 Isaac Sim 里搭一个仓库场景，直接拖入 SimReady 规范的纸箱和货架，它们已带质量、碰撞形状和语义类别，可马上用来训练搬运策略，并批量生成带分割标注的合成图像。",
+  "related": ["仿真资产", "通用场景描述", "Isaac Sim", "Omniverse", "数字孪生", "合成数据"],
+  "sources": [
+    {"title": "NVIDIA Omniverse - SimReady 文档", "url": "https://docs.omniverse.nvidia.com/simready/latest/index.html"}
+  ],
+  "as_of": "2026-09"
+},
+{
+  "name_zh": "仿真吞吐量",
+  "name_en": "Simulation Throughput (Steps / Frames Per Second)",
+  "abbr": "",
+  "aliases": ["仿真 FPS", "每秒步数", "Steps Per Second"],
+  "tier": 3,
+  "one_liner": "仿真器每秒能产出多少环境步或帧，决定造数据和训练有多快",
+  "explanation": "仿真吞吐量指仿真器单位时间内产出的交互数据量，常用每秒环境步数（steps per second）或每秒帧数（FPS）表示；在 GPU 并行仿真里，通常把成千上万个并行环境的步数加总来算。强化学习往往需要上亿步交互，吞吐量直接决定一次训练要几天还是几分钟。2021 年英伟达的 Isaac Gym 把物理仿真和神经网络都放在 GPU 上、数据不经过 CPU，报告比「CPU 仿真 + GPU 训练」的做法快 2 到 3 个数量级。影响吞吐量的主要因素有并行环境数、模型和接触的复杂度、仿真步长与子步数、求解器迭代次数，以及是否渲染相机图像（带渲染通常慢得多）。它和实时因子不同，后者衡量单个环境比真实时间快多少倍。横向比较时要看同一任务、同一硬件、是否渲染。",
+  "example": "ETH 的 legged_gym 工作在单张 GPU 上同时仿真数千只 ANYmal 四足机器人，平地行走策略不到 4 分钟训完，崎岖地形约 20 分钟；ManiSkill3 报告带渲染的仿真在其基准环境中可达每秒 3 万帧以上。",
+  "related": ["GPU 并行仿真", "并行环境", "实时因子", "大规模并行强化学习", "批量渲染", "样本效率"],
+  "sources": [
+    {"title": "arXiv 2108.10470 - Isaac Gym: High Performance GPU-Based Physics Simulation For Robot Learning", "url": "https://arxiv.org/abs/2108.10470"},
+    {"title": "arXiv 2109.11978 - Learning to Walk in Minutes Using Massively Parallel Deep RL", "url": "https://arxiv.org/abs/2109.11978"},
+    {"title": "arXiv 2410.00425 - ManiSkill3", "url": "https://arxiv.org/abs/2410.00425"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "光滑粒子流体动力学",
+  "name_en": "Smoothed Particle Hydrodynamics",
+  "abbr": "SPH",
+  "aliases": ["光滑粒子流体力学", "平滑粒子流体动力学"],
+  "tier": 3,
+  "one_liner": "把流体拆成大量粒子、用邻近粒子加权求和来计算运动的无网格仿真方法",
+  "explanation": "光滑粒子流体动力学由 Gingold、Monaghan 和 Lucy 在 1977 年提出，最初用于天体物理中模拟星系和恒星形成。它不划分网格，而是把流体看成一群随流体一起运动的粒子（拉格朗日方法，即跟着物质点走）：每个粒子的密度、压力等物理量，由「光滑长度」范围内的邻近粒子按核函数加权求和得到，再据此算出受力、推进粒子。因为不需要网格，它天然适合自由液面、飞溅、倒水这类形状剧烈变化的流动，也被广泛用于计算机图形学和游戏里的流体效果。在具身智能里，要让机器人学倒水、舀液体时会用到它，例如 Genesis 仿真器就集成了 SPH 求解器。代价是粒子一多计算量很大，也不容易精确保持液体的不可压缩性。",
+  "example": "在 Genesis 中用 SPH 粒子表示杯中的水，训练机械臂把水倒进另一只杯子，以洒出的粒子数作为惩罚。",
+  "related": ["流体仿真", "基于位置的动力学", "物质点法", "有限元法", "Genesis", "软体仿真"],
+  "sources": [
+    {"title": "Wikipedia - Smoothed-particle hydrodynamics", "url": "https://en.wikipedia.org/wiki/Smoothed-particle_hydrodynamics"},
+    {"title": "GitHub - Genesis-Embodied-AI/Genesis", "url": "https://github.com/Genesis-Embodied-AI/Genesis"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "软接触",
+  "name_en": "Soft Contact Model",
+  "abbr": "",
+  "aliases": ["软接触模型", "Soft Contact", "柔性约束"],
+  "tier": 3,
+  "one_liner": "允许物体间有微小穿透、按弹簧阻尼方式产生接触力的接触建模方式",
+  "explanation": "软接触是物理引擎处理接触的一类建模方式。经典的硬接触要求物体绝不互相穿透，并用互补条件（有接触力时两物体不能分离，分离时就没有接触力）来描述，求解困难、数值上也容易不稳定。软接触放宽了这一要求：允许少量穿透，把接触当成带弹簧和阻尼的约束，穿得越深力越大。MuJoCo 是典型代表，它去掉了线性互补问题里的严格互补条件，把接触写成凸优化问题，用 solref（时间常数和阻尼比，默认 0.02 与 1）和 solimp（约束阻抗，决定有多软）两组参数调节。好处是求解稳定、结果平滑，还能唯一地做逆动力学；代价是参数设得不当会出现明显穿模或物体发弹，做仿真到现实迁移时常要调这些参数去贴近真实材料。",
+  "example": "在 MuJoCo 中把夹爪指尖接触的 solref 时间常数调大，接触会变软、允许更深的穿透，抓取时接触力变化更平缓；时间常数若设得比仿真步长还小，接触就容易不稳定。",
+  "related": ["接触模型", "线性互补问题", "MuJoCo", "穿模", "投影高斯-赛德尔求解器", "仿真步长"],
+  "sources": [
+    {"title": "MuJoCo 文档 - Computation", "url": "https://mujoco.readthedocs.io/en/stable/computation/index.html"},
+    {"title": "MuJoCo 文档 - Modeling（solref / solimp）", "url": "https://mujoco.readthedocs.io/en/stable/modeling.html"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "SoftGym",
+  "name_en": "SoftGym: Benchmarking Deep Reinforcement Learning for Deformable Object Manipulation",
+  "abbr": "",
+  "aliases": [],
+  "tier": 3,
+  "one_liner": "基于英伟达 FleX 的柔性物体操作仿真基准，包含布料、绳子和液体任务",
+  "explanation": "SoftGym 是卡内基梅隆大学 David Held 组的 Xingyu Lin 等人发表在 CoRL 2020 的开源基准，专门评测强化学习在柔性物体操作上的表现。以往的强化学习基准多是刚体或低维状态任务，而布料、绳子、液体的状态维度极高、只能部分观测，难度完全不同。SoftGym 基于英伟达 FleX 粒子物理引擎（通过 Python 接口 PyFleX 调用），提供标准的 OpenAI Gym 接口。任务分两档：中等难度有运水、倒水、拉直绳子、铺平布料、叠布、放下布料；困难档有定量倒水、叠皱布、放下并叠布、把绳子摆成指定形状等。论文实验表明现有算法在这些任务上仍有明显困难，尤其是只看图像时。由于依赖较老的 CUDA 和系统版本，官方推荐用 Docker 安装。",
+  "example": "在 SoftGym 的 FoldCloth（叠布）任务中，智能体只看俯视相机图像，控制两个抓取点把平铺的布对折，按两半布料的对齐程度获得奖励。",
+  "related": ["柔性物体操作", "衣物操作", "布料仿真", "流体仿真", "基于位置的动力学", "基准测试"],
+  "sources": [
+    {"title": "arXiv 2011.07215 - SoftGym", "url": "https://arxiv.org/abs/2011.07215"},
+    {"title": "GitHub - Xingyu-Lin/softgym", "url": "https://github.com/Xingyu-Lin/softgym"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "求解器迭代次数",
+  "name_en": "Solver Iteration Count (Position / Velocity Iterations)",
+  "abbr": "",
+  "aliases": ["位置迭代次数", "速度迭代次数", "solver_position_iteration_count"],
+  "tier": 3,
+  "one_liner": "物理引擎每一步反复修正接触和关节约束的轮数，越多越准也越慢",
+  "explanation": "物理引擎每推进一个仿真步，都要同时满足所有接触和关节约束，通常用高斯-赛德尔这类迭代法一轮轮逼近，轮数就是求解器迭代次数。以英伟达 PhysX（Isaac Sim / Isaac Lab 的物理内核）为例，它分为位置迭代和速度迭代：前者修正穿透和关节错位，后者修正速度误差，默认值是 4 次位置迭代、1 次速度迭代。官方说明迭代越多结果越准，但一般只有关节多、对关节误差容忍度低的物体才需要明显调高。PhysX 还提供 PGS 和 TGS 两种求解器，TGS 收敛更好但单次迭代稍慢。迭代不够时常见关节松垮、物体抖动或互相穿透，调高则会拖慢仿真吞吐量。它和仿真步长、子步数一起，是调仿真稳定性时最常改的参数。",
+  "example": "Isaac Lab 自带的 Franka 机械臂配置把 solver_position_iteration_count 设为 8、solver_velocity_iteration_count 设为 0，位置迭代比 PhysX 默认的 4 次更多；每个物体可以各设各的，仿真时取场景中最大值并限制在 1 到 255 之间。",
+  "related": ["约束求解器", "投影高斯-赛德尔求解器", "仿真步长", "子步", "仿真爆炸", "PhysX"],
+  "sources": [
+    {"title": "NVIDIA PhysX 5 文档 - Rigid Body Dynamics", "url": "https://nvidia-omniverse.github.io/PhysX/physx/5.4.1/docs/RigidBodyDynamics.html"},
+    {"title": "Isaac Lab API - isaaclab.sim（PhysxCfg）", "url": "https://isaac-sim.github.io/IsaacLab/main/source/api/lab/isaaclab.sim.html"},
+    {"title": "Isaac Lab 源码 - franka.py", "url": "https://github.com/isaac-sim/IsaacLab/blob/main/source/isaaclab_assets/isaaclab_assets/robots/franka.py"}
+  ],
+  "as_of": "2026-09"
+}
+]}

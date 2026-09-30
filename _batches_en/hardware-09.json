@@ -1,0 +1,113 @@
+{
+  "batch": "hardware-09",
+  "terms": [
+    {
+      "key": "hardware-09#0",
+      "name_en": "Cycloidal Reducer",
+      "aliases": ["Cycloidal Drive", "Cycloidal Speed Reducer"],
+      "one_liner": "A reducer that meshes an eccentrically spinning cycloidal disc with a ring of pins for a large speed reduction.",
+      "explanation": "A cycloidal reducer is a mechanical speed-reduction device: the input shaft drives an eccentric shaft that makes a disc, shaped with cycloidal teeth around its edge, “roll” inside a fixed ring of pins; for each full orbit the disc makes around the ring, it only rotates on its own axis by a small amount, producing a large reduction ratio (commonly tens-to-one in a single stage). Because many teeth share the load at once, it's shock-resistant, stiff, and can be built with very little backlash (the play when gears reverse direction). The RV reducer commonly used in the base and shoulder joints of industrial robot arms is exactly this: a planetary-gear stage combined with a cycloidal-drive stage. In humanoid and quadruped robots, it's often compared with harmonic drives and planetary gearboxes — more shock-resistant than a harmonic drive, but heavier and requiring tighter manufacturing tolerances.",
+      "example": "In the RV reducer used in a six-axis industrial robot's base and upper-arm joints, the second stage is exactly this cycloidal-pin structure.",
+      "related": ["Reducer/Gearbox", "Rotate Vector (RV) Reducer", "Harmonic Drive", "Planetary Gearbox", "Backlash", "Gear Ratio"]
+    },
+    {
+      "key": "hardware-09#1",
+      "name_en": "D-Robotics RDK S100",
+      "aliases": ["RDK S100P", "RDK S100 Developer Kit"],
+      "one_liner": "A single-chip “compute-control integrated” robot dev kit from D-Robotics, starting at 80 TOPS.",
+      "explanation": "The RDK S100 is a robot development kit released in June 2025 by D-Robotics, part of Horizon Robotics, built around putting AI inference and real-time motor control on the same SoC (system on chip): a 6-core Cortex-A78AE CPU handles the system and planning, a self-developed Nash-architecture BPU (neural-network accelerator) delivers 80 TOPS of compute for vision and VLA-style models, and a separate 4-core Cortex-R52+ MCU handles joint-level real-time control. The higher-end S100P variant offers 128 TOPS and 24 GB of memory. It's designed to solve the communication latency and cost that come from using one board for the “brain” and another for the “cerebellum” in a robot. At launch, its pre-order price was reported at RMB 2,499, positioned to compete with edge compute platforms like NVIDIA's Jetson Orin.",
+      "example": "A developer can run a perception model on the BPU and drive robot-arm joints directly over CAN from the onboard MCU, both on the same RDK S100 board.",
+      "related": ["Onboard Compute Platform", "Compute-Control Integration", "NVIDIA Jetson", "Jetson Orin", "D-Robotics", "Neural Processing Unit (NPU)"]
+    },
+    {
+      "key": "hardware-09#2",
+      "name_en": "DAMIAO DM-J4310-2EC Joint Motor",
+      "aliases": ["DM4310", "DM-J4310-2EC", "Damiao Motor"],
+      "one_liner": "A small all-in-one joint actuator from Shenzhen's DAMIAO Technology, common in desktop arms and small humanoid joints.",
+      "explanation": "The DM-J4310-2EC is a compact joint module from Shenzhen DAMIAO Technology that integrates a brushless motor, reducer, driver, and dual encoders in one unit; its output shaft reads single-turn absolute position, and it takes commands and reports back velocity, position, torque, and temperature over a CAN bus. The official V1.1 spec lists a rated torque of 3 N·m and a peak of 7 N·m, with later versions improving on this. It's inexpensive and simple to wire, and supports the common “MIT mode” (sending position, velocity, stiffness, damping, and feedforward torque all at once), so it's widely used in student projects, open-source robot arms, and lightly loaded joints like the arms and head of humanoid robots — a common “off-the-shelf part” for beginners building real robots.",
+      "example": "Building a low-cost 6-axis desktop robot arm, the three wrist joints commonly use the DM4310, with a larger DAMIAO motor swapped in for the upper arm.",
+      "related": ["Joint Module", "DAMIAO Technology", "MIT Mode", "CAN Bus", "Dual Encoder", "Quasi-Direct Drive"]
+    },
+    {
+      "key": "hardware-09#3",
+      "name_en": "DEX-EE (Shadow Robot × Google DeepMind)",
+      "aliases": ["DEX-EE", "DEX-EE Chiral"],
+      "one_liner": "A rugged, three-fingered research dexterous hand co-developed by Shadow Robot and Google DeepMind.",
+      "explanation": "DEX-EE is a dexterous hand developed by the UK's Shadow Robot Company over roughly five years of iteration, at the request of Google DeepMind's robotics team. It doesn't try to look like a human hand: it has three fingers, each with 4 degrees of freedom for 12 total, is about half again as large as a human hand, and weighs about 4.1 kg. The design priorities are durability and sensitivity, since reinforcement learning needs to try and fail repeatedly on the real hardware, and an ordinary dexterous hand breaks too easily under that kind of abuse. Each fingertip carries an optical tactile sensor with hundreds of sensing points, the knuckles also carry multi-dimensional tactile sensing, and position, force, and IMU data are all streamed back at high speed. A later version, DEX-EE Chiral, moves the third finger to the side so it opposes the other fingers like a human thumb, making it easier for human teleoperation and imitation learning; it's offered in left-hand, right-hand, and two-handed sets.",
+      "example": "DeepMind uses DEX-EE as a platform for real-world learning research, letting a policy grasp and manipulate objects repeatedly on the real hardware to collect data.",
+      "related": ["Dexterous Hand", "Shadow Robot Company", "Shadow Dexterous Hand", "Google DeepMind", "Tactile Sensor", "Dexterous Manipulation"]
+    },
+    {
+      "key": "hardware-09#4",
+      "name_en": "Dielectric Elastomer Actuator (DEA)",
+      "aliases": ["Dielectric Elastomer"],
+      "one_liner": "An artificial muscle that squeezes and stretches a soft membrane using electrostatic force from a high voltage.",
+      "explanation": "A dielectric elastomer actuator is a type of electrically driven artificial muscle: a soft insulating elastic membrane (such as silicone or acrylic) is coated on both sides with stretchable electrodes, and applying a voltage of several kilovolts makes the opposite charges on each side attract each other, squeezing the membrane thinner, which makes it expand in its plane; it springs back when the power is switched off. Its advantages are that it's light, fast, quiet, and has relatively high energy density, with the ability to produce large deformations, making it suitable for soft robots, miniature grippers, and robotic fish. Its downsides are the need for kilovolt-level high voltage, a tendency to break down electrically, and relatively low output force, so it currently remains mostly confined to labs and small devices. Like the HASEL electrohydraulic actuator and shape-memory alloys, it's usually grouped under “novel actuation.”",
+      "example": "Rolling a DEA membrane into a tube that extends when powered and contracts when the power is cut turns it into a controllable soft “muscle” that can drive a small gripper.",
+      "related": ["Artificial Muscle", "HASEL Electrohydraulic Artificial Muscle", "Shape-Memory Alloy", "Soft Robot", "Actuator", "Soft Gripper"]
+    },
+    {
+      "key": "hardware-09#5",
+      "name_en": "Differential Drive Base",
+      "aliases": ["Differential Drive", "Two-Wheel Differential Base"],
+      "one_liner": "A mobile base with two independently driven wheels that steers by varying the speed of each side.",
+      "explanation": "A differential drive base is the most common mobile-robot chassis: an independently motor-driven wheel on the left and right, plus one or two caster wheels for support. Driving both wheels at the same speed goes straight, different speeds turn, and opposite directions spin the robot in place. It's mechanically simple, cheap, and easy to control — its kinematics need only two parameters, wheel speed and wheel separation, to compute the base's linear and angular velocity — so it's used in robot vacuums, the TurtleBot, and many warehouse AMRs. Its downside is that it can't translate sideways (it's a nonholonomic system) and is less agile than a Mecanum-wheel or swerve-drive base at repositioning in tight spaces. In ROS, it's typically commanded directly with linear and angular velocity over the cmd_vel topic.",
+      "example": "A robot vacuum is a textbook differential drive base: two drive wheels plus one front caster, able to spin in place but not move sideways.",
+      "related": ["Mobile Base / Chassis", "Differential Drive Kinematics", "Nonholonomic Constraint", "Mecanum Wheel", "Swerve Drive Wheel", "Wheel Odometry"]
+    },
+    {
+      "key": "hardware-09#6",
+      "name_en": "Electro-Hydrostatic Actuator (EHA)",
+      "aliases": ["Electrohydrostatic Actuator"],
+      "one_liner": "A self-contained hydraulic actuator with its own motor-driven pump and closed oil loop, needing no external hydraulic supply.",
+      "explanation": "An electro-hydrostatic actuator packages a motor, a small bidirectional oil pump, a cylinder, and a reservoir into one self-contained module: as the motor spins one way or the other, the pump pushes oil to one side of the cylinder, extending or retracting the piston, with the oil loop closed entirely inside the module. It keeps hydraulics' advantages — high force, shock resistance — while eliminating the central pump station, long hoses, and servo valves a traditional hydraulic system needs; it only needs power and a control signal to run, and is more efficient too. EHAs were first adopted in aerospace, for aircraft control-surface actuation, and have since been used in the leg joints of heavy-load legged and humanoid robots, as a middle ground between purely electric joints and traditional hydraulics.",
+      "example": "",
+      "related": ["Hydraulic Actuation", "Actuator", "Linear Actuator (Electric Cylinder)", "Hydraulic Atlas", "Torque Density"]
+    },
+    {
+      "key": "hardware-09#7",
+      "name_en": "Electroadhesion Gripper",
+      "aliases": ["Electrostatic Adhesion Gripper"],
+      "one_liner": "A gripper that “sticks” to objects using electrostatic attraction from high voltage across electrodes in a flexible pad.",
+      "explanation": "An electroadhesion gripper works on the principle of electroadhesion: interleaved electrodes are embedded beneath a soft gripper surface, and applying a high voltage induces an opposite charge on the object's surface, creating an electrostatic attraction between the two that holds the object against the pad and lifts it; the attraction disappears as soon as the power is cut. It needs neither a clamping motion nor a vacuum, making it friendly to cloth, paper, film, fragile items, or irregularly shaped objects, and it uses very little power. Its limitation is that the attraction force varies a lot with material, humidity, and surface condition, and it can't hold much weight, so it's often combined with mechanical fingers — the fingers handle enveloping the object, while electroadhesion adds friction and conformal contact.",
+      "example": "Picking up a piece of cloth or paper lying flat on a table is hard for an ordinary two-finger gripper to slide under, but an electroadhesion pad can just be pressed onto it and powered up to lift it.",
+      "related": ["Gripper", "Soft Gripper", "Vacuum Suction Cup", "Deformable Object Manipulation", "End Effector"]
+    },
+    {
+      "key": "hardware-09#8",
+      "name_en": "Fin Ray Gripper",
+      "aliases": ["Fin Ray Effect Gripper"],
+      "one_liner": "A compliant gripper, inspired by fish fins, whose fingers bend around an object automatically under side pressure.",
+      "explanation": "A Fin Ray finger is a triangular frame whose two outer edges are connected by a series of crosswise ribs, a structure inspired by fish fins (the Fin Ray Effect). When an object presses against the finger from the side, the finger doesn't just get squashed and pushed away — it bends toward the object instead, automatically conforming to its contour. This means a single, ordinary two-finger open/close motion is enough to gently wrap around fruit, bottles, and other irregularly shaped objects over a fairly large contact area, with no extra sensors or complex control needed. It's usually made from soft plastic or 3D-printed, is cheap, and is often used as a drop-in fingertip replacement on a two-finger gripper — a passively compliant type of soft gripper.",
+      "example": "Swapping a parallel gripper's rigid fingertips for two 3D-printed Fin Ray fingers lets it hold a tomato firmly without crushing it.",
+      "related": ["Soft Gripper", "Two-Finger Gripper", "Adaptive (Underactuated) Gripper", "Compliance", "Gripper"]
+    },
+    {
+      "key": "hardware-09#9",
+      "name_en": "Flexspline",
+      "aliases": ["Flexible Spline"],
+      "one_liner": "The thin-walled, externally toothed, cup-shaped flexible gear in a harmonic drive that gets flexed into an ellipse.",
+      "explanation": "The flexspline is one of the three core parts of a harmonic drive (the other two being the wave generator and the circular spline). It's a thin-walled, cup- or hat-shaped metal part with external teeth. As the elliptical wave generator rotates inside it, it flexes the flexspline into an ellipse, so its teeth mesh with the circular spline's internal teeth only at the two ends of the long axis; the flexspline has two fewer teeth than the circular spline, so for each full turn of the wave generator, the flexspline shifts by two teeth relative to the circular spline, producing a reduction ratio in the hundreds-to-one range. The flexspline has to flex elastically over and over, so its material, heat treatment, and machining precision directly determine a harmonic drive's lifespan and accuracy, making it a key focus of China's push to manufacture harmonic drives domestically.",
+      "example": "",
+      "related": ["Harmonic Drive", "Wave Generator", "Circular Spline", "Gear Ratio", "Backlash"]
+    },
+    {
+      "key": "hardware-09#10",
+      "name_en": "Fully Direct-Drive Dexterous Hand",
+      "aliases": ["Direct-Drive Dexterous Hand"],
+      "one_liner": "A dexterous hand where a motor mounted right at each active joint drives it directly, with no tendons or linkages.",
+      "explanation": "A fully direct-drive dexterous hand gives every actuated degree of freedom its own miniature motor, placed right next to that joint, keeping the transmission path from motor to joint as short as possible — unlike tendon drive, which keeps the motor in the forearm and pulls a cable, or a linkage design, where one motor drives several joints at once. The benefits are fast response, low friction and backlash, backdrivability (an external force can push the joint back), the ability to estimate force from motor current, and support for a high number of degrees of freedom. The challenge is that the space inside a finger is extremely tight, yet has to fit a motor, encoder, and drive electronics, which makes the whole hand heavier, concentrates heat generation, and demands a lot from micro-motor manufacturing. Several Chinese companies have introduced products like this since 2025.",
+      "example": "Dexterous-hand maker Wujitech's Wuji Hand (20 DOF) and Sharpa Wave (22 DOF) are both reported to use a direct-drive design.",
+      "related": ["Dexterous Hand", "Direct Drive", "Tendon-Driven Actuation", "Linkage Transmission", "Hybrid-Drive Dexterous Hand", "Backdrivability"]
+    },
+    {
+      "key": "hardware-09#11",
+      "name_en": "Granular Jamming Gripper (Universal Gripper)",
+      "aliases": ["Universal Gripper", "Jamming Gripper", "Coffee-Balloon Gripper"],
+      "one_liner": "A soft bag of granules that molds around an object, then hardens under vacuum to lock it in place.",
+      "explanation": "A granular jamming gripper consists of a soft balloon-like bag filled with granular material, such as coffee grounds or sand. To grasp, the soft, loose bag is first pressed onto the object, molding itself around the object's shape; then air is drawn out of the bag, the grains pack tightly together and stop flowing past each other (a physical transition called jamming), and the bag instantly stiffens, gripping the object through a combination of friction, suction, and geometric interlocking; releasing it is as simple as letting air back in. It was proposed by researchers at the University of Chicago, Cornell University, and iRobot in a 2010 PNAS paper, and earned the name “universal gripper” because it needs no prior knowledge of an object's shape and can grasp small objects of almost any shape. Its weakness is that it performs poorly on large, flat objects.",
+      "example": "The same coffee-grounds balloon gripper can pick up a coin, an egg, and a screwdriver without ever changing fingers.",
+      "related": ["Soft Gripper", "Gripper", "Vacuum Suction Cup", "Soft Robot", "Compliance"]
+    }
+  ]
+}

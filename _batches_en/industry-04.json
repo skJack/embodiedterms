@@ -1,0 +1,113 @@
+{
+  "batch": "industry-04",
+  "terms": [
+    {
+      "key": "industry-04#0",
+      "name_en": "Factory Pilot Deployment",
+      "aliases": ["In-Factory Trial Run", "Shop-Floor Pilot"],
+      "one_liner": "A trial placement of robots on a real factory line to test the job and collect data before wider rollout.",
+      "explanation": "“In-factory training” (进厂实训) is a term used in Chinese robotics media and industry for humanoid robots and other embodied-AI products being placed on real production lines — at automakers, electronics assemblers, and similar companies — to pilot specific jobs such as material handling, part feeding, quality inspection, or labeling. It usually sits between proof of concept and scaled deployment: on one hand it tests whether the robot can meet the line's cycle time (the seconds allowed per unit of work), reliability, and safety requirements; on the other, it gathers real-world data to feed back into training. Most of these placements are small-scale trials, not settled orders or genuine worker replacement, so readers should distinguish a pilot from a letter of intent, and both from an actual paid deployment.",
+      "example": "Since 2024, Figure has reportedly run line pilots at a BMW plant in the US, and UBTECH's Walker S series has done similar factory trials at several Chinese automakers.",
+      "related": ["Proof of Concept", "Pilot / Small-Batch Delivery", "Scaled Deployment", "Scenario Deployment", "Data Feedback Loop", "Cycle Time / UPH"]
+    },
+    {
+      "key": "industry-04#1",
+      "name_en": "Killer App",
+      "aliases": ["Killer Use Case", "Killer Application"],
+      "one_liner": "The one use case so valuable that customers buy an entire product just to get it.",
+      "explanation": "“Killer app” originally comes from the software industry: an application so valuable that it alone justifies buying a whole class of hardware or platform. The classic example is VisiCalc, an electronic spreadsheet released in 1979 that drove many businesses to buy an Apple II computer just to run it. In embodied AI, the debate is which single use case will make humanoid or general-purpose robots something customers actively want to pay for, at a scale large enough to matter. The industry consensus right now is that no such killer app has been found yet: candidates people are betting on include factory material handling, warehouse order picking, household chores, guided tours, and research and education, but none has proven itself. This question sits at the center of discussions about product-market fit and finding a workable business model.",
+      "example": "VisiCalc was the killer app for the Apple II; some believe a household robot that could reliably fold laundry and tidy a room would become embodied AI's killer app.",
+      "related": ["Product-Market Fit (PMF)", "Closed-Loop Business Model", "Scenario Deployment", "ChatGPT Moment", "iPhone Moment"]
+    },
+    {
+      "key": "industry-04#2",
+      "name_en": "Labor Shortage",
+      "aliases": ["Labor Shortage (Aging Workforce)", "Worker Shortage", "Hiring Difficulty"],
+      "one_liner": "Factories and similar employers can't find or keep enough workers, often cited as the core case for robots.",
+      "explanation": "A labor shortage means significantly more workers are wanted for a job than are willing to take it, and it's common on manufacturing lines and in logistics and caregiving — physically demanding, repetitive work. Causes include an aging population, a shrinking working-age population, and younger workers avoiding factory jobs; China, Japan, South Korea, and Western countries all face versions of this problem. It's the demand argument most often cited in robotics fundraising pitches and government policy documents: as workers become scarcer and more expensive, the payback period for replacing them with robots gets shorter. When reading coverage of this topic, it helps to distinguish a long-term structural shortage from a temporary hiring crunch in one industry, and to trace any headline shortage numbers back to their original source.",
+      "example": "Manufacturers cite hiring difficulty and high worker turnover as reasons for bringing in collaborative robots or humanoid robots to handle loading and material transport.",
+      "related": ["Machines Replacing Humans", "Dirty, Dull and Dangerous (3D) Jobs", "Return on Investment / Payback Period", "Lights-Out Factory", "Robot Density"]
+    },
+    {
+      "key": "industry-04#3",
+      "name_en": "Leaderboard Chasing",
+      "aliases": ["Benchmark Hacking", "Gaming the Benchmark"],
+      "one_liner": "Optimizing hard for one benchmark's score in a way that inflates it without necessarily improving real ability.",
+      "explanation": "“Leaderboard chasing” is AI-community slang for researchers or companies repeatedly tuning hyperparameters, cherry-picking settings, or even designing specifically around a public benchmark's quirks to push their score to the top. Chasing a benchmark in moderation can drive real progress, but overdoing it decouples the score from real capability — an instance of Goodhart's Law, which holds that once a measure becomes a target, it stops being a good measure. In embodied AI, a common version of this is simulation-benchmark saturation: several VLA (vision-language-action) models report near-perfect success rates on LIBERO, yet changing the camera angle or adding minor disturbances causes scores to drop sharply. That's why it's worth checking a paper's generalization tests and real-robot evaluations alongside its headline benchmark numbers.",
+      "example": "Many VLA models report above 95% success on LIBERO, while LIBERO-Plus and LIBERO-PRO, which add perturbations, show noticeably lower scores for the same models.",
+      "related": ["Benchmark", "Benchmark Saturation", "LIBERO", "LIBERO-Plus", "Real-Robot Evaluation", "Cherry-Picking Results"]
+    },
+    {
+      "key": "industry-04#4",
+      "name_en": "Machines Replacing Humans",
+      "aliases": ["“Machine for Worker” Substitution", "Machines Replacing Human Labor"],
+      "one_liner": "Using robots and automation to replace human workers on production jobs.",
+      "explanation": "“Machines replacing humans” (机器换人) is a slogan widely used in China's manufacturing upgrade drive, pushed hard by policy in manufacturing-heavy provinces like Zhejiang and Guangdong starting in the 2010s. The core idea is to use industrial robots and automated lines to replace repetitive, dangerous, hard-to-staff jobs, improving efficiency and quality while reducing dependence on cheap labor. In the past this relied mainly on fixed-program industrial robots, suited only to structured, high-volume work; embodied AI targets the jobs that change setup often or need flexible judgment, letting robots move into work that conventional automation couldn't reach. The phrase also regularly triggers broader public debate about job displacement.",
+      "example": "Welding shops at car factories are now run almost entirely by welding robots — an early example of machines replacing humans; some companies are now trying humanoid robots for moving parts bins.",
+      "related": ["Labor Shortage", "Industrial Robot", "Lights-Out Factory", "Dirty, Dull and Dangerous (3D) Jobs", "Human-Robot Mixed Workforce", "Return on Investment / Payback Period"]
+    },
+    {
+      "key": "industry-04#5",
+      "name_en": "NeurIPS / ICML / ICLR",
+      "aliases": ["Machine Learning's “Big Three” Conferences"],
+      "one_liner": "The three most influential annual academic conferences in machine learning.",
+      "explanation": "NeurIPS (Conference on Neural Information Processing Systems, called NIPS until 2018, usually held in December), ICML (International Conference on Machine Learning, usually held in summer), and ICLR (International Conference on Learning Representations, launched in 2013 by Yoshua Bengio, Yann LeCun, and others, with public review on OpenReview) are together known as machine learning's “big three” conferences. In computer science, conference papers are the primary form of publication, and these three have low acceptance rates and high impact; China's CCF ranking classifies them as top-tier “CCF-A” venues. Methods-heavy embodied-AI work — VLA models, world models, reinforcement-learning algorithms — is often submitted to these three, while more systems- and real-robot-focused work tends to go to CoRL, RSS, or ICRA instead.",
+      "example": "The Decision Transformer paper was published at NeurIPS 2021; many VLA and world-model papers are submitted to ICLR.",
+      "related": ["Top-Tier Venues (CCF-A)", "CoRL", "RSS", "ICRA", "CVPR / ICCV / ECCV (Computer Vision's Big Three)", "arXiv Preprint"]
+    },
+    {
+      "key": "industry-04#6",
+      "name_en": "NVIDIA GTC",
+      "aliases": ["GPU Technology Conference", "GTC"],
+      "one_liner": "NVIDIA's annual AI and GPU technology conference, where Jensen Huang unveils new products.",
+      "explanation": "GTC, short for GPU Technology Conference, is NVIDIA's flagship technical conference, with its main event usually held each spring in San Jose, California, plus regional editions elsewhere. Founder and CEO Jensen Huang's keynote is where NVIDIA unveils its next-generation GPUs, software platforms, and partner news, making it a bellwether for AI compute and NVIDIA's overall strategy. In recent years robotics and physical AI have been a major focus: at GTC 2024, NVIDIA announced Project GR00T, a foundation-model initiative for humanoid robots; at GTC 2025, it open-sourced GR00T N1 and unveiled the Newton physics engine, developed with Google DeepMind and Disney. Each GTC tends to trigger a wave of coordinated partnership announcements from robotics companies.",
+      "example": "In the GTC 2025 keynote, Jensen Huang announced the open-sourcing of the Isaac GR00T N1 humanoid-robot foundation model.",
+      "related": ["NVIDIA", "GR00T N1 Series", "Cosmos", "Newton Physics Engine", "NVIDIA Three-Computer Solution", "Physical AI"]
+    },
+    {
+      "key": "industry-04#7",
+      "name_en": "One Brain, Multiple Robots",
+      "aliases": ["One Brain, Multiple Embodiments", "One Brain, Multiple Bodies"],
+      "one_liner": "Using a single embodied-AI model to control many different kinds of robot hardware.",
+      "explanation": "“One brain, multiple robots” is a phrase used in China's robotics industry for training a single general-purpose robot “brain” model that can drive robot arms, dual-arm rigs, wheeled platforms, humanoids, and quadrupeds alike, instead of training a separate model for each type of machine. Technically, it relies on cross-embodiment training: data from many different robots is pooled for pretraining, and a unified action space or embodiment-specific action heads then handle differences in joint count and control scheme. The appeal is that data can be reused across robots and a model company isn't locked into one hardware platform; the difficulty is that embodiments differ enough that negative transfer — where training on one robot hurts performance on another — is common. Both “brain” companies and the model–hardware decoupling business model rest on this premise.",
+      "example": "Skild AI says its Skild Brain can control multiple robot embodiments; Physical Intelligence's π0 is jointly trained on data from several different robots.",
+      "related": ["Cross-Embodiment", "Embodiment Gap", "Unified Action Space", "Embodiment-Specific Head", "Robot-Brain (Model-only) Company", "Hardware-Software Decoupling"]
+    },
+    {
+      "key": "industry-04#8",
+      "name_en": "Playback Speed Label",
+      "aliases": ["1x / Sped-Up Label", "Playback Speed Disclosure"],
+      "one_liner": "The “1x,” “2x,” or “10x” marker in the corner of a robot demo video showing its true speed.",
+      "explanation": "Robot demo videos often carry a small label in the corner — “1x” for real time, or “2x,” “4x,” “10x” for sped-up playback. Real-robot policies are often slow and pause mid-task, so publishers speed up the footage to keep it watchable and the runtime short. That's not inherently deceptive, but if the label is missing or too small to notice, viewers will overestimate how fast and fluid the robot really is — and speed is directly tied to whether a robot can meet a factory's cycle time and become commercially viable. So when watching a demo, it helps to check for the speed label, then check whether it's fully autonomous, filmed in one continuous take, and whether only successful attempts were kept — judging a robot's real ability means weighing all of these together.",
+      "example": "A laundry-folding video labeled “4x” means folding one item in reality likely took about four times as long as shown.",
+      "related": ["Demo Video", "Fully Autonomous", "Teleoperated Demo", "One-Take (Uncut) Video", "Edited Demo", "Cherry-Picking Results"]
+    },
+    {
+      "key": "industry-04#9",
+      "name_en": "Pre-Programmed (Choreographed) Motion",
+      "aliases": ["Choreographed Motion", "Scripted Motion"],
+      "one_liner": "A fixed motion sequence designed in advance and replayed by the robot, not decided on the spot.",
+      "explanation": "Pre-programmed motion means engineers design a sequence of movements ahead of time — a dance, a backflip, a martial-arts routine — and the robot replays or tracks that fixed script. Today these are commonly built with motion capture plus reinforcement learning to train a tracking policy, with balance and force output handled by the controller in real time, which is not technically trivial. But what to do and when is fixed in advance, and doesn't depend on the robot understanding its surroundings. This differs from full autonomy, which requires the robot to decide its next move based on what it actually perceives. When watching a robot dance or box, it's worth separating “this is strong motor control” from “this robot can autonomously complete a task.”",
+      "example": "Boston Dynamics' 2020 dance video “Do You Love Me” and the humanoid group dances on CCTV's Spring Festival Gala, China's most-watched TV broadcast, are both examples of pre-choreographed motion.",
+      "related": ["Fully Autonomous", "Motion Tracking", "Motion Capture", "Demo Video", "Commercial Performance (Paid Appearance)", "Teleoperated Demo"]
+    },
+    {
+      "key": "industry-04#10",
+      "name_en": "Product-Market Fit",
+      "aliases": ["PMF"],
+      "one_liner": "When a product satisfies a large enough market that customers actively choose to buy it.",
+      "explanation": "Product-market fit (PMF) is startup and investing terminology for a product finding a market that genuinely needs it and is large enough to matter, evidenced by customers buying it on their own initiative, repurchasing, and spreading it by word of mouth. The concept originates with venture capitalist Andy Rachleff, and became widely known after Marc Andreessen's 2007 blog post calling it “the only thing that matters” for a startup. In embodied AI, PMF is the question investors ask most often: robot demos can be stunning, but which scenario will pay an acceptable price for a robot that's stable and efficient enough to replace the current solution is still unsettled. Until a company finds PMF, much of its revenue tends to come from research and education sales, exhibitions, and pilot programs.",
+      "example": "An investor asking a humanoid robot company, “Besides research/education sales and paid appearances, which use case has customers repurchasing at volume?” is really asking about PMF.",
+      "related": ["Killer App", "Closed-Loop Business Model", "Scenario Deployment", "Proof of Concept", "Scaled Deployment", "Return on Investment / Payback Period"]
+    },
+    {
+      "key": "industry-04#11",
+      "name_en": "Real-Robot-Data Camp vs. Sim-Data Camp",
+      "aliases": ["Real-Data Camp / Sim-Data Camp", "Real-World vs. Simulation Data Debate"],
+      "one_liner": "The debate over whether robot training data should mainly come from real robots or from simulation.",
+      "explanation": "This is how China's robotics industry refers to its ongoing debate over the data pipeline for embodied AI. The real-data camp argues that the fine details of real physical interaction are too hard for simulation to reproduce faithfully, and favors collecting large volumes of real-robot data via teleoperation — Physical Intelligence and AgiBot's AgiBot World dataset are representative examples. The sim-data camp argues real-robot collection is too slow and expensive, and favors generating synthetic data at scale in simulators using domain randomization and procedural generation, then applying sim-to-real transfer — Galbot's use of synthetic data to train grasping models, and NVIDIA's simulation toolchain, are representative examples. In practice most teams blend both approaches and are increasingly adding human-video data too; the “data pyramid” concept is exactly this idea of layering different data types by how much of each is used.",
+      "example": "Galbot's GraspVLA is pretrained mainly on roughly a billion synthetic grasping examples, while AgiBot World is a large-scale dataset collected from real robots at a dedicated data-collection facility.",
+      "related": ["Real-Robot Data", "Simulation Data", "Synthetic Data", "Sim-to-Real Transfer", "Data Pyramid", "Technical Route Debate"]
+    }
+  ]
+}

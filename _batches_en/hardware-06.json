@@ -1,0 +1,113 @@
+{
+  "batch": "hardware-06",
+  "terms": [
+    {
+      "key": "hardware-06#0",
+      "name_en": "Robotiq 2F-85 Gripper",
+      "aliases": ["2F-85", "Robotiq Adaptive Gripper"],
+      "one_liner": "An electric two-finger adaptive gripper from Canada's Robotiq, with an 85 mm opening.",
+      "explanation": "The 2F-85 is an electric two-finger gripper made by the Canadian company Robotiq; the “85” in its name refers to the fingers' maximum 85 mm opening. Official specs list a settable grip force of roughly 20–235 N and a repeatability of 0.05 mm. Its fingers use a linkage mechanism that lets them either pinch together like an ordinary parallel gripper, or automatically curl around an object once they make contact — an “adaptive,” or underactuated, design, where one motor drives multiple joints. It's interface-compatible with collaborative arms like UR and Franka and works right out of the box, which has made it one of the most common end effectors in robot-learning labs; in many public datasets and policy models, the gripper dimension of the action space is simply this gripper's open/close amount.",
+      "example": "The DROID dataset's data-collection rig pairs a Franka arm with a Robotiq 2F-85 gripper.",
+      "related": ["Gripper", "Two-Finger Gripper", "Adaptive Gripper", "End Effector", "Robotiq", "DROID Dataset"]
+    },
+    {
+      "key": "hardware-06#1",
+      "name_en": "ROBOTIS Dynamixel Servo",
+      "aliases": ["DXL", "Dynamixel", "Dynamixel Smart Actuator"],
+      "one_liner": "A smart bus-networked servo from Korea's ROBOTIS, the most common choice in research and low-cost arms.",
+      "explanation": "Dynamixel is the smart-actuator product line from the Korean company ROBOTIS, packing a motor, reducer, control circuitry, encoder, and communication interface into a single module. Multiple servos can be strung along one bus in a daisy chain, each with its own ID; a host computer reads and writes registers for position, speed, current, temperature, and so on over the protocol, and can switch between position, velocity, and current control modes. Compared with building a motor-plus-driver setup from scratch, it eliminates a huge amount of wiring and tuning, which is why it has become a common choice for low-cost robot arms and leader-follower teleoperation rigs in robot learning. Common models range from the compact XL330 and XL430 to the more powerful XM430.",
+      "example": "The Koch v1.1 arm is built from XL430 and XL330 Dynamixel servos, and the GELLO teleoperation leader arm is also Dynamixel-based.",
+      "related": ["Servo (Smart Serial Bus Servo)", "ROBOTIS", "Koch v1.1 Arm", "GELLO", "ViperX 300 Arm", "RS-485 Bus"]
+    },
+    {
+      "key": "hardware-06#2",
+      "name_en": "Rotary Actuator",
+      "aliases": ["Rotary Joint Module"],
+      "one_liner": "An actuator whose output is rotation, the power unit behind a robot's rotating joints.",
+      "explanation": "A rotary actuator is a drive unit whose output is rotation about an axis, as opposed to a linear actuator, whose output is straight-line motion. In humanoids and robot arms, it's usually packaged as an all-in-one joint module: a motor plus a reducer, plus an encoder and a driver, sometimes also a torque sensor and a brake — mount it and you have a working rotary joint. Selecting one mainly comes down to peak/rated torque, speed, weight, and backdrivability (whether it can be pushed from the output side by an external force). Most of a humanoid's shoulder, elbow, hip, and knee joints are rotary actuators, while linear actuators are commonly used at the shin and ankle, where a push-pull motion is needed — balancing the two is a basic trade-off in whole-robot design.",
+      "example": "",
+      "related": ["Actuator", "Joint Module", "Linear Actuator (Electric Cylinder)", "Reducer/Gearbox", "Rotary Joint", "Peak Torque"]
+    },
+    {
+      "key": "hardware-06#3",
+      "name_en": "Rotate Vector (RV) Reducer",
+      "aliases": ["RV Gearbox"],
+      "one_liner": "A precision two-stage reducer combining planetary gears with a cycloidal drive, stiff and high-capacity.",
+      "explanation": "An RV reducer is a two-stage precision reducer: the first stage is a planetary gear set, and the second is a cycloidal drive (a cycloidal disc rolling eccentrically inside a ring of pins, producing a large reduction ratio). It was brought to the industrial robot market by Japan's Nabtesco. Compared with a harmonic drive, an RV reducer is larger and heavier, but stiffer, more shock-resistant, and able to carry heavier loads, so traditional six-axis industrial robots typically use RV reducers in heavily loaded joints like the waist, shoulder, and elbow, while using harmonic drives in the lighter forearm and wrist. Humanoid robots prioritize low weight and use RV reducers less often; understanding it is mainly useful for making sense of the industrial-robot and reducer supply chain.",
+      "example": "The rotating base axis of an industrial robot commonly uses an RV reducer to bear the weight and tipping moment of the entire arm.",
+      "related": ["Reducer/Gearbox", "Cycloidal Drive", "Harmonic Drive", "Planetary Gearbox", "Nabtesco", "Industrial Robot"]
+    },
+    {
+      "key": "hardware-06#4",
+      "name_en": "Safety Gantry (Suspended Start)",
+      "aliases": ["Safety Hoist", "Suspension Rig"],
+      "one_liner": "A rig that suspends a humanoid or legged robot during testing so a fall doesn't damage it.",
+      "explanation": "A safety gantry is a gantry frame or mobile crane fitted with a hoist line, used to suspend a robot while testing humanoid or biped robots. It serves two purposes: first, during power-on, zero calibration, or switching control modes, it keeps the robot's legs off the ground so it can't fall over before the controller is ready; second, when testing a new walking policy — especially right after moving it from simulation to the real robot — the line is kept slightly slack, so if the robot loses balance it's caught by the line instead of damaging its joints or shell. Many humanoid makers' getting-started guides require suspending the robot before enabling motion control. It's a basic safety measure for real-robot experiments and plays no part in control itself.",
+      "example": "The first time a walking policy trained with reinforcement learning is deployed on a real humanoid, the robot is usually hung from a safety gantry to step with its feet off the ground, then gradually lowered until its feet touch down.",
+      "related": ["Humanoid Robot", "Sim-to-Real Transfer", "Joint Zero Calibration (Homing)", "Fall Protection and Recovery", "Emergency Stop"]
+    },
+    {
+      "key": "hardware-06#5",
+      "name_en": "Series Elastic Actuator (SEA)",
+      "aliases": ["Series Elastic Drive"],
+      "one_liner": "An actuator with a spring deliberately placed between the motor and the load, sensing force from spring deflection.",
+      "explanation": "A series elastic actuator deliberately places an elastic element (a spring) between the motor (plus reducer) and the output, an idea proposed by MIT's Gill Pratt and Matthew Williamson in 1995. Measuring how much the spring deflects gives an accurate estimate of output torque, enabling precise force control; the spring also cushions impacts and protects the reducer, making the robot safer to be around when it contacts a person. The trade-off is lower stiffness and lower bandwidth, which makes precise position control harder. SEAs are common in legged robots, exoskeletons, and collaborative robots that need compliance. The contrasting approach is quasi-direct drive, which skips the spring and estimates torque directly from motor current through a low gear ratio.",
+      "example": "The joints of Rethink Robotics' Baxter dual-arm robot use series elastic actuators, so the arm yields and gets pushed aside rather than colliding rigidly with a person.",
+      "related": ["Actuator", "Compliance", "Torque Control", "Quasi-Direct Drive", "Variable Stiffness Actuator", "Backdrivability"]
+    },
+    {
+      "key": "hardware-06#6",
+      "name_en": "Servo (Smart Serial Bus Servo)",
+      "aliases": ["Bus Servo", "Smart Servo"],
+      "one_liner": "A small position-control actuator with a motor, gears, position sensor, and control board built into one unit.",
+      "explanation": "A servo originally referred to the small actuator used in model aircraft to move control surfaces: a small box packing a motor, reduction gears, a position sensor (a potentiometer or magnetic encoder), and a control board — give it a target angle, and it drives itself there. Traditional servos take commands over PWM (pulse-width modulation); bus servos (smart servos) instead use a serial bus, so multiple servos can be chained on one line, each with its own ID, and can also report back position, current, and temperature. They're cheap and easy to use, but have limited torque and precision, so they're mostly used in education, desktop robot arms, small humanoids, and teleoperation leader arms. Newcomers doing real-robot experiments often start with a servo-based arm.",
+      "example": "LeRobot's SO-100 / SO-101 arm uses Feetech STS3215 bus servos, and a full arm costs only a few hundred dollars.",
+      "related": ["ROBOTIS Dynamixel Servo", "Feetech STS3215 Servo", "SO-100 / SO-101 Arm", "Servo Motor", "PWM (Pulse-Width Modulation)", "Desktop Robot Arm"]
+    },
+    {
+      "key": "hardware-06#7",
+      "name_en": "Servo Drive (Motor Driver)",
+      "aliases": ["Motor Drive", "Servo Amplifier"],
+      "one_liner": "The power-electronics board that turns control commands into motor current and runs low-level control loops.",
+      "explanation": "A motor driver is the power-electronics module between the controller and the motor. The host computer or onboard compute platform only sends high-level commands — go to this position, at this speed, with this torque — and the driver reads the encoder, switches power transistors (such as MOSFETs) to energize the motor windings via PWM, and internally runs the current loop, velocity loop, and position loop (cascade control); for brushless motors it also performs field-oriented control (FOC). It communicates with the main controller over a bus such as CAN, EtherCAT, or RS-485. Selecting one comes down to voltage, continuous/peak current, control frequency, and communication interface. In humanoid robots, the driver is often integrated together with the motor and reducer into the joint module itself, an arrangement called a drive-integrated joint.",
+      "example": "ODrive and mjbots moteus are open-source brushless motor drivers commonly used by robotics hobbyists.",
+      "related": ["Servo Motor", "Field-Oriented Control (FOC)", "Drive-Integrated Joint", "EtherCAT Bus", "CAN Bus", "ODrive"]
+    },
+    {
+      "key": "hardware-06#8",
+      "name_en": "Servo Motor",
+      "aliases": ["Servo System"],
+      "one_liner": "A motor with position feedback that can be closed-loop controlled precisely for position and speed.",
+      "explanation": "A servo motor is a motor fitted with position feedback, such as an encoder, that together with a servo drive forms a closed control loop able to precisely track position, velocity, or torque commands. “Servo” describes this closed-loop, tracking style of control, not any particular motor construction — internally it's usually a permanent-magnet synchronous motor or a brushless DC motor. Unlike a stepper motor, it can detect and correct errors in real time, keeping its accuracy even when the load changes. Industrial robots, CNC machine tools, and robot joints all make heavy use of servo motors. A humanoid robot's joint module is, in essence, a compact servo system: a motor plus a reducer plus an encoder plus a driver.",
+      "example": "",
+      "related": ["Motor Driver", "Encoder", "Permanent-Magnet Synchronous Motor", "Stepper Motor", "Joint Module", "Cascade Control"]
+    },
+    {
+      "key": "hardware-06#9",
+      "name_en": "Shadow Dexterous Hand",
+      "aliases": ["Shadow Hand"],
+      "one_liner": "A highly humanlike dexterous hand from the UK's Shadow Robot, with 24 joints and 20 actuated degrees of freedom.",
+      "explanation": "The Shadow Dexterous Hand was developed by London-based Shadow Robot Company and is the company's flagship product. Designed to match the size and joint range of a human hand, it has 24 joints in total, 20 of which are independently actuated, with the rest coupled through underactuation. The electric version places its motors in the forearm and pulls the fingers via tendons, and includes extensive position and tactile sensing. It's expensive and complex to maintain, but has long served as the benchmark platform for dexterous-manipulation research, and many simulators include a built-in model of it. The company later partnered with Google DeepMind to produce a more durable hand, the DEX-EE.",
+      "example": "OpenAI's Dactyl project trained a reinforcement-learning policy in simulation, then used it to solve a Rubik's Cube one-handed on a real Shadow Hand.",
+      "related": ["Dexterous Hand", "Shadow Robot Company", "Dactyl (OpenAI's Rubik's Cube Hand)", "Tendon Drive", "Shadow DEX-EE Hand", "In-Hand Manipulation"]
+    },
+    {
+      "key": "hardware-06#10",
+      "name_en": "Stall Torque / No-Load Speed",
+      "aliases": ["Locked-Rotor Torque", "Free-Run Speed"],
+      "one_liner": "A motor's maximum torque when jammed still, and its top speed with no load attached.",
+      "explanation": "These are the two endpoint values on a motor or servo's spec sheet. Stall torque is the torque a motor can output when its output shaft is locked and its speed is zero — the theoretical maximum. No-load speed is the highest speed it reaches with nothing attached. For a DC motor, torque and speed roughly fall along a straight line running from the stall point to the no-load point (the torque-speed curve), and the actual operating point sits somewhere between the two. Current, and therefore heat, is highest at stall, and prolonged stalling can burn out the motor — so selecting a motor by stall torque alone is a mistake; rated torque and sustained-operation capability matter too.",
+      "example": "When picking a servo for a robot arm joint, the torque actually needed is usually only a small fraction of the stall torque, leaving margin for acceleration and heat.",
+      "related": ["Torque-Speed Curve (T-N Curve)", "Peak Torque", "Rated Torque", "Servo (Smart Serial Bus Servo)", "Motor Thermal Rise and Overheat Protection", "Torque Constant (Kt)"]
+    },
+    {
+      "key": "hardware-06#11",
+      "name_en": "STMicroelectronics STM32 MCU Family",
+      "aliases": ["STM32", "STM32 Microcontroller"],
+      "one_liner": "A family of 32-bit microcontrollers from STMicroelectronics, built on Arm Cortex-M cores.",
+      "explanation": "STM32 is the 32-bit microcontroller (MCU) family from STMicroelectronics, built on Arm Cortex-M cores, spanning everything from the low-power L series to the high-performance H series. It's inexpensive, has rich on-chip peripherals (PWM, ADC, CAN, UART, and more), and has extensive documentation and community support, making it close to the standard entry point for embedded development in China's electronics and robotics community. In robots, it commonly serves as the lower-level controller: running the current loop for motor drivers, reading encoders and IMUs, and handling CAN bus communication, then passing data up to the host computer or onboard compute platform (such as a Jetson) that runs the policy.",
+      "example": "Many open-source brushless motor driver boards and joint modules use an STM32 as their control chip.",
+      "related": ["Microcontroller (MCU)", "Embedded System", "Lower-Level Controller", "Motor Driver", "CAN Bus", "Real-Time Operating System (RTOS)"]
+    }
+  ]
+}

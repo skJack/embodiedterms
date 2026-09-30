@@ -1,0 +1,113 @@
+{
+  "batch": "software-02",
+  "terms": [
+    {
+      "key": "software-02#0",
+      "name_en": "Action (ROS Action)",
+      "aliases": ["ROS Action", "actionlib"],
+      "one_liner": "A ROS communication style for tasks that take a while, with progress feedback partway through and the option to cancel.",
+      "explanation": "Action is one of ROS’s three main communication mechanisms, alongside topics (continuously broadcast data) and services (a single request and response). It’s designed for tasks that take some time to finish: a client sends a goal, the server sends back feedback continuously while it executes, and returns a result when done, with the option to cancel partway through. In ROS 1 it’s implemented by the actionlib library; in ROS 2 it’s a built-in mechanism, built underneath from a combination of services and topics. Tasks such as navigating to a point or an arm executing a trajectory are usually exposed as an action interface.",
+      "example": "Nav2’s NavigateToPose action: send a goal point, and the robot reports its remaining distance while it walks, returning success or failure once it arrives.",
+      "related": ["Topic", "Service", "Node", "Message", "Nav2", "MoveIt"]
+    },
+    {
+      "key": "software-02#1",
+      "name_en": "AutoDL",
+      "aliases": ["AutoDL GPU Cloud"],
+      "one_liner": "A Chinese pay-by-the-hour GPU cloud platform, popular with students for running experiments.",
+      "explanation": "AutoDL is a Chinese GPU-rental cloud platform: users pick a GPU model and a base image on its website, spin up a GPU-backed container instance, and are billed by usage time, accessing it through JupyterLab or SSH. The platform ships pre-built images with common environments such as PyTorch and CUDA already installed, plus a data disk, file storage, and network acceleration aimed at academic sites. Students without a lab server, or without a strong enough local GPU, often use it to train and fine-tune models and run simulations. Remember to shut the instance down when you’re done, since it keeps billing otherwise; data should be kept in a persistent directory, since it’s lost once the instance is released.",
+      "example": "Renting an RTX 4090 and booting the official PyTorch image, then SSHing in to clone the LeRobot code and fine-tune an ACT policy.",
+      "related": ["SSH Remote Login", "Docker", "Conda", "Chinese Mirror Sources (e.g. Tsinghua TUNA, Alibaba Cloud)", "Common GPU Models (RTX 4090 / A100 / H100 / B200)", "HF-Mirror"]
+    },
+    {
+      "key": "software-02#2",
+      "name_en": "CAD Software (SolidWorks / Onshape / Fusion 360)",
+      "aliases": ["Computer-Aided Design", "SolidWorks", "Onshape", "Fusion 360", "STEP File"],
+      "one_liner": "Software for drawing 3D models of mechanical parts and assemblies, the starting point for designing a robot’s structure.",
+      "explanation": "CAD (computer-aided design) software is used to draw 3D models of parts and assemblies. Three tools are common in robotics: Dassault Systèmes’ SolidWorks (desktop software, the most widely used in industry), PTC’s Onshape (browser-based, cloud-hosted CAD, convenient for collaboration), and Autodesk’s Fusion 360. Models are usually exchanged between different programs using the STEP format, a general-purpose, vendor-neutral 3D file format. For embodied AI, a CAD model is where simulation starts: a plugin exports the assembly into URDF or MJCF (robot model files describing links, joints, and mass), which, paired with mesh files, can be loaded straight into MuJoCo or Isaac Sim.",
+      "example": "onshape-to-robot exports an open-source arm assembly drawn in Onshape directly into a URDF, which is then loaded into a simulator.",
+      "related": ["Unified Robot Description Format (URDF)", "SolidWorks-to-URDF Plugin", "onshape-to-robot", "Mesh File", "MJCF", "3D Printing (FDM / SLA)"]
+    },
+    {
+      "key": "software-02#3",
+      "name_en": "CMake",
+      "aliases": ["CMakeLists.txt"],
+      "one_liner": "A cross-platform build-configuration tool for C/C++ projects that spells out exactly how to compile them.",
+      "explanation": "CMake is an open-source build-system generator led by Kitware. C/C++ code has to be compiled and linked to become an executable program, and once a project has many files, something needs to tell the compiler what to build first and which libraries it depends on. CMake reads a project’s CMakeLists.txt and generates the build files for a given platform (such as a Makefile or Ninja file), which then invoke the actual compiler. A large amount of low-level robotics code is C++; ROS 1’s catkin and ROS 2’s ament_cmake are both built on top of CMake, and libraries such as Pinocchio and OpenCV also need it when installed from source.",
+      "example": "The common three-step source install for a library: mkdir build && cd build, cmake .., make -j8.",
+      "related": ["colcon", "ament", "catkin", "Cross-Compilation", "Python and C++"]
+    },
+    {
+      "key": "software-02#4",
+      "name_en": "colcon",
+      "aliases": ["collective construction", "colcon build"],
+      "one_liner": "The recommended build tool for ROS 2, compiling an entire workspace with a single command.",
+      "explanation": "colcon is the officially recommended command-line build tool for ROS 2; its name comes from “collective construction.” A ROS workspace usually contains many packages with dependencies on each other, and colcon automatically works out the build order and calls each package’s own build system in turn or in parallel — CMake/ament_cmake for C++ packages, setuptools for Python packages — installing the results into an install directory. It replaced catkin_make and catkin_tools from the ROS 1 era. After building, you need to source install/setup.bash before the terminal can find the newly built packages.",
+      "example": "Running colcon build --symlink-install in ~/ros2_ws, then source install/setup.bash, followed by ros2 run to launch a node you wrote yourself.",
+      "related": ["ROS Workspace", "Package", "ament", "catkin", "CMake", "rosdep"]
+    },
+    {
+      "key": "software-02#5",
+      "name_en": "Conda",
+      "aliases": ["Anaconda", "Miniconda", "Miniforge", "conda environment"],
+      "one_liner": "A widely used Python package and virtual-environment manager that isolates dependencies between projects.",
+      "explanation": "Conda is an open-source package- and environment-management tool, originally released by the Anaconda company. It can create a separate environment for each project, each with its own versions of Python and libraries that don’t interfere with one another; beyond Python packages, it can also install non-Python dependencies such as the CUDA toolkit and compilers. Anaconda is the full distribution that bundles a large set of scientific-computing packages; Miniconda is a stripped-down version with just conda itself; Miniforge is the community edition, defaulting to downloads from the conda-forge channel. Dependency versions in embodied AI projects often conflict with each other (a simulator, for instance, might require a specific Python version), so most open-source install instructions start with creating a conda environment.",
+      "example": "conda create -n lerobot python=3.10, then conda activate lerobot, then pip install -e . as the project’s instructions describe.",
+      "related": ["uv", "Docker", "PyTorch", "CUDA", "Chinese Mirror Sources (e.g. Tsinghua TUNA, Alibaba Cloud)"]
+    },
+    {
+      "key": "software-02#6",
+      "name_en": "Data Distribution Service",
+      "aliases": ["DDS"],
+      "one_liner": "A publish/subscribe communication standard from the OMG, and the default underlying transport for ROS 2.",
+      "explanation": "DDS is a real-time publish/subscribe communication middleware standard defined by the Object Management Group (OMG), originally used in distributed systems such as defense and aerospace that demand high real-time performance and reliability. It has no central node — participants automatically discover each other over the network — and its QoS (Quality of Service) policies configure things like reliable versus best-effort delivery and how much message history to keep. ROS 2 dropped ROS 1’s home-grown communication layer in favor of connecting to DDS through the RMW (ROS middleware interface), with common implementations including eProsima Fast DDS, Eclipse Cyclone DDS, and RTI Connext. When multi-machine communication breaks or a topic isn’t receiving anything, the DDS configuration is often where to start looking.",
+      "example": "Setting the environment variable RMW_IMPLEMENTATION=rmw_cyclonedds_cpp switches ROS 2’s underlying communication from the default Fast DDS to Cyclone DDS.",
+      "related": ["ROS 2", "ROS Middleware Interface (RMW)", "Fast DDS", "Cyclone DDS", "Quality of Service (QoS)", "Zenoh"]
+    },
+    {
+      "key": "software-02#7",
+      "name_en": "Docker",
+      "aliases": ["Container", "Image", "Dockerfile"],
+      "one_liner": "Packaging a program together with its runtime environment into a container that runs the same way on any machine.",
+      "explanation": "Docker is a container platform from Docker, Inc., open-sourced in 2013. It packages a program together with its system libraries, dependencies, and configuration into an “image”; running that image produces a “container,” which shares the host machine’s kernel and is therefore much lighter weight than a virtual machine. An image is described by a Dockerfile script, and can be pushed to a registry for others to pull. Robotics development frequently runs into problems like a ROS version being tied to a specific Ubuntu version, or a simulator with complicated dependencies; Docker lets different environments run side by side on the same machine, and paired with the NVIDIA Container Toolkit, a container can use the GPU too. Many simulators and deployment toolchains ship an official Docker image.",
+      "example": "On an Ubuntu 24.04 host, pulling the official ROS 2 Humble image and building and running a driver package that needs a 22.04 environment inside the container.",
+      "related": ["Conda", "Ubuntu", "CUDA", "ROS 2", "Inference Deployment", "AutoDL"]
+    },
+    {
+      "key": "software-02#8",
+      "name_en": "Drake",
+      "aliases": ["pydrake"],
+      "one_liner": "A model-based robotics simulation and optimization toolbox led by MIT and the Toyota Research Institute.",
+      "explanation": "Drake is an open-source C++ toolbox started by Russ Tedrake’s group at MIT, with deep involvement from the Toyota Research Institute (TRI), and a Python interface called pydrake. It positions itself around “model-based design and verification”: it includes multibody dynamics computation, physics simulation with contact, and a set of mathematical optimization interfaces that let you write trajectory optimization, inverse kinematics, or controller-design problems directly and hand them to a range of solvers. Unlike simulators built mainly for large-scale parallel training, Drake puts more emphasis on physical and numerical rigor. The companion code for Tedrake’s public courses Underactuated Robotics and Robotic Manipulation is built on Drake.",
+      "example": "Loading an arm’s URDF with pydrake and writing an inverse-kinematics optimization problem to solve for the joint angles that bring the end effector to a target pose.",
+      "related": ["MuJoCo", "Pinocchio", "Trajectory Optimization", "Multibody Dynamics", "Toyota Research Institute (TRI)", "Inverse Kinematics"]
+    },
+    {
+      "key": "software-02#9",
+      "name_en": "Driver (Device Driver)",
+      "aliases": ["ROS Driver", "Device Driver"],
+      "one_liner": "The layer of software that lets an operating system or higher-level program read and write to a piece of hardware.",
+      "explanation": "A driver sits between hardware and higher-level software, translating requests like “read a frame of video” or “turn the motor to this angle” into low-level instructions the hardware understands, and organizing whatever the hardware returns into a format a program can use. The term has two related senses: an operating-system-level device driver, such as a graphics driver or a USB-serial driver; and a “ROS driver” in robot software — a ROS node, written by the manufacturer or the community, that publishes data from a camera, lidar, or motor onto standard topics. When bringing new hardware into a system, checking whether a driver is already available is usually the first step.",
+      "example": "After installing the realsense-ros driver package, launching it makes a RealSense camera’s color and depth images available on topics such as /camera/color/image_raw.",
+      "related": ["Firmware", "Software Development Kit (SDK)", "Hardware Abstraction Layer", "ros2_control", "RealSense SDK", "Node"]
+    },
+    {
+      "key": "software-02#10",
+      "name_en": "Embedded Software Development",
+      "aliases": ["Embedded Development", "Microcontroller Programming"],
+      "one_liner": "Writing the program that runs on the chip inside a device such as a motor driver board or a sensor.",
+      "explanation": "Embedded software runs on the chip built into a device — usually a microcontroller (MCU, such as an STM32) or an SoC (system-on-chip) — which has limited resources and needs to run reliably for long stretches. Development is usually done in C/C++, either operating hardware registers directly (bare metal) or running on top of a real-time operating system such as FreeRTOS; the code is cross-compiled on a computer and then flashed onto the chip, with a JTAG/SWD debugger used to step through it. Joint-motor control, sensor sampling, battery management, and low-level bus communication (CAN, EtherCAT) in a robot all belong to this layer, and it determines whether control is real-time and reliable — it’s also an important job category at embodied AI companies, distinct from algorithms work.",
+      "example": "A current-loop program written for an STM32 reads the encoder at 20 kHz, computes the PWM duty cycle, and reports the joint angle back to the host computer over a CAN bus.",
+      "related": ["Microcontroller (MCU)", "Real-Time Operating System (RTOS)", "Firmware", "Cross-Compilation", "STM32", "CAN Bus"]
+    },
+    {
+      "key": "software-02#11",
+      "name_en": "Gymnasium",
+      "aliases": ["OpenAI Gym", "gym"],
+      "one_liner": "The standard interface library for reinforcement learning environments, and the successor to OpenAI Gym.",
+      "explanation": "Gymnasium is a reinforcement-learning environment library maintained by the Farama Foundation; it grew out of Gym, which OpenAI released in 2016, and which Farama took over and renamed once OpenAI stopped maintaining it. Its most important contribution is a unified interface: env.reset() starts an episode and returns the initial observation, and env.step(action) executes an action and returns the new observation, the reward, terminated (the task ended naturally), truncated (cut off by something like a step limit), and extra info. It ships with classic tasks such as CartPole and MuJoCo continuous-control tasks built in. Most reinforcement-learning algorithm libraries are written against this interface, and many robot simulation environments provide a compatible wrapper, so an algorithm written once can be pointed at a new environment directly.",
+      "example": "env = gymnasium.make(“HalfCheetah-v5”), then calling env.step() in a loop to collect data, which is handed to Stable-Baselines3’s PPO for training.",
+      "related": ["Env (Environment) and the reset / step Interface", "Reinforcement Learning", "Termination vs. Truncation", "Stable-Baselines3", "Gym MuJoCo Continuous-Control Tasks", "MuJoCo"]
+    }
+  ]
+}

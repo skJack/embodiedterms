@@ -1,0 +1,179 @@
+{"category": "hardware", "batch": 11, "terms": [
+{
+ "name_zh": "升降柱",
+ "name_en": "Lifting Column",
+ "abbr": "",
+ "aliases": ["升降立柱", "升降模组"],
+ "tier": 3,
+ "one_liner": "装在底盘上、让机器人躯干或手臂整体上下移动的竖直直线轴。",
+ "explanation": "升降柱是移动操作机器人和轮式人形机器人上常见的竖直直线运动部件，一般由电机带动丝杠或同步带，驱动立柱或滑台上下移动，把双臂、头部相机整体抬高或放低。它解决的是工作高度问题：固定高度的手臂很难同时够到地面和高处的货架，加一根升降轴就能用一个自由度覆盖从低到高的工作空间，比做一双长腿便宜、稳定得多。选型时主要看行程、负载、速度和断电能否自锁（防止掉电时手臂下坠）。它和移动底盘、机械臂一起构成复合机器人的常见配置。",
+ "example": "Hello Robot 的 Stretch 在底盘上立了一根竖直升降轴，伸缩手臂挂在上面，可以从地面捡东西，也能够到桌面和台面。",
+ "related": ["复合机器人", "移动底盘", "轮式人形机器人", "工作空间", "移动关节", "滚珠丝杠"],
+ "sources": [{"title": "Hello Robot Stretch", "url": "https://hello-robot.com/"}],
+ "as_of": ""
+},
+{
+ "name_zh": "轻量化（镁合金 / 碳纤维）",
+ "name_en": "Lightweighting (Magnesium Alloy / Carbon Fiber)",
+ "abbr": "",
+ "aliases": ["轻量化设计"],
+ "tier": 3,
+ "one_liner": "用镁合金、碳纤维、工程塑料等轻材料给机器人本体减重。",
+ "explanation": "轻量化指在保证强度和刚度的前提下降低机器人结构件的重量，常用材料有镁合金（密度约为铝合金的三分之二）、碳纤维复合材料（比强度高，适合做杆件和外壳）以及 PEEK 等工程塑料。对腿足和人形机器人来说，减重的收益会层层放大：四肢越轻，转动惯量越小，关节电机需要的扭矩越低，续航更长，摔倒或碰到人时冲击也更小。代价是材料和加工成本更高，镁合金要做防腐处理，碳纤维件不便修补。它常和以塑代钢、负载自重比、续航一起讨论。",
+ "example": "把机械腿的铝合金小腿换成碳纤维管，可以减轻腿部远端重量，让髋、膝关节在快速摆腿时更省力。",
+ "related": ["以塑代钢", "负载自重比", "转动惯量", "续航", "PEEK", "扭矩密度"],
+ "sources": [
+  {"title": "Magnesium alloy - Wikipedia", "url": "https://en.wikipedia.org/wiki/Magnesium_alloy"},
+  {"title": "Carbon-fiber reinforced polymers - Wikipedia", "url": "https://en.wikipedia.org/wiki/Carbon-fiber-reinforced_polymers"}
+ ],
+ "as_of": ""
+},
+{
+ "name_zh": "直线电机",
+ "name_en": "Linear Motor",
+ "abbr": "",
+ "aliases": ["线性电机"],
+ "tier": 3,
+ "one_liner": "不经丝杠等传动、直接输出直线推力和直线运动的电机。",
+ "explanation": "直线电机的定子（线圈或磁轨）和动子沿一条直线展开，通电后动子直接沿轨道平移，中间没有丝杠、齿轮这类把转动变成直线运动的机构。好处是速度快、定位精度高、没有背隙（传动间隙），因此大量用在半导体设备、精密平台和高速分拣上；缺点是单位体积推力小、成本高、断电不能自锁。新人容易混淆的是：人形机器人上常说的「线性执行器」或「电缸」，大多是旋转电机加行星滚柱丝杠，并不是直线电机。",
+ "example": "晶圆检测设备的精密运动平台常用直线电机驱动，配合光栅尺实现微米级定位。",
+ "related": ["线性执行器（直线执行器 / 电缸）", "行星滚柱丝杠", "滚珠丝杠", "直驱", "永磁同步电机", "背隙"],
+ "sources": [{"title": "Linear motor - Wikipedia", "url": "https://en.wikipedia.org/wiki/Linear_motor"}],
+ "as_of": ""
+},
+{
+ "name_zh": "灵心巧手 Linker Hand",
+ "name_en": "Linker Hand",
+ "abbr": "",
+ "aliases": ["Linker Hand 灵巧手"],
+ "tier": 3,
+ "one_liner": "北京灵心巧手公司的灵巧手产品系列，覆盖腱绳、连杆、直驱三种驱动。",
+ "explanation": "Linker Hand 是灵心巧手（北京）科技（Linkerbot）的灵巧手产品线。据官方介绍，该系列自由度从 6 到 42 不等，覆盖腱绳驱动、连杆传动和直驱三种技术路线。其中 L20 基于连杆结构，21 个自由度，用无刷电机加精密滚珠丝杠驱动；L30 是腱绳驱动，22 个自由度。灵巧手是人形机器人做精细操作的末端执行器，自由度越高越接近人手，但控制和数据采集也越难。这类产品常被高校和机器人公司买来装在机械臂或人形上，配合数据手套、VR 遥操作采集灵巧操作数据。",
+ "example": "研究者把 Linker Hand 装在机械臂末端，用数据手套遥操作采集抓取、拧瓶盖等灵巧操作演示，再训练 VLA 策略。",
+ "related": ["灵心巧手", "灵巧手", "腱绳驱动", "连杆传动", "灵巧操作", "数据手套"],
+ "sources": [
+  {"title": "灵心巧手 - 全球领先的机器人灵巧手 | LinkerBot", "url": "https://www.linkerbot.cn/"},
+  {"title": "灵心巧手（Linkerbot） - RobotScope", "url": "https://robotscope.net/companies/linkerbot/"}
+ ],
+ "as_of": "2026-09"
+},
+{
+ "name_zh": "关节液冷（主动散热）",
+ "name_en": "Liquid-Cooled Joint Actuators (Active Thermal Management)",
+ "abbr": "",
+ "aliases": ["液冷关节", "关节主动散热"],
+ "tier": 3,
+ "one_liner": "在关节电机里走冷却液，把绕组热量带走，让关节能长时间大扭矩输出。",
+ "explanation": "关节液冷是在关节模组的电机外壳或定子附近开冷却通道，用泵让冷却液循环，把电机绕组和驱动器产生的热量带到散热器排掉。电机的发热大致与电流平方成正比，持续输出多大扭矩主要受绕组温度限制，而不是受电机能瞬间给多大力限制；风冷或自然散热跟不上时，关节只能降额运行或触发过热保护。液冷能明显抬高持续扭矩，让人形机器人长时间搬重物、连续高动态运动。代价是多了泵、管路和冷却液，增加重量、复杂度和漏液风险。电动车驱动电机普遍液冷，人形机器人关节正在借鉴这一做法。",
+ "example": "",
+ "related": ["电机温升与过热保护", "额定扭矩", "峰值扭矩", "关节模组", "功率密度", "扭矩密度"],
+ "sources": [{"title": "Water cooling - Wikipedia", "url": "https://en.wikipedia.org/wiki/Water_cooling"}],
+ "as_of": ""
+},
+{
+ "name_zh": "磁编码器",
+ "name_en": "Magnetic Encoder",
+ "abbr": "",
+ "aliases": ["磁编", "磁性编码器"],
+ "tier": 3,
+ "one_liner": "用磁铁加霍尔或磁阻芯片测量电机轴转角的角度传感器。",
+ "explanation": "磁编码器是编码器（测转角的传感器）的一种：在电机轴端装一块径向充磁的小磁铁，正对它放一颗霍尔或磁阻芯片，芯片读出磁场方向就得到转角。它体积小、成本低、不怕灰尘和油污，所以在机器人关节模组里非常普遍，常用来给磁场定向控制（FOC，一种电机控制方法）提供转子角度。与光电编码器相比，它的精度和分辨率通常低一些，也容易受外部磁场和装配偏心影响，需要标定。高端关节常在电机端和输出端各放一个编码器，组成双编码器方案。",
+ "example": "许多开源关节驱动板在电机轴端贴一块磁铁，板上正对着焊一颗 ams 的 AS5047P 磁编芯片读取转子角度。",
+ "related": ["编码器", "光电编码器", "绝对值编码器", "双编码器", "磁场定向控制", "霍尔传感器"],
+ "sources": [{"title": "Rotary encoder - Wikipedia", "url": "https://en.wikipedia.org/wiki/Rotary_encoder"}],
+ "as_of": ""
+},
+{
+ "name_zh": "磁力夹爪",
+ "name_en": "Magnetic Gripper",
+ "abbr": "",
+ "aliases": ["电磁吸盘", "磁性夹爪", "电永磁吸盘"],
+ "tier": 3,
+ "one_liner": "靠电磁铁或可开关永磁铁吸住铁质工件的末端执行器。",
+ "explanation": "磁力夹爪是一种末端执行器（装在机械臂末端干活的部件），用电磁铁或电永磁铁（通电一瞬间切换磁性、平时不耗电保持吸力）吸住钢铁类工件。它只需接触工件一个面，不用手指合拢，抓取快、结构简单，适合搬运钢板、冲压件和铁质零件；电永磁方案在断电时仍能吸住，安全性更好。局限也很明显：只对铁磁性材料有效，薄板容易一次吸起多张，放下时可能有剩磁残留。它和真空吸盘、二指夹爪一样，是工业场景里常用的非灵巧抓取方案。",
+ "example": "冲压生产线上，机械臂末端的磁力吸盘一次吸起一张钢板，送进下一台压机。",
+ "related": ["末端执行器", "真空吸盘", "夹爪", "静电吸附夹爪", "工业机器人", "码垛 / 拆垛"],
+ "sources": [
+  {"title": "Electropermanent magnet - Wikipedia", "url": "https://en.wikipedia.org/wiki/Electropermanent_magnet"},
+  {"title": "Robot end effector - Wikipedia", "url": "https://en.wikipedia.org/wiki/Robot_end_effector"}
+ ],
+ "as_of": ""
+},
+{
+ "name_zh": "Meta Quest 3 / PICO 4 Ultra 头显",
+ "name_en": "Meta Quest 3 / PICO 4 Ultra XR Headsets",
+ "abbr": "",
+ "aliases": ["Quest 3", "PICO 4 Ultra", "XR 头显"],
+ "tier": 3,
+ "one_liner": "两款常被拿来做机器人遥操作的消费级混合现实头显。",
+ "explanation": "Meta Quest 3 是 Meta 在 2023 年推出的混合现实头显，PICO 4 Ultra 是字节跳动旗下 PICO 在 2024 年推出的同类产品。两者都自带头部定位、手势追踪、手柄追踪和彩色透视摄像头，价格远低于 Apple Vision Pro。在具身智能里，它们主要用作低成本 VR 遥操作设备：头显把操作者的头部位姿、手部关键点或手柄位姿实时发给机器人，经动作重定向变成关节指令；机器人头部相机的画面再传回头显，让操作者身临其境地干活，同时记录下演示数据。",
+ "example": "宇树开源的 xr_teleoperate 支持用 Quest 3、PICO 4 Ultra 等 XR 设备遥操作宇树 G1 人形机器人及其灵巧手。",
+ "related": ["VR 遥操作", "VR 头显", "Apple Vision Pro", "宇树 xr_teleoperate（XR 遥操作）", "XRoboToolkit", "动作重定向"],
+ "sources": [
+  {"title": "Meta Quest 3 - Wikipedia", "url": "https://en.wikipedia.org/wiki/Meta_Quest_3"},
+  {"title": "unitreerobotics/xr_teleoperate - GitHub", "url": "https://github.com/unitreerobotics/xr_teleoperate"}
+ ],
+ "as_of": "2026-09"
+},
+{
+ "name_zh": "掌指关节 / 指间关节（MCP / PIP / DIP）",
+ "name_en": "Metacarpophalangeal / Proximal & Distal Interphalangeal Joints",
+ "abbr": "MCP / PIP / DIP",
+ "aliases": ["掌指关节", "近端指间关节", "远端指间关节"],
+ "tier": 3,
+ "one_liner": "手指从根部到指尖的三个关节，是描述灵巧手结构的通用术语。",
+ "explanation": "这三个缩写来自人手解剖学：MCP 是手指根部连接手掌的掌指关节，能屈伸也能左右侧摆，共 2 个自由度；PIP 是中间的近端指间关节，DIP 是靠指尖的远端指间关节，各只能屈伸。人在弯曲手指时 DIP 基本跟着 PIP 一起动，所以很多灵巧手用连杆或腱绳把两者耦合，一个电机带两个关节，结果是关节数多于主动自由度（电机数）。拇指的结构不同，没有 PIP/DIP 之分。看灵巧手参数时，分清关节数和主动自由度，才能比较不同产品。",
+ "example": "因时 RH56 灵巧手每根手指只有一个电机，通过连杆同时带动 MCP 和 PIP 屈曲，因此全手 12 个关节只有 6 个主动自由度。",
+ "related": ["灵巧手", "主动自由度 / 被动自由度", "拇指对掌", "屈伸与侧摆（外展/内收）", "欠驱动", "MANO 手部模型"],
+ "sources": [
+  {"title": "Metacarpophalangeal joint - Wikipedia", "url": "https://en.wikipedia.org/wiki/Metacarpophalangeal_joint"},
+  {"title": "Interphalangeal joints of the hand - Wikipedia", "url": "https://en.wikipedia.org/wiki/Interphalangeal_joints_of_the_hand"}
+ ],
+ "as_of": ""
+},
+{
+ "name_zh": "微型丝杠",
+ "name_en": "Micro Lead Screw",
+ "abbr": "",
+ "aliases": ["微型滚珠丝杠", "微型行星滚柱丝杠"],
+ "tier": 3,
+ "one_liner": "直径只有几毫米的丝杠，把小电机的转动变成直线推拉。",
+ "explanation": "微型丝杠是直径通常只有几毫米的丝杠，包括微型梯形丝杠、微型滚珠丝杠和微型行星滚柱丝杠，作用是把电机的旋转变成螺母的直线移动。在灵巧手里，常见做法是空心杯电机加微型丝杠组成一个小直线驱动器，藏在手掌或手指里推拉连杆，带动手指弯曲。导程（转一圈螺母走多远）越小，推力越大但速度越慢；梯形丝杠摩擦大能自锁，断电后手指仍能保持握力。人形机器人对它的需求量大，精度和寿命是国产化的难点之一。",
+ "example": "灵心巧手 Linker Hand L20 用无刷电机加精密滚珠丝杠驱动连杆，带动手指关节运动。",
+ "related": ["空心杯电机", "滚珠丝杠", "行星滚柱丝杠", "梯形丝杠（滑动丝杠）与自锁", "导程", "连杆传动"],
+ "sources": [
+  {"title": "Leadscrew - Wikipedia", "url": "https://en.wikipedia.org/wiki/Leadscrew"},
+  {"title": "灵心巧手 - 全球领先的机器人灵巧手 | LinkerBot", "url": "https://www.linkerbot.cn/"}
+ ],
+ "as_of": ""
+},
+{
+ "name_zh": "微控制器",
+ "name_en": "Microcontroller Unit",
+ "abbr": "MCU",
+ "aliases": ["单片机"],
+ "tier": 3,
+ "one_liner": "把处理器、存储和各种外设接口集成在一颗芯片上的小型控制芯片。",
+ "explanation": "微控制器俗称单片机，是把 CPU 内核、闪存、内存、定时器、模数转换、PWM（脉宽调制）输出以及 CAN、串口等通信接口集成在一颗芯片上的控制器，常见的有意法半导体的 STM32、乐鑫的 ESP32。它算力小、功耗低，但响应时间确定，适合跑裸机程序或实时操作系统。在机器人里，MCU 分布在关节驱动器、传感器板、灵巧手和电池管理系统中，负责几十千赫兹的电流环等底层实时控制；跑 Linux 和神经网络的主控（如 Jetson）则是另一类芯片，两者通过总线配合。",
+ "example": "关节驱动板上的 STM32 以很高频率执行 FOC 电流环，同时通过 CAN 总线接收上位机发来的位置和力矩指令。",
+ "related": ["STM32", "下位机", "嵌入式系统", "实时操作系统", "磁场定向控制", "片上系统（SoC）"],
+ "sources": [{"title": "Microcontroller - Wikipedia", "url": "https://en.wikipedia.org/wiki/Microcontroller"}],
+ "as_of": ""
+},
+{
+ "name_zh": "MIT Cheetah 执行器",
+ "name_en": "MIT Mini Cheetah Actuator",
+ "abbr": "",
+ "aliases": ["Mini Cheetah 电机", "Mini Cheetah 关节模组"],
+ "tier": 3,
+ "one_liner": "MIT 为 Mini Cheetah 四足设计的准直驱关节模组，后被业界广泛仿制。",
+ "explanation": "MIT Cheetah 执行器是 MIT 仿生机器人实验室（Sangbae Kim 组）的 Ben Katz 为 Mini Cheetah 四足机器人设计的关节模组：大直径外转子无刷电机，配一级 6:1 行星减速器，再集成驱动板和磁编码器，通过 CAN 总线通信。减速比小意味着反射惯量小、能被外力反推，关节可以直接用电流估算力矩，不需要额外的力矩传感器，这就是准直驱和本体感受式执行器的思路。由于设计资料和固件公开，国内外大量低成本关节电机沿用了它的结构和「MIT 模式」控制指令。",
+ "example": "达妙、小米 CyberGear、CubeMars AK 系列等关节电机都支持 MIT 模式，一帧指令同时给目标位置、速度、Kp、Kd 和前馈力矩。",
+ "related": ["MIT Mini Cheetah", "准直驱", "本体感受式执行器", "MIT 模式", "行星减速器", "反驱性"],
+ "sources": [
+  {"title": "Mini Cheetah: A Platform for Pushing the Limits of Dynamic Quadruped Control (ICRA 2019)", "url": "https://doi.org/10.1109/ICRA.2019.8793865"},
+  {"title": "bgkatz/motorcontrol - GitHub", "url": "https://github.com/bgkatz/motorcontrol"}
+ ],
+ "as_of": ""
+}
+]}

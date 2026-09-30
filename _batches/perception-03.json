@@ -1,0 +1,407 @@
+{
+  "category": "perception",
+  "batch": 3,
+  "terms": [
+    {
+      "name_zh": "AnyGrasp",
+      "name_en": "AnyGrasp: Robust and Efficient Grasp Perception in Spatial and Temporal Domains",
+      "abbr": "",
+      "aliases": [
+        "AnyGrasp SDK"
+      ],
+      "tier": 2,
+      "one_liner": "上海交大提出的通用抓取检测模型，从点云直接给出大量可用抓取位姿。",
+      "explanation": "AnyGrasp 是上海交通大学卢策吾团队（MVIG）提出的抓取感知系统，论文发表于 IEEE T-RO（2023）。输入深度相机得到的点云，输出场景中密集的 7 自由度抓取位姿（夹爪位置、朝向和张开宽度）并逐个打分；它对深度噪声较鲁棒，还能在连续帧间对应同一个抓取，从而跟踪移动物体。论文报告单臂系统每小时可完成 900 次以上抓取。它常被当作现成的抓取模块接入更大的系统，例如 OK-Robot 就用它决定怎么抓。SDK 在 GitHub 发布，但核心库需按机器申请许可证。",
+      "example": "在杂乱桌面拍一帧 RGB-D，AnyGrasp 给出上百个候选抓取，用目标物体的分割掩码筛掉不在目标上的，再取分数最高的一个交给机械臂执行。",
+      "related": [
+        "抓取位姿检测",
+        "无序抓取",
+        "GraspNet-1Billion 数据集",
+        "Contact-GraspNet",
+        "OK-Robot",
+        "点云"
+      ],
+      "sources": [
+        {
+          "title": "AnyGrasp (arXiv 2212.08333, IEEE T-RO)",
+          "url": "https://arxiv.org/abs/2212.08333"
+        },
+        {
+          "title": "AnyGrasp 项目页（SJTU MVIG）",
+          "url": "https://graspnet.net/anygrasp.html"
+        },
+        {
+          "title": "graspnet/anygrasp_sdk",
+          "url": "https://github.com/graspnet/anygrasp_sdk"
+        }
+      ],
+      "as_of": "2026-07"
+    },
+    {
+      "name_zh": "AprilTag",
+      "name_en": "AprilTag",
+      "abbr": "",
+      "aliases": [
+        "视觉标记",
+        "视觉基准标记",
+        "Fiducial Marker",
+        "AprilTag 3"
+      ],
+      "tier": 2,
+      "one_liner": "印出来贴上的黑白方块码，相机看到就能算出它的编号和 6D 位姿。",
+      "explanation": "AprilTag 是密歇根大学 Edwin Olson 团队（APRIL 实验室）2011 年在 ICRA 提出的视觉基准标记系统，外观像简化的二维码。它只编码一个编号，不存大段信息，但检测器能稳定找到标签的四个角点，结合相机内参和标签实际边长，用 PnP 算出它相对相机的位置和朝向。机器人里常用它做手眼标定、给物体或工作台提供位姿真值、对齐多相机外参。当前开源版本是 AprilTag 3（C 实现，BSD 许可），提供 tag36h11、tagStandard41h12 等多个标签族，也能检测 ArUco 码。",
+      "example": "在工作台四角贴 tag36h11 标签，固定的第三视角相机检测到后即可求出台面相对相机的位姿，用它把几台相机统一到同一坐标系。",
+      "related": [
+        "ArUco码",
+        "手眼标定",
+        "PnP（透视n点）",
+        "相机外参",
+        "6D位姿估计",
+        "标定板"
+      ],
+      "sources": [
+        {
+          "title": "AprilTag（University of Michigan APRIL Lab）",
+          "url": "https://april.eecs.umich.edu/software/apriltag"
+        },
+        {
+          "title": "AprilRobotics/apriltag（AprilTag 3）",
+          "url": "https://github.com/AprilRobotics/apriltag"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "检测框（边界框）",
+      "name_en": "Bounding Box (Detection)",
+      "abbr": "BBox",
+      "aliases": [
+        "边界框",
+        "包围框",
+        "检测框"
+      ],
+      "tier": 2,
+      "one_liner": "目标检测中框住物体的矩形，用几个坐标标出物体在图里的位置。",
+      "explanation": "检测框是目标检测模型最常见的输出：一个把物体框住的矩形，通常附带类别和置信度。常见表示有两种：左上角加右下角坐标 (x1, y1, x2, y2)，或中心点加宽高 (cx, cy, w, h)；不同数据集格式约定不同，混用是常见 bug。预测框准不准用交并比（IoU，两框交集面积除以并集面积）衡量，重复框用非极大值抑制去掉。扩展形式有带角度的旋转框和三维的 3D 检测框。在具身智能里它多是中间结果：先用开放词汇检测器按文字找到目标框，再交给 SAM 出掩码或裁出区域做抓取。它和物理引擎里做碰撞检查的「包围盒」不是一回事。",
+      "example": "指令是「拿起红色杯子」，Grounding DINO 在图中给出一个框和 0.6 左右的置信度，后续模块只在这个框内分割物体、找抓取点。",
+      "related": [
+        "目标检测",
+        "交并比",
+        "非极大值抑制",
+        "3D目标检测",
+        "Grounding DINO",
+        "掩码"
+      ],
+      "sources": [
+        {
+          "title": "Dive into Deep Learning: Object Detection and Bounding Boxes",
+          "url": "https://d2l.ai/chapter_computer-vision/bounding-box.html"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "标定板",
+      "name_en": "Calibration Board (Checkerboard / ChArUco)",
+      "abbr": "",
+      "aliases": [
+        "棋盘格",
+        "ChArUco 板",
+        "圆点标定板",
+        "标定靶",
+        "Calibration Target"
+      ],
+      "tier": 2,
+      "one_liner": "印有已知尺寸图案的平板，给相机标定提供精确的参考点。",
+      "explanation": "标定板是做相机标定、手眼标定时用的平面靶标，图案尺寸事先精确已知。最常见的是黑白棋盘格：检测方格交界的内角点，能达到亚像素精度，但通常要求整块板完整出现在画面里。圆点阵列板用圆心作特征点。ChArUco 板把 ArUco 码嵌进棋盘格的白格，靠码识别每个角点的编号，所以被遮挡或只拍到一部分时仍可用，同时保留棋盘角点的精度，OpenCV 有现成支持。使用时要保证打印尺寸准确、板面平整（常用铝板或玻璃基板），并从多个角度和距离拍摄，让角点覆盖画面各处。",
+      "example": "用 OpenCV 生成一张 ChArUco 板，打印后贴在平整铝板上并量准方格边长，手持相机从十几个不同角度拍摄，再交给标定函数求内参和畸变。",
+      "related": [
+        "相机标定",
+        "手眼标定",
+        "ArUco码",
+        "AprilTag",
+        "相机内参",
+        "镜头畸变"
+      ],
+      "sources": [
+        {
+          "title": "OpenCV Tutorial: Detection of ChArUco Boards",
+          "url": "https://raw.githubusercontent.com/opencv/opencv/4.x/doc/tutorials/objdetect/charuco_detection/charuco_detection.markdown"
+        },
+        {
+          "title": "MATLAB: What Is Camera Calibration?",
+          "url": "https://www.mathworks.com/help/vision/ug/camera-calibration.html"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "相机标定",
+      "name_en": "Camera Calibration",
+      "abbr": "",
+      "aliases": [
+        "内参标定",
+        "张正友标定法"
+      ],
+      "tier": 2,
+      "one_liner": "求出相机内参、畸变系数和外参，让像素和三维坐标能互相换算。",
+      "explanation": "相机标定是估计相机成像参数的过程，包括内参（焦距、主点即光轴落在图像上的位置）、镜头畸变系数（径向和切向），以及外参（相机相对某参考系的旋转和平移）。最常用的是张正友 2000 年发表在 IEEE TPAMI 的方法：拿平面标定板在至少两个不同姿态下拍摄，先求闭式解，再用最大似然优化统一细化。标定好坏常看重投影误差，即把三维点按估计参数投回图像后与实际检测点的像素距离。没有准确的内外参，机器人就无法把深度图变成点云，也无法把视觉结果换算到机械臂坐标系；深度相机出厂一般带内参，但相机与机械臂的关系仍要自己标。",
+      "example": "用 OpenCV 的 calibrateCamera 处理二十来张棋盘格照片，得到 fx、fy（以像素计的焦距）、主点 cx、cy 和一组畸变系数，同时报告平均重投影误差，数值越小说明标定越好。",
+      "related": [
+        "相机内参",
+        "相机外参",
+        "镜头畸变",
+        "标定板",
+        "手眼标定",
+        "针孔相机模型"
+      ],
+      "sources": [
+        {
+          "title": "Zhang, A Flexible New Technique for Camera Calibration (IEEE TPAMI 2000)",
+          "url": "https://www.microsoft.com/en-us/research/publication/a-flexible-new-technique-for-camera-calibration/"
+        },
+        {
+          "title": "MATLAB: What Is Camera Calibration?",
+          "url": "https://www.mathworks.com/help/vision/ug/camera-calibration.html"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "相机坐标系",
+      "name_en": "Camera Coordinate Frame",
+      "abbr": "",
+      "aliases": [
+        "相机系",
+        "Camera Frame",
+        "光学坐标系",
+        "Camera Optical Frame"
+      ],
+      "tier": 2,
+      "one_liner": "以相机光心为原点、光轴为 z 轴的三维坐标系，描述物体相对相机的位置。",
+      "explanation": "相机坐标系以相机光心为原点，按计算机视觉惯例 z 轴沿光轴朝前、x 轴指向图像右侧、y 轴指向图像下方。深度图反投影得到的点云、用 PnP 求出的标签位姿，最初都表达在这个坐标系下；再乘上相机外参（相机到基座或世界的变换），才能换算到机械臂基坐标系里用。常见的坑是约定不一致：ROS 的 REP 103 规定机器人本体坐标系是 x 前、y 左、z 上，而名字带 _optical 后缀的相机光学坐标系是 z 前、x 右、y 下，两者差一个固定旋转；OpenGL 等图形库的相机又是 -z 朝前、y 朝上。混用会让点云方向整体错乱。",
+      "example": "RealSense 的 ROS 驱动同时发布 camera_link（x 朝前）和带 _optical 后缀的光学坐标系，点云消息的 frame_id 是后者，直接当成 x 朝前使用就会出错。",
+      "related": [
+        "坐标系",
+        "相机外参",
+        "投影与反投影",
+        "右手坐标系与轴向约定",
+        "TF 坐标树",
+        "针孔相机模型"
+      ],
+      "sources": [
+        {
+          "title": "ROS REP 103: Standard Units of Measure and Coordinate Conventions",
+          "url": "https://raw.githubusercontent.com/ros-infrastructure/rep/master/rep-0103.rst"
+        },
+        {
+          "title": "MATLAB: What Is Camera Calibration?",
+          "url": "https://www.mathworks.com/help/vision/ug/camera-calibration.html"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "接触检测",
+      "name_en": "Contact Detection",
+      "abbr": "",
+      "aliases": [
+        "接触感知",
+        "触碰检测",
+        "Contact Sensing"
+      ],
+      "tier": 2,
+      "one_liner": "判断机器人是否、何时、在哪里碰到了物体或环境。",
+      "explanation": "接触检测是判断机器人某个部位（手指、夹爪、工具或机身）是否已经和物体或环境接触，进一步给出接触时刻和位置。信号来源主要有三类：触觉传感器或电子皮肤的读数变化；腕部六维力传感器的力、力矩突变；没有专门传感器时，比较电机电流或关节力矩与动力学模型预测值之间的残差。只靠视觉往往不可靠，因为接触瞬间手常挡住物体。它是许多操作流程的触发条件，比如夹爪闭合到接触就停、下探到碰到桌面再松手、装配时判断是否到位。固定阈值在家居场景容易误判，因此也有融合声音与力信号、或用学习方法检测的工作。腿足机器人判断脚是否着地一般另称「接触估计」。",
+      "example": "放杯子时机械臂缓慢下降，腕部力传感器测得竖直方向的力突然超过阈值，就判定杯底已碰到桌面，随即张开夹爪。",
+      "related": [
+        "触觉传感器",
+        "六维力传感器",
+        "滑移检测",
+        "外部接触感知",
+        "无传感器力估计",
+        "接触估计"
+      ],
+      "sources": [
+        {
+          "title": "Multimodal Contact Detection using Auditory and Force Features for Reliable Object Placing in Household Environments (arXiv 2012.01583)",
+          "url": "https://arxiv.org/abs/2012.01583"
+        },
+        {
+          "title": "Tactile sensor（Wikipedia）",
+          "url": "https://en.wikipedia.org/wiki/Tactile_sensor"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "Depth Anything",
+      "name_en": "Depth Anything (V1 / V2)",
+      "abbr": "",
+      "aliases": [
+        "Depth Anything V2",
+        "Depth Anything V1"
+      ],
+      "tier": 2,
+      "one_liner": "港大与 TikTok 推出的单目深度估计基础模型，一张照片就能出深度图。",
+      "explanation": "Depth Anything 是香港大学与 TikTok 研究团队提出的单目深度估计模型系列。V1（CVPR 2024）在约 150 万张有标注图像之外，用约 6200 万张无标注图像做伪标签训练，泛化很强，输出相对深度。V2（NeurIPS 2024）改用合成数据训练大教师模型，再用大规模伪标注真实图像训练学生模型，细节更清晰，提供约 2500 万到 13 亿参数的多个尺寸，另有度量深度微调版；Small 版为 Apache-2.0 许可，更大的版本限非商用。机器人里常用它补足深度相机，为 3D 感知、导航和数据生成提供深度先验。后续有 Depth Anything 3 等。",
+      "example": "给腕部相机的一帧 RGB 图跑 Depth Anything V2-Small，得到逐像素相对深度，再用少量深度相机测得的点拟合尺度和偏移，恢复出以米为单位的深度。",
+      "related": [
+        "单目深度估计",
+        "度量深度 / 相对深度",
+        "深度估计",
+        "Depth Anything 3",
+        "Prompt Depth Anything",
+        "视觉基础模型"
+      ],
+      "sources": [
+        {
+          "title": "Depth Anything: Unleashing the Power of Large-Scale Unlabeled Data (arXiv 2401.10891)",
+          "url": "https://arxiv.org/abs/2401.10891"
+        },
+        {
+          "title": "Depth Anything V2 (arXiv 2406.09414)",
+          "url": "https://arxiv.org/abs/2406.09414"
+        },
+        {
+          "title": "DepthAnything/Depth-Anything-V2（GitHub）",
+          "url": "https://github.com/DepthAnything/Depth-Anything-V2"
+        }
+      ],
+      "as_of": "2025-01"
+    },
+    {
+      "name_zh": "深度估计",
+      "name_en": "Depth Estimation",
+      "abbr": "",
+      "aliases": [
+        "深度预测"
+      ],
+      "tier": 2,
+      "one_liner": "推断图像里每个像素离相机有多远，输出一张深度图。",
+      "explanation": "深度估计是从图像推断场景各点到相机距离的任务，结果通常是一张与图像同尺寸的深度图。做法大致三类：双目立体匹配，按两台相机的视差用三角关系计算；主动测距，如结构光、ToF 深度相机和激光雷达；单目深度估计，用神经网络从单张图推断。单目天然有尺度歧义，早期模型多只给相对深度，MiDaS（TPAMI 2020）靠混合多数据集训练提升了跨场景泛化，近年的 Depth Pro、Metric3D 等可直接输出以米为单位的度量深度。对机器人，深度是把像素变成点云、做抓取和避障的基础，学习型方法还能弥补深度相机在透明、反光物体上的空洞。",
+      "example": "深度相机拍玻璃杯时杯身区域深度大片缺失，用学习型模型从 RGB 图估计深度把洞补上，才能生成完整点云供抓取检测使用。",
+      "related": [
+        "单目深度估计",
+        "立体匹配",
+        "深度相机",
+        "度量深度 / 相对深度",
+        "深度补全",
+        "Depth Anything"
+      ],
+      "sources": [
+        {
+          "title": "Towards Robust Monocular Depth Estimation: Mixing Datasets for Zero-shot Cross-dataset Transfer (MiDaS, arXiv 1907.01341)",
+          "url": "https://arxiv.org/abs/1907.01341"
+        },
+        {
+          "title": "Depth Anything V2 (arXiv 2406.09414)",
+          "url": "https://arxiv.org/abs/2406.09414"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "DIGIT 视触觉传感器",
+      "name_en": "DIGIT",
+      "abbr": "",
+      "aliases": [
+        "Meta DIGIT",
+        "DIGIT tactile sensor"
+      ],
+      "tier": 2,
+      "one_liner": "Meta 开源的低成本指尖大小视触觉传感器，用相机拍凝胶变形来感知接触。",
+      "explanation": "DIGIT 是 Facebook AI Research（现 Meta FAIR）2020 年在 IEEE RA-L 发表并开源的视触觉传感器。原理和 GelSight 类似：内部摄像头透过一层弹性凝胶拍摄，物体压上时凝胶变形，图像记下接触区域的形状和纹理，形成「触觉图像」。它小巧、便宜、易于制造，能装在多指灵巧手指尖，论文演示了在手中拨动玻璃弹珠。2021 年 Meta 宣布与 GelSight 合作量产，并开源了触觉库 PyTouch 和仿真器 TACTO；新一代是 Digit 360。它和 Agility Robotics 的人形机器人 Digit 只是同名，毫无关系。",
+      "example": "在夹爪两指各装一个 DIGIT，抓握时根据触觉图像里接触区域的位置判断物体是否夹正，或通过凝胶的剪切变形提前发现物体要滑落。",
+      "related": [
+        "视触觉传感器",
+        "GelSight",
+        "Digit 360",
+        "TACTO",
+        "触觉图像",
+        "Agility Digit 人形机器人"
+      ],
+      "sources": [
+        {
+          "title": "DIGIT: A Novel Design for a Low-Cost Compact High-Resolution Tactile Sensor (arXiv 2005.14679)",
+          "url": "https://arxiv.org/abs/2005.14679"
+        },
+        {
+          "title": "Meta AI: Teaching robots to perceive, understand, and interact through touch",
+          "url": "https://ai.meta.com/blog/teaching-robots-to-perceive-understand-and-interact-through-touch/"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "电子皮肤",
+      "name_en": "Electronic Skin",
+      "abbr": "E-skin",
+      "aliases": [
+        "机器人皮肤",
+        "柔性触觉传感器",
+        "Robot Skin"
+      ],
+      "tier": 2,
+      "one_liner": "贴在机器人表面、柔软可弯的大面积触觉传感层，模仿人的皮肤。",
+      "explanation": "电子皮肤指柔性、可拉伸、能贴合曲面的电子传感层，模仿人或动物皮肤感知压力、温度、应变等刺激，部分材料还能自修复。感压原理常见压阻式、电容式、压电式和磁性式，由大量触元（感压小单元）排成阵列。它起源于柔性电子和材料研究，也用于假肢和可穿戴健康监测。在机器人上，它能覆盖手掌、手臂乃至全身，感知接触位置、人机碰撞和握力分布，这是指尖大小的视触觉传感器做不到的；难点是耐磨、布线与串扰、单元一致性和标定。代表工作如 Meta 与卡内基梅隆大学的 ReSkin（CoRL 2021），用磁性原理让皮肤表层可以更换。",
+      "example": "在灵巧手手掌贴一层压阻式电子皮肤，抓握时读出每个触元的压力，得到一张压力分布图，判断物体压在手掌哪个区域、用了多大力。",
+      "related": [
+        "触觉传感器",
+        "压阻式触觉传感",
+        "电容式触觉传感",
+        "触觉单元（触元）",
+        "ReSkin / AnySkin",
+        "视触觉传感器"
+      ],
+      "sources": [
+        {
+          "title": "Electronic skin（Wikipedia）",
+          "url": "https://en.wikipedia.org/wiki/Electronic_skin"
+        },
+        {
+          "title": "ReSkin: versatile, replaceable, lasting tactile skins (arXiv 2111.00071)",
+          "url": "https://arxiv.org/abs/2111.00071"
+        },
+        {
+          "title": "Meta AI: Teaching robots to perceive, understand, and interact through touch",
+          "url": "https://ai.meta.com/blog/teaching-robots-to-perceive-understand-and-interact-through-touch/"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "眼在手上",
+      "name_en": "Eye-in-Hand",
+      "abbr": "",
+      "aliases": [
+        "相机装在末端",
+        "手上眼",
+        "Eye-in-Hand Camera"
+      ],
+      "tier": 2,
+      "one_liner": "把相机固定在机械臂末端、随手一起运动的安装方式。",
+      "explanation": "眼在手上是手眼系统的一种相机安装方式：相机固定在机械臂末端或夹爪上，随末端一起运动；相对的是相机固定在环境中的「眼在手外」。好处是能近距离看目标、不易被手臂挡住，适合精细对准和视觉伺服；缺点是视野窄、看不到全局，且每一时刻都要用正运动学算出的末端位姿，乘上一次性标好的相机到末端变换，才能把观测换到基坐标系。这个变换由手眼标定求出（经典形式 AX=XB）。学习型策略里的腕部相机就是这种配置，常与第三视角相机一起输入，例如 DROID 平台在 Franka 手腕上装了 ZED Mini 双目相机。",
+      "example": "抓取时先用固定的第三视角相机粗略定位物体，机械臂靠近后改看腕部相机的近距离图像，微调夹爪位置再闭合。",
+      "related": [
+        "眼在手外",
+        "手眼标定",
+        "腕部相机",
+        "视觉伺服",
+        "第三视角相机",
+        "正运动学"
+      ],
+      "sources": [
+        {
+          "title": "MoveIt: Hand-Eye Calibration Tutorial",
+          "url": "https://moveit.picknik.ai/main/doc/examples/hand_eye_calibration/hand_eye_calibration_tutorial.html"
+        },
+        {
+          "title": "DROID: A Large-Scale In-the-Wild Robot Manipulation Dataset",
+          "url": "https://droid-dataset.github.io/"
+        }
+      ],
+      "as_of": ""
+    }
+  ]
+}

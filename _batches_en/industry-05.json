@@ -1,0 +1,113 @@
+{
+  "batch": "industry-05",
+  "terms": [
+    {
+      "key": "industry-05#0",
+      "name_en": "Remote Teleoperation Takeover",
+      "aliases": ["Human Fallback", "Expert Mode (1X NEO)"],
+      "one_liner": "When a robot fails or hits something unfamiliar, a remote human operator takes over to finish the task.",
+      "explanation": "This refers to a remote operator taking real-time control of a robot — usually over the network via a VR headset or handheld controller — whenever the robot's autonomous policy fails or meets a situation it hasn't seen before, finishing the task in its place. It's common practice in embodied AI today: models aren't yet reliable enough for commercial use on their own, so human fallback keeps the service running without interruption, and the data recorded during the takeover can be fed back into training (the data feedback loop). When 1X opened preorders for its NEO robot in 2025, it publicly described an “Expert Mode,” where a 1X employee can remotely operate the robot with the user's consent. The practice is also controversial: whether the actions shown in a demo are fully autonomous or secretly teleoperated from offstage depends on whether the maker discloses it clearly.",
+      "example": "When the 1X NEO home robot encounters a chore it can't handle, a 1X remote operator wearing a VR headset can take over, with the user's authorization, to finish it.",
+      "related": ["Teleoperation", "Fully Autonomous", "Teleoperated Demo", "Intervention Data", "Data Feedback Loop", "Human-in-the-Loop"]
+    },
+    {
+      "key": "industry-05#1",
+      "name_en": "Research & Education Market",
+      "aliases": ["Research and Education Sales"],
+      "one_liner": "The market for selling robots to universities, research institutes, and schools for study and teaching.",
+      "explanation": "This refers to the segment of the robotics market whose customers are university labs, research institutes, vocational colleges, and primary and secondary schools. These customers don't buy robots to replace labor; they use them to run algorithms, collect data, publish papers, or teach classes, so they place a high value on developability — an open SDK and low-level interfaces — and a low value on reliably getting real work done. At a stage when humanoid and quadruped robots still can't be deployed into factories at scale, the research and education market has been many manufacturers' earliest and most stable source of revenue; companies like Unitree also release dedicated EDU editions aimed at further development. Its drawback is limited scale, so it's generally seen as a transitional source of revenue rather than the destination.",
+      "example": "University labs buy the Unitree G1 EDU edition to do reinforcement-learning locomotion control and VLA research.",
+      "related": ["EDU Edition", "Further Development (Secondary Development)", "Shipment Volume", "Scenario Deployment", "Closed-Loop Business Model"]
+    },
+    {
+      "key": "industry-05#2",
+      "name_en": "Return on Investment / Payback Period",
+      "aliases": ["ROI", "Payback Period"],
+      "one_liner": "How long it takes a robot buyer to earn back the purchase cost through the money it saves.",
+      "explanation": "Return on investment (ROI) is the ratio of gain to cost; the payback period is how long it takes cumulative gains to catch up with the initial cost. When a company evaluates whether to adopt robots, it weighs total cost — purchase price, deployment and retrofitting, maintenance, electricity — against the wages of the workers it replaces and any productivity gain. Manufacturers buying industrial robots commonly treat the payback period as a key threshold; humanoid robots today are expensive and still fall short of a skilled worker's efficiency and reliability, so the math often doesn't work out yet, which is why the industry frequently asks whether the ROI “pencils out” as a precondition for scaled deployment. Related figures that affect the return include cycle time (UPH) and mean time between failures.",
+      "example": "If a robot costs RMB 200,000 in total and replaces one position worth RMB 100,000 a year in wages, the payback period is roughly two years (a simplified estimate that ignores maintenance).",
+      "related": ["BOM Cost", "Cycle Time / UPH", "Scaled Deployment", "Machines Replacing Humans", "Mean Time Between Failures"]
+    },
+    {
+      "key": "industry-05#3",
+      "name_en": "Robot Rental",
+      "aliases": ["Humanoid Robot Rental"],
+      "one_liner": "Renting a robot out by the day or event instead of selling it outright.",
+      "explanation": "Robot rental means the owner leases equipment to a user for a set time or event, common for paid appearances, trade shows, store-opening ceremonies, and guided-tour receptions. Since humanoid robots broke into Chinese public awareness starting in 2025, renting one by the day for events has become a small business of its own, with prices reported to swing widely with a robot's current buzz. Rental lowers the barrier for customers to try a robot, and lets manufacturers and channel partners earn revenue before the robot can handle real physical work. It's close to robot-as-a-service (RaaS), but rental typically provides just the hardware itself, while RaaS more often bundles outcome- or subscription-based service and maintenance.",
+      "example": "A shopping mall rents a humanoid robot for a day to dance and interact with customers at its opening event.",
+      "related": ["Robot-as-a-Service", "Commercial Performance (Paid Appearance)", "Guided Tours & Reception", "Subscription Model", "Closed-Loop Business Model"]
+    },
+    {
+      "key": "industry-05#4",
+      "name_en": "Robot-as-a-Service",
+      "aliases": ["RaaS"],
+      "one_liner": "Customers don't buy the robot; they pay by the month or by the amount of work it does.",
+      "explanation": "Robot-as-a-service (RaaS) is modeled on the software industry's SaaS (software-as-a-service): the manufacturer keeps ownership of the robot, and the customer pays monthly, hourly, or by the amount of work completed, while the manufacturer handles maintenance, upgrades, and remote monitoring. It converts a customer's large one-time purchase into a predictable operating expense, lowering the barrier to adoption, while also giving the manufacturer continuous access to deployment data to improve its models. Warehouse and logistics robots adopted this model relatively early, and humanoid-robot companies such as Agility Robotics now also supply robots to factories and warehouses on a RaaS basis. The drawback is that the manufacturer must front the hardware cost, which demands strong cash flow.",
+      "example": "A warehouse uses a fleet of material-handling robots for a fixed monthly fee, and the manufacturer sends someone to fix any that break down.",
+      "related": ["Robot Rental", "Subscription Model", "Return on Investment / Payback Period", "Scaled Deployment", "Data Feedback Loop"]
+    },
+    {
+      "key": "industry-05#5",
+      "name_en": "Robot-Brain (Model-Only) Company",
+      "aliases": ["“Brain” Company", "Embodied-Model Company"],
+      "one_liner": "A company that builds general-purpose robot models but doesn't manufacture the robot hardware itself.",
+      "explanation": "This refers to companies that focus on developing embodied foundation models — such as VLA or world models — while largely not mass-producing robot hardware themselves, as distinct from “embodiment makers,” who build the physical robots. Their idea is to build a general-purpose “brain” that can be installed on different robots, using cross-embodiment generalization to cover many kinds of hardware; Physical Intelligence (the π0 series) and Skild AI are representative examples. Supporters argue the model is the real moat and hardware will gradually standardize; skeptics argue that without owning the hardware, it's hard to get enough real-robot data or to co-optimize software and hardware together. This is part of the broader “hardware–software integration vs. decoupling” debate in the embodied-AI industry.",
+      "example": "Physical Intelligence trains π0 on data collected from robot arms made by several different manufacturers, without selling any robots of its own.",
+      "related": ["Embodiment Maker", "Hardware-Software Integration", "Hardware-Software Decoupling", "One Brain, Multiple Robots", "Physical Intelligence", "Skild AI"]
+    },
+    {
+      "key": "industry-05#6",
+      "name_en": "Robotics: Science and Systems",
+      "aliases": ["RSS Conference"],
+      "one_liner": "A single-track top academic robotics conference held once a year.",
+      "explanation": "RSS is one of the most influential academic conferences in robotics, held annually since 2005 as a single-track event — every paper is presented in sequence in the same room — with a far lower acceptance count than ICRA or IROS, and a reputation for strict review and high paper quality. Important work in robot learning, manipulation, and motion planning is often published here, and together with CoRL it's considered one of the two most closely watched robot-learning venues. Newcomers reading papers can treat an “RSS 20XX” citation as a signal of high-quality work in that area; submissions are usually due early in the year, with the conference itself held in summer.",
+      "example": "The Diffusion Policy paper was published at RSS 2023.",
+      "related": ["ICRA", "IROS", "CoRL", "Top-Tier Venues (CCF-A)", "Science Robotics"]
+    },
+    {
+      "key": "industry-05#7",
+      "name_en": "Scaled Deployment",
+      "aliases": ["Large-Scale Deployment"],
+      "one_liner": "Robots going from a handful of pilot units to hundreds or thousands working long-term in real settings.",
+      "explanation": "Scaled deployment means robots have moved past proof of concept and small-batch pilots to running in large numbers, long-term and reliably, at a customer's site and actually generating value. It's the key threshold for commercializing embodied AI: a few prototypes succeeding in a demo isn't hard, but hundreds or thousands of units working continuously in real environments require a high enough success rate and reliability, a manageable cost and payback period, and mature operations and remote-monitoring systems. The industry often talks about it alongside “mass production,” but mass production emphasizes being able to build the units, while scaled deployment emphasizes them actually being used, and kept in use. Data generated during deployment feeding back into training is, for many companies, the imagined starting point of a data flywheel.",
+      "example": "",
+      "related": ["Proof of Concept", "Pilot / Small-Batch Delivery", "Mass Production", "Return on Investment / Payback Period", "Data Flywheel", "Scenario Deployment"]
+    },
+    {
+      "key": "industry-05#8",
+      "name_en": "Science Robotics",
+      "aliases": [],
+      "one_liner": "The top robotics-focused journal published under the Science family of journals.",
+      "explanation": "Science Robotics is a sister journal of Science, published by the American Association for the Advancement of Science (AAAS). Launched in 2016 and issued monthly, it covers robot hardware, control, learning, medical robotics, bio-inspired design, and related areas. It favors work with complete systems and real-world validation, publishes relatively few papers, and carries substantial influence, making it one of the most respected journals in robotics. Unlike conference papers, journal articles go through a longer review cycle and are written more completely, often accompanied by extensive video material. Multiple landmark papers on reinforcement-learning-based legged locomotion have appeared here.",
+      "example": "The paper on perceptive locomotion for the ANYmal quadruped over complex terrain (Miki et al., 2022) was published in Science Robotics.",
+      "related": ["IEEE T-RO / IJRR / RA-L", "RSS", "Top-Tier Venues (CCF-A)", "ANYmal Reinforcement-Learning Locomotion Series (Actuator Net / Teacher–Student Blind Walking / Perceptive Locomotion)"]
+    },
+    {
+      "key": "industry-05#9",
+      "name_en": "Selling Shovels",
+      "aliases": ["Picks-and-Shovels Play", "Selling Water (Gold-Rush Supplier)"],
+      "one_liner": "Not betting on who builds the best robot, but supplying everyone who's trying to build one.",
+      "explanation": "The phrase comes from the 19th-century American gold rush: most prospectors didn't strike it rich, but the merchants selling shovels and water made steady money regardless. Applied to embodied AI, it describes businesses that don't build complete robots or general-purpose models themselves, but instead supply the whole industry with what it needs — core components (reducers, lead screws, dexterous hands, sensors), simulation and training platforms, data-collection services, or compute chips. Whichever integrator eventually wins, these suppliers benefit, spreading their risk more broadly. NVIDIA is often cited as the archetypal example: it supplies GPUs, Jetson controllers, and the Isaac simulation platform to nearly every robotics company.",
+      "example": "A data-collection service provider supplies teleoperated data to several embodied-AI companies without training a general-purpose model of its own.",
+      "related": ["Core Components", "Embodied-Data Service Provider (Data Collection Vendor)", "NVIDIA", "Upstream / Midstream / Downstream Supply Chain", "Tesla (Optimus) Supply Chain"]
+    },
+    {
+      "key": "industry-05#10",
+      "name_en": "Shipment Volume",
+      "aliases": ["Units Delivered"],
+      "one_liner": "The number of robots a manufacturer actually ships to customers over a given period.",
+      "explanation": "Shipment volume is the quantity of product a manufacturer actually ships out during a given period, usually reported annually or quarterly, and it's one of the most direct measures of how far a robotics company's commercialization has progressed. A few things are worth watching when reading this number: shipping a unit doesn't mean a customer is actually using it (it may be sitting in channel inventory); robots sold for research and education or paid appearances mean something different from robots doing real factory work; and framework orders or letters of intent are only agreements, not shipments. Industry reports, from the IFR and various consultancies, compile shipment figures across manufacturers, but the definitions used for humanoid robots aren't standardized, so it's worth checking the source closely before citing a number.",
+      "example": "",
+      "related": ["Mass Production", "Framework Order / Letter-of-Intent Order", "Scaled Deployment", "Research & Education Market", "International Federation of Robotics"]
+    },
+    {
+      "key": "industry-05#11",
+      "name_en": "Specialized First, General Later",
+      "aliases": ["Narrow-to-General Strategy"],
+      "one_liner": "Making a robot work well in one narrow scenario first, then gradually broadening it toward generality.",
+      "explanation": "This is one school of thought in the embodied-AI industry about how to reach real-world deployment: pick one concrete scenario first — factory loading, logistics sorting, retail shelf restocking — and push the robot's success rate up to something profitable there, then use the revenue and real data from that scenario to improve the model and gradually expand to more tasks, eventually working toward a general-purpose robot. The opposing view is “general first, specialized later”: train a general foundation model first, then fine-tune it for specific scenarios. Advocates of specialized-first argue general models won't reach commercial reliability anytime soon; opponents worry that the deeper a specialized solution goes, the harder it becomes to transfer elsewhere. In practice, most companies hedge by pursuing both approaches at once.",
+      "example": "A company first limits its wheeled dual-arm robot to picking items off pharmacy shelves, then expands to other retail settings once it has accumulated enough data.",
+      "related": ["General-Purpose Robot", "Specialist Strategy", "Scenario Deployment", "Technical Route Debate", "Generalist Strategy", "Data Flywheel"]
+    }
+  ]
+}

@@ -1,0 +1,200 @@
+{
+  "category": "mechanics",
+  "batch": 13,
+  "terms": [
+    {
+      "name_zh": "非完整约束",
+      "name_en": "Nonholonomic Constraint",
+      "abbr": "",
+      "aliases": ["非完整系统", "Nonholonomic System", "不可积约束", "Nonintegrable Constraint"],
+      "tier": 3,
+      "one_liner": "只限制速度方向、又不能积分成位置限制的约束，典型如轮子不能横移。",
+      "explanation": "非完整约束是对系统速度的限制，而且这种限制无法积分成只含位置的方程；「完整」一词由赫兹在 1894 年引入。最常见的来源是轮子纯滚动不打滑：差速小车在位姿 (x, y, θ) 下必须满足 ẋ·sinθ − ẏ·cosθ = 0，x、y 是位置，θ 是朝向，意思是任何瞬间都不能横着走。它减少了每一刻可选的速度方向，却不减少能到达的位姿：车照样能停进任何车位，只是要像侧方停车那样前后倒几把。所以轮式底盘的规划不能直接做直线插值，要用混合 A* 这类考虑转向约束的方法；想摆脱它就换麦克纳姆轮等全向底盘。手指在物体表面滚动的抓取接触也属于这类约束。",
+      "example": "扫地机器人想往正左方平移 20 厘米，不能直接横移，只能原地转 90° 再前进，或者前后倒车调整，这就是非完整约束在起作用。",
+      "related": ["差速驱动运动学", "构型空间", "广义坐标", "混合 A*", "麦克纳姆轮", "动力学约束规划"],
+      "sources": [
+        {"title": "Wikipedia: Nonholonomic system", "url": "https://en.wikipedia.org/wiki/Nonholonomic_system"},
+        {"title": "Modern Robotics (Lynch & Park), Sec. 2.4 Holonomic and nonholonomic constraints", "url": "http://hades.mech.northwestern.edu/images/7/7f/MR.pdf"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "踱步步态",
+      "name_en": "Pace Gait",
+      "abbr": "",
+      "aliases": ["同侧步态", "Pacing"],
+      "tier": 3,
+      "one_liner": "四足同侧前后两腿同时迈、左右两侧轮流支撑的两拍步态。",
+      "explanation": "踱步是四足动物的一种两拍步态：左前腿和左后腿一起迈，接着右前腿和右后腿一起迈。它和对角小跑（trot，对角两条腿成对）的区别只在配对方式。马里有专门跑踱步的竞赛品系（Standardbred 中的踱步马），骆驼天生就这样走。对机器人来说，同侧两腿着地时支撑线落在身体一侧，质心不在支撑线上方，躯干容易左右晃，所以四足机器人日常更多用小跑。强化学习运控里常用各腿之间的相位差描述步态：Walk These Ways（2022）用三个时间偏移参数，(0, 0, 0.5) 是踱步，(0.5, 0, 0) 是小跑；他们在随机平台地形上的测试中，踱步的平均存活时间最长。",
+      "example": "在 Walk These Ways 的控制器里把步态偏移设为 (0, 0, 0.5)，机器狗会左侧两腿、右侧两腿轮流着地，身体随之左右摆动。",
+      "related": ["对角小跑步态", "跳跃步态", "疾驰步态", "步态周期与占空比", "步态相位（相位时钟）", "Walk These Ways"],
+      "sources": [
+        {"title": "Wikipedia: Horse gait (Pace)", "url": "https://en.wikipedia.org/wiki/Horse_gait"},
+        {"title": "Walk These Ways: Tuning Robot Control for Generalization with Multiplicity of Behavior (arXiv 2212.03238)", "url": "https://arxiv.org/html/2212.03238"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "并联踝关节",
+      "name_en": "Parallel Ankle Mechanism (Closed-Chain Ankle)",
+      "abbr": "",
+      "aliases": ["并联脚踝", "闭链踝关节", "Parallel Ankle"],
+      "tier": 3,
+      "one_liner": "由两台电机经连杆共同驱动脚踝俯仰和侧摆的闭链脚踝结构。",
+      "explanation": "并联踝关节是人形和双足机器人常见的脚踝结构：脚踝的俯仰（pitch，脚尖上下）和侧摆（roll，脚掌左右翻）两个自由度，不是两台电机各管一个，而是两台电机通过连杆一起推拉脚板，形成闭合的运动链。好处是电机可以上移到小腿靠膝处，腿末端变轻、摆腿惯量小；两台电机同时出力，扭矩可以叠加。代价是电机角度和脚踝角度之间是非线性耦合，要靠机构的正逆运动学来回换算，力矩也要经雅可比换算；URDF 只能描述树状结构，仿真里常把它简化成串联的俯仰、侧摆两个关节。宇树 G1 的 SDK 就提供两种模式：PR 模式按串联俯仰/侧摆关节下指令，AB 模式直接控制两台并联电机。",
+      "example": "典型的左右对称双连杆脚踝：两台电机同向转，脚掌做俯仰；反向转，脚掌做侧摆；其他转法是两者的叠加。",
+      "related": ["并联机构", "串联机构", "统一机器人描述格式", "宇树 G1", "双足机器人", "反射惯量"],
+      "sources": [
+        {"title": "unitree_sdk2 example: g1_ankle_swing_example.cpp（PR: Series Control for Pitch/Roll Joints; AB: Parallel Control for A/B Joints）", "url": "https://raw.githubusercontent.com/unitreerobotics/unitree_sdk2/main/example/g1/low_level/g1_ankle_swing_example.cpp"},
+        {"title": "Wikipedia: Parallel manipulator", "url": "https://en.wikipedia.org/wiki/Parallel_manipulator"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "平行轴定理",
+      "name_en": "Parallel Axis Theorem",
+      "abbr": "",
+      "aliases": ["惠更斯-斯坦纳定理", "Huygens–Steiner Theorem", "Steiner's Theorem", "移轴定理"],
+      "tier": 3,
+      "one_liner": "由过质心轴的转动惯量求任一平行轴转动惯量的公式：I = I_c + md²。",
+      "explanation": "平行轴定理又叫惠更斯-斯坦纳定理：刚体绕某轴的转动惯量 I，等于绕过质心且与之平行的轴的转动惯量 I_c，加上质量 m 乘以两轴距离 d 的平方，即 I = I_c + m·d²。可见绕质心轴转动惯量最小，轴离质心越远越难转。三维有矩阵版（Modern Robotics 称为 Steiner 定理）：I_q = I_b + m(qᵀq·E − q·qᵀ)，I_b 是质心处的惯性张量，q 是新参考点相对质心的位置，E 是 3×3 单位阵。机器人里用得很频繁：URDF 要求惯量参考系原点放在质心，动力学库在关节坐标系下计算时要把它平移过去；给法兰加装夹爪或负载时，要把负载惯量平移后再合并；动力学参数辨识也要用它在不同参考点间换算。",
+      "example": "质量 m、长 L 的均匀细杆，绕中点转动惯量为 mL²/12；绕一端转（相当于连杆绕关节转），d = L/2，I = mL²/12 + m(L/2)² = mL²/3，是前者的 4 倍。",
+      "related": ["转动惯量", "惯性张量", "惯性参数", "质心", "动力学参数辨识", "统一机器人描述格式"],
+      "sources": [
+        {"title": "Wikipedia: Parallel axis theorem", "url": "https://en.wikipedia.org/wiki/Parallel_axis_theorem"},
+        {"title": "Modern Robotics (Lynch & Park), Theorem 8.2 Steiner's theorem", "url": "http://hades.mech.northwestern.edu/images/7/7f/MR.pdf"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "被动动力学行走",
+      "name_en": "Passive Dynamic Walking",
+      "abbr": "",
+      "aliases": ["被动行走", "被动步行", "Passive Dynamic Walker"],
+      "tier": 3,
+      "one_liner": "不用电机，只靠重力和腿的自然摆动沿缓坡走下去的双足行走方式。",
+      "explanation": "被动动力学行走由 Tad McGeer 在 1980 年代末提出，代表论文是 1990 年发表在 IJRR 的《Passive Dynamic Walking》：一个没有电机和控制器的双腿机构放在缓坡上，靠重力提供能量、靠腿像钟摆一样自然摆动，就能走出稳定的周期步态，每步损失的能量正好由下坡补回，步态收敛到一个极限环（稳定的周期运动）。它说明行走的稳定性很大一部分来自机构本身的动力学，不必每个关节都精确控制。2005 年 Collins 等人在 Science 上展示了在它基础上只加少量驱动、能在平地行走的机器人，单位运输成本约 0.2，与人接近，而 ASIMO 约 3.2。它是理解低能耗步态、极限环稳定性和形态计算的经典例子。",
+      "example": "McGeer 式被动行走机：两条带膝盖的腿、没有任何电机，放在很缓的斜坡上轻推一下，就能自己一步一步走到坡底。",
+      "related": ["双足行走", "极限环", "运输成本", "形态计算", "倒立摆模型", "本田 ASIMO"],
+      "sources": [
+        {"title": "Wikipedia: Passive dynamics（含 McGeer 1990 与 Collins et al. 2005 Science 引用）", "url": "https://en.wikipedia.org/wiki/Passive_dynamics"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "Plücker 坐标（Plücker 射线嵌入）",
+      "name_en": "Plücker Coordinates (Plücker Ray Embedding)",
+      "abbr": "",
+      "aliases": ["普吕克坐标", "Plücker 嵌入", "Plücker Embedding", "Plücker Ray Map"],
+      "tier": 3,
+      "one_liner": "用方向加矩共 6 个数表示空间直线，也常用来编码每个像素的相机射线。",
+      "explanation": "Plücker 坐标由 19 世纪德国数学家 Julius Plücker 提出，用 6 个数描述三维空间里的一条直线：方向 d，和矩 m = p × d（p 是直线上任意一点，× 是叉乘）。p 取直线上哪一点 m 都不变，且 d·m = 0。它在机器人学里很基础：旋量理论里的关节轴、Featherstone 的空间向量动力学都建立在 Plücker 坐标上。近年它以「Plücker 射线嵌入」出现在生成模型里：对图像每个像素，用相机中心 o 和该像素的射线方向 d 算出 (o × d, d)，得到 6 通道的图，作为相机位姿条件输入。CameraCtrl（2024）沿用 Light Field Networks（2021）的做法，认为这比直接输入内外参矩阵更容易让网络把相机信息和像素对应起来，带相机控制的视频生成和世界模型常用它。",
+      "example": "相机在原点、朝 z 轴看，图像中心像素的射线方向 d = (0, 0, 1)，o × d = 0，嵌入为 (0, 0, 0, 0, 0, 1)；相机向侧面平移后 o 改变，同一像素的 o × d 随之变化，网络由此感知相机移动。",
+      "related": ["旋量理论", "空间向量代数", "相机外参", "相机内参", "视频生成模型", "世界模型"],
+      "sources": [
+        {"title": "Wikipedia: Plücker coordinates", "url": "https://en.wikipedia.org/wiki/Pl%C3%BCcker_coordinates"},
+        {"title": "CameraCtrl: Enabling Camera Control for Text-to-Video Generation (arXiv 2404.02101)", "url": "https://arxiv.org/html/2404.02101"},
+        {"title": "Roy Featherstone: Spatial vector teaching materials（Plücker Basis Vectors）", "url": "https://royfeatherstone.org/teaching/"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "点足 / 平足（足端形态）",
+      "name_en": "Point Foot vs. Flat Foot (Sole)",
+      "abbr": "",
+      "aliases": ["点接触足", "平底足", "Point-Foot", "Sole Foot"],
+      "tier": 3,
+      "one_liner": "足端和地面是点接触还是脚掌面接触，决定能否靠踝力矩保持平衡。",
+      "explanation": "足端形态指腿式机器人脚底和地面怎么接触。点足是一个小球或橡胶头，接触近似一个点，脚踝无法借地面产生力矩，压力中心就固定在接触点上，因此点足双足机器人是欠驱动的（可控的量少于要控制的自由度），不能静止站立，要靠不停踏步、调整落脚点来平衡；四足机器人的脚端大多也是点足，但多条腿同时着地仍能站稳。平足带一块脚掌，压力中心可以在脚底范围内移动，脚踝能施加力矩，支撑多边形更大，可以静止站立，也能用零力矩点（ZMP）方法规划步态；代价是脚踝要多装电机，腿末端更重。逐际动力 TRON 1 的足端可在点足、平足和轮足之间快拆切换，官方称点足是最简单、最易控制的腿式形态。",
+      "example": "2015 年论文里的点足双足机器人 Hume 要靠实时选择落脚点、持续踏步才能保持平衡；宇树 G1 这类平足人形则可以双脚并拢站着不动。",
+      "related": ["零力矩点", "压力中心", "支撑多边形", "欠驱动", "逐际动力 TRON 1", "并联踝关节"],
+      "sources": [
+        {"title": "LimX Dynamics TRON 1 产品页（Point-Foot / Sole / Wheeled 足端）", "url": "https://www.limxdynamics.com/en/products/tron1"},
+        {"title": "Assessing Whole-Body Operational Space Control in a Point-Foot Series Elastic Biped (arXiv 1501.02855)", "url": "https://arxiv.org/abs/1501.02855"},
+        {"title": "Wikipedia: Support polygon", "url": "https://en.wikipedia.org/wiki/Support_polygon"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "虚功原理",
+      "name_en": "Principle of Virtual Work",
+      "abbr": "",
+      "aliases": ["虚位移原理", "Principle of Virtual Displacements", "虚速度原理"],
+      "tier": 3,
+      "one_liner": "系统静平衡，当且仅当主动力在任意允许的微小虚位移上做功之和为零。",
+      "explanation": "虚功原理是分析力学的基本原理：设想系统在约束允许的范围内做一个假想的无穷小位移（虚位移），如果所有主动力做的功（虚功）之和为零，系统就处于静平衡。Johann Bernoulli 在 1715 年与 Varignon 的通信中系统表述了它，Lagrange 后来以它为基础建立分析力学。它的好处是理想约束的反力（如关节里的支反力）做的虚功为零，不用逐个去求。机器人里最常用的结论是 τ = Jᵀ(θ)F：末端对外施加力或力旋量 F 时，关节需要的力矩 τ 等于雅可比矩阵 J 的转置乘 F，依据就是关节和末端做的虚功（或功率）相等。力控、阻抗控制、重力补偿，以及腿足机器人把足端接触力 f 换算成关节力矩 τ = J_cᵀf，都建立在这个关系上。",
+      "example": "平面两连杆机械臂要在某个姿态下用末端向墙面水平推 10 N，把 F = (10, 0) 代入 τ = JᵀF，就得到两个关节各要出的力矩，无需分析连杆内部受力。",
+      "related": ["雅可比矩阵", "力旋量", "静力学", "重力补偿", "接触雅可比", "拉格朗日方程"],
+      "sources": [
+        {"title": "Wikipedia: Virtual work", "url": "https://en.wikipedia.org/wiki/Virtual_work"},
+        {"title": "Modern Robotics (Lynch & Park), Sec. 5.2 Statics of open chains", "url": "http://hades.mech.northwestern.edu/images/7/7f/MR.pdf"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "指数积公式",
+      "name_en": "Product of Exponentials Formula",
+      "abbr": "PoE",
+      "aliases": ["指数积", "PoE 公式", "POE"],
+      "tier": 3,
+      "one_liner": "把每个关节看作绕旋量轴的运动，连乘各关节矩阵指数得到末端位姿。",
+      "explanation": "指数积公式由 Roger Brockett 在 1984 年提出，是描述串联机械臂正运动学的一种方法，Lynch 和 Park 的教材 Modern Robotics 以它为主线。空间形式写作 T(θ) = e^[S₁]θ₁ ⋯ e^[Sₙ]θₙ M：M 是所有关节为零时末端的位姿，Sᵢ 是第 i 个关节在固定基坐标系下的旋量轴（6 维，含转动方向和线速度部分），θᵢ 是关节角或位移，e^[S]θ 表示沿该旋量轴运动 θ 得到的刚体变换。另有把旋量轴写在末端坐标系的物体形式 T = M e^[B₁]θ₁ ⋯。和 DH 参数相比，它只需基座和末端两个坐标系，转动和移动关节统一处理，几何含义直观；代价是参数不是最少的。雅可比、逆运动学和运动学标定都能在它上面推导。",
+      "example": "单关节平面臂：连杆长 L，绕基座 z 轴转动。零位时末端在 (L, 0, 0)，即 M；旋量轴 S = (0, 0, 1, 0, 0, 0)。T(θ) = e^[S]θ M 给出末端位置 (L·cosθ, L·sinθ, 0)。",
+      "related": ["旋量理论", "DH参数", "正运动学", "指数映射", "李群", "运动学标定"],
+      "sources": [
+        {"title": "Wikipedia: Product of exponentials formula", "url": "https://en.wikipedia.org/wiki/Product_of_exponentials_formula"},
+        {"title": "Modern Robotics (Lynch & Park), Sec. 4.1 Product of Exponentials Formula", "url": "http://hades.mech.northwestern.edu/images/7/7f/MR.pdf"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "四元数双倍覆盖",
+      "name_en": "Quaternion Double Cover",
+      "abbr": "",
+      "aliases": ["q 与 -q 等价", "四元数符号歧义", "Quaternion Sign Ambiguity", "双覆盖"],
+      "tier": 3,
+      "one_liner": "单位四元数 q 和 −q 表示同一个旋转，每个姿态都对应两个四元数。",
+      "explanation": "用单位四元数 q = (w, x, y, z) 表示旋转时，q 和 −q 得到完全相同的旋转矩阵：旋转公式对 q 是二次的，符号相互抵消。数学上，单位四元数组成的三维球面 S³ 到旋转群 SO(3) 是二对一映射（双倍覆盖），每个姿态对应球面上一对对径点。这在具身智能里是常见坑：同一个末端朝向在数据里可能时而是 q、时而是 −q，网络直接回归四元数并用普通 L2 损失，会把相同的姿态当成相差很大；衡量差异应该用 1 − |q₁·q₂|，或取 ‖q − q̂‖ 与 ‖q + q̂‖ 中较小者。做球面插值前若点积为负要先翻号，否则会绕远路。Zhou 等人（2019）进一步证明四维及以下的旋转表示都不连续，所以不少策略改用 6D 旋转表示。",
+      "example": "绕 z 轴转 90° 的四元数是 q = (0.707, 0, 0, 0.707)（w 在前）；−q = (−0.707, 0, 0, −0.707) 相当于多转一整圈 360°，姿态完全一样。常见的规范化做法是强制 w ≥ 0。",
+      "related": ["四元数", "6D 旋转表示", "球面线性插值", "旋转测地距离", "特殊正交群 SO(3)", "四元数分量顺序约定（wxyz / xyzw）"],
+      "sources": [
+        {"title": "Wikipedia: Quaternions and spatial rotation", "url": "https://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation"},
+        {"title": "Wikipedia: 3D rotation group（S³ 到 SO(3) 的二对一覆盖）", "url": "https://en.wikipedia.org/wiki/3D_rotation_group"},
+        {"title": "On the Continuity of Rotation Representations in Neural Networks (arXiv 1812.07035)", "url": "https://arxiv.org/abs/1812.07035"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "可达性地图 / 逆可达性地图",
+      "name_en": "Reachability Map / Inverse Reachability Map",
+      "abbr": "RM / IRM",
+      "aliases": ["能力图", "Capability Map", "逆能力图", "Inverse Capability Map"],
+      "tier": 3,
+      "one_liner": "离线预存机械臂能到达哪些末端位姿；逆图反查底座放哪能够到目标。",
+      "explanation": "可达性地图是对机械臂工作空间的离线预计算：把末端周围的空间划成三维体素，每个体素里再采样若干朝向，用逆运动学逐一检查能否到达，把结果（常用可达朝向的比例表示可达程度）存成表，用时直接查，不必现场反复求逆解。Zacharias 等人在 2007 年提出了这种「能力图」。逆可达性地图把每个可达位姿取逆，得到「以目标末端位姿为原点，底座可以放在哪里」的分布，Vahrenkamp 等人在 2013 年用它解决移动操作机器人的底座摆放问题。它们常用于抓取规划里筛掉够不着的抓取、移动操作里选站位，以及评估机器人设计和安装位置；2024 年的 RM4D 把两者压缩进同一个四维数据结构。",
+      "example": "移动机器人去桌边拿杯子：以候选抓取位姿为中心查逆可达性地图，得到地面上一片「站在这里能够到」的区域，去掉会撞桌子或不可通行的位置，再选可达程度最高的点作为导航目标。",
+      "related": ["工作空间", "逆运动学", "移动操作", "复合机器人", "抓取规划", "可操作度"],
+      "sources": [
+        {"title": "RM4D: A Combined Reachability and Inverse Reachability Map for Common 6-/7-axis Robot Arms (arXiv 2410.06968)", "url": "https://arxiv.org/html/2410.06968"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "递归牛顿-欧拉算法",
+      "name_en": "Recursive Newton-Euler Algorithm",
+      "abbr": "RNEA",
+      "aliases": ["递推牛顿-欧拉算法", "RNE", "牛顿-欧拉逆动力学"],
+      "tier": 3,
+      "one_liner": "先由基座向末端推速度加速度，再由末端往回推力，算出关节力矩的逆动力学算法。",
+      "explanation": "递归牛顿-欧拉算法用来算逆动力学：已知关节位置 q、速度 q̇、加速度 q̈，求所需关节力矩 τ = M(q)q̈ + C(q,q̇)q̇ + g(q)，M 是质量矩阵，C 项是科里奥利力和离心力，g 是重力项。它分两趟：前向从基座到末端，逐个连杆算速度和加速度；反向从末端回到基座，对每个连杆用牛顿-欧拉方程求它受的力和力矩，投影到关节轴上就是 τ。计算量随关节数线性增长，比展开拉格朗日方程高效得多。1980 年 Luh、Walker、Paul 的在线计算方案是其经典形式，Featherstone 用 6 维空间向量给出了统一写法。Pinocchio 的 rnea()、MuJoCo 的 mj_rne 都实现了它；把加速度设为 0 就得到重力、科氏力等偏置力，常用于重力补偿、计算力矩控制和基于模型的碰撞检测。",
+      "example": "用 Pinocchio 时，pinocchio.rnea(model, data, q, v, a) 直接返回关节力矩；令 v 和 a 为零，得到的就是让机械臂在当前姿态停住所需的重力补偿力矩。",
+      "related": ["逆动力学", "牛顿-欧拉方程", "铰接体算法", "复合刚体算法", "计算力矩控制", "Pinocchio"],
+      "sources": [
+        {"title": "Modern Robotics (Lynch & Park), Sec. 8.3 Newton–Euler Inverse Dynamics", "url": "http://hades.mech.northwestern.edu/images/7/7f/MR.pdf"},
+        {"title": "MuJoCo Documentation: Computation（bias force via RNE with acceleration set to 0）", "url": "https://mujoco.readthedocs.io/en/stable/computation/index.html"},
+        {"title": "Pinocchio documentation（Recursive Newton-Euler algorithm, pinocchio::rnea）", "url": "https://gepettoweb.laas.fr/doc/stack-of-tasks/pinocchio/master/doxygen-html/"}
+      ],
+      "as_of": ""
+    }
+  ]
+}

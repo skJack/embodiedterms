@@ -1,0 +1,113 @@
+{
+  "batch": "sim-03",
+  "terms": [
+    {
+      "key": "sim-03#0",
+      "name_en": "Articulated-Body Simulation (Articulation)",
+      "aliases": ["Multi-rigid-body simulation", "Articulation"],
+      "one_liner": "Simulating a robot as rigid bodies connected by joints, computing how it moves and what forces it feels.",
+      "explanation": "A robot is built from links (rigid parts) connected into a tree by joints, and articulated-body simulation is the technique for computing how such a system moves. There are two general approaches: treat every link as an independent rigid body and hold them together with constraints (maximal coordinates), where joints can slowly drift apart or separate; or describe the whole robot using only the base pose plus each joint angle (reduced, or generalized, coordinates), where joints can never come apart by construction — Featherstone's 1987 book laid out the efficient algorithms for this approach. Both PhysX's Articulation feature and MuJoCo take the reduced-coordinate route; PhysX's documentation states that this gives zero joint error and lets it handle much larger mass ratios, with computation scaling with the number of degrees of freedom rather than the number of links. The tradeoff is that it only supports tree structures — a closed loop, such as a parallel ankle mechanism, needs extra constraints added on top.",
+      "example": "Importing a Franka arm's URDF into Isaac Sim produces a fixed-base Articulation: 7 revolute joints plus 2 prismatic finger joints, so the simulation state is just the positions and velocities of these 9 joints.",
+      "related": ["Rigid-body simulation", "Articulated Body Algorithm", "Generalized coordinates", "Joint-space vs. Cartesian-space simulation (reduced vs. maximal coordinates)", "PhysX", "MuJoCo"]
+    },
+    {
+      "key": "sim-03#1",
+      "name_en": "Average Length (CALVIN)",
+      "aliases": ["Avg. Len", "Average Successful Sequence Length"],
+      "one_liner": "In the CALVIN benchmark, how many consecutive instructions a policy completes on average, out of 5.",
+      "explanation": "Average Length is the core metric of CALVIN's long-horizon evaluation. During evaluation, a policy attempts 1,000 instruction chains in sequence, each made of 5 consecutive language instructions (for example, open a drawer, then push a block into it), with each subtask capped at 360 steps; the chain ends the moment any subtask fails. The number of subtasks completed in a row (0 through 5) is recorded for every chain, and Avg. Len is the average across all chains. It's equal to the sum of the success rates for completing at least 1, at least 2, … up to all 5 tasks in a row, so it captures both single-step competence and whether errors compound over a long horizon. Papers typically report this number under the ABC→D setting (train on environments A, B, and C, test on the unseen environment D), to compare generalization and long-horizon ability.",
+      "example": "The CALVIN paper's baseline, MCIL, gets success rates of 48.9%, 12.9%, 2.6%, 0.5%, and 0.08% for completing 1 through 5 tasks in a row under the D→D setting — summing to about 0.65, or an average of well under one completed task.",
+      "related": ["CALVIN", "Success rate", "Long-horizon task", "Language-conditioned policy", "Closed-loop evaluation", "Progress score"]
+    },
+    {
+      "key": "sim-03#2",
+      "name_en": "BEHAVIOR-1K (BEHAVIOR Challenge)",
+      "aliases": ["BEHAVIOR", "BEHAVIOR Challenge"],
+      "one_liner": "Stanford's simulated benchmark of 1,000 everyday household tasks, built on the OmniGibson simulator.",
+      "explanation": "BEHAVIOR-1K is an embodied-AI benchmark from the Stanford Vision and Learning Lab, guided by Fei-Fei Li, Jiajun Wu, and others, with the first version published at CoRL 2022. Its tasks come from a survey asking what people would want a robot to help with around the house, distilled into 1,000 everyday activities spread across 50 interactive scenes (homes, gardens, restaurants, offices, and more), with more than 9,000 objects annotated with physical and semantic properties; task goals are defined in BDDL, a language that describes goal states with logical predicates. Its companion simulator, OmniGibson, is built on NVIDIA Isaac Sim and supports rigid bodies, soft bodies, and liquids. The team has run the BEHAVIOR Challenge since 2025; the second edition, in 2026, requires completing 100 full household tasks, provides 20,000 teleoperated demonstrations totaling 1,950 hours, and ranks entries by an average task success score that awards partial credit.",
+      "example": "The 2026 BEHAVIOR Challenge provides π0.5 and GR00T N1.7 as baselines; entrant policies control the robot using RGB, depth, and proprioceptive input to do household chores, with submissions due October 16, 2026, and a total prize pool of $11,000.",
+      "related": ["OmniGibson", "Isaac Sim", "Household tasks", "Long-horizon task", "Benchmark", "Mobile manipulation"]
+    },
+    {
+      "key": "sim-03#3",
+      "name_en": "CALVIN Benchmark",
+      "aliases": ["CALVIN ABC→D", "Composing Actions from Language and Vision"],
+      "one_liner": "A tabletop manipulation benchmark testing whether a robot can follow 5 language instructions in a row.",
+      "explanation": "CALVIN (Composing Actions from Language and Vision) is an open-source simulated benchmark released by Oier Mees, Wolfram Burgard, and colleagues at the University of Freiburg in Germany, published in RA-L 2022, where it won that journal's best-paper award that year. The setup is a table with a 7-DOF Franka arm, plus a drawer, a sliding door, a button, a switch, and three colored blocks, simulated in PyBullet; there are four environments, A, B, C, and D, structurally identical but differing in texture and part placement. It provides about 24 hours of teleoperated “play” data (only 1% of which is labeled with language), defines 34 task types, and its main evaluation requires executing 5 language instructions in a row, scored with Average Length. The most commonly used ABC→D setting trains on three environments and tests on the fourth, unseen one, to measure generalization.",
+      "example": "One test chain from the paper: “open the drawer” → “push the block into the drawer” → “take the block back out of the drawer” → “stack the blocks” → “close the drawer,” with the robot only advancing to the next instruction once it completes the current one.",
+      "related": ["Average Length", "Language-conditioned policy", "Long-horizon task", "LIBERO", "PyBullet", "Play data"]
+    },
+    {
+      "key": "sim-03#4",
+      "name_en": "Closed-Loop Evaluation",
+      "aliases": ["online evaluation"],
+      "one_liner": "Letting a policy actually control the robot, act, observe, and act again, scored by whether the task finishes.",
+      "explanation": "Closed-loop evaluation means actually running a policy inside a simulated or real environment: at every step, it computes an action from the latest observation, the action changes the environment, and the environment returns a new observation, repeating until the task succeeds, fails, or times out, with success rate and similar metrics tallied at the end. This contrasts with open-loop evaluation, which only compares the model's predicted actions against human demonstrations on offline data (for example, using mean squared error) without the model's own actions ever affecting what it sees next. The problem is that imitation learning's small errors can drive the robot into states never seen in the demonstrations, and these errors compound — something an offline error metric can't reveal. The SimplerEnv paper found in practice that validation-set mean squared error doesn't predict a policy's real-robot performance well, and a CVPR 2024 study in autonomous driving similarly found that open-loop planning metrics can be misleading. VLA papers therefore generally treat closed-loop success rate, in simulation or on a real robot, as the metric that counts.",
+      "example": "Evaluating a VLA on LIBERO: for each task, run several episodes from different initial states with the policy controlling the simulated arm in real time, then report success rate — that's closed-loop evaluation; computing only its predicted actions' mean squared error against a held-out test set would be open-loop evaluation instead.",
+      "related": ["Open-loop evaluation", "Simulation-based evaluation", "Real-world evaluation", "Rollout", "Compounding error", "SimplerEnv"]
+    },
+    {
+      "key": "sim-03#5",
+      "name_en": "Collision Detection",
+      "aliases": ["broad phase / narrow phase"],
+      "one_liner": "The step where a physics engine works out which objects are touching, where, and how deeply.",
+      "explanation": "Collision detection is a step a physics engine runs on every simulation tick, producing a list of contacts (contact points, normal directions, and penetration depth) that's then handed to the solver to compute contact forces. With n objects in a scene, there are n(n−1)/2 possible pairs, and checking every pair exactly is too slow, so engines generally split the work into two phases: broad phase, which uses cheap methods like bounding-box sorting (such as sweep-and-prune) to quickly rule out pairs that obviously can't be touching; and narrow phase, which does exact geometric computation on the remaining pairs, commonly using the GJK/EPA algorithm for convex shapes. MuJoCo adds a middle layer between the two, based on a bounding-volume hierarchy, and uses contype/conaffinity bitmasks to skip pairs that don't need checking at all. Note that this is a different “collision detection” from the kind used in robot safety systems to detect an actual physical impact.",
+      "example": "In MuJoCo, all the geometries of a robot, a table, and a block first go through sweep-and-prune to filter down to pairs that might touch, then a bounding-sphere test filters further; finally, basic shapes like spheres and boxes are handled with closed-form formulas, while pairs involving a mesh (first converted to a convex hull) go through GJK/EPA to compute contact points and penetration depth.",
+      "related": ["Collision geometry", "Broad-phase / narrow-phase collision detection", "GJK algorithm", "Bounding box", "Collision filtering (collision groups)", "Continuous collision detection (tunneling problem)"]
+    },
+    {
+      "key": "sim-03#6",
+      "name_en": "Collision Geometry (Collider)",
+      "aliases": ["collision mesh", "collision shape", "Collider"],
+      "one_liner": "The simplified shape a physics engine uses for collision checks, usually different from what's rendered on screen.",
+      "explanation": "A simulated object usually has two separate geometries: a visual mesh, used for rendering and meant to look good, with a high polygon count; and a collision geometry, handed to the physics engine for collision detection, meant to be computed quickly and stably. Collision geometry is usually a basic shape — sphere, capsule, box — or a convex hull (the smallest convex shape that encloses the object), because these have efficient collision algorithms. MuJoCo automatically converts a non-convex mesh supplied by the user into a convex hull for collision purposes; Isaac Sim also defaults to convex hulls, with convex decomposition (splitting an object into several convex pieces) or an SDF (signed distance field) mesh available when a closer fit is needed. Too coarse a collision shape, and a mug gets treated as solid, with nothing able to grip its handle; too fine, and the simulation slows down. This is exactly the distinction between <visual> and <collision> in a URDF, specified separately for every link.",
+      "example": "If a coffee mug uses a single convex hull as its collision geometry, the opening gets sealed shut and a spoon can't be placed inside it in simulation; decomposing it into several convex pieces with a tool like CoACD lets the wall, base, and handle collide separately.",
+      "related": ["Convex decomposition", "CoACD / V-HACD convex decomposition tools", "Collision detection", "Unified Robot Description Format (URDF)", "Signed distance field", "Clipping (mesh interpenetration)"]
+    },
+    {
+      "key": "sim-03#7",
+      "name_en": "Contact Model",
+      "aliases": ["contact dynamics"],
+      "one_liner": "The physics engine's rule for how much force and friction two touching objects generate.",
+      "explanation": "Collision detection only answers whether and where two objects are touching; a contact model answers how much force results from that contact: a normal force that keeps objects from interpenetrating, and a tangential friction force that resists sliding, capped by a friction cone whose size is the friction coefficient times the normal force. The classical approach is a hard-contact model, which writes “no force without contact, and no interpenetration once there is contact” as a complementarity condition, reducing to a Linear Complementarity Problem (LCP) that becomes NP-hard once friction is included, so different engines rely on various approximations. MuJoCo instead uses soft contact: it allows a small amount of interpenetration and defines the contact force as the unique solution to a convex optimization problem, with parameters like solref and solimp used to tune how soft or stiff it is. How accurate the contact model is directly affects whether contact-heavy tasks — grasping, peg insertion, legged locomotion — can transfer successfully from simulation to a real robot.",
+      "example": "In MuJoCo, setting a geom's condim to 3 computes only the normal force and in-plane sliding friction; setting it to 4 adds torsional friction, which the official documentation says helps simulate soft fingertips for steadier grasping; setting it to 6 further adds rolling friction.",
+      "related": ["Soft contact", "Linear complementarity problem", "Friction cone", "Constraint solver", "Collision detection", "Coulomb friction"]
+    },
+    {
+      "key": "sim-03#8",
+      "name_en": "Control Decimation",
+      "aliases": ["decimation", "physics-to-control frequency ratio"],
+      "one_liner": "The number of physics-engine steps that run for every single action a policy outputs.",
+      "explanation": "A physics engine needs a very small timestep (usually a few milliseconds) to stay numerically stable, but a policy network doesn't need to, and often can't, output actions that fast. Control decimation is the setting that lets a policy output one action while the simulator advances that action (or the PD targets computed from it) forward for N consecutive physics steps; N is called the decimation. Both Isaac Lab and legged_gym use this parameter, and the duration of one environment step equals the physics timestep times the decimation. Choosing it involves a tradeoff: too large, and the policy reacts too slowly; too small, and training compute is wasted, and it may no longer match the real robot's control frequency, widening the sim-to-real gap. When deployed to a real robot, the policy generally runs at that same frequency, while the low-level motor PD control runs at a much higher frequency underneath it.",
+      "example": "legged_gym defaults to a 0.005-second physics timestep with decimation = 4, so the policy outputs an action every 0.02 seconds — 50 Hz control — while the joint PD controller executes within 200 Hz physics steps.",
+      "related": ["Simulation timestep", "Control frequency", "Policy inference frequency", "PD control", "Substep", "Isaac Lab"]
+    },
+    {
+      "key": "sim-03#9",
+      "name_en": "Deformable-Body Simulation",
+      "aliases": ["soft-body simulation", "flexible-body simulation"],
+      "one_liner": "Physics simulation of objects that change shape under force, like cloth, rope, dough, or liquid.",
+      "explanation": "Rigid-body simulation assumes an object's shape never changes, so a handful of numbers is enough to describe its pose; deformable-body simulation has to handle objects that change shape under force, with state made up of the positions of hundreds or thousands of nodes or particles, which is far more computationally and numerically demanding. Common methods include the finite element method (FEM, which cuts an object into a tetrahedral mesh and computes deformation from material parameters like Young's modulus and Poisson's ratio, well suited to elastic bodies), position-based dynamics (PBD, fast and stable, commonly used for cloth and rope), and the material point method (MPM, suited to large-deformation materials such as dough and sand). PhysX runs soft bodies with FEM on the GPU; Genesis integrates FEM, MPM, and PBD/SPH solvers together. This underlies research on manipulating flexible objects, such as folding laundry or kneading dough, though the gap to real materials is usually larger than for rigid-body simulation.",
+      "example": "SoftGym (CoRL 2020), built on the particle simulator NVIDIA FleX, provides tasks such as flattening cloth, folding cloth, straightening rope, and pouring water, used to test how well reinforcement learning algorithms handle deformable objects.",
+      "related": ["Finite element method", "Material point method", "Position-based dynamics", "Cloth simulation", "Deformable object manipulation", "SoftGym"]
+    },
+    {
+      "key": "sim-03#10",
+      "name_en": "Differentiable Simulation",
+      "aliases": ["differentiable physics", "differentiable physics engine"],
+      "one_liner": "A simulator whose output can be differentiated, so gradient descent can optimize actions or physical parameters directly.",
+      "explanation": "An ordinary simulator only computes forward: given this action, what happens next. A differentiable simulator can also use automatic differentiation to compute, backward, the gradient of the result with respect to the action, the initial state, or physical parameters such as mass and friction. That makes it possible to directly optimize a control sequence, a policy network, or an estimate of physical parameters using gradient descent, the same way a neural network is trained, instead of estimating a gradient indirectly through large amounts of trial and error the way reinforcement learning does. Notable examples include DiffTaichi (ICLR 2020), Google's Brax, and MJX, the JAX version of MuJoCo (its Warp backend does not support automatic differentiation). The hard part is contact: collisions introduce sudden changes in the dynamics, so gradients can be huge, noisy, or zero; a 2022 ICML study by Suh and colleagues found that stiffness and discontinuity undermine the usefulness of this kind of first-order gradient.",
+      "example": "The DiffTaichi paper implements 10 differentiable simulators, and using them to optimize neural-network controllers typically converges within a few dozen iterations.",
+      "related": ["Physics engine", "MJX", "Brax", "Warp", "Trajectory optimization", "System identification"]
+    },
+    {
+      "key": "sim-03#11",
+      "name_en": "Dynamics Randomization",
+      "aliases": ["physics parameter randomization", "friction/mass randomization"],
+      "one_liner": "Randomizing physical parameters like mass and friction during training so a policy can handle a real robot.",
+      "explanation": "Dynamics randomization is a form of domain randomization that specifically randomizes physical parameters rather than visual appearance. A simulation's mass, friction, damping, motor gains, and delay can never fully match a real robot, and training under one fixed set of these values leaves a policy prone to overfitting to the simulator. The approach is to resample these parameters from a chosen range at the start of every episode, forcing the policy to succeed under a wide variety of physical conditions; if the real robot's true parameters fall within that range, the policy is more likely to work on it directly. A landmark example is Peng and colleagues' 2018 paper, which randomized 95 parameters for a puck-pushing task and deployed a policy trained purely in simulation directly onto a Fetch robot arm, with performance close to simulation. Today, frameworks such as Isaac Lab and legged_gym routinely randomize ground friction and payload mass, and apply random pushes, when training legged robots.",
+      "example": "legged_gym by default samples ground friction uniformly between 0.5 and 1.25, and randomly shoves the robot every 15 seconds, forcing the policy to learn to keep walking across different surfaces and under unexpected disturbances.",
+      "related": ["Domain randomization", "Sim-to-real transfer", "Sim-to-real gap", "Visual randomization", "Automatic domain randomization", "System identification"]
+    }
+  ]
+}

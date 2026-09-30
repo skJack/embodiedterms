@@ -1,0 +1,113 @@
+{
+  "batch": "mechanics-11",
+  "terms": [
+    {
+      "key": "mechanics-11#0",
+      "name_en": "Four-Bar Linkage",
+      "aliases": ["Four-Bar Mechanism", "Planar Four-Bar Linkage"],
+      "one_liner": "Four bars joined end to end by four revolute joints into a closed loop, with just 1 degree of freedom.",
+      "explanation": "A four-bar linkage connects four bars — one of which is fixed, called the frame — end to end with four revolute joints into a closed loop; it's the simplest movable closed-chain mechanism, and in the planar case it has only 1 degree of freedom: rotate any one bar and the positions of all the others are fully determined. The bar attached to the frame that can rotate all the way around is called the crank; one that can only rock back and forth is a rocker; the bar floating in between is the coupler. Whether a bar can rotate fully is decided by the Grashof condition: if the sum of the shortest and longest bar lengths is no greater than the sum of the other two, the shortest bar can rotate fully relative to its neighbors, which is how linkages get classified into crank-rocker, double-crank, and double-rocker types. Its job is to turn a motor's simple rotation into a desired output trajectory or angular relationship — windshield wipers and car suspensions both use it, and robots often use it to place a motor closer to the torso and drive a knee or ankle through a linkage, while a parallelogram four-bar can keep a gripper's fingers always parallel.",
+      "example": "A car windshield wiper: the motor spins a crank continuously, which drives a rocker back and forth through a coupler bar, and the wiper blade sweeps left and right across the windshield.",
+      "related": ["Grübler's Formula", "Linkage Transmission", "Parallel Mechanism", "Parallel Ankle Mechanism", "Degrees of Freedom", "Link"]
+    },
+    {
+      "key": "mechanics-11#1",
+      "name_en": "Friction Pyramid",
+      "aliases": ["Linearized Friction Cone", "Polyhedral Friction Cone", "Pyramidal Friction Cone"],
+      "one_liner": "Approximates the round friction cone with a polyhedral pyramid, turning the friction constraint into linear inequalities.",
+      "explanation": "Under Coulomb friction, the tangential force at a contact point can't exceed the friction coefficient μ times the normal force, and all the allowed contact forces form a cone in 3D — the friction cone. Because a cone is a nonlinear constraint, it's often approximated with a polyhedral pyramid instead, which is the friction pyramid: the simplest 4-sided pyramid is spanned by the four edges (μ,0,1), (−μ,0,1), (0,μ,1), and (0,−μ,1), and more edges get closer to the true cone. An inscribed pyramid underestimates the available friction, while a circumscribed one overestimates it; grasp analysis usually takes the conservative, inscribed option. The payoff is that the friction constraint becomes a set of linear inequalities, so contact problems can be solved with linear programming, quadratic programming, or a linear complementarity problem. The |fx| ≤ μfz, |fy| ≤ μfz constraints common in convex MPC for quadrupeds are a circumscribed 4-sided pyramid; MuJoCo also offers two global settings, pyramidal and elliptic, and the pyramidal option turns the solver's dual problem into a convex quadratic program with simple box constraints.",
+      "example": "With μ = 0.5 and a normal force fz = 100 N, the true friction cone allows at most 50 N of tangential force in any direction; with the circumscribed 4-sided pyramid constraint |fx| ≤ 50, |fy| ≤ 50, a solution with fx = fy = 50 N is also allowed, giving a combined force of about 70.7 N — beyond the true limit — which is why a conservative design often substitutes μ/√2 for μ.",
+      "related": ["Friction Cone", "Coulomb Friction", "Friction Coefficient", "Convex MPC", "Linear Complementarity Problem", "MuJoCo"]
+    },
+    {
+      "key": "mechanics-11#2",
+      "name_en": "Gait Cycle and Duty Factor",
+      "aliases": ["Stride", "Duty Factor"],
+      "one_liner": "The gait cycle is one full stride from touchdown to the next touchdown; the duty factor is the fraction spent on the ground.",
+      "explanation": "The gait cycle, or stride, is the complete cycle of a single foot from one touchdown to the next, split into a stance phase (foot on the ground, bearing weight and propelling) and a swing phase (foot lifted and moving forward). The duty factor β = stance time ÷ cycle time. Biomechanics commonly uses 50% as the dividing line: a duty factor above 50% counts as walking, where at least one foot is always on the ground; below 50% counts as running, which includes an aerial phase. For quadruped and humanoid robots, a periodic gait can be described with three quantities: the cycle period, each leg's duty factor, and the phase offsets between legs — a diagonal trot, for instance, has the two diagonal leg pairs offset by half a cycle. Model-based controllers use these quantities to schedule when each leg touches down (gait scheduling), and reinforcement-learning locomotion controllers often feed a phase clock into the observation or reward to guide the policy toward a desired rhythm.",
+      "example": "A leg with a 0.5 s cycle that spends 0.3 s on the ground has a duty factor of 0.6, above 0.5, so it counts as walking; if it only touches down for 0.2 s, the duty factor is 0.4, and there's an aerial phase — that's running.",
+      "related": ["Gait", "Stance Phase / Swing Phase", "Diagonal Trot Gait", "Contact Schedule (Gait Scheduler)", "Gait Phase (Phase Clock)", "Flight Phase"]
+    },
+    {
+      "key": "mechanics-11#3",
+      "name_en": "Gallop Gait",
+      "aliases": ["Gallop", "Rotary Gallop"],
+      "one_liner": "The fastest quadruped gait: all four feet touch down in sequence, slightly offset, with a phase where the whole body is airborne.",
+      "explanation": "The gallop is a high-speed, asymmetric gait in quadruped animals: the two front legs, or the two rear legs, don't touch down at exactly the same time — they're slightly offset, producing a four-beat footfall pattern, and each cycle also includes a suspension phase where all four feet leave the ground at once. It's the horse's fastest gait, averaging roughly 40–48 km/h, and the faster the pace, the longer the suspension phase; a greyhound's double-suspension rotary gallop has two suspension phases per cycle, one with the spine curled and one extended, using large spinal flexion to lengthen its stride. It differs from the bound gait (front pair together, rear pair together) in whether the left and right legs within each pair are offset. For robots, the gallop has a long airborne time and short per-leg ground contact, and the torso's center of mass can't be directly controlled during the suspension phase, making it harder to execute than a trot. MIT's Mini Cheetah used MPC combined with whole-body impulse control to demonstrate six gaits, including the gallop.",
+      "example": "When a horse gallops leading with its right front leg, the footfall order is left-hind, right-hind, left-front, right-front, followed by all four feet leaving the ground together before the next cycle begins.",
+      "related": ["Gait", "Bound Gait", "Diagonal Trot Gait", "Flight Phase", "Quadruped Robot", "MIT Mini Cheetah"]
+    },
+    {
+      "key": "mechanics-11#4",
+      "name_en": "Geodesic Distance on SO(3)",
+      "aliases": ["Angular Distance", "Geodesic Error", "Rotation Angle Error"],
+      "one_liner": "The minimum angle still needed to turn one orientation into another — the standard way to measure rotation error.",
+      "explanation": "The geodesic distance on SO(3) is the shortest distance between two rotations on the rotation group SO(3) (the set of all 3D rotations); numerically, it's the minimum rotation angle needed to turn one orientation into the other, ranging from 0 to π (180°). For rotation matrices R₁ and R₂, first compute the relative rotation R₁ᵀR₂, then take θ = arccos((tr(R₁ᵀR₂) − 1)/2), where tr is the sum of the diagonal entries; with unit quaternions q₁ and q₂ it can be written θ = 2·arccos(|q₁·q₂|), with the absolute value needed because q and −q represent the same rotation. Directly comparing the raw components of Euler angles or quaternions can be misled by the choice of representation; the geodesic distance only measures the actual angular difference. It's the standard metric reported as 'geodesic error' in 6D object pose estimation and rotation-representation research — such as the paper that introduced the 6D rotation representation by Zhou and colleagues — and it can also be used directly as a training loss.",
+      "example": "With R₁ the identity and R₂ a 90° rotation about the z-axis: tr(R₂) = 0+0+1 = 1, so θ = arccos(0) = 90°. Or take yaw angles of 179° and −179°: their raw difference is 358°, but the geodesic distance is only 2°.",
+      "related": ["Special Orthogonal Group SO(3)", "Rotation Matrix", "Quaternion Double Cover", "6D Rotation Representation", "6D Pose Estimation", "Euler Angles"]
+    },
+    {
+      "key": "mechanics-11#5",
+      "name_en": "Geometric vs. Analytical Jacobian",
+      "aliases": ["Geometric Jacobian", "Analytic Jacobian"],
+      "one_liner": "Both map joint velocity to end-effector velocity; they differ in whether orientation is expressed as angular velocity or as coordinate derivatives.",
+      "explanation": "The Jacobian matrix describes the linear relationship between joint velocity q̇ and end-effector velocity, and it comes in two versions depending on how end-effector velocity is expressed. The geometric Jacobian outputs the end-effector's linear velocity together with its angular velocity ω (this corresponds to the space/body Jacobian in Modern Robotics; Siciliano and colleagues' textbook defines it slightly differently, and terminology isn't fully standardized). The analytical Jacobian first describes the end-effector pose with a minimal set of coordinates, such as position plus Euler angles, then differentiates those coordinates directly, giving ẋ = J_a q̇. Angular velocity is not the same as the derivative of the Euler angles — the two differ by a transformation matrix that depends on the orientation representation — and that matrix can become non-invertible at certain orientations (such as gimbal lock), which makes the analytical Jacobian fail there, even when the arm itself isn't at a kinematic singularity. Velocity control and statics (τ = JᵀF) generally use the geometric Jacobian, while error feedback or trajectory optimization done directly in coordinates like Euler angles uses the analytical one.",
+      "example": "Describing end-effector orientation with ZYX Euler angles hits gimbal lock at a pitch angle of ±90°: some directions of angular velocity can no longer be expressed through the finite derivatives of the Euler angles, so the analytical Jacobian becomes non-invertible there, while the geometric Jacobian remains perfectly well-behaved at the same orientation.",
+      "related": ["Jacobian Matrix", "Differential Kinematics", "Euler Angles", "Gimbal Lock", "Twist", "Singular Configuration"]
+    },
+    {
+      "key": "mechanics-11#6",
+      "name_en": "Grasp Matrix",
+      "aliases": ["G", "Grasp Map"],
+      "one_liner": "The linear map that combines each contact point's force into the total force and torque acting on the grasped object.",
+      "explanation": "The grasp matrix G (called the grasp map in the textbook by Murray, Li, and Sastry) describes the relationship between the forces fingers apply at their contact points and the resultant wrench on the object: F_o = G·f_c. Here f_c is the stacked vector of all contact forces, and F_o is the 6-dimensional wrench (3D force plus 3D torque) acting on the object. Each contact point occupies a block within G, determined by the contact's position, its surface normal, and its contact type (frictionless point contact, point contact with friction, or soft-finger contact). In the other direction, Gᵀ maps the object's velocity to the velocity of each contact point. The null space of G corresponds to internal forces: forces where several fingers squeeze against each other but contribute zero net force to the object — this is how fingers grip an object firmly without pushing it around. Force closure can be stated as: under the friction-cone constraints, G can generate a wrench in any direction; combined with the hand's Jacobian J_h (via τ = J_hᵀ f_c), the required joint torques can be worked backward from the force the object needs.",
+      "example": "Two fingers squeeze a box horizontally from opposite sides with 10 N each: the two contact forces sum to zero net force through G, so this pair of forces lies in G's null space and is a pure internal force. To actually hold the box up without dropping it, an upward friction-force component, within the friction cone, also has to be added so that G·f_c cancels gravity.",
+      "related": ["Force Closure", "Form Closure", "Wrench", "Friction Cone", "Contact Jacobian", "Grasp Quality Metric"]
+    },
+    {
+      "key": "mechanics-11#7",
+      "name_en": "Grasp Quality Metric",
+      "aliases": ["ε Metric", "Epsilon Quality", "Ferrari-Canny Metric"],
+      "one_liner": "A single number scoring a grasp by how well it can resist outside disturbances, used to rank candidate grasps.",
+      "explanation": "A grasp quality metric maps a set of contact points, or a hand pose, to a single number, with a higher score meaning a better grasp — used to rank large numbers of candidate grasps. The most common is the ε metric proposed by Ferrari and Canny in 1992: with contact forces limited in magnitude and constrained to lie inside their friction cones, collect the achievable wrenches (force plus torque) at each contact point and take their convex hull; ε is the radius of the largest ball centered at the origin that fits inside that hull — the smallest disturbance, in the worst direction, that the grasp can still resist. A grasp that fails to achieve force closure scores zero or negative. Because force and torque have different units, torque is usually rescaled using a characteristic length of the object. Roa and Suárez's survey sorts these metrics into ones based on contact-point locations and ones based on hand configuration. Dex-Net 2.0 computes a robust ε metric under pose and friction uncertainty to label about 6.7 million synthetic samples, used to train the grasp-quality network GQ-CNN.",
+      "example": "Gripping the same disk with three fingers: when the fingers are evenly spaced around the circumference, the wrench convex hull is roughly symmetric and its inscribed ball is large, giving a high ε; when the three fingers are bunched on one side, the hull skews to that side, some direction of push is almost unresisted, and ε is very low.",
+      "related": ["Force Closure", "Wrench", "Grasp Matrix", "Grasp Planning", "Dex-Net", "Friction Cone"]
+    },
+    {
+      "key": "mechanics-11#8",
+      "name_en": "Grübler's Formula",
+      "aliases": ["Chebychev–Grübler–Kutzbach Criterion", "Kutzbach-Grübler Formula", "Mobility Formula"],
+      "one_liner": "Computes how many degrees of freedom a mechanism has from its number of links, joints, and each joint's own freedom.",
+      "explanation": "Grübler's formula, also known as the Chebychev–Grübler–Kutzbach criterion after its three originators, counts the degrees of freedom of a mechanism built from links and joints: dof = m(N − 1 − J) + Σfᵢ. Here m is the degrees of freedom of a single free rigid body (3 for a planar mechanism, 6 for a spatial one), N is the number of links (the fixed frame counts as one), J is the number of joints, and fᵢ is the number of degrees of freedom joint i provides (1 for a revolute or prismatic joint, 3 for a ball joint). The logic is that each movable link starts out with m degrees of freedom, and each joint removes m − fᵢ of them as a constraint. It's a quick way to figure out how many motors a parallel mechanism, closed-chain leg, or finger mechanism needs. Its limitation is that it assumes all the constraints are independent; when the geometry is special — parallel or equal-length members, for instance — the constraints can become redundant, and the true number of degrees of freedom can exceed what the formula predicts. Such mechanisms are called overconstrained, and in that case the formula only gives a lower bound.",
+      "example": "A planar four-bar linkage: m = 3, N = 4 (including the frame), J = 4 revolute joints each contributing 1 degree of freedom, so dof = 3×(4−1−4) + 4 = 1 — rotating one crank fully determines the configuration of the whole mechanism.",
+      "related": ["Degrees of Freedom", "Four-Bar Linkage", "Parallel Mechanism", "Kinematic Pair (Revolute / Prismatic Pair; Lower / Higher Pair)", "Configuration Space", "Underactuation"]
+    },
+    {
+      "key": "mechanics-11#9",
+      "name_en": "Hand Synergies",
+      "aliases": ["Postural Synergies", "Eigengrasps"],
+      "one_liner": "The many joints of a human hand tend to move together in a few fixed combinations, describable by a handful of synergy parameters.",
+      "explanation": "The idea of hand synergies comes from neuroscience: Santello, Flanders, and Soechting had subjects imagine grasping 57 common objects in 1998, measured the 15 joint angles of the fingers and thumb, and ran principal component analysis (PCA), finding that just the first two principal components explained over 80% of the variance. In other words, although the human hand has many degrees of freedom, most grasp postures fall within a low-dimensional subspace, with the higher-order components only fine-tuning the details. Robotics has borrowed this idea: the GraspIt! simulator's eigengrasp uses a few synergy amplitudes in place of the full set of joint angles when searching for grasps. On the hardware side, the Pisa/IIT SoftHand (Catalano et al., 2014) was designed around 'adaptive synergies,' and a related product, the qb SoftHand Research, drives 19 humanlike degrees of freedom with just one motor. When learning dexterous manipulation, synergies can also be used to compress the action space.",
+      "example": "The qb SoftHand has only one motor, so the only control input is how much to close the hand; the five fingers close together in proportions set by their tendon routing, letting it grasp objects of many different shapes.",
+      "related": ["Dexterous Hand", "Underactuation", "Tendon-Driven Actuation", "Motion Retargeting", "Grasp Taxonomy (Power Grasp / Precision Pinch)", "Data Glove"]
+    },
+    {
+      "key": "mechanics-11#10",
+      "name_en": "Impact",
+      "aliases": ["Collision Impact", "Impulsive Contact"],
+      "one_liner": "When two objects collide, a very brief but very large contact force that abruptly changes their velocities.",
+      "explanation": "An impact is a collision between two objects in which the contact force spikes to a large value over an extremely short time, changing the objects' velocities almost instantaneously. Rigid-body simulation and control commonly treat it as an instantaneous event: the impulse (the time-integral of force) equals the change in momentum, and the coefficient of restitution e determines how much rebound results — e = 0 means no bounce at all, e = 1 means no energy loss. Impacts are common in robotics: a legged robot's foot touching down each step, a jump landing, or an arm bumping into a person or a table. Peak impact forces can damage gearboxes and sensors, and they can also make a foot slip or destabilize a controller. On the hardware side, engineers cushion impacts by reducing the motor inertia reflected to the output and improving backdrivability; Wensing and colleagues proposed an impact mitigation factor (IMF) in 2017 to quantify this ability for the MIT Cheetah, which had contact durations as short as 85 ms and peak forces over 450 N while running with the bound gait.",
+      "example": "A 1 kg ball falls vertically at 2 m/s and lands with a coefficient of restitution of 0.5, so it bounces back at 1 m/s; momentum changes from −2 to +1 kg·m/s, an impulse of 3 N·s, and if contact lasts only 10 ms, the average contact force is about 300 N — roughly 30 times the ball's weight.",
+      "related": ["Coefficient of Restitution", "Backdrivability", "Reflected Inertia", "Quasi-Direct Drive", "Contact Model", "Ground Reaction Force"]
+    },
+    {
+      "key": "mechanics-11#11",
+      "name_en": "Inertia Tensor",
+      "aliases": ["Inertia Matrix", "Rotational Inertia Matrix", "3×3 Inertia Matrix"],
+      "one_liner": "A 3×3 symmetric matrix describing how hard a rigid body is to rotate about any given axis.",
+      "explanation": "The inertia tensor (also called the inertia matrix) is the complete description of a rigid body's rotational inertia, given as a 3×3 symmetric positive-definite matrix. The diagonal entries Ixx, Iyy, Izz are the moments of inertia about the x, y, and z axes — for example Ixx = Σm(y² + z²) — while the off-diagonal entries are called products of inertia, such as Ixy = −Σm·x·y (sign convention varies by textbook), and reflect whether rotating about one axis tends to drag the body around another. It relates angular velocity ω to angular momentum through L = Iω, and rotational kinetic energy is K = ½ωᵀIω. Rotating the reference frame gives I' = RᵀIR, and changing the reference point uses the parallel axis theorem; eigendecomposition yields the principal axes, along which the products of inertia all vanish. URDF's inertial tag requires filling in each link's mass, center-of-mass location, and the six independent entries of the inertia tensor — getting these wrong will throw off both dynamics simulation and torque control.",
+      "example": "A 2 kg point mass located at (0.1, 0, 0) m has Ixx = 0, Iyy = Izz = 2×0.1² = 0.02 kg·m², and all products of inertia equal to zero — meaning it costs nothing to spin about an x-axis passing through the point, while rotating about the y- or z-axis must overcome 0.02 kg·m² of inertia.",
+      "related": ["Moment of Inertia", "Inertial Parameters", "Parallel Axis Theorem", "Center of Mass", "Unified Robot Description Format (URDF)", "Dynamic Parameter Identification"]
+    }
+  ]
+}

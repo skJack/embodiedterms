@@ -1,0 +1,113 @@
+{
+  "batch": "named_model-01",
+  "terms": [
+    {
+      "key": "named_model-01#0",
+      "name_en": "Action Chunking with Transformers",
+      "aliases": ["ACT", "Action Chunking Transformer"],
+      "one_liner": "A 2023 Stanford imitation-learning policy that predicts a whole chunk of actions at once, letting low-cost bimanual robots do fine manipulation.",
+      "explanation": "ACT is an imitation-learning algorithm introduced in April 2023 by Tony Zhao, Chelsea Finn, and colleagues at Stanford, with collaborators from UC Berkeley and Meta, published alongside the low-cost bimanual platform ALOHA (roughly $20,000 in hardware) at RSS 2023. Behavior cloning — learning actions by copying human demonstrations — tends to accumulate small errors at every step, which is especially damaging for fine-grained tasks. ACT has a Transformer output an entire chunk of future actions at once, so fewer decisions are made and less error accumulates. During training it wraps a conditional variational autoencoder (CVAE, a generative model that can represent multiple valid ways of doing the same thing) around the policy to absorb the randomness in human demonstrations; at execution time, temporal ensembling averages overlapping action chunks with weights to keep motion smooth. Because it's structurally simple and needs little data, ACT went on to become a standard baseline for projects like Mobile ALOHA and LeRobot.",
+      "example": "On ALOHA, ACT learned six fine-grained tasks — such as opening a translucent condiment cup and slotting a battery into place — from only about 10 minutes of teleoperated demonstrations per task, reaching 80–90% success rates.",
+      "related": ["Action Chunking", "Temporal Ensembling", "Conditional Variational Autoencoder", "ALOHA (Bimanual Platform)", "Mobile ALOHA", "Behavior Cloning"]
+    },
+    {
+      "key": "named_model-01#1",
+      "name_en": "Diffusion Policy",
+      "aliases": ["DP", "Diffusion Policy: Visuomotor Policy Learning via Action Diffusion"],
+      "one_liner": "An imitation-learning policy that generates robot action sequences by gradually denoising from random noise, using a diffusion model.",
+      "explanation": "Diffusion Policy was introduced by Cheng Chi and colleagues in Shuran Song's group at Columbia University, working with Toyota Research Institute and MIT; it appeared on arXiv in March 2023, was published at RSS 2023, and an extended version appeared in IJRR in 2024. It formulates a robot policy as a conditional denoising diffusion process: conditioned on observations such as camera images, it starts from random noise and denoises step by step into a chunk of future actions. The advantage is that it can represent multimodal actions — when a scene has several equally valid ways to act, it doesn't average them into one wrong action the way direct regression would. The paper also combines this with receding-horizon control (predict a chunk, execute part of it, then re-predict), and beat the best prior methods by an average of 46.9% across 12 tasks in 4 benchmarks. It became an important source for the diffusion and flow-matching action heads later used in models like 3D Diffusion Policy and π0.",
+      "example": "Push-T is its signature task: the robot uses the end of a cylindrical rod to push a T-shaped block on a table into a target position and orientation. Since going around from the left or the right both work, and both appear in the demonstrations, Diffusion Policy learns both, but commits to just one of them on each run.",
+      "related": ["Diffusion Model", "Action Multimodality", "Denoising Diffusion Probabilistic Model", "Action Chunking", "3D Diffusion Policy", "Push-T"]
+    },
+    {
+      "key": "named_model-01#2",
+      "name_en": "Figure Helix",
+      "aliases": ["Helix", "Helix VLA"],
+      "one_liner": "Figure AI's 2025 vision-language-action model for its humanoid robot, using a fast-slow two-system architecture to control the whole upper body.",
+      "explanation": "Helix is a vision-language-action model (VLA — a model that looks at images, listens to instructions, and outputs actions directly) released on February 20, 2025, by the US humanoid-robot company Figure AI for use on its Figure humanoid robots. It uses a fast-slow, two-system design: System 2 is a 7-billion-parameter vision-language model that understands the scene and the language instruction at 7–9Hz and compresses the intent into a latent vector; System 1 is an 80-million-parameter Transformer that turns that latent vector, together with real-time perception, into actions at 200Hz. It controls the entire upper body at once — 35 degrees of freedom, including the wrists, every finger, the torso, and head orientation. Figure says training used only about 500 hours of teleoperation data, that a single set of weights covers many tasks without task-specific fine-tuning, and that the two systems each run on one of two low-power embedded GPUs onboard the robot. Later versions include Helix 02.",
+      "example": "In the launch demo, two Figure robots collaborated on putting away a bag of groceries neither had seen before, following spoken instructions and sorting items into the fridge and drawers.",
+      "related": ["Fast-Slow Dual System", "Vision-Language-Action Model", "Figure AI", "Helix 02", "Figure 02"]
+    },
+    {
+      "key": "named_model-01#3",
+      "name_en": "Gemini Robotics",
+      "aliases": ["Gemini Robotics 1.0"],
+      "one_liner": "Google DeepMind's 2025 VLA built on Gemini 2.0, able to directly control robots for dexterous manipulation.",
+      "explanation": "Gemini Robotics is a vision-language-action model released by Google DeepMind on March 12, 2025, built on top of the Gemini 2.0 multimodal model. Released alongside it, Gemini Robotics-ER focuses on spatial understanding and embodied reasoning, such as object detection and predicting trajectories and grasps. The goal is to bring the general understanding of large models into the physical world, and Google highlighted three properties: generalization (handling new objects, scenes, and instructions, scoring more than twice as well as other leading VLAs at the time on a general-generalization benchmark), interactivity (understanding conversational instructions and adjusting in real time as the environment or instructions change), and dexterity (such as folding origami or packing a snack into a zip-lock bag). It was trained mainly on the bimanual ALOHA 2 platform, but also adapts to Franka arms and Apptronik's Apollo humanoid robot; the technical report says a new task can be fine-tuned with around 100 demonstrations. Later versions include On-Device and 1.5.",
+      "example": "In official demos, an ALOHA 2 bimanual robot running Gemini Robotics folds origami and packs a snack into a zip-lock bag on spoken command; if someone moves the target object mid-task, the robot adjusts its motion and keeps going.",
+      "related": ["Gemini Robotics-ER", "Gemini Robotics 1.5", "Gemini Robotics On-Device", "Vision-Language-Action Model", "ALOHA 2", "Google DeepMind"]
+    },
+    {
+      "key": "named_model-01#4",
+      "name_en": "Mobile ALOHA",
+      "aliases": ["Mobile ALOHA: Learning Bimanual Mobile Manipulation with Low-Cost Whole-Body Teleoperation"],
+      "one_liner": "Stanford's 2024 project that puts the ALOHA bimanual robot on a mobile base for low-cost whole-body teleoperation and imitation learning.",
+      "explanation": "Mobile ALOHA is work published in January 2024 by Zipeng Fu, Tony Zhao, and Chelsea Finn at Stanford, presented at CoRL 2024. It mounts the previously tabletop-fixed ALOHA bimanual platform onto a Tracer mobile base from AgileX Robotics; the operator's waist is linked to the base so that walking moves the base along, while both hands drive the master arms, teleoperating the arms and base together. The full hardware budget is about $32,000. Actions are 16-dimensional: 14 joint positions for the two arms, plus the base's linear and angular velocity. The problem it targets is data collection and learning for mobile manipulation — using both hands while on the move. Another key finding is co-training: training on the new mobile data together with existing stationary ALOHA data raises success rates by up to 90%, using only about 50 demonstrations per task. The policy itself uses off-the-shelf imitation-learning methods such as ACT and Diffusion Policy.",
+      "example": "Mobile ALOHA has autonomously stir-fried shrimp and plated it, opened a two-door cabinet to store a heavy pot, called and boarded an elevator, and rinsed a used pan under a faucet.",
+      "related": ["ALOHA (Bimanual Platform)", "ACT", "Mobile Manipulation", "Co-training", "Whole-Body Teleoperation", "AgileX Robotics"]
+    },
+    {
+      "key": "named_model-01#5",
+      "name_en": "NVIDIA Isaac GR00T N1",
+      "aliases": ["GR00T", "GR00T N1 Series", "GR00T N1.5", "GR00T N1.6", "GR00T N1.7", "Isaac GR00T", "Isaac-GR00T Repository"],
+      "one_liner": "NVIDIA's open humanoid-robot foundation model family, built on a fast-slow architecture and continually updated since its 2025 launch.",
+      "explanation": "GR00T N1 is an open humanoid-robot foundation model (about 2.2 billion parameters) that NVIDIA released at GTC on March 18, 2025, with code under Apache 2.0 and weights under NVIDIA's open model license, both usable commercially. It uses a fast-slow, two-system design: System 2 is a vision-language model (Eagle-2 in N1) that looks at images and understands instructions; System 1 is a diffusion Transformer trained with flow matching that turns this into continuous action chunks, with each robot using its own state and action encoder/decoder. Data is organized as a “data pyramid”: web and human videos at the base, synthetic data from simulation and video models in the middle, and real-robot data at the top. Later releases followed: N1.5 (June 2025) froze the VLM and added a FLARE loss that lets it learn from human videos; N1.6 (December 2025) switched to a Cosmos-family VLM, doubled the action head, and moved to predicting relative actions; N1.7 (from April 2026), at about 3 billion parameters, switched its VLM to Cosmos-Reason2-2B and added pretraining on about 20,000 hours of EgoScale first-person human video.",
+      "example": "NVIDIA provides GR00T-N1.7-3B on Hugging Face along with versions fine-tuned on LIBERO, DROID, and SimplerEnv; the README recommends a GPU with at least 16GB of memory for inference and 40GB or more for fine-tuning.",
+      "related": ["Fast-Slow Dual System", "Data Pyramid", "Flow Matching", "Diffusion Transformer", "NVIDIA GEAR Lab", "EgoScale"]
+    },
+    {
+      "key": "named_model-01#6",
+      "name_en": "OpenVLA",
+      "aliases": ["OpenVLA-7B", "OpenVLA: An Open-Source Vision-Language-Action Model"],
+      "one_liner": "A 7-billion-parameter vision-language-action model that Stanford, UC Berkeley, and collaborators open-sourced in 2024, code and weights included.",
+      "explanation": "OpenVLA was released in June 2024 by researchers from Stanford, UC Berkeley, Toyota Research Institute, Google DeepMind, Physical Intelligence, and MIT, and published at CoRL 2024. It's built on the Prismatic vision-language model: the vision encoder fuses features from SigLIP and DINOv2, the language model is Llama 2 7B, and the total parameter count is about 7 billion. For actions, it follows RT-2's approach of discretizing each action dimension into 256 bins and having the language model predict them as tokens, one at a time. It was trained on 970,000 robot trajectories from the Open X-Embodiment dataset, and beat the 55-billion-parameter closed-source RT-2-X by 16.5 absolute percentage points in success rate across 29 tasks. Just as important, its code and weights are fully open, and it can be fine-tuned on consumer GPUs with LoRA (low-rank adaptation, which trains only a small number of added parameters) — which made it a common starting point and baseline for later VLA research, such as OpenVLA-OFT.",
+      "example": "To adapt OpenVLA to a new robot arm and task, fine-tuning only about 1.4% of its parameters with LoRA achieves results comparable to full-parameter fine-tuning.",
+      "related": ["Vision-Language-Action Model", "RT-2", "Open X-Embodiment Dataset", "Prismatic VLM", "OpenVLA-OFT", "Low-Rank Adaptation"]
+    },
+    {
+      "key": "named_model-01#7",
+      "name_en": "RT-1",
+      "aliases": ["Robotics Transformer 1", "RT-1: Robotics Transformer for Real-World Control at Scale"],
+      "one_liner": "Google's 2022 Transformer policy for real robots, trained on 130,000-plus real-robot demonstrations across 700-plus tasks.",
+      "explanation": "RT-1 is a robot control model released by the Google Robotics team and Everyday Robots in December 2022. At the time, most robot learning trained one small model per task; RT-1 set out to test whether the recipe behind language and vision breakthroughs — a large-capacity model trained on large, diverse data — would also work for robots. The team used 13 mobile manipulators over 17 months to collect more than 130,000 demonstrations across more than 700 tasks. The model takes in images and a language instruction: images go through an EfficientNet feature extractor, FiLM layers (which let the language instruction modulate the visual features) fold in the instruction, TokenLearner compresses the number of tokens, and a Transformer outputs discretized actions, controlling the arm and base in closed loop at 3Hz. It reached 97% success on trained instructions and generalized to new tasks, distractors, and backgrounds better than the baselines of the time. Its data later became part of Open X-Embodiment, and both its architecture and data underpin RT-2.",
+      "example": "In a Google office kitchen environment, RT-1 followed language instructions to pick and place objects, open and close drawers, and put items away in drawers.",
+      "related": ["RT-2", "RT-X", "RT-1 Dataset", "Transformer", "EfficientNet", "TokenLearner"]
+    },
+    {
+      "key": "named_model-01#8",
+      "name_en": "RT-2",
+      "aliases": ["Robotics Transformer 2", "RT-2: Vision-Language-Action Models Transfer Web Knowledge to Robotic Control"],
+      "one_liner": "Google DeepMind's 2023 model that outputs robot actions as text tokens — the paper that coined the term VLA.",
+      "explanation": "RT-2 is a model Google DeepMind released in July 2023, and its paper was the first to use the term “vision-language-action model” (VLA). The approach: take a vision-language model already pretrained on internet image-text data (PaLI-X or PaLM-E), discretize each dimension of a robot action into 256 bins, write them out as a string of number tokens, and have the model output them just like ordinary text. During training, RT-1's robot data is co-fine-tuned together with web-scale visual question-answering data, so the model doesn't lose its existing knowledge. This lets the robot draw directly on commonsense knowledge learned from the web, producing what the paper calls emergent capabilities: recognizing objects and symbols absent from the robot data, and understanding semantic concepts like “the smallest one” or “something that could be used as a hammer.” The model comes in two sizes, 12 billion parameters (PaLM-E version) and 55 billion parameters (PaLI-X version), and it opened the path that later VLA models such as OpenVLA and π0 followed.",
+      "example": "Told to “move the banana to the sum of two plus one,” RT-2 can place the banana on the spot marked 3, even though the robot's own training data contains no such arithmetic task.",
+      "related": ["Vision-Language-Action Model", "RT-1", "PaLM-E", "Co-training", "Bin-based Discretization", "OpenVLA"]
+    },
+    {
+      "key": "named_model-01#9",
+      "name_en": "π0",
+      "aliases": ["pi-zero", "pi0", "π-zero", "π0: A Vision-Language-Action Flow Model for General Robot Control"],
+      "one_liner": "Physical Intelligence's 2024 VLA that generates continuous robot actions with flow matching; code and weights are open-sourced.",
+      "explanation": "π0 is a general-purpose robot foundation model released on October 31, 2024, by the US embodied-AI company Physical Intelligence (PI). It's built on Google's 3-billion-parameter PaliGemma vision-language model, plus an “action expert” of about 300 million parameters that uses flow matching — a method similar to diffusion models that generates continuous values by gradually denoising — to produce the next 50 steps of action in one shot, controlling at up to 50Hz. Unlike RT-2 or OpenVLA, which discretize actions into tokens, this continuous generation suits high-frequency, dexterous tasks like folding laundry better. It was pretrained on more than 10,000 hours of robot data spanning 7 robot embodiments and 68 tasks, mixed with open datasets like OXE and DROID; after pretraining it can follow language instructions directly, and can also be fine-tuned on a small amount of data to learn new skills. PI later open-sourced the code and weights in the openpi repository, and it can run inference and LoRA fine-tuning on a single RTX 4090.",
+      "example": "In the paper's demos, a fine-tuned π0 takes clothes out of a dryer, carries them to a table, and folds each one; it can also assemble cardboard boxes and clear a table.",
+      "related": ["Flow Matching", "Action Expert", "PaliGemma", "π0.5", "π0-FAST", "Physical Intelligence"]
+    },
+    {
+      "key": "named_model-01#10",
+      "name_en": "π0.5",
+      "aliases": ["pi0.5", "pi05", "π0.5: a Vision-Language-Action Model with Open-World Generalization"],
+      "one_liner": "PI's 2025 VLA that handles long-horizon tasks like tidying a kitchen in real homes it has never seen.",
+      "explanation": "π0.5 is the upgraded version of π0 that Physical Intelligence released on April 22, 2025, focused on open-world generalization — getting a robot to work in homes it never visited during training. The approach co-trains on a mix of data sources: roughly 400 hours of mobile-manipulator data collected across about 100 homes makes up only about 2.4% of the pretraining examples, with the rest coming from other robots, lab data, web image-text question answering, and high-level semantic annotations. At inference, the model first predicts the next subtask in words (such as “pick up the plate”), then generates low-level actions conditioned on that — similar to chain-of-thought. During training, the pretraining stage compresses actions into discrete FAST tokens for efficiency, and post-training attaches a flow-matching action expert that outputs continuous actions. The paper tested it in 3 real homes excluded from training, where it completed multistep tasks like tidying a kitchen or straightening a bedroom. The weights were open-sourced in openpi in September 2025.",
+      "example": "Given the instruction “clean the kitchen” in a home it has never visited, π0.5 first states a subtask like “put the plate in the sink,” then executes the corresponding actions, working through the task step by step.",
+      "related": ["π0", "Co-training", "π0-FAST", "Open World", "Long-horizon Task", "π*0.6"]
+    },
+    {
+      "key": "named_model-01#11",
+      "name_en": "3D Diffusion Policy",
+      "aliases": ["DP3", "3D Diffusion Policy: Generalizable Visuomotor Policy Learning via Simple 3D Representations"],
+      "one_liner": "A diffusion policy that takes sparse point clouds as input and learns manipulation from very few demonstrations.",
+      "explanation": "3D Diffusion Policy (DP3) was proposed in March 2024 by researchers at the Shanghai Qi Zhi Institute and Huazhe Xu's group at Tsinghua University's Institute for Interdisciplinary Information Sciences, together with Shanghai Jiao Tong University and the Shanghai AI Lab (first author Yanjie Ze), and published at RSS 2024. Building on Diffusion Policy, it replaces 2D images with a sparse point cloud from a depth camera (a set of points with 3D coordinates) as input, compresses it with a lightweight point-cloud encoder into a compact 3D feature, and denoises actions conditioned on that feature. Because a 3D representation directly captures an object's position and geometry, it's less sensitive to changes in viewpoint or appearance, so it needs fewer demonstrations. The paper used just 10 demonstrations per task across 72 simulated tasks, improving 24.2% over baselines, and 40 demonstrations per task on 4 real-robot tasks, reaching 85% success with very few safety-violating actions. A later extension, iDP3, scales it up to humanoid robots.",
+      "example": "Real-robot experiments included rolling play-dough and folding it into a “dumpling” with an Allegro dexterous hand or a parallel gripper, touching a block with a power drill, and pouring out dried pork floss — each task using 40 demonstrations.",
+      "related": ["Diffusion Policy", "Point Cloud", "Point Cloud Encoder", "iDP3", "Imitation Learning", "Shanghai Qi Zhi Institute"]
+    }
+  ]
+}

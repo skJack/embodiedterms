@@ -1,0 +1,113 @@
+{
+  "batch": "robot-08",
+  "terms": [
+    {
+      "key": "robot-08#0",
+      "name_en": "Dobot Magician",
+      "aliases": [],
+      "one_liner": "A 4-axis desktop arm from Dobot, built for education and entry-level experiments.",
+      "explanation": "Dobot Magician is the desktop-class robot arm from Shenzhen-based Dobot, with 4 axes, meaning degrees of freedom, or independently rotating joints. Published specs: a 500 g maximum payload, a 320 mm maximum reach, repeatability of about 0.2 mm, and a body weighing about 4 kg. It ships with a gripper, suction cup, and pen as interchangeable end effectors, meaning the tools attached at the arm's tip to do the work, and can do pick-and-place, writing and drawing, laser engraving, and 3D printing, with both graphical programming and interfaces such as Python. Its precision and payload are both limited, so it can't do real industrial work, but its low price and small footprint mean it just sits on a desk, and it is widely used by universities and secondary schools for introductory lessons on robot kinematics, pick-and-place, and vision-based sorting.",
+      "example": "In a classroom, a Dobot Magician is paired with a camera to recognize different-colored blocks on the table and sort them into matching zones with its suction cup.",
+      "related": ["Desktop Robot Arm", "Dobot", "Research & Education Market", "Pick-and-Place", "Elephant Robotics myCobot"]
+    },
+    {
+      "key": "robot-08#1",
+      "name_en": "Elephant Robotics myCobot",
+      "aliases": ["myCobot", "myCobot 280"],
+      "one_liner": "A small, inexpensive 6-axis desktop collaborative arm from Elephant Robotics, easy to pick up.",
+      "explanation": "myCobot is the desktop 6-axis collaborative arm series from Shenzhen-based Elephant Robotics; the most common version, the myCobot 280, weighs about 850 g, has a 280 mm working radius, a 250 g payload, and repeatability of about ±0.5 mm, available with different main-controller options, including M5Stack, Raspberry Pi, Arduino, and Jetson. It supports ROS, meaning Robot Operating System, Python, C++, and graphical programming, and is commonly used to learn forward and inverse kinematics, run ROS/MoveIt experiments, and do simple vision-guided grasping. Compared with the Dobot Magician, it has two extra axes, giving the end effector more orientation flexibility, but its payload and precision are both low, so it is really only suited to teaching, demos, and prototyping.",
+      "example": "Using Python to drive a myCobot 280 through a series of preset waypoints, paired with a gripper to move small blocks on a table to a target position.",
+      "related": ["Desktop Robot Arm", "6-Axis Robot Arm", "Collaborative Robot", "Dobot Magician", "SO-100 / SO-101 Arm (LeRobot)", "Robot Operating System"]
+    },
+    {
+      "key": "robot-08#2",
+      "name_en": "OpenArm",
+      "aliases": ["OpenArm 2.0", "Enactic OpenArm"],
+      "one_liner": "An open-source, 7-DoF humanoid robot arm from Enactic, aimed at data collection for contact-rich tasks.",
+      "explanation": "OpenArm is an open-source humanoid robot arm project built and maintained by the company Enactic, with the hardware CAD, firmware, control software, and simulation models all published openly. Each arm has 7 degrees of freedom, scaled to fit a person roughly 160–165 cm tall, using backdrivable, quasi-direct-drive joints, meaning joints a motor can be pushed by an external force, for greater safety on contact, running on a CAN-FD bus; the official specs give a rated payload of 4.1 kg and a peak of 6.0 kg. The project also includes a motor-free leader arm matching the follower's kinematics, used for leader-follower and bilateral teleoperation with force feedback. According to its GitHub documentation, a complete bimanual system costs about $6,500. It is positioned as an open-source dual-arm platform for labs doing imitation learning and VLA data collection, cheaper than an industrial cobot yet more capable than a small servo-driven arm. As of September 2026, the official documentation lists the current version as 2.0.",
+      "example": "A lab builds two sets of OpenArm bimanual rigs, using the matching leader arms to teleoperate and collect laundry-folding demonstrations, then trains a diffusion policy to replay them on the follower arms.",
+      "related": ["Open-source Hardware", "7-DoF Robot Arm", "Dual-arm (Bimanual) Robot", "Leader-Follower Teleoperation", "Quasi-Direct Drive", "Contact-rich Manipulation"]
+    },
+    {
+      "key": "robot-08#3",
+      "name_en": "EngineAI PM01",
+      "aliases": ["PM01"],
+      "one_liner": "A 1.38-meter lightweight bipedal humanoid EngineAI released in late 2024, for research and education.",
+      "explanation": "PM01 is the small bipedal humanoid robot Shenzhen-based EngineAI released in December 2024: about 1.38 meters tall, roughly 40 kg, with 24 degrees of freedom across the body, a waist capable of a large rotation range, reported at 320°, and a walking speed of about 2 m/s. Its commercial and education editions are reported to be priced around RMB 88,000, and an open-source version is also available for custom development. It drew attention for being one of the earlier humanoid robots shown completing a front flip on video. Positioning-wise, PM01 is similar to Unitree's G1: relatively affordable and well-suited to reinforcement-learning locomotion control and sim-to-real experiments at universities and among developers, rather than a product meant to go straight to factory work.",
+      "example": "A university team trains a walking policy for the PM01 with reinforcement learning in Isaac Lab, then deploys it to the real robot for a sim-to-real transfer experiment.",
+      "related": ["EngineAI", "Small-size Humanoid Robot", "Bipedal Robot", "RL-based Locomotion Control", "Unitree G1", "EngineAI SE01"]
+    },
+    {
+      "key": "robot-08#4",
+      "name_en": "EngineAI SE01",
+      "aliases": ["SE01"],
+      "one_liner": "EngineAI's 2024 full-size, 1.7-meter humanoid, known for a walking gait close to a human's.",
+      "explanation": "SE01 is the full-size general-purpose humanoid robot EngineAI released in October 2024: about 170 cm tall, roughly 55 kg, 32 degrees of freedom, a walking speed of about 2 m/s, using in-house harmonic, planetary, and ball-screw joint actuator modules, with a reported peak knee-joint torque of about 186 N·m. Its selling point at launch was using an end-to-end neural network to control its gait, walking with long strides and straight knees, looking noticeably more human than the small-stepped, bent-knee walk common on most humanoids at the time, and the related videos drew considerable online discussion. The company says it targets industrial production lines and home companionship, though in practice it is still used mainly for demonstrations and research partnerships.",
+      "example": "SE01's release video shows it walking down a street with long strides and straight knees, widely compared against the small-stepped, bent-knee gait of earlier humanoid robots.",
+      "related": ["EngineAI", "Full-size Humanoid Robot", "Straight-Knee Walking", "RL-based Locomotion Control", "EngineAI PM01", "EngineAI T800"]
+    },
+    {
+      "key": "robot-08#5",
+      "name_en": "EngineAI T800",
+      "aliases": ["T800"],
+      "one_liner": "EngineAI's late-2025, 1.73-meter high-dynamics humanoid, known for high torque and combat-style demos.",
+      "explanation": "T800 is the full-size general-purpose humanoid robot EngineAI released in early December 2025: 1.73 meters tall, weighing about 75 kg, with a peak coordinated joint torque of 450 N·m, a magnesium-aluminum alloy skeleton, and a solid-state battery, with the company stating 4 to 5 hours of battery life. In China it ships in four configurations, Basic, Open-Source, Pro, and Max, with the Basic edition starting at RMB 180,000. After release, its promotional video's movements looked so fluid that some viewers suspected CGI; the company responded with a video of T800 kicking down CEO Zhao Tongyang, which drew wide attention. It represents a trend among Chinese humanoid makers of using highly dynamic moves, such as kicks and combat sequences, to demonstrate raw hardware power.",
+      "example": "In a December 2025 release video from EngineAI, CEO Zhao Tongyang, wearing protective gear, spars with the T800 and is knocked down by a kick; he later said that without the gear he would “definitely have broken a bone.”",
+      "related": ["EngineAI", "Full-size Humanoid Robot", "Solid-State Battery", "Demo (Demonstration Video)", "CMG Mecha Fighting Series", "EngineAI SE01"]
+    },
+    {
+      "key": "robot-08#6",
+      "name_en": "Engineered Arts Ameca",
+      "aliases": ["Ameca"],
+      "one_liner": "A British humanoid robot from Engineered Arts, known for remarkably lifelike facial expressions.",
+      "explanation": "Ameca is a humanoid robot developed by the British company Engineered Arts, based in Cornwall, built in 2021 and first publicly shown at CES in January 2022. It has a grey rubber face and hands, deliberately designed to be gender-neutral, with a large number of small actuators in its head and face able to produce subtle expressions such as blinking, frowning, and looking surprised; it runs on the company's own Tritium cloud robot-operating software, which can connect to a large language model for conversation. Ameca cannot walk on its own and is used mainly for trade shows, museums, reception duty, and human-robot interaction research. It is often invoked in discussions of the uncanny-valley effect, meaning the unease people feel when something looks almost, but not quite, human, and it also illustrates that humanoid robotics has a branch beyond locomotion and manipulation: expressive interaction.",
+      "example": "At a trade show, Ameca connects to a large language model to converse with visitors, raising an eyebrow and smiling as it answers; the video spread widely on social media.",
+      "related": ["Humanoid Robot", "Hyper-realistic Humanoid Robot (Android)", "Uncanny Valley", "Human-Robot Interaction", "Sophia (Hanson Robotics)", "Guided Tours & Reception"]
+    },
+    {
+      "key": "robot-08#7",
+      "name_en": "Everyday Robots Mobile Manipulator",
+      "aliases": ["EDR", "Google Mobile Manipulator"],
+      "one_liner": "The single-arm wheeled mobile robot used in Google's RT-1 and SayCan work.",
+      "explanation": "This is the wheeled mobile-manipulation robot built by the Everyday Robots team, incubated within Alphabet's X moonshot division: a mobile base on the bottom, a 7-DoF robot arm with a two-finger gripper on top, and a head carrying a camera and other sensors. The team once had over a hundred of these robots wiping tables, sorting trash, and opening doors around Google's own offices. It was the main platform behind Google's robot-learning papers, with SayCan, RT-1, and RT-2 all running experiments on it; RT-1 in particular used 13 of these robots to collect about 130,000 demonstrations over 17 months. In February 2023, the project was shut down as part of Alphabet's broader layoffs earlier that year, with part of the team and its technology folded into Google Research's robotics efforts. The robot itself was never commercialized, but the data it collected, the RT-1 dataset, was incorporated into Open X-Embodiment and continues to have influence today.",
+      "example": "In a SayCan demo, after hearing “I spilled my drink,” the robot planned out finding a sponge and bringing it over, and carried out the steps in the kitchen.",
+      "related": ["Everyday Robots (Alphabet X)", "Mobile Manipulator", "RT-1", "SayCan", "RT-1 Robot Action Dataset (Fractal)", "Google DeepMind"]
+    },
+    {
+      "key": "robot-08#8",
+      "name_en": "Fetch Robotics Fetch",
+      "aliases": ["Fetch", "Fetch Mobile Manipulator"],
+      "one_liner": "A research mobile manipulator from Fetch Robotics, combining a lifting torso and a 7-DoF arm.",
+      "explanation": "Fetch is the research-grade mobile manipulator from the American company Fetch Robotics: a differential-drive base, a torso that lifts up and down, a head that pans and tilts, plus a backdrivable 7-DoF robot arm and a parallel two-finger gripper. The arm uses harmonic-drive reducers paired with frameless motors and has about a 6 kg payload; the base carries a SICK lidar, the head has a depth camera, and it runs ROS. In the mid-to-late 2010s it was a common platform for US universities doing mobile manipulation, grasping, and navigation research, occupying a role similar to the earlier PR2. The company's main business was actually warehouse AMRs, and it was acquired by Zebra Technologies in 2021: Zebra paid about $290 million for the 95% of the company it didn't already own, valuing it at roughly $305 million overall.",
+      "example": "A research group runs MoveIt on a Fetch for grasp planning, having it pull a specified item off a shelf and drive it over to set down on a table.",
+      "related": ["Mobile Manipulator", "Mobile Manipulation", "Willow Garage PR2", "PAL Robotics TIAGo", "7-DoF Robot Arm", "Robot Operating System"]
+    },
+    {
+      "key": "robot-08#9",
+      "name_en": "Figure 01",
+      "aliases": ["Figure One"],
+      "one_liner": "Figure AI's first-generation humanoid, which went viral for a conversational demo made with OpenAI.",
+      "explanation": "Figure 01 is the first-generation bipedal humanoid robot from the US company Figure AI, founded by Brett Adcock in 2022, aimed at physical labor in logistics, warehousing, and manufacturing. Published specs: about 1.68 meters tall, roughly 60 kg, a payload of about 20 kg, about 5 hours of battery life, and exposed cabling for easier maintenance. In January 2024, Figure signed an agreement with BMW to bring humanoid robots into its Spartanburg, South Carolina factory; in March 2024, it released a demo video made in partnership with OpenAI, in which Figure 01 held a spoken conversation with a person while handing them an apple and clearing dishes, which the company said was recorded at normal speed in a single unedited take. In August 2024 it was succeeded by Figure 02, and Figure's partnership with OpenAI also ended in early 2025 as the company shifted to its own in-house model, Helix.",
+      "example": "In the March 2024 demo, when asked “can you give me something to eat,” Figure 01 handed over the only edible item on the table, an apple, and explained why it chose it.",
+      "related": ["Figure AI", "Figure 02", "Figure Helix", "OpenAI", "Full-size Humanoid Robot", "One-Take (Uncut) Video"]
+    },
+    {
+      "key": "robot-08#10",
+      "name_en": "Flexiv Rizon",
+      "aliases": ["Rizon 4", "Rizon 4s"],
+      "one_liner": "Flexiv's 7-axis force-sensing “adaptive” robot arm, well-suited to delicate contact work.",
+      "explanation": "Rizon is the 7-axis “adaptive” robot arm series from Flexiv, with the most common model, the Rizon 4, carrying a 4 kg payload and a reach of about 780 mm. Its defining feature is full-body force sensing: every joint has a torque sensor, paired with high-precision force-control algorithms, letting it sense forces as small as about 0.1 N and perform hybrid force/position control, meaning some directions are position-controlled and others force-controlled, plus multi-point collision detection; the “s” variants add a six-axis force/torque sensor at the wrist. Compared with an ordinary position-only industrial arm, it is well-suited to contact-rich work that needs a “sense of touch,” such as polishing, fitting parts together, and assembly. In embodied-AI research, it is often used as an experimental platform for contact-rich manipulation and force-based policy learning.",
+      "example": "Doing a peg-in-hole insertion with a Rizon 4: vision first roughly aligns the peg with the hole, and then impedance control feels the contact forces as it pushes the peg the rest of the way in.",
+      "related": ["Flexiv Robotics", "7-DoF Robot Arm", "Force Control", "Joint Torque Sensor", "Contact-rich Manipulation", "Hybrid Force/Position Control"]
+    },
+    {
+      "key": "robot-08#11",
+      "name_en": "Foundation Robotics Phantom",
+      "aliases": ["Phantom", "Phantom MK1"],
+      "one_liner": "A full-size humanoid from the US company Foundation, explicitly aimed at industrial and military high-risk tasks.",
+      "explanation": "Phantom is the full-size humanoid robot from Foundation, formally Foundation Robotics, a San Francisco startup founded by Sankaet Pathak in 2023; the current model is the Phantom MK1. It is reported to stand about 1.75 meters tall and weigh about 80 kg, using in-house backdrivable cycloidal actuators, and relies mainly on cameras for sensing rather than lidar. Unlike most humanoid companies, which focus on factories or the home, Foundation has openly named defense as a priority direction, with target tasks including reconnaissance and bomb disposal, meaning “send the robot in first” high-risk work, while stating that humans retain lethal decision-making authority. The company has set an aggressive production target: it is reported to plan deploying about 10,000 units in 2026 and reaching a cumulative 50,000 by the end of 2027, at a reported lease price of about $100,000 per unit per year. These are plans, not figures already achieved.",
+      "example": "Foundation envisions Phantom entering a suspicious area first in a bomb-disposal scenario to inspect and handle it, with an operator supervising from a distance.",
+      "related": ["Foundation Robotics", "Full-size Humanoid Robot", "Special-purpose Robot", "Cycloidal Reducer", "Vision-Only Approach", "Robot Rental"]
+    }
+  ]
+}

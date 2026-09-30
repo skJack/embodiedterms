@@ -1,0 +1,234 @@
+{
+ "batch": "model-03",
+ "terms": [
+  {
+   "key": "model-03#0",
+   "name_en": "Vision-Language-Action Model",
+   "aliases": [
+    "VLA",
+    "VLA Model"
+   ],
+   "one_liner": "A large model that looks at images, understands language instructions, and directly outputs robot actions.",
+   "explanation": "A vision-language-action model takes camera images and a natural-language instruction as input and directly outputs robot control actions, usually built by taking a pretrained vision-language model, a large model that can look at images and answer questions, and training it further on robot data. The name comes from Google DeepMind's RT-2 paper in July 2023: it writes actions as text tokens and trains them together with web image-text data, letting the robot draw on internet knowledge to handle objects and instructions it has never seen. Since then there has been the open-source OpenVLA (7B parameters, trained on 970,000 robot demonstrations), and Physical Intelligence's π0, which generates continuous action chunks with flow matching. The main difference between them is how actions get output: discrete tokens, a diffusion or flow-matching action head, or some mix of the two.",
+   "example": "Given a tabletop photo and the instruction “put the eggplant in the pot,” OpenVLA outputs 7 action tokens, which get decoded into the arm end-effector's translation, rotation, and gripper open/close.",
+   "related": [
+    "Vision-Language Model",
+    "RT-2",
+    "OpenVLA",
+    "π0",
+    "Action Tokenizer",
+    "Action Expert"
+   ]
+  },
+  {
+   "key": "model-03#1",
+   "name_en": "World Model",
+   "aliases": [
+    "WM",
+    "World Simulator"
+   ],
+   "one_liner": "A model that predicts what the world will look like after a given action is taken.",
+   "explanation": "A world model is one that has learned how an environment changes: given the current state or frame and an action, it predicts the next state or frame. Ha and Schmidhuber's 2018 paper “World Models” popularized the term: it compresses game frames into a low-dimensional vector with a variational autoencoder, then uses a recurrent network to predict the next step, letting an agent learn a policy inside the model's generated “dream” and transfer it back to the real game. Today the term covers models that predict purely in latent space, meaning compressed features, such as DreamerV3, which serves reinforcement learning, and Meta's V-JEPA 2, used for robot planning, as well as large models that directly generate video frames, such as Google DeepMind's Genie 3 and NVIDIA's Cosmos. In embodied AI, world models are used to generate synthetic training data, evaluate policies “in imagination,” and plan, all to cut down on real-robot trial and error.",
+   "example": "Genie 3, released in August 2025, generates a 720p, 24-frames-per-second scene from a text description; as the user presses direction keys to move around, it generates what comes next in real time, and can remember what it saw roughly a minute earlier.",
+   "related": [
+    "Latent World Model",
+    "World Foundation Model",
+    "World Action Model",
+    "NVIDIA Cosmos World Foundation Models",
+    "Genie 3 (Google DeepMind real-time interactive world model)",
+    "Model-Based Reinforcement Learning"
+   ]
+  },
+  {
+   "key": "model-03#2",
+   "name_en": "Action Binning",
+   "aliases": [
+    "Action Discretization",
+    "Bucketing"
+   ],
+   "one_liner": "Dividing each continuous action dimension into equal bins and using the bin number as a discrete token.",
+   "explanation": "Action binning is the simplest way to turn a continuous robot action into a discrete symbol: for each action dimension, such as end-effector x-displacement or gripper open/close, define a value range, divide it into equal bins, and use the bin a value falls into to represent it. RT-2 splits each dimension into 256 bins and maps each bin number onto a token in the language model's vocabulary, so actions can be predicted the same way text is. OpenVLA keeps 256 bins too, but uses the 1st and 99th percentile of the training data instead of the true minimum and maximum to set the range, so a few outliers don't stretch the bins and hurt precision. The downside is that every timestep and every dimension needs its own token, and at high control frequency, neighboring tokens are highly correlated, giving the model a lot of redundant, hard-to-learn tokens, which is exactly what compressive action tokenizers such as FAST were built to fix.",
+   "example": "If x-axis displacement ranges from −2 to 2 centimeters and is split into 256 bins, each bin is about 0.016 centimeters wide, so 0.5 centimeters would fall into bin number 160.",
+   "related": [
+    "Action Tokenizer",
+    "Action Representation",
+    "Discrete Cosine Transform",
+    "RT-2",
+    "OpenVLA",
+    "π0-FAST"
+   ]
+  },
+  {
+   "key": "model-03#3",
+   "name_en": "Action Horizon",
+   "aliases": [
+    "Prediction Horizon",
+    "Execution Horizon",
+    "Observation Horizon"
+   ],
+   "one_liner": "How many steps of history a policy looks at, how many steps of action it predicts, and how many it actually executes.",
+   "explanation": "Action horizon describes how far a policy looks, in time, in both directions. The Diffusion Policy (2023) paper splits it into three quantities: the observation horizon To, how many recent steps of observation are fed in; the prediction horizon Tp, how many steps of action get generated in one shot; and the execution horizon Ta, how many of those actually get sent to the robot before replanning, called receding-horizon control. After executing Ta steps, the policy re-observes and predicts again. A longer Ta means smoother, more coherent motion and fewer inference calls, but a slower reaction to sudden changes; a shorter Ta is more responsive but can jitter. The paper found 8 steps worked best for most tasks, and the open-source code defaults to To=2, Tp=16, Ta=8. What VLAs call chunk size roughly corresponds to the prediction horizon.",
+   "example": "π0 predicts 50 steps of action at once: on a 50Hz robot, it executes only the first 25 steps, 0.5 seconds, before re-running inference with new images, while on a 20Hz UR5e it re-infers every 16 steps.",
+   "related": [
+    "Action Chunking",
+    "Temporal Ensembling",
+    "Diffusion Policy",
+    "Asynchronous Inference",
+    "Closed-loop Control",
+    "Real-Time Chunking"
+   ]
+  },
+  {
+   "key": "model-03#4",
+   "name_en": "Action Representation",
+   "aliases": [
+    "Action Parameterization"
+   ],
+   "one_liner": "The quantity, reference frame, and format used to describe what action a robot should take.",
+   "explanation": "Action representation is how a policy's output action gets written down, one of the first things to settle when building a robot-learning system. It involves several choices: what quantity to control (joint angle, end-effector pose, or velocity or torque instead); what it's relative to (a fixed global frame, an increment relative to the last step, or a whole segment relative to the current pose); how to write rotation (Euler angles, quaternions, or the 6D representation, which is more continuous and easier for a neural network to learn); and the output format (continuous values, discrete tokens, or a more abstract intermediate representation such as a latent action or trajectory points). Swapping one action representation for another, with the same model, can change success rate a great deal, so papers usually spell this choice out explicitly and compare alternatives.",
+   "example": "The UMI paper compares these on a cup-pouring task: a whole trajectory relative to the current end-effector pose succeeds 20 out of 20 times, step-by-step increments, whose errors accumulate, succeed 16 out of 20, and a global absolute-coordinate representation succeeds only 5 out of 20.",
+   "related": [
+    "Action Space",
+    "Delta (Relative) Action vs. Absolute Action",
+    "6D Rotation Representation",
+    "Action Tokenizer",
+    "Latent Action",
+    "End-Effector Pose"
+   ]
+  },
+  {
+   "key": "model-03#5",
+   "name_en": "Action Tokenizer",
+   "aliases": [
+    "Action Tokenization",
+    "Action Token"
+   ],
+   "one_liner": "A module that encodes continuous actions into discrete tokens and decodes them back into actions at inference time.",
+   "explanation": "An action tokenizer converts a continuous action, usually a whole action chunk, into discrete tokens, and decodes them back into an executable action at inference time, letting a VLA output actions the same way it predicts the next token. The simplest version is per-dimension binning, as in RT-2 and OpenVLA's 256 bins per dimension, but with high-frequency data, actions at neighboring timesteps are nearly identical, so binning produces a lot of redundant tokens the model struggles to learn from. FAST, proposed by Physical Intelligence and others in January 2025, instead applies a discrete cosine transform, DCT, converting a signal into the frequency domain, to each action dimension, quantizes it, and compresses it with byte-pair encoding (BPE), cutting π0's training time to about a fifth. Another line of work learns a discrete action codebook using vector quantization (VQ).",
+   "example": "One second of 50Hz action data for folding a T-shirt needs 700 tokens with per-dimension binning, but only 53 tokens after FAST compression.",
+   "related": [
+    "Action Binning",
+    "Discrete Cosine Transform",
+    "Byte-Pair Encoding",
+    "Vector Quantization",
+    "π0-FAST",
+    "Action Representation"
+   ]
+  },
+  {
+   "key": "model-03#6",
+   "name_en": "Activation Function",
+   "aliases": [
+    "ReLU",
+    "GELU",
+    "SiLU",
+    "SwiGLU"
+   ],
+   "one_liner": "The nonlinear function after each layer's linear transform, letting a network fit complex relationships.",
+   "explanation": "An activation function follows every linear transform in a neural network's layers; without it, stacking layers would still amount to just one linear transform, no matter how many layers there are. A few are common: ReLU zeroes out negative numbers and passes positive ones through unchanged, is cheap to compute, and was the default choice through the convolutional-network era. GELU, defined by Hendrycks and Gimpel in 2016 as x times Φ(x), where Φ is the standard normal distribution's cumulative distribution function, is common in Transformers such as BERT and ViT. SiLU, also called Swish, is x times sigmoid(x). SwiGLU, proposed by Shazeer in 2020, is a gated-linear-unit variant that multiplies two linear projections element-wise, with one of them passed through Swish first. Llama, for instance, replaced ReLU with SwiGLU in its Transformer feed-forward layers.",
+   "example": "For inputs −1, 0.5, and 2, ReLU outputs 0, 0.5, and 2; GELU outputs about −0.16, 0.35, and 1.95, no longer chopping negative numbers straight down to zero.",
+   "related": [
+    "Multilayer Perceptron",
+    "Transformer",
+    "Neural Network",
+    "Normalization Layers (LayerNorm / RMSNorm / BatchNorm)",
+    "Vanishing / Exploding Gradients",
+    "Llama"
+   ]
+  },
+  {
+   "key": "model-03#7",
+   "name_en": "Asynchronous Inference",
+   "aliases": [
+    "Async Inference"
+   ],
+   "one_liner": "The robot keeps executing the current action chunk while the model computes the next one, with no pause between.",
+   "explanation": "Asynchronous inference splits “the model computing an action” and “the robot executing an action” into two parallel processes. In synchronous inference, the robot has to stop and wait once it finishes executing an action chunk until the model computes the next one, and the pause grows more noticeable the bigger the model. The asynchronous approach instead sends the latest observation to the model once the action queue drops below some threshold, so the next chunk finishes computing before the current one runs out, with the overlapping portion merged according to some rule. Hugging Face introduced this mechanism alongside SmolVLA in June 2025, splitting LeRobot into a PolicyServer that runs the model and a RobotClient that controls the robot. The hard part is stitching chunks together: a new chunk is computed from a slightly earlier observation, so switching directly can cause a jump in motion, which is exactly what Physical Intelligence's real-time chunking (RTC) was designed to handle.",
+   "example": "In LeRobot, with each inference outputting 50 steps of action and a threshold of 0.5, once fewer than 25 steps remain in the queue, the client sends a new image to the server, and the overlapping portion is merged with a weighted average.",
+   "related": [
+    "Inference Latency",
+    "Action Chunking",
+    "Real-Time Chunking",
+    "Policy Server (Remote Inference)",
+    "SmolVLA",
+    "LeRobot"
+   ]
+  },
+  {
+   "key": "model-03#8",
+   "name_en": "Autoencoder",
+   "aliases": [
+    "AE"
+   ],
+   "one_liner": "A network that compresses input into a short vector and then reconstructs it, learning what matters most in the data.",
+   "explanation": "An autoencoder consists of an encoder and a decoder: the encoder compresses input, such as an image, into a low-dimensional vector, and the decoder reconstructs the input from that vector, trained so the reconstruction is as close as possible to the original, with no human labels needed. Because the middle vector is smaller than the input, the network is forced to keep only the most important information, which is why it's commonly used for dimensionality reduction and feature learning. The idea goes back decades in neural networks, to work such as LeCun's in 1987. Common variants include the variational autoencoder (VAE), which makes the middle vector follow a probability distribution so new samples can be generated; the masked autoencoder (MAE), which hides part of the input and reconstructs it, used for visual pretraining; and VQ-VAE, which replaces the vector with a discrete index into a codebook. In embodied AI, latent diffusion models, video tokenizers, and latent action models all use this to compress high-dimensional data into a latent space before processing it.",
+   "example": "“World Models” used a convolutional VAE to compress every frame of a racing-game screen into a 32-dimensional vector, so the prediction model downstream only ever operates on those 32 numbers.",
+   "related": [
+    "Variational Autoencoder",
+    "Conditional Variational Autoencoder",
+    "Masked Autoencoder",
+    "Vector-Quantized Variational Autoencoder",
+    "Latent Space",
+    "Latent Diffusion Model"
+   ]
+  },
+  {
+   "key": "model-03#9",
+   "name_en": "Causal Attention",
+   "aliases": [
+    "Causal Mask",
+    "Masked Self-Attention"
+   ],
+   "one_liner": "Attention where each position can only see itself and earlier positions, never anything that comes after.",
+   "explanation": "Causal attention adds a mask to self-attention that sets the attention score for any “future” position to negative infinity, so each token can only attend to itself and the tokens before it. It comes from the decoder in the original 2017 Transformer paper, and it is what guarantees autoregressive behavior: the whole sequence is fed in at once during training, but predicting position i still only ever depends on what comes before it. Decoder-only language models such as GPT and Llama all use it, and so do VLAs built on them when generating action tokens one at a time. Its counterpart is bidirectional attention, where every position can see every other position, used by BERT and ViT. The two are also often mixed: π0 uses a block-causal mask, splitting the input into three blocks — image/language, robot state, and noisy action — where tokens within a block can all see each other, but each block can only see itself and the blocks before it.",
+   "example": "In the sequence “pick up cup,” when the model computes the representation for “cup,” it can only attend to “pick,” “up,” and “cup” itself; anything after “cup” is blocked by the mask.",
+   "related": [
+    "Self-Attention",
+    "Attention Mask",
+    "Decoder-only Architecture",
+    "Autoregressive Decoding",
+    "Key-Value Cache",
+    "Transformer"
+   ]
+  },
+  {
+   "key": "model-03#10",
+   "name_en": "Chain-of-Thought",
+   "aliases": [
+    "CoT",
+    "Chain-of-Thought Reasoning",
+    "Chain-of-Thought Prompting"
+   ],
+   "one_liner": "Having a model write out a series of intermediate reasoning steps before giving its final answer.",
+   "explanation": "Chain-of-thought means a model generates a series of intermediate reasoning steps before producing its answer. In 2022, Google's Wei and colleagues proposed “chain-of-thought prompting”: just putting a few examples with reasoning steps in the prompt gets a large model to imitate step-by-step thinking; prompting a 540-billion-parameter PaLM with 8 such examples reached the best result at the time on the math-word-problem benchmark GSM8K. Later it moved from a prompting trick to a training objective, with reasoning models such as OpenAI's o1 and DeepSeek-R1 using reinforcement learning to train longer chains of thought. Robotics has adopted the idea in VLAs: Embodied Chain-of-Thought (ECoT, 2024) has the model first write out a task plan, sub-task, action description, and object detection boxes before outputting the action, raising OpenVLA's success rate on generalization tasks by 28 percentage points absolute.",
+   "example": "Given “put the spoon on the towel,” an ECoT-style model first writes out a plan, grab the spoon, move it above the towel, release, the current sub-task, and the spoon's detection box, and only then outputs the action tokens.",
+   "related": [
+    "Embodied Chain-of-Thought",
+    "Visual Chain-of-Thought",
+    "Reasoning",
+    "Embodied Reasoning",
+    "CoT-VLA",
+    "Large Language Model"
+   ]
+  },
+  {
+   "key": "model-03#11",
+   "name_en": "Conditional Variational Autoencoder",
+   "aliases": [
+    "CVAE",
+    "Conditional VAE"
+   ],
+   "one_liner": "A VAE that learns an output distribution given a condition, so the same input can generate several valid outputs.",
+   "explanation": "A conditional variational autoencoder extends the variational autoencoder (VAE): both the encoder and decoder additionally take a condition, such as the current observation, and the model learns the distribution of outputs given that condition, rather than one single answer. It was proposed by Sohn, Lee, and Yan at NeurIPS 2015, originally for structured-output prediction tasks such as image segmentation. During training, the encoder sees the real output, compresses its “style” into a latent variable z, and the decoder reconstructs the output from the condition and z; at inference, z is instead drawn from the prior. Imitation learning uses it to handle the variety in demonstrations: for the same scene, different people might take different paths, and ordinary regression would average several valid approaches into one wrong action. ACT (2023) has the encoder take the joint positions and target action sequence to get z, and at test time drops the encoder and just sets z to the prior mean of 0.",
+   "example": "ACT uses a CVAE to predict a 100-step action chunk at once, and with only about 10 minutes of demonstration data, performs fine-motor tasks on a low-cost dual-arm setup with an 80% to 90% success rate.",
+   "related": [
+    "Variational Autoencoder",
+    "ACT",
+    "Action Multimodality",
+    "Action Chunking",
+    "Generative Model",
+    "Autoencoder"
+   ]
+  }
+ ]
+}

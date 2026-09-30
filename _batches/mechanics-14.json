@@ -1,0 +1,204 @@
+{
+  "category": "mechanics",
+  "batch": 14,
+  "terms": [
+    {
+      "name_zh": "罗德里格斯公式",
+      "name_en": "Rodrigues' Rotation Formula",
+      "abbr": "",
+      "aliases": ["罗德里格旋转公式", "罗德里格斯旋转公式", "欧拉有限旋转公式"],
+      "tier": 3,
+      "one_liner": "已知旋转轴和转角，直接算出三维旋转矩阵的公式。",
+      "explanation": "罗德里格斯公式以法国数学家 Olinde Rodrigues 命名（他在 1840 年发表了相关结果），也有学者认为应归功于欧拉。它回答一个问题：绕单位向量 k 表示的轴转 θ 角，对应的旋转矩阵是什么。矩阵形式为 R = I + sinθ·K + (1−cosθ)·K²，其中 I 是 3×3 单位矩阵，K 是 k 的反对称矩阵（K 乘任意向量 v 等于叉乘 k×v）。它把轴角表示（用一根轴加一个角描述旋转）换成旋转矩阵，本质上是旋转群 SO(3) 上指数映射的闭式解：exp(θK) 的无穷级数正好化简成这三项。机器人里用得很多，比如用指数积公式算正运动学、把轴角形式的动作转成姿态；OpenCV 里把旋转向量转成旋转矩阵的函数就叫 cv2.Rodrigues。",
+      "example": "绕 z 轴（k = (0,0,1)）转 90°：sin90° = 1，cos90° = 0，代入得 R = I + K + K²，算出来把 x 轴方向 (1,0,0) 转到 y 轴方向 (0,1,0)，和直觉一致。",
+      "related": ["轴角", "旋转矩阵", "反对称矩阵", "指数映射", "特殊正交群 SO(3)", "指数积公式"],
+      "sources": [
+        {"title": "Wikipedia: Rodrigues' rotation formula", "url": "https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula"},
+        {"title": "Wikipedia: Olinde Rodrigues", "url": "https://en.wikipedia.org/wiki/Olinde_Rodrigues"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "旋量理论",
+      "name_en": "Screw Theory",
+      "abbr": "",
+      "aliases": ["螺旋理论", "旋量", "螺旋轴", "Screw Axis", "Theory of Screws"],
+      "tier": 3,
+      "one_liner": "把刚体任意运动看成绕某根轴转动、同时沿该轴平移的数学框架。",
+      "explanation": "旋量理论研究刚体运动和受力的几何。1763 年 Mozzi 证明，任何刚体运动都可以看成绕一根轴转动、同时沿这根轴平移，像拧螺丝一样，这根轴叫螺旋轴（这一结论后来称为 Chasles 定理）；1876 年 Robert Ball 出版《旋量理论》，把它系统化。核心是两个 6 维量：运动旋量（twist，角速度 ω 和线速度 v 拼在一起）描述刚体速度，力旋量（wrench，力矩和力拼在一起）描述受力。好处是转动关节和移动关节都能统一写成一根螺旋轴，不必像 DH 参数那样在每个连杆上都建坐标系。Brockett 在 1983–1984 年据此提出指数积公式；Lynch 与 Park 的教材《Modern Robotics》（2017）用这套语言讲运动学、雅可比和动力学。",
+      "example": "拧螺丝时螺丝刀每转一圈，螺钉沿轴前进一个螺距，这就是一次旋量运动。机械臂的转动关节是螺距为 0 的旋量（只转不移），移动关节可看成螺距无穷大的旋量（只移不转）。",
+      "related": ["运动旋量（速度旋量）", "力旋量", "指数积公式", "李群", "指数映射", "伴随变换"],
+      "sources": [
+        {"title": "Wikipedia: Screw theory", "url": "https://en.wikipedia.org/wiki/Screw_theory"},
+        {"title": "Wikipedia: Product of exponentials formula", "url": "https://en.wikipedia.org/wiki/Product_of_exponentials_formula"},
+        {"title": "Modern Robotics: Mechanics, Planning, and Control (Lynch & Park)", "url": "http://hades.mech.northwestern.edu/index.php/Modern_Robotics"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "单刚体动力学模型",
+      "name_en": "Single Rigid Body Dynamics Model",
+      "abbr": "SRBD",
+      "aliases": ["单刚体模型", "SRB 模型", "SRBM", "Single Rigid Body Model"],
+      "tier": 3,
+      "one_liner": "把腿足机器人整机当成一个刚体、忽略腿部质量的简化动力学模型。",
+      "explanation": "单刚体动力学模型是腿足机器人控制里最常用的简化模型之一：假设腿很轻，把整机当成一个有质量和转动惯量的刚体，只受重力和几只脚上的地面反作用力。状态通常取机身的位置、姿态、线速度和角速度（共 12 维），控制量是各脚的接触力。完整模型有几十个关节、方程高度非线性，SRBD 把它压缩成少数几个方程，便于实时优化。代表工作是 MIT 的 Di Carlo 等人 2018 年在 Cheetah 3 上做的凸 MPC：再假设姿态转角较小，把地面反作用力规划写成凸优化，以 20–30 Hz 的频率规划未来最多 0.5 秒，单次求解不到 1 毫秒；算出的力再交给全身控制或关节控制去执行。它比倒立摆模型多考虑了姿态和转动，但不管腿怎么摆。",
+      "example": "MIT Cheetah 3 用单刚体凸 MPC 实现了站立、小跑、飞跑、四足齐跳（pronk）、跳跃步态（bound）、踱步、三足步态和三维疾驰，前进速度最高 3 m/s，全部用同一组增益和权重（Di Carlo 等，IROS 2018）。",
+      "related": ["凸 MPC", "模型预测控制", "质心动力学", "地面反作用力", "全身控制", "线性倒立摆模型"],
+      "sources": [
+        {"title": "Di Carlo et al., Dynamic Locomotion in the MIT Cheetah 3 Through Convex Model-Predictive Control (IROS 2018)", "url": "https://www.semanticscholar.org/paper/608d53fcd69173d30914e29d9b8ca4b37efe9ac4"},
+        {"title": "Lin et al., Learning Near-global-optimal Strategies for Hybrid Non-convex MPC of Single Rigid Body Locomotion (arXiv:2207.07846)", "url": "https://arxiv.org/abs/2207.07846"},
+        {"title": "Kim et al., Highly Dynamic Quadruped Locomotion via Whole-Body Impulse Control and Model Predictive Control (arXiv:1909.06586)", "url": "https://arxiv.org/abs/1909.06586"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "反对称矩阵",
+      "name_en": "Skew-Symmetric Matrix",
+      "abbr": "",
+      "aliases": ["斜对称矩阵", "叉乘矩阵", "hat 算子", "Cross-Product Matrix", "[ω]×"],
+      "tier": 3,
+      "one_liner": "转置等于自身相反数的矩阵；3×3 时能把叉乘写成矩阵乘法。",
+      "explanation": "反对称矩阵满足 Aᵀ = −A，对角线全为 0。机器人学里最常用的是 3×3 的情形：给定向量 ω = (ω₁, ω₂, ω₃)，构造矩阵 [ω] = [[0, −ω₃, ω₂], [ω₃, 0, −ω₁], [−ω₂, ω₁, 0]]，则 [ω]v 恰好等于叉乘 ω×v。把向量变成这个矩阵的操作叫 hat（记作 ω^ 或 [ω]×），反过来从矩阵取回向量叫 vee。它的重要性在于：所有 3×3 反对称矩阵组成旋转群 SO(3) 的李代数 so(3)，可以理解为「无穷小旋转」；对它取矩阵指数就得到旋转矩阵，闭式结果就是罗德里格斯公式。推导角速度、旋转矩阵的导数、雅可比矩阵时都会反复用到它。",
+      "example": "取 ω = (0,0,1)（绕 z 轴的单位角速度），v = (1,0,0)：[ω]v = (0,1,0)，和叉乘 ω×v 结果相同，意思是 x 轴上那个点此刻正朝 y 方向运动。",
+      "related": ["罗德里格斯公式", "旋转矩阵", "特殊正交群 SO(3)", "李群", "指数映射", "旋量理论"],
+      "sources": [
+        {"title": "Wikipedia: Skew-symmetric matrix", "url": "https://en.wikipedia.org/wiki/Skew-symmetric_matrix"},
+        {"title": "Wikipedia: Rodrigues' rotation formula", "url": "https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "空间向量代数",
+      "name_en": "Spatial Vector Algebra",
+      "abbr": "",
+      "aliases": ["空间向量", "6D 空间向量", "空间代数", "Spatial Algebra"],
+      "tier": 3,
+      "one_liner": "把角量和线量合成 6 维向量来算多刚体动力学的记号体系。",
+      "explanation": "空间向量代数由 Roy Featherstone 系统整理，是他的著作《Rigid Body Dynamics Algorithms》的数学基础。做法是把刚体的角速度和线速度拼成一个 6 维「运动向量」，把力矩和力拼成一个 6 维「力向量」，惯性也写成 6×6 的空间惯量矩阵，于是描述平动的牛顿方程和描述转动的欧拉方程可以合并成一条 6 维方程。运动向量和力向量是两类不同的量，各有对应的叉乘运算；它们和旋量理论里的运动旋量、力旋量本质相同。好处是公式短、坐标变换统一，递归算法写起来很规整：递归牛顿-欧拉算法（RNEA，算逆动力学）、铰接体算法（ABA，算正动力学）、复合刚体算法（CRBA，算质量矩阵）都用这套记号。Pinocchio 等动力学库都建立在 Featherstone 的算法之上。",
+      "example": "一个正在空中翻转的机身，速度写成 6 维向量：按 Featherstone 的约定前 3 维是角速度、后 3 维是线速度（有的库顺序相反，读代码时要留意）。从父连杆坐标系换到子连杆坐标系时，只需乘一个 6×6 变换矩阵，角速度和线速度一起换好。",
+      "related": ["递归牛顿-欧拉算法", "铰接体算法", "复合刚体算法", "运动旋量（速度旋量）", "力旋量", "Pinocchio"],
+      "sources": [
+        {"title": "Roy Featherstone: Spatial Vectors and Rigid-Body Dynamics", "url": "https://royfeatherstone.org/spatial/"},
+        {"title": "Roy Featherstone: spatial_v2 software (accompanies Rigid Body Dynamics Algorithms)", "url": "https://royfeatherstone.org/spatial/v2/index.html"},
+        {"title": "Pinocchio (GitHub)", "url": "https://github.com/stack-of-tasks/pinocchio"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "球形手腕",
+      "name_en": "Spherical Wrist",
+      "abbr": "",
+      "aliases": ["球腕", "三轴交于一点手腕", "Pieper 准则", "321 构型"],
+      "tier": 3,
+      "one_liner": "机械臂最后三个转动关节的轴线交于一点的手腕结构。",
+      "explanation": "球形手腕指 6 自由度机械臂最后三个转动关节的轴线交于同一点（腕心），效果类似一个球关节：只改变末端朝向，不改变腕心位置。Donald Pieper 在 1968 年的斯坦福博士论文中证明，有 6 个转动关节、且其中三个相邻关节轴线交于一点的串联机械臂，逆运动学可以写出闭式解（后人称为 Pieper 准则）。原因是位置和姿态可以解耦：先由目标位姿倒推出腕心位置，用前三个关节把腕心送到位；再用后三个关节凑出要求的朝向。这样逆解能直接用公式算，不必迭代，还能列出全部解（这类构型最多可达 8 组）。许多工业六轴机械臂都采用「正交平行基座 + 球形手腕」的布局，PUMA 560 是经典例子。",
+      "example": "给这类机械臂一个目标位姿：先沿末端工具方向往回退一段固定长度，得到腕心应在的位置，用前三个关节把腕心送过去；再算后三个关节角，把夹爪转到要求的朝向。",
+      "related": ["逆运动学", "解析逆解", "六轴机械臂", "IKFast", "DH参数", "奇异位形"],
+      "sources": [
+        {"title": "Wikipedia: Donald L. Pieper", "url": "https://en.wikipedia.org/wiki/Donald_L._Pieper"},
+        {"title": "Wikipedia: Inverse kinematics", "url": "https://en.wikipedia.org/wiki/Inverse_kinematics"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "弹簧负载倒立摆",
+      "name_en": "Spring-Loaded Inverted Pendulum",
+      "abbr": "SLIP",
+      "aliases": ["弹簧倒立摆", "弹簧-质量模型", "Spring-Mass Model", "SLIP 模型"],
+      "tier": 3,
+      "one_liner": "用一个质点加一根无质量弹簧腿来描述跑和跳的简化模型。",
+      "explanation": "弹簧负载倒立摆是描述跑步、跳跃的经典简化模型：身体缩成一个质点，腿是一根没有质量的弹簧。着地的支撑相里，弹簧先被压缩储能、再伸长把身体弹起；离地的腾空相里，质点只受重力做抛体运动，两相交替。生物力学研究（如 Blickhan 与 Full 1993 年的工作）发现，从昆虫到人类，多种动物奔跑时的质心运动都能用它描述。它和普通倒立摆的区别在于腿长可变、能储存和释放弹性能，所以能表现带腾空的跑跳，而线性倒立摆更适合描述步行。在机器人里，SLIP 常被当作「模板」：先在这个低维模型上规划着地角、腿刚度等参数，再映射到真实机器人；RHex 等腿足机器人的设计就参考了 SLIP 动力学。",
+      "example": "人跑步时，脚着地后膝踝弯曲、重心下沉（相当于弹簧被压缩），随后蹬伸把身体送进腾空；SLIP 只用质量、腿长、弹簧刚度和着地角几个参数，就能复现这种一沉一起的重心轨迹。",
+      "related": ["倒立摆模型", "线性倒立摆模型", "双足行走", "腾空相", "步态", "被动动力学行走"],
+      "sources": [
+        {"title": "Truax et al., Optimizing Design and Control of Running Robots Abstracted as TD-SLIP (arXiv:2407.12120)", "url": "https://arxiv.org/abs/2407.12120"},
+        {"title": "Chen, Wensing, Zhang, Optimal Control of a Differentially Flat 2D Spring-Loaded Inverted Pendulum Model (arXiv:1911.07168)", "url": "https://arxiv.org/abs/1911.07168"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "静摩擦与 Stribeck 效应",
+      "name_en": "Static Friction (Stiction) and Stribeck Effect",
+      "abbr": "",
+      "aliases": ["Stiction", "最大静摩擦", "Stribeck 曲线", "斯特里贝克效应", "Stribeck 摩擦"],
+      "tier": 3,
+      "one_liner": "起动前要先克服较大的静摩擦，刚动起来后摩擦反而先变小。",
+      "explanation": "静摩擦（stiction，static 与 friction 的合成词）指两个接触面相对静止时，要让它们开始相对运动必须克服的那股力；最大静摩擦通常比滑动起来之后的动摩擦大。Stribeck 效应得名于德国工程师 Richard Stribeck，他在 1901–1902 年发表的润滑轴承实验表明：有润滑的接触里，摩擦力并不随速度保持恒定，而是从静止起先下降，到某个速度降到最低，再随速度上升（上升段主要来自黏性摩擦）。画成摩擦-速度图就是 Stribeck 曲线。对机器人来说，减速器和关节在低速、换向时摩擦变化最剧烈，容易出现「卡住—突然冲出—再卡住」的黏滑现象，造成低速爬行和小幅定位误差。做关节摩擦补偿或参数辨识时，常用「库仑 + 黏性 + Stribeck」模型拟合，例如 ergoCub 人形机器人谐波减速关节的摩擦辨识研究就把它当作基线模型。",
+      "example": "给谐波减速关节一个很小的速度指令：起初电机电流升高、关节却不动（静摩擦还没被克服）；一旦突破，摩擦骤降，关节一下子冲过头，控制器再把它拉回，如此反复，编码器读数呈锯齿状，这就是低速黏滑。",
+      "related": ["库仑摩擦", "黏性摩擦", "摩擦补偿", "谐波减速器", "系统辨识", "摩擦系数"],
+      "sources": [
+        {"title": "Wikipedia: Stribeck curve", "url": "https://en.wikipedia.org/wiki/Stribeck_curve"},
+        {"title": "Wikipedia: Stiction", "url": "https://en.wikipedia.org/wiki/Stiction"},
+        {"title": "Sorrentino et al., Physics-Informed Learning for the Friction Modeling of High-Ratio Harmonic Drives (arXiv:2410.12685)", "url": "https://arxiv.org/abs/2410.12685"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "直膝行走",
+      "name_en": "Straight-Knee Walking (vs. Bent-Knee / Crouched Gait)",
+      "abbr": "",
+      "aliases": ["直腿行走", "Straight-Leg Walking", "伸膝步态"],
+      "tier": 3,
+      "one_liner": "人形机器人支撑腿接近伸直地走路，而不是一直弯着膝盖「蹲着走」。",
+      "explanation": "直膝行走指双足机器人在支撑阶段让膝关节接近伸直，配合脚跟着地、脚尖蹬离，更像人走路；与之相对的是许多人形机器人常见的屈膝步态，全程半蹲着走。机器人为什么习惯屈膝，IHMC 的 Griffin 等人 2017 年的论文总结了三点：常用的线性倒立摆模型假设质心高度不变，腿得弯着才能吸收高度变化；腿伸直后膝关节几乎无法再调节地面反作用力；腿完全伸直正好是奇异位形，雅可比矩阵掉秩，基于逆运动学或逆动力学的控制器会出问题。屈膝的代价是膝关节长期承受大力矩、耗电多，离地间隙也更小。实现直膝行走需要控制器允许质心高度起伏并处理好奇异点，IHMC 先后在 Atlas 和 Nadia 两台人形机器人上做过验证。",
+      "example": "看人形机器人走路视频时，如果膝盖一直弯着、身体高度几乎不变，是典型的屈膝步态；如果支撑腿接近伸直、躯干每一步有轻微起伏、脚跟先着地再滚到脚尖，就接近直膝行走。",
+      "related": ["双足行走", "线性倒立摆模型", "奇异位形", "零力矩点", "全身控制", "拟人步态（直膝行走 / 足跟-足尖行走）"],
+      "sources": [
+        {"title": "Griffin et al., Straight-Leg Walking Through Underconstrained Whole-Body Control (arXiv:1709.03660)", "url": "https://arxiv.org/abs/1709.03660"},
+        {"title": "Fasano et al., Efficient, Dynamic Locomotion through Step Placement with Straight Legs and Rolling Contacts (arXiv:2310.13134)", "url": "https://arxiv.org/abs/2310.13134"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "扭转摩擦与滚动摩擦",
+      "name_en": "Torsional and Rolling Friction",
+      "abbr": "",
+      "aliases": ["扭转摩擦", "自旋摩擦", "Spin Friction", "滚动摩擦", "滚动阻力", "Rolling Resistance"],
+      "tier": 3,
+      "one_liner": "分别阻止物体绕接触法线自转、阻止物体在表面上滚动的两种摩擦。",
+      "explanation": "常说的滑动摩擦阻止两个面相对滑动，此外还有两种：扭转摩擦阻止物体绕接触点的法线方向自转，前提是接触不是理想的一个点，而是有一小块面积；滚动摩擦（又称滚动阻力）阻止物体在表面上滚动，主要来自接触处材料反复变形时损失的能量（滞回），通常比滑动摩擦小得多，比如钢轮在钢轨上的滚阻系数约 0.0003–0.0004，汽车轮胎在混凝土路面上约 0.01–0.015。抓取分析里，能提供扭转摩擦的接触叫「软指接触」，比点接触多抵抗一个方向的力矩。仿真器里它们是可调参数：MuJoCo 每个几何体的 friction 有三个系数，依次是滑动、扭转、滚动，默认 1、0.005、0.0001；condim 设为 4 才启用扭转摩擦，设为 6 再加上滚动摩擦。",
+      "example": "在 MuJoCo 里把一个球放在平面上轻推：condim 只设为 3（只有滑动摩擦）时，球会一直滚下去；设为 6 并给出滚动摩擦系数，球会逐渐停下。同理，两指捏住瓶子不让它在指间打转，靠的是指腹与瓶身之间的扭转摩擦。",
+      "related": ["库仑摩擦", "摩擦系数", "摩擦锥", "接触模型", "MuJoCo", "抓取"],
+      "sources": [
+        {"title": "MuJoCo Documentation: Computation (Contact / Friction)", "url": "https://mujoco.readthedocs.io/en/stable/computation/index.html"},
+        {"title": "MuJoCo Documentation: XML Reference (geom friction, condim)", "url": "https://mujoco.readthedocs.io/en/stable/XMLreference.html"},
+        {"title": "Wikipedia: Rolling resistance", "url": "https://en.wikipedia.org/wiki/Rolling_resistance"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "黏性摩擦",
+      "name_en": "Viscous Friction",
+      "abbr": "",
+      "aliases": ["粘滞摩擦", "黏滞摩擦", "粘性摩擦", "黏性阻尼", "Viscous Damping"],
+      "tier": 3,
+      "one_liner": "大小与相对速度成正比的摩擦，转得越快阻力越大。",
+      "explanation": "黏性摩擦是一种与速度成正比的阻力，最简单的写法是 F = −b·v：v 是相对速度（关节里就是角速度），b 是黏性摩擦系数，负号表示方向与运动相反。它来自润滑油等流体层之间的内摩擦（黏度），速度为零时它也为零，这点和库仑摩擦不同，后者大小基本与速度无关、只看正压力。机器人关节里，电机、减速器和轴承的摩擦通常拆成几部分建模：库仑摩擦加黏性摩擦，低速段再加 Stribeck 效应。辨识出 b 后可以在控制器里做前馈补偿，让关节力矩控制更准。仿真器也用它模拟关节耗能：MuJoCo 关节的 damping 参数就是黏性阻尼系数，产生与关节速度方向相反的被动力；做仿真到现实迁移时，这个系数常要按真机辨识或做随机化。",
+      "example": "若某关节的黏性系数 b = 0.2 N·m·s/rad，以 1 rad/s 转动时黏性摩擦力矩是 0.2 N·m，以 2 rad/s 转动时就是 0.4 N·m；而库仑摩擦那部分在两个速度下几乎一样。",
+      "related": ["库仑摩擦", "静摩擦与 Stribeck 效应", "阻尼", "摩擦补偿", "动力学参数辨识", "动力学随机化"],
+      "sources": [
+        {"title": "Sorrentino et al., Physics-Informed Learning for the Friction Modeling of High-Ratio Harmonic Drives (arXiv:2410.12685)", "url": "https://arxiv.org/abs/2410.12685"},
+        {"title": "MuJoCo Documentation: Computation (Passive forces / damping)", "url": "https://mujoco.readthedocs.io/en/stable/computation/index.html"},
+        {"title": "Wikipedia: Friction", "url": "https://en.wikipedia.org/wiki/Friction"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "全身逆运动学",
+      "name_en": "Whole-Body Inverse Kinematics",
+      "abbr": "WBIK",
+      "aliases": ["全身 IK", "Whole-Body IK", "全身逆解"],
+      "tier": 3,
+      "one_liner": "一次解出机器人全身关节角，让手、脚、躯干等多个部位同时到达目标。",
+      "explanation": "普通逆运动学通常只管一条手臂：给定末端位姿，求这条链上的关节角。全身逆运动学把对象扩大到整台机器人（人形、带臂四足、双臂移动底盘等），同时满足多个目标：双手到哪、双脚踩哪、躯干朝向、质心落在支撑区域内，还要遵守关节限位、避免自碰撞。关节多、目标常互相冲突，一般没有解析解，常见做法是把每个目标写成一个「任务」，用雅可比矩阵把关节速度和任务误差联系起来，再用加权最小二乘或二次规划迭代求解（即微分逆运动学）；冲突时靠权重或任务优先级取舍。它只算关节角、不管力和力矩，这是它和全身控制的区别。具身智能里常用于把人体动捕数据重定向到人形机器人、做全身遥操作、给强化学习生成参考动作。",
+      "example": "GMR 通用动作重定向把人体动作映射到宇树 G1、Booster T1 等十多款人形机器人：每一帧用基于 mink（基于 MuJoCo 的微分 IK 库）的全身 IK，同时让机器人的手、脚、骨盆等部位对齐人体对应部位并满足关节限位，解出关节角序列，官方称可在 CPU 上实时运行。",
+      "related": ["逆运动学", "动作重定向", "GMR 通用动作重定向", "全身控制", "雅可比伪逆", "任务优先级"],
+      "sources": [
+        {"title": "mink: Python inverse kinematics based on MuJoCo (GitHub)", "url": "https://github.com/kevinzakka/mink"},
+        {"title": "GMR: General Motion Retargeting (GitHub)", "url": "https://github.com/YanjieZe/GMR"}
+      ],
+      "as_of": "2026-09"
+    }
+  ]
+}

@@ -1,0 +1,439 @@
+{
+  "category": "training",
+  "batch": 7,
+  "terms": [
+    {
+      "name_zh": "特权信息",
+      "name_en": "Privileged Information",
+      "abbr": "",
+      "aliases": [
+        "特权观测",
+        "Privileged Observation",
+        "特权学习",
+        "Learning Using Privileged Information",
+        "LUPI"
+      ],
+      "tier": 2,
+      "one_liner": "只在训练时能拿到、部署时拿不到的额外信息，如仿真里的真实地形和摩擦系数。",
+      "explanation": "这个说法来自 Vapnik 和 Vashist 2009 年提出的「使用特权信息学习」（LUPI）：训练时有额外信息辅助，测试时没有。在机器人里，它通常指仿真器能直接读出、真机传感器测不到的量，如地形高度、足端接触力、摩擦系数、外力扰动。只用真机能拿到的观测直接做强化学习往往学不动，常见做法是先训练一个能看到特权信息的教师策略，再蒸馏给只用本体感知或相机的学生策略（教师-学生蒸馏）；也可以只让评论家（估计价值的网络）看特权信息，即非对称演员-评论家。",
+      "example": "ETH 的 ANYmal 四足（Lee 等，Science Robotics 2020）：教师策略在仿真里能看到地形轮廓、足端接触状态与接触力、摩擦系数和外力扰动；学生策略只用关节、IMU 等本体感知的历史去模仿教师，最后直接部署到真机，走过泥地、雪地、碎石和茂密植被。",
+      "related": [
+        "教师-学生蒸馏",
+        "非对称演员-评论家",
+        "仿真到现实迁移",
+        "快速运动适应",
+        "本体感知",
+        "知识蒸馏"
+      ],
+      "sources": [
+        {
+          "title": "Learning Quadrupedal Locomotion over Challenging Terrain (Lee et al., Science Robotics 2020)",
+          "url": "https://arxiv.org/abs/2010.11251"
+        },
+        {
+          "title": "Learning by Cheating (Chen et al., CoRL 2019)",
+          "url": "https://arxiv.org/abs/1912.12294"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "Q 函数",
+      "name_en": "Q-Function (Action-Value Function)",
+      "abbr": "",
+      "aliases": [
+        "动作价值函数",
+        "Q 值",
+        "状态-动作价值函数",
+        "Action-Value Function",
+        "Q(s,a)"
+      ],
+      "tier": 2,
+      "one_liner": "在某状态先做某个动作、之后按策略行动，能拿到的期望回报。",
+      "explanation": "Q 函数写作 Q(s,a)：在状态 s 先执行动作 a，之后一直按策略 π 行动，所能得到的期望回报（未来奖励的折扣累加）。它比价值函数 V(s) 多了一个动作输入，所以能直接比较同一状态下不同动作的好坏；知道最优 Q 函数后，每步挑 Q 值最大的动作就是最优策略。Q 函数满足贝尔曼方程：当前 Q 值等于即时奖励加上下一步 Q 值的折扣。Q 学习、DQN、SAC、TD3 都在学它；演员-评论家算法里的评论家常常就是一个 Q 网络，优势函数 A(s,a)=Q(s,a)−V(s) 也由它得出。",
+      "example": "QT-Opt 用一个卷积网络估计 Q 值：输入当前相机图像和一个候选夹爪动作，输出执行后最终抓取成功的概率；每一步用交叉熵方法搜出 Q 值最高的动作去执行。",
+      "related": [
+        "价值函数",
+        "优势函数",
+        "贝尔曼方程",
+        "Q 学习",
+        "深度 Q 网络",
+        "回报"
+      ],
+      "sources": [
+        {
+          "title": "OpenAI Spinning Up: Key Concepts in RL",
+          "url": "https://spinningup.openai.com/en/latest/spinningup/rl_intro.html"
+        },
+        {
+          "title": "Hugging Face Deep RL Course: Introducing Q-Learning",
+          "url": "https://huggingface.co/learn/deep-rl-course/unit2/q-learning"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "Q 学习",
+      "name_en": "Q-Learning",
+      "abbr": "",
+      "aliases": [
+        "Q-learning",
+        "表格型 Q 学习"
+      ],
+      "tier": 2,
+      "one_liner": "用「即时奖励 + 下一状态最大 Q 值」反复修正 Q 值的经典无模型强化学习算法。",
+      "explanation": "Q 学习由 Chris Watkins 在 1989 年的博士论文中提出，1992 年他与 Peter Dayan 给出收敛证明。它不需要环境模型：每走一步，就用「即时奖励 + 折扣 × 下一状态的最大 Q 值」作为目标修正当前 Q 值，这种用自己的估计更新自己的做法属于时序差分学习。它是异策略算法：采数据时用 ε-贪心随机探索，学到的却是贪心的最优策略，旧数据能反复利用。早期用表格存 Q 值，只适合小规模离散问题；DeepMind 用神经网络代替表格做出了 DQN。max 操作会让 Q 值偏高，双 Q 学习专门修正这一点。",
+      "example": "QT-Opt（Google，2018）用 58 万多次真实抓取数据训练基于 Q 学习的视觉抓取策略，对训练时没见过的物体抓取成功率达到 96%。",
+      "related": [
+        "Q 函数",
+        "时序差分学习",
+        "深度 Q 网络",
+        "异策略",
+        "Q 值高估",
+        "QT-Opt"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Q-learning",
+          "url": "https://en.wikipedia.org/wiki/Q-learning"
+        },
+        {
+          "title": "Hugging Face Deep RL Course: Introducing Q-Learning",
+          "url": "https://huggingface.co/learn/deep-rl-course/unit2/q-learning"
+        },
+        {
+          "title": "QT-Opt: Scalable Deep Reinforcement Learning for Vision-Based Robotic Manipulation",
+          "url": "https://arxiv.org/abs/1806.10293"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "随机种子与可复现性",
+      "name_en": "Random Seed & Reproducibility",
+      "abbr": "",
+      "aliases": [
+        "随机种子",
+        "Random Seed",
+        "可复现性",
+        "Reproducibility",
+        "多种子实验"
+      ],
+      "tier": 2,
+      "one_liner": "固定随机数起点让实验能重跑，并用多个种子检验结果是不是靠运气。",
+      "explanation": "深度学习里很多环节带随机性：网络初始化、数据打乱、Dropout、强化学习的探索噪声、仿真的域随机化。随机种子是随机数生成器的起点，固定 Python、NumPy、PyTorch 的种子，同一份代码就能尽量跑出同样结果；但 PyTorch 官方说明，跨版本、跨平台仍不保证完全一致。可复现性的另一层意思是结论可信：Henderson 等人 2018 年发现，深度强化学习只换种子，结果就可能差到影响「谁更好」的判断。所以应报告多个种子的均值和置信区间，Agarwal 等人 2021 年还建议用四分位均值（IQM）和自助法置信区间。",
+      "example": "PyTorch 中固定种子：torch.manual_seed(0)、np.random.seed(0)、random.seed(0)，再设 torch.backends.cudnn.benchmark=False 和 torch.use_deterministic_algorithms(True)；比较两种强化学习算法时，每种用 5 个不同种子各跑一遍，报告均值和置信区间。",
+      "related": [
+        "超参数",
+        "消融实验",
+        "评测统计显著性（置信区间 / 序贯检验 / 多随机种子）",
+        "基准测试",
+        "训练集 / 验证集 / 测试集"
+      ],
+      "sources": [
+        {
+          "title": "Deep Reinforcement Learning that Matters (Henderson et al., AAAI 2018)",
+          "url": "https://arxiv.org/abs/1709.06560"
+        },
+        {
+          "title": "PyTorch Docs: Reproducibility",
+          "url": "https://docs.pytorch.org/docs/stable/notes/randomness.html"
+        },
+        {
+          "title": "Deep Reinforcement Learning at the Edge of the Statistical Precipice (NeurIPS 2021)",
+          "url": "https://arxiv.org/abs/2108.13264"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "真机强化学习",
+      "name_en": "Real-World Reinforcement Learning",
+      "abbr": "",
+      "aliases": [
+        "真实世界强化学习",
+        "Real-world RL",
+        "真机 RL"
+      ],
+      "tier": 2,
+      "one_liner": "让机器人直接在真实环境里试错学习，而不是只在仿真里训练。",
+      "explanation": "真机强化学习指策略的强化学习训练（至少一部分）直接在物理机器人上进行。它省去仿真建模，也绕开了虚实差距，适合插接、线缆布置这类接触复杂、难以仿真的任务。难点在于：真机数据慢而贵，算法必须样本效率高；每回合结束要有人或程序把场景复位；奖励要能从相机画面自动判断；探索时还不能撞坏机器人。Dulac-Arnold 等人 2019 年把这类难题归纳为九项挑战。常见对策是异策略算法加经验回放、用示范数据热启动、训练成功检测器当奖励、人在回路随时纠正，UC Berkeley 的 SERL / HIL-SERL 是代表工作。",
+      "example": "SERL（ICRA 2024）在真实机械臂上学 PCB 元件插装、线缆布置和物体搬移，每个策略平均只训练 25–50 分钟；后续的 HIL-SERL 加入人工示范与纠正，在 1–2.5 小时内学会精密装配、动态操作和双臂协作，成功率接近 100%。",
+      "related": [
+        "强化学习",
+        "样本效率",
+        "人在回路",
+        "无重置强化学习",
+        "HIL-SERL",
+        "仿真到现实迁移"
+      ],
+      "sources": [
+        {
+          "title": "Challenges of Real-World Reinforcement Learning (Dulac-Arnold et al., 2019)",
+          "url": "https://arxiv.org/abs/1904.12901"
+        },
+        {
+          "title": "SERL: A Software Suite for Sample-Efficient Robotic Reinforcement Learning",
+          "url": "https://arxiv.org/abs/2401.16013"
+        },
+        {
+          "title": "Precise and Dexterous Robotic Manipulation via Human-in-the-Loop Reinforcement Learning (HIL-SERL)",
+          "url": "https://arxiv.org/abs/2410.21845"
+        }
+      ],
+      "as_of": "2025-03"
+    },
+    {
+      "name_zh": "正则化",
+      "name_en": "Regularization",
+      "abbr": "",
+      "aliases": [
+        "正则项",
+        "正则化项",
+        "Regularization Term"
+      ],
+      "tier": 2,
+      "one_liner": "训练时加约束或惩罚，防止模型死记训练数据，提升在新数据上的表现。",
+      "explanation": "正则化是机器学习里一大类防止过拟合的手段：模型在训练集上越学越好、在新数据上反而变差时，就要用它约束模型复杂度。显式正则化是在损失函数里加惩罚项，如 L2 正则（也叫权重衰减，惩罚权重平方和，让权重整体变小）和 L1 正则（惩罚绝对值，让很多权重变成 0）；隐式正则化包括早停、Dropout（训练时随机丢弃部分神经元）、数据增强等。强化学习里还有几种专门的正则：熵正则化鼓励策略保持随机以便探索，KL 正则化让微调后的策略别偏离原模型太远，行为正则化让离线强化学习的策略贴近数据集里的动作。",
+      "example": "训练视觉运动策略时对相机图像做随机裁剪（数据增强），并在 AdamW 优化器里设置权重衰减；RLHF 在奖励里减去 KL 惩罚项，防止模型为刷高分而偏离原始语言模型。",
+      "related": [
+        "过拟合",
+        "随机失活",
+        "早停",
+        "数据增强",
+        "熵正则化",
+        "KL 正则化"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Regularization (mathematics)",
+          "url": "https://en.wikipedia.org/wiki/Regularization_(mathematics)"
+        },
+        {
+          "title": "Dive into Deep Learning: Weight Decay",
+          "url": "https://d2l.ai/chapter_linear-regression/weight-decay.html"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "强化学习微调",
+      "name_en": "Reinforcement Fine-Tuning (RL Fine-Tuning)",
+      "abbr": "RFT",
+      "aliases": [
+        "强化微调",
+        "RL 微调",
+        "RL fine-tuning",
+        "强化学习后训练"
+      ],
+      "tier": 2,
+      "one_liner": "在预训练或监督微调过的模型上，再用奖励信号做强化学习来提升能力。",
+      "explanation": "强化学习微调是拿一个已预训练或监督微调（SFT）过的模型当初始策略，让它自己生成回答或执行动作，按奖励打分，再用策略梯度等算法更新参数。和只模仿示范的 SFT 不同，它能从自己的成败中学习，学到示范里没有的做法。「RFT」一词因 OpenAI 面向 o 系列推理模型的强化微调服务流行开来：用户提供评分器，模型对每道题采样多个回答再按分数强化。具身领域 2025 年起涌现大量 VLA 强化学习微调工作，奖励常用任务成败的二值信号，算法多用 PPO、GRPO；流匹配动作头算不出动作概率，需要专门改造（如 πRL）。",
+      "example": "πRL 用在线强化学习微调流匹配 VLA：π0 先在 LIBERO 上用少量示范做 SFT，成功率 57.6%，强化学习后升到 97.6%；π0.5 从 77.1% 升到 98.3%。SimpleVLA-RL 则只用「成功记 1、失败记 0」的奖励配合 GRPO 训练 OpenVLA-OFT。",
+      "related": [
+        "后训练",
+        "监督微调",
+        "近端策略优化",
+        "组相对策略优化",
+        "πRL",
+        "SimpleVLA-RL"
+      ],
+      "sources": [
+        {
+          "title": "OpenAI API Docs: Reinforcement fine-tuning",
+          "url": "https://developers.openai.com/api/docs/guides/reinforcement-fine-tuning"
+        },
+        {
+          "title": "πRL: Online RL Fine-tuning for Flow-based Vision-Language-Action Models",
+          "url": "https://arxiv.org/abs/2510.25889"
+        },
+        {
+          "title": "SimpleVLA-RL: Scaling VLA Training via Reinforcement Learning",
+          "url": "https://arxiv.org/abs/2509.09674"
+        }
+      ],
+      "as_of": "2026-01"
+    },
+    {
+      "name_zh": "基于人类反馈的强化学习",
+      "name_en": "Reinforcement Learning from Human Feedback",
+      "abbr": "RLHF",
+      "aliases": [
+        "人类反馈强化学习",
+        "偏好优化",
+        "偏好对齐",
+        "Preference Alignment"
+      ],
+      "tier": 2,
+      "one_liner": "让人比较模型输出的好坏，据此训练奖励模型，再用强化学习按人的偏好优化模型。",
+      "explanation": "RLHF 由 Christiano 等人（OpenAI 与 DeepMind）2017 年提出：人只需比较两段轨迹哪段更好，就能学出奖励函数，所需人工反馈不到交互量的 1%。2022 年 OpenAI 的 InstructGPT 把它用于大语言模型，分三步：监督微调；用人对多个回答的排序训练奖励模型；用 PPO 优化模型并加 KL 惩罚防止偏离原模型，ChatGPT 沿用了这套流程。它适合「难写成公式、但人一看就能判断」的目标，缺点是标注贵，模型还可能钻奖励模型的空子。DPO 跳过奖励模型直接用偏好数据训练；具身领域的 GRAPE 用轨迹级偏好对齐 VLA。",
+      "example": "InstructGPT 的人工评测中，经过 RLHF、只有 13 亿参数的模型，回答比 1750 亿参数的 GPT-3 更受偏好。",
+      "related": [
+        "奖励模型",
+        "直接偏好优化",
+        "近端策略优化",
+        "KL 正则化",
+        "奖励黑客",
+        "GRAPE"
+      ],
+      "sources": [
+        {
+          "title": "Deep Reinforcement Learning from Human Preferences (Christiano et al., 2017)",
+          "url": "https://arxiv.org/abs/1706.03741"
+        },
+        {
+          "title": "Training language models to follow instructions with human feedback (InstructGPT)",
+          "url": "https://arxiv.org/abs/2203.02155"
+        },
+        {
+          "title": "Wikipedia: Reinforcement learning from human feedback",
+          "url": "https://en.wikipedia.org/wiki/Reinforcement_learning_from_human_feedback"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "表征学习",
+      "name_en": "Representation Learning",
+      "abbr": "",
+      "aliases": [
+        "表示学习",
+        "特征学习",
+        "Feature Learning"
+      ],
+      "tier": 2,
+      "one_liner": "让模型自动从原始数据里学出好用的特征向量，而不是靠人工设计特征。",
+      "explanation": "表征学习研究怎样把图像、文本、传感器读数等原始数据变成一组更好用的数字（表征，也叫特征或嵌入向量），让下游任务更容易学。Bengio 等人 2013 年的综述把它视为深度学习的核心问题：好的表征应把数据背后不同的变化因素分离开。学表征的途径很多，有监督分类、自监督学习（对比学习、掩码自编码器）、图文对齐（如 CLIP）等。具身智能里机器人数据少，常先用大规模图片或人类视频预训练视觉编码器，再冻结或微调它来学策略，这样只需少量示范，R3M、VC-1、DINOv2 都属于这条路线。世界模型的隐空间、潜在动作也是表征学习的产物。",
+      "example": "R3M 用 Ego4D 人类第一人称视频，以时间对比学习和视频-语言对齐预训练视觉表征；把它冻结后接到 Franka 机械臂的策略上，在真实杂乱的公寓里只用 20 条示范就学会了操作任务。",
+      "related": [
+        "自监督学习",
+        "对比学习",
+        "预训练视觉表征",
+        "嵌入向量",
+        "潜在空间",
+        "R3M"
+      ],
+      "sources": [
+        {
+          "title": "Representation Learning: A Review and New Perspectives (Bengio et al.)",
+          "url": "https://arxiv.org/abs/1206.5538"
+        },
+        {
+          "title": "R3M: A Universal Visual Representation for Robot Manipulation",
+          "url": "https://arxiv.org/abs/2203.12601"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "回报",
+      "name_en": "Return",
+      "abbr": "",
+      "aliases": [
+        "累积奖励",
+        "Cumulative Reward",
+        "折扣回报",
+        "Discounted Return",
+        "G_t"
+      ],
+      "tier": 2,
+      "one_liner": "从某一时刻起往后所有奖励（通常打折扣）加起来的总和。",
+      "explanation": "回报是强化学习要最大化的量。奖励是每一步环境给的即时分数，回报则是从当前时刻往后所有奖励的总和，常记作 G_t 或 R(τ)。回合有固定长度时可以直接相加；任务很长或没有终点时通常用折扣回报：k 步之后的奖励乘上折扣因子 γ 的 k 次方（γ 在 0 到 1 之间，常取 0.95–0.99），越远的奖励权重越小，既保证总和有限，也让智能体更看重眼前。强化学习的目标是最大化期望回报；价值函数和 Q 函数就是对未来回报的期望估计。回报条件化等方法还把目标回报当作输入，让策略按指定水平去做。",
+      "example": "机械臂抓取任务只在成功时给 +1、其余为 0，取 γ=0.99：第 10 步成功，从起点算的折扣回报是 0.99^10≈0.904；拖到第 50 步才成功，回报只有约 0.605，所以策略会倾向更快完成。",
+      "related": [
+        "奖励函数",
+        "折扣因子",
+        "价值函数",
+        "Q 函数",
+        "回合",
+        "回报条件化"
+      ],
+      "sources": [
+        {
+          "title": "OpenAI Spinning Up: Key Concepts in RL",
+          "url": "https://spinningup.openai.com/en/latest/spinningup/rl_intro.html"
+        },
+        {
+          "title": "Hugging Face Deep RL Course: The Reinforcement Learning Framework",
+          "url": "https://huggingface.co/learn/deep-rl-course/unit1/rl-framework"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "奖励工程",
+      "name_en": "Reward Engineering",
+      "abbr": "",
+      "aliases": [
+        "奖励设计",
+        "Reward Design",
+        "奖励函数设计"
+      ],
+      "tier": 2,
+      "one_liner": "为强化学习设计和调试奖励函数，让机器人学到真正想要的行为。",
+      "explanation": "奖励工程指为强化学习任务设计奖励函数的整套工作：放哪些奖励项、各项权重多大、什么时候给、怎样防止被钻空子。只有「成功 +1」这种稀疏奖励时，智能体很难碰巧拿到正反馈，于是常加稠密的中间奖励（奖励塑形），比如离目标越近分越高。机器人运动控制的奖励常由十几项组成，既奖励跟上速度指令，也惩罚力矩过大、动作抖动、身体碰撞，权重要反复试，设计不当就会出现奖励黑客。近年也用大模型自动写奖励：Eureka 让 GPT-4 迭代生成奖励代码，在 29 个环境中 83% 的任务超过人类专家写的奖励。",
+      "example": "legged_gym 四足行走的默认奖励：跟踪线速度指令（权重 1.0）、跟踪角速度（0.5）、惩罚竖直方向速度（−2.0）、惩罚关节力矩和加速度、惩罚动作变化率（−0.01）和身体碰撞（−1），并奖励足端腾空时间（1.0）。",
+      "related": [
+        "奖励函数",
+        "奖励塑形",
+        "稀疏奖励",
+        "稠密奖励",
+        "奖励黑客",
+        "Eureka"
+      ],
+      "sources": [
+        {
+          "title": "Eureka: Human-Level Reward Design via Coding Large Language Models",
+          "url": "https://arxiv.org/abs/2310.12931"
+        },
+        {
+          "title": "legged_gym: legged_robot_config.py (reward scales)",
+          "url": "https://raw.githubusercontent.com/leggedrobotics/legged_gym/master/legged_gym/envs/base/legged_robot_config.py"
+        },
+        {
+          "title": "Learning to Walk in Minutes Using Massively Parallel Deep Reinforcement Learning",
+          "url": "https://arxiv.org/abs/2109.11978"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "奖励黑客",
+      "name_en": "Reward Hacking",
+      "abbr": "",
+      "aliases": [
+        "奖励投机",
+        "Reward Exploitation",
+        "规格博弈",
+        "Specification Gaming",
+        "奖励作弊"
+      ],
+      "tier": 2,
+      "one_liner": "智能体钻奖励函数的漏洞拿高分，却没完成设计者真正想要的任务。",
+      "explanation": "奖励黑客指强化学习智能体利用奖励函数的缺陷拿到高奖励，却没真正学会目标任务。Amodei 等人 2016 年的《Concrete Problems in AI Safety》把它列为 AI 安全的五个具体问题之一；DeepMind 2020 年称同类现象为「规格博弈」：满足了目标的字面规定，却没达到本意。根源是奖励只是真实目标的近似，优化越用力偏差越容易被放大（古德哈特定律），能力更强的智能体往往更会钻空子。机器人仿真里它常表现为利用物理引擎漏洞，RLHF 中模型可能学会讨好奖励模型。应对办法是反复检查奖励、人工看回放、加约束项。",
+      "example": "DeepMind 列举的案例：要机械臂把红积木叠到蓝积木上，奖励按红积木底面的高度算，机械臂就学会直接把红积木翻个面；另一个仿真机械手学会挡在相机和物体之间，看起来像抓住了物体。",
+      "related": [
+        "奖励工程",
+        "奖励塑形",
+        "奖励模型",
+        "基于人类反馈的强化学习",
+        "安全强化学习"
+      ],
+      "sources": [
+        {
+          "title": "Concrete Problems in AI Safety (Amodei et al., 2016)",
+          "url": "https://arxiv.org/abs/1606.06565"
+        },
+        {
+          "title": "Google DeepMind: Specification gaming: the flip side of AI ingenuity",
+          "url": "https://deepmind.google/discover/blog/specification-gaming-the-flip-side-of-ai-ingenuity/"
+        },
+        {
+          "title": "Lilian Weng: Reward Hacking in Reinforcement Learning",
+          "url": "https://lilianweng.github.io/posts/2024-11-28-reward-hacking/"
+        }
+      ],
+      "as_of": ""
+    }
+  ]
+}

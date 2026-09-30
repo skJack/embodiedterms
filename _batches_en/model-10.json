@@ -1,0 +1,113 @@
+{
+  "batch": "model-10",
+  "terms": [
+    {
+      "key": "model-10#0",
+      "name_en": "Decoder-only Architecture",
+      "aliases": ["Decoder-only", "Decoder-only Transformer"],
+      "one_liner": "A Transformer design that keeps only the decoder, predicting the next token one at a time with causal attention.",
+      "explanation": "Decoder-only architecture removes the encoder from the original Transformer and stacks only decoder blocks. Google's Liu and colleagues used it to handle very long sequences in their 2018 work generating Wikipedia articles, and OpenAI's GPT-1 adopted the same design that same year; since then, the GPT series, Llama, and most other mainstream large language models have been decoder-only. It does next-token prediction using causal attention, where each position can only see the tokens before it, giving a simple, unified training objective that scales easily. Multimodal models feed it images by encoding them as visual tokens and placing them ahead of the text. Many VLAs reuse this language-model backbone directly, treating actions as just another kind of output token.",
+      "example": "OpenVLA is built on Llama 2 7B, a decoder-only language model: image features and the text instruction are concatenated into one sequence as input, and the model outputs discretized action tokens one at a time.",
+      "related": ["Transformer", "Encoder-Decoder", "Causal Attention", "Autoregressive Decoding", "Large Language Model", "Next-Token Prediction"]
+    },
+    {
+      "key": "model-10#1",
+      "name_en": "Decoding Strategies",
+      "aliases": ["Nucleus Sampling", "Top-k Sampling", "Top-p Sampling", "Beam Search"],
+      "one_liner": "The rule for picking an actual token once the model has given a probability distribution over what comes next.",
+      "explanation": "An autoregressive model only outputs a probability distribution at each step; a decoding strategy decides how to pick from it. Greedy decoding always takes the highest-probability token, giving deterministic but repetition-prone output; beam search keeps several candidate sequences at once; sampling draws randomly according to the probabilities. Temperature adjusts how sharp the distribution is — lower temperature pushes it toward greedy, higher makes it more random. Top-k only samples from the k highest-probability tokens, used by Fan and colleagues for story generation in 2018; top-p (nucleus sampling) samples from the smallest set of tokens whose cumulative probability just exceeds p, proposed by Holtzman and colleagues in 2019 to reduce the dull repetition that maximization-based decoding tends to produce. The same model can produce very different output quality depending on which strategy is used. VLAs that output action tokens usually turn off random sampling at deployment, so actions stay consistent.",
+      "example": "OpenVLA's official example calls predict_action with do_sample=False, meaning action tokens are decoded greedily, so the same image and instruction always produce the same action.",
+      "related": ["Autoregressive Decoding", "Large Language Model", "Action Tokenizer", "Best-of-N Sampling", "Inference-Time Compute", "Softmax"]
+    },
+    {
+      "key": "model-10#2",
+      "name_en": "Denoising Diffusion Implicit Model",
+      "aliases": ["DDIM", "DDIM Sampler"],
+      "one_liner": "A diffusion speedup method that keeps DDPM's training but turns sampling into a deterministic process that can skip steps.",
+      "explanation": "Denoising Diffusion Implicit Models were proposed in 2020 by Stanford's Jiaming Song, Chenlin Meng, and Stefano Ermon, and published at ICLR 2021. A DDPM (Denoising Diffusion Probabilistic Model) generates one sample by walking a Markov chain of hundreds to thousands of denoising steps, which is slow. DDIM constructs a family of non-Markovian diffusion processes with the same training objective as DDPM, so an already-trained DDPM can switch to DDIM sampling with no retraining: it can skip steps, running only a dozen to a few dozen, which the paper reports is 10 to 50 times faster in wall-clock time; and setting the stochastic term to zero makes sampling deterministic, so the same starting noise always gives the same result. It became the starting point for the many fast diffusion samplers that followed, and Diffusion Policy commonly relies on it to cut steps for real-time control on real robots.",
+      "example": "Diffusion Policy's real-robot experiments train with 100 steps but run inference with 10 DDIM steps, giving about 0.1 seconds of inference latency per call on an RTX 3080.",
+      "related": ["Denoising Diffusion Probabilistic Model", "Diffusion Model", "Denoising Steps / Number of Function Evaluations", "Diffusion / Flow Samplers", "Diffusion Policy", "Noise Schedule"]
+    },
+    {
+      "key": "model-10#3",
+      "name_en": "Diffusion / Flow Samplers",
+      "aliases": ["ODE / SDE Solvers", "Euler Sampler", "DPM-Solver"],
+      "one_liner": "The numerical algorithm that integrates a trained diffusion or flow model from random noise into a sample, step by step.",
+      "explanation": "What a diffusion or flow-matching model learns is 'which direction to move at each noise level'; actually generating a sample requires a numerical method to integrate that process forward, which is what a sampler does. In 2020, Song and colleagues wrote the diffusion process as a stochastic differential equation (SDE) and also derived a deterministic ordinary differential equation with the same marginal distributions, the probability-flow ODE: solving the SDE adds random noise at each step, while solving the ODE gives a deterministic result. Common samplers range from the simplest first-order Euler method and DDIM to specialized high-order solvers such as DPM-Solver, proposed in 2022 by Jun Zhu's team at Tsinghua, which can produce high-quality samples in roughly 10 to 20 network calls. Fewer steps means faster but less accurate, and robot policies have to trade off control frequency against action quality.",
+      "example": "π0's flow-matching action expert integrates with the forward Euler method over 10 steps (step size 0.1) at inference, turning a stretch of random noise into an action chunk.",
+      "related": ["Diffusion Model", "Flow Matching", "Denoising Diffusion Implicit Model", "Denoising Steps / Number of Function Evaluations", "Velocity Field", "One-step Generation"]
+    },
+    {
+      "key": "model-10#4",
+      "name_en": "Diffusion Forcing",
+      "aliases": [],
+      "one_liner": "A causal diffusion sequence model trained by adding an independently random noise level to each token in the sequence.",
+      "explanation": "Diffusion Forcing was proposed in 2024 by MIT's Boyuan Chen, Vincent Sitzmann, Russ Tedrake, and colleagues, published at NeurIPS 2024. Sequence generation traditionally comes in two flavors: next-token prediction generates one token at a time with flexible length, but tends to drift off course over long rollouts; full-sequence diffusion denoises an entire span at once, which allows guiding the whole trajectory but fixes its length. Diffusion Forcing trains a causal model in which each token in the sequence gets its own independently random noise level; at inference, it can then generate frame by frame like an autoregressive model, extending past the training length, while also using guidance like a diffusion model to steer the whole trajectory toward a desired goal. It's been used for long video generation, planning, and robot control, and is a training scheme that autoregressive video generation and world-model work often reuses or compares against.",
+      "example": "In the paper's real-robot experiment, an arm has to swap two randomly placed pieces of fruit using a third slot as a buffer, which requires remembering the initial positions; Diffusion Forcing completed the task, while an imitation-learning baseline without memory failed.",
+      "related": ["Diffusion Model", "Autoregressive Video Generation", "Next-Token Prediction", "Teacher Forcing", "World Model", "Self Forcing"]
+    },
+    {
+      "key": "model-10#5",
+      "name_en": "Diffusion Language Model",
+      "aliases": ["dLLM", "Diffusion LLM", "Masked Diffusion Language Model"],
+      "one_liner": "A language model that denoises a whole span of text in parallel using diffusion, instead of generating it word by word.",
+      "explanation": "A diffusion language model applies the diffusion idea to text: generation starts from a span of tokens that are all masked or noised, and predicts them together over several steps, gradually filling in content — each step can fill in several tokens at once, and can also revise earlier guesses. Representative work includes LLaDA (2025, from a Renmin University-led team), whose 8B version matches LLaMA3 8B on in-context learning; Inception Labs' commercial model Mercury; and Google DeepMind's experimental Gemini Diffusion, which the company reports sampling at about 1,479 tokens per second. Its appeal is fast parallel decoding and the ability to use context in both directions at once. Embodied AI has picked up the same idea for decoding actions in parallel too, as in Discrete Diffusion VLA.",
+      "example": "When LLaDA answers a question, it first generates a whole span of masked tokens, predicts all the masked positions at each step, keeps the ones it's confident about, re-masks the uncertain ones, and repeats over several rounds until everything is filled in.",
+      "related": ["Discrete Diffusion", "Large Language Model", "Parallel Decoding", "Autoregressive Decoding", "Diffusion Model", "Discrete Diffusion VLA"]
+    },
+    {
+      "key": "model-10#6",
+      "name_en": "Discrete Cosine Transform",
+      "aliases": ["DCT"],
+      "one_liner": "A transform that breaks a signal into a weighted sum of cosine waves at different frequencies, widely used for compression.",
+      "explanation": "The discrete cosine transform was originally conceived by Nasir Ahmed, who formally proposed it in a 1974 paper with Natarajan and Rao. It represents a discrete signal as a weighted sum of cosine waves ranging from low to high frequency; those weights are the DCT coefficients. For smooth signals, most of the energy concentrates in a few low-frequency coefficients, so dropping or coarsely quantizing the small high-frequency ones compresses the signal a lot with little loss — this is what JPEG images and MPEG/H.26x video rely on. Embodied AI uses it to represent actions: under high-frequency control, adjacent time steps' actions are very similar, so naively discretizing each step produces a lot of redundant tokens. Physical Intelligence's 2025 FAST tokenizer applies DCT to an action chunk first, then quantizes and compresses it with byte-pair encoding, letting an autoregressive VLA learn high-frequency, dexterous tasks well.",
+      "example": "FAST applies DCT dimension by dimension to an action chunk, quantizes it so most high-frequency coefficients become zero while low-frequency ones are kept, then compresses the result into a handful of tokens with byte-pair encoding; the paper reports that, paired with π0 trained on 10,000 hours of data, this matches the diffusion version's performance while cutting training time up to 5x.",
+      "related": ["Action Tokenizer", "π0-FAST", "Byte-Pair Encoding", "Action Binning / Discretization", "Action Representation", "Action Chunking"]
+    },
+    {
+      "key": "model-10#7",
+      "name_en": "Discrete Diffusion",
+      "aliases": ["Masked Diffusion"],
+      "one_liner": "A diffusion model that adds and removes noise on discrete symbols, like text tokens, instead of continuous values.",
+      "explanation": "An ordinary diffusion model adds Gaussian noise to continuous data — pixels, action values — but data like text or discrete action tokens can't have Gaussian noise added to it directly. Discrete diffusion instead adds noise through 'state transitions': at each step, a transition matrix randomly swaps a token for a different value, or for a special [MASK] symbol. Google's Austin and colleagues systematically formalized this framework in D3PM in 2021, and showed that using an 'absorbing state' for noising (once a token becomes MASK, it stays MASK) connects it closely to masked language models and autoregressive models. Masked diffusion has since become the dominant approach — NeurIPS 2024's MDLM, for instance, simplifies the training objective down to a mixture of masked-language-modeling losses. It's the theoretical foundation behind diffusion language models and discrete-diffusion-style VLAs.",
+      "example": "Discrete Diffusion VLA discretizes an action chunk into tokens, masks all of them, then progressively reveals the easiest ones first based on confidence, re-masking and recomputing the uncertain positions, and reports a 96.4% average success rate on LIBERO.",
+      "related": ["Diffusion Model", "Diffusion Language Model", "Parallel Decoding", "Discrete Diffusion VLA", "Denoising Diffusion Probabilistic Model", "Action Binning / Discretization"]
+    },
+    {
+      "key": "model-10#8",
+      "name_en": "Dynamic / Native Resolution",
+      "aliases": ["Native Resolution", "Naive Dynamic Resolution"],
+      "one_liner": "Letting a vision encoder cut an image at its original size, so bigger images produce more visual tokens instead of being rescaled.",
+      "explanation": "Early Vision Transformers and CLIP-style encoders required rescaling or cropping every image to a fixed size, such as 224×224, which loses detail or distorts aspect ratio. Dynamic resolution instead keeps the image's original size and aspect ratio and cuts it directly into fixed-size patches, so a bigger image simply produces more tokens. Google's 2023 NaViT used 'sequence packing' to fit images of different sizes into the same training batch; Alibaba's 2024 Qwen2-VL introduced Naive Dynamic Resolution, using 2D rotary position encoding inside the vision encoder to record each patch's row and column, letting it handle any resolution. The benefit is that small images save compute while large images keep their detail, at the cost of a token count that grows with resolution. VLA backbones using this usually cap the token count within a min/max range to control inference latency.",
+      "example": "Qwen2-VL maps roughly every 28×28 pixels to one visual token, with a default range of 4 to 16,384 tokens per image, adjustable via min_pixels and max_pixels to balance speed against memory.",
+      "related": ["Vision Encoder", "Vision Transformer", "Visual Token", "Qwen-VL", "Rotary Position Embedding", "Inference Latency"]
+    },
+    {
+      "key": "model-10#9",
+      "name_en": "Early Exit",
+      "aliases": ["Multi-exit Network", "Dynamic Inference"],
+      "one_liner": "Letting an easy input produce its output at a middle layer of the network, skipping the remaining layers' computation.",
+      "explanation": "A deep network normally runs every input through all of its layers, but many easy examples can already be judged correctly from shallow features. Early exit inserts several 'exits' (small classification or output heads) partway through the network; at inference, as soon as one exit is confident enough, the model outputs there and stops, and only hard examples run through the whole network. BranchyNet, from Harvard's Teerapittayanon and colleagues, is an early representative of this idea, later adopted for BERT and large language models. Robot control fits this pattern well, since the action is simple most of the time and only occasionally needs complex reasoning; Tsinghua's Gao Huang and colleagues proposed DeeR-VLA at NeurIPS 2024, turning a multimodal large model into a multi-exit structure that decides when to exit based on a compute, latency, and memory budget.",
+      "example": "DeeR-VLA reports on the CALVIN benchmark that it cuts the language model's compute by 5.2-6.5x and GPU memory by 2-6x, with essentially no drop in task performance.",
+      "related": ["Inference Latency", "On-device Model", "Visual Token Pruning", "Pruning", "Speculative Decoding", "Mixture of Experts"]
+    },
+    {
+      "key": "model-10#10",
+      "name_en": "EfficientNet",
+      "aliases": ["EfficientNet-B0-B7"],
+      "one_liner": "Google's efficient convolutional-network family that scales depth, width, and resolution together by a single fixed ratio.",
+      "explanation": "EfficientNet is a family of convolutional neural networks proposed by Google's Mingxing Tan and Quoc V. Le at ICML 2019. Scaling up a CNN previously usually meant increasing just one of depth, width, or input resolution, and returns quickly leveled off. The paper introduced 'compound scaling': a single coefficient scales depth, width, and resolution together by a fixed ratio; a small baseline network, B0, is found with neural architecture search, and then scaled up step by step to get B1 through B7. The paper reports B7 reaching 84.3% top-1 accuracy on ImageNet while being 8.4x smaller and 6.1x faster at inference than the best convolutional networks at the time. Because it's small and fast, robot policies commonly used it as their vision backbone before ViT became widespread.",
+      "example": "Google's RT-1 uses an ImageNet-pretrained EfficientNet to extract image features, has the language instruction modulate them through FiLM layers, and then passes the result to TokenLearner and a Transformer to output discrete action tokens.",
+      "related": ["Convolutional Neural Network", "Backbone Network", "Residual Network", "RT-1", "Feature-wise Linear Modulation", "TokenLearner"]
+    },
+    {
+      "key": "model-10#11",
+      "name_en": "Embodiment-specific Head",
+      "aliases": ["Embodiment-specific Decoder"],
+      "one_liner": "In a cross-embodiment model, a separate output layer per robot type that turns shared features into that robot's actions.",
+      "explanation": "Different robots have different state and action dimensions: a single arm with a gripper might be 7 dimensions, while a bimanual robot with dexterous hands might have several dozen. Cross-embodiment models usually share most of their parameters, but attach a small network per embodiment at the input and output ends; the output-side piece is the embodiment-specific head, typically an MLP or a small decoder that maps the shared backbone's representation into an action with that embodiment's specific dimensions and meaning. MIT and Meta's Lirui Wang, Kaiming He, and colleagues proposed the Heterogeneous Pre-trained Transformer (HPT) in 2024, using an 'embodiment-specific stem + shared trunk + embodiment-specific head' design; NVIDIA's GR00T N1 similarly gives each embodiment an MLP to encode state and action, with a dedicated action decoder for output. A different approach is a unified action space, which pads every embodiment's action into the same large vector instead.",
+      "example": "GR00T N1 attaches an embodiment-specific MLP action decoder after its last DiT block, letting the same backbone control everything from tabletop arms to humanoids with dexterous hands.",
+      "related": ["Cross-Embodiment", "Action Head", "Unified Action Space", "Heterogeneous Pre-trained Transformers", "NVIDIA Isaac GR00T N1", "Robot Embodiment"]
+    }
+  ]
+}

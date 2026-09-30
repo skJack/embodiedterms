@@ -1,0 +1,113 @@
+{
+  "batch": "sim-08",
+  "terms": [
+    {
+      "key": "sim-08#0",
+      "name_en": "Simulation Instability",
+      "aliases": ["Blow-up", "Numerical Instability", "NaN Explosion", "Simulation Blow-up"],
+      "one_liner": "A physics simulation diverging numerically — the robot twitches violently, objects fly apart, and the state turns into NaN or huge numbers.",
+      "explanation": "Simulation instability (often called blow-up) is a common failure mode in physics simulation: the velocities and accelerations the integrator computes each step keep growing until they become NaN (not a number) or astronomically large, which shows up on screen as a robot shaking violently, parts flying off, or an object that penetrated another getting launched away. Common causes include too large a simulation timestep, joint PD gains (the stiffness and damping of position control) set too stiff, unreasonable mass or inertia values, objects that start out interpenetrating, or too few constraint-solver iterations. MuJoCo's documentation explicitly warns that too large a timestep makes simulation unstable; the engine checks every step whether acceleration is NaN or exceeds a limit, and if so, issues a warning and resets the simulation automatically by default. In massively parallel reinforcement learning, the NaN values from just one environment can contaminate an entire batch of training data, so problem environments usually need to be detected and reset individually.",
+      "example": "In MuJoCo, increasing the timestep while also setting joint stiffness very high can make a robot arm shake violently within a few steps and its state turn into NaN; MuJoCo reports a bad-acceleration (BADQACC) warning and automatically resets the simulation.",
+      "related": ["Simulation Timestep", "Integrator", "Constraint Solver", "Interpenetration", "Solver Iterations", "MuJoCo"]
+    },
+    {
+      "key": "sim-08#1",
+      "name_en": "Simulation Timestep",
+      "aliases": ["dt", "Physics Timestep", "Physics dt", "Sim dt"],
+      "one_liner": "The amount of simulated time a physics engine advances per step, which trades off accuracy, stability, and speed.",
+      "explanation": "The simulation timestep (often written dt) is how much time the physics engine's integrator advances on each step — 0.002 seconds, for instance, means simulating 1 real second takes 500 steps. A smaller timestep computes contact and fast motion more accurately and is less prone to blowing up, but it also needs more steps to cover the same duration, making it slower. MuJoCo defaults to a 0.002-second timestep, and its documentation calls it the single most important parameter for the speed-accuracy trade-off; Isaac Lab's SimulationCfg defaults to 1/60 second, though specific tasks often set it smaller. The simulation timestep is usually shorter than the policy's control period: for every action the policy outputs, the simulation keeps running for several steps, and that multiple is called decimation; some engines further split a single step into several substeps.",
+      "example": "Isaac Lab's velocity-tracking task for legged robots sets sim.dt to 0.005 seconds (200 Hz) with a decimation of 4, so the policy outputs actions at 50 Hz.",
+      "related": ["Decimation", "Substep", "Integrator", "Simulation Instability", "Control Frequency", "Real-Time Factor"]
+    },
+    {
+      "key": "sim-08#2",
+      "name_en": "Success weighted by Path Length",
+      "aliases": ["SPL", "Success weighted by normalized inverse Path Length"],
+      "one_liner": "A navigation metric that credits both reaching the goal and taking a path close to the shortest possible route.",
+      "explanation": "SPL was proposed by Peter Anderson, Jitendra Malik, and 9 other researchers in their 2018 paper “On Evaluation of Embodied Navigation Agents,” which recommended it as the primary metric for embodied navigation. It is computed as follows: for each test episode i, S_i is 1 if the episode succeeded and 0 otherwise; l_i is the length of the shortest path from the start to the goal; p_i is the length of the path the agent actually took; and SPL is the average, over all episodes, of S_i · l_i / max(p_i, l_i). “Success” requires the agent to actively output a stop action while close enough to the goal — the paper recommends a default threshold of twice the agent's body width — and distance is measured along the shortest path around obstacles rather than as a straight line. SPL penalizes taking a roundabout route, preventing an agent that wanders randomly and happens to reach the goal from getting a perfect score under success rate alone. Tasks such as point-goal and object-goal navigation typically report both success rate and SPL together.",
+      "example": "The paper gives worked examples: if half the episodes succeed and each follows the shortest path, SPL is 0.5; if all episodes succeed but each path is twice the shortest-path length, SPL is also 0.5; and if half succeed with paths twice as long, SPL is 0.25.",
+      "related": ["Success Rate", "Point-Goal Navigation", "Object-Goal Navigation", "Navigation", "Normalized Dynamic Time Warping", "Navigation Error / Oracle Success Rate / Trajectory Length"]
+    },
+    {
+      "key": "sim-08#3",
+      "name_en": "Vectorized Environments",
+      "aliases": ["num_envs", "Vector Env", "Parallel Environments"],
+      "one_liner": "Running many independent copies of an environment at once to collect interaction data in batches.",
+      "explanation": "Vectorized environments are a way to speed up sampling in reinforcement learning: the same environment is duplicated N times (N is the num_envs value in code), and each step sends in N actions together and gets back N observations, rewards, and done flags — exactly forming one batch to feed a neural network. Gymnasium provides a sequential SyncVectorEnv and a multi-process AsyncVectorEnv, and automatically resets any copy whose episode ends without waiting for the others. GPU simulators such as Isaac Gym, Isaac Lab, and MJX go a step further, computing thousands of environments at once on a single GPU and handing the data to the training code directly as PyTorch tensors; the Isaac Gym paper claims speedups of two to three orders of magnitude over CPU simulation. Rudin and colleagues used this in 2021 to get an ANYmal quadruped walking on flat ground in under 4 minutes.",
+      "example": "Isaac Lab's velocity-tracking task for legged robots defaults to num_envs=4096, simulating 4,096 robot copies at once on a single GPU while training a walking policy with PPO.",
+      "related": ["GPU-Accelerated Parallel Simulation", "Massively Parallel Reinforcement Learning", "Isaac Lab", "Isaac Gym", "Simulation Throughput", "Proximal Policy Optimization"]
+    },
+    {
+      "key": "sim-08#4",
+      "name_en": "Visual Randomization",
+      "aliases": ["Texture Randomization", "Lighting Randomization", "Visual Domain Randomization"],
+      "one_liner": "Randomly varying a simulation's textures, colors, lighting, and camera during training so a vision policy isn't picky about how things look.",
+      "explanation": "Visual randomization is the part of domain randomization aimed specifically at what the policy sees: object and background textures and colors, light position and intensity, and camera pose are all randomly varied in simulation, with distractor objects added on top, so the model sees enough visual diversity to treat the real world as just one more variation. Tobin and colleagues (OpenAI, Berkeley) did this systematically in 2017, training an object detector using only randomly rendered simulated images and reaching about 1.5 cm localization accuracy in real scenes, which they then used for grasping. It mainly narrows the visual portion of the sim-to-real gap; randomizing physical parameters like mass and friction instead is called dynamics randomization. Isaac Lab has built-in event terms for random textures and random colors that can run automatically at the start of every episode.",
+      "example": "When training a vision policy to grasp a cube, each episode might randomly swap the tabletop for wood grain, marble, or a solid color, randomly adjust the light's direction and brightness, and slightly shift the camera position.",
+      "related": ["Domain Randomization", "Dynamics Randomization", "Sim-to-Real Transfer", "Sim-to-Real Gap", "Visual Generalization", "Variant Aggregation"]
+    },
+    {
+      "key": "sim-08#5",
+      "name_en": "VSI-Bench",
+      "aliases": ["Thinking in Space", "Visual-Spatial Intelligence Benchmark"],
+      "one_liner": "A question-answering benchmark using indoor videos to test whether multimodal models can remember and reason about spatial relationships.",
+      "explanation": "VSI-Bench comes from the paper “Thinking in Space,” by authors from NYU, Yale, and Stanford (including Saining Xie and Fei-Fei Li), released in December 2024 and selected for an oral presentation at CVPR 2025. It selects 288 first-person indoor videos from ScanNet, ScanNet++, and ARKitScenes and derives over 5,000 question-answer pairs across 8 task types: object counting, absolute distance, object size, room size, relative distance, relative direction, route planning, and appearance order, mixing multiple-choice and numerical-answer questions. The paper found the best model averaged about 45% while humans scored about 79%; roughly 71% of errors were attributed to spatial reasoning; chain-of-thought prompting did not help, while having the model first sketch a “cognitive map” improved accuracy on relative-distance questions. It is one of the standard benchmarks for measuring a multimodal model's spatial intelligence.",
+      "example": "After watching a video that scans a kitchen, the model answers: “If you are standing next to the refrigerator facing the stove, is the sink on your left or your right?” — a relative-direction question.",
+      "related": ["Spatial Intelligence", "Spatial Reasoning", "Multimodal Large Language Model", "Embodied Reasoning", "ERQA", "ScanNet Dataset"]
+    },
+    {
+      "key": "sim-08#6",
+      "name_en": "World-Model-based Policy Evaluation",
+      "aliases": ["World Model as Policy Evaluator", "World-Model Evaluation"],
+      "one_liner": "Using an interactive video world model in place of a real robot, running the policy in closed loop to estimate its performance.",
+      "explanation": "World-model-based evaluation connects a robot policy to an action-conditioned video generation model in a closed loop: the policy looks at the generated frame and outputs an action, the world model predicts the next frame based on that action, and the cycle repeats, with a human or a vision-language model finally judging whether the task was completed. It targets the problem that real-robot evaluation is slow, expensive, and hard to reproduce, while traditional simulators are laborious to set up and still fall short on visual and physical realism. Work such as WorldEval, WorldGym, and Ctrl-World appeared starting in 2025; Google DeepMind used its Veo video model to evaluate Gemini Robotics policies and cross-checked the results against over 1,600 real-robot evaluations, showing it can predict the relative ranking of different policies and can also be used for out-of-distribution generalization and safety red-teaming. New work has continued to appear into 2026, and the approach is currently used mainly for ranking checkpoints and screening for risk.",
+      "example": "Google DeepMind swapped in new objects, new backgrounds, and distractors inside the Veo world simulator to compare 8 Gemini Robotics policy checkpoints across 5 bimanual tasks, then checked the ranking against real-robot results.",
+      "related": ["World Model", "Veo World Simulator", "WorldEval", "Ctrl-World", "Sim-to-Real Correlation", "Real-robot Evaluation"]
+    },
+    {
+      "key": "sim-08#7",
+      "name_en": "Adroit",
+      "aliases": ["Adroit Hand", "ADROIT", "DAPG Tasks"],
+      "one_liner": "A benchmark for controlling a 24-DoF simulated five-fingered hand in MuJoCo to open doors, hammer nails, and more, across four tasks.",
+      "explanation": "The Adroit tasks come from a 2018 paper by Aravind Rajeswaran, Vikash Kumar, Sergey Levine, and colleagues (University of Washington, OpenAI, Berkeley), simulating a 24-degree-of-freedom ADROIT anthropomorphic hand in MuJoCo (D4RL refers to it as a simulated Shadow Hand) across four tasks: moving a ball to a target location, spinning a pen in-hand to a target orientation, hammering a nail, and pulling open a latched door. The authors collected 25 human demonstrations per task using a VR data glove, and proposed DAPG: behavioral cloning on the demonstrations first, followed by reinforcement-learning fine-tuning with a policy-gradient method that incorporates the demonstrations. D4RL later incorporated these tasks into its offline reinforcement-learning benchmark, providing human, cloned, and expert data for each, and Gymnasium-Robotics also maintains these environments. They are commonly used to test high-dimensional dexterous manipulation, sparse rewards, and demonstration-assisted learning.",
+      "example": "D4RL's pen-human dataset consists of the 25 human demonstrations for the pen-spinning task, and offline reinforcement-learning papers commonly use it to compare algorithms.",
+      "related": ["Dexterous Manipulation", "In-hand Manipulation", "Shadow Dexterous Hand", "D4RL", "MuJoCo", "Sparse Reward"]
+    },
+    {
+      "key": "sim-08#8",
+      "name_en": "ALFRED",
+      "aliases": ["Action Learning From Realistic Environments and Directives"],
+      "one_liner": "A benchmark that has an agent complete multi-step household chores in a simulated home by following natural-language instructions.",
+      "explanation": "ALFRED was proposed by Mohit Shridhar and colleagues (University of Washington, Carnegie Mellon, the Allen Institute for AI, NVIDIA), published at CVPR 2020, and built on the AI2-THOR simulator. It has 120 indoor scenes (30 each of kitchens, bathrooms, bedrooms, and living rooms), 8,055 expert demonstrations, and 25,743 English instructions, with each demonstration averaging about 50 steps; tasks fall into 7 categories, such as pick-and-place, stack-and-place, heat, cool, clean-and-place, and examining an object under a light. The agent sees only a first-person view and the instructions, and outputs discrete navigation and interaction actions, providing a pixel mask for the target object whenever it interacts. Metrics are task success rate and goal-condition success rate, plus versions weighted by path length. The original paper's baseline scored under 1% success on unseen scenes, versus about 91% for humans. Both ALFWorld and TEACh are built on top of it.",
+      "example": "Given the high-level goal “rinse off the mug and put it in the coffee maker,” paired with step-by-step instructions like “walk to the coffee maker on the right,” the agent must navigate, pick up the mug, rinse it at the sink, and then place it in the coffee maker, in sequence.",
+      "related": ["Instruction Following", "Long-Horizon Task", "AI2-THOR", "ALFWorld", "Household Tasks", "Vision-and-Language Navigation"]
+    },
+    {
+      "key": "sim-08#9",
+      "name_en": "ALFWorld",
+      "aliases": ["Aligning Text and Embodied Environments for Interactive Learning"],
+      "one_liner": "A text-game version of the ALFRED household tasks, letting an agent learn in text first and then act on the actual visuals.",
+      "explanation": "ALFWorld was proposed by Shridhar, Xingdi Yuan, and colleagues (University of Washington, Microsoft Research, Carnegie Mellon), published at ICLR 2021. It describes each ALFRED scene in PDDL (Planning Domain Definition Language) and uses Microsoft's TextWorld engine to generate an equivalent text-adventure game: the agent reads a text description of which furniture and items are in the room and acts through text commands like go to desk 1. Tasks fall into 6 categories, with 3,553 games used for training. The authors' BUTLER agent first learns a high-level policy in the text environment, then adds visual recognition (Mask R-CNN) and a low-level control module to transfer it to execution on AI2-THOR's actual visuals, training about 7 times faster than learning directly from visuals alone while also generalizing better. After large language models took off, agent frameworks such as ReAct adopted it as a standard test environment.",
+      "example": "For the task “examine the alarm clock under the desk lamp,” the text version is solved by entering go to desk 1, take alarmclock 2 from desk 1, and use desklamp 1 in sequence.",
+      "related": ["ALFRED", "AI2-THOR", "LLM Task Planning", "Planning Domain Definition Language", "Long-Horizon Task", "EmbodiedBench"]
+    },
+    {
+      "key": "sim-08#10",
+      "name_en": "ARNOLD",
+      "aliases": ["A Benchmark for Language-Grounded Task Learning with Continuous States in Realistic 3D Scenes"],
+      "one_liner": "A benchmark in Isaac Sim testing whether a robot can manipulate objects to a specified continuous state based on language.",
+      "explanation": "ARNOLD was proposed by the Beijing Institute for General Artificial Intelligence (BIGAI) together with UCLA, Peking University, Tsinghua, and Columbia, published at ICCV 2023. Earlier language-conditioned manipulation benchmarks mostly treated the goal as a binary state like open/closed; ARNOLD instead requires reaching a continuous target value, such as pulling a drawer open to a specified degree or pouring out a specified proportion of water, counting success only when the object's state stays within a tolerance range around the target. It is built on NVIDIA Isaac Sim and PhysX 5.0, and includes 8 tasks (picking up an object, adjusting orientation, opening/closing a drawer, opening/closing a cabinet door, pouring water, transferring water), 40 object types, 20 scenes, and 10,000 expert demonstrations, with language instructions generated from templates. Besides in-distribution testing, evaluation separately reports generalization splits for novel objects, novel scenes, and novel target states; the authors found that the language-conditioned policies available at the time performed noticeably worse on these splits.",
+      "example": "Given an instruction to open a cabinet door halfway, the robot must not only open the door but also stop its opening angle within an allowed range around the target value to count as successful.",
+      "related": ["Language-Conditioned Policy", "Articulated Object Manipulation", "Isaac Sim", "PhysX", "Generalization / Robustness Evaluation", "Benchmark"]
+    },
+    {
+      "key": "sim-08#11",
+      "name_en": "AutoEval",
+      "aliases": ["Autonomous Evaluation of Generalist Robot Manipulation Policies in the Real World"],
+      "one_liner": "Berkeley's round-the-clock, unattended real-robot evaluation system, which judges success automatically and resets the scene itself.",
+      "explanation": "AutoEval was proposed by Zhiyuan Zhou, Pranav Atreya, and colleagues in Sergey Levine's group at Berkeley (one author is also affiliated with NVIDIA), posted to arXiv in March 2025, with its code repository noting publication at CoRL 2025. It automates the two most labor-intensive parts of real-robot evaluation: a fine-tuned PaliGemma vision-language model serves as a success detector, answering questions like “is the drawer open?”; and OpenVLA fine-tuned on a few dozen teleoperated demonstrations (or a recorded trajectory played back) serves as a reset policy that restores the scene to its original state. Users submit their own policy server through a webpage, much like submitting a job to a compute cluster, and the system queues it up to run on a WidowX arm in Bridge-style scenes. The paper reports an average Pearson correlation of 0.942 with human evaluation, about 850 episodes run per station in 24 hours with only 3 human interventions needed, a reduction in human time of over 99%, and it has opened public scenes to the community.",
+      "example": "A researcher deploys their VLA policy as a publicly reachable server, submits an evaluation for the task “put the eggplant in the basket” on the AutoEval webpage, and the system automatically runs several dozen episodes before returning a success-rate report.",
+      "related": ["Real-robot Evaluation", "Success Detector", "BridgeData V2", "OpenVLA", "RoboArena", "Sim-to-Real Correlation"]
+    }
+  ]
+}

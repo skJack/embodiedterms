@@ -1,0 +1,408 @@
+{
+ "category": "sim",
+ "batch": 17,
+ "terms": [
+  {
+   "name_zh": "评测统计显著性（置信区间 / 序贯检验 / 多随机种子）",
+   "name_en": "Statistical Rigor in Policy Evaluation (Confidence Intervals / Sequential Testing / Multiple Seeds)",
+   "abbr": "",
+   "aliases": [
+    "统计严谨评测",
+    "评测的统计显著性"
+   ],
+   "tier": 3,
+   "one_liner": "用统计方法判断策略之间的成功率差距是真提升还是运气。",
+   "explanation": "机器人策略评测往往只跑几十次试验，成功率本身带着很大的随机误差：20 次成功 14 次，按常用的 Wilson 方法算，95% 置信区间约为 48%–85%。统计严谨的评测要求报告置信区间或贝叶斯后验，不能只给一个百分比；强化学习还要用多个随机种子重复训练，因为同一算法换个种子，结果可能差很多。Agarwal 等人在 NeurIPS 2021 的论文里建议报告区间估计、用四分位均值汇总多任务结果，并开源了 rliable 库。序贯检验是边做试验边检验，差距已经足够明显就提前停下，省掉昂贵的真机试验。丰田研究院 2024 年也撰文呼吁机器人学习按实验科学的标准做评测：写清实验条件、配合多种指标、做统计分析。",
+   "example": "丰田研究院 2025 年的大行为模型论文里，每个真机任务每个策略跑 50 次、仿真任务跑 200 次，评测员不知道在测哪个策略；结果用 Beta 先验下的贝叶斯后验展示，策略两两比较用序贯假设检验，并做 Bonferroni 校正控制多重比较。",
+   "related": [
+    "成功率",
+    "评测协议",
+    "随机种子与可复现性",
+    "双盲成对比较",
+    "真机评测",
+    "推演"
+   ],
+   "sources": [
+    {
+     "title": "Deep Reinforcement Learning at the Edge of the Statistical Precipice (arXiv 2108.13264, NeurIPS 2021)",
+     "url": "https://arxiv.org/abs/2108.13264"
+    },
+    {
+     "title": "Robot Learning as an Empirical Science: Best Practices for Policy Evaluation (arXiv 2409.09491)",
+     "url": "https://arxiv.org/abs/2409.09491"
+    },
+    {
+     "title": "A Careful Examination of Large Behavior Models for Multitask Dexterous Manipulation (TRI, arXiv 2507.05331)",
+     "url": "https://arxiv.org/html/2507.05331v1"
+    }
+   ],
+   "as_of": "2025-07"
+  },
+  {
+   "name_zh": "子步",
+   "name_en": "Substeps",
+   "abbr": "",
+   "aliases": [
+    "substepping",
+    "物理子步"
+   ],
+   "tier": 3,
+   "one_liner": "把一个仿真步再切成几段小步积分，换取更稳定、更准的物理。",
+   "explanation": "子步是物理仿真器里的一个设置：每调用一次仿真步进，引擎内部把这段时间均分成若干份，依次做积分和约束求解（计算接触力、关节约束的那一步）。Isaac Gym 的 SimParams 里有 dt 和 substeps 两个参数；Genesis 的 SimOptions 也有 substeps，文档写明它表示每次 scene.step() 里求解器积分几次。子步越多，等效时间步越小，高速碰撞和刚度大的接触越不容易穿模或数值爆炸，但计算量也成倍增加。它和控制降频不是一回事：降频是策略每隔几个仿真步才出一次动作，子步是在一个仿真步内部再细分。两者加上仿真步长，共同决定物理频率和控制频率。",
+   "example": "legged_gym 的默认配置是仿真步长 dt=0.005 秒、substeps=1、decimation=4，即物理 200 Hz、策略 50 Hz；若把 substeps 改成 2，引擎内部就按 2.5 毫秒一步积分，而策略频率不变。",
+   "related": [
+    "仿真步长",
+    "控制降频",
+    "积分器",
+    "仿真爆炸",
+    "求解器迭代次数",
+    "物理引擎"
+   ],
+   "sources": [
+    {
+     "title": "Genesis SimOptions 源码（dt / substeps 说明）",
+     "url": "https://raw.githubusercontent.com/Genesis-Embodied-AI/Genesis/main/genesis/options/solvers.py"
+    },
+    {
+     "title": "legged_gym 默认配置 legged_robot_config.py",
+     "url": "https://raw.githubusercontent.com/leggedrobotics/legged_gym/master/legged_gym/envs/base/legged_robot_config.py"
+    },
+    {
+     "title": "Isaac Gym Python API: SimParams（dt / substeps）",
+     "url": "https://docs.robotsfan.com/isaacgym/api/python/struct_py.html"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "TacSL 视触觉仿真库",
+   "name_en": "TacSL: A Library for Visuotactile Sensor Simulation and Learning",
+   "abbr": "",
+   "aliases": [
+    "TacSL"
+   ],
+   "tier": 3,
+   "one_liner": "英伟达开源的 GPU 视触觉传感器仿真与策略学习库。",
+   "explanation": "TacSL 由英伟达的 Iretiayo Akinola、Yashraj Narang 等人提出，2024 年 8 月发布在 arXiv，后发表于 IEEE Transactions on Robotics。它在 Isaac 仿真器里用 GPU 同时生成视触觉图像（GelSight 这类传感器内部相机拍到的胶面形变图）和接触力分布，论文称比此前最好的方法快 200 倍以上，这样才能大规模并行地训练带触觉输入的策略。库里还有接触丰富的训练环境（如轴孔插入）和非对称演员-评论家蒸馏（AACD）算法，用于学触觉策略并迁移到真机。代码最早放在 IsaacGymEnvs 仓库，如今 Isaac Lab 的视触觉传感器模块就是基于 TacSL 实现的。",
+   "example": "Isaac Lab 的视触觉传感器提供 GelSight R1.5 和 GelSight Mini 两种配置，用符号距离场查询计算基于惩罚的法向力和剪切力，同时可输出 RGB 触觉图像，直接作为强化学习或模仿学习的观测。",
+   "related": [
+    "触觉仿真",
+    "视触觉传感器",
+    "GelSight",
+    "Isaac Lab",
+    "非对称演员-评论家",
+    "仿真到现实迁移"
+   ],
+   "sources": [
+    {
+     "title": "TacSL: A Library for Visuotactile Sensor Simulation and Learning (arXiv 2408.06506)",
+     "url": "https://arxiv.org/abs/2408.06506"
+    },
+    {
+     "title": "TacSL 项目主页",
+     "url": "https://iakinola23.github.io/tacsl/"
+    },
+    {
+     "title": "Isaac Lab 文档：Visuo-Tactile Sensor",
+     "url": "https://isaac-sim.github.io/IsaacLab/main/source/overview/core-concepts/sensors/visuo_tactile_sensor.html"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "触觉仿真",
+   "name_en": "Tactile Simulation",
+   "abbr": "",
+   "aliases": [
+    "触觉传感器仿真",
+    "Tactile Sensor Simulation"
+   ],
+   "tier": 3,
+   "one_liner": "在仿真器里模拟触觉传感器读数，让带触觉的策略能在仿真中训练。",
+   "explanation": "触觉仿真指在物理仿真器中生成触觉传感器应有的输出，比如视触觉传感器（用内置相机拍弹性胶面形变的传感器，如 GelSight、DIGIT）的触觉图像、胶面标记点的位移，或压阻阵列的压力分布。难点是要同时处理接触、软材料形变、光照和成像，既要像真的，又要算得快。常见做法大致三类：拿渲染器按接触几何直接渲染触觉图像，如 Meta 开源的 TACTO；用少量真实样例标定查找表，如卡内基梅隆大学的 Taxim；用 GPU 并行计算接触力场和图像，如英伟达的 TacSL。它让仿真到现实迁移能扩展到插孔、拧螺丝这类接触丰富的操作，但仿真读数和真实传感器之间仍有差距，常要配合域随机化或少量真机数据。",
+   "example": "TACTO 论文用仿真生成了 100 万次抓取的触觉数据，训练模型预测一次抓取稳不稳。",
+   "related": [
+    "视触觉传感器",
+    "TACTO",
+    "Taxim",
+    "TacSL 视触觉仿真库",
+    "传感器仿真",
+    "触觉图像"
+   ],
+   "sources": [
+    {
+     "title": "TACTO: A Fast, Flexible, and Open-source Simulator for High-Resolution Vision-based Tactile Sensors (arXiv 2012.08456)",
+     "url": "https://arxiv.org/abs/2012.08456"
+    },
+    {
+     "title": "Taxim: An Example-based Simulation Model for GelSight Tactile Sensors (arXiv 2109.04027)",
+     "url": "https://arxiv.org/abs/2109.04027"
+    },
+    {
+     "title": "TacSL: A Library for Visuotactile Sensor Simulation and Learning (arXiv 2408.06506)",
+     "url": "https://arxiv.org/abs/2408.06506"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "TACTO",
+   "name_en": "TACTO: A Fast, Flexible, and Open-source Simulator for High-Resolution Vision-based Tactile Sensors",
+   "abbr": "",
+   "aliases": [
+    "TACTO 视触觉仿真器"
+   ],
+   "tier": 3,
+   "one_liner": "Meta 开源的视触觉仿真器，配合 PyBullet 渲染 DIGIT 等触觉图像。",
+   "explanation": "TACTO 由 Shaoxiong Wang、Mike Lambeta、Po-Wei Chou、Roberto Calandra 开发，代码发布在 Meta 的 facebookresearch 仓库，论文发表于 IEEE RA-L 并在 ICRA 2022 报告。它用 PyRender 渲染器根据物体与弹性胶面的接触几何，每秒生成数百帧高分辨率触觉图像，并提供和 PyBullet 物理引擎对接的接口，自带 DIGIT 和 OmniTact 两种传感器的模型与配置。作者特意说明，TACTO 不负责接触动力学（形变、摩擦）的物理精度，这部分交给现有物理引擎。它以 MIT 许可开源，可直接 pip 安装。",
+   "example": "论文用 TACTO 仿真 100 万次抓取来训练抓取稳定性预测，还演示了用触觉控制弹珠滚动的任务，以及初步的仿真到现实迁移。",
+   "related": [
+    "触觉仿真",
+    "DIGIT 视触觉传感器",
+    "PyBullet",
+    "Taxim",
+    "视触觉传感器"
+   ],
+   "sources": [
+    {
+     "title": "TACTO (arXiv 2012.08456)",
+     "url": "https://arxiv.org/abs/2012.08456"
+    },
+    {
+     "title": "facebookresearch/tacto GitHub 仓库",
+     "url": "https://github.com/facebookresearch/tacto"
+    }
+   ],
+   "as_of": "2022-02"
+  },
+  {
+   "name_zh": "Taxim",
+   "name_en": "Taxim: An Example-based Simulation Model for GelSight Tactile Sensors",
+   "abbr": "",
+   "aliases": [
+    "Taxim 触觉仿真模型"
+   ],
+   "tier": 3,
+   "one_liner": "用少量真实数据标定的 GelSight 视触觉传感器样例式仿真模型。",
+   "explanation": "Taxim 由卡内基梅隆大学 RoboTouch 实验室的 Zilin Si 和 Wenzhen Yuan 在 2021 年提出，专门仿真 GelSight 类视触觉传感器。所谓样例式（example-based），是不从头建模光路，而是用真实传感器采到的样例标定一张多项式查找表，把胶面形变的几何直接映射成相机像素亮度；胶面上标记点的运动则用弹性形变理论叠加计算。标定只需不到 100 个真实数据点，所以容易移植到不同型号的 GelSight。论文报告它的像素级光强误差低于此前方法，而且用 CPU 就能跑。它常和 TACTO 对比：TACTO 用通用渲染器出图，Taxim 靠实测数据标定出图。",
+   "example": "给 Taxim 输入物体点云和按压深度，就能得到对应的 GelSight 触觉图像；再给定 x、y、z 三个方向的载荷，可以得到胶面标记点的位移场。",
+   "related": [
+    "触觉仿真",
+    "GelSight",
+    "TACTO",
+    "标记点跟踪",
+    "光度立体"
+   ],
+   "sources": [
+    {
+     "title": "Taxim: An Example-based Simulation Model for GelSight Tactile Sensors (arXiv 2109.04027)",
+     "url": "https://arxiv.org/abs/2109.04027"
+    },
+    {
+     "title": "Robo-Touch/Taxim GitHub 仓库",
+     "url": "https://github.com/Robo-Touch/Taxim"
+    }
+   ],
+   "as_of": "2021-12"
+  },
+  {
+   "name_zh": "终止与截断",
+   "name_en": "Termination vs. Truncation",
+   "abbr": "",
+   "aliases": [
+    "terminated / truncated",
+    "超时截断"
+   ],
+   "tier": 3,
+   "one_liner": "回合结束分两种：任务本身到头叫终止，因步数上限被人为打断叫截断。",
+   "explanation": "这是强化学习环境接口里的一对概念。终止指智能体进入了马尔可夫决策过程的终止状态，比如任务完成、机器人摔倒；截断指因为任务之外的原因被打断，最常见的是训练时设的最大步数到了。两者对训练的影响不同：终止之后没有未来回报，价值目标就是当步奖励；截断时的状态并不是终点，算目标时仍应用下一状态的价值来自举（用估计值代替还没看到的后续回报）。Pardo 等人在 ICML 2018 的论文专门分析过把时间上限当终止带来的问题。Gymnasium 从 0.26 版起让 step() 分别返回 terminated 和 truncated，取代原来的单个 done；Isaac Lab 也用 time_out 标记来区分。",
+   "example": "legged_gym 里，机身等指定部位接触力超过阈值算终止；回合步数超过上限算超时截断，通过 extras 中的 time_outs 传给 rsl_rl，PPO 在超时步把折扣后的价值估计加回奖励，相当于继续自举。",
+   "related": [
+    "回合",
+    "提前终止",
+    "价值函数",
+    "自举",
+    "环境（Env）与 reset / step 接口",
+    "Gymnasium"
+   ],
+   "sources": [
+    {
+     "title": "Gymnasium: Handling Time Limits",
+     "url": "https://gymnasium.farama.org/tutorials/gymnasium_basics/handling_time_limits/"
+    },
+    {
+     "title": "Time Limits in Reinforcement Learning (arXiv 1712.00378, ICML 2018)",
+     "url": "https://arxiv.org/abs/1712.00378"
+    },
+    {
+     "title": "rsl_rl PPO 实现（time_outs 自举）",
+     "url": "https://raw.githubusercontent.com/leggedrobotics/rsl_rl/master/rsl_rl/algorithms/ppo.py"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "The Colosseum",
+   "name_en": "The Colosseum: A Benchmark for Evaluating Generalization for Robotic Manipulation",
+   "abbr": "",
+   "aliases": [
+    "Colosseum",
+    "THE COLOSSEUM"
+   ],
+   "tier": 3,
+   "one_liner": "在 RLBench 任务上系统施加 14 类环境扰动，测操作策略泛化能力的基准。",
+   "explanation": "The Colosseum 由 Wilbert Pumacay、Jiafei Duan、Dieter Fox 等人提出，发表于 RSS 2024。它基于 PyRep 仿真框架，从 RLBench 的 100 个任务里选了 20 个，每个任务可沿 14 个维度施加扰动：被操作物体和静止物体的颜色、纹理、尺寸，灯光颜色，桌面颜色与纹理，背景纹理，干扰物数量，相机位姿，物体摩擦和质量。作者用它测了 PerAct、RVT、R3M、MVP、VoxPoser 等方法，发现单个扰动就让成功率下降 30%–50%，多种扰动同时施加时下降超过 75%，影响最大的是干扰物数量、目标物体颜色和光照。真机复现实验中，仿真与真机结果的 R² 为 0.614。",
+   "example": "对同一个任务，分别只换桌面纹理、只加干扰物、只改相机位姿各跑一组试验，再和无扰动时的成功率对比，就能看出策略对哪类变化最敏感。",
+   "related": [
+    "RLBench",
+    "泛化与鲁棒性评测",
+    "干扰物",
+    "域随机化",
+    "PerAct",
+    "视觉泛化"
+   ],
+   "sources": [
+    {
+     "title": "THE COLOSSEUM: A Benchmark for Evaluating Generalization for Robotic Manipulation (arXiv 2402.08191)",
+     "url": "https://arxiv.org/abs/2402.08191"
+    },
+    {
+     "title": "The Colosseum 项目主页",
+     "url": "https://robot-colosseum.github.io/"
+    },
+    {
+     "title": "robot-colosseum GitHub 仓库",
+     "url": "https://github.com/robot-colosseum/robot-colosseum"
+    }
+   ],
+   "as_of": "2024-05"
+  },
+  {
+   "name_zh": "unitree_rl_gym",
+   "name_en": "unitree_rl_gym (Unitree RL Gym)",
+   "abbr": "",
+   "aliases": [
+    "宇树 RL Gym",
+    "Unitree RL Gym"
+   ],
+   "tier": 3,
+   "one_liner": "宇树官方开源的强化学习运控示例框架，覆盖仿真训练到真机部署。",
+   "explanation": "unitree_rl_gym 是宇树科技在 GitHub 开源的强化学习示例仓库，基于苏黎世联邦理工的 legged_gym（Isaac Gym 上的足式机器人训练框架）和 rsl_rl 算法库，支持 Go2 四足以及 H1、H1_2、G1 人形机器人。它把流程分成四步：在 Isaac Gym 里训练（Train），在仿真中回放检查（Play），把策略搬到 MuJoCo 里做仿真到仿真验证（Sim2Sim），最后部署到真机（Sim2Real）。仓库可导出 MLP 或 LSTM 策略网络，并为 G1 提供 C++ 部署示例。宇树另有一个基于 Isaac Lab（2.3 及以上）的 unitree_rl_lab 仓库，两者是不同项目。",
+   "example": "新手常见路径：用仓库的 train.py 指定 --task=g1 训练 G1 行走策略，play.py 回放并导出网络，放进 MuJoCo 确认不摔，再上真机。",
+   "related": [
+    "legged_gym",
+    "Isaac Gym",
+    "rsl_rl",
+    "仿真到仿真迁移",
+    "宇树 G1",
+    "MuJoCo"
+   ],
+   "sources": [
+    {
+     "title": "unitreerobotics/unitree_rl_gym GitHub 仓库",
+     "url": "https://github.com/unitreerobotics/unitree_rl_gym"
+    },
+    {
+     "title": "unitreerobotics/unitree_rl_lab GitHub 仓库",
+     "url": "https://github.com/unitreerobotics/unitree_rl_lab"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "变体聚合",
+   "name_en": "Variant Aggregation (SimplerEnv)",
+   "abbr": "VA",
+   "aliases": [
+    "Variant Aggregation"
+   ],
+   "tier": 3,
+   "one_liner": "SimplerEnv 的评测方式之一：在多个视觉变体场景里测策略再取平均。",
+   "explanation": "变体聚合是 SimplerEnv（SIMPLER）提出的两种「真实到仿真」评测方式之一，出自 Xuanlin Li 等人发表在 CoRL 2024 的论文。仿真画面和真机画面总有差距：另一种方式视觉匹配（Visual Matching）是尽量让仿真画面贴近真实；变体聚合则反过来，对场景做大幅视觉随机化，沿背景、光照、干扰物、桌面纹理、相机位姿等轴生成多个环境变体，分别测成功率后取平均，用来估计策略在各种视觉变化下的整体表现。论文用平均最大排名违背（MMRV）和皮尔逊相关系数衡量仿真结果与真机结果是否一致；在论文的实验里，视觉匹配与真机的一致性总体更好。VLA 论文报告谷歌机器人任务的 SimplerEnv 成绩时，常同时列 VM 和 VA 两栏。",
+   "example": "在「拿起可乐罐」任务上，让同一个策略在换背景、换光照、加干扰物、换桌面纹理、换相机角度等多个变体里各测一轮，平均成功率就是它的 VA 分数。",
+   "related": [
+    "SimplerEnv",
+    "视觉匹配",
+    "平均最大排名违背",
+    "仿真-真机相关性",
+    "视觉随机化",
+    "仿真评测"
+   ],
+   "sources": [
+    {
+     "title": "Evaluating Real-World Robot Manipulation Policies in Simulation (SIMPLER, arXiv 2405.05941)",
+     "url": "https://arxiv.org/html/2405.05941"
+    },
+    {
+     "title": "simpler-env/SimplerEnv GitHub 仓库",
+     "url": "https://github.com/simpler-env/SimplerEnv"
+    }
+   ],
+   "as_of": "2024-05"
+  },
+  {
+   "name_zh": "VBench 视频生成评测基准",
+   "name_en": "VBench: Comprehensive Benchmark Suite for Video Generative Models",
+   "abbr": "",
+   "aliases": [
+    "VBench",
+    "VBench++",
+    "VBench-2.0"
+   ],
+   "tier": 3,
+   "one_liner": "把视频生成质量拆成 16 个维度分别打分的开源评测基准。",
+   "explanation": "VBench 由南洋理工大学与上海人工智能实验室等机构的团队提出（第一作者 Ziqi Huang），2023 年 11 月发布，入选 CVPR 2024 Highlight。它不给一个笼统的总分，而是把文生视频质量拆成 16 个维度，如主体一致性、背景一致性、时间闪烁、运动平滑度、动态程度、美学质量、物体类别、空间关系等，每个维度配专门的提示词和自动评估方法，并用人类偏好标注检验打分是否和人的判断一致。后续的 VBench++ 扩展到图生视频、长视频和可信度评测；2025 年 3 月的 VBench-2.0 转向常识推理、物理真实性、人体动作等「内在忠实度」。具身领域评估视频世界模型时，常借用它的部分指标。",
+   "example": "评估一个用来生成机器人训练视频的模型时，可以用 VBench 的主体一致性和运动平滑度检查机械臂在视频中途有没有变形、抖动；动作是否符合物理，还要用 Physics-IQ 这类专门基准。",
+   "related": [
+    "视频生成模型",
+    "世界模型",
+    "弗雷歇视频距离",
+    "Physics-IQ 物理理解基准",
+    "WorldScore 世界生成评测",
+    "EWMBench 具身世界模型评测"
+   ],
+   "sources": [
+    {
+     "title": "VBench: Comprehensive Benchmark Suite for Video Generative Models (arXiv 2311.17982)",
+     "url": "https://arxiv.org/abs/2311.17982"
+    },
+    {
+     "title": "Vchitect/VBench GitHub 仓库",
+     "url": "https://github.com/Vchitect/VBench"
+    }
+   ],
+   "as_of": "2025-03"
+  },
+  {
+   "name_zh": "VIMA-Bench",
+   "name_en": "VIMA-Bench",
+   "abbr": "",
+   "aliases": [
+    "VIMABench"
+   ],
+   "tier": 3,
+   "one_liner": "用图文交错的多模态提示描述任务的桌面操作仿真基准，带四级泛化测试。",
+   "explanation": "VIMA-Bench 随 VIMA 模型一起提出，第一作者 Yunfan Jiang，合作者包括李飞飞、Anima Anandkumar 等，发表于 ICML 2023。它在 Ravens 仿真器（基于 PyBullet 的桌面操作环境）上扩展出 17 个元任务，任务指令写成文字和图片交错的多模态提示，覆盖简单物体操作、视觉目标到达、新概念理解、单样本视频模仿、视觉约束满足和视觉推理等类别，并提供 65 万条成功演示轨迹。评测分四级：L1 只随机物体摆放位置；L2 已见过的物体和纹理以新组合出现；L3 出现新物体和新纹理；L4 是全新任务，17 个任务里留出 4 个专门测零样本泛化。动作空间是一个抓取位姿加一个放置位姿。",
+   "example": "VIMA 论文报告，在最难的零样本泛化设置下，同样训练数据时 VIMA 的任务成功率最多是其他方案的 2.9 倍；训练数据少 10 倍时仍高出 2.7 倍。",
+   "related": [
+    "VIMA",
+    "基准测试",
+    "组合泛化",
+    "零样本",
+    "桌面操作",
+    "Transporter Networks"
+   ],
+   "sources": [
+    {
+     "title": "VIMA: General Robot Manipulation with Multimodal Prompts (arXiv 2210.03094)",
+     "url": "https://arxiv.org/html/2210.03094"
+    },
+    {
+     "title": "vimalabs/VIMABench GitHub 仓库",
+     "url": "https://github.com/vimalabs/VIMABench"
+    }
+   ],
+   "as_of": "2023-05"
+  }
+ ]
+}

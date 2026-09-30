@@ -1,0 +1,113 @@
+{
+  "batch": "perception-12",
+  "terms": [
+    {
+      "key": "perception-12#0",
+      "name_en": "Contact Estimation",
+      "aliases": ["Touchdown Detection", "Foot Contact Estimation"],
+      "one_liner": "Determines whether each foot of a legged robot is currently on the ground or in the air.",
+      "explanation": "Contact estimation is a subproblem of state estimation for legged robots: at every control cycle, it decides whether each leg is touching the ground, usually outputting a contact probability. There are several general approaches: reading foot-force sensors and thresholding them; using joint torques and a dynamics model to infer ground reaction force; probabilistically fusing gait phase and foot height; or, as in Lin and colleagues (CoRL 2021), training a neural network to learn touchdown events directly from proprioceptive data like joint encoders and the IMU (inertial measurement unit), with no dedicated contact sensor needed. Downstream modules all depend on this judgment: leg odometry assumes a foot in contact isn’t moving and uses that to infer body velocity, so a wrong call causes drift; the controller also relies on it to switch between stance and swing phases.",
+      "example": "If a quadruped robot trotting over gravel misjudges a slipping foot as “stably in contact,” leg odometry built on an invariant extended Kalman filter will mistake the slip for body motion, and the position estimate will drift as a result.",
+      "related": ["Leg Odometry", "Invariant Extended Kalman Filter", "State Estimation", "Foot-Force Sensor", "Learned State Estimator", "Stance Phase / Swing Phase"]
+    },
+    {
+      "key": "perception-12#1",
+      "name_en": "Contact Microphone",
+      "aliases": ["Audio as Tactile Signal", "Piezo Contact Microphone"],
+      "one_liner": "A microphone stuck to a gripper or object that picks up contact vibration, used as a cheap tactile sensor.",
+      "explanation": "A contact microphone doesn’t pick up sound through the air — it’s attached to a solid surface and picks up vibration directly, most commonly using a piezoelectric element. In robotics it’s used as a cheap, durable substitute for touch: the high-frequency vibrations from scraping, collision, friction, or shaking can reveal whether contact has occurred, what material a surface is, or whether something is inside a container — things a camera often can’t see. Hearing Touch (ICRA 2024) uses a contact microphone as a stand-in for touch and improves a manipulation policy with representations learned from large-scale audio-visual pretraining; ManiWAV (CoRL 2024) embeds a piezoelectric contact microphone in one finger of a UMI handheld gripper, so collected human demonstrations carry both video and sound. Its limitation is that it can’t help when the interaction itself makes no sound.",
+      "example": "In ManiWAV’s dice-pouring task, the robot first shakes a cup and listens through the contact microphone for the vibration of dice hitting the cup, judging whether the cup has been fully emptied.",
+      "related": ["Tactile Sensor", "Multimodal Perception", "Universal Manipulation Interface", "Contact-Rich Manipulation", "Visuo-Tactile Fusion", "Microphone Array"]
+    },
+    {
+      "key": "perception-12#2",
+      "name_en": "Contact-GraspNet",
+      "aliases": ["Contact-GraspNet: Efficient 6-DoF Grasp Generation in Cluttered Scenes"],
+      "one_liner": "NVIDIA’s grasping network that generates 6-DoF grasps directly from a depth point cloud in cluttered scenes.",
+      "explanation": "Contact-GraspNet was proposed by Sundermeyer, Mousavian, Triebel, and Fox at NVIDIA, published at ICRA 2021. It targets two-finger parallel-jaw grippers: given a depth image plus camera intrinsics (or a point cloud directly), with an optional object segmentation mask, it outputs a batch of 6-DoF grasp poses with confidence scores end to end. Its key design is treating every observed 3D point as a possible fingertip contact point, which leaves only the gripper’s 3D orientation and opening width — 4 degrees of freedom — left to predict, greatly easing the learning problem. The model doesn’t distinguish between object categories, and it was trained on 17 million simulated grasps (grasp annotations from the ACRONYM dataset); the paper reports over 90% success grasping unseen objects in cluttered real-robot scenes. It’s commonly used as the grasping module right after segmentation or open-vocabulary detection.",
+      "example": "A table is cluttered with cups, boxes, and toys; a segmentation model first cuts out the target cup, and the depth image plus the cup’s mask are fed into Contact-GraspNet, which picks the highest-confidence grasp among the candidates that land on the cup for motion planning to execute.",
+      "related": ["Grasp Pose Detection", "AnyGrasp", "ACRONYM Grasp Dataset", "GraspNet-1Billion Dataset", "Point Cloud", "Two-Finger Gripper"]
+    },
+    {
+      "key": "perception-12#3",
+      "name_en": "CoTracker",
+      "aliases": ["CoTracker: It is Better to Track Together", "CoTracker3", "CoTracker2"],
+      "one_liner": "Meta’s open-source video point-tracking model that jointly tracks large numbers of pixels, including ones that get occluded.",
+      "explanation": "CoTracker was proposed by Karaev and colleagues at Meta AI and Oxford’s VGG group, posted to arXiv in July 2023 and published at ECCV 2024. It belongs to the tracking-any-point family: given any pixel in a video, it outputs that point’s position and visibility in every subsequent frame. Most earlier methods tracked each point independently; CoTracker uses a Transformer to track a large batch of points jointly, exploiting the correlations between points to be more robust to occlusion and points leaving the frame, and it processes video in a sliding short time window so it can run online. The October 2024 CoTracker3 simplifies the architecture and trains using pseudo-labels generated on unlabeled real videos by existing models, needing roughly 1,000 times less training data than earlier methods. In robot learning, it’s commonly used to automatically label point trajectories on demonstration videos.",
+      "example": "ATM (Any-Point Trajectory Modeling) uses CoTracker to generate point trajectories on demonstration videos as ground truth to train a trajectory-prediction model, then uses the predicted future trajectories to guide a robot policy.",
+      "related": ["Tracking Any Point", "TAPIR", "Optical Flow", "ATM (Any-Point Trajectory Modeling)", "3D Point Tracking", "Occlusion"]
+    },
+    {
+      "key": "perception-12#4",
+      "name_en": "Crosstalk (Inter-Axis Coupling)",
+      "aliases": ["Cross-Axis Coupling", "Inter-Axis Interference"],
+      "one_liner": "When a multi-axis force sensor loaded along only one direction still shows nonzero readings on the other axes.",
+      "explanation": "Crosstalk is a metric for evaluating multi-axis force sensors, such as six-axis force sensors: when a load is applied along only one axis — say, a pure vertical push — the other channels that should read zero (Fx, Fy, and the torques) show a reading anyway. This happens because the strain gauges inside the sensor respond to loads from multiple directions at once, compounded by manufacturing and mounting errors in the elastic body. Manufacturers usually calibrate a decoupling matrix that converts the raw signals into three forces and three torques; the crosstalk that remains after calibration is typically expressed as a percentage of full scale (%FS), tested with both single-axis loading and simultaneous multi-axis loading. It directly affects force-control accuracy: in tasks like assembly or polishing, coupling error can make a robot believe it feels a lateral force that isn’t really there, triggering an incorrect compliant motion.",
+      "example": "A six-axis force sensor loaded with only 100 N straight down reads 1 N on the Fx channel; if Fx has a 100 N range, this crosstalk figure is 1% FS.",
+      "related": ["Six-Axis Force Sensor", "Strain Gauge", "Wrench (Force-Torque Vector)", "Sensor Drift (Bias Drift)", "Force Control", "Joint Torque Sensor"]
+    },
+    {
+      "key": "perception-12#5",
+      "name_en": "CUT3R",
+      "aliases": ["Continuous 3D Perception Model with Persistent State", "Continuous Updating Transformer for 3D Reconstruction"],
+      "one_liner": "A 3D reconstruction model with a persistent memory state that reads images one at a time and updates the whole scene online.",
+      "explanation": "CUT3R stands for Continuous Updating Transformer for 3D Reconstruction, proposed by researchers at UC Berkeley and Google DeepMind, and presented as an oral paper at CVPR 2025. It follows the same idea as DUSt3R-style models — regressing point maps directly from images, with one 3D point per pixel — but adds a continuously updated state: as each new image arrives, the model first uses it to update the state, then outputs that image’s point map in a shared coordinate system, at real-world scale; the reconstruction gradually gets more complete as more input arrives, with no per-video optimization needed. It can process either a video stream or an unordered set of photos, supports dynamic scenes with moving objects, and can even infer unseen regions from virtual viewpoints that were never actually photographed.",
+      "example": "Feeding a robot head camera’s video into CUT3R frame by frame produces, for each new frame, a point map aligned into the same coordinate system; accumulated together, this becomes a room point cloud that keeps getting more complete.",
+      "related": ["DUSt3R", "Point Map", "Feed-Forward 3D Reconstruction", "4D Reconstruction", "VGGT", "MASt3R-SLAM"]
+    },
+    {
+      "key": "perception-12#6",
+      "name_en": "Daimon DM-Tac Visuotactile Sensor",
+      "aliases": ["DM-Tac W2", "DM-Tac X", "DM-Tac F"],
+      "one_liner": "A line of vision-based tactile sensors from Daimon Robotics that senses force by imaging how a contact surface deforms.",
+      "explanation": "DM-Tac is the vision-based tactile sensor product line from Shenzhen-based Daimon Robotics, a company incubated at the Hong Kong University of Science and Technology that began formal operations in 2023. A vision-based tactile sensor places a small camera behind an elastic contact surface and infers contact shape and force from how that surface deforms in the image. According to the company’s website (as of 2026), the line includes the general-purpose DM-Tac W2 (available in two sizes, W2L and W2M), the 28°-pointed DM-Tac X for sharp-edge contact, DM-Tac F for dexterous-hand fingertips (covering the pad, side, and tip of a finger), and DM-Tac G, a two-finger gripper with sensors built in. The W2 and X sense at 384×288 resolution (about 110,000 effective sensing points) at a 120 Hz sampling rate, and the company states they can output contact geometry, a 3D deformation field, 3D distributed force, and a 6D lumped force. Daimon also uses these sensors to collect robot datasets that include touch.",
+      "example": "Mounting two DM-Tac W2 sensors on the two sides of a parallel gripper to pick up an egg lets the sensors give real-time contact deformation and distributed force, which the controller uses to adjust grip force and avoid crushing or dropping it.",
+      "related": ["Vision-Based Tactile Sensor", "Daimon Robotics", "Daimon-Infinity Dataset", "GelSight", "Vision-Tactile-Language-Action Model", "Tactile Data"]
+    },
+    {
+      "key": "perception-12#7",
+      "name_en": "Dense Correspondence",
+      "aliases": ["Semantic Correspondence", "Dense Matching"],
+      "one_liner": "Finds, for every pixel in one image, the matching location in another image.",
+      "explanation": "Dense correspondence means finding a match for every pixel (or nearly every pixel) between two images, as opposed to sparse matching, which matches only a small number of feature points. It comes in two flavors: geometric correspondence finds where the same physical point appears from a different viewpoint or at a different time — optical flow between neighboring video frames is one example; semantic correspondence finds parts with the same meaning across different objects, like the handles of two differently shaped cups. Recent work often uses nearest-neighbor matching on features from pretrained vision models directly, such as DINO-family features, or the features DIFT extracts from a diffusion model at NeurIPS 2023, with no dedicated training needed. In robotics, this lets a grasp point or keypoint from a demonstration transfer to a new object; MIT’s 2018 Dense Object Nets used self-supervised dense descriptors to transfer grasps between objects of the same category.",
+      "example": "In a demonstration, a person grasps the handle of a red cup; swapping in a never-before-seen blue mug, dense correspondence using DINOv2 features finds the matching handle pixels on the blue mug, and combined with depth this gives the grasp location.",
+      "related": ["Feature Matching", "Semantic Keypoint", "Optical Flow", "DINOv2", "Keypoint Detection", "Neural Descriptor Fields"]
+    },
+    {
+      "key": "perception-12#8",
+      "name_en": "Depth Anything 3",
+      "aliases": ["DA3", "Depth Anything 3: Recovering the Visual Space from Any Views"],
+      "one_liner": "ByteDance Seed’s geometry model that recovers depth and camera poses from any number of images, with poses optional.",
+      "explanation": "Depth Anything 3 was released by ByteDance’s Seed team in November 2025, the third generation of the Depth Anything series. The first two generations only did depth estimation from a single image; DA3 extends this to any number of input images, with camera poses either known or unknown, outputting spatially consistent depth and camera parameters, which can be further turned into a point cloud or 3D Gaussians. The design is deliberately simple: the backbone is just an ordinary Transformer (the original DINO encoder), and the training objective is unified into a single “depth plus ray” prediction. The paper reports, on its own visual geometry benchmark, that camera pose accuracy is on average 44.3% higher than the previous best method, VGGT, and geometric accuracy is 25.1% higher. Models range in size from Small (0.08B) to Giant (1.15B), with additional metric-depth and monocular-specific versions available.",
+      "example": "Walking around a table taking 5 photos on a phone with no camera parameters provided, DA3 gives every image’s depth and camera pose in a single forward pass and fuses them into one tabletop point cloud.",
+      "related": ["Depth Anything", "VGGT", "Feed-Forward 3D Reconstruction", "Monocular Depth Estimation", "3D Gaussian Splatting", "DINOv2"]
+    },
+    {
+      "key": "perception-12#9",
+      "name_en": "Depth Completion",
+      "aliases": ["Depth Inpainting", "Depth Map Completion"],
+      "one_liner": "Fills in missing or sparse pixels in a depth map to produce complete, dense depth.",
+      "explanation": "Depth completion takes an incomplete depth map — one with holes, or sparse like lidar output — usually paired with a matching color image, and predicts dense depth with a value at every pixel. The RGB-D depth cameras commonly used on robots often fail to measure depth on transparent, reflective, overly bright, or distant surfaces, yet grasping and obstacle avoidance both depend on complete geometry, so completion is a common preprocessing step. The simplest approach interpolates from neighboring pixels to fill holes; Zhang and Funkhouser at CVPR 2018 proposed first predicting surface normals and occlusion boundaries from the color image, then jointly solving for complete depth together with the raw depth; ClearGrasp (2019) specifically completes depth for transparent objects to support grasping. Recent work also completes depth by combining a monocular depth foundation model with sparse depth input.",
+      "example": "A gripper needs to grasp a glass cup on a table, but the depth camera returns almost entirely invalid values over the cup’s region; a method like ClearGrasp first fills in the cup surface’s depth, which is then passed to the grasp-detection network.",
+      "related": ["Depth Holes (Missing Depth)", "Depth Camera", "Perceiving Transparent and Reflective Objects", "Monocular Depth Estimation", "Prompt Depth Anything", "Robbyant LingBot-Depth"]
+    },
+    {
+      "key": "perception-12#10",
+      "name_en": "Depth Holes",
+      "aliases": ["Missing Depth", "Invalid Depth Pixels"],
+      "one_liner": "Pixels where a depth camera can’t measure distance, usually recorded as zero in the depth map.",
+      "explanation": "Depth holes are pixels in a depth map with no valid measurement; cameras like the RealSense record them as zero, which shows up as black patches. Taking stereo-based depth cameras as an example, Intel RealSense’s official white paper lists several causes: occlusion (the left and right cameras can’t both see the same point), lack of surface texture, repeating patterns causing multiple matches, over- or under-exposure, and objects closer than the minimum working distance; transparent surfaces, specular reflections, and very distant surfaces also often fail to register. Holes directly affect downstream processing: missing chunks in a point cloud cause grasp detection and obstacle avoidance to misjudge, and feeding a raw zero into a network as if it were a real distance makes the network think the object is pressed right up against the camera. Common fixes include post-processing filters (filling holes from neighboring pixels, or from previous frames’ values), learned depth completion, or masking out missing regions during training.",
+      "example": "Photographing a stainless-steel spoon and a glass on a table with a stereo depth camera: the highlight on the spoon and the whole glass often come back as a patch of zeros in the depth map, so these two objects are nearly missing once converted to a point cloud.",
+      "related": ["Depth Completion", "Depth Camera", "Active Stereo", "Flying Pixels", "Occlusion", "Perceiving Transparent and Reflective Objects"]
+    },
+    {
+      "key": "perception-12#11",
+      "name_en": "Depth Pro",
+      "aliases": ["Apple Depth Pro", "Depth Pro: Sharp Monocular Metric Depth in Less Than a Second"],
+      "one_liner": "Apple’s open-source monocular metric-depth model that outputs a sharp depth map in meters from a single image.",
+      "explanation": "Depth Pro was proposed by Bochkovskii, Koltun, and colleagues at Apple; the paper, code, and weights were released in October 2024, and it was published at ICLR 2025. It does zero-shot monocular metric depth estimation: given only a single image, with no metadata like camera intrinsics required, it outputs absolute depth in meters while also estimating the camera’s focal length. It’s built for sharp edges and fine detail, and the paper reports generating a 2.25-megapixel depth map in 0.3 seconds on an ordinary GPU. Technically, it uses an efficient multi-scale vision Transformer for dense prediction, trains on a mix of real and synthetic data, and introduces a dedicated metric for measuring the accuracy of depth boundaries. Relative depth only tells you what’s nearer or farther; metric depth carries true scale, which is what lets it be back-projected directly into a point cloud a robot can use.",
+      "example": "Given a kitchen photo downloaded from the web with no capture parameters, Depth Pro outputs how many meters each pixel is from the camera along with an estimated focal length, letting a true-scale point cloud be recovered with a pinhole camera model.",
+      "related": ["Monocular Depth Estimation", "Metric Depth / Relative Depth", "Depth Anything", "Metric3D", "MoGe", "Camera Intrinsics"]
+    }
+  ]
+}

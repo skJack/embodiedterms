@@ -1,0 +1,448 @@
+{
+  "category": "training",
+  "batch": 16,
+  "terms": [
+    {
+      "name_zh": "基于可验证奖励的强化学习",
+      "name_en": "Reinforcement Learning with Verifiable Rewards",
+      "abbr": "RLVR",
+      "aliases": [
+        "可验证奖励强化学习",
+        "RL with Verifiable Rewards"
+      ],
+      "tier": 3,
+      "one_liner": "用程序能自动判对错的结果当奖励，对模型做强化学习训练。",
+      "explanation": "RLVR 这个名字出自艾伦人工智能研究所（Ai2）2024 年 11 月的 Tülu 3 论文：对数学题、可自动检查的指令约束等任务，用规则或程序判断模型输出是否正确，答对给一个固定奖励、答错给 0，再用 PPO 等强化学习算法更新模型。它不需要单独训练奖励模型（RLHF 里给回答打分的网络），奖励来源更可靠，相对不易被模型钻空子。2025 年 DeepSeek-R1 用基于规则的准确性奖励练出推理能力，让这条路线广为人知。放到机器人上，「任务成没成功」就是天然的可验证奖励，SimpleVLA-RL、VLA-RFT 等工作都用成功与否的二值奖励对 VLA 做强化学习微调。",
+      "example": "SimpleVLA-RL 在 OpenVLA-OFT 上只用「任务成功得奖励、失败不得」的结果奖励做强化学习，在 LIBERO 上取得领先成绩，在 RoboTwin 1.0 / 2.0 上超过 π0，真机表现也好于只做监督微调的版本。",
+      "related": [
+        "强化学习微调",
+        "奖励模型",
+        "基于人类反馈的强化学习",
+        "组相对策略优化",
+        "稀疏奖励",
+        "SimpleVLA-RL"
+      ],
+      "sources": [
+        {
+          "title": "Lambert et al. 2024: Tülu 3: Pushing Frontiers in Open Language Model Post-Training",
+          "url": "https://arxiv.org/abs/2411.15124"
+        },
+        {
+          "title": "DeepSeek-AI 2025: DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning",
+          "url": "https://arxiv.org/abs/2501.12948"
+        },
+        {
+          "title": "Li et al. 2025: SimpleVLA-RL: Scaling VLA Training via Reinforcement Learning",
+          "url": "https://arxiv.org/abs/2509.09674"
+        }
+      ],
+      "as_of": "2025-09"
+    },
+    {
+      "name_zh": "拒绝采样微调 / 过滤式行为克隆",
+      "name_en": "Rejection Sampling Fine-Tuning / Filtered Behavior Cloning",
+      "abbr": "",
+      "aliases": [
+        "RFT（拒绝采样微调）",
+        "Filtered BC",
+        "百分位行为克隆",
+        "Percentile Behavior Cloning (%BC)",
+        "成功过滤行为克隆"
+      ],
+      "tier": 3,
+      "one_liner": "让模型多试几次，只留下成功或高分的结果，再拿来做监督训练。",
+      "explanation": "两个名字说的是同一类做法：先让现有模型针对任务生成多个结果，用答案检查、成功检测或回报排序把差的丢掉（「拒绝」），只把好的样本当训练数据做监督微调或行为克隆。大模型领域常引用 Yuan 等人 2023 年的论文，用它扩充数学推理数据；2021 年的决策 Transformer 论文里也有「只克隆回报前 X% 数据」的百分位行为克隆（%BC）作对照。它实现简单、训练稳定，缺点是失败样本里的信息被直接扔掉。机器人里常用来只保留成功的自主轨迹，或像字节 GR-RL 那样用学到的任务进度函数筛掉演示中没推进任务的片段。注意缩写 RFT 也常指强化学习微调。",
+      "example": "Yuan 等人让多个模型对 GSM8K 数学题反复作答，只保留答案正确的推理过程加入训练集，LLaMA-7B 的准确率从普通监督微调的 35.9% 提高到 49.3%。",
+      "related": [
+        "行为克隆",
+        "监督微调",
+        "自我提升",
+        "最优 N 采样",
+        "次优演示",
+        "优势条件化"
+      ],
+      "sources": [
+        {
+          "title": "Yuan et al. 2023: Scaling Relationship on Learning Mathematical Reasoning with Large Language Models",
+          "url": "https://arxiv.org/abs/2308.01825"
+        },
+        {
+          "title": "Chen et al. 2021: Decision Transformer: Reinforcement Learning via Sequence Modeling",
+          "url": "https://arxiv.org/abs/2106.01345"
+        },
+        {
+          "title": "Li et al. 2025: GR-RL: Going Dexterous and Precise for Long-Horizon Robotic Manipulation",
+          "url": "https://arxiv.org/abs/2512.01801"
+        }
+      ],
+      "as_of": "2025-12"
+    },
+    {
+      "name_zh": "表征对齐",
+      "name_en": "Representation Alignment (REPA-style)",
+      "abbr": "REPA",
+      "aliases": [
+        "REPA 正则化",
+        "REPresentation Alignment",
+        "特征对齐损失"
+      ],
+      "tier": 3,
+      "one_liner": "训练时让模型中间层特征去对齐一个现成预训练编码器的特征。",
+      "explanation": "REPA 由 Sihyun Yu、谢赛宁等人在 2024 年 10 月提出（ICLR 2025 口头报告），针对扩散 Transformer（DiT、SiT）训练慢的问题。做法是加一个辅助损失：把网络处理加噪图像时的中间隐藏状态经一个小投影层映射后，去对齐同一张干净图像在 DINOv2 等预训练视觉编码器里的特征。作者认为扩散模型训练的一个瓶颈是自己从零学视觉表征，借用现成的好表征能省下这部分功夫，SiT 的训练因此加速超过 17.5 倍。之后「REPA 式」对齐被推广到视频生成和机器人：例如 Spatial Forcing 把 VLA 的中间视觉 token 与 3D 基础模型 VGGT 的特征对齐，让只见过 2D 数据的 VLA 隐式学到空间感知。",
+      "example": "Spatial Forcing 在 OpenVLA-OFT 和 π0 上加入与 VGGT 特征的余弦相似度对齐损失，不额外输入深度图或点云，训练最多加速 3.8 倍，并提升数据效率。",
+      "related": [
+        "表征学习",
+        "扩散 Transformer",
+        "DINOv2",
+        "辅助损失 / 辅助任务",
+        "VGGT",
+        "预训练视觉表征"
+      ],
+      "sources": [
+        {
+          "title": "Yu et al. 2024: Representation Alignment for Generation: Training Diffusion Transformers Is Easier Than You Think",
+          "url": "https://arxiv.org/abs/2410.06940"
+        },
+        {
+          "title": "GitHub: sihyun-yu/REPA",
+          "url": "https://github.com/sihyun-yu/REPA"
+        },
+        {
+          "title": "Li et al. 2025: Spatial Forcing: Implicit Spatial Representation Alignment for Vision-language-action Model",
+          "url": "https://arxiv.org/abs/2510.12276"
+        }
+      ],
+      "as_of": "2025-10"
+    },
+    {
+      "name_zh": "无重置强化学习",
+      "name_en": "Reset-Free Reinforcement Learning",
+      "abbr": "",
+      "aliases": [
+        "自主强化学习",
+        "Autonomous RL",
+        "Autonomous Reinforcement Learning",
+        "免重置强化学习"
+      ],
+      "tier": 3,
+      "one_liner": "不靠人一次次把环境复位，让机器人在连续交互中自己学。",
+      "explanation": "标准强化学习默认每个回合结束后环境会重置回初始状态，仿真里一行代码就能做到，真机上却往往要人去把物体摆回原处，这是真机强化学习的主要瓶颈之一。无重置强化学习研究在尽量少的人工复位下学习：2017 年 Eysenbach 等人的 Leave no Trace 同时学「正向策略」和「复位策略」，并用复位策略的价值函数判断何时快要进入无法挽回的状态；2021 年 Gupta 等人让多个任务互相充当彼此的复位，用多任务学习解决复位问题；同年 Sharma、Finn 等人把它形式化为「自主强化学习」并发布 EARL 基准，发现常规回合制算法在减少人工干预后性能明显下降。它和失败恢复、自主数据采集密切相关。",
+      "example": "让机械臂学开抽屉的同时学关抽屉：开完之后由「关」的策略把环境恢复原样，机器人就能连续练习，而不需要有人守在旁边复位。",
+      "related": [
+        "真机强化学习",
+        "回合",
+        "失败恢复",
+        "自主数据采集",
+        "多任务学习",
+        "在线强化学习"
+      ],
+      "sources": [
+        {
+          "title": "Eysenbach et al. 2017: Leave no Trace: Learning to Reset for Safe and Autonomous Reinforcement Learning",
+          "url": "https://arxiv.org/abs/1711.06782"
+        },
+        {
+          "title": "Gupta et al. 2021: Reset-Free Reinforcement Learning via Multi-Task Learning",
+          "url": "https://arxiv.org/abs/2104.11203"
+        },
+        {
+          "title": "Sharma et al. 2021: Autonomous Reinforcement Learning: Formalism and Benchmarking",
+          "url": "https://arxiv.org/abs/2112.09605"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "残差强化学习",
+      "name_en": "Residual Reinforcement Learning",
+      "abbr": "Residual RL",
+      "aliases": [
+        "残差策略学习",
+        "Residual Policy Learning",
+        "RPL"
+      ],
+      "tier": 3,
+      "one_liner": "保留一个现成的基础控制器，只用强化学习学它输出上的修正量。",
+      "explanation": "残差强化学习在 2018 年底由两组工作几乎同时提出：UC 伯克利 Levine 组与西门子合作的 Residual Reinforcement Learning for Robot Control，以及 MIT 的 Residual Policy Learning。做法是最终动作等于基础策略的动作加上残差策略输出的修正量；基础策略可以是手写控制器、模型预测控制，或模仿学习得到的策略，强化学习只负责补上摩擦、接触这类难建模的部分。因为从一个「已经大致能用」的起点出发，探索更安全、样本效率更高，适合直接在真机上训练。近年它常被用来精修行为克隆策略：先用演示训练一个扩散或动作分块策略并冻结，再在上面训练一个小的闭环残差策略做实时修正。",
+      "example": "MIT 的 ResiP 冻结一个用演示训练的动作分块策略，把它当作轨迹规划器，再用强化学习训练闭环残差策略实时修正，用于行为克隆加数据也难再提高成功率的精密装配任务。",
+      "related": [
+        "残差策略",
+        "行为克隆",
+        "真机强化学习",
+        "强化学习微调",
+        "动作分块",
+        "噪声空间策略引导"
+      ],
+      "sources": [
+        {
+          "title": "Johannink et al. 2018: Residual Reinforcement Learning for Robot Control",
+          "url": "https://arxiv.org/abs/1812.03201"
+        },
+        {
+          "title": "Silver et al. 2018: Residual Policy Learning",
+          "url": "https://arxiv.org/abs/1812.06298"
+        },
+        {
+          "title": "Ankile et al. 2024: From Imitation to Refinement -- Residual RL for Precise Assembly",
+          "url": "https://arxiv.org/abs/2407.16677"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "回报条件化",
+      "name_en": "Return Conditioning",
+      "abbr": "",
+      "aliases": [
+        "回报条件策略",
+        "Return-Conditioned Policy",
+        "回报条件监督学习",
+        "Return-Conditioned Supervised Learning (RCSL)"
+      ],
+      "tier": 3,
+      "one_liner": "把「想拿多少回报」当输入给策略，让它照着目标回报去行动。",
+      "explanation": "回报条件化是把强化学习改写成监督学习的一种做法：训练时把每条轨迹从当前步起剩余的累计奖励（return-to-go）和观测一起输入策略，让它模仿这条轨迹里实际做的动作；测试时输入一个较高的目标回报，希望它做出高回报的行为。Schmidhuber 2019 年的倒置强化学习（Upside-Down RL）和 2021 年的决策 Transformer 是代表，后者用 Transformer 把回报、状态、动作排成序列来预测动作，在离线强化学习基准上与主流方法相当。它不用学价值函数，训练稳定；但 Brandfonbrener 等人 2022 年指出，在随机性强或数据覆盖不足时它可能学不到最优策略。π*0.6 所用 RECAP 的优势条件化是同一思路的变体。",
+      "example": "决策 Transformer 测试时先给定目标回报（如任务成功记为 1），每执行一步就把目标减去实际拿到的奖励，再以剩下的目标回报为条件预测下一个动作。",
+      "related": [
+        "决策 Transformer",
+        "优势条件化",
+        "回报",
+        "离线强化学习",
+        "RECAP",
+        "目标条件策略"
+      ],
+      "sources": [
+        {
+          "title": "Chen et al. 2021: Decision Transformer: Reinforcement Learning via Sequence Modeling",
+          "url": "https://arxiv.org/abs/2106.01345"
+        },
+        {
+          "title": "Schmidhuber 2019: Reinforcement Learning Upside Down: Don't Predict Rewards -- Just Map Them to Actions",
+          "url": "https://arxiv.org/abs/1912.02875"
+        },
+        {
+          "title": "Brandfonbrener et al. 2022: When does return-conditioned supervised learning work for offline reinforcement learning?",
+          "url": "https://arxiv.org/abs/2206.01079"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "安全强化学习",
+      "name_en": "Safe Reinforcement Learning",
+      "abbr": "Safe RL",
+      "aliases": [
+        "约束强化学习",
+        "Constrained Reinforcement Learning",
+        "Constrained RL"
+      ],
+      "tier": 3,
+      "one_liner": "在最大化奖励的同时，保证训练和部署过程中不违反安全约束。",
+      "explanation": "García 和 Fernández 2015 年的综述把安全强化学习定义为：在需要保证合理表现或遵守安全约束的问题中，于学习和/或部署期间最大化期望回报。常见做法分两类：一是改优化目标，例如把问题写成约束马尔可夫决策过程（在奖励之外再给「代价」设上限），用拉格朗日乘子法或 2017 年提出的约束策略优化（CPO）求解；二是改探索过程，例如引入先验知识，或用安全滤波器、控制障碍函数把危险动作拦下来。它对真机强化学习和人形、足式机器人运控尤其重要，因为摔倒、碰撞、关节超限会直接损坏硬件甚至伤人。",
+      "example": "CaT 方法把足式机器人运控中的各项约束改写成「一旦违反，就按一定概率提前终止回合」，只需对 PPO 做很小改动，就在真实的 Solo 四足机器人上学会了穿越障碍。",
+      "related": [
+        "具身安全",
+        "控制障碍函数",
+        "安全滤波器",
+        "真机强化学习",
+        "近端策略优化",
+        "奖励塑形"
+      ],
+      "sources": [
+        {
+          "title": "García & Fernández 2015: A Comprehensive Survey on Safe Reinforcement Learning (JMLR)",
+          "url": "https://www.jmlr.org/papers/v16/garcia15a.html"
+        },
+        {
+          "title": "Achiam et al. 2017: Constrained Policy Optimization",
+          "url": "https://arxiv.org/abs/1705.10528"
+        },
+        {
+          "title": "Chane-Sane et al. 2024: CaT: Constraints as Terminations for Legged Locomotion Reinforcement Learning",
+          "url": "https://arxiv.org/abs/2403.18765"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "分数匹配",
+      "name_en": "Score Matching (Score Function)",
+      "abbr": "",
+      "aliases": [
+        "得分匹配",
+        "分数函数",
+        "Score Function",
+        "去噪分数匹配",
+        "Denoising Score Matching"
+      ],
+      "tier": 3,
+      "one_liner": "训练网络估计数据分布对数密度的梯度（分数），不必算归一化常数。",
+      "explanation": "分数（score）指概率密度取对数后对输入的梯度 ∇x log p(x)，它指向「数据更可能出现」的方向。Hyvärinen 2005 年提出分数匹配：让模型的分数去拟合数据的分数，好处是绕开能量模型里难算的归一化常数。后来的去噪分数匹配把问题变成「给数据加噪，再学怎么去噪」。2019 年 Song 和 Ermon 用多级噪声下的分数估计加朗之万动力学采样做图像生成；2020 年 Song 等人用随机微分方程统一了分数模型与扩散模型，反向去噪过程只依赖各噪声水平下的分数。DDPM 预测噪声、流匹配预测速度，都可以换算成分数估计，所以扩散策略等生成式机器人策略的训练，背后就是分数匹配。",
+      "example": "扩散策略训练时给专家动作加上不同强度的高斯噪声，让网络预测所加的噪声；把这个预测除以噪声标准差再取负号，就是对加噪动作分布的分数估计。",
+      "related": [
+        "扩散模型",
+        "去噪扩散概率模型",
+        "去噪损失",
+        "流匹配",
+        "能量模型",
+        "预测目标参数化（ε / x0 / v 预测）"
+      ],
+      "sources": [
+        {
+          "title": "Hyvärinen 2005: Estimation of Non-Normalized Statistical Models by Score Matching (JMLR)",
+          "url": "https://www.jmlr.org/papers/v6/hyvarinen05a.html"
+        },
+        {
+          "title": "Song & Ermon 2019: Generative Modeling by Estimating Gradients of the Data Distribution",
+          "url": "https://arxiv.org/abs/1907.05600"
+        },
+        {
+          "title": "Song et al. 2020: Score-Based Generative Modeling through Stochastic Differential Equations",
+          "url": "https://arxiv.org/abs/2011.13456"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "自强制",
+      "name_en": "Self Forcing",
+      "abbr": "",
+      "aliases": [
+        "自强制训练",
+        "Self-Forcing"
+      ],
+      "tier": 3,
+      "one_liner": "训练时就让视频模型接着自己生成的画面往下生成，消除训练与推理的差异。",
+      "explanation": "Self Forcing 是 Adobe Research 与得克萨斯大学奥斯汀分校的 Xun Huang 等人 2025 年 6 月提出的自回归视频扩散训练方法（NeurIPS 2025 Spotlight）。自回归视频模型一段段往后生成，以往用教师强制（以真实前文为条件）或扩散强制（以加噪的真实前文为条件）训练，推理时却只能接自己生成的、带误差的前文，这种不一致叫曝光偏差，会让长视频越生成越差。Self Forcing 在训练时就按推理方式用 KV 缓存自回归展开，以自己生成的帧为条件，再对整段视频算整体损失。它基于 Wan2.1-T2V-1.3B，在单卡上做到亚秒级延迟的实时流式生成，这对需要边生成边响应动作的交互式世界模型很有用。",
+      "example": "据项目页，Self Forcing 模型在单张 H100 上以约 16 帧/秒生成 480P 视频，首帧延迟约 0.8 秒，在单张 RTX 4090 上也能实时流式生成。",
+      "related": [
+        "教师强制",
+        "扩散强制",
+        "曝光偏差（自回归误差累积）",
+        "自回归视频生成",
+        "KV 缓存",
+        "扩散步数蒸馏"
+      ],
+      "sources": [
+        {
+          "title": "Huang et al. 2025: Self Forcing: Bridging the Train-Test Gap in Autoregressive Video Diffusion",
+          "url": "https://arxiv.org/abs/2506.08009"
+        },
+        {
+          "title": "Self Forcing 项目页",
+          "url": "https://self-forcing.github.io/"
+        },
+        {
+          "title": "GitHub: guandeh17/Self-Forcing",
+          "url": "https://github.com/guandeh17/Self-Forcing"
+        }
+      ],
+      "as_of": "2025-11"
+    },
+    {
+      "name_zh": "自我提升",
+      "name_en": "Self-improvement",
+      "abbr": "",
+      "aliases": [
+        "自我改进",
+        "自主提升",
+        "Self-Improving",
+        "自我迭代"
+      ],
+      "tier": 3,
+      "one_liner": "机器人用自己练习产生的数据反复训练自己，越练越强，少靠人工。",
+      "explanation": "自我提升指模型在少量人工数据起步后，靠自己与环境交互产生新数据、自动判断好坏、再训练自己的循环，目标是让数据增长不再完全依赖人工演示。关键在于怎么自动判断成败：常用成功检测器、奖励模型或价值函数，再配合过滤式行为克隆或强化学习更新策略。代表工作有 DeepMind 2023 年的 RoboCat，用自己练习产生的数据训练下一代模型；2025 年 Ghasemipour 等人的 Self-Improving Embodied Foundation Models 让模型预测「还剩几步完成」，由此同时得到奖励和成功检测，让机器人机群自主练习，比单纯多采演示数据更省样本。π*0.6 用 RECAP 从自主经验和人工纠正中学习，也属于这一类。",
+      "example": "RoboCat 的一轮循环：人遥操作给出 100–1000 条新任务演示 → 微调出专用分支模型 → 分支自主练习平均约 1 万次 → 把新旧数据合并，训练下一版 RoboCat。",
+      "related": [
+        "RoboCat",
+        "数据飞轮",
+        "成功检测器",
+        "真机强化学习",
+        "π*0.6",
+        "拒绝采样微调 / 过滤式行为克隆"
+      ],
+      "sources": [
+        {
+          "title": "Google DeepMind Blog: RoboCat: A self-improving robotic agent",
+          "url": "https://deepmind.google/discover/blog/robocat-a-self-improving-robotic-agent/"
+        },
+        {
+          "title": "Bousmalis et al. 2023: RoboCat: A Self-Improving Generalist Agent for Robotic Manipulation",
+          "url": "https://arxiv.org/abs/2306.11706"
+        },
+        {
+          "title": "Ghasemipour et al. 2025: Self-Improving Embodied Foundation Models",
+          "url": "https://arxiv.org/abs/2509.15155"
+        }
+      ],
+      "as_of": "2025-09"
+    },
+    {
+      "name_zh": "自博弈",
+      "name_en": "Self-Play",
+      "abbr": "",
+      "aliases": [
+        "自我对弈",
+        "自对弈"
+      ],
+      "tier": 3,
+      "one_liner": "让智能体和自己（或自己的历史版本）对战，从胜负中不断变强。",
+      "explanation": "自博弈是多智能体强化学习中的一种训练方式：对手不是人或固定脚本，而是智能体自己的当前或历史版本。自己变强，对手也同步变强，相当于自动生成难度递增的课程，而且不需要人类对局数据。最著名的是 DeepMind 2017 年的 AlphaGo Zero：从随机落子开始，只靠自我对弈加蒙特卡洛树搜索，训练 3 天后以 100:0 战胜此前击败人类冠军的 AlphaGo 版本。机器人里，对抗类任务常用它，例如 DeepMind 让小型人形机器人 OP3 学一对一踢球：先分别训练起身和进球技能，再把两者蒸馏进一个策略，并与自己的历史快照对抗。只和最新的自己打容易来回兜圈子，所以通常从历史版本池里抽对手。",
+      "example": "OP3 踢球训练中，对手从智能体自身定期保存的历史快照池中抽取；消融实验显示，去掉自博弈训练的智能体即使面对固定对手也表现更差。",
+      "related": [
+        "多智能体强化学习",
+        "强化学习",
+        "蒙特卡洛树搜索",
+        "课程学习",
+        "基于群体的训练",
+        "OP3 足球（DeepMind 双足踢球）"
+      ],
+      "sources": [
+        {
+          "title": "Google DeepMind Blog: AlphaGo Zero: Starting from scratch",
+          "url": "https://deepmind.google/discover/blog/alphago-zero-starting-from-scratch/"
+        },
+        {
+          "title": "Haarnoja et al. 2023: Learning Agile Soccer Skills for a Bipedal Robot with Deep Reinforcement Learning",
+          "url": "https://arxiv.org/abs/2304.13653"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "梯度阻断",
+      "name_en": "Stop-Gradient",
+      "abbr": "",
+      "aliases": [
+        "停止梯度",
+        "stop-grad",
+        "detach",
+        "梯度截断",
+        "sg(·)"
+      ],
+      "tier": 3,
+      "one_liner": "前向照常计算，反向传播时不让梯度从某个量往回传。",
+      "explanation": "梯度阻断是深度学习里的一个基本操作：某个量在前向计算中照常使用，但反向传播时被当作常数，梯度不经过它流向更早的参数。论文里常写作 sg(·)，PyTorch 里用 .detach()，JAX 里用 jax.lax.stop_gradient。它用途很多：强化学习里阻断目标值的梯度来稳定时序差分学习；VQ-VAE 用它让码本和编码器分开更新；SimSiam 发现它是自监督学习中防止表征坍缩的关键。在 VLA 中，Physical Intelligence 2025 年的知识隔离阻断了动作专家流向 VLM 骨干的梯度，让新初始化的动作专家不破坏预训练知识，骨干改从离散化动作 token 学习。注意它和限制梯度大小的梯度裁剪不是一回事。",
+      "example": "知识隔离训练中，连续动作专家读取 VLM 骨干的特征来生成动作，但它的损失不回传到骨干；骨干只通过离散化动作 token 的下一个 token 预测损失来适应机器人数据。",
+      "related": [
+        "知识隔离",
+        "目标网络",
+        "表征坍缩",
+        "冻结骨干网络",
+        "反向传播",
+        "向量量化变分自编码器"
+      ],
+      "sources": [
+        {
+          "title": "Chen & He 2020: Exploring Simple Siamese Representation Learning (SimSiam)",
+          "url": "https://arxiv.org/abs/2011.10566"
+        },
+        {
+          "title": "Driess et al. 2025: Knowledge Insulating Vision-Language-Action Models: Train Fast, Run Fast, Generalize Better",
+          "url": "https://arxiv.org/abs/2505.23705"
+        }
+      ],
+      "as_of": "2025-05"
+    }
+  ]
+}

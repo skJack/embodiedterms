@@ -1,0 +1,113 @@
+{
+  "batch": "hardware-16",
+  "terms": [
+    {
+      "key": "hardware-16#0",
+      "name_en": "Three-Finger Gripper",
+      "aliases": ["Three-Fingered Gripper", "Adaptive Three-Finger Gripper"],
+      "one_liner": "A robotic gripper with three fingers, sitting between a two-finger gripper and a five-fingered dexterous hand.",
+      "explanation": "A three-finger gripper is an end effector mounted on a robot arm that picks things up with three fingers. A common design lets two fingers rotate around the palm to change their layout, facing the third finger; that lets it pinch like a two-finger gripper, or wrap around a cylinder or a ball using all three fingers together. Compared with a two-finger gripper, it has more contact points, grips more securely, and adapts to a wider range of shapes; compared with a five-fingered dexterous hand, it uses fewer motors, has a simpler mechanism, and holds up better over time. Many three-finger grippers are underactuated (fewer motors than joints), so a finger automatically curls to conform once it touches an object. They're used in both research and industry; well-known examples include the BarrettHand and the Robotiq 3-Finger Adaptive Gripper.",
+      "example": "BarrettHand: three fingers, two of which can rotate around the palm — a common choice in early grasp-planning research.",
+      "related": ["Gripper", "Two-Finger Gripper", "Adaptive Gripper", "Dexterous Hand", "End Effector", "Grasping"]
+    },
+    {
+      "key": "hardware-16#1",
+      "name_en": "Thumb Opposition",
+      "aliases": ["Opposition Movement"],
+      "one_liner": "The motion of rotating the thumb so its pad faces the pads of the other fingers.",
+      "explanation": "Thumb opposition is a basic human hand motion: the thumb rotates and draws inward at its base joint so its pad faces the pads of the index and middle fingers. Picking up a coin, twisting off a bottle cap, and holding a pen all depend on it. For a robotic dexterous hand, whether it can achieve opposition determines whether it can do fine pinching; a thumb that only flexes and can't rotate is limited to a crude wrap-around grip. That's why a humanoid hand's thumb base usually needs at least two degrees of freedom — one for flexion, one for rotation — and higher-end hands give the thumb even more actively driven degrees of freedom. A common way to evaluate a dexterous hand is checking whether its thumb can touch each of the other four fingertips individually.",
+      "example": "The Unitree Dex5-1 dexterous hand's thumb has 4 actively driven degrees of freedom, enough for opposition pinching.",
+      "related": ["Dexterous Hand", "Grasp Taxonomy (Power Grasp / Precision Pinch)", "MCP / PIP / DIP Joints", "Dexterous Manipulation", "Degrees of Freedom (DoF)"]
+    },
+    {
+      "key": "hardware-16#2",
+      "name_en": "Timing Belt Drive",
+      "aliases": ["Belt Drive", "Toothed Belt Drive"],
+      "one_liner": "A drive that transmits rotation through a toothed belt meshing with toothed pulleys, without slipping.",
+      "explanation": "A timing belt drive has teeth molded into the inside of the belt, which mesh with toothed pulleys to carry rotation from one shaft to another. A plain flat belt transmits force through friction and can slip; a timing belt meshes tooth-to-tooth, so the speed ratio stays fixed — hence “timing.” It's light, quiet, needs no lubrication, and can provide some gear reduction for free if the two pulleys are different sizes. In robots, it's often used to move a motor away from a joint — for example, mounting it near the body to cut the inertia at the end of a leg or arm — and it also shows up in linear stages and desktop robot arms. The downside is that the belt has some elasticity, so it's less stiff than a gear train, and it stretches loose over time and needs re-tensioning.",
+      "example": "The X and Y axes of a desktop 3D printer commonly use a GT2 timing belt to move the print head.",
+      "related": ["Reducer / Gearbox", "Gear Ratio", "Linkage Drive", "Tendon-Driven Actuation", "Proximal vs. Distal Actuator Placement", "Reflected Inertia"]
+    },
+    {
+      "key": "hardware-16#3",
+      "name_en": "Tool Changer",
+      "aliases": ["Quick-Change Coupler", "Quick-Change Adapter", "Automatic Tool Changer (ATC)"],
+      "one_liner": "A coupling that lets a robot arm automatically swap end-of-arm tools within seconds.",
+      "explanation": "A tool changer mounts between a robot arm's flange and its end-of-arm tool, and comes in two halves: a master side that stays fixed to the arm, and a tool side mounted on each individual tool. To swap tools, the arm aligns the master side with a tool side, and a pneumatic or electric locking mechanism clamps them together while connecting air lines, electrical signals, and communication — completing the swap in seconds. It solves the basic limit of one arm, one gripper: the same arm can pick up boxes with a vacuum cup one moment, switch to a two-finger gripper for assembly the next, then swap in a screwdriver after that. It's common on industrial production lines; in embodied AI, it also shows up on mobile-manipulation platforms and test rigs that need several different tools. Major makers include ATI and Schunk.",
+      "example": "The arm first picks up material with a vacuum cup, docks it on the tool rack, then swaps in an electric gripper to finish assembly — all without a human touching any hardware.",
+      "related": ["Tool Flange", "End Effector", "Gripper", "Vacuum Suction Cup", "Tool Use", "Robot Arm"]
+    },
+    {
+      "key": "hardware-16#4",
+      "name_en": "Tool Flange",
+      "aliases": ["End Flange", "Wrist Flange", "Robot Flange"],
+      "one_liner": "The standardized round mounting interface at a robot arm's tip, where grippers and other tools attach.",
+      "explanation": "The tool flange is the round mounting face at the end of a robot arm's last joint, with threaded holes and dowel-pin holes arranged in a standard pattern; grippers, force sensors, camera mounts, and tool changers all attach here. The international standard ISO 9409-1 defines the flange's dimensions and hole layout, so a tool built to that standard can be reused across arms from different brands; a tool that doesn't follow it needs an adapter plate. The flange center is also usually the origin of the arm's default end-effector coordinate frame — once a tool is attached, the controller needs its tool center point (TCP) offset set correctly so the arm knows exactly where its working point is. Some collaborative arms also route power and communication lines near the flange, making it easy to power an electric gripper.",
+      "example": "Swapping a gripper onto a UR5e: first bolt the gripper to the flange using the ISO 9409-1 hole pattern, then set the TCP offset on the teach pendant.",
+      "related": ["Tool Center Point (TCP)", "End Effector", "Tool Changer", "Six-Axis Force/Torque Sensor", "Robot Arm"]
+    },
+    {
+      "key": "hardware-16#5",
+      "name_en": "Torque Constant (Kt)",
+      "aliases": ["Kt", "Motor Torque Constant"],
+      "one_liner": "How much torque a motor produces per amp of current, in newton-meters per amp (N·m/A).",
+      "explanation": "The torque constant, Kt, describes the proportional relationship between a motor's current and its output torque: torque ≈ Kt × current. It's set by the motor's construction — magnets, number of winding turns — and stays roughly constant within the motor's rated range. This matters because when a robot joint does torque control, the driver is actually controlling current, and Kt is what converts a desired torque into the current to command; read the other way, current can be used to roughly estimate the force at a joint, which is the basis of sensorless force estimation. Kt is just another way of expressing the same thing as the back-EMF constant and the KV rating: a higher Kt means more torque for the same current, but a lower top speed. When a gearbox is involved, it's worth checking carefully whether a datasheet's number is measured at the motor side or the output side.",
+      "example": "The Unitree GO-M8010-6 joint motor's datasheet lists a torque constant of about 0.639 N·m/A.",
+      "related": ["Torque Control", "KV Rating (Speed Constant)", "Torque-Speed Curve", "Sensorless Force Estimation", "Field-Oriented Control (FOC)", "Brushless DC Motor (BLDC)"]
+    },
+    {
+      "key": "hardware-16#6",
+      "name_en": "Torque-Speed Curve",
+      "aliases": ["T-N Curve"],
+      "one_liner": "A curve plotting the maximum torque a motor can deliver at each speed.",
+      "explanation": "A torque-speed curve has speed on one axis and torque on the other, describing the limits of what a motor can deliver at a given voltage. Torque is highest at low speed; as speed rises, back-EMF (the reverse voltage the motor itself generates as it spins) increasingly cancels out the supply voltage, so less current can flow in, and torque drops accordingly, reaching zero at the no-load speed. The curve is usually split into two zones: a continuous-operation zone, where the motor can run indefinitely without overheating, and a peak zone, usable only briefly. When picking a joint motor, engineers plot the torque and speed a task actually needs — a robot's jump takeoff, a fast leg swing — onto this curve, to check it falls within the motor's capability with some margin to spare.",
+      "example": "When designing a quadruped robot, engineers overlay the knee joint's torque-versus-speed trajectory during a jump onto a candidate motor's T-N curve to check it doesn't exceed the peak zone.",
+      "related": ["Stall Torque / No-Load Speed", "Peak Torque", "Rated (Continuous) Torque", "Torque Constant (Kt)", "Motor Thermal Rise & Overheat Protection", "Power Density"]
+    },
+    {
+      "key": "hardware-16#7",
+      "name_en": "Trapezoidal Lead Screw & Self-Locking",
+      "aliases": ["Acme Lead Screw", "Sliding Lead Screw", "T-Type Lead Screw"],
+      "one_liner": "A lead screw with a trapezoidal thread that moves by sliding friction, and can lock itself when power is cut.",
+      "explanation": "A trapezoidal lead screw converts rotation into linear motion using a thread with a trapezoidal cross-section; the nut and screw make sliding contact, unlike a ball screw, which has rolling balls in between. It's cheap and mechanically simple, but has high friction and low efficiency. That same friction gives it a useful property called self-locking: when the thread's lead angle is smaller than the friction angle, an axial push on the nut can't force the screw to spin backward, so the load won't drift down on its own when power is cut, and no separate brake is needed. The tradeoff is poor back-drivability — an external force can't easily move the joint — which rules it out for applications needing compliance or force control. It's common in low-cost linear actuators, lift mechanisms, and some dexterous hands that use a small lead screw to push a finger.",
+      "example": "The Z-axis of a desktop 3D printer often uses a T8 trapezoidal lead screw, so the print bed doesn't sag when power is cut.",
+      "related": ["Ball Screw", "Lead", "Miniature Lead Screw", "Back-Drivability", "Linear Actuator (Electric Cylinder)", "Holding Brake"]
+    },
+    {
+      "key": "hardware-16#8",
+      "name_en": "Unitree Dex5-1",
+      "aliases": ["Dex5", "Dex5-1P"],
+      "one_liner": "A 20-degree-of-freedom five-fingered dexterous hand from Unitree Robotics, available in a tactile-sensing version.",
+      "explanation": "The Dex5-1 is the five-fingered dexterous hand Unitree Robotics built to go with its own humanoid robots. It has 20 degrees of freedom in total, 16 actively driven and 4 passive: the thumb has 4 actively driven degrees of freedom, and each of the other four fingers has 3 actively driven plus 1 passive. Its joints are driven by coreless motors paired with low-backlash reducers; Unitree states that each joint is back-drivable (an external force can push the joint), which helps with force control, and gives fingertip repeatability of about ±1 mm. The “P” variant, Dex5-1P, adds 94 tactile sensors across the palm, fingertips, and finger segments. According to the product page, it can be mounted on Unitree humanoid robots such as the H1 and H1-2, and researchers have also used it for dexterous manipulation and teleoperation data collection.",
+      "example": "",
+      "related": ["Dexterous Hand", "Unitree Dex3-1", "Unitree Robotics", "Tactile Sensor", "Thumb Opposition", "Coreless Motor"]
+    },
+    {
+      "key": "hardware-16#9",
+      "name_en": "Unitree GO-M8010-6 Motor",
+      "aliases": ["GO-M8010-6", "Go1 Motor"],
+      "one_liner": "An integrated joint-motor module Unitree Robotics sells separately, with a maximum torque of 23.7 N·m.",
+      "explanation": "The GO-M8010-6 is a joint-motor module from Unitree Robotics that integrates a permanent-magnet synchronous motor, driver board, reducer, encoder, and bearings into one unit ready to use as a robot joint. According to its user manual, it has a 6.33:1 gear ratio, a maximum output torque of 23.7 N·m, a top speed of 30 rad/s, weighs about 530 g, and is meant to run on 24 V power; it has a built-in field-oriented control (FOC) algorithm, a temperature sensor, and an absolute encoder, with a torque constant of about 0.639 N·m/A. Its low gear ratio gives it good back-drivability, which suits it to torque control in legged robots. Because it's relatively cheap and its specs are public, it's a popular joint choice for university labs and open-source small quadruped and humanoid projects.",
+      "example": "",
+      "related": ["Joint Module", "Quasi-Direct Drive", "Unitree Robotics", "Torque Constant (Kt)", "Field-Oriented Control (FOC)", "DAMIAO DM-J4310 Joint Motor"]
+    },
+    {
+      "key": "hardware-16#10",
+      "name_en": "Variable Stiffness Actuator (VSA)",
+      "aliases": ["VSA", "Variable Stiffness Joint"],
+      "one_liner": "An actuator whose joint “softness” can be mechanically adjusted on the fly, independent of position.",
+      "explanation": "A variable stiffness actuator adds an elastic element between the motor and the joint, plus an extra mechanism — usually a second motor — that adjusts that spring's effective stiffness in real time, so joint position and joint softness can be controlled separately. It extends the series elastic actuator, whose stiffness is fixed, and has been studied systematically since the 2000s by groups including the University of Pisa, the German Aerospace Center (DLR), and the Italian Institute of Technology. The benefits: turning stiffness down reduces impact if the joint hits a person, making it safer, while turning stiffness up gives precise positioning when that's needed; the spring can also store energy and release it for explosive motions like throwing or jumping. The downside is a more complex mechanism with higher weight and cost, so it's mainly used on research platforms today — production robots more often get similar behavior from software-based impedance control instead.",
+      "example": "DLR's Hand Arm System uses variable stiffness actuation in its arm and hand joints.",
+      "related": ["Series Elastic Actuator (SEA)", "Stiffness", "Compliance", "Impedance Control", "Variable Impedance Control", "Physical Human-Robot Interaction (pHRI)"]
+    },
+    {
+      "key": "hardware-16#11",
+      "name_en": "Wave Generator",
+      "aliases": ["Wave Generator Cam", "Elliptical Cam"],
+      "one_liner": "The input component of a harmonic reducer: an elliptical cam and flexible bearing that force the flexspline into an oval.",
+      "explanation": "The wave generator is one of the three core parts of a harmonic reducer, alongside the flexspline and the circular spline, and it's the input, connected directly to the motor. It's made of an elliptical cam wrapped in a thin-wall flexible bearing; inserted inside the thin-walled flexspline, it forces the flexspline into an oval shape so the flexspline's teeth mesh with the circular spline's internal teeth only at the two ends of the long axis. As the wave generator makes one full turn, the meshing points travel all the way around too, and since the flexspline typically has 2 fewer teeth than the circular spline, the flexspline ends up shifted by only 2 teeth relative to the circular spline per input revolution — producing a very large reduction ratio, commonly tens to over a hundred to one in a single stage. This is how harmonic reducers achieve a compact size with very little backlash, which is why they're used so widely in robot-arm and humanoid-robot joints.",
+      "example": "A harmonic reducer with a 100:1 ratio: a 200-tooth flexspline and a 202-tooth circular spline — the wave generator turns 100 times for every 1 output turn of the flexspline.",
+      "related": ["Harmonic Reducer", "Flexspline", "Circular Spline", "Gear Ratio", "Backlash", "Thin-Section Bearing"]
+    }
+  ]
+}

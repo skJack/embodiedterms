@@ -1,0 +1,386 @@
+{
+  "category": "named_model",
+  "batch": 12,
+  "terms": [
+    {
+      "name_zh": "Extreme Parkour",
+      "name_en": "Extreme Parkour with Legged Robots",
+      "abbr": "",
+      "aliases": [
+        "极限跑酷",
+        "Extreme Parkour with Legged Robots"
+      ],
+      "tier": 3,
+      "one_liner": "CMU 2023 年的工作：低成本四足只凭一台深度相机和单个网络完成跳高跳远等跑酷。",
+      "explanation": "Extreme Parkour 是卡内基梅隆大学 Xuxin Cheng、Deepak Pathak 等人 2023 年 9 月发布的工作，发表于 ICRA 2024。他们用的是低成本的宇树 A1 四足机器狗，电机控制不算精准，头部只有一台 Intel RealSense D435 深度相机，画面低频、抖动、有噪点。传统做法要把感知、建图、规划、控制分开精细设计，这里改成端到端：在仿真里用大规模强化学习训练一个神经网络，直接从深度图输出关节动作。训练分两步，先用仿真里才拿得到的精确地形信息训练，再蒸馏成只看深度图、还能自己决定朝哪个方向跳的策略；奖励基本统一成一条「速度方向与目标方向的内积」，不用为每种障碍单独设计。它把腿足机器人跑酷的难度上限推高了一大截，常与同期的 Robot Parkour Learning 一起被引用。",
+      "example": "A1 机器狗能跳上 0.5 米高的箱子（约为自身高度的 2 倍），跃过 0.8 米宽的沟（约为身长的 2 倍），还能只用两条前腿倒立行走。",
+      "related": [
+        "跑酷",
+        "Robot Parkour Learning",
+        "感知行走",
+        "教师-学生蒸馏",
+        "宇树 A1",
+        "仿真到现实迁移"
+      ],
+      "sources": [
+        {
+          "title": "Extreme Parkour with Legged Robots (arXiv 2309.14341)",
+          "url": "https://arxiv.org/abs/2309.14341"
+        },
+        {
+          "title": "Extreme Parkour 项目主页",
+          "url": "https://extreme-parkour.github.io/"
+        }
+      ],
+      "as_of": "2023-09"
+    },
+    {
+      "name_zh": "FALCON",
+      "name_en": "FALCON: Learning Force-Adaptive Humanoid Loco-Manipulation",
+      "abbr": "",
+      "aliases": [
+        "FALCON 力自适应人形运动操作"
+      ],
+      "tier": 3,
+      "one_liner": "CMU 等 2025 年提出的人形训练框架，让机器人边走边稳稳地推、拉、搬重物。",
+      "explanation": "FALCON 是卡内基梅隆大学 LeCAR 实验室（Guanya Shi 组）联合 Field AI 等机构在 2025 年 5 月发布的人形机器人全身控制方法，项目页标注入选 L4DC 2026 口头报告。人形机器人边走边干活（运动操作一体化）时，手上一旦受到较大外力，比如拉车、开门、搬重物，下半身容易失去平衡，上半身也跟不准目标位置。FALCON 用双智能体强化学习：下半身策略在外力干扰下保持行走稳定，上半身策略把手送到指定位置并隐式补偿外力，两者共享本体感知（关节角、速度等自身状态）联合训练；再配一个三维力课程，训练中逐步加大施加在手上的外力，同时不超过各关节的力矩上限。上半身关节跟踪精度约为基线的 2 倍，同一套训练流程不改奖励就能用在宇树 G1 和加速进化 Booster T1 两款人形上。",
+      "example": "真机实验中，人形机器人在 0–100 牛的拉力下拉车行走，在 0–40 牛的阻力下用双臂开门，还能端着负载边走边下蹲、转身。",
+      "related": [
+        "运动操作一体化",
+        "全身控制",
+        "课程学习",
+        "宇树 G1",
+        "加速进化 Booster T1",
+        "Field AI"
+      ],
+      "sources": [
+        {
+          "title": "FALCON: Learning Force-Adaptive Humanoid Loco-Manipulation (arXiv 2505.06776)",
+          "url": "https://arxiv.org/abs/2505.06776"
+        },
+        {
+          "title": "FALCON 项目主页（CMU LeCAR Lab）",
+          "url": "https://lecar-lab.github.io/falcon-humanoid/"
+        }
+      ],
+      "as_of": "2025-11"
+    },
+    {
+      "name_zh": "Fast-WAM",
+      "name_en": "Fast-WAM: Do World Action Models Need Test-time Future Imagination?",
+      "abbr": "",
+      "aliases": [],
+      "tier": 3,
+      "one_liner": "清华与星海图 2026 年的世界动作模型：训练时学预测视频，推理时跳过想象，更快。",
+      "explanation": "Fast-WAM 是清华大学交叉信息研究院与星海图的 Tianyuan Yuan、赵行（Hang Zhao）等人 2026 年 3 月发布的论文。世界动作模型（WAM，同时预测未来画面和机器人动作的模型）多数走「先想象再执行」路线：先用视频扩散模型生成未来几帧，再据此出动作，反复去噪让推理很慢。作者把两件事拆开做对照：训练时要不要联合学视频预测，推理时要不要真的生成未来画面。结论是去掉推理时的想象几乎不掉点，去掉训练时的视频联合训练则明显变差，说明视频预测的价值主要在于训练出更好的世界表征。模型以 Wan2.2-5B 视频扩散 Transformer 为骨干，加约 10 亿参数的动作专家，共约 60 亿参数；推理延迟 190 毫秒，比同类「先想象再执行」模型快 4 倍以上。",
+      "example": "不做任何机器人数据预训练，Fast-WAM 在 RoboTwin 2.0 上成功率 91.8%，在 LIBERO 上平均 97.6%，并在星海图 R1 Lite 上完成真机长程叠毛巾任务。",
+      "related": [
+        "世界动作模型",
+        "视频生成模型",
+        "动作专家",
+        "推理延迟",
+        "蚂蚁灵波 LingBot-VA",
+        "Motus"
+      ],
+      "sources": [
+        {
+          "title": "Fast-WAM: Do World Action Models Need Test-time Future Imagination? (arXiv 2603.16666)",
+          "url": "https://arxiv.org/abs/2603.16666"
+        }
+      ],
+      "as_of": "2026-03"
+    },
+    {
+      "name_zh": "Field AI FFM（场景基础模型）",
+      "name_en": "Field Foundation Models (FieldAI)",
+      "abbr": "FFM",
+      "aliases": [
+        "Field Foundation Models",
+        "FieldAI 基础模型",
+        "现场基础模型"
+      ],
+      "tier": 3,
+      "one_liner": "美国 Field AI 公司的机器人基础模型，主打在无地图的工地、厂区里自主作业。",
+      "explanation": "FFM（Field Foundation Models）是美国机器人软件公司 Field AI 的核心模型系列。公司总部在加州尔湾，创始人兼 CEO 是 Ali Agha，团队来自 NASA 喷气推进实验室、Google DeepMind 等，参与过火星探测和 DARPA 项目。官方把 FFM 描述为「物理优先」的具身基础模型：把数据驱动的神经网络与基于物理的推理、不确定性估计结合起来，核心是一个会评估风险的「信念世界模型」，让机器人在没有预先建图、没有 GPS、没有预设路径的非结构化环境里自主移动和作业，并且完全在机载算力上运行。同一套模型可以装到不同形态、不同厂商的机器人上，公司称之为「一个大脑用于任何机器」。据其新闻稿，Field AI 累计融资超过 4 亿美元，投资方包括 Bezos Expeditions、Khosla Ventures 和英伟达旗下的风投 NVentures。",
+      "example": "2026 年 3 月 Field AI 与波士顿动力宣布合作，把 FFM 装到 Spot 四足机器人上，让它在没有地图、每天都在变化的建筑工地里自主行走作业；同年 9 月又与卡特彼勒宣布合作。",
+      "related": [
+        "Field AI",
+        "基础模型",
+        "世界模型",
+        "不确定性估计",
+        "波士顿动力 Spot",
+        "端侧部署"
+      ],
+      "sources": [
+        {
+          "title": "FieldAI 官网",
+          "url": "https://www.fieldai.com/"
+        },
+        {
+          "title": "Boston Dynamics and FieldAI Partner to Bring Robots Into Uncharted and Dynamic Environments",
+          "url": "https://www.fieldai.com/news/boston-dynamics-and-fieldai-partner-to-bring-robots-into-uncharted-and-dynamic-environments"
+        },
+        {
+          "title": "Caterpillar and FieldAI Advance AI-Powered Industrial Innovation (PR Newswire, 2026-09-02)",
+          "url": "https://www.prnewswire.com/news-releases/caterpillar-and-fieldai-advance-ai-powered-industrial-innovation-302866862.html"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "Helix 2.5",
+      "name_en": "Figure Helix 2.5",
+      "abbr": "",
+      "aliases": [
+        "Figure Helix 2.5"
+      ],
+      "tier": 3,
+      "one_liner": "Figure AI 2026 年 9 月发布的人形机器人模型，能在 30 个陌生家庭里零样本做家务。",
+      "explanation": "Helix 2.5 是美国人形机器人公司 Figure AI 在 2026 年 9 月 17 日发布的机器人模型，运行在 Figure 03 人形机器人上，是 Helix、Helix 02 之后的版本。与之前从视觉语言模型出发不同，官方称 Helix 2.5 完全在 Index 上预训练，Index 是 Figure 自建的全球规模人类行为数据集，据称每秒新增约 35 分钟的人类经验。发布重点是零样本泛化：在 30 个从没去过的旧金山湾区住户家里，不采数据、不微调，每项任务只用一个固定的模型权重，完成整理客厅、叠毛巾、铺床三类需要边走边操作的家务。官方对照实验中，从随机初始化训练的策略成功率 9%，从 Index 预训练的 Helix 2.5 出发为 56%；达到与 Helix 02 相当的成功率只需一半的任务数据。",
+      "example": "Figure 03 进入一户陌生人家，用同一个模型权重把客厅散落的物品归位、把毛巾叠好、把床铺平，事先没在这户人家采集过任何数据。",
+      "related": [
+        "Figure AI",
+        "Helix",
+        "Helix 02",
+        "Figure 03",
+        "人类视频数据",
+        "零样本"
+      ],
+      "sources": [
+        {
+          "title": "Helix 2.5: Zero-Shot 30-Home Generalization (Figure AI, 2026-09-17)",
+          "url": "https://www.figure.ai/news/helix-2-5-zero-shot-30-home-generalization"
+        },
+        {
+          "title": "Figure AI 新闻列表",
+          "url": "https://www.figure.ai/news"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "Flamingo",
+      "name_en": "Flamingo: a Visual Language Model for Few-Shot Learning (DeepMind)",
+      "abbr": "",
+      "aliases": [
+        "DeepMind Flamingo"
+      ],
+      "tier": 3,
+      "one_liner": "DeepMind 2022 年的视觉语言模型，给几个图文示例就能做新任务，是早期 VLM 代表。",
+      "explanation": "Flamingo 是 DeepMind 在 2022 年 4 月发布的视觉语言模型（VLM，能同时看图和读写文字的模型），论文发表于 NeurIPS 2022，最大版本 800 亿参数。它把已经训练好的视觉编码器和语言模型（DeepMind 的 700 亿参数 Chinchilla）冻结不动，中间加两类新模块：Perceiver 重采样器把任意数量的图像特征压成固定数量的视觉 token；门控交叉注意力层插在语言模型里，让它生成文字时能「看」图像。它用网页上图文交错的数据训练，因此能像大语言模型一样做少样本学习：在提示里放几个图文示例，不改参数就能完成新任务。在 16 个基准上，每个任务只给 4 个示例就超过了此前的少样本方法。社区的开源复现 OpenFlamingo 后来被 RoboFlamingo 用作机器人策略的底座。",
+      "example": "在提示里先放两张带说明文字的动物照片作示例，再放一张新照片，Flamingo 就会照同样格式写出这张照片的说明，全程不需要额外训练。",
+      "related": [
+        "视觉语言模型",
+        "Perceiver 重采样器",
+        "交叉注意力",
+        "少样本",
+        "上下文学习",
+        "RoboFlamingo"
+      ],
+      "sources": [
+        {
+          "title": "Flamingo: a Visual Language Model for Few-Shot Learning (arXiv 2204.14198)",
+          "url": "https://arxiv.org/abs/2204.14198"
+        },
+        {
+          "title": "Tackling multiple tasks with a single visual language model (Google DeepMind 博客)",
+          "url": "https://deepmind.google/discover/blog/tackling-multiple-tasks-with-a-single-visual-language-model/"
+        }
+      ],
+      "as_of": "2022-04"
+    },
+    {
+      "name_zh": "FLUX 3 Action（Black Forest Labs）",
+      "name_en": "FLUX 3 Action (Black Forest Labs open-weight world action model)",
+      "abbr": "",
+      "aliases": [
+        "FLUX 3 Action"
+      ],
+      "tier": 3,
+      "one_liner": "德国 Black Forest Labs 2026 年 9 月开放权重的 7B 世界动作模型，同时预测画面与动作。",
+      "explanation": "FLUX 3 Action 是以 FLUX 系列图像生成模型知名的德国公司 Black Forest Labs 在 2026 年 9 月发布的机器人模型，参数量 70 亿，权重在 Hugging Face 开放。它属于世界动作模型（WAM，同时预测未来画面和机器人动作的模型）：由公司的多模态 FLUX 3 骨干改造而来，这个骨干在大量视频、图像和音频上预训练，以视频为主。模型输入相机画面、关节状态和文字指令，同时输出机器人动作和预测的未来画面，目的是把视频预训练学到的物理常识迁移到控制上。官方称它支持末端位姿、关节角等多种动作空间，在 Franka 机械臂和 SO-101 上做了演示。它是图像、视频生成公司进入具身智能的一个例子。",
+      "example": "官方报告：引导蒸馏版在 RoboLab-120 仿真榜上成功率 42.2%，高于英伟达 Cosmos 3 Nano 的 36.8%；在 10 个 DROID 真机操作任务上成功率 93.3%。",
+      "related": [
+        "世界动作模型",
+        "开放权重",
+        "Cosmos 3",
+        "Fast-WAM",
+        "DROID 数据集",
+        "SO-100 / SO-101 机械臂"
+      ],
+      "sources": [
+        {
+          "title": "FLUX 3 Action 模型页（Black Forest Labs）",
+          "url": "https://bfl.ai/models/flux-3-action"
+        },
+        {
+          "title": "Black Forest Labs 官网",
+          "url": "https://bfl.ai/"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "Wayve GAIA-2",
+      "name_en": "GAIA-2: A Controllable Multi-View Generative World Model for Autonomous Driving (Wayve)",
+      "abbr": "GAIA",
+      "aliases": [
+        "GAIA-2"
+      ],
+      "tier": 3,
+      "one_liner": "英国自动驾驶公司 Wayve 2025 年的驾驶世界模型，可控地生成多路摄像头驾驶视频。",
+      "explanation": "GAIA-2 是英国自动驾驶公司 Wayve 在 2025 年 3 月 26 日发布的生成式世界模型，是 GAIA-1 的后续。这里的世界模型指能按给定条件「想象」出驾驶场景未来画面的视频生成模型。GAIA-2 从 GAIA-1 的自回归 token 生成改为视频分词器加潜在扩散（先把视频压缩到隐空间，再在隐空间里去噪生成）的架构，原生支持多个摄像头同时生成且彼此在时间和空间上一致，数据覆盖英国、美国、德国。生成时可以控制自车的速度和转向、其他车辆和行人的行为、天气和时段、车道和路口等道路结构。用途是批量制造合成数据、在真实行车记录上改出变体，以及生成罕见的危险场景来测试驾驶模型。它是世界模型在物理 AI 中较早落地的案例之一。",
+      "example": "拿一段真实的多摄像头行车记录，把天气改成大雨，再加一辆突然切入的车，生成一组新的环视视频，用来检验驾驶模型遇到这种少见情况时的反应。",
+      "related": [
+        "世界模型",
+        "自动驾驶",
+        "潜在扩散模型",
+        "合成数据",
+        "Waymo 世界模型",
+        "Cosmos"
+      ],
+      "sources": [
+        {
+          "title": "GAIA-2: A Controllable Multi-View Generative World Model for Autonomous Driving (arXiv 2503.20523)",
+          "url": "https://arxiv.org/abs/2503.20523"
+        },
+        {
+          "title": "GAIA-2（Wayve 官方博客）",
+          "url": "https://wayve.ai/thinking/gaia-2/"
+        }
+      ],
+      "as_of": "2025-03"
+    },
+    {
+      "name_zh": "星海图 G0",
+      "name_en": "Galaxea G0 Dual-System VLA",
+      "abbr": "",
+      "aliases": [
+        "G0",
+        "G0-VLA",
+        "Galaxea G0"
+      ],
+      "tier": 3,
+      "one_liner": "星海图 2025 年开源的快慢双系统机器人模型：VLM 拆解任务，VLA 执行动作。",
+      "explanation": "G0 是具身智能公司星海图（Galaxea AI）在 2025 年 8 月底发布、9 月开源的双系统机器人大模型，与 Galaxea 开放世界数据集一同推出。它按快慢双系统拆分：慢系统 G0-VLM 以 Qwen2.5-VL 为基础微调，负责听懂指令、把长任务拆成子任务；快系统 G0-VLA 的视觉语言骨干从 PaliGemma 初始化，根据画面、本体状态和子任务指令输出动作。训练分三阶段：先在 OXE 等多种机器人的数据上做跨本体预训练，再在自家单一本体数据上预训练，最后针对具体任务后训练。论文发现第二阶段，也就是在同一种机器人上的真实数据预训练最关键。数据集用星海图 R1 Lite 在家庭、商超、餐饮、办公等 50 个真实场景采集，约 500 小时、10 万条轨迹。之后星海图又发布了 G0Plus（2026 年 1 月）和 G0.5（2026 年 6 月）。",
+      "example": "用户说「帮我铺床」，G0-VLM 把它拆成一串子任务指令，G0-VLA 按指令驱动 R1 Lite 的双臂和底盘一步步执行，直到把床铺好。",
+      "related": [
+        "星海图",
+        "快慢双系统",
+        "星海图开放世界数据集",
+        "星海图 R1",
+        "PaliGemma",
+        "视觉-语言-动作模型"
+      ],
+      "sources": [
+        {
+          "title": "Galaxea Open-World Dataset and G0 Dual-System VLA Model (arXiv 2509.00576)",
+          "url": "https://arxiv.org/abs/2509.00576"
+        },
+        {
+          "title": "OpenGalaxea/GalaxeaVLA（GitHub）",
+          "url": "https://github.com/OpenGalaxea/GalaxeaVLA"
+        }
+      ],
+      "as_of": "2026-08"
+    },
+    {
+      "name_zh": "GameNGen（神经游戏引擎）",
+      "name_en": "GameNGen: Diffusion Models Are Real-Time Game Engines",
+      "abbr": "GameNGen",
+      "aliases": [
+        "神经游戏引擎",
+        "Diffusion Models Are Real-Time Game Engines"
+      ],
+      "tier": 3,
+      "one_liner": "谷歌 2024 年的工作：用扩散模型实时生成可玩的《毁灭战士》画面，替代游戏引擎。",
+      "explanation": "GameNGen 是 Google Research 与 Google DeepMind 的研究者在 2024 年 8 月发布的论文，演示了用神经网络模拟一款复杂游戏并能实时游玩。游戏选的是经典第一人称射击游戏《毁灭战士》（DOOM）。做法分两步：先训练一个强化学习智能体玩游戏，录下画面和按键；再把 Stable Diffusion 1.4 改造成以过去若干帧和玩家操作为条件、预测下一帧的扩散模型。自回归生成（用自己生成的帧接着生成下一帧）容易越跑越糊，作者在训练时给历史帧加高斯噪声，让模型学会纠偏，因此能稳定运行几分钟；另外单独微调了图像解码器以减少压缩失真。它在单个 TPU 上达到每秒 20 帧左右。这项工作让可交互世界模型受到广泛关注，常与 DIAMOND、Genie 2 并列讨论。",
+      "example": "玩家按键开枪、开门、捡血包，画面以及血量、弹药数字都由扩散模型逐帧生成；生成画面的 PSNR 为 29.4，与有损 JPEG 压缩相当，人类评估者区分短片真假只比随机猜略好。",
+      "related": [
+        "可交互世界模型",
+        "扩散模型",
+        "自回归视频生成",
+        "DIAMOND（扩散世界模型）",
+        "Genie 2",
+        "世界模型"
+      ],
+      "sources": [
+        {
+          "title": "Diffusion Models Are Real-Time Game Engines (arXiv 2408.14837)",
+          "url": "https://arxiv.org/abs/2408.14837"
+        },
+        {
+          "title": "GameNGen 项目主页",
+          "url": "https://gamengen.github.io/"
+        }
+      ],
+      "as_of": "2024-08"
+    },
+    {
+      "name_zh": "Gato",
+      "name_en": "Gato: A Generalist Agent (DeepMind)",
+      "abbr": "",
+      "aliases": [
+        "A Generalist Agent"
+      ],
+      "tier": 3,
+      "one_liner": "DeepMind 2022 年的通才智能体：同一套权重能打游戏、看图说话、聊天和控制机械臂。",
+      "explanation": "Gato 是 DeepMind 在 2022 年 5 月发布的通才智能体，论文题为《A Generalist Agent》。当时的主流做法是一个任务训一个模型，Gato 则尝试用一个约 12 亿参数的 Transformer、同一套权重覆盖 604 个任务：玩 Atari 游戏、给图片写说明、对话、在仿真里控制多种机器人，以及用真实机械臂堆积木。关键做法是把所有模态都转成 token（词元）：文字用分词器切分，图片切成小块，关节角、按键等离散或连续数值也编码成 token，统统拼成一条序列，像语言模型一样逐个预测，训练时只对文字和动作算损失。推理时模型每次自回归地采样动作 token，上下文窗口为 1024 个 token。它是「一个大模型控制多种本体」思路的早期代表，DeepMind 后来的 RoboCat 就沿用了 Gato 的架构。",
+      "example": "同一个 Gato 模型，这一刻在 Atari 游戏里按手柄键，下一刻给一张照片生成文字描述，再下一刻控制真实机械臂把彩色积木叠起来。",
+      "related": [
+        "通用策略",
+        "Transformer",
+        "token（词元）",
+        "RoboCat",
+        "多任务学习",
+        "跨本体"
+      ],
+      "sources": [
+        {
+          "title": "A Generalist Agent (arXiv 2205.06175)",
+          "url": "https://arxiv.org/abs/2205.06175"
+        },
+        {
+          "title": "A Generalist Agent（Google DeepMind 博客）",
+          "url": "https://deepmind.google/discover/blog/a-generalist-agent/"
+        }
+      ],
+      "as_of": "2022-05"
+    },
+    {
+      "name_zh": "Gemini Robotics On-Device",
+      "name_en": "Gemini Robotics On-Device",
+      "abbr": "",
+      "aliases": [
+        "Gemini Robotics On-Device 2"
+      ],
+      "tier": 3,
+      "one_liner": "谷歌 DeepMind 的轻量版 Gemini Robotics VLA，可直接在机器人本机运行、不依赖联网。",
+      "explanation": "Gemini Robotics On-Device 是 Google DeepMind 在 2025 年 6 月 24 日发布的视觉-语言-动作模型（VLA，看图听指令直接输出机器人动作的模型），是 Gemini Robotics 的精简版，专门优化到能在机器人自带的计算设备上运行，不需要连云端，适合网络差或对延迟敏感的场景。它主要面向双臂操作，能完成拉开拉链、叠衣服等灵巧任务，并支持只用 50 到 100 条演示就微调到新任务。模型在 ALOHA 双臂平台上训练，官方演示把它迁移到了双臂 Franka FR3 和 Apptronik 的 Apollo 人形机器人上。它与 Gemini Robotics SDK 一起通过可信测试者计划开放。之后 DeepMind 推出了 Gemini Robotics On-Device 2，官方称可用不到 200 条示例适配新的机器人本体，目前同样以可信测试者形式开放。",
+      "example": "开发者为一个新任务采集 50–100 条演示，比如叠一种新衣服，就能把 On-Device 模型微调到这个任务，之后推理全程在机器人本机完成，断网也能干活。",
+      "related": [
+        "Gemini Robotics",
+        "Gemini Robotics 2",
+        "端侧模型",
+        "Gemini Robotics SDK",
+        "ALOHA 双臂平台",
+        "Apptronik Apollo"
+      ],
+      "sources": [
+        {
+          "title": "Gemini Robotics On-Device brings AI to local robotic devices (Google DeepMind 博客, 2025-06-24)",
+          "url": "https://deepmind.google/discover/blog/gemini-robotics-on-device-brings-ai-to-local-robotic-devices/"
+        },
+        {
+          "title": "Gemini Robotics On-Device 2 模型页",
+          "url": "https://deepmind.google/models/gemini-robotics/gemini-robotics-on-device/"
+        },
+        {
+          "title": "Gemini Robotics 模型总览",
+          "url": "https://deepmind.google/models/gemini-robotics/"
+        }
+      ],
+      "as_of": "2026-09"
+    }
+  ]
+}

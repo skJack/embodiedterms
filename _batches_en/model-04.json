@@ -1,0 +1,229 @@
+{
+  "batch": "model-04",
+  "terms": [
+    {
+      "key": "model-04#0",
+      "name_en": "Continuous Action Regression",
+      "aliases": [
+        "Regression Head",
+        "L1 Regression",
+        "MSE Regression"
+      ],
+      "one_liner": "Having a network output continuous action values directly, trained with L1 or mean-squared error against demonstrations.",
+      "explanation": "Continuous action regression is the most direct way for a robot policy to output actions: the network ends in a regression head, usually a few fully connected layers, that directly outputs real numbers such as joint angles or end-effector displacement, trained with mean squared error or L1 loss, the squared or absolute difference between the prediction and the demonstrated action, to match human demonstrations. It is simple to implement, and inference needs just one forward pass, so it's fast. Its weakness shows up when a demonstration set contains several valid ways to do the same thing in the same scene, called action multimodality: regression tends to learn the average of those ways, which can end up being none of them; the Octo paper observed that an MSE regression head produces hesitant, indecisive robot motion. Common alternatives are discretizing actions into tokens, or generating them with diffusion or flow matching. Still, 2025's OpenVLA-OFT paired L1 regression with action chunking and parallel decoding to raise LIBERO's average success rate across four task suites from 76.5% to 97.1%, showing regression is good enough for plenty of tasks.",
+      "example": "ACT (Action Chunking with Transformers) trains by directly regressing a future sequence of joint angles with an L1 loss; OpenVLA-OFT replaces OpenVLA's discrete-token output with an L1 regression head, computing a whole action segment in one forward pass and increasing action-generation throughput by about 26x.",
+      "related": [
+        "Action Head",
+        "Action Multimodality",
+        "L1 Loss",
+        "Mean Squared Error",
+        "Diffusion Action Head",
+        "Action Binning"
+      ]
+    },
+    {
+      "key": "model-04#1",
+      "name_en": "CLIP",
+      "aliases": [
+        "Contrastive Language-Image Pre-training"
+      ],
+      "one_liner": "An OpenAI model trained on 400 million image-text pairs that maps pictures and text into one shared vector space.",
+      "explanation": "CLIP is an image-text model OpenAI released in 2021, made of an image encoder and a text encoder trained together with contrastive learning on 400 million image-caption pairs collected from the internet: matching image-text pairs are pulled together in vector space, and mismatched ones are pushed apart. After training, images and text land in the same embedding space and their similarity can be computed directly, so it can do zero-shot classification with no further training at all — just write each category as a sentence and see which sentence the image is closest to. The paper reports this matched the zero-shot accuracy of a ResNet-50 trained on 1.28 million labeled images. In embodied AI, CLIP is often used as an open-vocabulary vision or language encoder: the early CLIPort used it to understand the semantics of objects named in an instruction, and many later VLMs and VLAs' vision encoders build on CLIP or its improved successor, SigLIP.",
+      "example": "Crop a few small patches from a tabletop photo and encode both them and the sentence “a red cup” with CLIP; the patch whose embedding is most similar to that sentence is the object the instruction is pointing to.",
+      "related": [
+        "Contrastive Learning",
+        "SigLIP",
+        "Vision Encoder",
+        "Open-vocabulary",
+        "Embedding",
+        "CLIPort"
+      ]
+    },
+    {
+      "key": "model-04#2",
+      "name_en": "Convolutional Neural Network",
+      "aliases": [
+        "CNN",
+        "ConvNet"
+      ],
+      "one_liner": "A neural network that slides small filters across an image to extract local features; long the workhorse of vision.",
+      "explanation": "A convolutional neural network is designed specifically for grid-shaped data such as images. Its core is the convolutional layer: a set of small, learnable filters, such as 3×3, slide across the image, computing a local weighted sum at each position; the same filter's parameters are shared across every position, so the parameter count is far lower than a fully connected network, and it's naturally suited to recognizing edges, textures, and parts wherever they appear in the frame. Pooling layers then progressively shrink the resolution, letting the network build up from local detail to overall meaning. Historically, LeCun used LeNet to recognize handwritten digits in the 1990s, AlexNet won decisively on ImageNet in 2012, and ResNet used residual connections to go much deeper in 2015. Since Vision Transformers appeared, large models' vision encoders have mostly switched to Transformers, but CNNs remain common in smaller robot models — RT-1, for instance, uses EfficientNet, and Diffusion Policy uses ResNet-18 to process camera images.",
+      "example": "Diffusion Policy replaces a standard ResNet-18's global average pooling with a spatial softmax to preserve positional information, and replaces BatchNorm with GroupNorm to stabilize training, using it to encode each camera frame into features.",
+      "related": [
+        "Residual Network",
+        "EfficientNet",
+        "Vision Encoder",
+        "Vision Transformer",
+        "Backbone Network",
+        "Spatial Softmax (Keypoint Pooling)"
+      ]
+    },
+    {
+      "key": "model-04#3",
+      "name_en": "Cross-Attention",
+      "aliases": [
+        "Encoder-Decoder Attention"
+      ],
+      "one_liner": "Attention where one set of tokens queries information from a different set; a common way to fuse modalities.",
+      "explanation": "Cross-attention is a variant of the attention mechanism. In self-attention, the query, key, and value all come from the same sequence; in cross-attention, sequence A supplies the query while sequence B supplies the key and value, so every token in A can pull in relevant information from B, while B itself is left unchanged. It first appeared in the encoder-decoder structure of the 2017 Transformer paper, where the decoder uses it to read the encoder's representation of the source sentence for translation. It has since become the standard way to inject conditioning information into a model: text-to-image models use it to read text encodings, and robot policies use it to feed visual and language features into the action-generation part. An alternative is simply concatenating two sets of tokens and running self-attention over the combination; both approaches are common in VLAs, each with its own tradeoffs.",
+      "example": "NVIDIA's GR00T N1 action module, a DiT variant, stacks two kinds of blocks alternately: self-attention blocks process the noisy action tokens and robot state, while cross-attention blocks read the visual-language tokens output by the VLM.",
+      "related": [
+        "Attention Mechanism",
+        "Self-Attention",
+        "Transformer",
+        "Multimodal Fusion",
+        "Encoder-Decoder",
+        "Diffusion Transformer"
+      ]
+    },
+    {
+      "key": "model-04#4",
+      "name_en": "Delta (Relative) Action vs. Absolute Action",
+      "aliases": [
+        "Relative Action",
+        "Delta Action",
+        "Absolute Action",
+        "Relative Trajectory"
+      ],
+      "one_liner": "Writing an action as “move by this much” (delta) versus “go to this coordinate” (absolute).",
+      "explanation": "This is one of the basic choices in action representation. An absolute action gives a target value directly, such as the pose the end-effector, the gripper or tool at the very tip of the arm, should reach, or a target angle for each joint. A delta action instead gives only the change relative to the current state, such as “move 1 centimeter further along x.” Delta actions don't depend on precise calibration between the robot's base and the world frame, and their value distribution is more consistent across different scenes, but errors accumulate as they add up step by step. Absolute actions don't accumulate error, but they need the coordinate frame to be well calibrated. There's a middle ground too: UMI uses a “relative trajectory,” writing a whole action segment as a transform relative to the end-effector pose at the start of that segment. The Diffusion Policy paper separately found that, for its test tasks, position control that outputs a target position beat velocity control that outputs a target velocity. Which one to use depends on how the dataset defines it, and training and deployment must match, or the robot will drift off course.",
+      "example": "If the arm's end effector is currently at x=0.40 meters and needs to move to x=0.42 meters, an absolute action writes 0.42, and a delta action writes +0.02. In one UMI experiment, an absolute-action baseline succeeded only 25% of the time because SLAM coordinates and the robot base's coordinates were hard to align, while the relative-trajectory version succeeded 100% of the time.",
+      "related": [
+        "Action Space",
+        "Action Representation",
+        "End-Effector Pose",
+        "Coordinate Frame",
+        "Universal Manipulation Interface",
+        "Action Chunking"
+      ]
+    },
+    {
+      "key": "model-04#5",
+      "name_en": "Denoising Diffusion Probabilistic Model",
+      "aliases": [
+        "DDPM"
+      ],
+      "one_liner": "The 2020 diffusion model that made the approach work well: add noise step by step, then learn to remove it step by step.",
+      "explanation": "The denoising diffusion probabilistic model was proposed by Jonathan Ho, Ajay Jain, and Pieter Abbeel in 2020, and is the base version behind today's diffusion models. It defines two processes: a forward process that adds Gaussian noise to a real image a little at a time, following a fixed noise schedule, a timetable of how much noise to add at each step, until it becomes pure noise; and a reverse process, where a neural network is trained to predict, and subtract, the noise added at each step. The training objective is simple, just the mean squared error between predicted and true noise. To generate, start from pure noise and denoise step by step into a new sample. The paper used T=1,000 steps and a U-Net, reaching an FID of 3.17 on CIFAR-10. The downside is that sampling needs many steps, which later methods such as DDIM greatly cut down. Robotics' Diffusion Policy applies this same method to action sequences.",
+      "example": "Diffusion Policy trains by adding noise to demonstrated action sequences over a 100-step diffusion process, teaching the network to gradually turn noise back into actions; at deployment it switches to DDIM and samples only 10 steps, taking about 0.1 seconds on an RTX 3080.",
+      "related": [
+        "Diffusion Model",
+        "Denoising Diffusion Implicit Model",
+        "Noise Schedule",
+        "Denoising Steps",
+        "U-Net",
+        "Diffusion Policy"
+      ]
+    },
+    {
+      "key": "model-04#6",
+      "name_en": "Denoising Steps",
+      "aliases": [
+        "Number of Function Evaluations",
+        "NFE",
+        "Sampling Steps",
+        "Inference Steps"
+      ],
+      "one_liner": "How many times a diffusion or flow-matching model calls its network to generate one result; this sets inference speed.",
+      "explanation": "Diffusion and flow-matching models don't generate a sample in one shot; they start from noise and call the network repeatedly, each call correcting the result a little. The number of network calls is the number of denoising steps, often written precisely as NFE, the number of function evaluations. More steps usually give a more refined result, but time cost grows roughly proportionally, which matters for robots since a policy has to produce actions in real time inside a closed control loop. Values vary widely by method: the original DDPM used 1,000 steps; Diffusion Policy trains with 100 steps but drops to 10 at inference using DDIM; π0 integrates flow matching over 10 steps; GR00T N1 uses just 4. Consistency models and mean-flow methods push toward generating in 1 or 2 steps. Note that the number of diffusion steps used in training and the number of sampling steps used at inference don't have to match — inference steps are generally adjustable at deployment time.",
+      "example": "When π0 predicts a 50-step-long action chunk, it integrates 10 steps, each of size δ=0.1, starting from Gaussian noise, meaning it calls the action expert 10 times to produce one action segment.",
+      "related": [
+        "Denoising Diffusion Probabilistic Model",
+        "Denoising Diffusion Implicit Model",
+        "Flow Matching",
+        "Consistency Model",
+        "Inference Latency",
+        "One-step Generation"
+      ]
+    },
+    {
+      "key": "model-04#7",
+      "name_en": "Diffusion Action Head",
+      "aliases": [
+        "Diffusion Head"
+      ],
+      "one_liner": "An output module attached after a policy's backbone that generates continuous actions through diffusion denoising.",
+      "explanation": "A diffusion action head is a type of action head, the part of a policy network that produces the final action. A backbone, such as a Transformer or VLM, first encodes images, language, and robot state into features; the diffusion head then conditions on those features and, starting from random noise, denoises over multiple steps to generate a segment of continuous action. Compared with direct regression, it can express a multimodal action distribution: when a demonstration set shows both “go around the left” and “go around the right” as valid, it doesn't average them into a middle path that runs into the obstacle; compared with discretizing actions into tokens, it keeps the precision of continuous values. The cost is that inference needs multiple network calls. It scales from small to large: Octo uses a 3-layer MLP, while GR00T N1 and CogACT use a dedicated diffusion Transformer as their action module; π0's flow-matching action expert works on a similar principle and is often discussed alongside it.",
+      "example": "Octo's Transformer backbone outputs the embedding of a readout token, which is handed to a 3-layer-MLP diffusion head that denoises over 20 steps to generate a segment of action. The paper's comparison found the robot moved hesitantly with an MSE regression head, and imprecisely, often grasping at empty air, with a discrete action head.",
+      "related": [
+        "Action Head",
+        "Action Expert",
+        "Diffusion Policy",
+        "Diffusion Transformer",
+        "Action Multimodality",
+        "Continuous Action Regression"
+      ]
+    },
+    {
+      "key": "model-04#8",
+      "name_en": "Diffusion Transformer",
+      "aliases": [
+        "DiT"
+      ],
+      "one_liner": "Using a Transformer instead of a U-Net as a diffusion model's denoising network architecture.",
+      "explanation": "The Diffusion Transformer was proposed by William Peebles and Saining Xie in 2022 (published at ICCV 2023). Before this, diffusion models' denoising networks were mostly U-Nets, a convolutional encoder-decoder network; DiT replaces this with a standard Transformer: a VAE-compressed latent image is cut into patches and treated as tokens, and adaptive layer normalization (adaLN) injects conditioning information, such as the denoising timestep and class label, into every layer. The paper found that generation quality kept improving with more compute, following a clean scaling trend; the largest model, DiT-XL/2, reached an FID of 2.27 on 256×256 ImageNet. Video-generation models have since widely adopted this structure. Robotics uses it to generate actions too: RDT-1B (Robotics Diffusion Transformer) uses it for bimanual manipulation, and GR00T N1's action module is likewise a DiT variant.",
+      "example": "RDT-1B is a diffusion Transformer of about 1.2 billion parameters that, conditioned on a language instruction and camera images, denoises to generate a segment of upcoming action for a dual-arm robot.",
+      "related": [
+        "Diffusion Model",
+        "Transformer",
+        "U-Net",
+        "Adaptive Layer Normalization",
+        "Latent Diffusion Model",
+        "RDT-1B"
+      ]
+    },
+    {
+      "key": "model-04#9",
+      "name_en": "DINOv2",
+      "aliases": [
+        "self-DIstillation with NO labels v2",
+        "DINO Features"
+      ],
+      "one_liner": "Meta's 2023 self-supervised vision model that learns general-purpose image features with no labels at all.",
+      "explanation": "DINOv2 is a vision foundation model Meta AI released in April 2023, the second generation of 2021's DINO, whose name stands for “self-distillation with no labels.” It uses no human annotation at all: a student network is trained to match a teacher network's output across different crops of the same image, a form of self-supervised learning, and the team also curated a 142-million-image dataset, LVD-142M, with an automated filtering pipeline. The largest model, ViT-g/14, has about 1.1 billion parameters, and was distilled down into smaller versions from 21 million to 300 million parameters. Its features need no fine-tuning — just attach a linear layer to do classification, segmentation, or depth estimation — and they preserve relatively fine spatial and geometric detail, exactly what robots need. OpenVLA fuses DINOv2's features with SigLIP's as its vision encoder, and DINO-WM trains a world model directly on DINOv2's patch features.",
+      "example": "OpenVLA feeds the same camera image into both DINOv2 and SigLIP separately, fuses their features, and projects the result into the Llama 2 language model: DINOv2 supplies spatial and geometric detail, and SigLIP supplies semantics aligned with language.",
+      "related": [
+        "Vision Foundation Model",
+        "Self-Supervised Learning",
+        "Vision Transformer",
+        "DINOv3",
+        "Pre-trained Visual Representation",
+        "OpenVLA"
+      ]
+    },
+    {
+      "key": "model-04#10",
+      "name_en": "DINOv3",
+      "aliases": [],
+      "one_liner": "Meta's August 2025 third-generation DINO: 7 billion parameters, self-supervised on 1.7 billion images.",
+      "explanation": "DINOv3 is a self-supervised vision foundation model Meta released in August 2025, the successor to DINOv2. Its largest model has 7 billion parameters, trained on 1.7 billion images, roughly 7 times the model scale and 12 times the data of its predecessor. When large models train for a long time, their dense, per-patch features tend to degrade, so DINOv3 introduces Gram anchoring to keep those features stable. Meta reports that, with no fine-tuning and only a lightweight task head attached, it beats specially trained models on tasks such as detection and semantic segmentation. Besides the 7-billion-parameter flagship, several smaller ViT and ConvNeXt models were distilled from it, along with a version trained on satellite imagery. For robotics, it can serve as a stronger frozen vision encoder than DINOv2, providing high-resolution, dense features.",
+      "example": "Feed footage from a wrist-mounted camera into a frozen DINOv3, pull out each patch's feature vector, and train a lightweight head on top for object segmentation or grasp-point prediction, with no need to train a vision network from scratch.",
+      "related": [
+        "DINOv2",
+        "Vision Foundation Model",
+        "Self-Supervised Learning",
+        "Vision Encoder",
+        "Pre-trained Visual Representation",
+        "Semantic Segmentation"
+      ]
+    },
+    {
+      "key": "model-04#11",
+      "name_en": "Embedding",
+      "aliases": [
+        "Vector Representation"
+      ],
+      "one_liner": "Representing a word, image patch, or action as a string of real numbers, where similar things end up as nearby vectors.",
+      "explanation": "An embedding is the basic unit a neural network uses to represent information internally: a word, an image patch, a frame of robot state, or some other object gets mapped into a fixed-length string of real numbers, say 1,024 of them. It is learned during training, not hand-specified, and once trained, objects with similar meaning end up close together in vector space. Compared with one-hot encoding, where each category occupies its own dimension and only one entry is ever 1, embeddings use far fewer dimensions and can still express similarity; word2vec is an early, well-known example. Embeddings show up almost everywhere in embodied AI models: a tokenizer cuts text into tokens and looks up their word embeddings, a vision encoder turns each image patch into a visual-token embedding, and a projection layer then maps those into the language model's dimension; robot state and noisy actions also pass through a linear layer to become embeddings before joining other tokens into a Transformer.",
+      "example": "CLIP encodes a photo of a cat and the sentence “a photo of a cat” into embedding vectors separately, and the cosine similarity between them comes out clearly higher than between that same photo and “a photo of a dog.”",
+      "related": [
+        "Token",
+        "Tokenizer",
+        "Visual Token",
+        "Latent Space",
+        "Projector / Connector",
+        "Representation Learning"
+      ]
+    }
+  ]
+}

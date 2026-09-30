@@ -1,0 +1,422 @@
+{
+ "category": "training",
+ "batch": 3,
+ "terms": [
+  {
+   "name_zh": "协同训练",
+   "name_en": "Co-training",
+   "abbr": "",
+   "aliases": [
+    "联合训练",
+    "混合训练",
+    "协同微调",
+    "co-fine-tuning",
+    "仿真-真机协同训练",
+    "Sim-and-Real Co-training"
+   ],
+   "tier": 2,
+   "one_liner": "把目标机器人数据和其他来源的数据按比例混在一起，训练同一个模型。",
+   "explanation": "协同训练在具身智能里指：把少量目标机器人数据和其他来源的数据按比例混进同一批次，一起训练同一个模型。其他来源可以是网上图文问答、别的机器人数据或仿真数据。2023 年谷歌 RT-2 把机器人轨迹和视觉问答等网页任务一起微调，称为 co-fine-tuning；2025 年的 π0.5 把多机器人数据、高层语义预测和网页数据一起训练。它要解决真机数据太少的问题：借其他数据保住视觉和语言常识、提升泛化，关键是调好数据配比。传统机器学习里 Blum 和 Mitchell 1998 年提出的 co-training 是半监督方法，意思不同。",
+   "example": "Mobile ALOHA 每个任务只有 50 条移动操作演示，与已有的静态 ALOHA 双臂数据协同训练后，成功率最高提升 90%；英伟达等 2025 年的仿真-真机协同训练研究中，混入仿真数据让真机任务成功率平均提高 38%。",
+   "related": [
+    "数据配比",
+    "仿真到现实迁移",
+    "跨本体数据",
+    "RT-2",
+    "π0.5",
+    "Mobile ALOHA"
+   ],
+   "sources": [
+    {
+     "title": "RT-2: Vision-Language-Action Models Transfer Web Knowledge to Robotic Control (arXiv 2307.15818)",
+     "url": "https://arxiv.org/abs/2307.15818"
+    },
+    {
+     "title": "Mobile ALOHA: Learning Bimanual Mobile Manipulation with Low-Cost Whole-Body Teleoperation (arXiv 2401.02117)",
+     "url": "https://arxiv.org/abs/2401.02117"
+    },
+    {
+     "title": "Sim-and-Real Co-Training: A Simple Recipe for Vision-Based Robotic Manipulation (arXiv 2503.24361)",
+     "url": "https://arxiv.org/abs/2503.24361"
+    }
+   ],
+   "as_of": "2025-04"
+  },
+  {
+   "name_zh": "冷启动",
+   "name_en": "Cold Start (SFT Cold-start before RL)",
+   "abbr": "",
+   "aliases": [
+    "冷启动数据",
+    "冷启动微调",
+    "Cold-start SFT",
+    "Cold-start Data"
+   ],
+   "tier": 2,
+   "one_liner": "强化学习之前，先用少量高质量示范做监督微调，给模型一个像样的起点。",
+   "explanation": "冷启动在大模型和 VLA 训练里指：正式做强化学习之前，先用少量高质量数据做监督微调（SFT，直接拿标准答案训练），得到一个基本会做任务的初始模型。这个说法因 DeepSeek-R1（2025 年 1 月）流行：纯 RL 训出的 R1-Zero 可读性差、多语言混杂，于是先用数千条长思维链数据微调再做 RL。原因是强化学习靠试错，初始模型几乎从不成功时拿不到奖励信号，训练慢且不稳。具身领域的对应做法是先用演示数据做行为克隆得到基础策略，再到仿真或真机上做 RL 微调。推荐系统里的「冷启动」指新用户没有历史数据，是另一回事。",
+   "example": "SimpleVLA-RL（2025）先对每个任务只用 1 条演示做 SFT，LIBERO-Long 成功率为 17.3%；以此为起点做强化学习后升到 91.7%。",
+   "related": [
+    "监督微调",
+    "强化学习微调",
+    "行为克隆",
+    "后训练",
+    "稀疏奖励",
+    "SimpleVLA-RL"
+   ],
+   "sources": [
+    {
+     "title": "DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning (arXiv 2501.12948)",
+     "url": "https://arxiv.org/html/2501.12948v1"
+    },
+    {
+     "title": "SimpleVLA-RL: Scaling VLA Training via Reinforcement Learning (arXiv 2509.09674)",
+     "url": "https://arxiv.org/abs/2509.09674"
+    }
+   ],
+   "as_of": "2025-09"
+  },
+  {
+   "name_zh": "复合误差",
+   "name_en": "Compounding Error",
+   "abbr": "",
+   "aliases": [
+    "误差累积",
+    "累积误差",
+    "误差复合",
+    "Error Compounding"
+   ],
+   "tier": 2,
+   "one_liner": "模仿策略每步的小偏差不断叠加，把机器人带进没见过的状态而失败。",
+   "explanation": "复合误差是行为克隆（用监督学习直接模仿专家动作）的核心问题。策略每一步都有一点误差，一旦偏离专家轨迹，就会进入训练数据里没出现过的状态，在那里更容易犯错，偏差越滚越大。Ross 和 Bagnell 2010 年的分析指出：每步出错率为 ε、任务长 T 步时，纯监督模仿比专家多出的代价最坏可达 T²ε 量级，随任务长度二次增长。其根源是协变量偏移。常见缓解办法有：DAgger 让专家在策略自己走到的状态上补标注；专门采集纠偏数据；ACT 用动作分块一次预测一段动作，减少需要决策的步数。",
+   "example": "ACT 论文指出，在高精度的双臂精细操作中，模仿策略的误差会随时间累积，于是改为一次预测一整段动作序列，只用 10 分钟人类演示就在多个任务上达到 80%–90% 成功率。",
+   "related": [
+    "协变量偏移 / 分布偏移",
+    "DAgger（数据集聚合）",
+    "行为克隆",
+    "动作分块",
+    "纠偏数据",
+    "曝光偏差（自回归误差累积）"
+   ],
+   "sources": [
+    {
+     "title": "Efficient Reductions for Imitation Learning (Ross & Bagnell, AISTATS 2010)",
+     "url": "https://proceedings.mlr.press/v9/ross10a.html"
+    },
+    {
+     "title": "A Reduction of Imitation Learning and Structured Prediction to No-Regret Online Learning (AISTATS 2011)",
+     "url": "https://proceedings.mlr.press/v15/ross11a/ross11a.pdf"
+    },
+    {
+     "title": "Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware (ACT, arXiv 2304.13705)",
+     "url": "https://arxiv.org/abs/2304.13705"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "对比学习",
+   "name_en": "Contrastive Learning",
+   "abbr": "",
+   "aliases": [
+    "对比表征学习",
+    "Contrastive Representation Learning"
+   ],
+   "tier": 2,
+   "one_liner": "让相似样本的表示靠近、不相似样本的表示远离，从无标签数据里学特征。",
+   "explanation": "对比学习是一类自监督表征学习方法：构造「正样本对」（应当相似的两份数据，如同一张图的两种随机增强、一张图和它的配文）和「负样本」，训练编码器把正样本对的向量拉近、把负样本推远。常用损失是 InfoNCE，源自 2018 年的 CPC 论文。代表工作有 SimCLR、MoCo 和 CLIP。它不需要人工标签，能从海量图像、视频和图文里学到通用视觉特征。具身智能里，很多 VLA 的视觉编码器（如 CLIP、SigLIP）就是用对比目标训出来的；R3M 则在人类视频上用时间对比学习预训练机器人视觉表征。",
+   "example": "CLIP 用 4 亿对网上图文训练，任务是判断哪段文字配哪张图；R3M 在 Ego4D 人类视频上结合时间对比学习等目标预训练，冻结后给 Franka 机械臂用，只需 20 条演示就能在真实杂乱的公寓里学会操作任务。",
+   "related": [
+    "自监督学习",
+    "InfoNCE 损失",
+    "CLIP",
+    "SigLIP",
+    "时间对比学习",
+    "R3M"
+   ],
+   "sources": [
+    {
+     "title": "Representation Learning with Contrastive Predictive Coding (arXiv 1807.03748)",
+     "url": "https://arxiv.org/abs/1807.03748"
+    },
+    {
+     "title": "Learning Transferable Visual Models From Natural Language Supervision (CLIP, arXiv 2103.00020)",
+     "url": "https://arxiv.org/abs/2103.00020"
+    },
+    {
+     "title": "R3M: A Universal Visual Representation for Robot Manipulation (arXiv 2203.12601)",
+     "url": "https://arxiv.org/abs/2203.12601"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "收敛",
+   "name_en": "Convergence",
+   "abbr": "",
+   "aliases": [
+    "训练收敛",
+    "Converge"
+   ],
+   "tier": 2,
+   "one_liner": "继续训练时损失或回报几乎不再变化，模型进入稳定状态。",
+   "explanation": "收敛指训练中损失（衡量预测与目标差距的数值）或强化学习的回报随迭代基本不再变化，再训下去收益很小。梯度下降类方法只在一定条件下保证收敛到局部最优或平稳点，深度网络实际上靠看训练曲线判断。学习率过大会让损失震荡甚至发散，梯度爆炸、数据问题也会导致不收敛。机器人学习里要注意：损失收敛不等于策略最好用。robomimic 的大规模实验指出，训练目标和实际评测目标不一致，按验证损失挑检查点并不可靠，通常还要实际跑推演、看成功率来选模型。",
+   "example": "训练腿足运控策略时，平均回报曲线先快速上升、后来走平，就认为基本收敛；训练行为克隆策略时，损失曲线走平后仍要对多个检查点分别测成功率，再决定用哪一个。",
+   "related": [
+    "损失函数",
+    "学习率",
+    "梯度下降",
+    "过拟合",
+    "检查点",
+    "早停"
+   ],
+   "sources": [
+    {
+     "title": "Google Machine Learning Glossary: convergence",
+     "url": "https://developers.google.com/machine-learning/glossary"
+    },
+    {
+     "title": "What Matters in Learning from Offline Human Demonstrations for Robot Manipulation (robomimic, arXiv 2108.03298)",
+     "url": "https://arxiv.org/abs/2108.03298"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "协变量偏移 / 分布偏移",
+   "name_en": "Covariate Shift / Distribution Shift",
+   "abbr": "",
+   "aliases": [
+    "分布偏移",
+    "分布漂移",
+    "数据集偏移",
+    "Dataset Shift",
+    "Distribution Drift"
+   ],
+   "tier": 2,
+   "one_liner": "部署时输入数据的分布和训练时不一样，模型因此表现变差。",
+   "explanation": "分布偏移泛指训练数据和部署时数据的分布不一致；协变量偏移是其中一种：输入 x 的分布变了，但「给定输入该输出什么」（P(y|x)）没变。与它并列的还有标签偏移和概念偏移。在模仿学习里它尤其致命：训练用的是专家走过的状态，部署时策略看到的却是自己走出来的状态，一出错就进入专家没去过的区域，这正是复合误差的根源。Ross 等 2011 年指出，模仿学习因此违反了监督学习的独立同分布假设。应对思路有 DAgger 在新状态上补标注、用数据增强和域随机化扩大训练覆盖面，以及按重要性权重给训练样本重新加权。",
+   "example": "在实验室白色桌面、固定灯光下采集数据训练的抓取策略，搬到木纹桌面、光照多变的家庭厨房后频繁失败，这就是视觉输入的分布偏移。",
+   "related": [
+    "复合误差",
+    "DAgger（数据集聚合）",
+    "分布外",
+    "领域自适应",
+    "域随机化",
+    "重要性采样"
+   ],
+   "sources": [
+    {
+     "title": "Dive into Deep Learning: Environment and Distribution Shift",
+     "url": "https://d2l.ai/chapter_linear-classification/environment-and-distribution-shift.html"
+    },
+    {
+     "title": "A Reduction of Imitation Learning and Structured Prediction to No-Regret Online Learning (PMLR v15)",
+     "url": "https://proceedings.mlr.press/v15/ross11a.html"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "交叉熵",
+   "name_en": "Cross-Entropy",
+   "abbr": "CE",
+   "aliases": [
+    "交叉熵损失",
+    "Cross-Entropy Loss",
+    "对数损失",
+    "Log Loss"
+   ],
+   "tier": 2,
+   "one_liner": "衡量模型预测的概率分布离正确答案有多远，是分类任务最常用的损失。",
+   "explanation": "交叉熵来自信息论，用来衡量两个概率分布的差异。深度学习里把它当分类损失：模型对每个类别输出概率（通常经 Softmax 归一化），正确类别的预测概率越低，损失越大；标签只有一个正确类别时，它就等于负对数似然（NLL）。大语言模型的下一个 token 预测，就是在整个词表上算交叉熵。具身里，把连续动作离散成 token 的 VLA（如 RT-2、OpenVLA）同样用交叉熵训练动作输出；直接回归连续动作的策略多用均方误差或 L1 损失，扩散和流匹配策略则用各自的去噪损失。",
+   "example": "OpenVLA 把每个动作维度按训练数据的 1% 到 99% 分位区间均分成 256 个桶，用它们覆盖 Llama 词表里最少用的 256 个 token，训练时只在动作 token 上计算交叉熵损失。",
+   "related": [
+    "损失函数",
+    "下一个 token 预测",
+    "分箱离散化",
+    "均方误差",
+    "KL 散度",
+    "最大似然估计 / 负对数似然"
+   ],
+   "sources": [
+    {
+     "title": "Google Machine Learning Glossary: cross-entropy",
+     "url": "https://developers.google.com/machine-learning/glossary"
+    },
+    {
+     "title": "OpenVLA: An Open-Source Vision-Language-Action Model (arXiv 2406.09246)",
+     "url": "https://arxiv.org/html/2406.09246"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "课程学习",
+   "name_en": "Curriculum Learning",
+   "abbr": "",
+   "aliases": [
+    "课程",
+    "课程式训练",
+    "自动课程学习",
+    "Automatic Curriculum Learning"
+   ],
+   "tier": 2,
+   "one_liner": "先让模型学简单的样本或任务，再逐步加大难度的训练策略。",
+   "explanation": "课程学习由 Bengio 等人在 2009 年 ICML 论文中正式提出：像人按课程表学习一样，先给模型看简单的样本或子任务，再逐步提高难度。论文实验显示它能加快收敛、提升泛化。机器人强化学习里用得很多，因为一上来就面对最难的任务，策略几乎拿不到奖励，根本学不起来。常见形式有地形课程（腿足机器人先在平地练，再上台阶和斜坡）、逐步提高指令速度、逐步放宽域随机化范围；难度还可以按策略当前表现自动调整，称为自动课程。",
+   "example": "legged_gym（Rudin 等 2021）同时仿真 4096 台 ANYmal 四足：走出当前地形边界的机器人下一回合换更难的地形，走不到目标距离一半的降一级；台阶高度从 5 厘米升到 20 厘米，坡度从 0° 升到 25°。",
+   "related": [
+    "地形课程",
+    "强化学习",
+    "自动域随机化",
+    "稀疏奖励",
+    "legged_gym",
+    "大规模并行强化学习"
+   ],
+   "sources": [
+    {
+     "title": "Curriculum Learning (Bengio et al., ICML 2009)",
+     "url": "https://ronan.collobert.com/pub/2009_curriculum_icml.pdf"
+    },
+    {
+     "title": "Learning to Walk in Minutes Using Massively Parallel Deep Reinforcement Learning (arXiv 2109.11978)",
+     "url": "https://arxiv.org/html/2109.11978"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "数据增强",
+   "name_en": "Data Augmentation",
+   "abbr": "",
+   "aliases": [
+    "数据扩增",
+    "数据增广",
+    "图像增强"
+   ],
+   "tier": 2,
+   "one_liner": "对已有训练数据做随机变换生成新样本，让模型见过更多变化。",
+   "explanation": "数据增强指不新增采集，而是对已有样本做随机但不改变含义的变换来扩充训练集，是减轻过拟合、提升鲁棒性的标准手段。图像上常用随机裁剪、平移、旋转、颜色抖动、随机遮挡等。机器人数据又贵又少，增强尤其有用；但变换不能破坏图像和动作标签的对应关系，比如把画面左右翻转，动作里的左右方向也得跟着翻。2020 年 RAD 等工作表明，只加随机裁剪、平移这类简单增强，就能明显提升基于像素的强化学习的数据效率。近年还有用生成模型换背景、换物体的生成式数据增强，以及改写语言指令的指令增强。",
+   "example": "RAD 对 DeepMind Control Suite 的像素输入加入随机裁剪、随机平移等增强，数据效率和最终性能达到当时最好水平，并在 ProcGen 上明显提升了测试时的泛化。",
+   "related": [
+    "过拟合",
+    "泛化",
+    "域随机化",
+    "生成式数据增强",
+    "指令增强",
+    "视觉泛化"
+   ],
+   "sources": [
+    {
+     "title": "Google Machine Learning Glossary: data augmentation",
+     "url": "https://developers.google.com/machine-learning/glossary"
+    },
+    {
+     "title": "Reinforcement Learning with Augmented Data (RAD, arXiv 2004.14990)",
+     "url": "https://arxiv.org/abs/2004.14990"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "DAgger（数据集聚合）",
+   "name_en": "Dataset Aggregation",
+   "abbr": "DAgger",
+   "aliases": [
+    "数据集聚合",
+    "DAGGER"
+   ],
+   "tier": 2,
+   "one_liner": "让策略自己去跑，专家为它走到的状态补标正确动作，合并数据后重训。",
+   "explanation": "DAgger 是 Ross、Gordon 和 Bagnell 在 AISTATS 2011 提出的交互式模仿学习算法。它针对行为克隆的复合误差：只在专家轨迹上训练的策略，一偏离就不知所措。做法是多轮迭代：先用专家数据训练初始策略；让当前策略去执行，记录它实际遇到的状态；请专家为这些状态标注「这里该怎么做」；把新标注并入历史数据集，重新训练，如此反复。论文证明这样能把误差随任务长度的增长从二次降到近似线性。缺点是专家要随时标注，真机上常用人在旁监控、必要时接管的 HG-DAgger 等变体。",
+   "example": "原论文在赛车游戏 Super Tux Kart 里学转向、在 Super Mario Bros. 里学通关，DAgger 的表现都好于只用专家演示做监督学习的方法。",
+   "related": [
+    "复合误差",
+    "协变量偏移 / 分布偏移",
+    "行为克隆",
+    "人工门控 DAgger",
+    "交互式模仿学习",
+    "人在回路"
+   ],
+   "sources": [
+    {
+     "title": "A Reduction of Imitation Learning and Structured Prediction to No-Regret Online Learning (PMLR v15)",
+     "url": "https://proceedings.mlr.press/v15/ross11a.html"
+    },
+    {
+     "title": "A Reduction of Imitation Learning and Structured Prediction to No-Regret Online Learning (PDF, 含 DAgger 算法与 T²ε 分析)",
+     "url": "https://proceedings.mlr.press/v15/ross11a/ross11a.pdf"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "深度 Q 网络",
+   "name_en": "Deep Q-Network",
+   "abbr": "DQN",
+   "aliases": [
+    "Deep Q-Learning",
+    "深度 Q 学习"
+   ],
+   "tier": 2,
+   "one_liner": "用深度神经网络估计每个动作长期价值（Q 值）的强化学习算法。",
+   "explanation": "DQN 由 DeepMind 的 Mnih 等人提出：2013 年预印本在 7 个 Atari 游戏上验证，2015 年《自然》论文扩展到 49 个游戏，只看屏幕像素和得分，整体达到与职业人类测试员相当的水平。它把 Q 学习（学习「在某状态做某动作后能拿到多少总回报」）里的表格换成卷积神经网络，并用经验回放（存下历史经验随机抽取训练）和目标网络（定期同步的副本，用来算学习目标）稳住训练，开启了深度强化学习热潮。它要在所有动作里取 Q 值最大者，适合离散动作；机械臂的连续动作多改用 DDPG、SAC 等。",
+   "example": "谷歌 2018 年的 QT-Opt 把 Q 学习搬到真实机械臂抓取：累计 58 万多次真机抓取尝试，训出的闭环视觉抓取策略在没见过的物体上成功率达 96%。",
+   "related": [
+    "Q 学习",
+    "Q 函数",
+    "经验回放",
+    "目标网络",
+    "深度确定性策略梯度",
+    "QT-Opt"
+   ],
+   "sources": [
+    {
+     "title": "Playing Atari with Deep Reinforcement Learning (arXiv 1312.5602)",
+     "url": "https://arxiv.org/abs/1312.5602"
+    },
+    {
+     "title": "Google DeepMind: Deep Reinforcement Learning",
+     "url": "https://deepmind.google/discover/blog/deep-reinforcement-learning/"
+    },
+    {
+     "title": "QT-Opt: Scalable Deep Reinforcement Learning for Vision-Based Robotic Manipulation (arXiv 1806.10293)",
+     "url": "https://arxiv.org/abs/1806.10293"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "稠密奖励",
+   "name_en": "Dense Reward",
+   "abbr": "",
+   "aliases": [
+    "密集奖励",
+    "稠密回报"
+   ],
+   "tier": 2,
+   "one_liner": "几乎每一步都给反馈、告诉智能体离目标更近还是更远的奖励设计。",
+   "explanation": "稠密奖励指强化学习中几乎每个时间步都给出有信息量的奖励，与只在任务成功时才给奖励的稀疏奖励相对。它通常由人把任务拆成若干项加权相加，如到目标的距离、速度跟踪误差、能耗惩罚。好处是智能体从一开始就知道往哪个方向改进，学得快；腿足运控的强化学习几乎都用稠密奖励。代价是设计费力，各项权重没调好时，智能体会钻空子刷分而不完成真正的目标，即奖励黑客。Eureka 等工作尝试让大模型自动写这类奖励函数代码。",
+   "example": "Gymnasium-Robotics 的 FetchReach 有两个版本：稀疏版在末端离目标超过 5 厘米时每步给 -1、到达给 0；稠密版 FetchReachDense 每步给末端到目标的负欧氏距离。legged_gym 的四足行走奖励由速度跟踪、关节力矩惩罚、碰撞惩罚等多项组成，每个仿真步都计算。",
+   "related": [
+    "稀疏奖励",
+    "奖励塑形",
+    "奖励函数",
+    "奖励工程",
+    "奖励黑客",
+    "Eureka"
+   ],
+   "sources": [
+    {
+     "title": "Gymnasium-Robotics: Fetch Reach",
+     "url": "https://robotics.farama.org/envs/fetch/reach/"
+    },
+    {
+     "title": "Learning to Walk in Minutes Using Massively Parallel Deep Reinforcement Learning (arXiv 2109.11978)",
+     "url": "https://arxiv.org/html/2109.11978"
+    }
+   ],
+   "as_of": ""
+  }
+ ]
+}

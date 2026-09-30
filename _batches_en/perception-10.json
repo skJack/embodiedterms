@@ -1,0 +1,113 @@
+{
+  "batch": "perception-10",
+  "terms": [
+    {
+      "key": "perception-10#0",
+      "name_en": "Active Perception",
+      "aliases": ["Active Vision", "Active Sensing"],
+      "one_liner": "A robot deliberately moves its sensors or body to see or feel a target better, rather than just passively observing.",
+      "explanation": "Active perception means an agent doesn’t just passively receive sensor data, but actively decides where, how, and when to look based on the task and its current judgment. The idea was proposed by Ruzena Bajcsy in 1985 and published in Proceedings of the IEEE in 1988; that same year Aloimonos and colleagues independently proposed “active vision.” A 2016 survey by Bajcsy, Aloimonos, and Tsotsos defined it this way: an agent knows why it needs to perceive something, chooses what to perceive, and decides how, when, and where to perceive it. It addresses the problem of a single viewpoint not giving enough information — occlusion, a target outside the field of view, or poor lighting. Common forms in embodied AI include turning the head for a different view, adjusting a wrist camera, or reaching out to touch something to confirm its material; it is closely related to next-best-view planning, interactive perception, and active exploration.",
+      "example": "A cup is half-hidden behind a cardboard box; a humanoid robot turns its head and bends down for another shot from a different angle, confirms which way the handle is facing, and only then reaches to grasp it.",
+      "related": ["Interactive Perception", "Next-Best-View", "Active Exploration", "Perception-Action Loop", "Embodied Perception", "Head Camera"]
+    },
+    {
+      "key": "perception-10#1",
+      "name_en": "Active Stereo",
+      "aliases": ["IR-Projected Stereo", "Projected Texture Stereo"],
+      "one_liner": "A stereo camera pair with an infrared projector adding a speckle pattern to help match the left and right images and compute depth.",
+      "explanation": "Active stereo is a depth-camera design: two infrared cameras triangulate depth from disparity just like ordinary stereo, while an infrared projector simultaneously casts a random dot pattern onto the scene. Passive (ordinary) stereo matches the two images using natural texture, and fails on texture-free surfaces like blank walls or plain tabletops, leaving holes in the depth map; the projected speckle pattern artificially adds texture to these surfaces so matching is no longer ambiguous. Intel RealSense’s R200 and D400 series use this approach; Intel’s technical paper notes that, unlike structured light, the projected pattern doesn’t need to be known in advance — it only needs to be dense and non-repeating along the matching direction. Because the cameras can also exploit natural texture lit by sunlight, this kind of camera still works outdoors. Orbbec’s Gemini 330 series is also marketed as combining active and passive stereo.",
+      "example": "A camera like the RealSense D435 photographing a plain white table gets a depth map full of holes with the infrared projector off; turning the projector on covers the table in a speckle pattern, and the holes disappear.",
+      "related": ["Stereo Camera", "Structured Light", "Speckle Structured Light", "Depth Camera", "Stereo Matching", "RealSense Depth Camera (D435i / D405)"]
+    },
+    {
+      "key": "perception-10#2",
+      "name_en": "Adaptive Monte Carlo Localization",
+      "aliases": ["AMCL", "KLD-Sampling Monte Carlo Localization"],
+      "one_liner": "A classic particle-filter algorithm that estimates a mobile robot’s position and orientation on a known 2D map.",
+      "explanation": "AMCL is a probabilistic method for a mobile robot to localize itself on a known 2D map, and it is the default localization module in the ROS navigation stack. It uses a particle filter — representing uncertainty with a large set of “possible pose” samples — to track the robot: as the robot moves, odometry pushes the particles forward; when a lidar scan arrives, each particle’s expected view of the map is compared against the actual scan, particles that match well get higher weight, and the set is resampled by weight. “Adaptive” refers to the KLD-sampling technique proposed by Dieter Fox, which automatically grows or shrinks the number of particles with the uncertainty level: more particles right after startup when position is unknown, fewer once the estimate converges. ROS 1’s amcl package descends from a driver of the same name in the Player project, and ROS 2’s nav2_amcl is its ported version, defaulting to 500–2,000 particles and outputting the map-to-odom coordinate transform. It depends on a map built beforehand with SLAM, and is mostly used on indoor wheeled bases.",
+      "example": "After a ROS robot powers on, clicking its approximate starting position in RViz makes AMCL’s particle cloud gradually converge onto the true position as the robot moves; only then can navigation plan routes reliably against the map.",
+      "related": ["Particle Filter", "Simultaneous Localization and Mapping", "Occupancy Grid Map", "Nav2", "2D Lidar", "Wheel Odometry"]
+    },
+    {
+      "key": "perception-10#3",
+      "name_en": "Affordance Detection",
+      "aliases": ["Affordance Grounding", "Affordance Map", "Affordance Prediction"],
+      "one_liner": "Finds where on an object you can grip, press, or pour from an image or point cloud, and marks it to a specific region.",
+      "explanation": "Affordance refers to the actions an object offers an agent — a handle affords gripping, a button affords pressing. Affordance detection pins this possibility down to specific pixels or points: given an RGB image, depth image, or point cloud, it outputs an action label or heatmap (an affordance map) for each region. An early landmark, AffordanceNet (Do et al., ICRA 2018), detects objects and simultaneously assigns each pixel of the object its most likely affordance label. “Affordance grounding” puts more emphasis on finding a region for a given action word — for instance, Luo and colleagues’ AGD20K dataset (CVPR 2022, over 20,000 images across 36 affordance classes) learns from third-person human-object interaction images and transfers this knowledge to object-only images. This fills the gap between “recognizing an object” and “knowing how to operate it,” and the result is often used as an intermediate representation for grasp planning or a policy. Recent work also uses vision-language models to predict actionable points directly, such as RoboPoint.",
+      "example": "Given the instruction “pour a cup of water,” affordance detection on an image of a kettle labels the handle a “grip” region and the spout a “pour” region, so the grasping module only samples grasp poses on the handle.",
+      "related": ["Affordance", "Grasp Pose Detection", "Task-Oriented Grasping (Functional Grasping)", "RoboPoint", "VRB (Learning Affordances from Human Video)", "Intermediate Representation"]
+    },
+    {
+      "key": "perception-10#4",
+      "name_en": "Allan Variance",
+      "aliases": ["Allan Deviation", "Two-Sample Variance", "AVAR"],
+      "one_liner": "A statistical method for how sensor noise changes with averaging time, commonly used to calibrate IMU noise parameters.",
+      "explanation": "Allan variance is the “two-sample variance” that David W. Allan proposed in 1966 to measure the frequency stability of atomic clocks and crystal oscillators; it later became the standard method for calibrating noise in gyroscopes and accelerometers, and IEEE Std 952-1997 (the fiber-optic gyroscope test standard) documents how to read noise parameters off it. In practice, an IMU sits still and records a long stretch of data; the data is divided into segments of different averaging times τ, the mean of each segment is computed, and the variance of the differences between neighboring segment means is plotted on a log-log curve. A segment of the curve with slope −1/2 corresponds to white noise (noise density), while a slope of +1/2 corresponds to bias random walk. Kalibr’s IMU noise model documentation recommends recording 15 to 24 hours while stationary, reading white noise at τ = 1 second and the random-walk line at τ = 3 seconds. These readings feed into the configuration of visual-inertial odometry, camera-IMU joint calibration, and Kalman filters; getting them wrong makes the fusion algorithm trust the IMU too much or too little.",
+      "example": "Before doing camera-IMU joint calibration, the IMU is left recording overnight while stationary; allan_variance_ros plots the curve, and the gyroscope’s and accelerometer’s noise density and random walk are read off it and written into Kalibr’s IMU configuration file.",
+      "related": ["Inertial Measurement Unit", "Sensor Drift (Bias Drift)", "Camera-IMU Joint Calibration", "Kalibr", "Visual-Inertial Odometry", "Kalman Filter"]
+    },
+    {
+      "key": "perception-10#5",
+      "name_en": "AnyTouch",
+      "aliases": ["AnyTouch: Learning Unified Static-Dynamic Representation across Multiple Visuo-tactile Sensors", "AnyTouch 2"],
+      "one_liner": "A unified tactile-representation model spanning multiple vision-based tactile sensors, from Renmin University’s Di Hu group, covering both static and dynamic touch.",
+      "explanation": "AnyTouch is a visuo-tactile representation learning framework proposed by Di Hu’s group at Renmin University of China together with Bin Fang at Beijing University of Posts and Telecommunications and others, published at ICLR 2025. Vision-based tactile sensors use a camera to image the deformation of an elastic gel layer, but different sensor models image very differently, making data and models hard to share across them. The authors first collected the TacQuad dataset: four sensors — GelSight Mini, DIGIT, a custom DuraGel, and Tac3D — touching the same location on the same object, yielding 72,606 aligned frames of contact data, paired with visual images and text descriptions of tactile properties. The model takes both tactile images and tactile video as input, uses masked modeling to learn pixel-level detail, and then learns sensor-agnostic semantic features by aligning with vision and language and by matching across sensors. In February 2026 the team released AnyTouch 2, shifting the focus to dynamic tactile sensing with force information.",
+      "example": "In the paper’s real-robot experiment, a robot arm pours 60 grams of small beads out of a cylinder using only tactile feedback, and the error between the poured mass and the target mass is used to evaluate different tactile representations.",
+      "related": ["Vision-Based Tactile Sensor", "Tactile Representation Learning", "GelSight Mini", "DIGIT", "Sparsh", "Visuo-Tactile Fusion"]
+    },
+    {
+      "key": "perception-10#6",
+      "name_en": "Articulation Estimation",
+      "aliases": ["Articulated Object Pose Estimation", "Joint Parameter Estimation"],
+      "one_liner": "Infers an object’s parts, how they’re joined, which axis each part moves around, and how far it’s currently open.",
+      "explanation": "Articulated objects — cabinet doors, drawers, laptops, scissors — are made of multiple rigid parts connected by joints. Articulation estimation infers, from an image or point cloud: how the object divides into parts, whether each joint is revolute or prismatic, the position and direction of each joint axis, and the current joint state (say, how many degrees a door is open). A robot needs this information before opening a door or pulling a drawer — pushing in the wrong direction can jam or damage the object. Notable work includes ANCSH, by Xiaolong Li, He Wang, Shuran Song, and colleagues, which estimates part poses, joint parameters, and joint states for unseen objects of a known category from a single depth point cloud; and Ditto (Zhenyu Jiang, Yuke Zhu, and colleagues, CVPR 2022), which uses two observations, before and after an interaction, to reconstruct part geometry and estimate a joint model whose result can be dropped straight into physics simulation — effectively building a digital twin of the articulated object.",
+      "example": "Facing an unfamiliar cabinet, a robot first gives the door a push, compares the point clouds before and after, and estimates that the hinge is a vertical axis at the left edge of the cabinet — then pulls the door open along that arc.",
+      "related": ["Articulated Object", "Articulated Object Manipulation", "PartNet-Mobility Dataset", "Interactive Perception", "Digital Twin", "6D Pose Estimation"]
+    },
+    {
+      "key": "perception-10#7",
+      "name_en": "ArUco Marker",
+      "aliases": ["ArUco", "Fiducial Marker"],
+      "one_liner": "A square tag with a black border around a black-and-white grid code; a camera that spots it can compute its own pose relative to the tag.",
+      "explanation": "ArUco is a square fiducial marker system and open-source detection library developed by the AVA research group (Rafael Muñoz, Sergio Garrido, and others) at the University of Córdoba in Spain. Each marker has a thick black border around a binary matrix of black-and-white cells encoding an ID: the black border makes it fast to find in an image, and the binary code allows error detection and correction, as well as telling how far the marker has rotated. A usable set of codes is called a dictionary — a 4×4 marker, for instance, encodes 16 bits. The four corners of a single marker are enough to solve for the camera’s 6D pose relative to the marker using PnP. OpenCV’s aruco module is built on this library, and from version 4.7 it moved into the objdetect module. In robotics, ArUco markers are commonly used for hand-eye calibration, ChArUco calibration boards (ArUco markers embedded in a checkerboard), or stuck on objects and worktables to quickly get ground-truth pose. It belongs to the same family of techniques as AprilTag.",
+      "example": "When collecting data, sticking an ArUco marker to a table corner lets the wrist camera detect it every frame and convert the camera pose into the table’s coordinate frame, which also serves as a quick check on how accurate the hand-eye calibration is.",
+      "related": ["AprilTag", "Calibration Board", "Hand-Eye Calibration", "PnP (Perspective-n-Point)", "Camera Calibration", "OpenCV"]
+    },
+    {
+      "key": "perception-10#8",
+      "name_en": "Attitude Estimation",
+      "aliases": ["Attitude and Heading Reference System", "AHRS", "IMU Attitude Fusion"],
+      "one_liner": "Fuses gyroscope, accelerometer, and (optionally) magnetometer data to compute roll, pitch, and yaw angles in real time.",
+      "explanation": "Attitude estimation computes an object’s orientation in space from inertial sensor data, typically expressed as roll, pitch, and yaw angles or as a quaternion. AHRS (attitude and heading reference system) was originally an aviation instrument, built from a three-axis gyroscope, accelerometer, and magnetometer plus an onboard computer that outputs attitude and heading directly; a plain IMU usually only outputs raw angular velocity and acceleration. In principle, integrating the gyroscope gives an angle that’s accurate short-term but drifts; the accelerometer can sense the direction of gravity, which corrects roll and pitch; yaw has no gravity reference, so it needs correction from a magnetometer, vision, or another source. Common fusion algorithms include the Kalman filter, the complementary filter, the Madgwick algorithm (proposed during a 2009 PhD project, now open-sourced under the name Fusion), and the Mahony filter. Control policies for legged and humanoid robots often take the estimated attitude (or projected gravity) and angular velocity as input, so attitude error directly affects balance control.",
+      "example": "When a quadruped robot is shoved from the side, IMU attitude estimation gives the real-time change in body roll angle, and the locomotion control policy steps to recover balance based on it.",
+      "related": ["Inertial Measurement Unit", "Complementary Filter", "Kalman Filter", "Projected Gravity", "Roll-Pitch-Yaw Angles", "Quaternion"]
+    },
+    {
+      "key": "perception-10#9",
+      "name_en": "Automatic Speech Recognition",
+      "aliases": ["ASR", "Speech-to-Text", "STT"],
+      "one_liner": "Automatically converts spoken words into text — the first step in a robot understanding a spoken command.",
+      "explanation": "Automatic speech recognition converts a speech signal into text, also called speech-to-text (STT). The standard evaluation metric is word error rate (WER): the number of substitutions plus deletions plus insertions, divided by the number of reference words; for Chinese, this is usually computed per character and called character error rate (CER). The leading recent model is OpenAI’s Whisper, released in 2022, trained on 680,000 hours of weakly supervised, multilingual audio; it approaches the performance of supervised methods on several standard benchmarks without fine-tuning, and both the model and the inference code are open source. In embodied AI systems, speech recognition is usually the entry point of the interaction pipeline: a microphone array picks up audio, noise reduction cleans it up, ASR converts it to text, that text goes to a large language model or a VLA to generate a plan and actions, and finally text-to-speech (TTS) is used to reply. Some natively multimodal models take audio directly as input without converting to text first. On robots, ASR also has to cope with motor noise and far-field pickup.",
+      "example": "A user says “hand me the red cup on the table”; an ASR model like Whisper converts it to text first, which is then passed to a VLA model as a language instruction to execute.",
+      "related": ["Microphone Array", "Large Language Model", "Instruction Following", "Human-Robot Interaction", "Native Multimodality", "Vision-Language-Action Model"]
+    },
+    {
+      "key": "perception-10#10",
+      "name_en": "Average Distance of Model Points",
+      "aliases": ["ADD", "ADD-S", "ADI"],
+      "one_liner": "Poses an object’s 3D model under both the true and predicted pose and averages the point-to-point distance, to score 6D pose estimation.",
+      "explanation": "ADD is the most common error metric for 6D object pose estimation, introduced by Hinterstoisser and colleagues at ACCV 2012 alongside the LINEMOD dataset. It works by taking points on an object’s 3D model, transforming them by the ground-truth pose and by the predicted pose separately, and averaging the distance between corresponding points; a common criterion counts a prediction correct if this average distance is under 10% of the model’s diameter, and reports the resulting accuracy. For symmetric objects (bowls, cans) that look the same after a rotation, matching points one to one unfairly penalizes reasonable predictions, so ADD-S is used instead: for each point, it finds the nearest point in the other point set before averaging — the BOP benchmark calls this ADI. PoseCNN (2018) swept this threshold from 0 to 10 centimeters on YCB-Video and reported the area under the accuracy-threshold curve (AUC), a format that later became common. The BOP benchmark notes that ADI can assign a low error to poses that are visibly misaligned, so it switched to three other metrics instead: VSD, MSSD, and MSPD.",
+      "example": "For a pot 20 centimeters in diameter, the 10%-of-diameter rule sets the threshold at 2 centimeters: a predicted pose whose model points deviate 1.5 centimeters on average from the ground truth counts as correct, while a 3-centimeter deviation counts as wrong.",
+      "related": ["6D Pose Estimation", "BOP Benchmark", "FoundationPose", "YCB Object Set", "Chamfer Distance", "Pose"]
+    },
+    {
+      "key": "perception-10#11",
+      "name_en": "BioTac",
+      "aliases": ["SynTouch BioTac", "BioTac SP"],
+      "one_liner": "SynTouch’s biomimetic fingertip tactile sensor, which senses contact force, micro-vibration, and temperature.",
+      "explanation": "BioTac is a fingertip-shaped tactile sensor from the US company SynTouch, developed out of biomimetic tactile research by Gerald Loeb’s group (Wettels, Fishel, and others). Its structure is a rigid core wrapped in a rubber skin, with conductive liquid filling the space between; the core’s surface carries 19 sensing electrodes and 4 excitation electrodes, and when something makes contact, the liquid layer deforms and each electrode’s voltage changes accordingly, from which contact location, force magnitude, and direction can be inferred. It can also sense micro-vibration and temperature — the former is useful for recognizing texture and detecting slip, the latter for telling materials apart. BioTac was long a high-end benchmark in robot tactile research, commonly mounted on dexterous-hand fingertips, and it built up public datasets on slip direction and grasp stability. Its drawback is that the relationship between electrode signals and deformation is complex and hard to interpret — an NVIDIA paper in 2021 built a model specifically to address this. According to a 2024 paper, the sensor has since been discontinued, which has made these datasets hard to keep using.",
+      "example": "The BioTac SP slip-direction dataset mounts BioTac on a robotic fingertip and records electrode signals during grasping, used to train a model that judges which direction an object is sliding.",
+      "related": ["Tactile Sensor", "Slip Detection", "Electronic Skin", "Vision-Based Tactile Sensor", "GelSight", "Dexterous Hand"]
+    }
+  ]
+}

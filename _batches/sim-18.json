@@ -1,0 +1,266 @@
+{
+  "category": "sim",
+  "batch": 18,
+  "terms": [
+    {
+      "name_zh": "VirtualHome 家庭活动仿真",
+      "name_en": "VirtualHome: Simulating Household Activities via Programs",
+      "abbr": "",
+      "aliases": [
+        "VirtualHome"
+      ],
+      "tier": 3,
+      "one_liner": "用「程序」驱动虚拟人在 Unity 家庭场景里做家务的仿真平台。",
+      "explanation": "VirtualHome 是 MIT 与多伦多大学在 CVPR 2018 提出的家庭活动仿真平台，基于 Unity3D 游戏引擎，用 Python API 调用。它把「做早饭」「看电视」这类家务写成「程序」，即由走到、拿起、打开、开关电器等原子动作组成的步骤序列，让虚拟人在仿真公寓里逐步执行，并渲染出带标注的视频。它关心高层任务规划，不模拟机械臂和接触力学，因此常用来测大语言模型的任务分解能力。当前版本 2.3 支持程序化生成场景，还衍生出人机协作基准 Watch-And-Help。",
+      "example": "例如「看电视」可以写成「走到客厅→拿起遥控器→打开电视→坐到沙发上」这样的程序，虚拟人按步骤执行，平台输出对应的视频和标注。",
+      "related": [
+        "家务任务",
+        "大模型任务规划",
+        "长程任务",
+        "AI2-THOR",
+        "ALFRED",
+        "仿真器"
+      ],
+      "sources": [
+        {
+          "title": "VirtualHome: Simulating Household Activities via Programs (arXiv 1806.07011, CVPR 2018)",
+          "url": "https://arxiv.org/abs/1806.07011"
+        },
+        {
+          "title": "VirtualHome GitHub 仓库",
+          "url": "https://github.com/xavierpuigf/virtualhome"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "视觉匹配",
+      "name_en": "Visual Matching (SimplerEnv)",
+      "abbr": "VM",
+      "aliases": [
+        "SimplerEnv 视觉匹配",
+        "SIMPLER Visual Matching"
+      ],
+      "tier": 3,
+      "one_liner": "SimplerEnv 的一种评测设置：把仿真画面做得尽量和真机相机画面一样。",
+      "explanation": "视觉匹配是 SimplerEnv（SIMPLER，UCSD、斯坦福、伯克利和谷歌 DeepMind 于 2024 年 5 月发布）的两种评测设置之一，用来在仿真里评测用真机数据训练的操作策略。这类策略直接进仿真常因画面差异失灵。视觉匹配用「绿幕」把仿真物体和机械臂叠到真实背景照片上，再把真实纹理投到仿真模型、按真实视频调机械臂颜色，让画面接近真机。另一种设置「变体聚合」则换背景、光照、干扰物等生成多个变体取平均。两者都用皮尔逊相关系数和平均最大排名违背（MMRV）检验仿真与真机成绩是否一致。",
+      "example": "VLA 论文在 SimplerEnv 谷歌机器人任务（拿可乐罐、移到物体旁、开关抽屉）上，通常把成功率分成「视觉匹配」和「变体聚合」两栏分别报告。",
+      "related": [
+        "SimplerEnv",
+        "变体聚合",
+        "仿真-真机相关性",
+        "平均最大排名违背",
+        "虚实差距",
+        "现实到仿真"
+      ],
+      "sources": [
+        {
+          "title": "Evaluating Real-World Robot Manipulation Policies in Simulation (arXiv 2405.05941)",
+          "url": "https://arxiv.org/abs/2405.05941"
+        },
+        {
+          "title": "SIMPLER 项目主页",
+          "url": "https://simpler-env.github.io/"
+        },
+        {
+          "title": "SimplerEnv GitHub 仓库",
+          "url": "https://github.com/simpler-env/SimplerEnv"
+        }
+      ],
+      "as_of": "2024-05"
+    },
+    {
+      "name_zh": "VLA-Arena",
+      "name_en": "VLA-Arena: An Open-Source Framework for Benchmarking Vision-Language-Action Models",
+      "abbr": "",
+      "aliases": [
+        "VLA-Arena 基准"
+      ],
+      "tier": 3,
+      "one_liner": "北大团队的开源 VLA 评测框架，按任务、语言、视觉三条轴分级测能力边界。",
+      "explanation": "VLA-Arena 是北京大学 PKU-Alignment 团队发布的开源 VLA（视觉-语言-动作模型）评测框架，2025 年 12 月上线 arXiv，后被 ICML 2026 接收，仿真基于 LIBERO 和 robosuite。它把难度拆成任务结构、语言指令、视觉观测三条独立的轴：11 个任务套件共 170 个任务，分属安全、干扰物、外推、长程四类，每套分 L0–L2 三级，只许在 L0 上微调；语言（W0–W4）和视觉（V0–V4）扰动可叠加到任意任务上。作者据此发现，现有 VLA 偏向记忆训练任务、视觉理解浅、常忽视安全约束。",
+      "example": "论文发现同一个模型在 L0 排名靠前、到 L1/L2 却可能被别的模型反超，作者把这种排名反转当作三级难度各自提供独立信息的证据。",
+      "related": [
+        "视觉-语言-动作模型",
+        "LIBERO",
+        "robosuite",
+        "泛化与鲁棒性评测",
+        "具身安全",
+        "基准测试"
+      ],
+      "sources": [
+        {
+          "title": "VLA-Arena: An Open-Source Framework for Benchmarking Vision-Language-Action Models (arXiv 2512.22539)",
+          "url": "https://arxiv.org/abs/2512.22539"
+        },
+        {
+          "title": "VLA-Arena 项目主页",
+          "url": "https://vla-arena.github.io"
+        }
+      ],
+      "as_of": "2026-08"
+    },
+    {
+      "name_zh": "VLABench",
+      "name_en": "VLABench: A Large-Scale Benchmark for Language-Conditioned Robotics Manipulation with Long-Horizon Reasoning Tasks",
+      "abbr": "",
+      "aliases": [],
+      "tier": 3,
+      "one_liner": "复旦发布的语言条件操作基准，侧重常识、隐含意图和长程多步推理。",
+      "explanation": "VLABench 是复旦大学 OpenMOSS 团队 2024 年 12 月发布的开源基准，2025 年被 ICCV 接收，评测按自然语言指令操作机械臂的能力。它基于 MuJoCo 和 dm_control 搭建，默认用 7 自由度 Franka 机械臂，共 100 类任务（60 类原子、40 类组合），物体资产 2000 多个。和指令多为固定模板的已有基准相比，它的任务需要常识和世界知识，指令带隐含意图，长程任务需要多步推理，而且 VLA 策略和 VLM 驱动的工作流都能评。项目还提供自动生成的训练数据和六个评测赛道。",
+      "example": "它的指令不一定直说要拿什么，而是带着隐含意图，需要模型先推断出目标物体再动手；论文结果显示当时最强的预训练 VLA 和基于 VLM 的流程在这些任务上都表现吃力。",
+      "related": [
+        "视觉-语言-动作模型",
+        "指令跟随",
+        "长程任务",
+        "LIBERO",
+        "MuJoCo",
+        "基准测试"
+      ],
+      "sources": [
+        {
+          "title": "VLABench (arXiv 2412.18194)",
+          "url": "https://arxiv.org/abs/2412.18194"
+        },
+        {
+          "title": "VLABench GitHub 仓库（OpenMOSS）",
+          "url": "https://github.com/OpenMOSS/VLABench"
+        }
+      ],
+      "as_of": "2025-06"
+    },
+    {
+      "name_zh": "Webots",
+      "name_en": "Webots",
+      "abbr": "",
+      "aliases": [
+        "Webots 机器人仿真器"
+      ],
+      "tier": 3,
+      "one_liner": "瑞士 Cyberbotics 维护的开源桌面机器人仿真软件，入门友好，常用于教学。",
+      "explanation": "Webots 是跨平台的开源桌面机器人仿真软件，1996 年诞生于瑞士洛桑联邦理工学院（EPFL），1998 年起由其衍生公司 Cyberbotics 维护，2018 年 12 月开源（Apache 2.0 许可证）。它自带图形界面、基于 ODE 改造的物理引擎和大量现成的机器人与传感器模型，控制器可用 C/C++、Java、Python 或 MATLAB 编写，也能接 ROS / ROS 2。和 Isaac Lab、MuJoCo 这类面向大规模并行强化学习的仿真器相比，它偏向单机交互式仿真，多见于教学、竞赛和移动机器人算法验证。截至 2026 年 9 月，最新正式版是 2025 年 2 月的 R2025a。",
+      "example": "官方入门教程第一课：在一个带围墙的场地里放一台两轮小车 e-puck，写一段控制器程序让它动起来，大约 30 分钟可以完成。",
+      "related": [
+        "仿真器",
+        "物理引擎",
+        "Gazebo",
+        "CoppeliaSim",
+        "机器人操作系统",
+        "ROS 2"
+      ],
+      "sources": [
+        {
+          "title": "Cyberbotics 官网：Webots",
+          "url": "https://cyberbotics.com/"
+        },
+        {
+          "title": "Webots GitHub 仓库",
+          "url": "https://github.com/cyberbotics/webots"
+        },
+        {
+          "title": "Webots Releases",
+          "url": "https://github.com/cyberbotics/webots/releases"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "WorldArena 具身世界模型基准",
+      "name_en": "WorldArena: A Unified Benchmark for Evaluating Perception and Functional Utility of Embodied World Models",
+      "abbr": "",
+      "aliases": [
+        "WorldArena",
+        "WorldArena 2.0"
+      ],
+      "tier": 3,
+      "one_liner": "清华牵头的具身世界模型基准，同时考生成画面质量和对下游任务的实际用处。",
+      "explanation": "WorldArena 是清华大学牵头、多家机构参与、2026 年 2 月发布的具身世界模型评测基准。具身世界模型指根据当前画面和动作或指令预测未来画面的模型。作者认为已有评测只看视频好不好看，不问它能否帮到决策，于是从三方面打分：视频质量（6 个子维度共 16 项指标）、具身任务功能（把世界模型当数据引擎、策略评估器和动作规划器来检验）、人工评估，汇总成综合分 EWMScore。基于 RoboTwin 2.0 双臂任务评测 14 个模型后，作者发现画面好不等于任务强。2026 年 5 月的 2.0 版加入了视触觉和真机平台。",
+      "example": "第一版评测了 Wan 2.2、Veo 3.1 等通用视频模型，以及 Cosmos-Predict 2.5、Genie Envisioner、Ctrl-World 等具身世界模型，排行榜公开在 world-arena.ai。",
+      "related": [
+        "世界模型",
+        "世界模型评测",
+        "EWMBench 具身世界模型评测",
+        "RoboTwin",
+        "Ctrl-World",
+        "WorldScore 世界生成评测"
+      ],
+      "sources": [
+        {
+          "title": "WorldArena (arXiv 2602.08971)",
+          "url": "https://arxiv.org/abs/2602.08971"
+        },
+        {
+          "title": "WorldArena 2.0 (arXiv 2605.17912)",
+          "url": "https://arxiv.org/abs/2605.17912"
+        }
+      ],
+      "as_of": "2026-05"
+    },
+    {
+      "name_zh": "WorldEval",
+      "name_en": "WorldEval: World Model as Real-World Robot Policies Evaluator",
+      "abbr": "",
+      "aliases": [
+        "dWorldEval"
+      ],
+      "tier": 3,
+      "one_liner": "用视频世界模型代替真机跑推演，给机器人策略打分和排名的评测方法。",
+      "explanation": "WorldEval 是美的集团与华东师范大学研究者 2025 年 5 月提出的机器人策略评测方法，用世界模型代替真机做评测。真机逐个测策略又慢又难复现。WorldEval 让策略在世界模型里闭环运行：策略看生成画面输出动作，世界模型据此生成下一段视频。为让视频严格跟着动作走，作者提出 Policy2Vec，让视频生成模型跟随潜在动作生成画面。实验显示它的排名与真机成绩高度相关，还能区分同一策略的不同检查点、拦下危险动作。2026 年 4 月的后续工作 dWorldEval 改用离散扩散世界模型，并用「进度 token」自动判断任务是否完成。",
+      "example": "上真机之前，先让几个候选策略（或同一策略的多个检查点）在 WorldEval 里跑一遍排序，再只把排名靠前的拿去真机验证。",
+      "related": [
+        "世界模型评测",
+        "世界模型",
+        "视频生成模型",
+        "潜在动作",
+        "仿真-真机相关性",
+        "Ctrl-World"
+      ],
+      "sources": [
+        {
+          "title": "WorldEval: World Model as Real-World Robot Policies Evaluator (arXiv 2505.19017)",
+          "url": "https://arxiv.org/abs/2505.19017"
+        },
+        {
+          "title": "WorldEval 项目主页",
+          "url": "https://worldeval.github.io"
+        },
+        {
+          "title": "dWorldEval (arXiv 2604.22152)",
+          "url": "https://arxiv.org/abs/2604.22152"
+        }
+      ],
+      "as_of": "2026-04"
+    },
+    {
+      "name_zh": "WorldScore 世界生成评测",
+      "name_en": "WorldScore: A Unified Evaluation Benchmark for World Generation",
+      "abbr": "",
+      "aliases": [
+        "WorldScore"
+      ],
+      "tier": 3,
+      "one_liner": "斯坦福的世界生成统一评测，让 3D、4D 场景生成和视频模型用同一把尺子比。",
+      "explanation": "WorldScore 是斯坦福李飞飞、吴佳俊团队 2025 年 4 月发布的世界生成评测基准，收录于 ICCV 2025。世界生成指从图片或文字生成一个可沿相机路径探索的场景；此前 3D、4D 场景生成和视频生成模型各测各的，无法横比。WorldScore 把任务统一拆成一连串「下一个场景生成」，每步用相机轨迹指定布局，数据集含 3000 个样例。指标分可控性（相机、物体、内容对齐）、质量（3D 一致性、光度与风格一致性、主观质量）、动态（运动准确度、幅度、平滑度）三类，汇总为 WorldScore-Static 和 WorldScore-Dynamic 两个总分。",
+      "example": "论文用同一套样例评测了 3D 场景生成、4D 场景生成、图生视频、文生视频四类共 19 个开源和闭源模型，并维护公开排行榜。",
+      "related": [
+        "世界模型",
+        "视频生成模型",
+        "4D 世界模型",
+        "Marble（World Labs）",
+        "WorldArena 具身世界模型基准",
+        "VBench 视频生成评测基准"
+      ],
+      "sources": [
+        {
+          "title": "WorldScore (arXiv 2504.00983, ICCV 2025)",
+          "url": "https://arxiv.org/abs/2504.00983"
+        },
+        {
+          "title": "WorldScore 项目主页",
+          "url": "https://haoyi-duan.github.io/WorldScore/"
+        }
+      ],
+      "as_of": "2025-11"
+    }
+  ]
+}

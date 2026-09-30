@@ -1,0 +1,113 @@
+{
+  "batch": "model-05",
+  "terms": [
+    {
+      "key": "model-05#0",
+      "name_en": "Embodied Chain-of-Thought",
+      "aliases": ["ECoT", "Embodied Chain-of-Thought Reasoning"],
+      "one_liner": "A method that has a robot model reason step by step — plan, subtask, object locations — before producing an action.",
+      "explanation": "Embodied Chain-of-Thought (ECoT) was proposed in 2024 by researchers from UC Berkeley, Stanford, and other institutions. A standard vision-language-action (VLA) model looks at an image, hears an instruction, and outputs an action directly. ECoT instead has the model write out a chain of reasoning first — a restatement of the task, an overall plan, the current subtask, the direction the gripper should move next, the gripper's position, and bounding boxes for objects in the scene — and only then output the action. Unlike chain-of-thought in large language models, this reasoning has to stay grounded in the actual image and robot state. The authors used off-the-shelf foundation models to automatically label the BridgeData V2 dataset with these reasoning traces, then trained OpenVLA on them; on hard generalization tasks, absolute success rate rose by 28%, with no extra robot data. The cost is generating many more tokens, which slows inference down; a 2025 follow-up from the same team introduced a lighter training scheme that runs about 3x faster.",
+      "example": "Given the instruction ‘put the mushroom in the pot,’ an ECoT model first writes out a plan (find the mushroom → pick it up → move it above the pot → put it down), the current subtask (‘pick up the mushroom’), a movement direction (‘down and to the left’), and bounding boxes for the mushroom, the pot, and the gripper — only then does it output the 7-dimensional arm action.",
+      "related": ["Chain-of-Thought", "Embodied Reasoning", "Vision-Language-Action Model", "OpenVLA", "Visual Chain-of-Thought", "Inference Latency"]
+    },
+    {
+      "key": "model-05#1",
+      "name_en": "Encoder-Decoder",
+      "aliases": ["Encoder-Decoder Architecture", "Seq2Seq", "Sequence-to-Sequence Model"],
+      "one_liner": "A network design that compresses the input into an intermediate representation, then generates the output from that representation.",
+      "explanation": "Encoder-decoder is a general-purpose neural network design: an encoder turns the input (a sentence, an image, a set of sensor readings) into an intermediate representation, and a decoder generates the output from that representation, with input and output allowed to differ in length. Sutskever et al.'s 2014 machine-translation model, which used two LSTMs (a type of recurrent neural network) to translate English to French, is the classic example on sequence-to-sequence tasks. The original 2017 Transformer also used this design, with the decoder reading the encoder's output through cross-attention. Later, GPT-style large language models mostly switched to decoder-only designs, but encoder-decoder remains common in robotics: ACT uses a Transformer encoder to fuse multiple camera views and joint state, then has a decoder output an entire chunk of actions at once. Autoencoders and variational autoencoders also belong to this family.",
+      "example": "Controlling the bimanual ALOHA robot, ACT's encoder takes in 4 camera views and a 14-dimensional joint-angle reading; its decoder outputs the target 14-dimensional joint positions for the next k steps (typically 100).",
+      "related": ["Transformer", "Decoder-only Architecture", "Cross-Attention", "Autoencoder", "Variational Autoencoder", "ACT"]
+    },
+    {
+      "key": "model-05#2",
+      "name_en": "Floating-Point Operations (FLOPs)",
+      "aliases": ["FLOPs", "FLOP"],
+      "one_liner": "The number of floating-point additions and multiplications a computation takes — a measure of how computationally heavy a model is.",
+      "explanation": "FLOPs stands for floating-point operations: the total number of floating-point arithmetic operations a computation requires, used as a measure of a model's computational cost. The lowercase ‘s’ just marks the plural, which is a different thing from the uppercase FLOPS (‘per second’), a measure of hardware compute capacity. There is a widely used Transformer estimate, from OpenAI's 2020 scaling-law paper: processing one token in a forward pass through a model with N parameters takes about 2N floating-point operations, and about 6N once training's backward pass is included; total training compute is also often reported in FLOPs. For robots, FLOPs matters because it drives inference latency directly: on the same onboard chip, a policy with more FLOPs runs slower and forces a lower control frequency, which is why on-device deployment usually relies on shrinking the model and pruning visual tokens to cut FLOPs.",
+      "example": "Using the 2N rule of thumb, a 7-billion-parameter VLA processing a single token costs about 14 billion floating-point operations (14 GFLOPs) in its forward pass; feeding in 256 image tokens at once costs roughly 3.6 trillion operations for that part alone (not counting attention).",
+      "related": ["Parameter Count", "Scaling Law", "FLOPS / TFLOPS", "Inference Latency", "On-device Model", "Visual Token Pruning"]
+    },
+    {
+      "key": "model-05#3",
+      "name_en": "Forward Dynamics Model",
+      "aliases": ["FDM", "Forward Model", "Learned Dynamics Model"],
+      "one_liner": "A model that takes the current state and an action and predicts what the next state will look like.",
+      "explanation": "A forward dynamics model learns ‘what the world will look like after this action is taken’: it takes the current state (or observation) s_t and an action a_t as input and outputs the next state s_{t+1}. The idea parallels forward dynamics in mechanics, where torques are used to compute acceleration, but in robot learning it usually isn't derived from physics equations — instead, a neural network learns it from interaction data. With such a model, a robot can try out many candidate action sequences inside the model first and execute whichever leads to the best predicted outcome; this is exactly what model-based reinforcement learning and model predictive control (MPC) do. In 2017, Nagabandi et al. combined a learned neural-network dynamics model with MPC to make simulated legged robots track arbitrary trajectories. Today's world models are essentially large forward dynamics models operating on images or a latent space; a forward dynamics model is often paired with an inverse dynamics model, and the decoder of a latent action model belongs to this family too.",
+      "example": "In a block-pushing task, the model is given the block's current position and the action ‘push right 2 cm’ and predicts the block's new position afterward; MPC uses it to compare dozens of candidate pushes and execute whichever gets closest to the goal.",
+      "related": ["Inverse Dynamics Model", "World Model", "Model-Based Reinforcement Learning", "Model Predictive Control", "Forward Dynamics", "Latent Action Model"]
+    },
+    {
+      "key": "model-05#4",
+      "name_en": "Generative Adversarial Network",
+      "aliases": ["GAN"],
+      "one_liner": "A generative model where a generator fakes data and a discriminator tries to catch the fakes, trained against each other.",
+      "explanation": "Generative adversarial networks (GANs) were introduced by Ian Goodfellow and colleagues in 2014 and are a class of generative model — a model that learns to produce new data rather than just classify it. A GAN has two networks: a generator that turns random noise into samples, and a discriminator that judges whether a sample is real or generator-made. The two train in turns, with the generator trying to fool the discriminator and the discriminator trying to catch it; ideally the generator ends up learning the true data distribution. GANs produce an image in a single forward pass, so they're fast, but training is unstable and prone to mode collapse (generating only a few kinds of samples), and in recent years diffusion models have mostly replaced them for image and video generation. The ‘discriminator as a judge’ idea is still common in robotics: both Generative Adversarial Imitation Learning (GAIL) and Adversarial Motion Priors (AMP) use a discriminator to judge how closely a robot's motion resembles demonstration data, then feed that judgment to reinforcement learning as a reward.",
+      "example": "Training a simulated humanoid with AMP: the discriminator compares motion clips produced by the policy to motion-capture data, giving higher reward the more human-like they look, which teaches the character natural walking and running gaits.",
+      "related": ["Generative Model", "Generative Adversarial Imitation Learning", "Adversarial Motion Priors", "Diffusion Model", "Variational Autoencoder", "Entropy Collapse / Mode Collapse"]
+    },
+    {
+      "key": "model-05#5",
+      "name_en": "Generative Model",
+      "aliases": [],
+      "one_liner": "A model that learns the probability distribution behind data and can sample new data from it.",
+      "explanation": "A generative model learns the distribution of the data itself, p(x), or a conditional distribution p(x|c), so it can produce new samples. This is in contrast to a discriminative model, which only learns p(y|x) and is used for classification or scoring. Common generative models include autoregressive models (which predict the next token one at a time, like GPT), variational autoencoders (VAEs), generative adversarial networks (GANs), diffusion models, and flow matching. In embodied AI, generative models show up in three main places. First, for generating actions: demonstration data for the same scene often contains several equally valid ways to solve it (action multimodality), and methods like Diffusion Policy and π0 use diffusion or flow matching to model the whole action distribution instead of regressing to a single average. Second, for generating future frames, which is what world models and video-prediction models do. Third, for generating training data itself, such as using a video generation model to synthesize robot demonstrations.",
+      "example": "Suppose half the demonstrations go left around an obstacle and half go right: a model trained with direct regression outputs the average of the two and drives straight into it, while a generative model like Diffusion Policy samples either ‘go left’ or ‘go right.’",
+      "related": ["Diffusion Model", "Flow Matching", "Variational Autoencoder", "Generative Adversarial Network", "Action Multimodality", "Diffusion Policy"]
+    },
+    {
+      "key": "model-05#6",
+      "name_en": "Inverse Dynamics Model",
+      "aliases": ["IDM", "Inverse Model"],
+      "one_liner": "A model that looks at two frames, before and after, and infers what action happened in between.",
+      "explanation": "An inverse dynamics model runs in the opposite direction from a forward dynamics model: it takes the current state s_t and the next state s_{t+1} (or a pair of consecutive video frames) and outputs the action a_t that caused the change. In classical mechanics, inverse dynamics works backward from a desired motion to the joint torques that would produce it; in robot learning, an IDM is usually a neural network trained on data instead. Its main use is labeling videos that have no action labels: OpenAI's 2022 VPT project first trained an IDM on about 2,000 hours of Minecraft footage recorded together with keyboard and mouse input, then used it to attach pseudo action labels to about 70,000 hours of online video for pretraining a game-playing agent. Because an IDM can see both the past and future frame, predicting the action is much easier for it to learn than predicting an action from the current frame alone. ‘Generate video, then infer actions’ methods such as UniPi also rely on an IDM to translate generated frames into robot actions.",
+      "example": "Given two frames — the first shows an open gripper hovering above a cup, the second shows the gripper closed with the cup lifted a few centimeters — an IDM outputs the action vector for ‘close the gripper and move up.’",
+      "related": ["Forward Dynamics Model", "Latent Action Model", "Pseudo Action Labels", "Action-free Video", "VPT", "UniPi"]
+    },
+    {
+      "key": "model-05#7",
+      "name_en": "Joint-Embedding Predictive Architecture",
+      "aliases": ["JEPA", "I-JEPA", "V-JEPA"],
+      "one_liner": "A self-supervised architecture that predicts masked or future content in an abstract representation space instead of reconstructing raw pixels.",
+      "explanation": "JEPA is an architecture Yann LeCun proposed in his 2022 position paper ‘A Path Towards Autonomous Machine Intelligence’; Meta later built an image version, I-JEPA (2023), and a video version, V-JEPA. It encodes part of the input (the context), then has a predictor guess the representation of another part — a masked region, or a future frame — with the loss computed on the representation rather than on pixels. That means the model doesn't need to reconstruct hard-to-predict details like individual leaf texture, and can instead focus on semantic information such as objects and motion, though extra care is needed to keep the representation from collapsing. V-JEPA 2, released in June 2025, was pretrained on more than 1 million hours of video and then fine-tuned on fewer than 62 hours of robot video to produce the action-conditioned V-JEPA 2-AC, which can plan pick-and-place actions zero-shot on a Franka arm given a goal image. LeCun left Meta in November 2025 and founded AMI Labs to continue working on world models.",
+      "example": "For pick-and-place, V-JEPA 2-AC is given a goal image showing the cup already placed on the plate; the model plays out several candidate action sequences in representation space and executes whichever one lands closest to the goal image's predicted representation.",
+      "related": ["V-JEPA 2", "World Model", "Self-Supervised Learning", "Latent World Model", "Masked Autoencoder", "Representation Collapse"]
+    },
+    {
+      "key": "model-05#8",
+      "name_en": "Key-Value Cache",
+      "aliases": ["KV Cache", "KV Caching"],
+      "one_liner": "Storing already-computed attention keys and values so later tokens can reuse them instead of recomputing.",
+      "explanation": "The KV cache is the standard trick for speeding up Transformer inference. In self-attention, each token produces a query (Q), key (K), and value (V) vector; during autoregressive generation, only one new token is added at each step, and the K and V vectors for all earlier tokens never change. Without caching, every step would have to recompute the entire preceding sequence; with caching, each step only computes the new token and then attends to the stored K and V vectors, which is much faster. The cost is GPU memory: the cache grows linearly with context length and often becomes a bottleneck for long contexts, which is why techniques like cache quantization and sliding windows exist. The KV cache matters just as much for VLA models: π0 caches the K and V vectors for the prefix formed by the image and language inputs, so its 10-step flow-matching denoising process only has to recompute the action part, making one full inference pass take about 73 milliseconds.",
+      "example": "One π0 inference pass: image encoding takes about 14 ms and the prefix forward pass about 32 ms, computed only once; the action expert's 10 denoising steps take about 27 ms total, each step reusing the same cached prefix KV.",
+      "related": ["Self-Attention", "Causal Attention", "Autoregressive Decoding", "Inference Latency", "Context Length", "π0"]
+    },
+    {
+      "key": "model-05#9",
+      "name_en": "Large Behavior Model",
+      "aliases": ["LBM", "TRI LBM"],
+      "one_liner": "Toyota Research Institute's term for a general-purpose, multi-task robot policy pretrained on large amounts of demonstration data.",
+      "explanation": "Large Behavior Model is Toyota Research Institute's (TRI) name, by analogy with large language models, for a general-purpose manipulation policy pretrained on a large amount of multi-task robot data and used to output actions directly. TRI first raised the idea of building an LBM when it published its diffusion-policy skill-learning results in September 2023; a July 2025 paper then gave a concrete implementation: a diffusion Transformer that takes wrist and scene camera images, proprioceptive state, and a language instruction, and predicts 16 steps of action at once. It was trained on about 1,700 hours of data, roughly 468 hours of which came from TRI's own bimanual teleoperation. The paper found that after pretraining, learning a new task needs 3-5x less data, and performance scales smoothly with pretraining data size. TRI has partnered with Boston Dynamics since October 2024, and in August 2025 the two demonstrated a single LBM controlling a full electric Atlas, continuously walking while carrying parts and sorting them into bins.",
+      "example": "In the August 2025 demo, a single LBM controls Atlas's arms and legs together: it walks, crouches, picks up a part, and sorts it into a bin; when someone slides a closed box across the floor into its path, it adjusts and keeps working.",
+      "related": ["Toyota Research Institute", "Diffusion Policy", "Foundation Model", "Behavior Foundation Model", "Vision-Language-Action Model", "Boston Dynamics Atlas (Electric)"]
+    },
+    {
+      "key": "model-05#10",
+      "name_en": "Latent Action",
+      "aliases": [],
+      "one_liner": "An abstract action code learned automatically from how consecutive video frames change, with no real action labels needed.",
+      "explanation": "A latent action is an action representation a model infers automatically from the change between adjacent video frames, usually a handful of discrete codes or a single low-dimensional vector. It targets a specific problem: there is a huge amount of human and gameplay video on the internet, but none of it carries real action labels like joint angles or button presses, so it can't be used to train a policy directly. A latent action doesn't correspond to any specific robot's joints; it only describes ‘what kind of change happened on screen,’ so the same coding scheme can be shared across human-hand video and video from very different robots. DeepMind's 2024 Genie learned 8 discrete latent actions from about 30,000 hours of platformer game video and used them to control its generated game worlds; methods such as LAPA, UniVLA, and AgiBot's GO-1 instead pretrain a VLA to predict latent actions first, then fine-tune on a small amount of real robot data to learn how to map them to real actions.",
+      "example": "The 8 latent actions Genie learned are numbered consistently across the games it can generate, roughly corresponding to moves like left, right, and jump; users can steer a character in a scene the model has never seen just by pressing the numbered action.",
+      "related": ["Latent Action Model", "Latent Action Pretraining", "Action-free Video", "Genie 1 (DeepMind)", "LAPA", "AgiBot GO-1"]
+    },
+    {
+      "key": "model-05#11",
+      "name_en": "Latent Action Model",
+      "aliases": ["LAM"],
+      "one_liner": "The network that produces latent actions from unlabeled video, trained by having an encoder-decoder pair reconstruct the next frame.",
+      "explanation": "A latent action model is the network that produces latent actions. The typical design comes from DeepMind's 2024 Genie: an encoder looks at the current frame and the next frame and outputs a latent action, playing the role of an inverse dynamics model; a decoder then takes only the current frame plus that latent action and reconstructs the next frame, playing the role of a forward dynamics model. In between, vector quantization (the VQ-VAE approach) restricts the latent action to a very small discrete codebook — Genie uses just 8 codes — so the latent action can't encode a whole image, only ‘what changed.’ Once trained, the encoder can attach latent-action labels to huge amounts of video. A common difficulty is that task-irrelevant changes, such as camera shake or a person walking through the background, also get encoded; UniVLA addresses this by learning in DINO feature space instead and using the language instruction to strip out such distractions.",
+      "example": "LAPA has three stages: first train a latent-action quantization model on video, then train a VLA to predict latent actions from images and instructions, and finally fine-tune on a small amount of robot data to replace latent actions with real ones.",
+      "related": ["Latent Action", "Inverse Dynamics Model", "Forward Dynamics Model", "Vector-Quantized Variational Autoencoder", "Genie 1 (DeepMind)", "UniVLA"]
+    }
+  ]
+}

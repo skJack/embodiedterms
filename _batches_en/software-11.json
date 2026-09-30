@@ -1,0 +1,113 @@
+{
+  "batch": "software-11",
+  "terms": [
+    {
+      "key": "software-11#0",
+      "name_en": "Groot2 (BehaviorTree.CPP IDE)",
+      "aliases": ["Groot"],
+      "one_liner": "A graphical editor and debugger for the behavior trees used by BehaviorTree.CPP.",
+      "explanation": "Groot2 is a desktop tool built by the same team behind BehaviorTree.CPP; its predecessor, Groot, was open source. A behavior tree writes a robot's task logic as a tree of sequence, selector, condition, and action nodes, and BehaviorTree.CPP describes that tree in an XML file. Writing that XML by hand is error-prone and makes it hard to see where execution currently is, so Groot2 lets you build the tree by dragging nodes and exporting XML, and it can also connect to a running program to watch each node's status — success, failure, or running — live, and replay logs. The name looks similar to NVIDIA's humanoid model GR00T, but the two have nothing to do with each other. It's also commonly used to inspect and debug the behavior trees in ROS 2's Nav2 navigation stack.",
+      "example": "In Nav2, open the navigation behavior tree's XML in Groot2 to see which recovery node keeps failing when the robot gets stuck.",
+      "related": ["Behavior Tree", "BehaviorTree.CPP", "ROS 2 Navigation Stack (Nav2)", "Finite State Machine", "Task Planning"]
+    },
+    {
+      "key": "software-11#1",
+      "name_en": "gRPC Remote Procedure Calls",
+      "aliases": ["gRPC"],
+      "one_liner": "Google's open-source RPC framework, letting programs on different machines call each other like local functions.",
+      "explanation": "gRPC is Google's open-source RPC (remote procedure call) framework, now hosted by the Cloud Native Computing Foundation (CNCF). It defines interfaces and messages with Protobuf (a binary serialization format), runs over HTTP/2, supports bidirectional streaming, and can automatically generate client and server code in C++, Python, Go, and many other languages. In embodied AI, it's commonly used to connect “the GPU server running the model” to “the robot itself”: the robot sends images and joint state to a policy server and gets an action back, which saves the trouble of hand-rolling a socket protocol and makes cross-language use easy. It isn't a real-time control bus, though — millisecond-scale low-level motor loops are still left to something like EtherCAT or CAN.",
+      "example": "Boston Dynamics' official Spot SDK exposes a gRPC-based interface, letting Python code send commands and read state remotely.",
+      "related": ["Protocol Buffers (Protobuf)", "Policy Server (Remote Inference)", "WebSocket", "ZeroMQ", "Middleware"]
+    },
+    {
+      "key": "software-11#2",
+      "name_en": "Guyuehome (Chinese ROS community)",
+      "aliases": ["Guyuehome ROS community"],
+      "one_liner": "An early, sizable Chinese-language learning community and tutorial site for ROS robotics.",
+      "explanation": "Guyuehome (古月居) is a Chinese-language robotics community founded by Hu Chunxu, who goes by “Guyue” (古月) online and is also the author of the book ROS Robot Development in Practice. The site centers on ROS (Robot Operating System, a robot software framework), and gathers blog posts, Q&A, and video courses ranging from beginner to advanced (some paid), covering ROS 1/ROS 2, SLAM, navigation, robot arms, and mobile robots. For Chinese-speaking readers, it's a common place to look up ROS errors or find introductory tutorials, and together with tools like the FishROS one-click installer, it forms part of the domestic Chinese ROS learning ecosystem.",
+      "example": "A newcomer works through Guyuehome's ROS 2 introductory course, starting by writing their first publisher and subscriber node.",
+      "related": ["Robot Operating System", "ROS 2", "FishROS One-Click Installer", "ROS 2 Navigation Stack (Nav2)", "MoveIt Motion Planning Framework"]
+    },
+    {
+      "key": "software-11#3",
+      "name_en": "Hard Real-Time",
+      "aliases": [],
+      "one_liner": "A guarantee that every single execution finishes before its deadline — missing even once counts as a system failure.",
+      "explanation": "Hard real-time is the strictest tier of real-time computing: a task must complete within its specified deadline every single time, and missing it even once is treated as an error, potentially leading to an accident. The looser tier, soft real-time, tolerates the occasional miss with just some degradation in quality — a video dropping a frame now and then, for instance. A robot's low-level motor current loop, joint torque control, and bus communication typically demand hard real-time, often with periods of 1 kHz or higher, because computing a cycle late can cause the motor to jitter or lose control entirely. Achieving hard real-time generally relies on a real-time operating system (RTOS), Linux patched with PREEMPT_RT, or Xenomai, combined with a deterministic bus such as EtherCAT; large-model inference doesn't meet hard-real-time requirements, so it's usually kept at a higher level, with real-time control reserved for a dedicated low-level controller.",
+      "example": "A humanoid robot's joint drivers run a torque loop at 1 kHz, which must finish and send its output every 1 millisecond without fail — not something that can be run on an ordinary Python process.",
+      "related": ["Real-Time Operating System (RTOS)", "PREEMPT_RT Real-Time Linux Patch", "Xenomai", "EtherCAT Bus", "Control Frequency", "Timing Jitter"]
+    },
+    {
+      "key": "software-11#4",
+      "name_en": "Hardware Abstraction Layer (HAL)",
+      "aliases": [],
+      "one_liner": "A layer of code that hides specific hardware differences and exposes a uniform interface to the software above it.",
+      "explanation": "A hardware abstraction layer is a common design pattern in operating systems and software engineering: a uniform interface is placed between specific hardware — motor drivers, cameras, sensors — and the higher-level program, so the upper layer only calls standard functions like “read joint angle” or “send torque command” without caring whether the bus underneath is CAN or EtherCAT, or which vendor's motor it is. That way, switching hardware only requires changing or adding this one layer, leaving the control algorithms and policy code untouched. In robotics, ROS 2's ros2_control implements exactly this through “hardware interface” plugins; embodied models aiming for “one brain, many bodies” — the same policy running on different robot bodies — also can't do without a clean HAL.",
+      "example": "Writing a hardware interface plugin for a particular arm model in ros2_control lets MoveIt and controllers above it drive that arm directly.",
+      "related": ["ros2_control", "Driver (device driver)", "Software Development Kit (SDK)", "Secondary Development (custom development on SDK)", "One Brain, Many Bodies"]
+    },
+    {
+      "key": "software-11#5",
+      "name_en": "Holosoma (Amazon FAR humanoid RL framework)",
+      "aliases": [],
+      "one_liner": "An open-source humanoid reinforcement-learning framework for training and deployment, from Amazon's FAR team.",
+      "explanation": "Holosoma is a humanoid robotics framework open-sourced on GitHub by Amazon's Frontier AI & Robotics (FAR) team. According to its repository, it connects “training a policy in simulation with reinforcement learning” to “deploying that policy on a real robot,” covering both velocity-command-based walking and whole-body motion tracking, able to train across multiple simulation backends and supporting humanoid platforms such as the Unitree G1. A common pain point in humanoid RL projects is that training code, the simulator, and real-robot deployment each end up as a separate, one-off setup, so switching robots or simulators means rebuilding almost everything; the value of a framework like this is in offering a ready-made pipeline. It sits in the same category as HumanoidVerse and legged_gym.",
+      "example": "",
+      "related": ["Amazon Frontier AI & Robotics (FAR)", "HumanoidVerse", "Reinforcement-Learning-Based Locomotion Control", "Sim-to-Real Transfer", "Motion Tracking", "Unitree G1"]
+    },
+    {
+      "key": "software-11#6",
+      "name_en": "Horizon Robotics OpenExplorer",
+      "aliases": ["OpenExplorer"],
+      "one_liner": "Horizon Robotics' toolchain for converting, quantizing, and deploying AI models on its own BPU chips.",
+      "explanation": "OpenExplorer (天工开物) is an AI development platform and toolchain from Horizon Robotics, built to serve its chips that carry a BPU (Horizon's own neural-network processor). A trained PyTorch or ONNX model can't run directly on this kind of chip — it first needs to be quantized (converting floating-point weights to a lower-precision format like INT8), compiled into chip instructions, and then loaded through a runtime library — and OpenExplorer provides the tools for these steps, along with example models and performance-profiling tools. Embodied-AI developers deploying vision or policy models on D-Robotics' RDK-series development boards commonly end up using this toolchain.",
+      "example": "Export a YOLO detection model to ONNX, post-training-quantize and compile it with OpenExplorer's tools, then deploy it to an RDK development board for real-time detection.",
+      "related": ["Horizon Robotics", "D-Robotics RDK S100", "Post-Training Quantization (PTQ)", "Neural Processing Unit (NPU / BPU)", "On-Device / Edge Deployment", "Open Neural Network Exchange (ONNX)"]
+    },
+    {
+      "key": "software-11#7",
+      "name_en": "Huawei Cloud CloudRobo Embodied AI Platform",
+      "aliases": ["CloudRobo"],
+      "one_liner": "Huawei Cloud's embodied-AI cloud platform, providing robots with large models and services hosted in the cloud.",
+      "explanation": "CloudRobo is a cloud platform for embodied AI from Huawei Cloud, reportedly unveiled at Huawei's 2025 developer conference. The idea is to move part of a robot's “brain” into the cloud: the platform offers embodied-AI-related models built on Huawei's Pangu large model (reportedly spanning data generation, task planning, and action execution), along with services for data synthesis and simulation-based training, with robots connecting to the cloud through a connection protocol Huawei has proposed. For robot manufacturers, a platform like this lowers the barrier to building their own large model and compute stack; the tradeoff is dependence on network and cloud service availability, and any control loop with tight real-time requirements still has to be handled on-device.",
+      "example": "",
+      "related": ["Huawei", "Cloud-Edge-Device Collaboration", "Embodied Foundation Model", "Tencent Tairos", "Huisi Kaiwu (X-Humanoid general embodied AI platform)"]
+    },
+    {
+      "key": "software-11#8",
+      "name_en": "Hugging Face Accelerate",
+      "aliases": ["accelerate"],
+      "one_liner": "Hugging Face's training-helper library that lets the same PyTorch code run across multiple GPUs with minimal changes.",
+      "explanation": "Accelerate is an open-source PyTorch helper library from Hugging Face. A training script written for a single GPU only needs a few added lines — creating an Accelerator and wrapping the model, optimizer, and data loader with it — to run unchanged across a single GPU, multiple GPUs, multiple machines, or with mixed precision, and it can switch to a distributed backend such as DeepSpeed or FSDP (Fully Sharded Data Parallel) without the developer having to write process initialization or gradient synchronization by hand. The companion commands accelerate config and accelerate launch generate a configuration and then launch training. Fine-tuning a large model like a VLA often needs multiple GPUs, and a lot of open-source robot-learning code uses Accelerate to manage that distributed training.",
+      "example": "Running accelerate launch starts a VLA fine-tuning script across 8 GPUs, with bf16 mixed precision turned on.",
+      "related": ["Distributed Data Parallel (DDP)", "Fully Sharded Data Parallel (FSDP)", "DeepSpeed", "Mixed-Precision Training", "PyTorch", "Hugging Face"]
+    },
+    {
+      "key": "software-11#9",
+      "name_en": "Hugging Face Diffusers",
+      "aliases": ["diffusers"],
+      "one_liner": "Hugging Face's open-source diffusion-model toolkit, with ready-made schedulers, networks, and generation pipelines.",
+      "explanation": "Diffusers is Hugging Face's open-source library for diffusion models, built on PyTorch. It splits a diffusion model into three pieces: a scheduler (which decides the noising and denoising steps, such as DDPM or DDIM), a model (such as a U-Net or a diffusion transformer), and a pipeline that strings the two together for inference — and it can load many publicly available image and video generation models directly. In robotics, people often only borrow its scheduler: Diffusion Policy swaps “denoising an image” for “denoising a sequence of actions,” and the sampling steps are the same as in image diffusion, so there's no need to rewrite them from scratch. It's also commonly used to load a pretrained video model and fine-tune it when building a world model or doing video generation.",
+      "example": "The official Diffusion Policy code calls Diffusers' DDPMScheduler and DDIMScheduler directly to train and sample actions.",
+      "related": ["Diffusion Model", "Diffusion Policy", "Denoising Diffusion Probabilistic Models (DDPM)", "Denoising Diffusion Implicit Models (DDIM)", "Noise Schedule", "Hugging Face"]
+    },
+    {
+      "key": "software-11#10",
+      "name_en": "Huisi Kaiwu (X-Humanoid general embodied AI platform)",
+      "aliases": [],
+      "one_liner": "A general-purpose embodied-AI software platform from the Beijing Humanoid Robot Innovation Center.",
+      "explanation": "Huisi Kaiwu is a general-purpose embodied-AI platform from the Beijing Humanoid Robot Innovation Center (X-Humanoid), positioned as a software system that can be installed across different robots. According to its public materials, it brings together large-model-driven task understanding and planning, a skill library, and low-level motion control, aiming for “one brain, many skills; one brain, many bodies” — the same software able to drive different robot bodies and carry out a variety of tasks, cutting down on the work of building everything from scratch for every scenario. It belongs to the same technical family as the center's humanoid robot Tien Kung and its embodied models Pelican-VL and XR-1.",
+      "example": "",
+      "related": ["Beijing Humanoid Robot Innovation Center", "Tien Kung", "Beijing Humanoid Pelican-VL", "Beijing Humanoid XR-1", "One Brain, Many Bodies", "Huawei Cloud CloudRobo Embodied AI Platform"]
+    },
+    {
+      "key": "software-11#11",
+      "name_en": "HumanoidVerse",
+      "aliases": [],
+      "one_liner": "An open-source, multi-simulator humanoid robot learning framework from CMU's LeCAR Lab.",
+      "explanation": "HumanoidVerse is an open-source humanoid-robot learning framework from Carnegie Mellon University's LeCAR Lab (Guanya Shi's group). It decouples the simulator, the task, and the robot from one another: the same task and training code can switch between different simulation backends such as IsaacGym, Isaac Sim, and Genesis, and can also switch between different humanoid robot bodies. That makes “sim-to-sim” validation convenient — training in one simulator and testing in another — catching a policy that has overfit to one particular physics engine before it ever gets transferred to a real robot. The same lab's ASAP (Aligning Simulation and Real Physics for learning Agile whole-body Skills) is built on top of it.",
+      "example": "Train a Unitree G1's motion-tracking policy in IsaacGym using HumanoidVerse, then switch to Genesis to run a sim-to-sim check.",
+      "related": ["ASAP", "Sim-to-Sim Transfer", "Sim-to-Real Transfer", "Isaac Gym", "Genesis", "Holosoma (Amazon FAR humanoid RL framework)"]
+    }
+  ]
+}

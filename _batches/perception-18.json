@@ -1,0 +1,194 @@
+{"category": "perception", "batch": 18, "terms": [
+{
+  "name_zh": "Luxonis OAK-D 相机",
+  "name_en": "Luxonis OAK-D / OAK 4 (DepthAI)",
+  "abbr": "",
+  "aliases": ["OAK-D", "OAK 4 D", "OpenCV AI Kit", "DepthAI 相机"],
+  "tier": 3,
+  "one_liner": "Luxonis 出的自带 AI 芯片的双目深度相机，神经网络可直接在相机里跑。",
+  "explanation": "OAK 是 Luxonis 公司的相机产品线，OAK-D 是最常见的一款：两颗全局快门黑白相机做双目测深（基线 7.5 厘米，官方给的理想测距约 0.8–12 米），中间一颗彩色相机，内置 9 轴 IMU，经 USB 接电脑。它的特点是相机里自带计算芯片（RVC2 平台，官方标 4 TOPS，其中 1.4 TOPS 用于 AI），深度计算和目标检测等神经网络可以在相机端算完，只把结果传给主机，适合算力紧张的小机器人。新一代 OAK 4 系列换成高通 QCS8550 芯片（RVC4 平台，48 INT8 TOPS），带 6 核 ARM CPU 跑 Linux，可以脱离主机独立运行。配套开源库叫 DepthAI（C++ 编写，带 Python 绑定，MIT 协议），另有官方 ROS 驱动 depthai-ros。",
+  "example": "在低成本移动机器人上装一台 OAK-D，用官方 ROS 驱动把彩色图和深度图发到 ROS 话题，同时在相机端跑目标检测网络，主机只接收检测结果，省下主控算力。",
+  "related": ["深度相机", "双目相机", "RealSense 深度相机（D435i / D405）", "奥比中光 Gemini 330 系列", "ZED 双目相机", "端侧部署"],
+  "sources": [
+    {"title": "Luxonis Docs: OAK-D", "url": "https://docs.luxonis.com/hardware/products/OAK-D"},
+    {"title": "Luxonis Docs: RVC4 平台（OAK 4 系列）", "url": "https://docs.luxonis.com/hardware/platform/rvc/rvc4"},
+    {"title": "GitHub: luxonis/depthai-core", "url": "https://github.com/luxonis/depthai-core"}
+  ],
+  "as_of": "2026-09"
+},
+{
+  "name_zh": "磁性触觉传感",
+  "name_en": "Magnetic Tactile Sensing",
+  "abbr": "",
+  "aliases": ["磁敏式触觉", "霍尔式触觉传感", "磁性触觉皮肤", "Magnetic Tactile Skin"],
+  "tier": 3,
+  "one_liner": "在软胶里掺磁性颗粒，用磁力计测变形引起的磁场变化来感知接触。",
+  "explanation": "磁性触觉传感是触觉传感器的一类做法：把磁化颗粒或小磁铁埋进柔软的弹性体，下方放霍尔传感器或磁力计。碰到物体时弹性体变形，磁源跟着移动，磁场读数随之改变，再用标定或机器学习把读数换算成接触位置、压力和剪切力（沿表面方向的力）。好处是软胶层和电路板分开，胶皮磨坏了可以直接换，成本低、形状容易做；缺点是易受外部磁场和附近电机干扰，空间分辨率通常不如视触觉传感器。代表工作有卡内基梅隆大学与 Meta 合作的 ReSkin（CoRL 2021），以及 Lerrel Pinto 团队的 AnySkin（2024），后者主打换一块新皮肤后，已学好的操作策略不用重新标定也能继续用。",
+  "example": "AnySkin 论文把磁性皮肤装在夹爪指尖上做滑移检测和策略学习，并展示了换上另一块新皮肤后策略仍可直接使用。",
+  "related": ["触觉传感器", "ReSkin / AnySkin", "uSkin", "视触觉传感器", "电子皮肤", "滑移检测"],
+  "sources": [
+    {"title": "ReSkin: versatile, replaceable, lasting tactile skins (CoRL 2021)", "url": "https://arxiv.org/abs/2111.00071"},
+    {"title": "AnySkin: Plug-and-play Skin Sensing for Robotic Touch", "url": "https://arxiv.org/abs/2409.08276"}
+  ],
+  "as_of": "2024-09"
+},
+{
+  "name_zh": "MapAnything",
+  "name_en": "MapAnything: Universal Feed-Forward Metric 3D Reconstruction",
+  "abbr": "",
+  "aliases": ["Map Anything"],
+  "tier": 3,
+  "one_liner": "Meta 与 CMU 的通用前馈三维重建模型，直接输出带真实尺度的场景结构。",
+  "explanation": "MapAnything 由 Meta Reality Labs 与卡内基梅隆大学在 2025 年 9 月发布，是基于 Transformer 的前馈式三维重建模型：输入一张或多张图片，还可按需附上相机内参、位姿、深度或部分重建结果，一次前向计算就输出每张图的深度图、局部射线图、相机位姿和统一的度量尺度因子，合起来就是带米制尺度的三维场景。过去未标定运动恢复结构、多视图立体、单目深度估计、相机定位、深度补全等任务各用一套算法，它用一个模型全部覆盖。它与 DUSt3R、VGGT 属于同一条前馈重建路线，代码和权重已开源（含 Apache 协议版本）。对机器人来说，可以从几张照片快速得到能直接用于规划的米制点云。",
+  "example": "用手机围着桌面拍几张照片、不给任何相机参数，MapAnything 就能输出带米制尺度的点云和每张照片的相机位姿；如果已知相机内参，也可以一并输入作为约束。",
+  "related": ["前馈式三维重建", "DUSt3R", "VGGT", "MASt3R", "运动恢复结构", "度量深度 / 相对深度"],
+  "sources": [
+    {"title": "arXiv: MapAnything: Universal Feed-Forward Metric 3D Reconstruction", "url": "https://arxiv.org/abs/2509.13414"},
+    {"title": "MapAnything 项目主页", "url": "https://map-anything.github.io/"}
+  ],
+  "as_of": "2026-01"
+},
+{
+  "name_zh": "标记点跟踪",
+  "name_en": "Marker Tracking (Tactile Markers)",
+  "abbr": "",
+  "aliases": ["标记点位移", "凝胶标记点", "Marker Displacement", "Marker Flow"],
+  "tier": 3,
+  "one_liner": "在视触觉传感器的软胶上印点阵，跟踪点的位移来估计剪切力和滑移。",
+  "explanation": "标记点跟踪是视触觉传感器（用相机拍软胶变形的触觉传感器，如 GelSight）常用的信号处理方法：在弹性体和反光涂层之间印上一排排黑点，接触时相机拍到这些点随胶面横向移动，逐点跟踪就得到一张位移场。Yuan、Dong、Adelson 2017 年的 GelSight 论文总结了读法：受法向压力时标记点从接触中心向外散开，受剪切力时整体朝剪切方向移动，出现旋转图案说明有面内扭矩，位移大小大致与力成正比；物体将要滑动时，接触区边缘的点先动而中心不动，这种不均匀可用来提前判断滑移。只看胶面凹凸（光度立体）只能得到形状，标记点补上了切向力信息。TacTip 这类传感器则以内壁标记针的位移作为主要信号。",
+  "example": "用装了 GelSight Mini 的夹爪夹杯子时，若外圈标记点开始朝同一方向移动、中心点基本不动，就说明杯子快要滑落，可以让夹爪加大握力。",
+  "related": ["视触觉传感器", "GelSight", "滑移检测", "光度立体", "法向力与切向力（剪切力）", "触觉图像"],
+  "sources": [
+    {"title": "GelSight: High-Resolution Robot Tactile Sensors for Estimating Geometry and Force (Sensors 2017)", "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5751610/"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "Mask R-CNN",
+  "name_en": "Mask R-CNN",
+  "abbr": "",
+  "aliases": ["Mask RCNN"],
+  "tier": 3,
+  "one_liner": "何恺明等 2017 年提出的实例分割模型，同时输出检测框和每个物体的掩码。",
+  "explanation": "Mask R-CNN 由 Facebook AI Research 的何恺明、Gkioxari、Dollár、Girshick 于 2017 年提出，获 ICCV 2017 马尔奖（最佳论文）。它在两阶段检测器 Faster R-CNN 上，给每个候选区域并行加了一个预测像素级掩码的分支，一个网络同时完成目标检测和实例分割（分出每个物体各占哪些像素），再加分支还能做人体关键点检测。论文提出的 RoIAlign 用双线性插值取代 RoIPool 的取整，消除特征与像素的错位，对掩码精度提升明显。ResNet-101-FPN 版本在 COCO 上掩码 AP 为 35.7，约 5 帧/秒。在机器人领域，它长期是抓取、拣选流程里分割物体的常用基线，如今常被 SAM 系列、Grounded-SAM 等开放词汇方法替代或配合使用。",
+  "example": "无序抓取流程中，先用在自家零件图片上微调过的 Mask R-CNN 分出料箱里每个零件的掩码，再把掩码对应的点云交给抓取位姿检测模块。",
+  "related": ["实例分割", "目标检测", "掩码", "分割一切模型", "Grounded-SAM", "平均精度均值"],
+  "sources": [
+    {"title": "arXiv: Mask R-CNN", "url": "https://arxiv.org/abs/1703.06870"},
+    {"title": "GitHub: facebookresearch/Detectron（注明 Marr Prize at ICCV 2017）", "url": "https://github.com/facebookresearch/Detectron"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "MASt3R-SLAM",
+  "name_en": "MASt3R-SLAM: Real-Time Dense SLAM with 3D Reconstruction Priors",
+  "abbr": "",
+  "aliases": [],
+  "tier": 3,
+  "one_liner": "以 MASt3R 为先验的实时单目稠密 SLAM，普通视频不标定也能建图定位。",
+  "explanation": "MASt3R-SLAM 由帝国理工学院 Andrew Davison 团队（Riku Murai、Eric Dexheimer 等）提出，发表于 CVPR 2025（Highlight）。它是实时的单目稠密 SLAM（同步定位与建图）系统，从底层围绕 MASt3R 这个两视图三维重建与匹配模型设计：新来一帧，就用 MASt3R 预测它与关键帧之间的点图和稠密匹配，再做相机跟踪、局部融合、回环检测和二阶全局优化，得到全局一致的相机轨迹和稠密三维几何，速度约 15 帧/秒。传统单目 SLAM 通常要先标定相机内参，它只假设相机有唯一光心，不依赖固定的参数化相机模型，未标定的视频也能跑；已知标定时稍作修改即可达到当时最好水平。开源代码支持 RealSense 实时输入、MP4 视频和图片文件夹。",
+  "example": "拿手机在室内录一段视频，不做相机标定，MASt3R-SLAM 就能估出相机轨迹并重建出房间的稠密点云。",
+  "related": ["MASt3R", "DUSt3R", "同步定位与建图", "视觉SLAM", "DROID-SLAM", "点图"],
+  "sources": [
+    {"title": "arXiv: MASt3R-SLAM: Real-Time Dense SLAM with 3D Reconstruction Priors", "url": "https://arxiv.org/abs/2412.12392"},
+    {"title": "GitHub: rmurai0610/MASt3R-SLAM", "url": "https://github.com/rmurai0610/MASt3R-SLAM"}
+  ],
+  "as_of": "2025-06"
+},
+{
+  "name_zh": "MASt3R",
+  "name_en": "MASt3R: Grounding Image Matching in 3D",
+  "abbr": "",
+  "aliases": ["Grounding Image Matching in 3D with MASt3R"],
+  "tier": 3,
+  "one_liner": "Naver 在 DUSt3R 上加匹配头的模型，同时输出三维点图和稠密匹配特征。",
+  "explanation": "MASt3R 由 Naver 的 Vincent Leroy、Yohann Cabon、Jérôme Revaud 于 2024 年提出，发表于 ECCV 2024。它的出发点是：图像匹配（找两张图里对应同一物理点的像素）本质上是三维问题，和相机位姿、场景几何紧密相关。它以 DUSt3R 为底座——DUSt3R 输入两张图，直接回归每个像素的三维坐标（点图），对大视角变化很鲁棒但匹配精度有限——再加一个输出稠密局部特征的新头，用额外的匹配损失训练，并配一套快速互为最近邻匹配算法，把匹配速度提高了几个数量级。它在多个匹配基准上大幅领先，在 Map-free 定位数据集上 VCRE AUC 绝对提升 30%。MASt3R-SfM、MASt3R-SLAM 都以它为核心。代码采用 CC BY-NC-SA 4.0 协议，仅限非商业使用。",
+  "example": "给机器人两张视角相差很大的桌面照片，MASt3R 能直接给出两图之间的像素对应和各自的三维点图，据此可以算出两个视角的相对位姿。",
+  "related": ["DUSt3R", "MASt3R-SLAM", "特征匹配", "点图", "前馈式三维重建", "VGGT"],
+  "sources": [
+    {"title": "arXiv: Grounding Image Matching in 3D with MASt3R", "url": "https://arxiv.org/abs/2406.09756"},
+    {"title": "GitHub: naver/mast3r", "url": "https://github.com/naver/mast3r"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "平均精度均值",
+  "name_en": "mean Average Precision",
+  "abbr": "mAP",
+  "aliases": ["AP", "mAP50", "mAP50-95", "mAP@[.5:.95]"],
+  "tier": 3,
+  "one_liner": "目标检测和分割最常用的精度指标：各类别平均精度（AP）再取平均。",
+  "explanation": "平均精度均值（mAP）是目标检测、实例分割最常用的综合指标。先对某一类别把所有预测按置信度排序，只有与真值框的交并比（IoU，两框重叠面积除以并集面积）超过阈值才算对，由此画出精确率-召回率曲线，曲线下面积就是这一类的 AP；再对所有类别取平均即为 mAP。阈值不同数值差别很大：PASCAL VOC 时代常用 IoU=0.5（mAP50）；COCO 则在 0.5 到 0.95、每隔 0.05 的 10 个阈值上各算一次再平均（mAP50-95），对定位精度要求更严。要注意 COCO 论文和排行榜里写的「AP」已经对类别取过平均，官方明确说不区分 AP 和 mAP。读机器人感知论文时，先确认报告的是哪种阈值、在哪个数据集上。",
+  "example": "Mask R-CNN 论文报告 ResNet-101-FPN 版本在 COCO 上的掩码 AP 为 35.7，这里的 AP 就是在 10 个 IoU 阈值和全部类别上平均后的 mAP。",
+  "related": ["交并比", "精确率 / 召回率", "目标检测", "COCO / LVIS 数据集", "非极大值抑制", "Mask R-CNN"],
+  "sources": [
+    {"title": "COCO Detection Evaluation（官方评测说明）", "url": "https://raw.githubusercontent.com/cocodataset/cocodataset.github.io/master/dataset/detection-eval.htm"},
+    {"title": "Ultralytics: Performance Metrics Deep Dive", "url": "https://docs.ultralytics.com/guides/yolo-performance-metrics/"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "MegaPose",
+  "name_en": "MegaPose: 6D Pose Estimation of Novel Objects via Render & Compare",
+  "abbr": "",
+  "aliases": [],
+  "tier": 3,
+  "one_liner": "只要物体的 CAD 模型、不用重新训练，就能估计新物体 6D 位姿的方法。",
+  "explanation": "MegaPose 由 Inria、NVIDIA 等机构的 Yann Labbé、Dieter Fox、Josef Sivic 等人提出，发表于 CoRL 2022。6D 位姿估计要算出物体在相机坐标系下的三维位置和朝向，以往方法多要为每个物体单独训练，换个新零件就得重来。MegaPose 采用「渲染-比较」思路：给定图中物体所在区域和它的 CAD 模型，先粗估一个位姿，用模型渲染出该位姿下的合成图，与真实图像对比，由网络预测如何修正位姿，反复迭代。它在包含数千种物体的大规模逼真合成数据上训练，论文指出物体多样性是泛化的关键，因此能不重训练直接用于数百种新物体，在 YCB-Video、BOP 等基准上结果有竞争力。后来英伟达的 FoundationPose 也用了类似的渲染比较精修，并与它做了对比。",
+  "example": "工厂新到一种零件，只要有它的 CAD 文件，先用检测器框出零件，再交给 MegaPose 估出 6D 位姿供机械臂抓取，不必为这个零件专门采数据训练。",
+  "related": ["6D位姿估计", "FoundationPose", "SAM-6D", "BOP 位姿估计基准", "YCB 物体集", "位姿跟踪"],
+  "sources": [
+    {"title": "arXiv: MegaPose: 6D Pose Estimation of Novel Objects via Render & Compare", "url": "https://arxiv.org/abs/2212.06870"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "度量深度 / 相对深度",
+  "name_en": "Metric Depth / Relative Depth",
+  "abbr": "",
+  "aliases": ["绝对深度", "尺度不确定性", "Scale Ambiguity", "仿射不变深度", "Affine-invariant Depth"],
+  "tier": 3,
+  "one_liner": "度量深度以米给出真实距离；相对深度只给远近关系，差一个未知缩放和偏移。",
+  "explanation": "深度估计的输出分两种。度量深度（也叫绝对深度）给出每个像素到相机的真实距离，单位是米，深度相机、激光雷达测到的就是这种；相对深度只告诉你哪里近哪里远，数值和真实距离之间差一个未知的缩放和偏移。单目图像天生有尺度不确定性：同一张照片可能是近处的模型，也可能是远处的真房子，加上不同相机焦距不同，混在一起训练会互相矛盾。所以 MiDaS 这类方法用对尺度和偏移不敏感的损失，在大量混合数据上训练相对深度，泛化好但没有米制尺度；ZoeDepth、Metric3D、Depth Pro 等则设法直接输出度量深度。机器人抓取、避障要知道物体到底多远，因此需要度量深度，或用少量真实测距点把相对深度对齐到真实尺度。",
+  "example": "同一张桌面照片，相对深度模型只能告诉你杯子比后面的墙近；度量深度模型会给出杯子离相机大约多少米，机械臂才能据此规划抓取。",
+  "related": ["单目深度估计", "深度估计", "Metric3D", "Depth Anything", "Depth Pro", "深度相机"],
+  "sources": [
+    {"title": "ZoeDepth: Zero-shot Transfer by Combining Relative and Metric Depth", "url": "https://arxiv.org/abs/2302.12288"},
+    {"title": "MiDaS: Towards Robust Monocular Depth Estimation: Mixing Datasets for Zero-shot Cross-dataset Transfer", "url": "https://arxiv.org/abs/1907.01341"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "Metric3D",
+  "name_en": "Metric3D: Towards Zero-shot Metric 3D Prediction from a Single Image",
+  "abbr": "",
+  "aliases": ["Metric3D v2", "Metric3Dv2"],
+  "tier": 3,
+  "one_liner": "从单张图片估计米制深度的模型，靠标准相机空间变换消除不同相机的尺度歧义。",
+  "explanation": "Metric3D 由尹伟、沈春华等人提出，发表于 ICCV 2023，目标是从单张照片零样本估计带真实尺度的深度。难点在于不同相机焦距不同，同样大小的物体在图上显得远近不一，把各种相机拍的数据混在一起训练，尺度会互相冲突。它的做法是「标准相机空间变换」：训练时把所有样本按焦距统一换算到一个虚拟的标准相机下，推理时再按真实相机内参换算回去。这样能用 800 多万张、来自上千种相机的图片训练，对没见过的相机也能给出米制深度，在 7 个零样本基准上取得当时最好成绩。2024 年的 Metric3D v2（TPAMI）换用 DINOv2 骨干，训练数据增至 1600 多万张，并增加表面法向量估计。代码以 BSD 协议开源。",
+  "example": "单目 SLAM 只靠一个普通相机，不知道场景真实尺度；Metric3D 仓库推荐了一个把它预测的深度接入 DROID-SLAM 的开源实现，用来得到米制尺度的建图结果。",
+  "related": ["单目深度估计", "度量深度 / 相对深度", "相机内参", "Depth Anything", "Depth Pro", "MoGe"],
+  "sources": [
+    {"title": "arXiv: Metric3D: Towards Zero-shot Metric 3D Prediction from A Single Image", "url": "https://arxiv.org/abs/2307.10984"},
+    {"title": "arXiv: Metric3Dv2: A Versatile Monocular Geometric Foundation Model", "url": "https://arxiv.org/abs/2404.15506"},
+    {"title": "GitHub: YvanYin/Metric3D", "url": "https://github.com/YvanYin/Metric3D"}
+  ],
+  "as_of": "2025-01"
+},
+{
+  "name_zh": "麦克风阵列",
+  "name_en": "Microphone Array",
+  "abbr": "",
+  "aliases": ["声源定位", "多麦阵列", "Sound Source Localization", "波束成形", "Beamforming"],
+  "tier": 3,
+  "one_liner": "多个麦克风按固定几何排布协同工作，用来定向拾音、判断声音从哪来。",
+  "explanation": "麦克风阵列是把多个麦克风按已知的几何位置（线形、环形等）排在一起，同时采集、联合处理信号。声音到达各个麦克风的时间有细微差别，据此可以估计声源方向（声源定位，也叫到达方向 DOA 估计）；对各路信号做延时加权合成，就能只增强某个方向的声音、压低其他方向的噪声，这叫波束成形。单个麦克风做不到这两件事。它广泛用于电话、智能音箱、助听器和语音识别前端。对机器人来说，麦克风阵列让它在嘈杂环境里听清指令、判断说话人在哪并转头看过去，也是视听导航这类「听声找目标」研究的硬件基础。不少人形机器人把它当标准配置，例如宇树 G1 的规格表写明配有 4 麦克风阵列。",
+  "example": "用户在客厅另一头喊机器人的名字，机器人用麦克风阵列估出声源方位后转身朝向用户，再用波束成形增强这个方向的语音，送去做语音识别。",
+  "related": ["语音识别", "视听导航", "多模态感知", "人机交互", "多传感器融合", "接触式麦克风（音频触觉）"],
+  "sources": [
+    {"title": "Wikipedia: Microphone array", "url": "https://en.wikipedia.org/wiki/Microphone_array"},
+    {"title": "Unitree G1 产品页（规格表：4 Microphone Array）", "url": "https://www.unitree.com/g1"}
+  ],
+  "as_of": "2026-09"
+}
+]}

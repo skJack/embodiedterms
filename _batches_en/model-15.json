@@ -1,0 +1,113 @@
+{
+  "batch": "model-15",
+  "terms": [
+    {
+      "key": "model-15#0",
+      "name_en": "Score Function / Score Matching",
+      "aliases": ["Score", "Denoising Score Matching", "Score-based Generative Model"],
+      "one_liner": "The 'score' is the gradient of log-probability with respect to the input; score matching is how a network learns it.",
+      "explanation": "The score function is the gradient of the log probability density with respect to the input, ∇ₓ log p(x); it points in the direction where the data's probability increases fastest, and computing it doesn't require the hard-to-compute normalization constant. Score matching was proposed by Hyvärinen in 2005 as a way to train a model to fit this gradient without knowing the true distribution; the later denoising score matching variant instead 'adds noise to the data, then learns how to remove it.' In 2019, Song and Ermon learned the score across many noise levels and generated images with Langevin dynamics (a sampling method that follows the gradient while adding a bit of random noise at every step); the 2021 stochastic differential equation (SDE) framework then showed this is essentially the same class of model as denoising diffusion probabilistic models. What a diffusion model predicts as 'noise' is the score up to a rescaling, so understanding the score is the key to understanding what Diffusion Policy is really doing underneath.",
+      "example": "The Diffusion Policy paper describes its own method as learning a score gradient field over the action distribution: at inference, starting from random noise, it takes several noisy, Langevin-like steps along this gradient field and ends up with a robot action.",
+      "related": ["Diffusion Model", "Denoising Diffusion Probabilistic Model", "Energy-Based Model", "Diffusion Policy", "Flow Matching", "Diffusion / Flow Samplers"]
+    },
+    {
+      "key": "model-15#1",
+      "name_en": "Self Forcing",
+      "aliases": ["Self-Forcing"],
+      "one_liner": "Training a video model by having it continue generating from its own already-generated frames, closing the train-inference gap.",
+      "explanation": "Self Forcing is a method released in June 2025 by Adobe Research and UT Austin's Xun Huang and colleagues (NeurIPS 2025 Spotlight), aimed at autoregressive video diffusion models (video diffusion models that generate frame by frame or chunk by chunk going forward). Previously, training used teacher forcing, conditioning each frame on the real preceding frames, but at inference the model can only condition on its own, imperfect generated frames, and errors compound — this is exposure bias. Self Forcing instead unrolls the model autoregressively during training itself, using a KV cache (storing already-computed attention keys and values), and supervises the whole generated video with a distribution-matching loss such as DMD, SiD, or a GAN loss, controlling cost with few-step diffusion and randomly truncated gradients. The result is real-time streaming video generation on a single GPU, which is exactly the speed an interactive world model needs.",
+      "example": "The paper initializes from Wan2.1-T2V-1.3B and generates 832×480 video; the chunk-by-chunk version reaches 17.0 frames per second with 0.69 seconds of latency on a single H100, while the frame-by-frame version reaches 8.9 frames per second with 0.45 seconds of latency.",
+      "related": ["Autoregressive Video Generation", "Diffusion Forcing", "Teacher Forcing", "Exposure Bias", "Key-Value Cache", "Interactive World Model"]
+    },
+    {
+      "key": "model-15#2",
+      "name_en": "Spacetime Patches",
+      "aliases": ["Spacetime Latent Patches", "Tubelet"],
+      "one_liner": "Small cubes cut jointly across time and space from a video, each treated as one token for a Transformer.",
+      "explanation": "A spacetime patch is the video version of 'cutting an image into patches.' A Vision Transformer cuts an image into fixed-size squares, each treated as a token; video adds a time dimension, so it's instead cut into small cubes spanning several frames and several pixels — Google's ViViT (ICCV 2021) calls this a tubelet, commonly extracted with a 3D convolution. OpenAI popularized the term 'spacetime patches' when it released Sora in February 2024: a video-compression network first compresses the video into latent space, and the latent representation is then cut into spacetime patches and handed to a diffusion Transformer to denoise. The benefit is that videos of different resolutions, durations, and aspect ratios can all become token sequences of varying length and be trained together, with no need to crop or rescale first. Most video generation models and video world models today turn video into tokens in a similar way.",
+      "example": "If a compressed latent video is cut into blocks of '2 frames × 2 × 2 cells,' each block is flattened and mapped by a linear layer into one token; landscape and portrait videos simply differ in how many blocks they're cut into and how they're arranged, and can be trained in the same batch.",
+      "related": ["Vision Transformer", "Diffusion Transformer", "Video Tokenizer / Video VAE", "Video Generation Model", "Token", "Sora"]
+    },
+    {
+      "key": "model-15#3",
+      "name_en": "Spatial Softmax",
+      "aliases": ["Spatial Soft-Argmax", "Soft-Argmax", "Keypoint Pooling"],
+      "one_liner": "Pooling each channel of a convolutional feature map down to the 2D coordinate of its 'brightest point,' preserving location.",
+      "explanation": "Spatial Softmax is a pooling layer that turns a convolutional feature map into coordinates, proposed by Berkeley's Levine, Finn, Darrell, and Abbeel in their 2015 work on end-to-end visuomotor policies. The procedure applies softmax across all pixel positions within each channel, producing a probability distribution for 'where this feature appears,' then takes the expectation over pixel coordinates to get one (x, y) pair — effectively a differentiable argmax. Ordinary classification networks use global average pooling, which erases location information, but robot manipulation specifically needs to know where things are; softmax also suppresses weak false activations, making it more robust to distractor objects. It later became a common choice in imitation-learning vision encoders — Diffusion Policy uses it at the end of its ResNet-18 in place of global average pooling.",
+      "example": "Levine and colleagues' policy network follows three convolutional layers with a spatial softmax; the last layer's 32 channels each output one feature-point coordinate, which is concatenated with the robot's joint state and passed through fully connected layers to output motor torques, with the whole network having only about 92,000 parameters.",
+      "related": ["Convolutional Neural Network", "Vision Encoder", "Visuomotor Policy", "Diffusion Policy", "Keypoint Detection", "End-to-End Training of Deep Visuomotor Policies"]
+    },
+    {
+      "key": "model-15#4",
+      "name_en": "Speculative Decoding",
+      "aliases": ["Speculative Sampling"],
+      "one_liner": "Having a small model quickly guess a few tokens, then having the large model verify them all in one parallel pass, with no change in output.",
+      "explanation": "Speculative decoding is a large-model inference speedup technique, proposed by Google's Leviathan and colleagues in late 2022 (ICML 2023), with DeepMind's Chen and colleagues independently proposing the same idea as 'speculative sampling' around the same time. An autoregressive model has to run the full large model for every single token it generates, which is slow. Speculative decoding instead has a cheap draft model guess several tokens in a row, then has the large model score all of them in one forward pass; a specific acceptance rule keeps the prefix of correct guesses and resamples from the first wrong position onward — so the output distribution exactly matches what the large model would have produced generating alone, with no retraining needed. Google measured a 2-3x speedup on T5-XXL. In embodied AI, VLAs that output discrete action tokens, such as OpenVLA, use it to cut inference latency too, and 2026 saw improved methods that incorporate kinematic information.",
+      "example": "Spec-VLA (EMNLP 2025) found that applying standard speculative decoding directly to a VLA gave limited speedup, so it relaxes the acceptance condition using the relative distance between action tokens, raising accepted length by 44% on OpenVLA for a 1.42x speedup with no drop in success rate.",
+      "related": ["Autoregressive Decoding", "Inference Latency", "Parallel Decoding", "Key-Value Cache", "Vision-Language-Action Model", "OpenVLA"]
+    },
+    {
+      "key": "model-15#5",
+      "name_en": "State Space Model",
+      "aliases": ["SSM", "S4", "Selective SSM"],
+      "one_liner": "A network that processes long sequences with a hidden state updated over time, with compute growing linearly with sequence length.",
+      "explanation": "The state space model comes from control theory: a hidden state summarizes the past, and every new input updates that state and produces an output according to linear equations. In deep learning, an SSM discretizes those equations and uses them as a network layer, with the parameters learned through training. In 2021, Stanford's Gu, Goel, and Ré proposed S4 (ICLR 2022), which made SSMs work well on sequences tens of thousands of steps long for the first time; in 2023, Gu and Dao's Mamba made the parameters depend on the input itself (calling this 'selective'), letting the model decide what to remember or forget based on content. Compared with a Transformer, an SSM only needs to keep a fixed-size state at inference, so compute grows linearly with sequence length rather than quadratically like attention, which suits long history, high-frequency control, and on-device deployment. Don't confuse this with 'state space' in reinforcement learning, which means the set of all possible states.",
+      "example": "The Mamba paper reports about 5x the inference throughput of a similarly sized Transformer, with a 3B-parameter Mamba language model beating a Transformer of the same size and matching one twice as large; in embodied AI, RoboMamba uses a Mamba language model in place of a Transformer as the inference backbone for its VLA.",
+      "related": ["Mamba", "Transformer", "Recurrent Neural Network", "RoboMamba", "Context Length", "State Space"]
+    },
+    {
+      "key": "model-15#6",
+      "name_en": "System 0",
+      "aliases": ["S0/S1/S2 Architecture", "Three-System Architecture"],
+      "one_liner": "A kilohertz-rate whole-body control network added below the fast/slow two-system split, dedicated to balance, contact, and coordination.",
+      "explanation": "System 0 is a layer Figure AI added when it released Helix 02 on January 27, 2026. The original Helix was a dual-system design: System 2 is a vision-language model that understands the scene and instruction and produces an implicit goal; System 1 is a visuomotor policy that turns that goal into joint commands. Helix 02 adds S0 below S1: a roughly 10-million-parameter neural whole-body controller running at 1kHz, responsible for whole-body balance, contact, and coordination; it's trained on more than 1,000 hours of joint-level human motion data across more than 200,000 parallel simulated environments, and transfers to the real robot via domain randomization. S1 was also upgraded to output whole-body joint targets — from legs and torso to fingers — at 200Hz. This way, the upper layers handle 'what to do,' while the bottom layer guarantees 'stay balanced,' which is what lets a humanoid walk and work at the same time.",
+      "example": "Figure showed Helix 02 autonomously completing about 4 minutes of dishwasher loading and unloading throughout an entire kitchen, including 61 combined walking-and-manipulation actions, with no human intervention.",
+      "related": ["Dual-System Architecture", "Hierarchical Architecture", "Whole-Body Control", "Learning-based Whole-Body Control", "Figure Helix 02", "Brain–Cerebellum Architecture"]
+    },
+    {
+      "key": "model-15#7",
+      "name_en": "TokenLearner",
+      "aliases": [],
+      "one_liner": "A module that adaptively pools a large number of image tokens down into a handful of key tokens, to save compute.",
+      "explanation": "TokenLearner is a module Google's Ryoo and colleagues proposed in 2021 (NeurIPS 2021), with a paper title that literally asks what 8 learned tokens can do. A Vision Transformer usually cuts an image into tens to hundreds of patches, one token each, and attention's compute grows with the square of the token count. TokenLearner instead computes a spatial attention map for each output token based on the input content, uses it to weight and pool the feature map, and compresses a large number of tokens down to around 8; later layers only process these few tokens. The paper reaches competitive results on benchmarks like ImageNet and the Kinetics video-recognition set while using noticeably less compute. Its best-known use in embodied AI is in Google's RT-1, where it helps a large model meet the speed requirements of real-time control.",
+      "example": "RT-1 uses TokenLearner to compress each image's 81 visual tokens down to 8, so 6 frames of history become just 48 tokens fed into the Transformer; the paper reports this step gives about a 2.4x inference speedup.",
+      "related": ["Visual Token", "Visual Token Pruning", "RT-1", "Perceiver Resampler", "Querying Transformer", "Vision Transformer"]
+    },
+    {
+      "key": "model-15#8",
+      "name_en": "Uncertainty Estimation",
+      "aliases": ["Uncertainty Quantification", "UQ"],
+      "one_liner": "Having a model report how confident it is alongside its prediction, so it's clear when to stop or ask for help.",
+      "explanation": "Uncertainty estimation studies how to quantify how confident a model is in its own output. It's usually split into two kinds: aleatoric uncertainty comes from randomness in the data itself, such as sensor noise, and doesn't go away with more data; epistemic uncertainty comes from the model not having seen or learned something well, and can be reduced with more data. Common methods include deep ensembles (training several models and looking at how much they disagree), Monte Carlo dropout (randomly dropping units multiple times at inference and looking at the spread of results), and conformal prediction (producing a candidate set with a statistical coverage guarantee). For robots, this matters directly for safety: when facing an out-of-distribution scene, high uncertainty can trigger slowing down, stopping, asking a person to take over, or actively collecting more data; model-based reinforcement learning also often treats disagreement across an ensemble of models as an exploration signal.",
+      "example": "KnowNo (CoRL 2023) uses conformal prediction to measure a large-language-model planner's uncertainty: when the candidate-action set has more than one option — say, two bowls are on the table and the instruction doesn't say which one to pick up — the robot proactively asks a person, keeping task success guaranteed while asking for help as rarely as possible.",
+      "related": ["Out-of-distribution", "Robustness", "Embodied Safety", "Failure Recovery", "Human-in-the-Loop", "KnowNo"]
+    },
+    {
+      "key": "model-15#9",
+      "name_en": "Unified Multimodal Model",
+      "aliases": ["UMM", "Unified Understanding and Generation Model"],
+      "one_liner": "A single model that can both understand images and video by answering questions about them, and generate or edit images and video.",
+      "explanation": "A unified multimodal model puts multimodal understanding (answering questions about an image) and visual generation (drawing or editing an image, or generating video, from text) into a single model. These used to be two separate lines of work: understanding mostly used autoregressive multimodal large language models, and generation mostly used diffusion models. GPT-4o's native image generation brought wide attention to this direction, and a leading open-source example is ByteDance Seed's BAGEL, released in May 2025 (a Mixture-of-Transformers design, with 7 billion active parameters and 14 billion total). Roughly speaking, these fall into three categories by generation method: autoregressive, diffusion, and hybrid autoregressive-diffusion. Embodied AI cares about this direction because a single model that can both understand a scene and 'imagine what it will look like after this action' can double as a policy and a world model at once.",
+      "example": "Alibaba DAMO Academy's WorldVLA puts a VLA and a world model into the same autoregressive framework: it outputs an action given the current view, and also predicts the next frame given the view and an action; the paper reports the two reinforce each other, outperforming a standalone action model or world model.",
+      "related": ["Multimodal Large Language Model", "Native Multimodal", "BAGEL", "Hybrid Autoregressive-Diffusion Architecture", "World Model", "WorldVLA"]
+    },
+    {
+      "key": "model-15#10",
+      "name_en": "Vector Quantization",
+      "aliases": ["VQ", "Codebook", "Residual VQ", "RVQ"],
+      "one_liner": "Preparing a 'codebook' and replacing a continuous vector with the ID of its nearest codeword, turning it into a discrete token.",
+      "explanation": "Vector quantization is a classic compression technique from signal processing, systematically developed in the early 1980s by Robert Gray and colleagues. It works by preparing a set of representative vectors called a codebook, where each vector is called a codeword; for any input vector, you find the nearest codeword and record only its ID. This is essentially the same as k-means clustering, with codewords as the cluster centers. In deep learning, VQ is one of the main tools for turning continuous signals like images, audio, and actions into discrete tokens, which then makes it possible to model them with a language model's 'next-token prediction.' Residual vector quantization (RVQ) uses several codebooks in sequence, each quantizing the error left over from the previous level; Google's 2021 SoundStream audio codec uses it to let a single model switch bitrate anywhere between 3 and 18 kbps.",
+      "example": "VQ-BeT (ICML 2024) encodes a robot's continuous actions into discrete tokens using hierarchical residual vector quantization, replacing the k-means clustering of its predecessor BeT, and the paper reports about 5x faster inference than Diffusion Policy.",
+      "related": ["Vector-Quantized Variational Autoencoder", "Action Tokenizer", "Finite Scalar Quantization", "Tokenizer", "BeT / VQ-BeT", "Latent Action"]
+    },
+    {
+      "key": "model-15#11",
+      "name_en": "Vector-Quantized Variational Autoencoder",
+      "aliases": ["VQ-VAE", "VQ-VAE-2"],
+      "one_liner": "An autoencoder whose encoded output is quantized by a codebook into discrete IDs, commonly used to turn images, video, or actions into tokens.",
+      "explanation": "VQ-VAE was proposed by DeepMind's van den Oord, Vinyals, and Kavukcuoglu in 2017 (NeurIPS 2017). It differs from a variational autoencoder (VAE, a generative model that compresses data into a continuous latent variable and reconstructs it) in two ways: the encoder's output first goes through vector quantization, replaced with the nearest codeword in a codebook, so the latent variable is discrete; and the prior isn't a fixed Gaussian but a separately trained autoregressive model (such as PixelCNN) instead. The quantization step isn't differentiable, so training copies the gradient from the decoder side straight to the encoder with a straight-through estimator, plus a commitment loss that pulls the encoder's output toward the codeword. It also eases posterior collapse, a common VAE problem. Many later image and video tokenizers, and latent action models, are built on top of it.",
+      "example": "Google DeepMind's Genie uses a VQ-VAE to compress video into discrete tokens, and its latent action model uses a VQ-VAE-style objective too, learning discrete latent actions with just 8 codewords from unlabeled game video with no action labels, letting a person 'control' the generated world frame by frame.",
+      "related": ["Variational Autoencoder", "Vector Quantization", "Video Tokenizer / Video VAE", "Latent Action Model", "Genie 1 (DeepMind)", "LAPA"]
+    }
+  ]
+}

@@ -1,0 +1,203 @@
+{
+  "category": "model",
+  "batch": 10,
+  "terms": [
+    {
+      "name_zh": "仅解码器架构",
+      "name_en": "Decoder-only Architecture",
+      "abbr": "",
+      "aliases": ["Decoder-only", "纯解码器架构", "仅解码器 Transformer"],
+      "tier": 3,
+      "one_liner": "只保留 Transformer 解码器、用因果注意力逐个预测下一个 token 的模型结构。",
+      "explanation": "仅解码器架构是把原始 Transformer 的编码器去掉、只堆叠解码器的结构。2018 年谷歌 Liu 等人在生成维基百科的工作里用它处理超长序列，同年 OpenAI 的 GPT-1 也采用这种结构，此后 GPT 系列、Llama 等主流大语言模型基本都是仅解码器。它用因果注意力（每个位置只能看到前面的 token）做下一个 token 预测，训练目标简单统一，容易扩大规模。多模态模型会把图像编成视觉 token 拼在文字前面一起输入。很多 VLA 直接沿用这种语言模型骨干，把动作也当成 token 输出。",
+      "example": "OpenVLA 以 Llama 2 7B 这个仅解码器语言模型为骨干：图像特征和文字指令拼成一条序列输入，模型再逐个输出离散化后的动作 token。",
+      "related": ["Transformer", "编码器-解码器", "因果注意力", "自回归解码", "大语言模型", "下一个 token 预测"],
+      "sources": [
+        {"title": "Generating Wikipedia by Summarizing Long Sequences (arXiv:1801.10198)", "url": "https://arxiv.org/abs/1801.10198"},
+        {"title": "Generative pre-trained transformer - Wikipedia", "url": "https://en.wikipedia.org/wiki/Generative_pre-trained_transformer"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "解码策略（贪心 / 温度采样 / Top-k / Top-p）",
+      "name_en": "Decoding Strategies (Greedy / Temperature / Top-k / Top-p Sampling)",
+      "abbr": "",
+      "aliases": ["采样策略", "核采样", "Nucleus Sampling", "束搜索"],
+      "tier": 3,
+      "one_liner": "模型给出下一个 token 的概率分布后，决定具体选哪个 token 的规则。",
+      "explanation": "自回归模型每一步只输出一个概率分布，解码策略决定从中怎么挑。贪心解码每步选概率最大的，结果确定但容易重复；束搜索同时保留几条候选序列；采样则按概率随机抽。温度用来调分布的尖锐程度，温度越低越接近贪心，越高越随机。Top-k 只在概率最高的 k 个里抽，Fan 等人 2018 年把它用于故事生成；Top-p（核采样）只在累计概率刚超过 p 的最小集合里抽，由 Holtzman 等人 2019 年提出，用来缓解最大化解码带来的乏味重复。同一个模型换解码策略，输出质量可能差别很大。输出动作 token 的 VLA 部署时常关掉随机采样，让动作更稳定。",
+      "example": "OpenVLA 官方示例调用 predict_action 时设置 do_sample=False，即对动作 token 做贪心解码，同一画面、同一指令每次得到相同动作。",
+      "related": ["自回归解码", "大语言模型", "动作分词器", "最优 N 采样", "推理时计算", "Softmax（归一化指数函数）"],
+      "sources": [
+        {"title": "How to generate text: using different decoding methods for language generation with Transformers (Hugging Face)", "url": "https://huggingface.co/blog/how-to-generate"},
+        {"title": "The Curious Case of Neural Text Degeneration (arXiv:1904.09751)", "url": "https://arxiv.org/abs/1904.09751"},
+        {"title": "openvla/openvla-7b model card", "url": "https://huggingface.co/openvla/openvla-7b"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "去噪扩散隐式模型",
+      "name_en": "Denoising Diffusion Implicit Model",
+      "abbr": "DDIM",
+      "aliases": ["DDIM 采样器"],
+      "tier": 3,
+      "one_liner": "沿用 DDPM 的训练方式、把采样改成可跳步的确定性过程的扩散加速方法。",
+      "explanation": "去噪扩散隐式模型由斯坦福的 Jiaming Song、Chenlin Meng、Stefano Ermon 于 2020 年提出，发表于 ICLR 2021。DDPM（去噪扩散概率模型）生成一个样本要沿马尔可夫链走几百上千步去噪，很慢。DDIM 构造了一类非马尔可夫的扩散过程，训练目标和 DDPM 相同，所以训好的 DDPM 不用重训就能换成 DDIM 采样：可以跳步，只走十几到几十步，论文报告墙钟时间快 10–50 倍；把随机项设为零时采样是确定性的，同一个初始噪声总得到同一结果。它是后来各类快速扩散采样器的起点，扩散策略在真机上做实时控制也常靠它减少步数。",
+      "example": "扩散策略（Diffusion Policy）的真机实验用 100 步训练、DDIM 10 步推理，在 RTX 3080 上单次推理延迟约 0.1 秒。",
+      "related": ["去噪扩散概率模型", "扩散模型", "去噪步数", "扩散 / 流采样器（ODE / SDE 求解器）", "扩散策略", "噪声调度"],
+      "sources": [
+        {"title": "Denoising Diffusion Implicit Models (arXiv:2010.02502)", "url": "https://arxiv.org/abs/2010.02502"},
+        {"title": "Diffusion Policy: Visuomotor Policy Learning via Action Diffusion (arXiv HTML)", "url": "https://arxiv.org/html/2303.04137v5"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "扩散 / 流采样器（ODE / SDE 求解器）",
+      "name_en": "Diffusion / Flow Samplers (ODE / SDE Solvers, e.g. Euler, DPM-Solver)",
+      "abbr": "",
+      "aliases": ["扩散采样器", "Sampler", "Euler 采样器", "DPM-Solver"],
+      "tier": 3,
+      "one_liner": "把训练好的扩散或流模型从随机噪声一步步积分成样本的数值算法。",
+      "explanation": "扩散模型和流匹配模型学到的是「在每个噪声水平该往哪个方向走」，真正生成时要用数值方法把这个过程积分出来，这就是采样器。2020 年 Song 等人把扩散过程写成随机微分方程（SDE），并推出一个分布相同的确定性常微分方程，即概率流 ODE：按 SDE 解每步会加随机噪声，按 ODE 解则结果确定。常见采样器有最简单的一阶 Euler 法、DDIM，以及清华朱军团队 2022 年提出的 DPM-Solver 这类专用高阶求解器，后者约 10–20 次网络调用就能得到高质量样本。步数越少越快、误差越大，机器人策略要在控制频率和动作质量之间权衡。",
+      "example": "π0 的流匹配动作专家推理时用前向 Euler 法积分 10 步（步长 0.1），把一段随机噪声变成一个动作块。",
+      "related": ["扩散模型", "流匹配", "去噪扩散隐式模型", "去噪步数", "速度场", "单步生成"],
+      "sources": [
+        {"title": "Score-Based Generative Modeling through Stochastic Differential Equations (arXiv:2011.13456)", "url": "https://arxiv.org/abs/2011.13456"},
+        {"title": "DPM-Solver: A Fast ODE Solver for Diffusion Probabilistic Model Sampling in Around 10 Steps (arXiv:2206.00927)", "url": "https://arxiv.org/abs/2206.00927"},
+        {"title": "π0: A Vision-Language-Action Flow Model for General Robot Control (arXiv HTML)", "url": "https://arxiv.org/html/2410.24164v1"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "扩散强制",
+      "name_en": "Diffusion Forcing",
+      "abbr": "",
+      "aliases": ["扩散强制训练"],
+      "tier": 3,
+      "one_liner": "给序列里每个 token 加各自独立强度的噪声来训练的因果扩散序列模型。",
+      "explanation": "扩散强制由 MIT 的 Boyuan Chen、Vincent Sitzmann、Russ Tedrake 等人于 2024 年提出，发表于 NeurIPS 2024。以往序列生成有两类：下一个 token 预测逐个生成，长度灵活，但长时间推演容易跑偏；全序列扩散一次去噪整段，能对整条轨迹做引导，但长度固定。扩散强制训练一个因果模型，让序列中每个 token 的噪声水平各自独立随机，推理时就既能像自回归那样一帧帧往后生成、超出训练长度，也能像扩散那样用引导把整条轨迹推向期望目标。它被用于长视频生成、规划和机器人控制，也是自回归视频生成和世界模型里常被沿用和对比的训练方式。",
+      "example": "论文的真机实验中，机械臂要借助第三个槽位交换两个随机摆放的水果，必须记住初始位置；扩散强制完成了任务，对比的模仿学习基线因缺少记忆而失败。",
+      "related": ["扩散模型", "自回归视频生成", "下一个 token 预测", "教师强制", "世界模型", "Self Forcing（自强制训练）"],
+      "sources": [
+        {"title": "Diffusion Forcing: Next-token Prediction Meets Full-Sequence Diffusion (arXiv:2407.01392)", "url": "https://arxiv.org/abs/2407.01392"},
+        {"title": "Diffusion Forcing project page", "url": "https://boyuan.space/diffusion-forcing/"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "扩散语言模型",
+      "name_en": "Diffusion Language Model",
+      "abbr": "dLLM",
+      "aliases": ["扩散大语言模型", "Diffusion LLM", "掩码扩散语言模型"],
+      "tier": 3,
+      "one_liner": "用扩散方式对整段文本并行去噪、而不是逐字往后生成的语言模型。",
+      "explanation": "扩散语言模型把扩散思路用到文本上：生成时先放一段全被遮住（掩码）或加了噪的 token，再分若干步同时预测，逐步确定内容，每步可以一次填出多个 token，也能回头修改。代表工作有中国人民大学等团队 2025 年的 LLaDA，8B 规模在上下文学习上与 LLaMA3 8B 相当；Inception Labs 的商用模型 Mercury；以及谷歌 DeepMind 的实验性模型 Gemini Diffusion，官方公布采样速度约每秒 1479 个 token。它的吸引力在于并行解码速度快、能双向利用上下文。具身领域也有工作把这种思路用来并行解码动作，如 Discrete Diffusion VLA。",
+      "example": "LLaDA 回答问题时先生成一整段掩码 token，每一步预测所有被遮住的位置，保留把握大的、把把握小的重新遮住，重复多轮直到全部填完。",
+      "related": ["离散扩散", "大语言模型", "并行解码", "自回归解码", "扩散模型", "Discrete Diffusion VLA（离散扩散 VLA）"],
+      "sources": [
+        {"title": "Large Language Diffusion Models (LLaDA, arXiv:2502.09992)", "url": "https://arxiv.org/abs/2502.09992"},
+        {"title": "Gemini Diffusion - Google DeepMind", "url": "https://deepmind.google/models/gemini-diffusion/"},
+        {"title": "Mercury: Ultra-Fast Language Models Based on Diffusion (arXiv:2506.17298)", "url": "https://arxiv.org/abs/2506.17298"}
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "离散余弦变换",
+      "name_en": "Discrete Cosine Transform",
+      "abbr": "DCT",
+      "aliases": ["DCT 变换"],
+      "tier": 3,
+      "one_liner": "把一段信号拆成不同频率余弦波加权和的变换，常用于数据压缩。",
+      "explanation": "离散余弦变换最早由 Nasir Ahmed 构想，1974 年他与 Natarajan、Rao 发表论文正式提出。它把一段离散信号表示成一组频率由低到高的余弦波的加权和，这组权重就是 DCT 系数。对平滑的信号，大部分能量集中在少数低频系数上，把高频的小系数舍掉或粗略量化，就能在损失很小的情况下大幅压缩，JPEG 图片和 MPEG、H.26x 视频都依赖它。具身领域用它来表示动作：高频控制下相邻时刻的动作很相似，逐步离散化会产生大量冗余 token。Physical Intelligence 2025 年提出的 FAST 分词器先对动作块做 DCT，再量化并用字节对编码压缩，让自回归 VLA 能学好高频灵巧任务。",
+      "example": "FAST 对动作块逐维做 DCT，量化后保留低频系数、多数高频系数变成 0，再用字节对编码压成少量 token；论文称配合 π0 在 1 万小时数据上训练时，效果与扩散版相当，训练时间最多缩短 5 倍。",
+      "related": ["动作分词器", "π0-FAST", "字节对编码", "分箱离散化", "动作表示", "动作分块"],
+      "sources": [
+        {"title": "Discrete cosine transform - Wikipedia", "url": "https://en.wikipedia.org/wiki/Discrete_cosine_transform"},
+        {"title": "FAST: Efficient Action Tokenization for Vision-Language-Action Models (arXiv:2501.09747)", "url": "https://arxiv.org/abs/2501.09747"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "离散扩散",
+      "name_en": "Discrete Diffusion",
+      "abbr": "",
+      "aliases": ["掩码扩散", "Masked Diffusion", "离散去噪扩散"],
+      "tier": 3,
+      "one_liner": "在文字 token 这类离散符号上做加噪和去噪的扩散模型。",
+      "explanation": "普通扩散模型给连续数据（像素、动作数值）加高斯噪声，而文本、离散动作 token 这类数据没法直接加高斯噪声。离散扩散改用「状态转移」加噪：每一步按转移矩阵把 token 随机换成别的值，或换成一个特殊的 [MASK] 符号。2021 年谷歌 Austin 等人在 D3PM 中系统提出这一框架，并指出用「吸收态」（变成 MASK 后不再改变）加噪时，它和掩码语言模型、自回归模型联系紧密。此后掩码扩散成为主流，如 NeurIPS 2024 的 MDLM 把训练目标化简成一组掩码语言建模损失的混合。它是扩散语言模型和离散扩散类 VLA 的理论基础。",
+      "example": "Discrete Diffusion VLA 把动作块离散成 token，先全部遮住，再按置信度由易到难逐步揭开，对没把握的位置二次遮住重算，在 LIBERO 上报告 96.4% 的平均成功率。",
+      "related": ["扩散模型", "扩散语言模型", "并行解码", "Discrete Diffusion VLA（离散扩散 VLA）", "去噪扩散概率模型", "分箱离散化"],
+      "sources": [
+        {"title": "Structured Denoising Diffusion Models in Discrete State-Spaces (D3PM, arXiv:2107.03006)", "url": "https://arxiv.org/abs/2107.03006"},
+        {"title": "Simple and Effective Masked Diffusion Language Models (MDLM, arXiv:2406.07524)", "url": "https://arxiv.org/abs/2406.07524"},
+        {"title": "Discrete Diffusion VLA (arXiv:2508.20072)", "url": "https://arxiv.org/abs/2508.20072"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "动态分辨率（原生分辨率输入）",
+      "name_en": "Dynamic / Native Resolution (Vision Encoder)",
+      "abbr": "",
+      "aliases": ["原生分辨率", "Native Resolution", "Naive Dynamic Resolution", "任意分辨率输入"],
+      "tier": 3,
+      "one_liner": "视觉编码器按图片原尺寸切块，图越大视觉 token 越多，不再统一缩放。",
+      "explanation": "早期的视觉 Transformer 和 CLIP 类编码器要求把图片统一缩放或裁剪成固定大小（如 224×224），会丢失细节或让长宽比失真。动态分辨率保留原图尺寸和长宽比，直接切成固定大小的图块，图越大 token 越多。谷歌 2023 年的 NaViT 用「序列打包」把不同尺寸的图拼进同一批训练；阿里 2024 年的 Qwen2-VL 提出 Naive Dynamic Resolution，在视觉编码器里用二维旋转位置编码记录每个图块的行列位置，从而处理任意分辨率。好处是小图省算力、大图保细节，代价是 token 数随分辨率增长。用它做 VLA 骨干时通常会限定 token 数上下限，以控制推理延迟。",
+      "example": "Qwen2-VL 大致每 28×28 像素对应一个视觉 token，默认每张图 4 到 16384 个 token，可用 min_pixels、max_pixels 设定范围来平衡速度和显存。",
+      "related": ["视觉编码器", "视觉 Transformer", "视觉 token", "通义千问 Qwen-VL", "旋转位置编码", "推理延迟"],
+      "sources": [
+        {"title": "Patch n' Pack: NaViT, a Vision Transformer for any Aspect Ratio and Resolution (arXiv:2307.06304)", "url": "https://arxiv.org/abs/2307.06304"},
+        {"title": "Qwen2-VL: Enhancing Vision-Language Model's Perception of the World at Any Resolution (arXiv:2409.12191)", "url": "https://arxiv.org/abs/2409.12191"},
+        {"title": "Qwen/Qwen2-VL-7B-Instruct model card", "url": "https://huggingface.co/Qwen/Qwen2-VL-7B-Instruct"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "早退机制",
+      "name_en": "Early Exit",
+      "abbr": "",
+      "aliases": ["提前退出", "多出口网络", "动态推理"],
+      "tier": 3,
+      "one_liner": "让简单输入在网络中间层就提前输出结果、省掉后面几层计算的方法。",
+      "explanation": "深度网络对每个输入都要跑完全部层，但很多简单样本用浅层特征就足以判断。早退机制在网络中间插入若干「出口」（小的分类头或输出头），推理时某个出口已经足够有把握，就直接输出，不再往下算，只有难样本才走完整个网络。哈佛大学 Teerapittayanon 等人提出的 BranchyNet 是较早的代表工作，这一思路后来被用到 BERT 和大语言模型上。机器人控制里大部分时刻动作简单、少数时刻才需要复杂推理，正适合这种做法：清华大学黄高团队等在 NeurIPS 2024 提出 DeeR-VLA，把多模态大模型改成多出口结构，按算力、延迟和显存预算决定何时退出。",
+      "example": "DeeR-VLA 在 CALVIN 基准上报告，大语言模型部分的计算量降低 5.2–6.5 倍、GPU 显存降低 2–6 倍，任务性能基本不受影响。",
+      "related": ["推理延迟", "端侧模型", "视觉 token 剪枝", "剪枝", "投机解码", "混合专家模型"],
+      "sources": [
+        {"title": "BranchyNet: Fast Inference via Early Exiting from Deep Neural Networks (arXiv:1709.01686)", "url": "https://arxiv.org/abs/1709.01686"},
+        {"title": "DeeR-VLA: Dynamic Inference of Multimodal Large Language Models for Efficient Robot Execution (arXiv:2411.02359)", "url": "https://arxiv.org/abs/2411.02359"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "EfficientNet",
+      "name_en": "EfficientNet",
+      "abbr": "",
+      "aliases": ["EfficientNet-B0~B7"],
+      "tier": 3,
+      "one_liner": "谷歌提出的高效卷积网络系列，按统一比例同时放大深度、宽度和分辨率。",
+      "explanation": "EfficientNet 是谷歌 Mingxing Tan 和 Quoc V. Le 在 ICML 2019 提出的卷积神经网络系列。以前放大 CNN 通常只加深、加宽或加大输入分辨率其中一项，收益很快饱和。论文提出「复合缩放」：用一个系数按固定比例同时放大深度、宽度和分辨率；先用神经架构搜索得到小的基线网络 B0，再逐级放大得到 B1 到 B7。论文报告 B7 在 ImageNet 上达到 84.3% top-1 准确率，比当时最好的卷积网络小 8.4 倍、推理快 6.1 倍。参数少、速度快，因此在 ViT 普及前，机器人策略常拿它做视觉骨干。",
+      "example": "谷歌的 RT-1 用 ImageNet 预训练的 EfficientNet 提取图像特征，并通过 FiLM 层让语言指令调制这些特征，再交给 TokenLearner 和 Transformer 输出离散动作 token。",
+      "related": ["卷积神经网络", "骨干网络", "残差网络", "RT-1", "FiLM 特征调制", "TokenLearner"],
+      "sources": [
+        {"title": "EfficientNet: Rethinking Model Scaling for Convolutional Neural Networks (arXiv:1905.11946)", "url": "https://arxiv.org/abs/1905.11946"},
+        {"title": "RT-1: Robotics Transformer project page", "url": "https://robotics-transformer1.github.io/"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "本体专属头",
+      "name_en": "Embodiment-specific Head",
+      "abbr": "",
+      "aliases": ["本体特定输出头", "本体专属解码器", "Embodiment-specific Decoder"],
+      "tier": 3,
+      "one_liner": "跨本体模型里为每种机器人单独配的输出层，把共享特征转成该机器人的动作。",
+      "explanation": "不同机器人的状态和动作维度各不相同：单臂加夹爪可能是 7 维，双臂加灵巧手可能有几十维。跨本体模型通常让大部分参数共享，只在输入和输出两端为每种本体配一个小网络，输出端这一块就叫本体专属头，一般是一个 MLP 或小型解码器，负责把共享主干的表征映射成该本体对应维度和含义的动作。MIT 与 Meta 的 Lirui Wang、何恺明等人 2024 年提出的异构预训练 Transformer（HPT）采用「本体专属 stem + 共享主干 + 本体专属头」的设计；英伟达 GR00T N1 也为每种本体配 MLP 编码状态和动作，并用专属动作解码器输出。另一条路线是统一动作空间，把所有本体的动作填进同一个大向量。",
+      "example": "GR00T N1 在最后一个 DiT 模块之后接一个本体专属的 MLP 动作解码器输出动作，从而用同一个主干控制从桌面机械臂到带灵巧手的人形机器人等不同本体。",
+      "related": ["跨本体", "动作头", "统一动作空间", "异构预训练 Transformer", "GR00T N1 系列", "本体"],
+      "sources": [
+        {"title": "Scaling Proprioceptive-Visual Learning with Heterogeneous Pre-trained Transformers (HPT, arXiv:2409.20537)", "url": "https://arxiv.org/abs/2409.20537"},
+        {"title": "GR00T N1: An Open Foundation Model for Generalist Humanoid Robots (arXiv HTML)", "url": "https://arxiv.org/html/2503.14734v2"}
+      ],
+      "as_of": ""
+    }
+  ]
+}

@@ -1,0 +1,227 @@
+{
+ "batch": "concept-01",
+ "terms": [
+  {
+   "key": "concept-01#0",
+   "name_en": "Action Space",
+   "aliases": [
+    "Continuous Action Space",
+    "Discrete Action Space"
+   ],
+   "one_liner": "The set of all actions an agent can take at each step, and the numerical form those actions take.",
+   "explanation": "Action space is a foundational concept in reinforcement learning and robot learning: the full set of actions an agent can choose from at each step. There are two kinds. A discrete action space has a finite number of options, like the handful of buttons in an Atari game. A continuous action space consists of real-valued numbers, such as the target angles for a robot arm's joints, or the displacement and gripper opening of the end effector (the gripper or tool at the very tip of the arm). Robot control at the lowest level is almost always continuous, though discrete examples exist too — embodied-navigation benchmarks often use just a few actions such as move forward, turn left, turn right, and stop. The same task can be represented with joint angles or end-effector pose, and with absolute or incremental (delta) values; different robots also have different action dimensions, which is exactly the mismatch cross-embodiment training has to handle. Vision-language-action (VLA) models commonly discretize continuous actions into tokens for output, or generate continuous values directly via diffusion, flow matching, or straightforward regression.",
+   "example": "The CartPole task has just two actions, push left and push right — a discrete action space. OpenVLA outputs robot-arm actions as 3D translation plus 3D rotation plus 1D gripper open/close, a 7-dimensional continuous action space.",
+   "related": [
+    "State Space",
+    "Observation",
+    "Policy",
+    "Delta Action / Absolute Action",
+    "Action Tokenizer",
+    "Unified Action Space"
+   ]
+  },
+  {
+   "key": "concept-01#1",
+   "name_en": "Agent–Environment Interaction",
+   "aliases": [
+    "Agent-Environment Loop",
+    "Agent-Environment Interface"
+   ],
+   "one_liner": "The basic RL framework: the decision-maker is the agent, and everything outside it that it can observe and affect is the environment.",
+   "explanation": "This is the basic framework reinforcement learning uses to describe a problem. The agent is the decision-maker; the environment is everything outside it that the agent can observe and act on. The two interact in a loop: the agent sees the current observation and picks an action; the environment transitions to a new state accordingly and returns a new observation and a reward (a number measuring how good the outcome was); this repeats until the episode ends. In embodied AI, the agent is usually a policy model running on a robot, and the environment is the real world or a simulator, including the tabletop, objects, and any nearby people. This shared framework lets very different problems — navigation, grasping, walking — be described with the same vocabulary; simulation libraries such as Gymnasium build their APIs around it too, using reset to start a new episode and step to execute one action.",
+   "example": "A robot arm folding a towel: the agent is the folding policy, the environment is the tabletop, the towel, and the camera feed. At each step the policy outputs a set of joint actions, and the environment returns the new image that results.",
+   "related": [
+    "Reinforcement Learning",
+    "Markov Decision Process",
+    "Observation",
+    "Action Space",
+    "Reward Function",
+    "Environment (Env) and the reset / step Interface"
+   ]
+  },
+  {
+   "key": "concept-01#2",
+   "name_en": "Bimanual Manipulation",
+   "aliases": [
+    "Dual-arm Manipulation"
+   ],
+   "one_liner": "A robot uses two arms together, coordinating them to complete a single task.",
+   "explanation": "Bimanual manipulation means a robot controls two arms — or, on a humanoid, two hands — at once to jointly carry out a task: holding a bottle steady with one hand while unscrewing the cap with the other, say, or folding clothes with both hands together. Many everyday tasks are impossible or clumsy to do with a single arm, which makes this a core capability for housework, assembly, and similar settings. The challenges are that the action dimensions double, the two arms must be coordinated precisely in both time and space, and the task often involves soft, deformable objects and dense contact. A landmark project is ALOHA (2023), from Tony Zhao, Chelsea Finn, and colleagues: a low-cost bimanual teleoperation platform paired with the ACT algorithm reached an 80–90% success rate on fine tasks like opening a translucent condiment jar or inserting a battery into a remote control, using only about 10 minutes (50 demonstrations) of data per task — though the hardest task, threading a zip tie, managed only 20%. Mobile ALOHA (2024) later mounted the same two arms on a mobile base.",
+   "example": "With just 20–50 human demonstrations per task, Mobile ALOHA learned to autonomously stir-fry shrimp and plate it, open a two-door cabinet and put away a pot, and even call and ride an elevator — tasks that need both bimanual coordination and mobility.",
+   "related": [
+    "Bimanual Robot",
+    "ALOHA (Bimanual Teleoperation Platform)",
+    "ACT",
+    "Mobile ALOHA",
+    "Dexterous Manipulation",
+    "Mobile Manipulation"
+   ]
+  },
+  {
+   "key": "concept-01#3",
+   "name_en": "Brain–Cerebellum Architecture",
+   "aliases": [
+    "Robot Brain and Cerebellum",
+    "Brain-Cerebellum Hierarchical Architecture"
+   ],
+   "one_liner": "Splitting a robot's software into a 'brain' that plans and reasons and a 'cerebellum' that executes movement.",
+   "explanation": "This is informal shorthand used in China's embodied-AI industry (大小脑, literally “big brain, small brain”) for a layered robot system, borrowed from the division of labor in the human brain. The “brain” is usually a large multimodal model (one that handles both images and text), responsible for understanding instructions, perceiving the scene, breaking a task into steps, and other high-level decisions. The “cerebellum” turns each sub-task into concrete motion: it might be a library of skills, a VLA (vision-language-action) policy, or a motion controller built with reinforcement learning or classical control, running at a higher frequency and closer to the hardware. Splitting the system this way lets each layer be trained and swapped independently, and lets one brain coordinate several different robots. The Beijing Academy of Artificial Intelligence's RoboOS (2025) uses this architecture, with RoboBrain as the brain and a pluggable cerebellum skill library for execution. China's Ministry of Industry and Information Technology used a similar “brain, cerebellum, limbs” breakdown of key technologies in its 2023 Guiding Opinions on Innovation and Development of Humanoid Robots.",
+   "example": "A humanoid robot hears, “hand me the cup on the table.” The brain model breaks this into walking to the table, picking up the cup, and handing it over; the cerebellum's walking controller and grasping policy then carry out each step.",
+   "related": [
+    "Fast-Slow Dual System",
+    "Hierarchical Architecture",
+    "Embodied Foundation Model",
+    "Motion Control",
+    "Whole-Body Control",
+    "RoboOS"
+   ]
+  },
+  {
+   "key": "concept-01#4",
+   "name_en": "Closed-loop Control",
+   "aliases": [
+    "Closed-loop Execution",
+    "Feedback Control"
+   ],
+   "one_liner": "Acting while watching: adjusting the next action based on the latest observation at every step.",
+   "explanation": "Closed-loop originated as a control-theory concept: a controller continuously measures a system's actual output, compares it to the target, and uses the difference to correct its action — cruise control that automatically adds power going uphill, for instance. The opposite, open-loop, executes a pre-planned sequence of commands without checking the result. In robot learning, closed-loop execution means the policy keeps reading new camera images and joint states while it runs and decides its next action accordingly, so it can handle surprises like a bumped object or a slipping grasp; open-loop means computing an entire trajectory once and then following it blindly. Many diffusion policies and VLA models output a chunk of actions at a time but only execute part of it before re-observing and re-predicting — receding-horizon control — trading off between smooth motion and timely feedback. “Closed-loop evaluation” also refers to actually running a policy in an environment, rather than just comparing its outputs to a dataset's recorded actions.",
+   "example": "A robot arm reaches for a cup, but someone nudges the cup 5 cm to the side. A closed-loop policy sees the change in the next camera frame and adjusts its path, while an open-loop policy executes the original plan and grasps empty air.",
+   "related": [
+    "Open-loop",
+    "Perception-Action Loop",
+    "Closed-loop Evaluation",
+    "Action Chunking",
+    "Visual Servoing",
+    "Model Predictive Control"
+   ]
+  },
+  {
+   "key": "concept-01#5",
+   "name_en": "Cross-Embodiment",
+   "aliases": [
+    "Cross-embodiment Transfer",
+    "Cross-embodiment Learning"
+   ],
+   "one_liner": "Training one model on data from many different robots so it can control more than one of them.",
+   "explanation": "“Embodiment” here means a robot's specific physical body: how many arms and joints it has, whether it uses a parallel gripper or a dexterous hand, which cameras it carries. Any single robot only generates a modest amount of data on its own, so cross-embodiment learning pools data from many different robots to train one policy, letting knowledge transfer between robots and letting the result be adapted or fine-tuned to a new robot. The hard part is that different robots have different observation and action spaces — dimensions, coordinate frames, and control frequencies all vary. Open X-Embodiment (2023), a collaboration across 21 institutions, pooled data from 22 robot types; policies trained on it, RT-1-X and RT-2-X, showed positive transfer, meaning data from other robots improved performance on a given one. CrossFormer (2024) trained a single policy on 900,000 trajectories from 20 embodiments, controlling arms, wheeled robots, quadrupeds, and drones all at once.",
+   "example": "Octo is pretrained on the multi-robot Open X-Embodiment data and can then be fine-tuned in just a few hours to a new robot with a different observation and action space.",
+   "related": [
+    "Embodiment",
+    "Embodiment Gap",
+    "Cross-embodiment Data",
+    "Open X-Embodiment Dataset",
+    "RT-X",
+    "CrossFormer"
+   ]
+  },
+  {
+   "key": "concept-01#6",
+   "name_en": "Dexterous Manipulation",
+   "aliases": [
+    "Dexterous Hand Manipulation",
+    "Multi-fingered Dexterous Manipulation"
+   ],
+   "one_liner": "Using a multi-fingered hand, coordinated finger movement and force control to grasp, flip, and handle objects.",
+   "explanation": "Dexterous manipulation refers to a robot hand — usually a multi-fingered dexterous hand — using fine coordination and force control across several fingers to grasp, reorient, and manipulate objects: rotating a block in the hand, unscrewing a bottle cap with the fingers, adjusting a grip on a pen. Compared with a two-finger parallel gripper that just opens and closes, this is much closer to a human hand, and it is key to letting robots use human tools and handle complex objects. The challenges are the many joints and high degrees of freedom, frequent contact that is hard to model, and the difficulty of both tactile sensing and data collection. A landmark project is OpenAI's Dactyl (2018), which trained a Shadow dexterous hand in simulation using reinforcement learning plus domain randomization (randomly varying friction, appearance, and other parameters), then transferred it directly to the real hand; the policy spontaneously learned human-like tricks such as finger gaiting, where the fingers release and reposition in turn to keep rotating an object. More recent work increasingly uses teleoperation or human hand videos for imitation learning instead.",
+   "example": "OpenAI's Dactyl used a Shadow dexterous hand to reorient a block held in its palm to a target orientation: block pose was estimated from three ordinary cameras, fingertip positions were tracked with a motion-capture system, no tactile sensing was used, and the policy was trained entirely in simulation.",
+   "related": [
+    "Dexterous Hand",
+    "In-hand Manipulation",
+    "Contact-rich Manipulation",
+    "Tactile Sensor",
+    "Dactyl (OpenAI's Rubik's-cube Hand)",
+    "Bimanual Manipulation"
+   ]
+  },
+  {
+   "key": "concept-01#7",
+   "name_en": "Embodied AI",
+   "aliases": [
+    "Embodied Intelligence",
+    "EAI",
+    "Embodied Artificial Intelligence"
+   ],
+   "one_liner": "Artificial intelligence with a body, able to perceive, decide, and act in the physical world.",
+   "explanation": "Embodied AI refers to intelligent systems that have a physical body (or a simulated one) and perceive, decide, and act through real-time interaction with their environment — robots and self-driving cars are the typical examples. The contrast is disembodied AI, like ChatGPT, which only processes text and images and never directly acts on the physical world. The idea is often traced back to Alan Turing's 1950 paper “Computing Machinery and Intelligence,” and to the robotics research of Rodney Brooks and others in the 1980s–90s, which emphasized that a body interacting with its environment is central to intelligence. At its core is a closed loop of perception, decision, action, and feedback. In the past few years, large language models and vision-language models have let robots understand open-ended instructions, making embodied AI a hot field, often seen as a key step toward artificial general intelligence (AGI).",
+   "example": "A home robot told to put the dirty clothes in the washing machine has to find the clothes itself, walk over, pick them up, open the machine, and load them, adjusting its actions throughout using visual feedback — that is embodied AI. ChatGPT can only describe the steps; that is disembodied AI.",
+   "related": [
+    "Disembodied AI",
+    "Physical AI",
+    "Embodied Agent",
+    "Embodied Cognition",
+    "General-purpose Robot",
+    "Vision-Language-Action Model"
+   ]
+  },
+  {
+   "key": "concept-01#8",
+   "name_en": "Episode",
+   "aliases": [],
+   "one_liner": "One full attempt at a task, from the environment's reset to completion, failure, or timeout.",
+   "explanation": "An episode is the basic unit of time in reinforcement learning and robot learning. After the environment resets to a starting state, the agent acts step by step until the task is completed, fails, or hits a step limit — that whole span is one episode, and the recorded sequence of observations and actions is a trajectory. Gymnasium marks the end of an episode with two separate flags: terminated means the task itself finished, successfully or not, and truncated means it was cut off by an external limit such as a time cap. In robot imitation learning, one demonstration usually corresponds to one episode; when an evaluation reports “50 episodes per task,” it means the robot attempted the task from scratch 50 times and the success rate was computed from that. Note that an episode is not the same thing as a training epoch, which is one full pass through the entire dataset.",
+   "example": "In a clothes-folding task, one episode runs from laying a wrinkled shirt on the table to the robot finishing the fold or hitting a two-minute timeout.",
+   "related": [
+    "Trajectory",
+    "Rollout",
+    "Success Rate",
+    "Training Epoch",
+    "Termination and Truncation",
+    "Demonstration Data"
+   ]
+  },
+  {
+   "key": "concept-01#9",
+   "name_en": "General-purpose Robot",
+   "aliases": [
+    "Generalist Robot"
+   ],
+   "one_liner": "A robot not built for one fixed task, meant to handle many tasks across many settings.",
+   "explanation": "A general-purpose robot is defined in contrast to a special-purpose one. A traditional industrial robot is programmed for one production line and one operation, and needs reprogramming and new tooling whenever the task changes. A general-purpose robot aims to be more like a person: one body plus one intelligent system that can do many things, including handling objects and environments it has never seen before. On the hardware side, this usually means a humanoid or a dual-arm mobile platform, since doors, tools, and stairs are all designed for the human body — companies such as Figure cite this as their reason for building humanoids. On the software side, it relies on generalist policies or embodied foundation models that learn cross-task ability from large-scale data; Physical Intelligence's π0, for example, is trained on data from single-arm, dual-arm, and mobile-manipulation robots, and can fold laundry, clear a table, and assemble a box. Every product today still falls short of this goal — it remains a long-term direction for embodied AI.",
+   "example": "In its company plan (Master Plan), dated May 2022, Figure set out to build a “general-purpose humanoid robot”: one humanoid hardware platform taking on a large share of the work people currently do, instead of building a separate special-purpose robot for every task.",
+   "related": [
+    "Embodied AI",
+    "Generalist Policy",
+    "Humanoid Robot",
+    "Industrial Robot",
+    "Embodied Foundation Model",
+    "π0"
+   ]
+  },
+  {
+   "key": "concept-01#10",
+   "name_en": "Generalist Policy",
+   "aliases": [
+    "Generalist Robot Policy"
+   ],
+   "one_liner": "A single control policy that can perform many tasks, and often work across many settings or robots.",
+   "explanation": "A policy is a model that maps observations to actions. A generalist policy is a single policy trained on large-scale, multi-task — often cross-robot — data, able to follow a language instruction or a goal image to complete many different tasks, and to generalize somewhat to new settings. The contrast is a specialist policy, trained for just one task or one robot. Generalist policies are usually pretrained at scale first, then fine-tuned to a specific robot and task with a small amount of target-domain data, an approach modeled on large language models. Notable examples include the open-source Octo (2024, trained on 800,000 trajectories from Open X-Embodiment and fine-tunable to a new robot in a few hours on a consumer GPU), OpenVLA, and Physical Intelligence's π0 series. Most vision-language-action (VLA) models today aim to be generalist policies.",
+   "example": "Give Octo either a spoken instruction or an image of the completed task, and it can output robot-arm actions accordingly, without needing a separate model trained for each task.",
+   "related": [
+    "Policy",
+    "Specialist Policy",
+    "Octo",
+    "π0",
+    "Vision-Language-Action Model",
+    "Cross-Embodiment"
+   ]
+  },
+  {
+   "key": "concept-01#11",
+   "name_en": "Generalization",
+   "aliases": [
+    "Generalization Ability"
+   ],
+   "one_liner": "A model's ability to still perform correctly in new situations it never saw during training.",
+   "explanation": "Generalization is a core machine-learning concept: how well a model performs on new examples outside its training data, rather than just memorizing the training set (a model that memorizes training data and falls apart on new data is said to overfit). Generalization is especially hard in robot learning because the real world varies so much — a different tablecloth, a different cup, a shifted position, or a differently worded instruction can all make a policy fail. Researchers therefore often evaluate different kinds of variation separately: object generalization, scene generalization, position generalization, instruction generalization. STAR-Gen (2025), proposed by Jensen Gao, Dorsa Sadigh, and colleagues, splits generalization into three categories — visual (appearance and background changes), semantic (concept and instruction changes), and behavioral (requiring a different way of acting) — and found that open-source VLA models, despite being pretrained on internet-scale language data, still often struggle specifically with semantic generalization. Generalization ability is the main yardstick for judging a generalist policy.",
+   "example": "A policy trained only to pick up a red block on a white table is tested on a wood-grain table (visual generalization), or given the instruction “pick up the thing that can hold water” instead (semantic generalization), to probe how well it generalizes.",
+   "related": [
+    "Overfitting",
+    "Out-of-Distribution",
+    "Zero-shot",
+    "Object Generalization",
+    "Visual Generalization",
+    "Semantic Generalization"
+   ]
+  }
+ ]
+}

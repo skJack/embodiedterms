@@ -1,0 +1,113 @@
+{
+  "batch": "model-06",
+  "terms": [
+    {
+      "key": "model-06#0",
+      "name_en": "Latent Space",
+      "aliases": ["Latent Feature Space"],
+      "one_liner": "The internal representation space a model compresses raw data into, where similar things end up close together.",
+      "explanation": "Latent space is the vector space a neural network uses internally to represent data. An encoder compresses high-dimensional raw data — images, audio, actions — into vectors with far fewer dimensions, and the space those vectors live in is the latent space; when training goes well, samples with similar meaning end up close together in it. Its value is that it saves compute and captures what matters: generating, predicting, or planning in latent space is much cheaper than working directly with pixels, and it's less easily thrown off by irrelevant detail. Autoencoders and variational autoencoders (VAEs, autoencoders that can sample to generate new data) both rely on it. Common uses in embodied AI include latent diffusion models, which denoise and generate images and video in latent space; latent world models, which predict the future in terms of latent states; and latent action models, which learn an abstract ‘action code’ from video with no action labels.",
+      "example": "A latent diffusion model (the basis of Stable Diffusion) first uses a pretrained autoencoder to compress an image into a much smaller latent representation, runs denoising diffusion in that space, and only decodes back to pixels at the end — far cheaper to train and run than diffusing directly on pixels.",
+      "related": ["Embedding", "Variational Autoencoder", "Latent Diffusion Model", "Latent World Model", "Latent Action", "Representation Learning"]
+    },
+    {
+      "key": "model-06#1",
+      "name_en": "Llama",
+      "aliases": ["LLaMA", "Llama 2", "Llama 3", "Llama 4"],
+      "one_liner": "Meta's family of openly released large language models, widely used as the language backbone inside other models.",
+      "explanation": "Llama is Meta's family of large language models. The original LLaMA was released in February 2023, followed by Llama 2 (July 2023, the first version whose license allowed commercial use), Llama 3 / 3.1 (2024, up to 405B parameters), Llama 3.2 (September 2024, which added 11B/90B vision versions and small 1B/3B models), and Llama 4 (April 2025, which switched to a mixture-of-experts architecture and is natively multimodal). The weights can be downloaded, but the license carries usage restrictions, so ‘open-weight’ is a more accurate description than ‘open source’ in the strict sense. Many academic vision-language models and VLAs use Llama as their language backbone — OpenVLA, for instance, is built on Llama 2 7B. As of April 2026, Meta's own Meta AI assistant is reportedly powered instead by the closed-source Muse model family from its superintelligence lab.",
+      "example": "OpenVLA combines the Llama 2 language model with a visual encoder that fuses DINOv2 and SigLIP features, trained on about 970,000 real-robot demonstrations, to produce a 7B-parameter open VLA.",
+      "related": ["Large Language Model", "Open-weight Model", "Mixture of Experts", "OpenVLA", "Prismatic VLMs", "Backbone Network"]
+    },
+    {
+      "key": "model-06#2",
+      "name_en": "Long Short-Term Memory / Gated Recurrent Unit",
+      "aliases": ["LSTM", "GRU"],
+      "one_liner": "Recurrent neural networks with learned 'gates' that let them retain longer histories, widely used for time-series data.",
+      "explanation": "LSTM was introduced by Hochreiter and Schmidhuber in 1997 as an improved recurrent neural network (RNN) — a network that reads a sequence one step at a time and stores information in a hidden state. In an ordinary RNN, gradients shrink exponentially over time steps during training, so the network struggles to remember anything from far in the past; LSTM adds a forget gate, an input gate, and an output gate that control what information is dropped, written, and output, which eases the problem. GRU, proposed by Cho and colleagues in 2014, has only an update gate and a reset gate and no output gate, so it has fewer parameters and runs faster, often matching LSTM's performance. Since Transformers became dominant, LSTM and GRU have taken a back seat in language tasks, but they're still common in robotics: legged locomotion policies often use them to infer terrain and body state from a history of proprioception, and some imitation-learning baselines for behavior cloning use RNNs too.",
+      "example": "OpenAI's Dactyl used policy-gradient reinforcement learning to train an LSTM policy that controlled a five-fingered dexterous hand, teaching it to reorient a block in-hand and solve a Rubik's cube.",
+      "related": ["Recurrent Neural Network", "Transformer", "State Space Model", "History Encoder", "Vanishing / Exploding Gradients", "OpenAI Dactyl"]
+    },
+    {
+      "key": "model-06#3",
+      "name_en": "Mixture of Experts",
+      "aliases": ["MoE", "Sparse MoE"],
+      "one_liner": "A model made of many 'expert' subnetworks where only a few are activated per input, trading a little compute for a lot of capacity.",
+      "explanation": "The idea behind Mixture of Experts goes back to Jacobs, Jordan, Nowlan, and Hinton in 1991: several expert networks plus a gating network (also called a router) that decides which experts handle each input. In 2017, Shazeer and colleagues turned this into a sparsely-gated MoE layer for large-scale language models with hundreds of billions of parameters, where each input only runs through a small fraction of them. It solves a specific problem: you want a bigger model that holds more knowledge, but you don't want every inference to pay for the full parameter count. Large language models such as Mixtral 8x7B, DeepSeek-V3, and Llama 4 all use MoE. Worth noting: the π0 paper describes its own architecture as ‘an MoE with only two experts’ — images and text go through the VLM weights, and state and action go through the action-expert weights — a fixed division of labor by token type, not routing learned by a gating network.",
+      "example": "Mixtral 8x7B has 8 experts per layer and routes each token to 2 of them; total parameter count is about 46.7B, but each token actually only uses about 12.9B parameters worth of compute.",
+      "related": ["Mixture-of-Transformers", "Action Expert", "Large Language Model", "Parameter Count", "Transformer", "Multilayer Perceptron"]
+    },
+    {
+      "key": "model-06#4",
+      "name_en": "Multilayer Perceptron",
+      "aliases": ["MLP", "Feedforward Neural Network"],
+      "one_liner": "The most basic neural network: stacked fully-connected layers with nonlinear activations in between.",
+      "explanation": "A multilayer perceptron is the most basic feedforward neural network: an input layer, several hidden layers, and an output layer, with every neuron in one layer connected to every neuron in the next. Each layer applies a linear transformation followed by a nonlinear activation function (such as ReLU). It traces back to Rosenblatt's 1958 perceptron; only after the backpropagation algorithm spread in 1986 could multi-layer versions be trained effectively. A single-layer perceptron can only separate linearly separable data; adding hidden layers and nonlinearity lets it fit far more complex functions. MLPs are everywhere in today's models: the feedforward block inside each Transformer layer is itself a two-layer MLP; vision-language models such as LLaVA-1.5 use an MLP to project visual features into the language model's input space; and in robotics, reinforcement-learning locomotion policies with modest input dimensions, action heads, and state encoders are often just an MLP.",
+      "example": "The default policy network in the legged_gym reinforcement-learning framework for legged robots is an MLP with three hidden layers of width 512, 256, and 128, using ELU activations, taking in proprioception and velocity commands, and outputting target joint positions.",
+      "related": ["Neural Network", "Activation Function", "Transformer", "Projector / Connector", "Action Head", "Backpropagation"]
+    },
+    {
+      "key": "model-06#5",
+      "name_en": "Multimodal Fusion",
+      "aliases": ["Early / Late Fusion"],
+      "one_liner": "Combining information from different sources — image, language, robot state — into a form a model can use jointly.",
+      "explanation": "Multimodal fusion means combining information from different modalities — image, text, depth, touch, joint state, and so on — into a representation the model can use jointly. Baltrušaitis and colleagues' 2017 survey lists it as one of five core challenges in multimodal machine learning, alongside representation, translation, alignment, and co-learning. Fusion approaches are usually grouped by where the combination happens: early fusion concatenates features or tokens from each modality right at the start and processes them together; mid fusion encodes each modality separately first, then merges them partway through the network, often via cross-attention; and late fusion lets each modality produce its own result and combines them only at the final decision. Embodied AI is inherently multimodal — a VLA has to look at camera images, read a language instruction, and sense its own state at the same time — and the fusion approach directly determines whether the model can map an instruction like ‘pick up the red cup’ onto the right object and action.",
+      "example": "RT-1 uses FiLM layers to inject the language instruction's embedding into its EfficientNet-B3 image encoder, so visual features carry task information from early in the network; π0, by contrast, puts image, language, state, and action tokens into the same Transformer and lets attention handle the fusion.",
+      "related": ["Multimodal Large Language Model", "Cross-Attention", "Feature-wise Linear Modulation", "Projector / Connector", "Visuo-Tactile Fusion", "Multi-Sensor Fusion"]
+    },
+    {
+      "key": "model-06#6",
+      "name_en": "Multimodal Large Language Model",
+      "aliases": ["MLLM", "Multimodal LLM"],
+      "one_liner": "A large language model that can also understand non-text inputs like images, video, and audio.",
+      "explanation": "A multimodal large language model uses an LLM as its ‘brain’ but can also take in non-text inputs such as images, video, and audio; GPT-4V brought wide attention to this direction in 2023. Yin and colleagues' survey breaks the typical architecture into three parts: a pretrained modality encoder (such as a CLIP or SigLIP vision encoder), a pretrained LLM, and a modality interface connecting the two — an MLP projector, a Q-Former, or cross-attention layers inserted into the LLM. Training usually proceeds in two stages: modality-alignment pretraining, then instruction tuning. An MLLM that only handles images and text is often called a vision-language model (VLM) instead. Its significance for embodied AI is that it brings internet-scale common sense and visual understanding: most VLAs are built by adding an action output on top of an MLLM or VLM, and embodied-reasoning models and task planners are also often fine-tuned from an MLLM.",
+      "example": "LLaVA-1.5 uses a CLIP-ViT-L-336px vision encoder connected to the language model through an MLP projector, then is fine-tuned on visual instruction data; GPT-4o, Gemini, and Qwen2.5-VL are also multimodal large language models.",
+      "related": ["Vision-Language Model", "Large Language Model", "Native Multimodal Model", "Projector / Connector", "Vision-Language-Action Model", "Modality Alignment"]
+    },
+    {
+      "key": "model-06#7",
+      "name_en": "Native Multimodal",
+      "aliases": ["Native Multimodal Model", "Natively Multimodal"],
+      "one_liner": "Training a model on multiple modalities together from the very start of pretraining, instead of bolting a vision module onto a language model.",
+      "explanation": "Native multimodal means a model is trained from the start of pretraining on text, image, audio, and video data together, with every modality processed inside the same backbone network. It's the opposite of the ‘stitched-together’ approach, where a vision encoder and a language model are each trained separately first and then connected with a projector layer for further training. Google emphasized that Gemini was natively multimodal when it launched it in December 2023; Meta's Chameleon (2024) discretized images into tokens too and mixed them with text from the very beginning of training (early fusion); Llama 4 (April 2025) likewise claims to be natively multimodal and uses early fusion. Proponents argue this lets modalities combine more deeply and makes it easier to handle understanding and generation together; the cost is higher training expense and a harder balance to strike in the data mix across modalities. In embodied AI, unified multimodal models and world-action models that train video and action within the same sequence follow the same idea.",
+      "example": "Gemini was jointly pretrained on text, image, audio, and video data together from the start, whereas LLaVA attaches a vision encoder in front of an already-trained language model and then does further training — a stitched-together design.",
+      "related": ["Multimodal Large Language Model", "Unified Multimodal Model", "Multimodal Fusion", "Visual Token", "BAGEL", "World Action Model"]
+    },
+    {
+      "key": "model-06#8",
+      "name_en": "Numerical Precision Formats",
+      "aliases": ["FP32", "BF16", "FP16", "FP8", "INT8", "bfloat16"],
+      "one_liner": "The format that fixes how many bits represent each number and how they're split, which sets memory use and speed.",
+      "explanation": "A model's weights and intermediate results all have to be stored and computed in some numerical format. FP32 (single precision) uses 32 bits: 1 sign bit, 8 exponent bits, and 23 mantissa bits. FP16 (half precision) uses 16 bits but only 5 exponent bits, so it can only represent values up to about 65,504 and overflows easily during training. BF16, designed by Google Brain for TPUs, is also 16 bits but keeps 8 exponent bits, giving it the same range as FP32 with less precision — it's the dominant format for training large models today. FP8, proposed by NVIDIA, Arm, Intel, and others in 2022, comes in two variants, E4M3 and E5M2. INT8 uses 8-bit integers and is mainly used for quantized inference. Fewer bits means less memory use and faster compute, but more error. For training a VLA and for on-device deployment, the choice of format directly decides whether a model fits on the GPU and whether inference is fast enough.",
+      "example": "A 7B-parameter VLA needs roughly 28 GB to store its weights in FP32, about 14 GB in BF16, and about 7 GB quantized to INT8 — often the deciding factor in whether it fits on an onboard compute board.",
+      "related": ["Mixed-Precision Training", "Post-Training Quantization", "Quantization-Aware Training", "On-Device / Edge Deployment", "GPU Memory (VRAM)", "Inference Latency"]
+    },
+    {
+      "key": "model-06#9",
+      "name_en": "On-device Model",
+      "aliases": ["Edge Model", "On-device AI"],
+      "one_liner": "A model that runs locally on a device's own chip — a robot, a phone — instead of relying on the cloud.",
+      "explanation": "An on-device model is deployed to run locally on an end device — for example, a robot's onboard computer (such as an NVIDIA Jetson), a phone chip, or a car's chip — as opposed to a model that runs inference in a cloud data center. Device compute, memory, and power are all limited, so on-device models are usually smaller and compressed using quantization, pruning, distillation, and similar techniques; Apple's 2025 on-device foundation model, for example, has about 3B parameters, with weights compressed to 2 bits each via quantization-aware training. For robots, running locally has real practical benefits: it still works without a network connection, avoids network round-trip latency, and keeps data from leaving the device. The tradeoff is that on-device models are usually less capable than large cloud models, so a common setup has a large cloud model handle slower planning and reasoning while a small on-device model outputs actions at high frequency — cloud-edge-device collaboration.",
+      "example": "Google DeepMind released Gemini Robotics On-Device in June 2025: this VLA can run locally on the robot with no network connection, adapts to new tasks with just 50 to 100 demonstrations, and has been validated on a bimanual Franka FR3 and the Apptronik Apollo humanoid.",
+      "related": ["On-Device / Edge Deployment", "Cloud-Edge-Device Collaboration", "Post-Training Quantization", "NVIDIA Jetson", "Gemini Robotics On-Device", "Inference Latency"]
+    },
+    {
+      "key": "model-06#10",
+      "name_en": "PaliGemma",
+      "aliases": ["PaliGemma 2"],
+      "one_liner": "Google's open-weight vision-language model, combining a SigLIP visual encoder with a Gemma language model.",
+      "explanation": "PaliGemma is an open-weight vision-language model (VLM) Google released in May 2024, combining a SigLIP-So400m visual encoder with a Gemma-2B language model for about 3B parameters total. It isn't meant to be an out-of-the-box chat model; it's positioned as a base model meant to be transferred and fine-tuned, and the paper validates transfer performance on roughly 40 tasks. PaliGemma 2, released in December 2024, switched to the Gemma 2 language model and comes in three sizes (3B, 10B, 28B) and three input resolutions (224, 448, and 896 pixels). It's well known in embodied AI because Physical Intelligence uses it as the VLM backbone for π0: it's small, fast to run, and carries internet-scale vision-language knowledge, which makes it a good base for attaching an action expert to build a VLA.",
+      "example": "π0 uses the 3B-parameter PaliGemma as its backbone, adds a separate, randomly initialized action expert of about 300M parameters, for 3.3B parameters total, and generates continuous actions using flow matching.",
+      "related": ["Vision-Language Model", "SigLIP", "π0", "Action Expert", "Vision-Language-Action Model", "Open-weight Model"]
+    },
+    {
+      "key": "model-06#11",
+      "name_en": "Positional Encoding",
+      "aliases": ["PE", "Position Embedding"],
+      "one_liner": "Information added to each Transformer token telling the model which position in the sequence it's at.",
+      "explanation": "Self-attention inside a Transformer is order-blind on its own: shuffle the input tokens and the output just gets shuffled the same way. To give the model a sense of what came before what, the 2017 paper ‘Attention Is All You Need’ added a set of sine and cosine values at different frequencies to the input embeddings — this is positional encoding; the authors also tried learned position embeddings and found the results almost identical. Several variants have followed: Rotary Position Embedding (RoPE), proposed by Jianlin Su and colleagues in 2021, encodes position with a rotation matrix so that attention scores naturally reflect relative distance, and it has been adopted by mainstream large models such as Llama; Qwen2-VL further extends it to M-RoPE, which jointly encodes text order, an image's rows and columns, and a video's time dimension. Embodied models have to handle multiple frames, multiple camera views, and action sequences, so positional encoding determines whether the model can tell which frame came first and which patch belongs where.",
+      "example": "ViT splits a 224×224 image into 16×16-pixel patches, 196 in total, and adds a learned position embedding to each one so the model knows which patch is top-left and which is bottom-right.",
+      "related": ["Rotary Position Embedding", "Transformer", "Self-Attention", "Vision Transformer", "Context Length", "Token"]
+    }
+  ]
+}

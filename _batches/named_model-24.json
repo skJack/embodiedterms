@@ -1,0 +1,392 @@
+{
+  "category": "named_model",
+  "batch": 24,
+  "terms": [
+    {
+      "name_zh": "Socratic Models（苏格拉底模型）",
+      "name_en": "Socratic Models: Composing Zero-Shot Multimodal Reasoning with Language",
+      "abbr": "SMs",
+      "aliases": [
+        "Socratic Models",
+        "苏格拉底模型"
+      ],
+      "tier": 3,
+      "one_liner": "用自然语言当接口，把多个现成大模型零样本串起来完成多模态任务的框架",
+      "explanation": "谷歌 Andy Zeng、Pete Florence 等人 2022 年 4 月发布。不同基础模型各有所长：视觉语言模型（VLM，能看图说话）懂图像，大语言模型（LLM）懂常识和推理，音频模型懂声音。Socratic Models 不做任何微调，而是用自然语言当公共接口，把一个模型的输出写进另一个模型的提示词里，让它们像对话一样交换信息，零样本组合出新能力。论文展示了第一人称视频问答、多模态助手对话，以及机器人感知与规划：先由视觉模型把桌面物体转成文字描述，再由 LLM 把指令拆成一步步抓取放置动作，交给预训练的语言条件策略执行。它和同期的 SayCan、代码即策略一起，代表了「用大语言模型当机器人规划器」的早期路线。",
+      "example": "用户说「把水果都放进碗里」，视觉模型先列出桌上有苹果、香蕉和碗，语言模型据此写出「拿起苹果放进碗里；拿起香蕉放进碗里」，再由底层抓放策略逐步执行。",
+      "related": [
+        "大语言模型",
+        "视觉语言模型",
+        "零样本",
+        "SayCan",
+        "代码即策略",
+        "Inner Monologue"
+      ],
+      "sources": [
+        {
+          "title": "Socratic Models: Composing Zero-Shot Multimodal Reasoning with Language (arXiv 2204.00598)",
+          "url": "https://arxiv.org/abs/2204.00598"
+        },
+        {
+          "title": "Socratic Models project page",
+          "url": "https://socraticmodels.github.io/"
+        }
+      ],
+      "as_of": "2022-05"
+    },
+    {
+      "name_zh": "SONIC",
+      "name_en": "SONIC: Supersizing Motion Tracking for Natural Humanoid Whole-Body Control",
+      "abbr": "SONIC",
+      "aliases": [
+        "GEAR-SONIC"
+      ],
+      "tier": 3,
+      "one_liner": "英伟达把运动跟踪做大规模训练，得到的通用人形机器人全身控制基础模型",
+      "explanation": "英伟达 GEAR 实验室（Zhengyi Luo、Linxi Fan、Yuke Zhu 等）2025 年 11 月发布，后发表于 Science Robotics（2026）。它认为人形控制器也能靠扩大规模变强，而运动跟踪（让机器人实时复现一段人体动作）适合放大：动捕数据自带密集监督，不用手工设计奖励。团队把网络从 120 万扩到 4200 万参数，用约 700 小时动捕（1 亿多帧）、约 2.1 万 GPU 小时训练，部署在宇树 G1 上。同一个策略通过统一的 token 接口，可接收手柄加实时运动规划器、VR 遥操作、视频模仿、文本和音乐生成的动作，也能接在 GR00T N1.5 等 VLA 后面做全身移动操作。代码已在 GR00T-WholeBodyControl 仓库开源。",
+      "example": "操作员戴 VR 设备只追踪头部和双手，SONIC 用运动规划器补全下半身动作，控制 G1 完成推割草机这类边走边操作的任务。",
+      "related": [
+        "运动跟踪",
+        "学习型全身控制",
+        "宇树 G1",
+        "GR00T N1 系列",
+        "英伟达 GEAR 实验室",
+        "GR00T 全身控制代码库"
+      ],
+      "sources": [
+        {
+          "title": "SONIC: Supersizing Motion Tracking for Natural Humanoid Whole-Body Control (arXiv 2511.07820)",
+          "url": "https://arxiv.org/abs/2511.07820"
+        },
+        {
+          "title": "GEAR-SONIC project page",
+          "url": "https://nvlabs.github.io/GEAR-SONIC/"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "SpatialLM（群核空间大模型）",
+      "name_en": "SpatialLM: Training Large Language Models for Structured Indoor Modeling (Manycore)",
+      "abbr": "",
+      "aliases": [
+        "SpatialLM 1.1",
+        "群核 SpatialLM"
+      ],
+      "tier": 3,
+      "one_liner": "群核科技开源的 3D 大模型，读入室内点云，输出墙门窗和家具的结构化布局",
+      "explanation": "杭州群核科技（旗下有酷家乐）2025 年 3 月开源，6 月发布技术报告，入选 NeurIPS 2025。它输入一个室内场景的点云（可来自手机视频重建、RGB-D 相机或激光雷达），输出结构化的场景描述：墙、门、窗的位置，以及带类别和朝向的家具 3D 框。和以往为每个任务单独设计网络不同，它沿用标准多模态大模型结构：点云编码器把几何信息转成 token，再由 Llama 1B、Qwen 0.5B 这类小型开源语言模型以文本形式逐项写出场景。训练用了 12328 个合成室内场景（54778 个房间）的点云和标注。6 月的 1.1 版换用 Sonata 点云编码器，并支持按用户指定类别检测。它可为机器人导航和室内布局理解提供结构化空间信息。",
+      "example": "用手机绕房间拍一段视频，经 MASt3R-SLAM 重建成点云后输入 SpatialLM，得到每面墙的端点、门窗位置，以及床、床头柜的 3D 框。",
+      "related": [
+        "点云",
+        "3D目标检测",
+        "场景理解",
+        "群核科技",
+        "空间智能",
+        "多模态大语言模型"
+      ],
+      "sources": [
+        {
+          "title": "SpatialLM: Training Large Language Models for Structured Indoor Modeling (arXiv 2506.07491)",
+          "url": "https://arxiv.org/abs/2506.07491"
+        },
+        {
+          "title": "manycore-research/SpatialLM (GitHub)",
+          "url": "https://github.com/manycore-research/SpatialLM"
+        }
+      ],
+      "as_of": "2025-09"
+    },
+    {
+      "name_zh": "SpatialVLM",
+      "name_en": "SpatialVLM: Endowing Vision-Language Models with Spatial Reasoning Capabilities",
+      "abbr": "",
+      "aliases": [
+        "Spatial VLM"
+      ],
+      "tier": 3,
+      "one_liner": "用自动生成的海量 3D 空间问答数据，教视觉语言模型估算距离和大小",
+      "explanation": "Google DeepMind 联合 MIT、斯坦福 2024 年 1 月发布，发表于 CVPR 2024。作者发现，视觉语言模型（VLM）能认出图里有什么，却答不好「杯子离盒子多远」「哪个更高」这类定量空间问题，原因是训练数据缺少 3D 空间知识。他们搭了一条自动数据流水线：对真实图片做目标检测、分割和度量深度估计，把 2D 图片提升成带真实尺度的 3D 点云，再按模板生成空间问答，在 1000 万张图片上产出 20 亿条问答，是首个互联网规模的度量空间推理数据集。用这些数据训练后，模型在定性和定量空间问答上都明显提升，还能配合大语言模型做多步空间推理，并把距离估计用作机器人任务的稠密奖励。",
+      "example": "问「红色积木离蓝色碗大约多少厘米」，普通 VLM 往往只给出模糊描述，SpatialVLM 能直接给出一个带单位的距离估计。",
+      "related": [
+        "空间推理",
+        "视觉语言模型",
+        "视觉问答",
+        "单目深度估计",
+        "空间智能",
+        "谷歌 DeepMind"
+      ],
+      "sources": [
+        {
+          "title": "SpatialVLM (arXiv 2401.12168)",
+          "url": "https://arxiv.org/abs/2401.12168"
+        },
+        {
+          "title": "SpatialVLM project page",
+          "url": "https://spatial-vlm.github.io/"
+        }
+      ],
+      "as_of": "2024-06"
+    },
+    {
+      "name_zh": "千寻 Spirit v1.5",
+      "name_en": "Spirit v1.5 (Spirit AI)",
+      "abbr": "",
+      "aliases": [
+        "Spirit-v1.5",
+        "千寻智能 Spirit v1.5"
+      ],
+      "tier": 3,
+      "one_liner": "千寻智能开源的 VLA 基础模型，主张用多样、不刻意整理的数据做预训练",
+      "explanation": "千寻智能（Spirit AI）2026 年 1 月发布并开源的视觉-语言-动作（VLA）模型，公开了推理代码（MIT 协议）、基座权重和一个微调权重（Apache 2.0 协议），4 月又放出微调代码。结构是常见的「VLM + 动作头」：以通义千问 Qwen3-VL-4B 作视觉语言骨干，接一个扩散 Transformer（DiT）动作头生成连续动作。它的主要观点写在技术博客标题里——「干净数据是好机器人基础模型的敌人」：不给采集员写固定脚本、不刻意摆放物体，只让他们带着一个目标自由完成一连串真实任务，数据里自然包含失败重试和任务切换。团队称这样做让人均有效采集时长提高了 200%。发布时它在 RoboChallenge 的 Table30 真机榜单上排名第一。",
+      "example": "采集员给自己定一个目标「今天用机器人调一杯饮料」，从备料、发现比例不对再调整到加减配料，整段连续操作都录下来用于预训练。",
+      "related": [
+        "千寻智能",
+        "视觉-语言-动作模型",
+        "RoboChallenge",
+        "通义千问 Qwen-VL",
+        "扩散 Transformer",
+        "数据多样性"
+      ],
+      "sources": [
+        {
+          "title": "Spirit-v1.5: Clean Data Is the Enemy of Great Robot Foundation Models (Spirit AI Blog)",
+          "url": "https://www.spirit-ai.com/en/blog/spirit-v1-5"
+        },
+        {
+          "title": "Spirit-AI-Team/spirit-v1.5 (GitHub)",
+          "url": "https://github.com/Spirit-AI-Team/spirit-v1.5"
+        },
+        {
+          "title": "Spirit-AI-robotics/Spirit-v1.5 (Hugging Face)",
+          "url": "https://huggingface.co/Spirit-AI-robotics/Spirit-v1.5"
+        }
+      ],
+      "as_of": "2026-04"
+    },
+    {
+      "name_zh": "Stable Video Diffusion",
+      "name_en": "Stable Video Diffusion (SVD)",
+      "abbr": "SVD",
+      "aliases": [
+        "SVD-XT",
+        "Stable Video Diffusion: Scaling Latent Video Diffusion Models to Large Datasets"
+      ],
+      "tier": 3,
+      "one_liner": "Stability AI 开源的图生视频扩散模型，常被机器人研究用作视频预测底座",
+      "explanation": "Stability AI 于 2023 年 11 月 21 日发布的开源视频生成模型，属于潜在扩散模型（先把图像压缩到低维潜空间，再在潜空间里逐步去噪生成）。它在图像模型 Stable Diffusion 基础上插入时间层，并总结出三阶段训练：文生图预训练、大规模视频预训练、高质量视频微调，强调视频数据筛选的重要性。首发的是两个图生视频模型，分别生成 14 帧和 25 帧（后者即 SVD-XT），帧率可在每秒 3 到 30 帧间设置，当时以研究预览形式发布、不面向商用。由于权重开放、参数量约 15 亿，SVD 成了具身智能里常用的视频底座，例如视频预测策略（VPP）就在它上面加入语言条件、用机器人视频微调，再从中提取对未来的预测表征来输出动作。",
+      "example": "视频预测策略（VPP）把 SVD 微调成操作视频预测模型：给定当前画面和「打开抽屉」指令，先预测接下来画面的特征，再据此输出机械臂动作。",
+      "related": [
+        "视频生成模型",
+        "潜在扩散模型",
+        "视频预测策略",
+        "文生视频 / 图生视频",
+        "世界模型",
+        "扩散模型"
+      ],
+      "sources": [
+        {
+          "title": "Stable Video Diffusion: Scaling Latent Video Diffusion Models to Large Datasets (arXiv 2311.15127)",
+          "url": "https://arxiv.org/abs/2311.15127"
+        },
+        {
+          "title": "Introducing Stable Video Diffusion (Stability AI)",
+          "url": "https://stability.ai/news-updates/stable-video-diffusion-open-ai-video-model"
+        },
+        {
+          "title": "Video Prediction Policy (arXiv 2412.14803)",
+          "url": "https://arxiv.org/abs/2412.14803"
+        }
+      ],
+      "as_of": "2023-11"
+    },
+    {
+      "name_zh": "SuSIE",
+      "name_en": "SuSIE: Subgoal Synthesis via Image Editing",
+      "abbr": "SuSIE",
+      "aliases": [
+        "Zero-Shot Robotic Manipulation with Pretrained Image-Editing Diffusion Models",
+        "基于图像编辑的子目标合成"
+      ],
+      "tier": 3,
+      "one_liner": "把图像编辑扩散模型当高层规划器，先画出子目标画面，再让底层策略去达成",
+      "explanation": "UC Berkeley 与斯坦福的 Kevin Black、Sergey Levine、Chelsea Finn 等人 2023 年 10 月发布。方法分两层：高层是开源图像编辑模型 InstructPix2Pix，在人类视频和机器人数据上微调后，输入当前相机画面和语言指令，输出接下来某一时刻「应该是什么样」的子目标图片；低层是只看目标图、不看语言的目标条件策略，负责把机器人从当前画面带到子目标画面。两层交替执行，直到任务完成。这样高层能借用互联网规模图像预训练带来的语义理解去处理新物体、新指令，低层专心做精确控制。它在 CALVIN 基准的零样本设置上取得当时最好成绩，真机实验中也超过了 RT-2-X。它和 UniPi 同属「先生成画面、再推出动作」的路线。",
+      "example": "指令是「把黄色积木放进抽屉」，SuSIE 先生成一张夹爪已抓住黄色积木的图片当子目标，底层策略到达后，再生成积木落入抽屉的下一张子目标图。",
+      "related": [
+        "目标条件策略",
+        "扩散模型",
+        "分层架构",
+        "CALVIN",
+        "UniPi",
+        "零样本"
+      ],
+      "sources": [
+        {
+          "title": "Zero-Shot Robotic Manipulation with Pretrained Image-Editing Diffusion Models (arXiv 2310.10639)",
+          "url": "https://arxiv.org/abs/2310.10639"
+        },
+        {
+          "title": "SuSIE project page",
+          "url": "https://rail-berkeley.github.io/susie/"
+        }
+      ],
+      "as_of": "2023-10"
+    },
+    {
+      "name_zh": "TD-MPC2",
+      "name_en": "TD-MPC2: Scalable, Robust World Models for Continuous Control",
+      "abbr": "TD-MPC2",
+      "aliases": [
+        "TD-MPC 2"
+      ],
+      "tier": 3,
+      "one_liner": "在学到的隐空间世界模型里做规划的强化学习算法，一套超参数通吃上百个控制任务",
+      "explanation": "UC San Diego 的 Nicklas Hansen、苏昊、王小龙 2023 年 10 月发布，是 ICLR 2024 Spotlight 论文，改进自同一团队的 TD-MPC。它属于基于模型的强化学习：先学一个只在隐空间里预测下一状态、奖励和价值的世界模型（不重建图像，即无解码器）；决策时在隐空间里做模型预测控制（MPC），短期靠模型推演，更远的回报交给用时序差分（TD）学到的价值函数估计，名字由此而来。TD-MPC2 在 DMControl、Meta-World、ManiSkill2、MyoSuite 四个领域共 104 个连续控制任务上，用同一套超参数表现稳定；还训练出一个 3.17 亿参数、能做 80 个任务的多任务智能体，显示能力随模型和数据规模增长。",
+      "example": "同一个 TD-MPC2 多任务模型既能控制 DMControl 里的猎豹奔跑，也能控制 Meta-World 里的机械臂开抽屉，训练时不用为每个任务单独调超参数。",
+      "related": [
+        "基于模型的强化学习",
+        "世界模型",
+        "模型预测控制",
+        "隐空间世界模型",
+        "时序差分学习",
+        "DreamerV3"
+      ],
+      "sources": [
+        {
+          "title": "TD-MPC2: Scalable, Robust World Models for Continuous Control (arXiv 2310.16828)",
+          "url": "https://arxiv.org/abs/2310.16828"
+        },
+        {
+          "title": "TD-MPC2 project page",
+          "url": "https://www.tdmpc2.com/"
+        }
+      ],
+      "as_of": "2024-01"
+    },
+    {
+      "name_zh": "Waymo 世界模型",
+      "name_en": "The Waymo World Model (built on Genie 3)",
+      "abbr": "",
+      "aliases": [
+        "Waymo World Model"
+      ],
+      "tier": 3,
+      "one_liner": "Waymo 基于 Genie 3 的驾驶仿真生成模型，可同时生成相机和激光雷达数据",
+      "explanation": "Waymo 于 2026 年 2 月 6 日公布的生成式世界模型，用于大规模自动驾驶仿真。它建立在 Google DeepMind 的可交互世界模型 Genie 3 之上，借助后者在海量视频上的预训练，生成照片级、可交互的 3D 驾驶环境，并同时输出摄像头和激光雷达两种传感器数据。它主要针对自动驾驶的长尾问题：极端天气、自然灾害、罕见物体等危险情况在真实路测中很少遇到，却必须提前测过。控制方式有三种：改变自车驾驶动作，做「当时如果这样开会怎样」的反事实推演；控制道路布局和交通状况；用语言调整时间、天气，甚至生成完全合成的场景。它说明通用世界模型已开始被用作具身系统的测试环境和数据来源。",
+      "example": "用一句话把一段真实的晴天路测场景改成暴雨夜晚，再让自车换一种变道方式，观察自动驾驶系统在同一路段的反应。",
+      "related": [
+        "Genie 3",
+        "世界模型",
+        "自动驾驶",
+        "可交互世界模型",
+        "长尾问题",
+        "激光雷达"
+      ],
+      "sources": [
+        {
+          "title": "The Waymo World Model: A New Frontier for Autonomous Driving Simulation (Waymo Blog)",
+          "url": "https://waymo.com/blog/2026/02/the-waymo-world-model-a-new-frontier-for-autonomous-driving-simulation"
+        }
+      ],
+      "as_of": "2026-02"
+    },
+    {
+      "name_zh": "ThinkAct",
+      "name_en": "ThinkAct: Vision-Language-Action Reasoning via Reinforced Visual Latent Planning",
+      "abbr": "",
+      "aliases": [
+        "Fast-ThinkAct（后续版本）"
+      ],
+      "tier": 3,
+      "one_liner": "先让多模态大模型想出视觉规划，再交给动作模型执行的推理型 VLA",
+      "explanation": "英伟达与台湾大学（Chi-Pin Huang、Fu-En Yang 等）2025 年 7 月发布，发表于 NeurIPS 2025。多数 VLA 直接从画面和指令输出动作，缺少显式推理，难做多步长程任务。ThinkAct 采用快慢双系统：「思考」部分是以 Qwen2.5-VL 7B 初始化的多模态大模型，先监督微调冷启动，再用 GRPO 强化学习训练它生成具身推理计划，奖励来自视觉信号——规划出的轨迹终点是否与示范一致、整条轨迹是否与示范相符。推理结果被压缩成一个视觉规划隐变量，作为条件输入下游动作模型输出具体动作。在 SimplerEnv、LIBERO 等操作基准和多个具身推理基准上，它表现出少样本适应、长程规划和自我纠错能力。后续版本 Fast-ThinkAct 发表于 CVPR 2026。",
+      "example": "面对「把胡萝卜放到盘子上」，ThinkAct 先推理出要先抓胡萝卜、再移到盘子上方，并规划出夹爪的运动轨迹，动作模型按这个规划执行；中途失手时还能重新规划。",
+      "related": [
+        "具身推理",
+        "快慢双系统",
+        "思维链",
+        "组相对策略优化",
+        "潜在推理",
+        "LIBERO"
+      ],
+      "sources": [
+        {
+          "title": "ThinkAct (arXiv 2507.16815)",
+          "url": "https://arxiv.org/abs/2507.16815"
+        },
+        {
+          "title": "ThinkAct project page",
+          "url": "https://jasper0314-huang.github.io/thinkact-vla/"
+        },
+        {
+          "title": "Fast-ThinkAct (arXiv 2601.09708)",
+          "url": "https://arxiv.org/abs/2601.09708"
+        }
+      ],
+      "as_of": "2026-01"
+    },
+    {
+      "name_zh": "TinyVLA",
+      "name_en": "TinyVLA: Towards Fast, Data-Efficient Vision-Language-Action Models for Robotic Manipulation",
+      "abbr": "",
+      "aliases": [
+        "Tiny-VLA"
+      ],
+      "tier": 3,
+      "one_liner": "用小型多模态模型加扩散策略头、不做机器人数据预训练的快速 VLA",
+      "explanation": "美的集团 AI Lab 与华东师范大学等（Junjie Wen、Yichen Zhu 等）2024 年 9 月发布，发表于 IEEE RA-L 2025。当时的 OpenVLA 等模型推理慢，还要先在大规模机器人数据上预训练。TinyVLA 的做法是：先按 LLaVA 流程训练一族以 Pythia 为语言模型、参数 7000 万到 14 亿的小型视觉语言模型，作为策略骨干；在机器人数据上微调时冻结预训练部分，只用 LoRA 训练约 5% 的参数，并接一个扩散策略解码器直接输出连续动作。在 Franka 单臂和双臂 UR5 真机上，最大的 TinyVLA-H 成功率比 OpenVLA 高 25.7%，参数少 5.5 倍，推理延迟低约 20 倍。同一团队之后又做了 DexVLA。",
+      "example": "在双臂 UR5 任务上，依赖单臂 Open X-Embodiment 数据预训练的 OpenVLA 表现吃力，而不做机器人预训练、直接微调的 TinyVLA 表现更好。",
+      "related": [
+        "视觉-语言-动作模型",
+        "OpenVLA",
+        "扩散策略",
+        "低秩适配",
+        "推理延迟",
+        "DexVLA"
+      ],
+      "sources": [
+        {
+          "title": "TinyVLA (arXiv 2409.12514)",
+          "url": "https://arxiv.org/abs/2409.12514"
+        },
+        {
+          "title": "TinyVLA project page",
+          "url": "https://tiny-vla.github.io/"
+        }
+      ],
+      "as_of": "2025-05"
+    },
+    {
+      "name_zh": "TraceVLA",
+      "name_en": "TraceVLA: Visual Trace Prompting Enhances Spatial-Temporal Awareness for Generalist Robotic Policies",
+      "abbr": "",
+      "aliases": [
+        "视觉轨迹提示 VLA",
+        "Visual Trace Prompting"
+      ],
+      "tier": 3,
+      "one_liner": "把画面中关键点的历史运动轨迹画在图上当提示，增强 VLA 时空理解的方法",
+      "explanation": "马里兰大学与微软研究院（Ruijie Zheng、Jianwei Yang 等）2024 年 12 月发布，发表于 ICLR 2025。VLA 通常只看当前一帧，不知道机器人和物体刚才怎么动过。TraceVLA 提出「视觉轨迹提示」：用点跟踪模型 CoTracker 追踪画面中关键点过去若干帧的运动，把轨迹直接画在图像上，再把原图和叠加了轨迹的图一起输入模型。作者用这种方式在自己收集的 15 万条操作轨迹上微调 OpenVLA，得到 TraceVLA：在 SimplerEnv 的 137 种配置上比 OpenVLA 高约 10%，在 WidowX 真机 4 个任务上达到其 3.5 倍。另有基于 40 亿参数 Phi-3-Vision 的小版本，效果接近 70 亿参数的 OpenVLA。",
+      "example": "机械臂正在把勺子挪向毛巾，输入图上叠着夹爪和勺子前几步的彩色轨迹线，模型据此判断运动方向和进度，决定下一步动作。",
+      "related": [
+        "OpenVLA",
+        "视觉提示",
+        "任意点跟踪",
+        "CoTracker",
+        "SimplerEnv",
+        "视觉-语言-动作模型"
+      ],
+      "sources": [
+        {
+          "title": "TraceVLA (arXiv 2412.10345)",
+          "url": "https://arxiv.org/abs/2412.10345"
+        },
+        {
+          "title": "TraceVLA project page",
+          "url": "https://tracevla.github.io/"
+        }
+      ],
+      "as_of": "2025-01"
+    }
+  ]
+}

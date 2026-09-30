@@ -1,0 +1,415 @@
+{
+ "category": "mechanics",
+ "batch": 9,
+ "terms": [
+  {
+   "name_zh": "伴随变换",
+   "name_en": "Adjoint Map",
+   "abbr": "Ad",
+   "aliases": [
+    "伴随表示",
+    "伴随映射",
+    "Adjoint Representation"
+   ],
+   "tier": 3,
+   "one_liner": "把速度旋量、力旋量从一个坐标系换到另一个坐标系的 6×6 矩阵",
+   "explanation": "旋量理论里的基本工具，Lynch 与 Park 的教材《Modern Robotics》把它作为刚体运动一章的核心定义。给定位姿 T=(R,p)（R 是旋转矩阵，p 是平移向量），伴随表示 [Ad_T] 是一个 6×6 矩阵：左上、右下两块是 R，左下是 [p]R（[p] 是 p 的反对称矩阵），右上是 0。它的用途是换坐标系：同一个运动旋量（角速度加线速度）在 {a}、{b} 两个坐标系下满足 V_a = [Ad_Tab]·V_b；力旋量（力矩加力）则用它的转置来换算。指数积公式、雅可比推导和动力学递推里都频繁用到它。",
+   "example": "腕部六维力传感器读到的力旋量 F_s 是在传感器坐标系下表示的；要得到工具中心点坐标系下的力，用 F_tcp = [Ad_T]ᵀ·F_s 一步换算，其中 T 是工具中心点坐标系相对传感器坐标系的位姿。",
+   "related": [
+    "旋量理论",
+    "运动旋量（速度旋量）",
+    "力旋量",
+    "齐次变换矩阵",
+    "李群",
+    "指数积公式"
+   ],
+   "sources": [
+    {
+     "title": "Modern Robotics（Lynch & Park）预印本，3.3.2 节 Definition 3.20 与 Proposition 3.27",
+     "url": "http://hades.mech.northwestern.edu/images/7/7f/MR.pdf"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "臂型角（肘部自运动角）",
+   "name_en": "Arm Angle / Swivel Angle (7-DoF Redundancy Parameter)",
+   "abbr": "",
+   "aliases": [
+    "臂型角",
+    "肘部自运动角",
+    "肘部摆角",
+    "Swivel Angle",
+    "Elbow Swivel Angle"
+   ],
+   "tier": 3,
+   "one_liner": "7 自由度手臂在手的位姿固定时，肘部绕肩-腕连线转过的角度",
+   "explanation": "描述 7 自由度手臂冗余度的一个标量参数。Kreutz-Delgado 等人 1992 年在 IJRR 论文中用「手臂平面与参考平面的夹角」来参数化冗余，手臂平面由肩、肘、腕三点确定。确定末端位姿只需 6 个自由度，多出的 1 个表现为：手不动时，肘部还能绕肩-腕连线画圆，这种末端不动、关节在动的运动叫自运动。把臂型角定下来，逆运动学就有唯一的闭式解；Shimizu 等人 2008 年据此给出了考虑关节限位的 7 自由度解析逆解。人的手臂也有同样的冗余，外骨骼和遥操作研究常称之为 swivel angle。",
+   "example": "遥操作 7 自由度机械臂时，先用动捕测出操作者手臂的臂型角，再把它和手的目标位姿一起交给机械臂逆解，让机械臂的肘部姿态跟人一致；已有研究在 KUKA LWR4+ 的遥操作中这样利用人手臂的肘部臂型角。",
+   "related": [
+    "七自由度机械臂",
+    "运动学冗余",
+    "零空间",
+    "解析逆解",
+    "逆运动学",
+    "动作重定向"
+   ],
+   "sources": [
+    {
+     "title": "Kreutz-Delgado, Long, Seraji: Kinematic Analysis of 7-DOF Manipulators (IJRR, 1992)",
+     "url": "https://doi.org/10.1177/027836499201100504"
+    },
+    {
+     "title": "Shimizu et al.: Analytical Inverse Kinematic Computation for 7-DOF Redundant Manipulators With Joint Limits (IEEE T-RO, 2008)",
+     "url": "https://doi.org/10.1109/tro.2008.2003266"
+    },
+    {
+     "title": "Kim & Rosen: Redundancy Resolution of the Human Arm and an Upper Limb Exoskeleton (IEEE TBME, 2012)",
+     "url": "https://doi.org/10.1109/tbme.2012.2194489"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "铰接体算法",
+   "name_en": "Articulated Body Algorithm",
+   "abbr": "ABA",
+   "aliases": [
+    "Featherstone 算法",
+    "关节体算法",
+    "Articulated-Body Algorithm",
+    "Featherstone's Algorithm"
+   ],
+   "tier": 3,
+   "one_liner": "已知关节力矩求关节加速度的 O(n) 递推算法，正动力学的经典解法",
+   "explanation": "Roy Featherstone 1983 年在 IJRR 论文中提出，也叫 Featherstone 算法。它解决正动力学：给定关节角、关节速度和关节力矩，求关节加速度。ABA 引入「铰接体惯量」，即某个连杆连同它外侧所有连杆作为一个带关节的整体所表现出的惯性，沿运动链先由根向外算速度、再由外向内累积铰接体惯量、最后由内向外算加速度，计算量只随关节数 n 线性增长。Pinocchio 等刚体动力学库都实现了它。",
+   "example": "仿真一台 7 轴机械臂的每个时间步：已知当前关节角、速度和电机输出力矩，调用 ABA（例如 Pinocchio 的 aba 函数）得到关节加速度，再做数值积分得到下一时刻的状态。",
+   "related": [
+    "正动力学",
+    "复合刚体算法",
+    "递归牛顿-欧拉算法",
+    "空间向量代数",
+    "质量矩阵",
+    "物理引擎"
+   ],
+   "sources": [
+    {
+     "title": "Featherstone: The Calculation of Robot Dynamics Using Articulated-Body Inertias (IJRR, 1983)",
+     "url": "https://doi.org/10.1177/027836498300200102"
+    },
+    {
+     "title": "Wikipedia: Featherstone's algorithm",
+     "url": "https://en.wikipedia.org/wiki/Featherstone%27s_algorithm"
+    },
+    {
+     "title": "Pinocchio GitHub README",
+     "url": "https://github.com/stack-of-tasks/pinocchio"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "跳跃步态",
+   "name_en": "Bound Gait",
+   "abbr": "",
+   "aliases": [
+    "跳跑步态",
+    "Bounding",
+    "Bounding Gait"
+   ],
+   "tier": 3,
+   "one_liner": "四足两条前腿一起着地、两条后腿一起着地，前后交替的奔跑步态",
+   "explanation": "四足动物和四足机器人的一种对称步态。四条腿分成前后两对：两条前腿同时着地、同时抬起，两条后腿也一样，前后两对交替支撑，中间通常夹着全身离地的腾空相，一个周期依次是前腿支撑、腾空、后腿支撑、腾空。它常和对角小跑（对角两条腿成对）、踱步（同侧两条腿成对）、弹跳（四条腿同步）放在一起比较，控制时身体会有明显的俯仰摆动。它适合高速奔跑，MIT Cheetah 2 就用它做过高速实验；强化学习运控里也常把它作为可以用指令切换的步态之一。",
+   "example": "MIT Cheetah 2 在 2017 年 IJRR 论文中用跳跃步态在不拴线的三维实验里跑到最高 6.4 m/s；Walk These Ways 策略可以按指令在对角小跑、弹跳、踱步和跳跃步态之间切换。",
+   "related": [
+    "步态",
+    "对角小跑步态",
+    "踱步步态",
+    "疾驰步态",
+    "腾空相",
+    "四足机器人"
+   ],
+   "sources": [
+    {
+     "title": "Yang & Bhounsule: Koopman Operator Based Linear MPC for 2D Quadruped Trotting, Bounding, and Gait Transition (arXiv 2507.14605)",
+     "url": "https://arxiv.org/abs/2507.14605"
+    },
+    {
+     "title": "Park, Wensing, Kim: High-speed bounding with the MIT Cheetah 2 (IJRR, 2017), MIT DSpace",
+     "url": "https://dspace.mit.edu/handle/1721.1/119686"
+    },
+    {
+     "title": "Margolis & Agrawal: Walk These Ways (arXiv 2212.03238)",
+     "url": "https://arxiv.org/abs/2212.03238"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "捕获点",
+   "name_en": "Capture Point",
+   "abbr": "CP",
+   "aliases": [
+    "瞬时捕获点",
+    "捕捉点",
+    "Instantaneous Capture Point",
+    "ICP"
+   ],
+   "tier": 3,
+   "one_liner": "机器人此刻一步踩到那里就能完全停住的地面点",
+   "explanation": "由 Pratt、Carff、Drakunov、Goswami 在 2006 年 Humanoids 会议论文中提出，回答被推时「往哪儿迈一步才能停下」。在线性倒立摆模型（把机器人看成质心高度不变、支在一点上的质点）里，捕获点 ξ = x + ẋ/ω：x 是质心水平位置，ẋ 是质心水平速度，ω = √(g/h)，g 是重力加速度，h 是质心高度。它正是这个模型里会发散的那部分运动：把零力矩点放在捕获点上，质心会逐渐停下；捕获点落在脚掌以外，就必须迈步。后续工作把它发展成双足行走控制方法和「可捕获性」分析框架。",
+   "example": "设质心高 0.9 m，则 ω ≈ 3.3 /s；被推后质心以 0.5 m/s 向前运动，捕获点约在质心地面投影前方 0.15 m。若这个点已超出支撑脚掌，机器人就要往前迈一步，把脚落在捕获点附近。",
+   "related": [
+    "线性倒立摆模型",
+    "发散运动分量",
+    "零力矩点",
+    "推恢复",
+    "支撑多边形",
+    "质心力矩枢轴点"
+   ],
+   "sources": [
+    {
+     "title": "Pratt et al.: Capture Point: A Step toward Humanoid Push Recovery (Humanoids 2006)",
+     "url": "https://doi.org/10.1109/ichr.2006.321385"
+    },
+    {
+     "title": "Stéphane Caron: Capture point",
+     "url": "https://scaron.info/robotics/capture-point.html"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "小车-桌子模型",
+   "name_en": "Cart-Table Model",
+   "abbr": "",
+   "aliases": [
+    "桌子-小车模型",
+    "桌上小车模型",
+    "Cart-on-a-Table Model"
+   ],
+   "tier": 3,
+   "one_liner": "把双足机器人看成桌面上跑的小车，用来联系质心运动和零力矩点",
+   "explanation": "梶田秀司（Shuuji Kajita）等人 2003 年在 ICRA 论文中提出，用于零力矩点预观控制的步行模式生成。模型把机器人质量集中成一辆在水平桌面上跑的小车，桌子没有质量、只有一条细腿，桌腿底面相当于脚掌。零力矩点（地面反力产生的水平力矩为零的点）满足 p = x − (z_c/g)·ẍ：x 是小车即质心的水平位置，z_c 是质心高度，g 是重力加速度，ẍ 是水平加速度。小车加速太猛，零力矩点跑出桌腿底面，桌子就会翻。它和线性倒立摆是同一组方程，但写成「给定零力矩点参考求质心轨迹」，便于用预观控制利用未来的参考值。",
+   "example": "Kajita 等人在论文中用「小车-桌子模型 + 预观控制」生成步行轨迹，并用多体模型补偿简化带来的零力矩点误差，在仿真里让双足机器人走上了螺旋楼梯。",
+   "related": [
+    "零力矩点",
+    "线性倒立摆模型",
+    "ZMP 预观控制",
+    "双足行走",
+    "支撑多边形",
+    "质心"
+   ],
+   "sources": [
+    {
+     "title": "Kajita et al.: Biped walking pattern generation by using preview control of zero-moment point (ICRA 2003)",
+     "url": "https://doi.org/10.1109/robot.2003.1241826"
+    },
+    {
+     "title": "Stéphane Caron: Linear inverted pendulum model",
+     "url": "https://scaron.info/robotics/linear-inverted-pendulum-model.html"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "质心动力学",
+   "name_en": "Centroidal Dynamics",
+   "abbr": "",
+   "aliases": [
+    "质心动量动力学",
+    "Centroidal Momentum Dynamics"
+   ],
+   "tier": 3,
+   "one_liner": "只描述机器人质心和整体动量如何随外力变化的动力学",
+   "explanation": "Orin、Goswami 与 Lee 2013 年在《Autonomous Robots》论文中系统整理了这一概念：把所有连杆的动量都换算到整机质心处叠加，得到 6 维的质心动量（3 维线动量加 3 维绕质心的角动量）。它的变化率只由外力决定：线动量的变化等于各接触力之和加重力，角动量的变化等于各接触力对质心的力矩之和。这组方程对整机是精确的，不是近似，只是没把关节力矩上限、腿能伸多远等限制算进去。因为维度低，人形和四足的规划与模型预测控制常先在它上面算接触力和质心轨迹，再交给全身控制器落到每个关节。",
+   "example": "规划一次原地起跳：先在质心动力学模型里算出每只脚要蹬出多大的地面反作用力、质心和角动量怎么变化，再由全身控制器把这些目标换算成各关节的力矩。",
+   "related": [
+    "质心动量矩阵",
+    "单刚体动力学模型",
+    "角动量",
+    "全身控制",
+    "模型预测控制",
+    "接触力"
+   ],
+   "sources": [
+    {
+     "title": "Orin, Goswami, Lee: Centroidal dynamics of a humanoid robot (Autonomous Robots, 2013)",
+     "url": "https://doi.org/10.1007/s10514-013-9341-4"
+    },
+    {
+     "title": "Underactuated Robotics（Tedrake）: Highly-articulated Legged Robots 一章",
+     "url": "https://underactuated.mit.edu/humanoids.html"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "质心力矩枢轴点",
+   "name_en": "Centroidal Moment Pivot",
+   "abbr": "CMP",
+   "aliases": [
+    "质心力矩支点"
+   ],
+   "tier": 3,
+   "one_liner": "过质心作地面反作用力的平行线，与地面的交点",
+   "explanation": "由 Herr、Hofmann、Popovic 等人在 2003–2004 年提出（Goswami 等人独立提出过同一个点），2005 年的 IJRR 论文统一了定义：过质心作一条平行于地面反作用力的直线，它与地面的交点就是 CMP。若地面反作用力正好穿过质心（绕质心力矩为零），CMP 与零力矩点重合；两者分开，说明身体绕质心受到力矩、整体角动量在变，分开的距离等于该力矩的水平分量除以地面反力的竖直分量。零力矩点不能离开支撑区域，CMP 可以，所以它常用来描述挥臂、转体这类靠角动量保持平衡的策略。",
+   "example": "Popovic 等人测量人在平地上正常行走，发现 CMP 始终没有离开支撑区域，与零力矩点的平均距离只有脚长的 14% 左右，说明人走路时会把绕质心的角动量控制得很小。",
+   "related": [
+    "零力矩点",
+    "压力中心",
+    "角动量",
+    "捕获点",
+    "质心动力学",
+    "推恢复"
+   ],
+   "sources": [
+    {
+     "title": "Popovic, Goswami, Herr: Ground Reference Points in Legged Locomotion（IntechOpen 开放获取版）",
+     "url": "https://www.intechopen.com/chapters/50"
+    },
+    {
+     "title": "Popovic, Goswami, Herr: Ground Reference Points in Legged Locomotion (IJRR, 2005)",
+     "url": "https://doi.org/10.1177/0278364905058363"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "质心动量矩阵",
+   "name_en": "Centroidal Momentum Matrix",
+   "abbr": "CMM",
+   "aliases": [
+    "A_G 矩阵"
+   ],
+   "tier": 3,
+   "one_liner": "把全身关节速度映射成质心线动量和角动量的矩阵",
+   "explanation": "Orin 与 Goswami 2008 年在 IROS 论文中专门分析了它的结构：机器人的质心动量 h_G（线动量加绕质心的角动量，共 6 维）是广义速度 q̇ 的线性函数，h_G = A_G(q)·q̇，A_G 就是质心动量矩阵，q 是包括浮动基在内的全部广义坐标。它曾被分别叫作雅可比矩阵和惯性矩阵，论文指出它其实是两者的乘积。对 h_G 求导得 ḣ_G = A_G·q̈ + Ȧ_G·q̇，全身控制就能把期望的动量变化写成关节加速度的线性约束，放进二次规划求解。Pinocchio 里用 ccrba 函数计算它。",
+   "example": "一台有 30 个关节的人形机器人，加上浮动基的 6 个自由度，q̇ 是 36 维，A_G 就是 6×36 的矩阵；平衡控制时要求 A_G·q̈ + Ȧ_G·q̇ 等于期望的动量变化率，再和其他任务一起交给二次规划求解。",
+   "related": [
+    "质心动力学",
+    "角动量",
+    "雅可比矩阵",
+    "质量矩阵",
+    "全身控制",
+    "浮动基"
+   ],
+   "sources": [
+    {
+     "title": "Orin & Goswami: Centroidal Momentum Matrix of a humanoid robot: Structure and properties (IROS 2008)",
+     "url": "https://doi.org/10.1109/iros.2008.4650772"
+    },
+    {
+     "title": "Underactuated Robotics（Tedrake）: Highly-articulated Legged Robots 一章",
+     "url": "https://underactuated.mit.edu/humanoids.html"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "恢复系数",
+   "name_en": "Coefficient of Restitution",
+   "abbr": "COR",
+   "aliases": [
+    "碰撞恢复系数",
+    "Restitution"
+   ],
+   "tier": 3,
+   "one_liner": "碰撞后分离速度与碰撞前接近速度之比，衡量碰撞有多「弹」",
+   "explanation": "描述碰撞弹性的经验参数，常记作 e，一般追溯到牛顿提出的碰撞定律：e = 碰撞后两物体的相对分离速度 ÷ 碰撞前的相对接近速度。e = 1 是完全弹性碰撞，动能不损失；e = 0 是完全非弹性碰撞，物体不反弹；实际碰撞介于两者之间。在机器人里它主要出现在两处：一是足式机器人落脚、机械手抓取瞬间的碰撞建模；二是物理引擎的材质参数，Isaac Lab 的刚体材质就有 restitution 一项，与静摩擦、动摩擦系数并列，训练时常一起做域随机化，避免策略只适应某一种弹性的地面或物体。",
+   "example": "小球从 1 m 高处落到地面、弹回 0.64 m，则 e = √(0.64/1) = 0.8。Isaac Lab 的 randomize_rigid_body_material 会在给定范围内随机采样静摩擦、动摩擦和恢复系数。",
+   "related": [
+    "碰撞冲击",
+    "物理引擎",
+    "接触模型",
+    "域随机化",
+    "动力学随机化",
+    "摩擦系数"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Coefficient of restitution",
+     "url": "https://en.wikipedia.org/wiki/Coefficient_of_restitution"
+    },
+    {
+     "title": "Isaac Lab API: isaaclab.envs.mdp（randomize_rigid_body_material）",
+     "url": "https://isaac-sim.github.io/IsaacLab/main/source/api/lab/isaaclab.envs.mdp.html"
+    },
+    {
+     "title": "Isaac Lab API: isaaclab.sim.spawners（RigidBodyMaterialCfg.restitution）",
+     "url": "https://isaac-sim.github.io/IsaacLab/main/source/api/lab/isaaclab.sim.spawners.html"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "复合刚体算法",
+   "name_en": "Composite Rigid Body Algorithm",
+   "abbr": "CRBA",
+   "aliases": [
+    "组合刚体算法",
+    "CRB 算法",
+    "Composite-Rigid-Body Algorithm"
+   ],
+   "tier": 3,
+   "one_liner": "把关节外侧连杆合成一个刚体来高效计算质量矩阵的算法",
+   "explanation": "用来计算关节空间质量矩阵 M(q) 的递推算法，M 描述关节加速度与所需关节力矩之间的惯性关系，方法一般追溯到 Walker 与 Orin 1982 年的论文。核心想法是：对第 i 个关节，把它外侧的所有连杆看成锁死在一起的复合刚体，这个复合体的惯量直接给出 M 中与该关节相关的元素；复合惯量可以从末端往根部逐级累加。算出 M 后，再用递归牛顿-欧拉算法求出科里奥利、离心和重力项 c，解 M·q̈ = τ − c 就完成正动力学。它和铰接体算法是正动力学的两条常见路线。",
+   "example": "MuJoCo 每个仿真步用 CRB 算法得到关节空间质量矩阵 M，用 RNE 算法（加速度置零）得到包含科里奥利、离心和重力的偏置力，再结合约束求解得到加速度；Pinocchio 里对应的函数是 crba。",
+   "related": [
+    "质量矩阵",
+    "铰接体算法",
+    "递归牛顿-欧拉算法",
+    "正动力学",
+    "运动学树",
+    "MuJoCo"
+   ],
+   "sources": [
+    {
+     "title": "MuJoCo 文档: Computation",
+     "url": "https://mujoco.readthedocs.io/en/stable/computation/index.html"
+    },
+    {
+     "title": "Walker & Orin: Efficient Dynamic Computer Simulation of Robotic Mechanisms (1982)",
+     "url": "https://doi.org/10.1115/1.3139699"
+    },
+    {
+     "title": "Pinocchio 项目主页（CRBA 等算法列表）",
+     "url": "https://stack-of-tasks.github.io/pinocchio/"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "接触雅可比",
+   "name_en": "Contact Jacobian",
+   "abbr": "",
+   "aliases": [
+    "约束雅可比",
+    "Constraint Jacobian"
+   ],
+   "tier": 3,
+   "one_liner": "把关节速度映射成接触点速度、把接触力映射回关节力矩的矩阵",
+   "explanation": "雅可比矩阵在接触点上的特例，常记作 J_c(q)。它有两种用法：一是 v_c = J_c(q)·q̇，由关节（含浮动基）速度 q̇ 得到接触点速度，脚掌不打滑就意味着 J_c·q̇ = 0；二是它的转置把接触力 λ 换算成各关节上的广义力，出现在动力学方程 M(q)·q̈ + C(q,q̇)·q̇ = τ_g(q) + B·u + J_cᵀ·λ 中（M 为质量矩阵，C 为科里奥利与离心项，τ_g 为重力项，B·u 为电机输入）。物理引擎里对应更一般的约束雅可比，MuJoCo 文档说它把关节空间的运动量映射到约束空间。全身控制和仿真接触求解都要用到它。",
+   "example": "四足机器人支撑相时，控制器先规划出每只支撑脚应提供的地面反作用力，再乘以这条腿接触雅可比的转置，换算成髋、膝关节该输出的力矩（这是忽略腿部质量时的常用近似）。",
+   "related": [
+    "雅可比矩阵",
+    "接触力",
+    "地面反作用力",
+    "全身控制",
+    "接触力优化",
+    "浮动基"
+   ],
+   "sources": [
+    {
+     "title": "Underactuated Robotics（Tedrake）: Multi-Body Dynamics 一章",
+     "url": "https://underactuated.mit.edu/multibody.html"
+    },
+    {
+     "title": "MuJoCo 文档: Computation",
+     "url": "https://mujoco.readthedocs.io/en/stable/computation/index.html"
+    }
+   ],
+   "as_of": ""
+  }
+ ]
+}

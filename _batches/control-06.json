@@ -1,0 +1,197 @@
+{"category": "control", "batch": 6, "terms": [
+{
+"name_zh": "实时控制",
+"name_en": "Real-Time Control",
+"abbr": "",
+"aliases": ["实时控制回路", "实时控制循环"],
+"tier": 2,
+"one_liner": "控制程序按固定周期读传感器、算指令、发给电机，每一拍都必须准时完成。",
+"explanation": "实时控制指控制程序按固定周期（如每 1 毫秒）读取传感器、计算指令并下发给电机，而且每个周期都必须在截止时间前完成。这里的实时强调准时、可预期，而不是算得快：硬实时系统错过一次截止时间就算失败，软实时只会让效果变差。例如 Franka 机械臂的 libfranka 以 1 kHz 执行用户的控制回调，官方要求工作站使用 PREEMPT_RT 实时内核、以实时优先级运行控制程序。具身智能系统里常见的分工是：VLA 等大模型以几到几十 Hz 推理出目标，底层关节控制在实时回路里以数百到上千 Hz 跟踪。",
+"example": "用 libfranka 给 Franka FR3 做力矩控制时，回调函数每 1 毫秒被调用一次，读入机器人状态、返回 7 个关节力矩；如果电脑卡顿导致连续 20 个以上数据包丢失，控制回路会抛出 communication_constraints_violation 并停止。",
+"related": ["控制频率", "硬实时", "实时操作系统", "实时内核补丁", "时间抖动", "控制延迟"],
+"sources": [
+{"title": "Wikipedia: Real-time computing", "url": "https://en.wikipedia.org/wiki/Real-time_computing"},
+{"title": "Franka FCI 文档：libfranka Overview（1 kHz 控制回路、丢包处理）", "url": "https://frankarobotics.github.io/docs/doc/libfranka/docs/overview.html"},
+{"title": "Franka FCI 文档：Setting up the Real-Time Kernel", "url": "https://frankarobotics.github.io/docs/doc/libfranka/docs/real_time_kernel.html"}
+],
+"as_of": ""
+},
+{
+"name_zh": "重规划",
+"name_en": "Replanning",
+"abbr": "",
+"aliases": ["在线重规划", "动态重规划"],
+"tier": 2,
+"one_liner": "执行途中根据新情况重新计算路径或步骤，而不是按原计划一条路走到底。",
+"explanation": "重规划指机器人在执行过程中因环境变化、执行出错或获得新信息，重新计算剩余的路径、轨迹或任务步骤。事先算好的计划默认世界不变，但现实中会冒出新障碍、物体被碰歪、抓取失败，照原计划走下去就会失败。它出现在各个层级：导航中，ROS 2 导航栈 Nav2 的默认行为树以 1 Hz 周期性重算全局路径；控制中，模型预测控制每个周期都重新求解一小段未来动作，可以看作高频的重规划；任务层面，Inner Monologue 把成功检测、场景描述等反馈交给大语言模型，让它在失败后调整下一步。",
+"example": "用 Nav2 导航的移动机器人按路径去厨房，途中有人把椅子挪进走廊；代价地图更新后，下一轮重规划给出绕开椅子的新路径，路径算不出来时再触发清空代价地图、原地旋转、后退等恢复动作。",
+"related": ["失败恢复", "模型预测控制", "D* / D* Lite", "闭环", "行为树", "大模型任务规划"],
+"sources": [
+{"title": "Nav2 默认行为树 navigate_to_pose_w_replanning_and_recovery.xml（1 Hz 重规划）", "url": "https://github.com/ros-navigation/navigation2/blob/main/nav2_bt_navigator/behavior_trees/navigate_to_pose_w_replanning_and_recovery.xml"},
+{"title": "Inner Monologue: Embodied Reasoning through Planning with Language Models", "url": "https://arxiv.org/abs/2207.05608"}
+],
+"as_of": ""
+},
+{
+"name_zh": "强化学习运控",
+"name_en": "RL-based Locomotion Control",
+"abbr": "",
+"aliases": ["RL 运控", "基于强化学习的运动控制"],
+"tier": 2,
+"one_liner": "在仿真里用强化学习训练神经网络，直接控制腿足机器人行走的方法。",
+"explanation": "强化学习运控指用强化学习（在试错中最大化奖励）训练神经网络控制器，让四足、人形等腿足机器人行走、奔跑、摔倒后起身。典型流程是：在 Isaac Gym、Isaac Lab 等 GPU 仿真器里并行跑数千个机器人，用 PPO 训练；策略以约 50 Hz 输出关节目标角度，由关节 PD 控制器换算成力矩；再借域随机化、执行器建模等手段跨过虚实差距部署到真机。ETH 的 Hwangbo 等人 2019 年在 ANYmal 四足上验证了这条路线，Rudin 等人 2021 年用单块 GPU 把平地行走的训练缩短到 4 分钟以内。相比 MPC 加全身控制等基于模型的方法，它不用手写步态和精确模型、对复杂地形更鲁棒，但依赖奖励设计和大量调参。",
+"example": "在宇树开源的 unitree_rl_gym 里训练 Go2：仿真步长 5 毫秒、每 4 步更新一次动作，即策略每 20 毫秒输出 12 个关节的目标角度，底层用 Kp=20、Kd=0.5 的 PD 控制跟踪，训练好后导出网络部署到真机。",
+"related": ["腿足运动", "仿真到现实迁移", "域随机化", "近端策略优化", "刚度与阻尼增益", "速度指令跟踪"],
+"sources": [
+{"title": "Learning agile and dynamic motor skills for legged robots (Hwangbo et al., Science Robotics 2019)", "url": "https://arxiv.org/abs/1901.08652"},
+{"title": "Learning to Walk in Minutes Using Massively Parallel Deep Reinforcement Learning (Rudin et al.)", "url": "https://arxiv.org/abs/2109.11978"},
+{"title": "unitree_rl_gym：Go2 训练配置", "url": "https://github.com/unitreerobotics/unitree_rl_gym/blob/main/legged_gym/envs/go2/go2_config.py"}
+],
+"as_of": "2026-09"
+},
+{
+"name_zh": "基于采样的规划",
+"name_en": "Sampling-Based Planning",
+"abbr": "",
+"aliases": ["采样式规划", "基于采样的运动规划"],
+"tier": 2,
+"one_liner": "在构型空间里随机撒点、用碰撞检测筛选后连成无碰路径的一类运动规划方法。",
+"explanation": "基于采样的规划是运动规划（找一条从起点到终点且不碰撞的运动）中的主流方法之一。LaValle 的教材《Planning Algorithms》把它的思路概括为：不显式构造会碰撞的构型集合，而是在构型空间（所有关节角组成的空间）里随机采样，把每个点和每段连线交给碰撞检测模块当黑箱判断。代表算法有先建路网、可反复查询的概率路线图 PRM，从起点长树、单次查询的快速扩展随机树 RRT，以及渐近最优的 RRT*、PRM*。它擅长 6–7 自由度机械臂这类高维问题，但只有概率完备性（采样足够多时找到解的概率趋于 1），路径往往曲折，需要再做平滑和时间参数化。开源库 OMPL 实现了其中大部分算法。",
+"example": "让 7 自由度机械臂把手从桌面上方伸进柜子：RRT-Connect 从起点和终点各长一棵随机树，两棵树接上即得到一条无碰路径，再经路径平滑去掉多余拐弯后执行。",
+"related": ["运动规划", "快速扩展随机树", "概率路线图", "概率完备性", "构型空间", "OMPL"],
+"sources": [
+{"title": "LaValle, Planning Algorithms, Chapter 5: Sampling-Based Motion Planning", "url": "https://lavalle.pl/planning/ch5.pdf"},
+{"title": "OMPL: Available Planners", "url": "https://ompl.kavrakilab.org/planners.html"}
+],
+"as_of": ""
+},
+{
+"name_zh": "自碰撞检测",
+"name_en": "Self-Collision Checking",
+"abbr": "",
+"aliases": ["自碰撞", "自碰撞检查"],
+"tier": 2,
+"one_liner": "判断机器人在某个姿态下，自己的连杆之间会不会相互撞上。",
+"explanation": "自碰撞检测是碰撞检查的一种，只判断机器人自身各连杆之间在某个关节构型下是否相交，比如双臂互撞、手臂打到躯干、两腿相碰。它与对环境障碍物的检查一起用在运动规划、逆运动学求解和遥操作中，也可作为运行时的安全监控。为节省计算，通常先用允许碰撞矩阵排除不必检查的连杆对：MoveIt Setup Assistant 默认随机采样 10000 个构型，把相邻、永不相碰、总是相碰的连杆对标记出来写入 SRDF。它与碰撞检测（本体安全）不同：后者靠力矩或动量观测器发现已经发生的碰撞，自碰撞检测是在几何上提前判断。",
+"example": "Franka 的 FR3 Duo 双臂配置启动时会自动运行自碰撞监控节点，默认在连杆周围留 0.045 米安全余量，两臂靠得过近就在 collision_detected 话题上发布警报，并打印是哪两个连杆。",
+"related": ["碰撞检查", "碰撞检测（本体安全）", "语义机器人描述格式", "碰撞体", "双臂操作", "MoveIt"],
+"sources": [
+{"title": "MoveIt Setup Assistant Tutorial: Generate Self-Collision Matrix", "url": "https://moveit.picknik.ai/main/doc/examples/setup_assistant/setup_assistant_tutorial.html"},
+{"title": "Franka FCI 文档：franka_selfcollision", "url": "https://frankarobotics.github.io/docs/doc/franka_ros2_jazzy/franka_selfcollision/doc/index.html"}
+],
+"as_of": "2026-09"
+},
+{
+"name_zh": "伺服使能（上使能 / 下使能）",
+"name_en": "Servo Enable (Servo ON / OFF)",
+"abbr": "",
+"aliases": ["使能", "上使能", "下使能", "Servo ON", "Enable Operation"],
+"tier": 2,
+"one_liner": "让电机驱动器进入可出力状态（上使能）或切断输出（下使能）的操作。",
+"explanation": "伺服使能指让电机驱动器从通电但不出力，切换到闭环工作、按指令输出力矩的状态，俗称上使能；反过来断开输出叫下使能。以工业总线常用的 CiA 402 驱动规范为例，驱动器内部有一个状态机，上位机要通过控制字依次发出 Shutdown、Switch on、Enable operation 命令，驱动器进入 Operation enabled 后才接受位置、速度或力矩设定值；出错会进入 Fault 状态，需先复位。显式使能是为了防止上电瞬间电机乱动。下使能后电机不再出力，没有抱闸的关节会在重力下落下，所以人形和腿足机器人上下使能时通常挂在吊架上。",
+"example": "调试 EtherCAT 关节模组时，上位机先读状态字确认处于 Switch on disabled，再依次发 Shutdown、Switch on、Enable operation，状态字变为 Operation enabled 后开始周期性发送目标位置；调试结束先让关节回到安全姿态，再下使能。",
+"related": ["CANopen / CiA 402 驱动协议", "电机驱动器", "抱闸", "安全扭矩关断", "周期同步位置 / 速度 / 力矩模式（CSP / CSV / CST）", "吊装架（安全吊架）"],
+"sources": [
+{"title": "ethercat_driver_ros2: CANopen over EtherCAT for electrical drives（CiA402 状态机）", "url": "https://icube-robotics.github.io/ethercat_driver_ros2/developer_guide/cia402_drive.html"}
+],
+"as_of": ""
+},
+{
+"name_zh": "软限位",
+"name_en": "Soft Limits (Software Joint Limits)",
+"abbr": "",
+"aliases": ["软件限位", "虚拟墙", "工作空间限制"],
+"tier": 2,
+"one_liner": "在机械极限之内由软件设定的更保守的运动边界，先于机械止挡拦住机器人。",
+"explanation": "软限位是控制软件设定的运动边界，比关节机械极限（硬限位、限位块）更靠里，让机器人在撞到机械止挡前就被软件拦下。关节层面，URDF 可在 safety_controller 标签里写 soft_lower_limit / soft_upper_limit，ros2_control 的说明是：关节到达这个边界时安全控制器开始限制其位置，k_position、k_velocity 决定允许的速度和力矩收紧得多快。笛卡尔层面，很多机械臂控制器支持设定末端不能越过的平面或区域，俗称虚拟墙。强化学习运控里，legged_gym 用 soft_dof_pos_limit 按比例缩小 URDF 的关节范围，超出部分给负奖励，让策略学会远离极限。",
+"example": "某关节机械范围是 ±170°，软件把软限位设为 ±165°；遥操作时操作员把手柄推到底，关节也会在 165° 附近停住，不会撞上机械止挡。",
+"related": ["关节限位", "力矩限幅", "保护性停止", "工作空间", "统一机器人描述格式", "功能安全"],
+"sources": [
+{"title": "ros2_control joint_limits.hpp：SoftJointLimits（来自 URDF safety_controller）", "url": "https://github.com/ros-controls/ros2_control/blob/master/joint_limits/include/joint_limits/joint_limits.hpp"},
+{"title": "legged_gym legged_robot_config.py：soft_dof_pos_limit", "url": "https://github.com/leggedrobotics/legged_gym/blob/master/legged_gym/envs/base/legged_robot_config.py"}
+],
+"as_of": ""
+},
+{
+"name_zh": "阶跃响应指标（超调 / 调节时间 / 稳态误差）",
+"name_en": "Step Response Metrics (Overshoot / Settling Time / Steady-State Error)",
+"abbr": "",
+"aliases": ["超调量", "调节时间", "稳态误差", "上升时间", "阶跃响应性能指标"],
+"tier": 2,
+"one_liner": "目标突然改变时，衡量输出多快、多稳、多准到达目标的几个数。",
+"explanation": "阶跃响应指标用来评价闭环控制器调得好不好：把目标值突然从一个值改成另一个值（阶跃输入），记录输出随时间的变化，读出几个数。上升时间：输出从变化量的 10% 升到 90% 所用时间；超调量：输出冲过最终值的最大幅度占变化量的百分比；调节时间：输出此后一直停在最终值附近 2%（有时取 5%）范围内所需的时间；稳态误差：足够长时间后输出与目标之差。这几项互相牵制：加大 Kp 响应更快但超调变大，加大阻尼能压住超调但变慢；纯比例控制常留稳态误差，加积分项可以消除。调关节 PD 增益、对比仿真与真机响应时都看这几项。",
+"example": "让关节从 0 rad 转到 1 rad：输出最高冲到 1.13 rad，比最终稳定值 0.98 rad 高出约 15%，即超调约 15%；0.3 秒后输出一直在 0.98 rad 上下 2% 以内，调节时间约 0.3 秒；最终差目标 0.02 rad，就是稳态误差。",
+"related": ["PID 控制", "PD 控制", "刚度与阻尼增益", "阻尼比", "积分饱和与抗饱和", "控制带宽"],
+"sources": [
+{"title": "MATLAB stepinfo 文档（RiseTime / SettlingTime / Overshoot 定义）", "url": "https://www.mathworks.com/help/control/ref/dynamicsystem.stepinfo.html"},
+{"title": "Wikipedia: Settling time", "url": "https://en.wikipedia.org/wiki/Settling_time"},
+{"title": "Wikipedia: Steady-state error", "url": "https://en.wikipedia.org/wiki/Steady-state_error"}
+],
+"as_of": ""
+},
+{
+"name_zh": "刚度与阻尼增益",
+"name_en": "Stiffness and Damping Gains",
+"abbr": "Kp/Kd",
+"aliases": ["PD 增益", "kp/kd", "P增益/D增益", "stiffness/damping"],
+"tier": 2,
+"one_liner": "关节 PD 控制里决定关节有多硬、多稳的两个系数 Kp 和 Kd。",
+"explanation": "刚度与阻尼增益是关节 PD 控制律 τ = Kp(q* − q) + Kd(q̇* − q̇) 里的两个系数：τ 是电机输出力矩，q*、q 是目标与实际关节角，q̇*、q̇ 是目标与实际角速度。Kp（单位 N·m/rad）越大，关节偏离目标时回拉的力越大，跟踪更准但更硬、碰撞冲击也更大；Kd（单位 N·m·s/rad）按速度施加阻力，抑制振荡和超调，过大会反应迟钝并放大速度噪声。这条控制律在力学上等价于关节上并联一根弹簧和一个阻尼器，所以仿真器常直接叫 stiffness / damping。强化学习运控里策略通常只输出目标角度，力矩由 PD 算出，Kp/Kd 的取值会直接影响仿真到真机的迁移。",
+"example": "unitree_rl_gym 里宇树 Go2 所有关节取 Kp=20 N·m/rad、Kd=0.5 N·m·s/rad；G1 人形的髋关节 Kp=100、膝关节 Kp=150、踝关节 Kp=40，承重大的关节给更高刚度。",
+"related": ["PD 控制", "MIT 模式", "阻抗控制", "强化学习运控", "阶跃响应指标（超调 / 调节时间 / 稳态误差）", "质量-弹簧-阻尼系统"],
+"sources": [
+{"title": "legged_gym legged_robot.py：_compute_torques（PD 力矩公式）", "url": "https://github.com/leggedrobotics/legged_gym/blob/master/legged_gym/envs/base/legged_robot.py"},
+{"title": "unitree_rl_gym：Go2 配置", "url": "https://github.com/unitreerobotics/unitree_rl_gym/blob/main/legged_gym/envs/go2/go2_config.py"},
+{"title": "unitree_rl_gym：G1 配置", "url": "https://github.com/unitreerobotics/unitree_rl_gym/blob/main/legged_gym/envs/g1/g1_config.py"}
+],
+"as_of": "2026-09"
+},
+{
+"name_zh": "系统辨识",
+"name_en": "System Identification",
+"abbr": "SysID",
+"aliases": ["系统辨识建模", "模型辨识", "参数辨识"],
+"tier": 2,
+"one_liner": "用实测的输入输出数据，反推出系统的数学模型和参数。",
+"explanation": "系统辨识是根据实测的输入、输出数据，用统计方法建立动态系统数学模型的学问，也包括如何设计实验以采到信息量足的数据。按先验知识多少分三类：白箱（完全由物理定律推导）、灰箱（结构已知、参数靠数据拟合，如辨识连杆质量、惯量和关节摩擦）、黑箱（只拟合输入输出关系，如用神经网络）。在具身智能里它是缩小虚实差距的主要手段之一：把真机测得的参数写回仿真器，或学一个模型补上仿真缺失的部分。Hwangbo 等人 2019 年在 ANYmal 上先辨识机器人物理参数，再用真机数据训练执行器网络来模拟电机与底层软件的动态。它和域随机化互补：前者让仿真更准，后者让策略对剩余误差更鲁棒。",
+"example": "给机器人某个关节施加正弦扫频力矩，记录角度和角速度，用最小二乘拟合出转动惯量、黏性摩擦和库仑摩擦系数，再写回 MuJoCo 模型，让仿真里同一指令下的关节轨迹与真机对齐。",
+"related": ["动力学参数辨识", "执行器建模", "虚实差距", "域随机化", "现实到仿真", "惯性参数"],
+"sources": [
+{"title": "Wikipedia: System identification", "url": "https://en.wikipedia.org/wiki/System_identification"},
+{"title": "Learning agile and dynamic motor skills for legged robots（执行器网络）", "url": "https://arxiv.org/abs/1901.08652"}
+],
+"as_of": ""
+},
+{
+"name_zh": "任务与运动规划",
+"name_en": "Task and Motion Planning",
+"abbr": "TAMP",
+"aliases": ["集成任务与运动规划", "任务-运动联合规划"],
+"tier": 2,
+"one_liner": "把先做哪些动作和每个动作具体怎么动放在一起联合求解的规划方法。",
+"explanation": "任务与运动规划（TAMP）同时决定两类问题：离散的任务层（先动哪个物体、放到哪、按什么顺序）和连续的运动层（抓取位姿、放置位置、无碰撞的手臂轨迹）。Garrett、Kaelbling、Lozano-Pérez 等人 2021 年发表的综述指出，它横跨离散任务规划、离散-连续数学规划和连续运动规划，单靠其中任何一个领域都解决不好。原因是两层相互依赖：符号上可行的计划可能因为够不着或被挡住而执行不了，只做运动规划又处理不了长序列决策。代表工具 PDDLStream 在 PDDL 上扩展出「流」，把逆运动学、抓取采样、碰撞检查等过程当作黑箱采样器调用。",
+"example": "让机器人把绿色方块放进柜子，但柜门口挡着一个红色方块：纯任务规划不知道红块碍事，纯运动规划找不到可行路径；TAMP 会得出先把红块挪开的计划，并同时算出挪到哪里、怎么抓、手臂怎么走。",
+"related": ["任务规划", "运动规划", "规划领域定义语言", "PDDLStream", "长程任务", "大模型任务规划"],
+"sources": [
+{"title": "Integrated Task and Motion Planning (Garrett et al., Annual Review of Control, Robotics, and Autonomous Systems 2021)", "url": "https://arxiv.org/abs/2010.01083"},
+{"title": "PDDLStream: Integrating Symbolic Planners and Blackbox Samplers via Optimistic Adaptive Planning", "url": "https://arxiv.org/abs/1802.08705"}
+],
+"as_of": ""
+},
+{
+"name_zh": "任务规划",
+"name_en": "Task Planning",
+"abbr": "",
+"aliases": ["自动规划", "AI 规划", "高层规划"],
+"tier": 2,
+"one_liner": "给定当前状态和目标，找出一串能达成目标的高层动作步骤。",
+"explanation": "任务规划是人工智能中自动规划在机器人上的应用：已知初始状态、目标和一组可用动作（每个动作有前提条件和执行效果），求出一串动作，执行完后目标成立。经典做法用 STRIPS 或 PDDL（规划领域定义语言）描述问题，交给通用规划器搜索；分层任务网络（HTN）则把大任务逐层拆成子任务。它只决定做什么、按什么顺序，不管手臂具体怎么动，后者交给运动规划，两者合起来就是任务与运动规划。近年常用大语言模型做任务规划，例如 SayCan 让语言模型提出候选技能，再用各技能的价值函数判断在当前场景下能否做成，把语言知识落到真实机器人上。",
+"example": "指令「把桌上的可乐放进冰箱」：任务规划给出走到桌边 → 抓起可乐 → 走到冰箱 → 打开冰箱门 → 放入可乐 → 关门，每一步再交给导航、抓取等底层技能执行。",
+"related": ["任务与运动规划", "规划领域定义语言", "分层任务网络", "符号规划", "大模型任务规划", "SayCan"],
+"sources": [
+{"title": "Wikipedia: Automated planning and scheduling", "url": "https://en.wikipedia.org/wiki/Automated_planning_and_scheduling"},
+{"title": "Do As I Can, Not As I Say: Grounding Language in Robotic Affordances (SayCan)", "url": "https://arxiv.org/abs/2204.01691"}
+],
+"as_of": ""
+}
+]}

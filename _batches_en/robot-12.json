@@ -1,0 +1,113 @@
+{
+  "batch": "robot-12",
+  "terms": [
+    {
+      "key": "robot-12#0",
+      "name_en": "PAL Robotics TALOS",
+      "aliases": ["TALOS"],
+      "one_liner": "A full-size research humanoid from Spain's PAL Robotics with torque control at every major joint.",
+      "explanation": "TALOS is a bipedal research humanoid that Spain's PAL Robotics introduced around 2017. It stands about 1.75 m tall, weighs about 95 kg, and has 32 degrees of freedom across its body; PAL says every major joint carries a torque sensor, with four additional six-axis force sensors at the ankles and wrists, and the joints communicate over an EtherCAT bus (an industrial real-time communication protocol). Each arm can carry about 6 kg fully extended. Its selling point is torque control — commanding how much force a joint outputs, rather than just what angle to move to — which is why European labs commonly use it to validate model-based algorithms for whole-body control, contact planning, and trajectory optimization. Compared with today's reinforcement-learning-driven humanoids, TALOS functions more like a standard reference platform for force-control research.",
+      "example": "The French lab LAAS-CNRS has used TALOS for years of experiments, and its open-source dynamics and optimal-control libraries, such as Pinocchio and Crocoddyl, have been validated on it.",
+      "related": ["Humanoid Robot", "Torque Control", "Whole-Body Control", "Joint Torque Sensor", "Crocoddyl (Contact RObot COntrol by Differential DYnamic programming Library)", "PAL Robotics TIAGo"]
+    },
+    {
+      "key": "robot-12#1",
+      "name_en": "PAL Robotics TIAGo",
+      "aliases": ["TIAGo++", "TIAGo Pro"],
+      "one_liner": "PAL Robotics' modular mobile manipulator, widely used in academic research and home-service studies.",
+      "explanation": "TIAGo is a mobile manipulator (a mobile base topped with a robot arm) from Spain's PAL Robotics. The standard version has a differential-drive base, a lift that adjusts torso height (roughly 1.1–1.45 m), a 7-degree-of-freedom arm, and a head that pans and tilts with an RGB-D camera (color plus depth). Its main selling point is modularity: it can be configured with a gripper or a dexterous hand, one arm or two (TIAGo++), and an optional series-elastic-actuator arm for torque control and safer collisions; PAL rates single-arm payload at about 3 kg excluding the end effector, and there's also an upgraded TIAGo Pro. The system runs on ROS, so many universities use it for research in navigation, grasping, human-robot interaction, and home-service tasks — it sits in the same category of research platform as PR2, Fetch, and Toyota's HSR.",
+      "example": "Researchers run ROS's Nav2 navigation stack together with MoveIt grasp planning on a TIAGo to have it pick up a cup from a kitchen counter and hand it to a person.",
+      "related": ["Mobile Manipulation", "Mobile Manipulator", "Willow Garage PR2 (Personal Robot 2)", "Fetch Robotics Fetch", "Toyota Human Support Robot", "Robot Operating System"]
+    },
+    {
+      "key": "robot-12#2",
+      "name_en": "PaXini TORA-ONE",
+      "aliases": ["TORA-ONE"],
+      "one_liner": "A humanoid robot from tactile-sensor maker PaXini, built to showcase dense, multi-axis touch sensing.",
+      "explanation": "TORA-ONE is a humanoid robot from PaXini Tech, a tactile-sensor company; its second generation was unveiled at the World Robot Conference in August 2024. According to launch reports, the robot body has 47 degrees of freedom, paired with a 26-DOF biomimetic dexterous hand, and its height adjusts from 1.46 to 1.86 m. Its standout feature is that its two hands integrate nearly 2,000 of PaXini's own ITPU multi-axis tactile sensing units, which measure pressure and fine deformation across the contact surface, with a claimed measurement precision of 0.01 N. This design targets a common weakness of vision-only robots — they can see but can't feel — for tasks like twisting open a bottle cap or squeezing something soft, where the robot needs to know how much force it's applying and whether it's slipping. PaXini also uses this tactile data to train its own visuo-tactile multimodal models.",
+      "example": "In demos, TORA-ONE uses its tactile-equipped fingers to grip fragile or soft objects, adjusting grip force in real time based on tactile feedback.",
+      "related": ["PaXini Tech", "Tactile Sensor", "PaXini PX-6AX Multi-dimensional Tactile Sensor", "Dexterous Hand", "Visuo-Tactile Fusion", "Humanoid Robot"]
+    },
+    {
+      "key": "robot-12#3",
+      "name_en": "Pollen Robotics Reachy 2",
+      "aliases": ["Reachy"],
+      "one_liner": "An open-source upper-body humanoid robot from France's Pollen Robotics, built for VR teleoperation and research.",
+      "explanation": "Reachy 2 is an open-source research humanoid that France's Pollen Robotics launched in October 2024; Hugging Face acquired Pollen in April 2025. It's an upper-body-only humanoid: two 7-degree-of-freedom arms, each able to lift about 3 kg, using Pollen's own Orbita parallel joints at the head and wrists, with parallel-jaw grippers at the ends. The head carries an RGB-D camera and a time-of-flight depth sensor, and an optional mobile base with three omnidirectional wheels and lidar can be added. The software runs on ROS 2 with a Python interface, and it ships with VR teleoperation support, making it easy to collect demonstration data for training imitation-learning policies. The full version with the mobile base has reportedly been priced at over $70,000.",
+      "example": "A researcher wears a VR headset to teleoperate a Reachy 2 folding laundry and tidying a desk, then uses the recorded data to train policies such as ACT with LeRobot.",
+      "related": ["Pollen Robotics", "Hugging Face", "Pollen Robotics Reachy Mini", "Upper-body Humanoid Robot", "VR Teleoperation", "LeRobot (Hugging Face)"]
+    },
+    {
+      "key": "robot-12#4",
+      "name_en": "Pollen Robotics Reachy Mini",
+      "aliases": ["Reachy Mini"],
+      "one_liner": "A few-hundred-dollar open-source desktop robot from Hugging Face and Pollen Robotics.",
+      "explanation": "Reachy Mini is an open-source desktop robot that Hugging Face and its newly acquired Pollen Robotics launched in July 2025. It stands about 28 cm tall, weighs about 1.5 kg, and is sold as a kit that the buyer assembles. It has no arms — just a 6-degree-of-freedom head, a body that can rotate as a whole, and two moving antennas, along with a wide-angle camera, four microphones, and a speaker, mainly for expressive, conversational human-robot-interaction AI applications. It comes in two versions: a Lite edition that must stay tethered to a computer, and a wireless edition with its own Raspberry Pi, Wi-Fi, and battery. At launch it was priced from $299 (Lite) and $449 (wireless); the current prices listed on Pollen's site are $399 and $499. It's programmed through an open-source Python SDK, and finished applications can be shared on Hugging Face.",
+      "example": "A developer wires speech recognition and a large language model into a Reachy Mini so that it turns its head toward whoever says its name and responds by moving its antennas.",
+      "related": ["Pollen Robotics", "Hugging Face", "Pollen Robotics Reachy 2", "Companion Robot", "Open-source Hardware", "Human-Robot Interaction"]
+    },
+    {
+      "key": "robot-12#5",
+      "name_en": "Qinglong (OpenLoong)",
+      "aliases": ["OpenLoong"],
+      "one_liner": "An open-source full-size humanoid “reference design” released by the Shanghai Humanoid Robot Innovation Center.",
+      "explanation": "Qinglong is a full-size bipedal humanoid robot that the National and Local Co-built Humanoid Robotics Innovation Center (also known as the Shanghai Humanoid Robot Innovation Center, operated by Humanoid Robot (Shanghai) Co., Ltd.) unveiled at the World Artificial Intelligence Conference in July 2024, positioned as an open-source “reference platform.” Published specs: 185 cm tall, 43 degrees of freedom across the body, 400 N·m of peak joint torque, and 400 TOPS (trillion operations per second) of onboard compute. Alongside the launch, the center founded the OpenLoong open-source community, publishing the full hardware design and software so universities and companies can build on the same base platform instead of each reinventing the hardware. Qinglong and Tiangong, from the Beijing Humanoid Robot Innovation Center, are frequently mentioned together as China's two leading open-source general-purpose humanoid platforms.",
+      "example": "A developer downloads Qinglong's models and control code from the OpenLoong community, tunes motion control in simulation first, and then deploys it to the real robot.",
+      "related": ["National and Local Co-built Humanoid Robotics Innovation Center (Shanghai)", "Tiangong (Beijing Humanoid Robot Innovation Center / X-Humanoid)", "Full-size Humanoid Robot", "Open-source Hardware", "Humanoid Robot"]
+    },
+    {
+      "key": "robot-12#6",
+      "name_en": "Rainbow Robotics RB-Y1",
+      "aliases": ["RB-Y1"],
+      "one_liner": "A wheeled dual-arm humanoid mobile-manipulation platform from South Korea's Rainbow Robotics.",
+      "explanation": "RB-Y1 is a wheeled humanoid robot that South Korea's Rainbow Robotics — founded by members of the KAIST team behind the HUBO humanoid, with Samsung Electronics becoming its largest shareholder after increasing its stake in early 2025 — unveiled in March 2024. Its upper body has two 7-degree-of-freedom arms, its waist is a single 6-degree-of-freedom “leg”-like torso that can bend and rise and lower, and it sits on a wheeled base below. Published specs: about 131 kg total weight, about 1.4 m tall, roughly 3 kg of single-arm payload, and a top driving speed of about 1.5 m/s. By using wheels instead of legs, it avoids the hard problem of balance control and can focus on bimanual manipulation and mobile manipulation, which is why it's commonly used as a research platform for collecting demonstration data and training policies such as VLA models.",
+      "example": "A researcher teleoperates an RB-Y1 with VR to walk it up to a table indoors, bend at the waist, and lift a box with both arms, recording the data to train an imitation-learning policy.",
+      "related": ["Rainbow Robotics", "Wheeled Humanoid Robot", "Mobile Manipulation", "Bimanual Manipulation", "Samsung Electronics", "Mobile Manipulator"]
+    },
+    {
+      "key": "robot-12#7",
+      "name_en": "RealMan RM Series Arm",
+      "aliases": ["RM65", "RM75"],
+      "one_liner": "RealMan's ultra-lightweight humanlike robot arms, with the controller built into the arm itself.",
+      "explanation": "The RM series comprises lightweight collaborative robot arms from Beijing-based RealMan Intelligent Technology, which the company markets as “ultra-lightweight humanlike arms.” Its flagship models are the 6-axis RM65 and the 7-axis RM75. Taking the B variant as an example, the RM65-B weighs about 7.2 kg, has a rated payload of 5 kg, and a working radius of about 610 mm; the RM75-B weighs about 7.8 kg, also has a rated payload of 5 kg, and repeats position within ±0.05 mm. Its defining feature is a controller built into the arm body itself, running on 24V DC power, giving it a high payload-to-weight ratio — which makes it easy to mount on a mobile base, a wheeled humanoid, or a dual-arm platform. Many Chinese embodied-AI companies and universities use it as the arm on their dual-arm or mobile-manipulator systems.",
+      "example": "Mounting two RM75 arms on a lift column and a mobile base is enough to assemble a dual-arm mobile manipulator for collecting teleoperation data.",
+      "related": ["RealMan Robotics", "Collaborative Robot", "6-Axis Robot Arm", "7-DoF Robot Arm", "Payload-to-Weight Ratio", "Mobile Manipulator"]
+    },
+    {
+      "key": "robot-12#8",
+      "name_en": "Rethink Robotics Baxter",
+      "aliases": ["Baxter"],
+      "one_liner": "Rethink Robotics' 2012 low-cost dual-arm collaborative robot, with an animated screen for a face.",
+      "explanation": "Baxter is a dual-arm robot that Rethink Robotics — founded by iRobot co-founder Rodney Brooks — released in 2012, priced at about $22,000, far below industrial robots of the time. It has two 7-degree-of-freedom arms whose joints use series elastic actuators (a spring placed between the motor and the load, which makes the arm “give” a bit on contact with a person); its head is a screen that displays an animated face; and workers can teach it a motion just by physically grabbing and moving the arm, with no programming required. Baxter was an early example of the “collaborative robot” concept, and because a research edition existed, it became a common platform in robot-learning labs through the 2010s. Commercially, sales fell short of expectations, and Rethink Robotics shut down in 2018, ending Baxter's production.",
+      "example": "The RoboNet dataset includes video of Baxter pushing objects around, used to train video-prediction models.",
+      "related": ["Rethink Robotics", "Rethink Robotics Sawyer", "Collaborative Robot", "Dual-arm (Bimanual) Robot", "Series Elastic Actuator", "Kinesthetic Teaching"]
+    },
+    {
+      "key": "robot-12#9",
+      "name_en": "Rethink Robotics Sawyer",
+      "aliases": ["Sawyer"],
+      "one_liner": "Rethink Robotics' 2015 single-arm 7-DOF collaborative robot arm.",
+      "explanation": "Sawyer is the single-arm collaborative robot Rethink Robotics released in 2015, following Baxter. It has 7 degrees of freedom and a 4 kg payload, and is smaller, faster, and more precise than Baxter, while keeping the same screen-based head and Intera graphical programming software, plus support for kinesthetic (hand-guided) teaching. After Rethink Robotics shut down in 2018, the German HAHN Group acquired the intellectual property and trademarks for Sawyer and Intera and continued developing and selling them. In robot-learning research, Sawyer was a common arm in labs such as Berkeley and Stanford in the late 2010s, and appears in datasets and benchmarks such as RoboNet and Meta-World, where the simulated arm model is Sawyer's.",
+      "example": "All 50 manipulation tasks in the Meta-World benchmark — opening a drawer, pressing a button, and so on — are defined on a simulated Sawyer arm.",
+      "related": ["Rethink Robotics", "Rethink Robotics Baxter", "Collaborative Robot", "7-DoF Robot Arm", "Meta-World", "RoboNet: Large-Scale Multi-Robot Learning"]
+    },
+    {
+      "key": "robot-12#10",
+      "name_en": "Robot Vacuum Cleaner",
+      "aliases": ["Robovac"],
+      "one_liner": "A home robot that autonomously navigates and vacuums or mops floors — the most common consumer robot by far.",
+      "explanation": "A robot vacuum is a wheeled home service robot that plans its own route and vacuums or mops as it goes. The first mass-produced model was Electrolux's Trilobite in 2001, but the one that actually caught on was iRobot's Roomba in 2002, which in its early versions simply bounced off obstacles and turned randomly. Today's mainstream models use lidar or vision to do SLAM (building a map of the space and tracking their own position while moving), plan a coverage path room by room, and use structured light or cameras to detect obstacles; many docking stations can now empty the dustbin and wash the mop automatically. It's the best-selling category of home robot by far, and it's also a common reference point for discussing what it takes to get a robot into people's homes: mapping, obstacle avoidance, and autonomous docking are all mature technologies, but actually tidying up objects remains hard — in recent years some manufacturers have started adding robot arms to vacuums.",
+      "example": "A typical use: the vacuum first circles the home once, building a floor plan with lidar; the user marks off-limits zones in the app; after that, it cleans room by room on its own and returns to dock automatically when done.",
+      "related": ["Service Robot", "Consumer-Grade Robot", "Simultaneous Localization and Mapping", "Coverage Path Planning", "LiDAR (Light Detection and Ranging)", "Autonomous Docking and Recharging"]
+    },
+    {
+      "key": "robot-12#11",
+      "name_en": "RobotEra L7",
+      "aliases": ["STAR L7"],
+      "one_liner": "RobotEra's 2025 full-size bipedal humanoid, with 55 degrees of freedom across its body.",
+      "explanation": "L7 is a full-size bipedal humanoid robot that RobotEra — an embodied-AI company with roots at Tsinghua University — released on July 22, 2025. Published specs: 171 cm tall, 65 kg (excluding the dexterous hands), and 55 degrees of freedom across the body: 2 in the neck, 7 in each arm, 3 in the waist, 6 in each leg, and 12 in each dexterous hand. Its self-developed joint actuator modules deliver 400 N·m of peak torque, its arms together can carry 20 kg, and RobotEra says it can run at up to 4 m/s. L7 is driven by the company's own end-to-end VLA model, ERA-42, and at launch it demonstrated both highly dynamic moves like street dance and fine manipulation such as screwing in bolts and sorting parts — positioned as a general-purpose humanoid that can both move athletically and do real work.",
+      "example": "At the launch event, L7 both performs a street-dance routine and, at a workstation, uses its dexterous hands to screw in bolts and sort parts.",
+      "related": ["RobotEra", "ERA-42 (Robot Era end-to-end native robot model)", "RobotEra STAR1", "RobotEra XHAND1", "Full-size Humanoid Robot", "Humanoid Robot"]
+    }
+  ]
+}

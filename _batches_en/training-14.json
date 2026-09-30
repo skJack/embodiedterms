@@ -1,0 +1,231 @@
+{
+  "batch": "training-14",
+  "terms": [
+    {
+      "key": "training-14#0",
+      "name_en": "Meta-Learning",
+      "aliases": [
+        "Learning to Learn"
+      ],
+      "one_liner": "Training a model on many tasks so it gets good at quickly learning new tasks, not just one fixed task.",
+      "explanation": "Meta-learning, also called “learning to learn,” does not train toward a single task; instead the model repeatedly goes through “see a few examples, adapt, get tested” across many related small tasks, and what it learns is an initialization, update rule, or memory mechanism that lets it adapt quickly to a new task. Common approaches fall into three families: metric-based (such as prototypical networks), model-based (using external memory or fast weights), and optimization-based. The best known is MAML, proposed by Chelsea Finn, Pieter Abbeel, and Sergey Levine in 2017, which directly trains a set of initial parameters so the model performs well on a new task after just a few steps of gradient descent on a small amount of data. Because robot data is expensive, meta-learning was long the main approach to learning skills from very few examples; one-shot imitation learning and meta-reinforcement learning both build on it, and some researchers view large models' in-context learning as a form of implicit meta-learning.",
+      "example": "Finn and colleagues (2017) used MAML for “meta-imitation learning”: the robot is meta-trained on demonstrations from many tasks, and at test time it only needs to watch a single visual demonstration of a new task to learn it end to end.",
+      "related": [
+        "Few-shot",
+        "One-shot Imitation Learning",
+        "Meta Reinforcement Learning",
+        "In-Context Learning",
+        "Transfer Learning",
+        "Multi-Task Learning"
+      ]
+    },
+    {
+      "key": "training-14#1",
+      "name_en": "Mid-training",
+      "aliases": [],
+      "one_liner": "An extra training stage between pretraining and post-training that uses more targeted data to fill in specific abilities.",
+      "explanation": "Mid-training first became popular with large language models: after large-scale pretraining and before instruction tuning and reinforcement learning, the model continues training for a while on higher-quality or more target-relevant data — math, code, long documents — often paired with learning-rate annealing and context-length extension, aiming to strengthen specific abilities without losing general foundations; a dedicated 2025 survey already maps out this stage. Embodied AI borrowed the term: an off-the-shelf vision-language model has never seen robot data, so fine-tuning it directly into a VLA gives limited results, so teams insert a transitional round in between using embodiment-related data, such as spatial reasoning, robot trajectories, or human motion aligned to robot motion. Ai2's MolmoAct released a robot dataset built specifically for mid-training, and the Chinese embodied-AI company Dexmal's DM0 likewise uses a three-stage pretraining, mid-training, post-training pipeline.",
+      "example": "EgoScale first pretrains a VLA on more than 20,000 hours of action-annotated egocentric human video, then runs one lightweight round of mid-training on a small amount of data that aligns human and robot actions; after that, it needs only minimal robot supervision to adapt to new dexterous-manipulation tasks.",
+      "related": [
+        "Pre-training",
+        "Post-training",
+        "Supervised Fine-Tuning",
+        "Vision-Language-Action Model",
+        "Data Mixture",
+        "MolmoAct"
+      ]
+    },
+    {
+      "key": "training-14#2",
+      "name_en": "Mixed-Precision Training",
+      "aliases": [
+        "bf16 Training",
+        "Half-Precision Training",
+        "Automatic Mixed Precision (AMP)"
+      ],
+      "one_liner": "Running most computation in 16-bit floating point and keeping only the sensitive parts in 32-bit, to save memory and gain speed.",
+      "explanation": "Deep learning defaults to 32-bit floating point (FP32) for storing parameters and doing computation. Mixed-precision training switches operations like matrix multiplication and convolution to a 16-bit format (FP16 or BF16), while reductions, normalization, and other numerically sensitive operations, plus the master copy of the parameters, stay in FP32. Researchers at NVIDIA and Baidu systematically proposed this approach in 2017 and introduced “loss scaling” to stop small FP16 gradients from underflowing to zero; memory use drops by nearly half, and GPU tensor cores have higher throughput for 16-bit math, so training runs faster too. BF16 has the same numeric range as FP32 and usually needs no loss scaling, so most large-model and VLA training today uses BF16. PyTorch's autocast handles most of the precision switching automatically.",
+      "example": "openpi trains the π0 family in JAX with mixed precision by default: weights and gradients are kept in FP32, while most activations and computation run in BF16; training in full FP32 is just a matter of changing the config's dtype to float32.",
+      "related": [
+        "Numerical Precision Formats (FP32 / BF16 / FP16 / FP8 / INT8)",
+        "GPU Memory (VRAM)",
+        "Distributed Training (Data / Model Parallelism)",
+        "Gradient Checkpointing",
+        "Quantization-Aware Training",
+        "openpi"
+      ]
+    },
+    {
+      "key": "training-14#3",
+      "name_en": "Model Merging",
+      "aliases": [
+        "Weight Interpolation",
+        "Weight Averaging",
+        "Model Soups",
+        "Task Arithmetic"
+      ],
+      "one_liner": "Combining several related models' parameters by weighted averaging, with no extra training required.",
+      "explanation": "Model merging combines multiple models that share the same architecture — usually all fine-tuned from the same pretrained model — directly at the parameter level, needing no extra training and adding no inference cost. The simplest version is linear interpolation: new parameters equal (1−α) times the pretrained parameters plus α times the fine-tuned parameters. Notable examples include WiSE-FT, which interpolates a zero-shot model with a fine-tuned one to preserve robustness; Model Soups, which averages the results of fine-tuning runs with different hyperparameters; and task arithmetic, which treats “fine-tuned minus pretrained” as a task vector that can be added or subtracted. In robotics it is used to fight the catastrophic forgetting caused by fine-tuning: Sergey Levine's team's 2025 RETAIN interpolates a fine-tuned π0-FAST-DROID with the original model, keeping both the new skill and the model's original generalization. Other work, however, has found that directly merging VLAs each fine-tuned on a different task can push success rate close to zero.",
+      "example": "RETAIN fine-tunes π0-FAST-DROID on a “wipe the whiteboard with an eraser” task using a few dozen demonstrations, then interpolates it with the original model at an α between 0.25 and 0.75; the merged model clearly beats the plain fine-tuned version on out-of-distribution variations such as new objects and new camera angles.",
+      "related": [
+        "Catastrophic Forgetting",
+        "Fine-tuning",
+        "Continual Learning",
+        "Low-Rank Adaptation",
+        "Exponential Moving Average",
+        "Checkpoint"
+      ]
+    },
+    {
+      "key": "training-14#4",
+      "name_en": "Monte Carlo Methods",
+      "aliases": [
+        "MC",
+        "Monte Carlo Return"
+      ],
+      "one_liner": "Estimating a value by averaging over many random samples; in RL, using a whole episode's actual return to estimate value.",
+      "explanation": "Monte Carlo methods broadly refers to any technique that approximates a computation through random sampling and averaging. In reinforcement learning it refers specifically to this: let the agent run a full episode to completion, sum up the actual (discounted) rewards received from some step onward to get the “Monte Carlo return,” then average that over many episodes to estimate the value of a state or action. It does not rely on any estimate of later states' value, so it avoids the bias that bootstrapping introduces, but variance grows with episode length, and it can only update once an episode ends, so it only applies to tasks that actually terminate. Its counterpart is temporal difference learning, which can update at every single step; TD(λ) lets you tune continuously between the two. Monte Carlo tree search borrows the same idea of random simulation.",
+      "example": "π*0.6's RECAP training uses the Monte Carlo return directly for its value function: each step costs a reward of −1, a successful finish scores 0, and a failure subtracts a large penalty, so the value roughly equals the negative of how many steps remain to complete the task.",
+      "related": [
+        "Return",
+        "Temporal Difference Learning",
+        "Value Function",
+        "Discount Factor",
+        "Monte Carlo Tree Search",
+        "RECAP"
+      ]
+    },
+    {
+      "key": "training-14#5",
+      "name_en": "Multi-Agent Reinforcement Learning",
+      "aliases": [
+        "MARL"
+      ],
+      "one_liner": "Reinforcement learning where multiple agents learn at once in a shared environment, cooperating or competing.",
+      "explanation": "Multi-agent reinforcement learning studies settings where several learning decision-makers share one environment; based on the reward relationship, it splits into fully cooperative (a shared reward), fully competitive (a zero-sum game, like chess), and mixed settings, such as self-driving cars that each want to reach their own destination while all avoiding collisions. The biggest difficulty compared to single-agent RL is non-stationarity: every other agent keeps changing its policy too, so from any one agent's perspective the environment never stops shifting, which breaks the convergence guarantees single-agent algorithms rely on; credit assignment and partial observability are additional challenges. A common approach is “centralized training, decentralized execution”: during training a critic sees global information, while at execution time each agent sees only its own local observation, as in 2017's MADDPG and 2021's MAPPO. Multi-robot collaboration, robot soccer, and adversarial self-play training all draw on this field.",
+      "example": "MAPPO controls each unit in a battle with its own PPO-based agent, and reaches results on par with or better than off-policy methods on benchmarks such as the StarCraft Multi-Agent Challenge (SMAC) and Google Research Football.",
+      "related": [
+        "Reinforcement Learning",
+        "Multi-robot Collaboration",
+        "Self-Play",
+        "Swarm Intelligence",
+        "Partially Observable Markov Decision Process",
+        "Proximal Policy Optimization"
+      ]
+    },
+    {
+      "key": "training-14#6",
+      "name_en": "Noise-Space Policy Steering",
+      "aliases": [
+        "Diffusion Noise-Space RL",
+        "Latent Noise-Space RL",
+        "Diffusion Steering"
+      ],
+      "one_liner": "Keeping a diffusion policy's weights fixed and using reinforcement learning to pick its input noise instead, changing its output.",
+      "explanation": "Diffusion and flow-matching policies generate actions by sampling a random noise vector and gradually denoising it into an action; feed the same model a different starting noise and it produces a different action. Noise-space policy steering treats that noise as a controllable “action”: it freezes the original policy and trains a small, separate reinforcement-learning policy that, given the current observation, outputs which noise to use so the original policy produces a better action. The representative method is DSRL, proposed by a UC Berkeley-led team in 2025. It only needs black-box calls to the original policy, with no backpropagation through the multi-step denoising process, and it never touches the large model's weights, so it is sample-efficient and well suited to online improvement on a real robot, including on-the-fly adaptation of general-purpose VLAs such as π0. Correspondingly, how much it can improve things is bounded by the range of actions the original policy is capable of producing in the first place.",
+      "example": "DSRL steers a public π0 checkpoint trained on DROID data to open a toaster with a Franka arm; after about 80 online episodes, success rate rises from 5/20 to 18/20.",
+      "related": [
+        "DSRL",
+        "Diffusion Policy",
+        "Flow Matching",
+        "RL Fine-Tuning",
+        "Residual Reinforcement Learning",
+        "π0"
+      ]
+    },
+    {
+      "key": "training-14#7",
+      "name_en": "Offline-to-Online Reinforcement Learning",
+      "aliases": [
+        "O2O RL",
+        "Offline-to-Online Fine-tuning"
+      ],
+      "one_liner": "Pretraining with offline reinforcement learning on existing data, then letting the robot keep improving through live interaction.",
+      "explanation": "Offline-to-online reinforcement learning happens in two stages: first, offline RL on data that already exists — human demonstrations, historical logs, or an older policy's trajectories — produces an initial policy and value function that does not have to explore from scratch; then the agent interacts with the real environment to collect new data and fine-tunes online. The benefit is skipping a lot of dangerous, expensive random exploration, which matters enormously for real robots. The hard part is the handoff between the two stages: the offline stage is deliberately conservative to avoid overestimation, so its value scale is often inaccurate, and performance commonly dips right after switching to online training. Representative methods include AWAC (2020), Calibrated Q-Learning (Cal-QL, 2023), and RLPD (2023), which mixes offline data directly into the online replay buffer and trains from scratch. Real-robot RL systems such as SERL and HIL-SERL, and π*0.6's RECAP, all follow this same two-stage idea.",
+      "example": "SERL uses RLPD as its core algorithm: it starts with 20 demonstrations teleoperated with a SpaceMouse, then trains online on the real robot, learning tasks such as PCB assembly or cable routing in 25 to 50 minutes on average.",
+      "related": [
+        "Offline Reinforcement Learning",
+        "Online Reinforcement Learning",
+        "Reinforcement Learning with Prior Data",
+        "Calibrated Q-Learning",
+        "Real-World Reinforcement Learning",
+        "SERL"
+      ]
+    },
+    {
+      "key": "training-14#8",
+      "name_en": "On-Policy Distillation",
+      "aliases": [
+        "OPD",
+        "Generalized Knowledge Distillation (GKD)"
+      ],
+      "one_liner": "Distillation where the student generates its own trajectories, and the teacher scores and corrects it at every step.",
+      "explanation": "Ordinary knowledge distillation has the student imitate data the teacher already generated, but once deployed the student runs into states that were never in the teacher's data, and errors accumulate — the same problem as compounding error in behavior cloning. On-policy distillation instead has the student generate its own samples, and the teacher gives a target distribution at every step the student actually reaches, whether that is every token or every action, usually measured with reverse KL divergence, an idea in the same spirit as DAgger. Google DeepMind's Agarwal and colleagues systematically proposed this under the name GKD in 2023; a Thinking Machines blog post in October 2025 made it widely known in large-model post-training, where its feedback is far denser than reinforcement learning's sparse reward. A 2026 paper, VLA-OPD, applies the idea to VLA post-training, replacing sparse environment reward with dense, step-by-step supervision from an expert teacher.",
+      "example": "According to the Qwen3 technical report cited in the Thinking Machines blog post, on-policy distillation scored 74.4 on AIME'24 using about 1,800 GPU-hours, while plain reinforcement learning scored only 67.6 using about 17,920 GPU-hours.",
+      "related": [
+        "Knowledge Distillation",
+        "Policy Distillation",
+        "DAgger",
+        "Teacher-Student Distillation",
+        "RL Fine-Tuning",
+        "VLA-OPD"
+      ]
+    },
+    {
+      "key": "training-14#9",
+      "name_en": "One-shot Imitation Learning",
+      "aliases": [
+        "One-shot Imitation"
+      ],
+      "one_liner": "The robot watches a new task demonstrated just once, then completes it starting from a different arrangement.",
+      "explanation": "One-shot imitation learning requires the robot, when faced with a new task, to succeed in a new situation — different object placement, different initial state — after seeing just a single demonstration, whether a teleoperated trajectory or a video. Rather than training from scratch on that one demonstration, the approach first trains a policy conditioned on a demonstration across many tasks: feed it a demonstration plus the current observation, and it outputs an action. OpenAI's Yan Duan and colleagues proposed and named this setting in 2017 on a block-stacking task; that same year Chelsea Finn and colleagues used MAML for meta-imitation learning, extending it to raw image input and verifying it on a real robot. Later work tried using human video directly as the demonstration, which also has to cross the embodiment gap between a human and a robot. In essence this is meta-learning applied to imitation learning, and it is conceptually close to large models' in-context learning.",
+      "example": "In Duan and colleagues' experiments, each task is stacking blocks on a table in some particular pattern, say all into one tower, or into several two-block towers; at test time, given one demonstration of a new pattern, the network has to reproduce that pattern with the blocks starting in new positions.",
+      "related": [
+        "Meta-Learning",
+        "Imitation Learning",
+        "Few-shot",
+        "In-Context Learning",
+        "Demonstration Data",
+        "OKAMI"
+      ]
+    },
+    {
+      "key": "training-14#10",
+      "name_en": "Ossification",
+      "aliases": [
+        "Model Ossification",
+        "Weight Ossification"
+      ],
+      "one_liner": "A model's weights seem to “freeze up,” unable to absorb new information even as more training data is added.",
+      "explanation": "The term “ossification” comes from OpenAI's Hernandez, Kaplan, and colleagues, in their 2021 paper “Scaling Laws for Transfer”: they found that with enough fine-tuning data, a small model that had been pretrained could actually fall behind a same-sized model trained from scratch, as if pretraining had “ossified” the weights into a bad initialization that was hard to escape. Embodied AI picked up the term after Generalist AI's GEN-0, released in November 2025: when pretraining at scale on real-robot data, a 1-billion-parameter model struggled to absorb complex, diverse sensorimotor data, its weights becoming unable to learn new information over time, while 6-billion- and 7-billion-parameter models kept improving. The team describes this as the first time ossification has been observed in robotics; previously it had only been seen in language models, and only at a much smaller, tens-of-millions-of-parameters scale. It is a reminder that as data scale grows, model capacity has to keep up.",
+      "example": "In GEN-0's comparison, a 1-billion-parameter model shows ossification-like stagnation when faced with large, diverse sensorimotor data, while 6-billion- and 7-billion-parameter models keep improving as pretraining data grows.",
+      "related": [
+        "Scaling Law",
+        "GEN-0",
+        "Parameter Count",
+        "Pre-training",
+        "Transfer Learning",
+        "Catastrophic Forgetting"
+      ]
+    },
+    {
+      "key": "training-14#11",
+      "name_en": "Overestimation Bias",
+      "aliases": [
+        "Q-value Overestimation",
+        "Maximization Bias"
+      ],
+      "one_liner": "Taking a max over noisy Q-value estimates systematically inflates them, biasing an agent toward overrated actions.",
+      "explanation": "Q-learning's update target includes a step that takes the maximum Q-value over all actions in the next state. Because Q-values are themselves noisy estimates, taking the max of a set of noisy numbers is biased high in expectation, and that bias then compounds across many rounds of bootstrapping, pushing the agent to favor overrated actions and degrading the policy. Thrun and Schwartz pointed this out as early as 1993. Hado van Hasselt proposed Double Q-learning, using one set of estimates to select the action and another to evaluate it, and in 2015 turned it into Double DQN with DeepMind colleagues, confirming that the original DQN showed clear overestimation on several Atari games. In continuous control, TD3 takes the smaller of two critic networks' values to suppress overestimation, and SAC does the same. In offline RL, overestimation is even worse for actions never seen in the data, which is exactly what methods like conservative Q-learning are built to handle.",
+      "example": "TD3 trains two critic networks at once and, when computing the target value, takes the smaller of the two (clipped double Q-learning), preferring a slight underestimate over an overestimate to make training more stable.",
+      "related": [
+        "Q-Learning",
+        "Deep Q-Network",
+        "Twin Delayed Deep Deterministic Policy Gradient",
+        "Target Network",
+        "Extrapolation Error",
+        "Conservative Q-Learning"
+      ]
+    }
+  ]
+}

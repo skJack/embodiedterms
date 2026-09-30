@@ -1,0 +1,427 @@
+{
+  "category": "concept",
+  "batch": 8,
+  "terms": [
+    {
+      "name_zh": "复杂地形行走",
+      "name_en": "Rough-terrain Locomotion",
+      "abbr": "",
+      "aliases": [
+        "越野行走",
+        "非结构化地形行走",
+        "复杂地形运动"
+      ],
+      "tier": 2,
+      "one_liner": "足式机器人在台阶、碎石、草地、雪地等不平整地面上稳定移动的能力。",
+      "explanation": "指腿足机器人在台阶、斜坡、碎石、泥地、雪地等不平整甚至会变形的地面上行走而不摔倒。传统做法靠人工建模和调参，地形一变就容易失效。2020 年苏黎世联邦理工（ETH）团队用强化学习在仿真里训练 ANYmal 四足：先让能看到真实地形的「教师」策略学会走，再蒸馏给只靠本体感知（关节角、IMU 等身体内部传感器）的「学生」策略，直接部署到野外；2022 年又融合了深度等外部感知，论文称在阿尔卑斯山完成了约一小时的徒步路线，用时与人类推荐时间相当。如今它是检验足式运控的基本考题，常与地形课程、域随机化一起出现。",
+      "example": "ANYmal 四足在 2022 年 Science Robotics 论文中，靠融合深度感知与本体感知的策略，走完了阿尔卑斯山一段约一小时的徒步路线。",
+      "related": [
+        "腿足运动",
+        "感知行走",
+        "盲走",
+        "地形课程",
+        "教师-学生蒸馏",
+        "仿真到现实迁移"
+      ],
+      "sources": [
+        {
+          "title": "Learning Quadrupedal Locomotion over Challenging Terrain (Lee et al., Science Robotics 2020)",
+          "url": "https://arxiv.org/abs/2010.11251"
+        },
+        {
+          "title": "Learning robust perceptive locomotion for quadrupedal robots in the wild (Miki et al., Science Robotics 2022)",
+          "url": "https://arxiv.org/abs/2201.08117"
+        },
+        {
+          "title": "Learning to Walk in Minutes Using Massively Parallel Deep Reinforcement Learning (Rudin et al., CoRL 2021)",
+          "url": "https://arxiv.org/abs/2109.11978"
+        }
+      ],
+      "as_of": "2022-01"
+    },
+    {
+      "name_zh": "场景泛化",
+      "name_en": "Scene / Environment Generalization",
+      "abbr": "",
+      "aliases": [
+        "环境泛化",
+        "新场景泛化"
+      ],
+      "tier": 2,
+      "one_liner": "策略换到没见过的房间、桌面、光照或背景里仍能完成任务。",
+      "explanation": "泛化的一个维度，考察训练好的机器人策略被搬到训练时没见过的环境——新房间、新桌面纹理、不同光照、相机位置变化、背景杂物——时还能否成功。机器人数据多在少数实验室采集，模型容易记住场景外观本身，换个厨房就失败，所以它是能否进入用户家庭的关键指标。Xie、Finn 等人 2023 年把影响因素拆成光照、相机位姿等 11 类逐一测试；π0.5（Physical Intelligence，2025）把「在全新住宅里收拾厨房和卧室」作为主要评测。常见手段是增加采集环境的数量与多样性、数据增强、与网页数据协同训练。",
+      "example": "π0.5 在训练中从未出现过的真实住宅里，完成收拾厨房、整理卧室等长程任务。",
+      "related": [
+        "泛化",
+        "物体泛化",
+        "任务泛化",
+        "视觉泛化",
+        "分布外",
+        "数据多样性"
+      ],
+      "sources": [
+        {
+          "title": "Decomposing the Generalization Gap in Imitation Learning for Visual Robotic Manipulation (Xie et al., 2023)",
+          "url": "https://arxiv.org/abs/2307.03659"
+        },
+        {
+          "title": "π0.5: a Vision-Language-Action Model with Open-World Generalization",
+          "url": "https://arxiv.org/abs/2504.16054"
+        },
+        {
+          "title": "Robot Utility Models: General Policies for Zero-Shot Deployment in New Environments",
+          "url": "https://arxiv.org/abs/2409.05865"
+        }
+      ],
+      "as_of": "2025-04"
+    },
+    {
+      "name_zh": "感知-规划-行动范式",
+      "name_en": "Sense-Plan-Act",
+      "abbr": "SPA",
+      "aliases": [
+        "感知-决策-执行",
+        "感知-规划-执行",
+        "层级式范式",
+        "Hierarchical Paradigm"
+      ],
+      "tier": 2,
+      "one_liner": "机器人先感知建模、再规划、最后执行，循环往复的经典控制流程。",
+      "explanation": "经典机器人学的三步流程：先用传感器感知环境并更新内部世界模型，再在模型上规划下一步动作，最后交给执行器执行，如此循环。20 世纪 60–70 年代斯坦福研究院（SRI）的 Shakey 机器人是代表，它用 STRIPS 规划器和 A* 搜索把指令拆成可执行步骤。缺点是依赖准确的世界模型、计算慢，环境一变就容易出错；80 年代中期 Rodney Brooks 提出不建全局模型、让感知直接驱动行为的包容架构，后来又出现两者结合的混合架构。今天的模块化方案仍沿用这一思路，端到端 VLA 则用一个网络直接把观测映射成动作。",
+      "example": "Shakey 接到「把积木推下平台」的指令后，先识别平台和坡道，再规划出「推来坡道—爬上平台—推积木」的步骤，最后逐步执行。",
+      "related": [
+        "感知-行动闭环",
+        "包容架构（行为式机器人）",
+        "分层架构",
+        "端到端",
+        "任务规划",
+        "世界模型"
+      ],
+      "sources": [
+        {
+          "title": "Robotic paradigm - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Robotic_paradigm"
+        },
+        {
+          "title": "Shakey the robot - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Shakey_the_robot"
+        },
+        {
+          "title": "Subsumption architecture - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Subsumption_architecture"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "原子技能",
+      "name_en": "Skill Primitive",
+      "abbr": "",
+      "aliases": [
+        "技能基元",
+        "原子动作",
+        "基础技能",
+        "动作基元",
+        "Action Primitive"
+      ],
+      "tier": 2,
+      "one_liner": "可复用的最小动作单元，如抓取、放置、开抽屉，组合起来完成复杂任务。",
+      "explanation": "把机器人能力拆成一组可单独调用、单独训练的基本动作，例如「抓起」「放下」「推」「打开抽屉」「移动到某处」。每个原子技能通常带参数（抓哪个物体、放到哪里），由上层的规划器或大模型按顺序调用，拼成长程任务。好处是每个技能容易单独训练和验证，也能跨任务复用；代价是技能库之外的动作做不了，技能衔接处容易出错。代表工作有谷歌的 SayCan（2022），让大语言模型从预训练技能库里挑下一步，并用各技能的价值函数判断当前是否可行；RAPS（2021）则把手工定义的参数化基元当作强化学习的动作空间，以提高探索和学习效率。",
+      "example": "「把可乐放进冰箱」可拆成：导航到桌边→抓取可乐→导航到冰箱→打开冰箱门→放置可乐→关门，每一步都是一个原子技能。",
+      "related": [
+        "长程任务",
+        "分层架构",
+        "运动基元",
+        "SayCan",
+        "大模型任务规划",
+        "动态运动基元"
+      ],
+      "sources": [
+        {
+          "title": "Do As I Can, Not As I Say: Grounding Language in Robotic Affordances (SayCan)",
+          "url": "https://arxiv.org/abs/2204.01691"
+        },
+        {
+          "title": "Accelerating Robotic Reinforcement Learning via Parameterized Action Primitives (RAPS)",
+          "url": "https://arxiv.org/abs/2110.15360"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "分拣",
+      "name_en": "Sorting (Parcel / Item Sorting)",
+      "abbr": "",
+      "aliases": [
+        "包裹分拣",
+        "物品分拣",
+        "Sortation"
+      ],
+      "tier": 2,
+      "one_liner": "识别传送带或料箱里的物品，并按目的地或类别送到不同位置。",
+      "explanation": "物流和制造里的基础作业：识别物品（读条码、看类别或外观），再把它分流到对应的格口、料箱或传送带。传统分拣靠交叉带、摆轮等固定设备加条码扫描，擅长规则纸箱；形状不规则的软包、混杂堆放的散件仍大量依赖人工。机器人分拣要先从杂乱物品中单件抓出，再判断去向并放置，涉及视觉识别、抓取规划和吸盘或夹爪的选择。它是具身智能公司最常展示的落地场景之一，例如亚马逊的 Sparrow 能在仓库里识别并抓取单件商品；Figure 在 2025 年 2 月演示人形机器人把包裹从一条传送带搬到另一条，并把面单转向扫码方向。",
+      "example": "Figure 的人形机器人用 Helix 模型在物流线上逐件抓取纸箱和软包，调整面单朝向后放上另一条传送带供扫码。",
+      "related": [
+        "无序抓取",
+        "拣选（订单拣货）",
+        "抓取放置",
+        "料箱搬运",
+        "场景落地",
+        "真空吸盘"
+      ],
+      "sources": [
+        {
+          "title": "Sortation - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Sortation"
+        },
+        {
+          "title": "Helix Accelerating Real-World Logistics (Figure AI, 2025-02-26)",
+          "url": "https://www.figure.ai/news/helix-logistics"
+        },
+        {
+          "title": "Amazon introduces Sparrow (About Amazon)",
+          "url": "https://www.aboutamazon.com/news/operations/amazon-introduces-sparrow-a-state-of-the-art-robot-that-handles-millions-of-diverse-products"
+        }
+      ],
+      "as_of": "2025-02"
+    },
+    {
+      "name_zh": "空间推理",
+      "name_en": "Spatial Reasoning",
+      "abbr": "",
+      "aliases": [
+        "空间理解",
+        "Spatial Understanding",
+        "三维空间推理"
+      ],
+      "tier": 2,
+      "one_liner": "判断物体位置、距离、大小、方向及相互关系的能力。",
+      "explanation": "指模型根据图像或视频回答「杯子在盘子左边吗」「两个物体相距多远」这类问题，涵盖相对方位、度量距离、大小比较、视角变换等。它是机器人把语言指令落到具体位置和动作上的前提。多模态大模型擅长识别「是什么」，对「在哪、多远」普遍较弱。谷歌 SpatialVLM（2024）用自动管线从 1000 万张真实图片生成 20 亿条带度量信息的空间问答训练 VLM；Thinking in Space（2024，李飞飞、谢赛宁等）提出含 5000 多道题的 VSI-Bench，发现现有模型明显不如人，而让模型先显式画出「认知地图」能提升距离判断。",
+      "example": "指令「把离你最近的红杯子放到碗的右边」，模型需先估计几个杯子离机器人的距离，再确定碗的右侧在画面中对应哪块区域。",
+      "related": [
+        "空间智能",
+        "具身推理",
+        "SpatialVLM",
+        "VSI-Bench 空间智能基准",
+        "视觉语言模型",
+        "3D视觉定位"
+      ],
+      "sources": [
+        {
+          "title": "SpatialVLM: Endowing Vision-Language Models with Spatial Reasoning Capabilities",
+          "url": "https://arxiv.org/abs/2401.12168"
+        },
+        {
+          "title": "Thinking in Space: How Multimodal Large Language Models See, Remember, and Recall Spaces (VSI-Bench)",
+          "url": "https://arxiv.org/abs/2412.14171"
+        }
+      ],
+      "as_of": "2024-12"
+    },
+    {
+      "name_zh": "专用策略",
+      "name_en": "Specialist Policy",
+      "abbr": "",
+      "aliases": [
+        "专才策略",
+        "单任务策略",
+        "专家策略",
+        "Single-task Policy"
+      ],
+      "tier": 2,
+      "one_liner": "只针对单一机器人、单一任务或单一场景训练的策略，与通用策略相对。",
+      "explanation": "为某个具体机器人、具体任务甚至具体环境单独采数据、从头训练的控制策略。过去机器人学习基本都这样做：换一台机器人或一个任务，就重新采数据、重新训一个模型。它在自己的任务上往往表现不错、所需数据也少，但难以迁移。Open X-Embodiment（2023）的对比显示，在数据少的场景下，用 22 种机器人混合数据训练的 RT-1-X 比各自只用本数据集训练的原方法平均高约 50%。现在常见做法是先预训练通用策略，再用少量本任务数据微调成专用策略。注意「专家策略」在模仿学习里也指提供示范的 expert，含义不同。",
+      "example": "只用某台 ALOHA 采集的「拧瓶盖」示范从头训练一个 ACT 策略：它在这台机器、这个任务上可用，换成叠衣服或换一台机械臂就得重新采数据、重新训练。",
+      "related": [
+        "通用策略（通才策略）",
+        "策略",
+        "微调",
+        "跨本体",
+        "RT-X",
+        "Open X-Embodiment 数据集"
+      ],
+      "sources": [
+        {
+          "title": "Open X-Embodiment: Robotic Learning Datasets and RT-X Models (project page)",
+          "url": "https://robotics-transformer-x.github.io/"
+        },
+        {
+          "title": "Open X-Embodiment: Robotic Learning Datasets and RT-X Models (arXiv)",
+          "url": "https://arxiv.org/abs/2310.08864"
+        },
+        {
+          "title": "Octo: An Open-Source Generalist Robot Policy",
+          "url": "https://arxiv.org/abs/2405.12213"
+        }
+      ],
+      "as_of": "2023-10"
+    },
+    {
+      "name_zh": "状态空间",
+      "name_en": "State Space",
+      "abbr": "",
+      "aliases": [
+        "状态",
+        "State",
+        "状态集合"
+      ],
+      "tier": 2,
+      "one_liner": "系统所有可能状态的集合；机器人里常由关节角、位姿、速度等量构成。",
+      "explanation": "在强化学习和控制里，状态是描述系统此刻情况、足以预测下一步变化的一组量，所有可能状态合起来就是状态空间。马尔可夫决策过程（MDP，强化学习的标准数学框架）把它记作 S，可以是离散的（如棋盘格子），也可以是连续的（实数向量）。机器人的状态通常包括关节角与角速度、末端位姿、夹爪开合，以及物体的位置等。真实机器人往往拿不到完整状态，只能通过相机和传感器得到「观测」，这时问题就变成部分可观测 MDP。VLA 论文里的 state 多指机器人自身的关节量，与图像一起输入模型。它和 Mamba 这类「状态空间模型」不是一回事。",
+      "example": "一台 7 自由度机械臂加平行夹爪，本体状态可以是 7 个关节角、7 个关节角速度和 1 个夹爪开度，共 15 维实数向量。",
+      "related": [
+        "观测",
+        "动作空间",
+        "马尔可夫决策过程",
+        "部分可观测马尔可夫决策过程",
+        "本体感知",
+        "状态空间模型"
+      ],
+      "sources": [
+        {
+          "title": "Markov decision process - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Markov_decision_process"
+        },
+        {
+          "title": "State space (computer science) - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/State_space_(computer_science)"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "结构化 / 非结构化环境",
+      "name_en": "Structured vs. Unstructured Environment",
+      "abbr": "",
+      "aliases": [
+        "结构化环境",
+        "非结构化环境",
+        "结构化场景",
+        "非结构化场景"
+      ],
+      "tier": 2,
+      "one_liner": "结构化环境里物品和流程固定可预知；非结构化环境杂乱多变、无法事先规定。",
+      "explanation": "描述机器人工作环境可预测程度的一对说法。结构化环境指工厂产线这类场所：工件的位置、姿态和节拍都事先设计好，机器人照固定程序重复动作即可，传统工业机器人主要在这里工作。非结构化环境指家庭、商超、户外等：物品随意摆放、会被人挪动，光照和地面变化大，还有人在走动，无法事先写死每个动作。具身智能想解决的核心问题之一，就是让机器人从结构化环境走进非结构化环境，这需要感知、泛化和实时决策，而不能只靠示教编程。两者之间还有「半结构化」场景，例如仓库货架区。",
+      "example": "汽车焊装线上每台车身都停在同一位置，属于结构化环境；家里厨房台面上的碗筷每天摆法不同、旁边还有人走动，属于非结构化环境。",
+      "related": [
+        "工业机器人",
+        "示教再现",
+        "场景泛化",
+        "开放世界",
+        "通用机器人",
+        "服务机器人"
+      ],
+      "sources": [
+        {
+          "title": "Autonomous robot - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Autonomous_robot"
+        },
+        {
+          "title": "Industrial robot - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Industrial_robot"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "桌面操作",
+      "name_en": "Tabletop Manipulation",
+      "abbr": "",
+      "aliases": [
+        "桌面场景操作"
+      ],
+      "tier": 2,
+      "one_liner": "固定在桌边的机械臂对桌上物体做抓取、推动、摆放等操作。",
+      "explanation": "机器人操作研究里最常见的实验设定：一台或两台机械臂固定在桌旁，相机从上方、侧面或手腕处看桌面，任务是对桌上物体做抓取、放置、推动、堆叠、摆图案、叠布等。它把移动和导航问题排除在外，场景好搭、便于复现，因此大量数据集和基准都基于桌面。例如 CLIPort（2021）用一个多任务策略覆盖 10 个仿真和 9 个真实桌面任务；谷歌 Language-Table 收集了近 60 万条带语言标注的桌面推方块轨迹。缺点是离真实家庭环境较远、工作空间小，所以近年研究逐渐扩展到移动操作和全身操作。",
+      "example": "桌上散放几块彩色积木，用户说「用积木摆一个笑脸」，机械臂依次把积木推到对应位置（Language-Table 中的任务）。",
+      "related": [
+        "操作",
+        "抓取放置",
+        "物体重排",
+        "移动操作",
+        "CLIPort",
+        "Language-Table 数据集"
+      ],
+      "sources": [
+        {
+          "title": "CLIPort: What and Where Pathways for Robotic Manipulation",
+          "url": "https://arxiv.org/abs/2109.12098"
+        },
+        {
+          "title": "Interactive Language: Talking to Robots in Real Time (Language-Table)",
+          "url": "https://arxiv.org/abs/2210.06407"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "任务泛化",
+      "name_en": "Task Generalization",
+      "abbr": "",
+      "aliases": [
+        "新任务泛化",
+        "跨任务泛化"
+      ],
+      "tier": 2,
+      "one_liner": "策略完成训练中没出现过的新任务或新指令的能力。",
+      "explanation": "泛化的一个维度，指模型能否做训练数据里没有的任务，例如只学过「把苹果放进碗里」和「打开抽屉」，能否完成「把苹果放进抽屉」。它通常比换物体、换场景更难，因为要把学过的动作重新组合，还要理解新的语义。谷歌 BC-Z（2022）在 100 多个任务上训练后，在 24 个没有任何示范的新任务上取得平均 44% 的成功率；RT-Trajectory（2023）指出只用语言作条件的策略很难从抓放迁移到折叠这类动作不同的任务，于是改用粗略的轨迹草图作条件。VLA 借助大模型的语义知识，也被寄望提升这类泛化。",
+      "example": "只学过「把苹果放进碗里」和「打开抽屉」的机械臂被要求「把苹果放进抽屉」——这是训练数据里没有的任务组合，能做成就体现了任务泛化。",
+      "related": [
+        "泛化",
+        "零样本",
+        "组合泛化",
+        "语义泛化",
+        "RT-Trajectory",
+        "指令跟随"
+      ],
+      "sources": [
+        {
+          "title": "BC-Z: Zero-Shot Task Generalization with Robotic Imitation Learning",
+          "url": "https://arxiv.org/abs/2202.02005"
+        },
+        {
+          "title": "RT-Trajectory: Robotic Task Generalization via Hindsight Trajectory Sketches",
+          "url": "https://arxiv.org/abs/2311.01977"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "示教再现",
+      "name_en": "Teach-and-Playback Programming",
+      "abbr": "",
+      "aliases": [
+        "示教-再现",
+        "示教编程",
+        "Teach and Playback"
+      ],
+      "tier": 2,
+      "one_liner": "人先带机器人走一遍并记录位置，机器人再按记录原样重复执行。",
+      "explanation": "传统工业机器人最主要的编程方式：操作员用示教器（带急停和使能开关的手持编程盒）点动机器人，或直接手拉机械臂，把一串关键位置和路径记录下来，之后机器人按记录反复「回放」。1961 年在通用汽车工厂上岗的第一台工业机器人 Unimate，就是把示教时的关节位置存进磁鼓存储器再重放。它简单可靠、重复精度高，适合焊接、喷涂、搬运等位置固定的重复作业；但机器人只是复现轨迹、不理解任务，工件位置一变就要重新示教。具身智能里的模仿学习也从人类示范出发，区别是要学出能根据观测调整动作的策略，而不是机械回放。",
+      "example": "汽车焊装车间里，工程师用示教器把焊枪逐个移到车身上的焊点并保存，此后每台车身到位，机器人都按这段程序依次焊接。",
+      "related": [
+        "示教器",
+        "拖动示教",
+        "工业机器人",
+        "模仿学习",
+        "结构化 / 非结构化环境",
+        "离线编程"
+      ],
+      "sources": [
+        {
+          "title": "Teach pendant - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Teach_pendant"
+        },
+        {
+          "title": "Unimate - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Unimate"
+        },
+        {
+          "title": "Industrial robot - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Industrial_robot"
+        }
+      ],
+      "as_of": ""
+    }
+  ]
+}

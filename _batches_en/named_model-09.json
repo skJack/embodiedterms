@@ -1,0 +1,113 @@
+{
+  "batch": "named_model-09",
+  "terms": [
+    {
+      "key": "named_model-09#0",
+      "name_en": "Dex-Net 2.0",
+      "aliases": ["Dexterity Network", "GQ-CNN", "Grasp Quality CNN"],
+      "one_liner": "Berkeley's grasp-scoring network, trained on simulated data, that judges from a depth image which grasp will hold best.",
+      "explanation": "Dex-Net is the grasping research project of Ken Goldberg's group (AUTOLAB) at UC Berkeley; its best-known version, Dex-Net 2.0, was published at RSS 2017. Instead of collecting real-robot data, it labels a huge collection of 3D object models using analytic grasp metrics (formulas from geometry and mechanics that score how stable a grasp is), synthesizing 6.7 million “point cloud + grasp + label” examples, then trains a convolutional network, GQ-CNN: given a depth image and a candidate grasp (planar position, angle, depth), it outputs a success probability, and the robot executes whichever candidate scores highest. It's an early, representative example of “train on synthetic simulated data, deploy directly to the real robot” for grasping; a later version, 3.0, extended this to suction grippers, and 4.0 (Science Robotics, 2019) uses both parallel-jaw grippers and suction together for bin picking.",
+      "example": "Dex-Net 2.0 used GQ-CNN to plan two-finger parallel-jaw grasps on an ABB YuMi robot: 93% success on 8 known objects, and about 99% precision for grasps judged “stable” on household objects it had never seen.",
+      "related": ["Grasping", "Grasp Quality Metric", "Bin Picking", "Synthetic Data", "Convolutional Neural Network", "Grasp Pose Detection"]
+    },
+    {
+      "key": "named_model-09#1",
+      "name_en": "DexGraspVLA",
+      "aliases": ["DexGraspVLA: A Vision-Language-Action Framework Towards General Dexterous Grasping"],
+      "one_liner": "A hierarchical dexterous-hand grasping framework from Peking University and PsiBot: a large model plans, a diffusion policy acts.",
+      "explanation": "DexGraspVLA was released in February 2025 by teams including Peking University's Institute for Artificial Intelligence and the Peking University–PsiBot (灵初智能) joint lab, later accepted as an oral presentation at AAAI 2026. It has two layers. The upper layer uses an off-the-shelf vision-language model (such as Qwen-VL) to understand the instruction and draw a box around the target object in the image. The lower layer is a diffusion controller: SAM and Cutie continuously track the target's mask, a frozen DINOv2 extracts visual features, and a diffusion Transformer outputs arm and dexterous-hand actions. The core idea is to use foundation models first to turn highly variable images and language into a more stable representation, narrowing the gap between training and test scenes, so that imitation learning from only a small number of human demonstrations can still generalize to a huge number of new scenes.",
+      "example": "After training on 2,094 cluttered-scene grasping demonstrations collected across 36 household objects, it was tested zero-shot across roughly 1,287 scenes combining 360 new objects, 6 new backgrounds, and 3 new lighting conditions, reaching an overall success rate of 90.8% on a Realman 7-DOF arm paired with PsiBot's 6-DOF G0-R dexterous hand.",
+      "related": ["Vision-Language-Action Model", "Dexterous Manipulation", "Hierarchical Architecture", "Diffusion Policy", "DINOv2", "PsiBot"]
+    },
+    {
+      "key": "named_model-09#2",
+      "name_en": "DexterityGen",
+      "aliases": ["DexGen"],
+      "one_liner": "Meta and Berkeley's low-level dexterous-hand controller that turns a human's rough teleoperation intent into precise finger motion.",
+      "explanation": "DexterityGen (DexGen for short) is a dexterous-hand control method released in February 2025 by teams at Meta FAIR and UC Berkeley. A dexterous hand has many degrees of freedom, and direct human teleoperation struggles to reliably perform fine motions like spinning a pen in-hand or turning a screw; pure reinforcement learning, on the other hand, has trouble learning long, complex tasks. Its division of labor: first, reinforcement learning in simulation trains a huge library of in-hand motion primitives — rotation, translation, and so on — collecting about 10^10 state transitions; that data then trains a diffusion model as a “foundation controller,” which generates fingertip keypoint motion from the current observation, converted into joint commands by an inverse-dynamics model. At deployment, a higher-level source (such as human teleoperation) only needs to give a rough intent, and DexGen refines it into stable, dexterous motion, while also being able to reject dangerous actions.",
+      "example": "On a Franka arm fitted with an Allegro dexterous hand, an operator wearing a Manus data glove teleoperates with DexGen's help to pick up and use a pen, a syringe, and a screwdriver; the paper reports the object stays gripped without dropping 10 to 100 times longer than baselines.",
+      "related": ["Dexterous Manipulation", "In-Hand Manipulation", "Reinforcement Learning", "Diffusion Model", "Teleoperation", "Meta FAIR"]
+    },
+    {
+      "key": "named_model-09#3",
+      "name_en": "DextrAH-G",
+      "aliases": ["DextrAH-G: Pixels-to-Action Dexterous Arm-Hand Grasping with Geometric Fabrics"],
+      "one_liner": "NVIDIA's arm-and-hand dexterous grasping system, trained entirely in simulation, grasping and carrying objects continuously from depth images alone.",
+      "explanation": "DextrAH-G is a dexterous-grasping method released by NVIDIA together with researchers at Stanford, the University of Utah, and Berkeley in July 2024, published at CoRL 2024. It controls a KUKA arm plus an Allegro dexterous hand — 23 motors in total — and the challenge is the high action dimensionality, the sim-to-real gap, and the need to avoid collisions and respect joint limits. The approach has three steps: train a teacher policy in Isaac Gym with reinforcement learning that can see privileged information such as the object's true pose; distill it into a student policy that sees only a depth image; then deploy zero-shot to the real robot. The key detail is that the policy's output doesn't go straight to the motors — it's handed to Geometric Fabrics, NVIDIA's reactive motion-generation method, which handles obstacle avoidance, joint limits, and posture, both protecting the hardware and making reinforcement-learning exploration easier.",
+      "example": "In a bin-picking test, DextrAH-G, using only a single RealSense depth camera mounted at the edge of the table, continuously grasped and carried objects with an 87% success rate over 256 attempts, at about 10.7 seconds per pick-and-place cycle.",
+      "related": ["Geometric Fabrics", "Dexterous Manipulation", "Teacher-Student Distillation", "Privileged Information", "Sim-to-Real Transfer", "Isaac Gym"]
+    },
+    {
+      "key": "named_model-09#4",
+      "name_en": "DexVLA",
+      "aliases": ["DexVLA: Vision-Language Model with Plug-In Diffusion Expert for General Robot Control"],
+      "one_liner": "A VLA from Midea and others that attaches a roughly billion-parameter diffusion action expert to a vision-language model, adapting to many robots.",
+      "explanation": "DexVLA was released in February 2025 by researchers at Midea Group, East China Normal University, and Shanghai University, published at CoRL 2025. It pairs the vision-language model Qwen2-VL (2 billion parameters) with a pluggable diffusion action expert: the VLM handles looking at images and understanding instructions, while the action expert, built on the ScaleDP architecture and scaled up to about 1 billion parameters, uses multiple output heads to adapt to different robots and is dedicated to generating continuous actions. Training follows an “embodiment curriculum” with three stages: first, the action expert is pretrained on its own using about 100 hours of cross-embodiment data; then it's attached to the VLM and aligned to a specific embodiment; finally, it's post-trained on data annotated with substeps for a specific task. It aims to fix earlier VLAs' weak action representation, expensive training, and difficulty switching robots — the same “VLM plus action expert” approach as π0.",
+      "example": "The paper tests on a single-arm Franka (gripper or dexterous hand), a bimanual UR5e, and a bimanual AgileX robot; with no task-specific adaptation it folds a shirt (score 0.92), and on the full laundry-folding task it scores 0.4, versus 0.2 for π0 under the same conditions.",
+      "related": ["Vision-Language-Action Model", "Action Expert", "Diffusion Action Head", "Cross-Embodiment", "π0", "Qwen-VL"]
+    },
+    {
+      "key": "named_model-09#5",
+      "name_en": "DIAMOND",
+      "aliases": ["Diffusion for World Modeling", "DIAMOND: Visual Details Matter in Atari"],
+      "one_liner": "Generates frames one at a time with a diffusion model as a world model, letting an RL agent train inside a generated game.",
+      "explanation": "DIAMOND was released in May 2024 by researchers at the University of Geneva, the University of Edinburgh, and Microsoft Research, a NeurIPS 2024 Spotlight paper. Many earlier world models (such as IRIS and DreamerV3) compress frames into discrete tokens or a latent variable before predicting, which easily loses small but important visual details. DIAMOND instead uses a diffusion model directly to generate the next frame from recent frames and the action, and works out the key design choices needed to keep this stable over long rollouts. An agent is trained with reinforcement learning entirely inside this generated environment, then tested in the real game: on the Atari 100k benchmark it reaches an average human-normalized score of 1.46, the best result at the time for an agent trained purely with a world model. It also shows that a diffusion world model can serve as a playable, interactive game engine, in a similar spirit to GameNGen and Genie.",
+      "example": "The authors trained a 381-million-parameter diffusion world model on 87 hours of human Counter-Strike: Global Offensive (CS:GO) match data; it runs at about 10 frames per second on an RTX 3090, and a person can “play” inside it in real time with a keyboard and mouse.",
+      "related": ["World Model", "Diffusion Model", "Learning in Imagination", "GameNGen (Neural Game Engine)", "DreamerV3", "Atari Benchmark (Arcade Learning Environment / Atari 100k)"]
+    },
+    {
+      "key": "named_model-09#6",
+      "name_en": "Diffuser",
+      "aliases": ["Planning with Diffusion for Flexible Behavior Synthesis"],
+      "one_liner": "A planning method that generates an entire trajectory as one object to be denoised, one of the first uses of diffusion for decision-making.",
+      "explanation": "Diffuser is an ICML 2022 paper by Michael Janner and Sergey Levine at UC Berkeley, and Yilun Du and Joshua Tenenbaum at MIT. Traditional model-based reinforcement learning first learns a dynamics model and then plans with an optimizer, and errors in the model are often amplified by the planner. Diffuser merges the two steps: a diffusion model directly models an entire “state plus action” trajectory, and planning becomes starting from noise and repeatedly denoising it into a trajectory. To get high return, the denoising process is guided with the gradient of a value function; to reach a specific goal, the start and end states are fixed and the model fills in the middle (similar to image inpainting). The same model can switch tasks with no retraining. It's a precursor to later “diffusion model for decision-making” work such as Decision Diffuser and Diffusion Policy.",
+      "example": "In the Maze2D task, fixing the start and end states, Diffuser “inpaints” a full feasible path in between by denoising; in a block-stacking task, swapping in a different guidance function lets the same model stack towers under different constraints.",
+      "related": ["Diffusion Model", "Model-Based Reinforcement Learning", "Trajectory Optimization", "Decision Diffuser", "Diffusion Policy", "Offline Reinforcement Learning"]
+    },
+    {
+      "key": "named_model-09#7",
+      "name_en": "Diffusion Policy Policy Optimization",
+      "aliases": ["DPPO"],
+      "one_liner": "Fine-tunes a diffusion policy directly with PPO policy-gradient reinforcement learning by treating each denoising step as a decision.",
+      "explanation": "DPPO was proposed in September 2024 by Allen Z. Ren and colleagues at Princeton, together with researchers at MIT, Toyota Research Institute, Carnegie Mellon University, and Harvard, published at ICLR 2025. A diffusion policy is trained with imitation learning, so its performance is capped by the quality of the demonstrations; policy-gradient reinforcement learning methods like PPO need to compute action probabilities, and multi-step diffusion denoising doesn't lend itself to that directly, so this kind of fine-tuning was widely assumed to be inefficient. DPPO splits the process into two nested Markov decision processes: the outer one is interacting with the environment, and the inner one treats each denoising step as a Gaussian-sampling “action,” whose probability can be computed, making it possible to fine-tune end to end with PPO. Experiments show it explores close to the demonstration data's distribution, trains stably, and produces more robust policies after fine-tuning, making it a common baseline for reinforcement-learning fine-tuning of diffusion and flow-matching policies.",
+      "example": "On the Furniture-Bench furniture-assembly simulation tasks, DPPO raised a pretrained diffusion policy's success rate from 57% to 97% on One-Leg and from 12% to 87% on Lamp, and the assembly policy also transferred zero-shot to a real robot.",
+      "related": ["Diffusion Policy", "Proximal Policy Optimization", "Reinforcement Learning Fine-tuning", "Policy Gradient", "Sim-to-Real Transfer", "ReinFlow"]
+    },
+    {
+      "key": "named_model-09#8",
+      "name_en": "Diffusion Steering via Reinforcement Learning",
+      "aliases": ["DSRL", "Steering Your Diffusion Policy with Latent Space RL"],
+      "one_liner": "Leaves a diffusion policy's weights untouched and uses reinforcement learning only to pick its input noise, steering it toward better actions.",
+      "explanation": "DSRL was proposed in June 2025 by Andrew Wagenmaker and colleagues in Sergey Levine's group at UC Berkeley, together with researchers at the University of Washington and Amazon, published at CoRL 2025. A diffusion policy generates an action by first sampling random noise and then denoising it, and for the same observation, different initial noise leads to different actions. DSRL treats this initial noise as a new “action space,” training a small reinforcement-learning policy (an MLP) that outputs noise given the observation, which is then handed to the frozen diffusion policy to denoise. The base policy's weights are never touched — it's only called as a black box — and because the noise always maps to some reasonable action from the demonstration data, exploration is better directed and needs less real-robot interaction. It's well suited to quickly and autonomously improving a behavior-cloned policy in a new environment, and it's a representative example of steering a policy through its noise space.",
+      "example": "The authors treated a public π0 checkpoint (trained on DROID) as a black box and ran reinforcement learning only in its noise space, improving performance on real-robot manipulation tasks without fine-tuning π0 itself.",
+      "related": ["Noise-Space Policy Steering", "Diffusion Policy", "π0", "Real-Robot Reinforcement Learning", "Residual Reinforcement Learning", "DPPO"]
+    },
+    {
+      "key": "named_model-09#9",
+      "name_en": "DIAL-MPC",
+      "aliases": ["Diffusion-Inspired Annealing for Legged MPC", "Full-Order Sampling-Based MPC for Torque-Level Locomotion Control via Diffusion-Style Annealing"],
+      "one_liner": "A training-free, sampling-based MPC for legged robots that borrows diffusion-style annealing to optimize whole-body motion in real time.",
+      "explanation": "DIAL-MPC was proposed by Guanya Shi's group (LeCAR Lab) at Carnegie Mellon University in September 2024, and was a best-paper finalist at ICRA 2025. Real-time optimal control for legged robots usually requires a simplified model (such as a single rigid body) or a pre-specified contact schedule, because the full dynamics are high-dimensional and non-convex. Sampling-based MPC methods (such as MPPI) sample many candidate action sequences every control cycle, roll them out in a model, and average them by weight — but a single round of sampling is often noisy or gets stuck in a local solution. The authors identify a connection between MPPI and single-step diffusion denoising, and change it to iterate over multiple rounds the way a diffusion model does, annealing the noise level step by step: searching broadly at first, then converging to fine detail. It needs no training and no model simplification, doing real-time, torque-level control directly on the full-order dynamics.",
+      "example": "On a Unitree Go2 quadruped, DIAL-MPC performed precise, loaded jumps and trajectory tracking in real time; the paper reports 13.4x lower tracking error than standard MPPI and about 50% better performance than a reinforcement-learning policy on a climbing task, with no training at all.",
+      "related": ["Sampling-Based MPC", "Model Predictive Path Integral Control", "Model-Predictive Control", "Legged Locomotion", "Diffusion Model", "Unitree Go2"]
+    },
+    {
+      "key": "named_model-09#10",
+      "name_en": "DINO-WM",
+      "aliases": ["DINO World Model", "DINO-WM: World Models on Pre-trained Visual Features enable Zero-shot Planning"],
+      "one_liner": "A world model that predicts the future in DINOv2's image-feature space, able to plan zero-shot toward new goals after training.",
+      "explanation": "DINO-WM was proposed by Gaoyue Zhou and Hengkai Pan at NYU with Yann LeCun and Lerrel Pinto (the former also at Meta FAIR), released in November 2024 and published at ICML 2025. Many world models need to reconstruct pixels, or are tied to a specific task reward. DINO-WM instead uses a pretrained, frozen DINOv2 to extract patch features, and trains only a predictor: given the current features and an action, it predicts the next step's features, with no image reconstruction at all. Training uses only offline collected trajectories, needing no expert demonstrations, reward model, or inverse-dynamics model. At test time, given a goal image, it uses model-predictive control (MPC) to search for a sequence of actions whose predicted future features come as close as possible to the goal's features — zero-shot planning. It represents the approach of building a world model inside a pretrained representation's latent space, in a similar spirit to JEPA and V-JEPA 2.",
+      "example": "In the Push-T task, given a goal image of the desired arrangement, DINO-WM rolls out different pushing actions in feature space and picks the sequence that brings the T-shaped block closest to the goal pose; the same method is also used for maze navigation and manipulating rope and granular materials.",
+      "related": ["World Model", "Latent World Model", "DINOv2", "Model-Predictive Control", "Joint Embedding Predictive Architecture", "V-JEPA 2"]
+    },
+    {
+      "key": "named_model-09#11",
+      "name_en": "Discrete Diffusion VLA",
+      "aliases": ["Discrete Diffusion VLA: Bringing Discrete Diffusion to Action Decoding in Vision-Language-Action Policies"],
+      "one_liner": "Decodes VLA actions with discrete diffusion: action tokens are generated in parallel, confident ones fixed first, the rest filled in over several rounds.",
+      "explanation": "Discrete Diffusion VLA was released in August 2025 by researchers at the University of Hong Kong, Shanghai Jiao Tong University, and other institutions (corresponding authors Yao Mu and Ping Luo), and has been accepted at ICML 2026. Discrete VLAs like OpenVLA bin actions into tokens and generate them one at a time, autoregressively, which is slow and can't revise early mistakes; continuous diffusion-head VLAs like π0 need a separate action module bolted on. This model instead changes the action-chunk tokens in OpenVLA (built on Prismatic-7B, a Llama 2 backbone) to use bidirectional attention, and decodes them with discrete diffusion (masked prediction): all tokens start masked, each round predicts in parallel, high-confidence tokens are locked in first, the rest keep iterating, and already-filled tokens that remain uncertain can be re-masked and corrected. Action decoding shares a single Transformer and a cross-entropy objective with the language model, which also better preserves the original VLM's abilities.",
+      "example": "On simulation benchmarks it reaches 96.4% average success on LIBERO, 71.2% on SimplerEnv-Fractal visual matching, and 54.2% on SimplerEnv-Bridge; the authors also validated it on a real AgileX Cobot Magic platform.",
+      "related": ["Discrete Diffusion", "Vision-Language-Action Model", "OpenVLA", "Bin-based Discretization", "Parallel Decoding", "Autoregressive Decoding"]
+    }
+  ]
+}

@@ -1,0 +1,233 @@
+{
+ "batch": "training-02",
+ "terms": [
+  {
+   "key": "training-02#0",
+   "name_en": "Reward Function",
+   "aliases": [
+    "Reward",
+    "Reward Signal"
+   ],
+   "one_liner": "The scoring rule in reinforcement learning that rates an agent's behavior at each step, defining what counts as doing well.",
+   "explanation": "The reward function is a core piece of reinforcement learning (RL): after every action the agent takes, the environment returns a scalar score based on the current state, the action, and the resulting next state, typically written r = R(s, a, s′). The agent's objective is to maximize the sum of these rewards over time (the return), so the reward function effectively defines what the task is. For robot tasks, reward functions are usually hand-written, which is harder than it sounds. Giving credit only on full success (a sparse reward) makes learning slow, but a carelessly designed reward is easy for a policy to exploit — it drives the score up without actually solving the task, a failure mode called reward hacking. This has led to techniques like reward shaping (adding extra intermediate rewards to guide learning), learned reward models, and even having a large language model write reward code automatically.",
+   "example": "A quadruped locomotion reward is usually a weighted sum of terms: a bonus for tracking the target velocity, a penalty for excessive joint torque, and a penalty for falling. NVIDIA and collaborators' Eureka has GPT-4 write reward-function code directly, and it beat reward functions written by human experts on 83% of 29 tasks.",
+   "related": [
+    "Reinforcement Learning",
+    "Return",
+    "Reward Shaping",
+    "Sparse Reward",
+    "Reward Hacking",
+    "Eureka"
+   ]
+  },
+  {
+   "key": "training-02#1",
+   "name_en": "Scaling Law",
+   "aliases": [
+    "Neural Scaling Law",
+    "Robot Scaling Law",
+    "Data Scaling Law"
+   ],
+   "one_liner": "The empirical pattern that model performance improves smoothly, as a power law, with more parameters, data, and compute.",
+   "explanation": "Scaling laws quantify the intuition that bigger models, more data, and more compute produce better results. In 2020, OpenAI's Kaplan and colleagues found that a language model's test loss follows power-law relationships with parameter count, dataset size, and training compute, with some of these trends holding across seven or more orders of magnitude. In 2022, DeepMind's Chinchilla study refined this, showing that for a fixed compute budget, model size and the number of training tokens should be scaled up in roughly equal proportion. Scaling laws matter because they let researchers run small, cheap experiments and extrapolate the payoff of a much larger training run, which guides where to spend a limited budget. The embodied-AI field is now testing whether robot data obeys a similar law, and this is part of the motivation behind the industry's large-scale data-collection efforts.",
+   "example": "Tsinghua's Yang Gao lab published “Data Scaling Laws in Imitation Learning for Robotic Manipulation” (2024), collecting over 40,000 demonstrations and running more than 15,000 real-robot trials. They found that a policy's ability to generalize to new environments and objects scales roughly as a power law with the number of training environments and objects, while adding more demonstrations within a single environment gives diminishing returns past a certain point.",
+   "related": [
+    "Data Scaling Laws (Imitation Learning)",
+    "Parameter Count",
+    "Large Language Model",
+    "Data Diversity",
+    "The Bitter Lesson",
+    "Emergent Abilities"
+   ]
+  },
+  {
+   "key": "training-02#2",
+   "name_en": "Supervised Learning",
+   "aliases": [],
+   "one_liner": "Training a model on input–correct-answer pairs so it learns to predict the answer from the input alone.",
+   "explanation": "Supervised learning is the most common machine-learning paradigm. Every training input comes paired with the correct output — a label, also called ground truth — and the model repeatedly shrinks the gap between its own prediction and that label, measured by a loss function. The ultimate goal is for the model to predict correctly on new data it has never seen, a property called generalization. When the output is a category, this is called classification; when it's a continuous number, it's regression. The contrasting paradigms are unsupervised learning, which uses no labels at all, and reinforcement learning, which learns from a reward signal instead. In embodied AI, behavior cloning is essentially supervised learning: the observations recorded during a human demonstration become the input, and the human's actions become the label, and a policy is trained to imitate them.",
+   "example": "Collect 1,000 paired examples of “camera image → arm joint angles” through teleoperation, then train a network that takes the image as input and outputs joint angles, with the loss defined as the mean squared error between predicted and demonstrated angles. That is behavior cloning framed as supervised learning.",
+   "related": [
+    "Behavior Cloning",
+    "Unsupervised Learning",
+    "Reinforcement Learning",
+    "Loss Function",
+    "Ground Truth",
+    "Supervised Fine-Tuning"
+   ]
+  },
+  {
+   "key": "training-02#3",
+   "name_en": "Training / Validation / Test Set",
+   "aliases": [
+    "Train/Val/Test Split",
+    "Training Set",
+    "Validation Set",
+    "Test Set",
+    "Held-out Set"
+   ],
+   "one_liner": "Splitting a dataset into three parts: one to learn from, one to tune and select a model, and one saved for a final, honest check.",
+   "explanation": "This is the standard way machine learning splits its data. The training set is used to update the model's parameters. The validation set evaluates the model during development, guiding the choice of hyperparameters and which checkpoint (a saved snapshot of the model's weights partway through training) to keep. The test set is touched only at the very end, to report how the model performs on data it has truly never seen. Google's Machine Learning Crash Course uses a 70/15/15 split as an example, but the exact ratio isn't fixed; what matters is that the validation and test sets are large enough to give reliable conclusions. The three sets must not share samples — overlap is equivalent to peeking at the answer key and inflates the reported score — and a validation set that gets reused for many rounds of decisions can gradually lose its value as an honest check. In robotics, real-robot or simulation evaluation often plays the role of the test set, and it's just as important that the test scenes and objects never appeared in training.",
+   "example": "To train a grasping policy: train on data collected in 8 kitchens, use data from a 9th kitchen as validation to decide how long to train, then run real-robot trials in a never-before-seen 10th kitchen and report that success rate.",
+   "related": [
+    "Overfitting",
+    "Hyperparameter",
+    "Checkpoint",
+    "Generalization",
+    "Out-of-Distribution",
+    "Data Leakage / Test Set Contamination"
+   ]
+  },
+  {
+   "key": "training-02#4",
+   "name_en": "Alchemy (Deep-Learning Slang)",
+   "aliases": [
+    "Elixir Refining",
+    "Tuning Wizard (slang)",
+    "Alchemist (slang)"
+   ],
+   "one_liner": "Chinese deep-learning slang for training models and tuning hyperparameters by trial and error, likening it to alchemy.",
+   "explanation": "This is slang from China's deep-learning community that compares training a model to alchemy. Data and a model go into a GPU server (jokingly the “alchemy furnace”), you set hyperparameters — configuration choices like learning rate and batch size fixed before training starts, nicknamed the “heat” of the fire — then wait hours or days for a result whose cause is often hard to pin down, so all you can do is try again. Adjusting these hyperparameters is called “炼丹” (elixir-refining) or “调参” (tuning), and the people who do it jokingly call themselves “tuning wizards” or “alchemists.” English-speaking ML has voiced a similar complaint: in his 2017 NeurIPS Test of Time talk, Ali Rahimi said outright that “machine learning has become alchemy,” criticizing the field's reliance on techniques nobody fully understands. More systematic approaches to tuning include grid search, random search, Bayesian optimization, and population-based training.",
+   "example": "A VLA fine-tune isn't working well, so a student changes the learning rate from 1e-4 to 2e-5, the batch size from 32 to 128, trains for 20,000 more steps, and checks again — round after round of this trial and error is what “alchemy” refers to.",
+   "related": [
+    "Hyperparameter",
+    "Learning Rate",
+    "Batch Size",
+    "Population-Based Training",
+    "Ablation Study",
+    "Random Seed and Reproducibility"
+   ]
+  },
+  {
+   "key": "training-02#5",
+   "name_en": "AdamW",
+   "aliases": [
+    "Adam with Decoupled Weight Decay"
+   ],
+   "one_liner": "A version of the Adam optimizer that separates weight decay from the gradient update; the default choice for training most large models.",
+   "explanation": "AdamW comes from Ilya Loshchilov and Frank Hutter's paper “Decoupled Weight Decay Regularization” (ICLR 2019). An optimizer is the algorithm that updates a model's parameters based on gradients, and Adam adapts the step size for each parameter individually. The older way to regularize Adam was to fold an L2 penalty into the gradient, but that penalty then gets rescaled by Adam's adaptive step sizes along with everything else, which weakens its effect. The authors showed that this L2-in-the-gradient approach is equivalent to weight decay (shrinking every parameter by a small proportion at each step) for plain SGD, but not for Adam — so they pulled the decay step out and applied it separately from the gradient update. This improves generalization and decouples the best decay value from the learning rate. AdamW is now one of the most common optimizers for training Transformer-based models.",
+   "example": "In PyTorch, torch.optim.AdamW(model.parameters(), lr=1e-4, weight_decay=0.01) uses AdamW directly; PyTorch's own defaults for it are a learning rate of 1e-3, betas of (0.9, 0.999), and a weight decay of 0.01.",
+   "related": [
+    "Optimizer",
+    "Gradient Descent",
+    "Learning Rate",
+    "Regularization",
+    "Learning Rate Schedule (Warmup and Cosine Decay)"
+   ]
+  },
+  {
+   "key": "training-02#6",
+   "name_en": "Advantage Function",
+   "aliases": [
+    "Advantage",
+    "A(s,a)"
+   ],
+   "one_liner": "A measure of how much better an action is than the policy's average, equal to the Q-value minus the value function.",
+   "explanation": "The advantage function is defined as A(s,a) = Q(s,a) − V(s). Q is the expected return of taking action a in state s and then following the policy afterward; V is the expected return of just following the policy from state s directly. Subtracting the two tells you how much better than average that specific action is: positive means do more of it, negative means do less. Policy-gradient methods use the advantage in place of the raw return because it substantially reduces the variance (noisiness) of the gradient estimate, which makes training more stable. Algorithms like PPO typically compute it with Generalized Advantage Estimation (GAE), introduced by Schulman and colleagues in 2015; Physical Intelligence's RECAP instead feeds the advantage into a VLA as a conditioning input, letting the model distinguish good experience from bad.",
+   "example": "When an arm reaches for a cup in state s, the current policy earns an average return of 0.6. If leading with a straight vertical approach raises the expected return to 0.8, that action's advantage is +0.2, and training will increase the probability of picking it.",
+   "related": [
+    "Value Function",
+    "Q-Function",
+    "Generalized Advantage Estimation",
+    "Policy Gradient",
+    "Proximal Policy Optimization",
+    "RECAP"
+   ]
+  },
+  {
+   "key": "training-02#7",
+   "name_en": "Backbone Freezing",
+   "aliases": [
+    "Freezing the Backbone",
+    "Frozen Backbone",
+    "Frozen Pretrained Layers"
+   ],
+   "one_liner": "Keeping a pretrained backbone network's parameters fixed during training and updating only the newly added parts.",
+   "explanation": "A backbone is the part of a model responsible for extracting features, usually a pretrained network such as a ResNet, a ViT, or an entire vision-language model (VLM). Freezing it means those parameters are not updated during training (in PyTorch, by setting requires_grad to False), and only newly added output heads or action modules are trained. The upside is lower memory use, faster training, less overfitting when data is scarce, and less catastrophic forgetting; the downside is that the backbone can't learn features the new task might need. The trade-off shows up concretely in VLA models: OpenVLA found that freezing the vision encoder loses fine-grained spatial information and hurts control performance, while NVIDIA's GR00T N1 freezes the VLM's language component during both pretraining and post-training and trains only the remaining modules.",
+   "example": "PyTorch's own transfer-learning tutorial fine-tunes an ImageNet-pretrained ResNet-18 to classify ants versus bees: every layer except the last is frozen, and only the newly swapped-in fully connected layer is trained.",
+   "related": [
+    "Backbone Network",
+    "Fine-tuning",
+    "Parameter-Efficient Fine-Tuning",
+    "Catastrophic Forgetting",
+    "Knowledge Insulation",
+    "Gradient Blocking"
+   ]
+  },
+  {
+   "key": "training-02#8",
+   "name_en": "Backpropagation",
+   "aliases": [
+    "BP",
+    "Backprop",
+    "Error Backpropagation"
+   ],
+   "one_liner": "The chain-rule algorithm that computes gradients layer by layer from the output backward; the core algorithm for training neural networks.",
+   "explanation": "Backpropagation is how a neural network's gradients get computed. Training first runs a forward pass to get an output and a loss, then works backward from that loss, applying the chain rule layer by layer from the last layer to the first, computing the gradient of the loss with respect to every parameter in one pass. Those gradients then go to an optimizer like gradient descent or AdamW to update the parameters, avoiding the huge redundant computation of differentiating each parameter separately. The idea traces back to Seppo Linnainmaa's automatic-differentiation work in 1970; Paul Werbos applied it to neural networks in 1974; and a 1986 Nature paper by Rumelhart, Hinton, and Williams brought it wide attention. In PyTorch, calling loss.backward() performs backpropagation.",
+   "example": "Training a behavior-cloning policy: each step runs a forward pass to compute the mean squared error between predicted and demonstrated actions, calls loss.backward() to get the gradient for every weight, then optimizer.step() to update the parameters.",
+   "related": [
+    "Gradient Descent",
+    "Optimizer",
+    "Loss Function",
+    "Vanishing/Exploding Gradients",
+    "Gradient Blocking",
+    "Neural Network"
+   ]
+  },
+  {
+   "key": "training-02#9",
+   "name_en": "Batch Size",
+   "aliases": [
+    "Mini-batch Size"
+   ],
+   "one_liner": "The number of samples fed through the model together for each single parameter update.",
+   "explanation": "Training doesn't use the whole dataset at once; instead the data is split into small mini-batches, and each one produces one average loss, one gradient, and one parameter update. The number of samples in each of those batches is the batch size. A larger batch size gives a more stable gradient estimate and better GPU utilization, but uses more memory; too small a batch makes the gradient noisier and training slower. Batch size is closely tied to the learning rate, so changing one usually means retuning the other. When memory is too limited for a large batch, two common workarounds are gradient accumulation (summing gradients over several small batches before updating) and multi-GPU data parallelism. It's worth distinguishing batch size from a training epoch, which is one full pass through the entire dataset and consists of many batches.",
+   "example": "OpenVLA trained for 14 days on 64 A100 GPUs, using a global batch size of 2048 and a fixed learning rate of 2e-5, passing over the training set 27 times in total.",
+   "related": [
+    "Learning Rate",
+    "Training Epoch",
+    "Gradient Accumulation",
+    "Distributed Training (Data/Model Parallelism)",
+    "Hyperparameter",
+    "Gradient Descent"
+   ]
+  },
+  {
+   "key": "training-02#10",
+   "name_en": "Bellman Equation",
+   "aliases": [
+    "Bellman Optimality Equation",
+    "Bellman Expectation Equation"
+   ],
+   "one_liner": "A recursive formula that breaks a state's value into the immediate reward plus the discounted value of the next state.",
+   "explanation": "The Bellman equation is named after the American mathematician Richard Bellman, and it comes from the dynamic programming method he introduced. It states that the value of a state equals the immediate reward earned there plus a discount factor times the expected value of the next state. This turns the hard problem of “how good is this in the long run” into a step-by-step recursion. The version written for a fixed policy is called the Bellman expectation equation; the version that takes the maximum over actions is the Bellman optimality equation. Nearly all value-based reinforcement learning builds on this idea — Q-learning, Deep Q-Networks (DQN), and temporal-difference learning all use it to construct their training targets, pushing the network's predictions to satisfy this self-consistent relationship between a state and what follows it.",
+   "example": "Q-learning's training target is r + γ·max Q(s′, a′): when a robot takes action a in state s, gets reward r, and lands in state s′, it updates Q(s, a) toward that target — which is exactly the Bellman optimality equation in use.",
+   "related": [
+    "Value Function",
+    "Q-Function",
+    "Discount Factor",
+    "Temporal-Difference Learning",
+    "Q-Learning",
+    "Markov Decision Process"
+   ]
+  },
+  {
+   "key": "training-02#11",
+   "name_en": "Catastrophic Forgetting",
+   "aliases": [
+    "Catastrophic Interference"
+   ],
+   "one_liner": "A neural network's sharp loss, or outright loss, of old abilities after it learns something new.",
+   "explanation": "Catastrophic forgetting, also called catastrophic interference, was first systematically reported by McCloskey and Cohen in 1989, when a backpropagation network trained on one set of addition problems and then another lost much of its performance on the first. Learning new material changes the same weights that encoded old knowledge, so performance on the old task drops sharply. Mitigations include replaying old data, elastic weight consolidation (EWC, which protects weights that matter most for old tasks), freezing part of the network, and parameter-efficient fine-tuning. In embodied AI, converting a pretrained VLM into a VLA and fine-tuning it only on robot data often erodes the model's original language understanding and general knowledge. That's why models like π0.5 co-train on a mix of web image-text data and robot data, and why Physical Intelligence's knowledge insulation approach blocks the action expert's gradients from flowing back into the VLM.",
+   "example": "Physical Intelligence's knowledge insulation paper found that directly attaching a continuous action expert to a VLM and training the whole thing together noticeably erodes the model's pretrained knowledge and weakens its ability to understand language instructions; they mitigate this with gradient blocking plus co-training on image-text QA data.",
+   "related": [
+    "Continual Learning",
+    "Backbone Freezing",
+    "Co-training",
+    "Knowledge Insulation",
+    "Gradient Blocking",
+    "Parameter-Efficient Fine-Tuning"
+   ]
+  }
+ ]
+}

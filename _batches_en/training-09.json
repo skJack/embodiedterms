@@ -1,0 +1,113 @@
+{
+  "batch": "training-09",
+  "terms": [
+    {
+      "key": "training-09#0",
+      "name_en": "Twin Delayed DDPG",
+      "aliases": ["TD3", "Twin Delayed Deep Deterministic Policy Gradient"],
+      "one_liner": "A continuous-action reinforcement-learning algorithm that adds three fixes to DDPG specifically to curb Q-value overestimation.",
+      "explanation": "TD3 was introduced by Scott Fujimoto, Herke van Hoof, and David Meger at ICML 2018, as an improved version of DDPG (an actor-critic algorithm that outputs deterministic actions). It's off-policy (able to reuse old data repeatedly) and applies only to continuous actions. DDPG's Q-network tends to overestimate action values, and the policy learns to exploit those inflated estimates, which often makes training unstable. TD3 addresses this with three changes: training two Q-networks and taking the smaller one when computing the target (twin); updating the policy and target networks only once for every two Q-network updates (delayed); and adding clipped noise to the target action, smoothing how the Q-value changes with the action. TD3 and SAC are the two most common baselines for continuous control, and the offline reinforcement-learning method TD3+BC is also built on it.",
+      "example": "The original paper tests on OpenAI Gym's MuJoCo continuous-control tasks (such as HalfCheetah, Hopper, and Walker2d), where TD3 outperformed DDPG and other leading algorithms of the time.",
+      "related": ["Deep Deterministic Policy Gradient", "Q-value Overestimation", "Target Network", "Soft Actor-Critic", "Off-Policy", "Value Function"]
+    },
+    {
+      "key": "training-09#1",
+      "name_en": "Underfitting",
+      "aliases": [],
+      "one_liner": "A model too weak or too undertrained to learn even the patterns already present in the training data.",
+      "explanation": "Underfitting is a basic machine-learning concept, the opposite of overfitting: the model's error is already high on the training set, and it does just as poorly on validation and test data. Common causes include insufficient model capacity (too few parameters, too simple an architecture), too little training, a poorly chosen learning rate, too much regularization, or inputs that are missing information the task actually needs. It's diagnosed by watching the training loss: training loss that won't come down is underfitting, while training loss that's low but validation loss that rises again is overfitting. In robot learning, a typical symptom is a policy that fails even on the exact demonstration scenes it trained on — the right fix is usually a bigger model or longer training, or checking whether the observation and action data (camera images, action normalization) is broken, rather than reaching for anti-overfitting tools like data augmentation.",
+      "example": "Training a very small multilayer perceptron to imitate demonstrations of bimanual clothes-folding: the training loss plateaus at a high value early on, and the policy still can't grasp the fabric correctly even when replayed on the exact scenes it trained on — that's underfitting.",
+      "related": ["Overfitting", "Regularization", "Training / Validation / Test Set", "Loss Function", "Parameter Count", "Convergence"]
+    },
+    {
+      "key": "training-09#2",
+      "name_en": "Unsupervised Learning",
+      "aliases": [],
+      "one_liner": "Using only unlabeled data and letting the model discover structure in it on its own.",
+      "explanation": "Unsupervised learning is the machine-learning paradigm contrasted with supervised learning: the training data has only inputs, no human-annotated answers, and the model must find patterns on its own. Classic tasks include clustering (such as k-means, which groups similar samples together), dimensionality reduction (such as principal component analysis, PCA), and density estimation (learning the data's underlying probability distribution); generative models like autoencoders are also often grouped here. Self-supervised learning (constructing a supervisory signal from the data itself, such as predicting a hidden part) is sometimes considered a branch of it. It matters because labeling is expensive while unlabeled data is abundant, and large-model pretraining relies heavily on unlabeled text, images, and video. In embodied AI, learning latent actions from action-free human video, and letting a robot discover a variety of behaviors through unsupervised skill discovery, both follow this line of thinking.",
+      "example": "Running k-means clustering on a batch of unlabeled tabletop scene images: the algorithm doesn't know any category names, it just groups the images by feature similarity.",
+      "related": ["Supervised Learning", "Self-Supervised Learning", "Representation Learning", "Pretraining", "Unsupervised Skill Discovery", "Autoencoder"]
+    },
+    {
+      "key": "training-09#3",
+      "name_en": "Value Function",
+      "aliases": ["State-Value Function", "V-Function", "Critic"],
+      "one_liner": "A function estimating how much total reward will follow from a given state if the agent keeps following a given policy.",
+      "explanation": "The value function is a core concept in reinforcement learning. The state-value function V(s) is the expected return — the discounted sum of future rewards — from state s onward while following policy π the whole time; the Q-function Q(s,a) is the expected return from taking action a first and then following the policy; A = Q − V is called the advantage function, measuring how much better a given action is than average. With it, an agent can judge which states and actions are worth pursuing. The actor-critic architecture combines a policy with a value function: the actor is the policy network, responsible for producing actions, and the critic is the value network, scoring actions and supplying the advantage signal used to update the actor — PPO, SAC, and TD3 all belong to this family. In embodied AI, value functions are also used to filter data and to run reinforcement learning on VLAs, as in Physical Intelligence's RECAP method for π*0.6.",
+      "example": "π*0.6 trains a value function that predicts “how many steps remain until the task succeeds” (a failed trajectory gets a very low value), and uses it to compute each action's advantage, telling the policy which actions are better.",
+      "related": ["Q-Function", "Advantage Function", "Bellman Equation", "Temporal-Difference Learning", "Return", "Asymmetric Actor-Critic"]
+    },
+    {
+      "key": "training-09#4",
+      "name_en": "Vanishing / Exploding Gradients",
+      "aliases": ["Vanishing Gradient", "Exploding Gradient"],
+      "one_liner": "Gradients shrinking to near zero or blowing up as they're multiplied across many layers during backpropagation, stalling deep-network training.",
+      "explanation": "A deep network computes gradients through backpropagation, and the gradient reaching an early layer is a product of the derivatives (matrices) of every layer after it. When those factors tend to be small, the gradient shrinks toward zero by the time it reaches shallow layers, so the early layers barely learn at all — vanishing gradients; when the factors tend to be large, the product grows exponentially, and a single update can send parameters diverging and the loss to NaN — exploding gradients. Bengio and colleagues analyzed this problem in recurrent neural networks in 1994, and Pascanu and colleagues proposed gradient-norm clipping to handle explosion in 2013. Other common fixes include activation functions that don't saturate easily, like ReLU (sigmoid's derivative approaches zero when its input is very large or very small), Xavier/He initialization, residual connections, normalization layers, and LSTM's gating structure. The gradient clipping commonly set when training VLAs and diffusion policies is also there to prevent this kind of numerical instability.",
+      "example": "Stacking dozens of fully connected layers with sigmoid activations, the gradient in the first few layers is often close to 0 and their parameters barely move; switching to ReLU and adding residual connections lets a network of the same depth train normally.",
+      "related": ["Backpropagation", "Gradient Clipping", "Residual Network", "Activation Function", "Normalization Layers (LayerNorm / RMSNorm / BatchNorm)", "LSTM / GRU"]
+    },
+    {
+      "key": "training-09#5",
+      "name_en": "Action / State Normalization",
+      "aliases": ["Norm Stats", "Quantile Normalization"],
+      "one_liner": "Scaling each action and state dimension to a common range before training, then converting model output back to real units at inference.",
+      "explanation": "A robot's actions and proprioceptive state (joint angles, gripper opening, end-effector position, and so on) span very different units and scales across dimensions, and feeding them into a network unscaled lets the largest-magnitude dimensions dominate the loss and destabilize training. A common fix is to compute, from the training data, each dimension's mean and standard deviation, or its 1st and 99th percentiles (quantile normalization), and rescale the data to zero mean and unit variance, or to the range [-1, 1]. These statistics are called norm stats and must be saved alongside the model weights, since inference needs to de-normalize the output back into real commands; percentiles are more robust to outliers than a raw min/max. Physical Intelligence's FAST paper, for instance, normalizes actions using the 1st/99th percentiles; openpi requires running compute_norm_stats.py before fine-tuning, though a new task on a robot already present in the pretraining data can reuse the pretrained statistics. Mismatched normalization statistics are a common cause of erratic real-robot behavior.",
+      "example": "π0-FAST maps each action dimension's 1st and 99th training-set percentiles onto [-1, 1] before tokenizing actions, so data from different robots can share the same tokenizer.",
+      "related": ["Action Tokenizer", "π0-FAST", "Proprioception", "Cross-Embodiment Data", "openpi", "Fine-tuning"]
+    },
+    {
+      "key": "training-09#6",
+      "name_en": "Actor-Learner Architecture (Distributed RL)",
+      "aliases": ["Actor-Learner Architecture", "Decoupled Sampling and Training"],
+      "one_liner": "Splitting “interacting with the environment to collect data” and “updating the network's parameters” across separate processes or machines, run in parallel.",
+      "explanation": "This is a common system design in distributed reinforcement learning: several actors each hold a copy of the policy and interact with their own environment to generate experience; a learner centrally collects that experience and updates the parameters on a GPU, periodically syncing the new parameters back to the actors. DeepMind's Ape-X and IMPALA (2018) are notable examples: Ape-X has actors write experience into a shared replay buffer; IMPALA has actors send trajectories directly to the learner and uses V-trace, an importance-weighted correction, to handle the bias from the actors' policy lagging slightly behind the learner's. The benefit is that sampling and training never block each other, and the system can scale to thousands of machines. Real-robot reinforcement learning needs this same split: SERL runs the actor and learner on separate threads, so training being slow never drags down the robot's control frequency.",
+      "example": "SERL runs three processes in parallel on a real robot: the actor picks actions, the learner trains the network, and the robot's environment executes the actions — keeping a fixed control frequency and shortening total real-world training time.",
+      "related": ["Experience Replay", "Off-Policy", "Importance Sampling", "Real-World Reinforcement Learning", "SERL", "Massively Parallel Reinforcement Learning"]
+    },
+    {
+      "key": "training-09#7",
+      "name_en": "Adapter",
+      "aliases": ["Adapter Tuning", "Bottleneck Adapter"],
+      "one_liner": "Small modules inserted between a frozen large model's layers, with only those small modules trained to adapt it to a new task.",
+      "explanation": "Adapters are a family of parameter-efficient fine-tuning methods, introduced by Houlsby and colleagues in the 2019 paper “Parameter-Efficient Transfer Learning for NLP”: a small bottleneck network — project down, then back up, with a residual connection — is inserted into each Transformer layer, and fine-tuning freezes the original model and trains only these adapters. On 26 text-classification tasks with BERT, adding just 3.6% extra parameters per task matched full fine-tuning within 0.4%. Adapters save memory and storage, let one base model carry adapters for many tasks at once, and reduce catastrophic forgetting; LoRA, introduced later, continues the same basic idea. In robotics, TAIL (ICLR 2024) compares bottleneck adapters, P-Tuning, and LoRA for imitation learning, and this family of methods is commonly used to adapt a VLA to a new task or new robot.",
+      "example": "TAIL fine-tunes a pretrained decision-making model on a small number of demonstrations and finds that LoRA, training only about 1% of the parameters, matches full fine-tuning's performance while avoiding catastrophic forgetting during continual learning.",
+      "related": ["Parameter-Efficient Fine-Tuning", "LoRA", "Backbone Freezing", "Catastrophic Forgetting", "Full Fine-Tuning", "Prompt Tuning / Soft Prompts"]
+    },
+    {
+      "key": "training-09#8",
+      "name_en": "Advantage Conditioning",
+      "aliases": ["Advantage-Conditioned Policy"],
+      "one_liner": "Telling the policy how “good” each action was during training, then at deployment asking it only to generate “good” actions.",
+      "explanation": "Advantage conditioning turns reinforcement learning into conditional supervised learning: first train a value function and use it to compute each action's advantage in the dataset (how much better than average it was), then feed that advantage, or a binarized version of it, into the policy as an extra input and train with ordinary imitation learning. This way both good and bad data contribute to training, and at inference, setting the condition to “good” biases the policy toward high-advantage actions. The idea is close to return-conditioned methods like Decision Transformer, and related to CFGRL, proposed by Frans and colleagues in 2025, which treats a diffusion model's classifier-free guidance as a form of policy improvement. Physical Intelligence's π*0.6 (November 2025) builds its RECAP method on this: it binarizes the advantage by a threshold, feeds it to the policy as the text “Advantage: positive / negative,” randomly drops the condition during training, and sets it to positive at inference — or amplifies the effect further with classifier-free guidance.",
+      "example": "After training with RECAP, π*0.6 can fold laundry in real homes, reliably assemble cardboard boxes, and make espresso on a professional machine; the paper reports throughput more than doubling on some of the hardest tasks and failure rate roughly halving.",
+      "related": ["RECAP", "π*0.6", "Advantage Function", "Return Conditioning", "Classifier-Free Guidance", "Advantage-Weighted Regression"]
+    },
+    {
+      "key": "training-09#9",
+      "name_en": "Advantage-Weighted Regression",
+      "aliases": ["AWR", "Advantage-Weighted Behavioral Cloning"],
+      "one_liner": "Doing imitation learning weighted by each action's advantage, so higher-advantage actions get imitated more.",
+      "explanation": "AWR was introduced by Xue Bin Peng, Aviral Kumar, Grace Zhang, and Sergey Levine in 2019, aiming to do reinforcement learning using only supervised-learning regression steps. Each round has two steps: fit the value function by regression, then do weighted behavior cloning, where each action in the data is weighted by exp(advantage/β), so higher-advantage actions get imitated more heavily, with β a temperature coefficient. It can reuse old data from a replay buffer (off-policy), and can also learn from a fixed dataset alone; it needs only a few lines of code to implement, and supports both continuous and discrete actions. This “estimate the advantage, then imitate with weighting” style of policy extraction has been widely adopted by later offline reinforcement-learning methods — implicit Q-learning (IQL), for instance, uses advantage-weighted behavior cloning as its final policy-extraction step.",
+      "example": "Implicit Q-learning first learns a Q-function and a value function from offline data, then extracts the final policy with advantage-weighted behavior cloning: actions in the data with a larger positive advantage get a higher weight during imitation.",
+      "related": ["Advantage Function", "Offline Reinforcement Learning", "Implicit Q-Learning", "Behavior Cloning", "Policy Constraint", "Advantage Conditioning"]
+    },
+    {
+      "key": "training-09#10",
+      "name_en": "Adversarial Motion Priors",
+      "aliases": ["AMP", "AMP Style Reward"],
+      "one_liner": "Using a discriminator that judges how much motion resembles motion-capture data, and turning that resemblance into a reward for natural movement.",
+      "explanation": "AMP was introduced by Xue Bin Peng, Pieter Abbeel, Sergey Levine, Angjoo Kanazawa, and colleagues in 2021, originally for simulated character animation. It borrows from generative adversarial imitation learning: a discriminator is trained on pairs of consecutive-frame states, judging whether a snippet of motion came from a reference motion-capture dataset or from the policy; the policy treats how well it fools the discriminator as a style reward, added to the task reward (such as moving forward at a commanded speed) and optimized together with reinforcement learning. The benefit is not having to hand-write an imitation objective or pick specific motion clips to track — an unstructured pile of mocap clips is enough to make the motion look natural. In 2022, Escontrela and colleagues applied it to the Unitree A1 quadruped, learning a natural, energy-efficient gait from only about 4.5 seconds of German shepherd motion-capture data, and it's often used as a substitute for laborious reward engineering.",
+      "example": "Escontrela and colleagues set the style-reward weight to 0.65 and the task-reward weight to 0.35 on the A1; the robot dog learned a gait resembling a real dog's, naturally switching gaits with speed, and transferred directly to the real robot.",
+      "related": ["Generative Adversarial Imitation Learning", "Reward Engineering", "DeepMimic", "ASE (Adversarial Skill Embeddings)", "Motion Tracking", "Sim-to-Real Transfer"]
+    },
+    {
+      "key": "training-09#11",
+      "name_en": "Asymmetric Actor-Critic",
+      "aliases": ["Asymmetric AC"],
+      "one_liner": "Letting the critic see the full simulated state while the actor sees only what a real robot could actually observe.",
+      "explanation": "Asymmetric actor-critic was introduced by Lerrel Pinto, Marcin Andrychowicz, Pieter Abbeel, and colleagues in 2017. In an actor-critic algorithm, the critic (the value network) is used only during training and discarded at deployment, so while training in simulation it can be given the full true state — exact object poses, velocities, and other privileged information — while the actor (the policy) receives only inputs a real robot can actually get, such as camera images. The critic's value estimates become more accurate, training is faster and more stable, and the policy that's left over can go straight onto a real robot. The original paper combined this with domain randomization to complete grasping and pushing tasks on a 7-DOF Fetch arm using no real-robot data at all. OpenAI's Dactyl dexterous-hand project used the same approach, and it's also common today to let the critic read privileged observations like terrain and friction when training legged locomotion with PPO.",
+      "example": "When training Dactyl, the value network could read extra information unavailable on the real robot, while the policy used only observations available on the real robot; once trained, the policy deployed directly to a Shadow dexterous hand to rotate a block.",
+      "related": ["Privileged Information", "Teacher-Student Distillation", "Value Function", "Partially Observable Markov Decision Process", "Sim-to-Real Transfer", "Domain Randomization"]
+    }
+  ]
+}

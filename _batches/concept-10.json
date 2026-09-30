@@ -1,0 +1,390 @@
+{
+  "category": "concept",
+  "batch": 10,
+  "terms": [
+    {
+      "name_zh": "盲走",
+      "name_en": "Blind Locomotion",
+      "abbr": "",
+      "aliases": [
+        "纯本体感知行走",
+        "无视觉行走",
+        "Proprioceptive Locomotion"
+      ],
+      "tier": 3,
+      "one_liner": "不用相机和雷达，只靠关节、IMU 等本体感知走路的运动控制方式。",
+      "explanation": "盲走指足式机器人行走时不使用相机、激光雷达等外部感知，只依赖关节编码器、IMU（惯性测量单元）等本体感知信号，靠脚下的触地反馈推断地形。代表工作是 ETH 苏黎世 Hutter 组 2020 年发表在 Science Robotics 上的 ANYmal 四足控制器：神经网络只读取本体感知信号序列，训练时用了教师-学生蒸馏，在仿真中训练后零样本迁移到泥地、雪地、碎石、茂密植被和流水等野外地形。2021 年 Siekmann 等人（RSS）用类似思路，让双足机器人 Cassie 只靠本体感知走真实楼梯。盲走的好处是不怕视觉失效（黑暗、烟雾、草丛遮挡），也省掉建图带来的延迟和误差；缺点是只能踩到之后再反应，难以提前规划跨越高台阶或沟壑。因此它常和感知行走结合，在视觉不可靠时兜底。",
+      "example": "ANYmal 四足机器人不看路，只凭腿部关节和 IMU 的信号，走过泥地、雪地和湍急的流水。",
+      "related": [
+        "感知行走",
+        "本体感知",
+        "腿足运动",
+        "复杂地形行走",
+        "教师-学生蒸馏",
+        "仿真到现实迁移"
+      ],
+      "sources": [
+        {
+          "title": "Learning Quadrupedal Locomotion over Challenging Terrain (Lee et al., Science Robotics 2020)",
+          "url": "https://arxiv.org/abs/2010.11251"
+        },
+        {
+          "title": "Blind Bipedal Stair Traversal via Sim-to-Real Reinforcement Learning (Siekmann et al., RSS 2021)",
+          "url": "https://arxiv.org/abs/2105.08328"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "组合泛化",
+      "name_en": "Compositional Generalization",
+      "abbr": "",
+      "aliases": [
+        "系统性泛化",
+        "Systematic Generalization"
+      ],
+      "tier": 3,
+      "one_liner": "把分别学过的要素重新组合，处理训练中没见过的搭配。",
+      "explanation": "组合泛化指模型把训练中分别见过的要素（词、物体、技能、环境因素）按新方式组合后，仍能正确处理。这个问题最早在语言和认知科学中讨论：人学会新动词 dax 后，马上能理解 dax twice 和 sing and dax；Lake 与 Baroni 2018 年（ICML）用 SCAN 基准表明，循环神经网络在需要真正组合的测试上会大幅失败。放到机器人里，要素可以是物体种类、摆放位置、桌面纹理、相机视角，也可以是「抓起」「放进」等原子技能。它重要的原因是要素的组合数随数量成倍增长，不可能每种都采数据。Gao 等人（RSS 2024）发现机器人策略确实能组合部分环境因素，据此设计采集方案，可以少采很多数据。VLA 能否执行「把没见过的物体放进没见过的容器」，也常被当作组合泛化来测。",
+      "example": "训练数据里有「红杯子放进碗」和「蓝盘子放进篮子」，测试时让机器人「把红杯子放进篮子」。",
+      "related": [
+        "泛化",
+        "任务泛化",
+        "语义泛化",
+        "零样本",
+        "分布外",
+        "原子技能"
+      ],
+      "sources": [
+        {
+          "title": "Generalization without Systematicity: On the Compositional Skills of Sequence-to-Sequence Recurrent Networks (Lake & Baroni, ICML 2018)",
+          "url": "https://arxiv.org/abs/1711.00350"
+        },
+        {
+          "title": "Efficient Data Collection for Robotic Manipulation via Compositional Generalization (Gao et al., RSS 2024)",
+          "url": "https://arxiv.org/abs/2403.05110"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "动态操作",
+      "name_en": "Dynamic Manipulation",
+      "abbr": "",
+      "aliases": [],
+      "tier": 3,
+      "one_liner": "利用速度、惯性和重力完成的操作，比如抛、甩、接、颠。",
+      "explanation": "动态操作指机器人有意利用物体的速度、惯性、重力、离心力等动力学效应完成任务，比如抛掷、甩动、接住、拍打。与它相对的是准静态操作：动作慢到可以忽略惯性，每一刻都近似处于静止平衡，大多数抓取放置属于这一类。机器人学里较早的系统研究来自 Lynch 与 Mason（IJRR 1999），他们证明只有一两个关节的简单机械臂，借助滚动、滑动和抛飞也能控制物体状态。动态操作更快，还能把物体送到手臂够不到的地方；难点在于物体一旦脱手就无法修正，需要准确预测动力学，高速下对感知和控制延迟也更敏感。近年学习方法把它和数据驱动结合，如 TossingBot 学抛物入箱，FlingBot 学甩开布料，IRP 学甩绳击中目标。",
+      "example": "FlingBot 用双臂抓住布的两角向前一甩，把一团乱布摊开，比一点点拉平快得多，还能展开比手臂够得着范围更大的布。",
+      "related": [
+        "非抓取操作",
+        "柔性物体操作",
+        "衣物操作",
+        "外在灵巧性",
+        "准静态假设",
+        "操作"
+      ],
+      "sources": [
+        {
+          "title": "Dynamic Nonprehensile Manipulation: Controllability, Planning and Experiments (Lynch & Mason, IJRR 1999)",
+          "url": "https://publications.ri.cmu.edu/dynamic-nonprehensile-manipulation-controllability-planning-and-experiments/"
+        },
+        {
+          "title": "FlingBot: The Unreasonable Effectiveness of Dynamic Manipulation for Cloth Unfolding (CoRL 2021)",
+          "url": "https://arxiv.org/abs/2105.03655"
+        },
+        {
+          "title": "TossingBot: Learning to Throw Arbitrary Objects with Residual Physics",
+          "url": "https://arxiv.org/abs/1903.11239"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "具身认知",
+      "name_en": "Embodied Cognition",
+      "abbr": "",
+      "aliases": [
+        "具身性",
+        "涉身性",
+        "Embodiment (cognitive science)",
+        "具身心智",
+        "涉身认知"
+      ],
+      "tier": 3,
+      "one_liner": "认为思维离不开身体及身体与环境互动的认知科学观点。",
+      "explanation": "具身认知是认知科学和心灵哲学中的一类理论，主张思维不只是大脑里的符号运算，而是由身体的形态、感觉运动能力以及身体与环境的互动共同塑造。思想源头可追溯到梅洛-庞蒂等人的现象学；1991 年 Varela、Thompson、Rosch 合著的《具身心智》（The Embodied Mind）把它系统化，Lakoff 与 Johnson 则从语言角度论证抽象概念来自身体经验。它对机器人学影响很直接：Rodney Brooks 放弃「先建完整世界模型再规划」的做法，让传感器直接驱动行为，主张世界本身就是最好的模型；Rolf Pfeifer 等人也认为真正的智能需要有感觉运动能力的身体。今天「具身智能」的说法就源于这一脉络，它为「智能要在与物理世界的交互中形成」提供了理论依据。",
+      "example": "英语用 grasp（抓住）表示「理解」，Lakoff 与 Johnson 把这类说法看作抽象概念借用身体经验的证据。",
+      "related": [
+        "具身智能",
+        "离身智能",
+        "包容架构（行为式机器人）",
+        "形态计算",
+        "符号落地问题",
+        "莫拉维克悖论"
+      ],
+      "sources": [
+        {
+          "title": "Embodied Cognition (Stanford Encyclopedia of Philosophy)",
+          "url": "https://plato.stanford.edu/entries/embodied-cognition/"
+        },
+        {
+          "title": "Embodied cognition (Wikipedia)",
+          "url": "https://en.wikipedia.org/wiki/Embodied_cognition"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "具身交互",
+      "name_en": "Embodied Interaction",
+      "abbr": "",
+      "aliases": [],
+      "tier": 3,
+      "one_liner": "智能体在物理或仿真空间中与人、物体和环境发生的交互。",
+      "explanation": "具身交互在具身智能领域指智能体（真实机器人或仿真中的虚拟体）在物理或仿真空间中与人和环境发生的交互：既包括移动、抓取、推拉等会改变环境的动作，也包括听人的语言指令行事、回答问题。中山大学等团队 2024 年的具身智能综述把它列为四个研究方向之一（另外三个是具身感知、具身智能体、仿真到现实），并以具身问答和语言引导抓取为典型任务。它和纯感知的区别在于交互会改变环境，智能体既要决定做什么，也要判断何时已获得足够信息。这个词在人机交互（HCI）领域另有用法：Paul Dourish 2001 年的著作 Where the Action Is 用它指人通过身体、实物和社会情境与计算系统互动，属于界面设计理论，读文献时需要区分。",
+      "example": "用户说「我渴了，给我点喝的」，机器人要推断出意图，找到饮料并稳稳递过去，而不只是认出画面里有杯子。",
+      "related": [
+        "具身感知",
+        "具身问答",
+        "人机交互",
+        "物理人机交互",
+        "交互式感知",
+        "语言接地"
+      ],
+      "sources": [
+        {
+          "title": "Aligning Cyber Space with Physical World: A Comprehensive Survey on Embodied AI (Liu et al., 2024)",
+          "url": "https://arxiv.org/abs/2407.06886"
+        },
+        {
+          "title": "Paul Dourish (Wikipedia, on Where the Action Is: The Foundations of Embodied Interaction)",
+          "url": "https://en.wikipedia.org/wiki/Paul_Dourish"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "具身记忆",
+      "name_en": "Embodied Memory",
+      "abbr": "",
+      "aliases": [
+        "机器人记忆"
+      ],
+      "tier": 3,
+      "one_liner": "机器人把看过、做过的事存下来，供之后决策和回答问题使用。",
+      "explanation": "具身记忆指具身智能体在长时间运行中保存并调用过去经历的机制：去过哪里、东西放在哪、任务做到了哪一步、上次在哪里失败。它之所以必要，是因为机器人每次只能看到局部（部分可观测），很多任务又持续几分钟到几天，只看当前画面的策略会忘掉已完成的子任务，或反复寻找同一样东西。常见做法有三类：一是在模型内部保存历史特征，如 MemoryVLA（2025）借鉴人的工作记忆和情景记忆，给 VLA 加了记忆库；二是维护外部结构化记忆，如 3D 场景图、语义地图，KARMA 用长期场景图加短期状态记录来辅助家务规划；三是检索增强，如 ReMEmbR 把长时间导航的画面按时间、位置存进数据库，用来回答「在哪、什么时候发生」一类问题。",
+      "example": "巡逻机器人被问「上次在哪看到一辆红色推车」，需要从几小时的历史画面中检索出时间和位置再回答。",
+      "related": [
+        "记忆增强 VLA",
+        "MemoryVLA",
+        "长程任务",
+        "部分可观测马尔可夫决策过程",
+        "3D场景图",
+        "具身问答"
+      ],
+      "sources": [
+        {
+          "title": "MemoryVLA: Perceptual-Cognitive Memory in Vision-Language-Action Models for Robotic Manipulation",
+          "url": "https://arxiv.org/abs/2508.19236"
+        },
+        {
+          "title": "ReMEmbR: Building and Reasoning Over Long-Horizon Spatio-Temporal Memory for Robot Navigation",
+          "url": "https://arxiv.org/abs/2409.13682"
+        },
+        {
+          "title": "KARMA: Augmenting Embodied AI Agents with Long-and-short Term Memory Systems",
+          "url": "https://arxiv.org/abs/2409.14908"
+        }
+      ],
+      "as_of": "2025-08"
+    },
+    {
+      "name_zh": "具身感知",
+      "name_en": "Embodied Perception",
+      "abbr": "",
+      "aliases": [],
+      "tier": 3,
+      "one_liner": "为行动服务的感知：边移动边观察，理解三维空间并支撑决策。",
+      "explanation": "具身感知指身处环境中的智能体为了行动而进行的感知。和传统计算机视觉「给一张图、输出标签」不同，它的输入是随身体移动不断变化的第一人称观测，要回答的是「我在哪、周围是什么三维结构、下一步该往哪看、怎么动」。中山大学等团队 2024 年的具身智能综述把它列为四个研究方向之一，内容包括视觉 SLAM（同时定位与建图）、3D 场景理解、主动探索，以及视觉语言导航等任务。它的关键特点是主动：智能体可以转头、走近、挪开遮挡物来获取更多信息，而不是被动接收数据。机器人上的深度相机、激光雷达、触觉传感器，以及点云、语义地图等表示，都服务于具身感知。",
+      "example": "机器人在桌上找不到遥控器时，会换个角度或挪开挡在前面的杂志再看，而不是只对当前一帧图片做检测。",
+      "related": [
+        "主动感知",
+        "交互式感知",
+        "同步定位与建图",
+        "场景理解",
+        "具身交互",
+        "多模态感知"
+      ],
+      "sources": [
+        {
+          "title": "Aligning Cyber Space with Physical World: A Comprehensive Survey on Embodied AI (Liu et al., 2024)",
+          "url": "https://arxiv.org/abs/2407.06886"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "具身问答",
+      "name_en": "Embodied Question Answering",
+      "abbr": "EQA",
+      "aliases": [
+        "Embodied QA"
+      ],
+      "tier": 3,
+      "one_liner": "智能体在三维环境里自己走动收集信息，再回答问题的任务。",
+      "explanation": "具身问答由 Abhishek Das、Dhruv Batra 等人在 2017 年底提出（CVPR 2018 口头报告）：智能体被放在 3D 房屋环境的随机位置，收到一个问题，比如「车是什么颜色」，它必须以第一人称视角自己导航、找到相关物体，再给出答案。首个数据集 EQA v1 建在 House3D 仿真器上，问题分位置、颜色、房间颜色、介词关系几类。这个任务把主动感知、语言理解、目标导航、常识推理和语言接地放在一起，因此常被当作检验具身智能的综合基准。之后出现了多目标、真实扫描场景等变体；Meta FAIR 在 CVPR 2024 发布的 OpenEQA 把它扩展到开放词汇，分为「凭记忆回答」和「主动探索后回答」两种设置。大模型时代常用视觉语言模型加前沿探索来做。",
+      "example": "问智能体「厨房里有几把椅子」，它需要从客厅出发找到厨房、数清椅子，再给出答案。",
+      "related": [
+        "具身交互",
+        "视觉问答",
+        "OpenEQA 开放词汇具身问答基准",
+        "主动探索",
+        "视觉语言导航",
+        "具身记忆"
+      ],
+      "sources": [
+        {
+          "title": "Embodied Question Answering (Das et al., CVPR 2018)",
+          "url": "https://arxiv.org/abs/1711.11543"
+        },
+        {
+          "title": "EmbodiedQA project page",
+          "url": "https://embodiedqa.org/"
+        },
+        {
+          "title": "OpenEQA: Embodied Question Answering in the Era of Foundation Models",
+          "url": "https://open-eqa.github.io/"
+        }
+      ],
+      "as_of": "2024-06"
+    },
+    {
+      "name_zh": "具身视觉跟踪（目标跟随）",
+      "name_en": "Embodied Visual Tracking",
+      "abbr": "EVT",
+      "aliases": [
+        "目标跟随",
+        "主动目标跟踪",
+        "Active Object Tracking"
+      ],
+      "tier": 3,
+      "one_liner": "机器人靠自身相机持续跟着指定目标移动，让目标始终留在视野里。",
+      "explanation": "具身视觉跟踪指智能体仅凭第一人称视觉，在动态环境中持续跟随指定目标（通常是行人或另一台机器人），并控制自身移动，让目标保持在视野内、距离合适。它和传统视觉跟踪的区别是：传统方法只在录好的视频里框出目标，而这里跟踪器要自己输出运动指令，看到什么取决于自己怎么走。Wenhan Luo 等人 2018 年（ICML）的主动目标跟踪用强化学习把画面直接映射成前进、转弯等动作，是早期代表。难点在于遮挡、外观相似的干扰者、目标突然转向，以及目标识别和路径规划要同时完成。2025 年北京大学、银河通用等团队的 TrackVLA（CoRL 2025）用一个视觉-语言-动作模型同时做识别和轨迹规划，并构建了 EVT-Bench，采集约 170 万条样本。应用包括陪伴跟随、跟拍和物流跟车。",
+      "example": "机器狗听到「跟着穿红衣服的人」后在人群中锁定对方；对方拐进走廊被短暂挡住，它仍能找回并继续跟随。",
+      "related": [
+        "目标跟踪",
+        "银河通用 TrackVLA",
+        "视觉语言导航",
+        "主动感知",
+        "社交导航",
+        "视觉-语言-动作模型"
+      ],
+      "sources": [
+        {
+          "title": "End-to-end Active Object Tracking via Reinforcement Learning (Luo et al., ICML 2018)",
+          "url": "https://arxiv.org/abs/1705.10561"
+        },
+        {
+          "title": "TrackVLA: Embodied Visual Tracking in the Wild",
+          "url": "https://arxiv.org/abs/2505.23189"
+        },
+        {
+          "title": "TrackVLA project page",
+          "url": "https://pku-epic.github.io/TrackVLA-web/"
+        }
+      ],
+      "as_of": "2025-05"
+    },
+    {
+      "name_zh": "本体无关",
+      "name_en": "Embodiment-agnostic",
+      "abbr": "",
+      "aliases": [
+        "本体不可知",
+        "与本体无关"
+      ],
+      "tier": 3,
+      "one_liner": "方法或表示不绑定某一款机器人的结构，可以用到不同机器人上。",
+      "explanation": "本体无关用来形容一种模型、表示或数据格式不绑定特定的机器人本体（关节数、夹爪类型、相机位置、控制频率各不相同）。机器人学习中，每种机器人的动作空间都不一样，直接混在一起训练很难，所以研究者常用与本体无关的形式描述「要做什么」，比如物体该怎么移动（物体轨迹或场景流）、手或末端的轨迹、潜在动作，再为具体机器人换算出关节指令。Tang 等人 2024 年的工作先生成物体部件的 3D 场景流，再解出不同机器人的动作轨迹，还能从人类视频中学习。另一条路是让同一个网络直接消化各种本体的数据，如 CrossFormer 用同一套权重控制单臂、双臂、轮式车、四旋翼和四足。它与跨本体、统一动作空间、本体专属头等概念相关，目标都是让数据和模型在不同机器人之间复用。",
+      "example": "同一条「把杯子挪到盘子左边」的物体运动轨迹，可以分别换算成机械臂夹爪的动作和人形机器人手的动作。",
+      "related": [
+        "跨本体",
+        "本体差异",
+        "统一动作空间",
+        "本体专属头",
+        "潜在动作",
+        "中间表示"
+      ],
+      "sources": [
+        {
+          "title": "Embodiment-Agnostic Action Planning via Object-Part Scene Flow (Tang et al., 2024)",
+          "url": "https://arxiv.org/abs/2409.10032"
+        },
+        {
+          "title": "Scaling Cross-Embodied Learning: One Policy for Manipulation, Navigation, Locomotion and Aviation (CrossFormer)",
+          "url": "https://arxiv.org/abs/2408.11812"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "经验时代",
+      "name_en": "Era of Experience",
+      "abbr": "",
+      "aliases": [
+        "Welcome to the Era of Experience"
+      ],
+      "tier": 3,
+      "one_liner": "Silver 与 Sutton 的观点：AI 下一阶段主要靠自身交互经验来学习。",
+      "explanation": "经验时代出自 David Silver 与 Richard Sutton 2025 年 4 月发布的短文 Welcome to the Era of Experience，是 MIT Press 图书 Designing an Intelligence 中一章的预印本；Silver 是 AlphaGo 系列的主要负责人之一，Sutton 是强化学习奠基人之一。文章认为，靠海量人类数据训练、再用人类偏好微调的「人类数据时代」在数学、代码、科学等领域正接近上限，下一阶段智能体应主要从自己与环境交互产生的经验中学习。文中列出四个特征：活在长期的经验流里而非短对话中；行动和观察扎根于环境；奖励来自环境中的真实信号而非人的事先评判；规划和推理也基于经验。对具身智能而言，这一观点支持机器人在真实部署中持续试错、自我改进。",
+      "example": "文中举 AlphaProof 为例：它先学习约十万条人类写的形式化证明，再通过与证明系统交互自行生成约一亿条，最终在国际数学奥林匹克上达到奖牌水平。",
+      "related": [
+        "强化学习",
+        "苦涩的教训",
+        "真机强化学习",
+        "自我提升",
+        "数据飞轮",
+        "持续学习"
+      ],
+      "sources": [
+        {
+          "title": "Welcome to the Era of Experience (Silver & Sutton, 2025, preprint)",
+          "url": "https://storage.googleapis.com/deepmind-media/Era-of-Experience%20/The%20Era%20of%20Experience%20Paper.pdf"
+        }
+      ],
+      "as_of": "2025-04"
+    },
+    {
+      "name_zh": "外在灵巧性",
+      "name_en": "Extrinsic Dexterity",
+      "abbr": "",
+      "aliases": [
+        "外部灵巧性"
+      ],
+      "tier": 3,
+      "one_liner": "借助重力、桌面、墙壁、手臂甩动等外部条件，让简单夹爪完成复杂操作。",
+      "explanation": "外在灵巧性由 Chavan-Dafle、Rodriguez、Mason 等人在 ICRA 2014 的论文中提出，指不靠手指自身的灵活运动，而是借助手外部的资源，包括重力、与桌面或墙壁的接触、手臂的动态运动，来调整物体在手中的位置或完成操作。传统灵巧操作主要依赖多指手的手指协调运动。原论文为简单夹爪设计了 12 种重新抓取动作，在 3 个物体上做了 1200 多次实验，说明简单夹爪也能完成相当多的手内操作。它的意义在于：高自由度灵巧手昂贵且难控制，而善用环境能大幅扩展简单夹爪的能力。后续工作开始用学习方法自动发现这类技巧，例如 Zhou 与 Held（CoRL 2022）用强化学习让夹爪学会把平躺、无处下手的物体推靠墙壁翻起再抓，从仿真迁移到真机的成功率为 78%。",
+      "example": "书平放在桌上，夹爪无从下手，机器人先把书推到墙边让它斜立起来，再从侧面夹住。",
+      "related": [
+        "非抓取操作",
+        "手内操作",
+        "接触丰富操作",
+        "灵巧操作",
+        "动态操作",
+        "夹爪"
+      ],
+      "sources": [
+        {
+          "title": "Extrinsic Dexterity: In-Hand Manipulation with External Forces (Chavan-Dafle et al., ICRA 2014)",
+          "url": "https://publications.ri.cmu.edu/extrinsic-dexterity-in-hand-manipulation-with-external-forces/"
+        },
+        {
+          "title": "Learning to Grasp the Ungraspable with Emergent Extrinsic Dexterity (Zhou & Held, CoRL 2022)",
+          "url": "https://arxiv.org/abs/2211.01500"
+        }
+      ],
+      "as_of": ""
+    }
+  ]
+}

@@ -1,0 +1,203 @@
+{
+  "batch": "concept-09",
+  "terms": [
+    {
+      "key": "concept-09#0",
+      "name_en": "The Bitter Lesson",
+      "aliases": [],
+      "one_liner": "Rich Sutton's argument that, over time, general methods that scale with compute beat hand-engineered domain knowledge.",
+      "explanation": "This is a short essay published in March 2019 by Rich Sutton, one of the founders of reinforcement learning. Looking back over 70 years of AI research, he argues that what has actually worked in the long run is general-purpose methods that can fully exploit growing compute — search and learning — rather than hard-coding human understanding of a domain into the system. Chess, Go, speech, and vision all followed the same pattern: hand-engineered knowledge produced short-term progress, but was ultimately overtaken by scaled-up search and learning, because the cost of a unit of compute keeps falling exponentially. In embodied AI, this essay is often invoked to support an “end-to-end plus big data plus large models” approach and to argue against over-engineered, hand-designed modules; the point of contention is that robot data is far scarcer than text and images, so whether the same lesson applies is still debated.",
+      "example": "Sutton's own example: computer Go long relied on hand-crafted Go theory and Go-specific structure, and was eventually surpassed completely by methods based on large-scale search plus self-play learning of a value function.",
+      "related": [
+        "Scaling Laws",
+        "End-to-end",
+        "Moravec's Paradox",
+        "Foundation Model",
+        "Data Scarcity",
+        "Embodied AI"
+      ]
+    },
+    {
+      "key": "concept-09#1",
+      "name_en": "Tool Use",
+      "aliases": [],
+      "one_liner": "A robot using an external object as a tool to complete a task it cannot do bare-handed.",
+      "explanation": "Tool use means a robot treats an object in its environment as an extension of its arm — pulling a distant item closer with a hook, stir-frying with a spatula, tightening a screw with a screwdriver. The difficulty lies in understanding a tool's shape and affordance (how an object can be used), grasping the contact mechanics between the tool and the target object, and replanning motion once the tool is in hand. A 2023 study, RoboTool, splits “creative tool use” into three categories: selecting the right tool from several objects, using multiple tools in sequence, and improvising or assembling a tool on the spot. A common recent approach uses a large language model for high-level reasoning, with imitation learning or reinforcement learning handling the specific motions. Note this is unrelated to “tool calling” in the large-model world, where an AI calls an API.",
+      "example": "In RoboTool (2023), a Kinova robot arm cannot reach a milk carton at the far end of a table, so it selects a hammer from among several objects and uses it to hook the carton within reach.",
+      "related": [
+        "Affordance",
+        "Manipulation",
+        "Contact-rich Manipulation",
+        "LLM-based Task Planning",
+        "Long-horizon Task",
+        "Dexterous Manipulation"
+      ]
+    },
+    {
+      "key": "concept-09#2",
+      "name_en": "Tote Handling",
+      "aliases": [
+        "Material Handling"
+      ],
+      "one_liner": "The task of picking up, moving, and placing standard plastic totes (storage bins) in warehouses and on production lines.",
+      "explanation": "A tote is the standard plastic storage bin used to hold parts or goods in logistics warehouses and factories. Tote handling means taking a tote off a shelf, a cart, or a collaborative robot arm and moving it to a conveyor, a workstation, or another storage location, sometimes including stacking and unstacking totes as well. It is one of the most common and repetitive jobs within material handling: totes are a uniform size, the motion involved is fairly fixed, and there is a reasonable margin for error, which is why a number of humanoid robot companies have chosen it as an early deployment scenario. Compared with retrofitting a conveyor line or adding dedicated equipment, a humanoid robot's selling point is that it can slot directly into a workstation previously staffed by a person, though cycle time, continuous run duration, and reliability remain the main things customers evaluate.",
+      "example": "In June 2024, logistics company GXO signed a multi-year robots-as-a-service agreement with Agility Robotics, under which Digit humanoid robots move totes handed off by a collaborative arm onto a conveyor at a SPANX warehouse.",
+      "related": [
+        "Palletizing / Depalletizing",
+        "Machine Tending",
+        "Sorting",
+        "Humanoid Robot",
+        "Real-world Deployment",
+        "Robots-as-a-Service"
+      ]
+    },
+    {
+      "key": "concept-09#3",
+      "name_en": "Uncanny Valley",
+      "aliases": [],
+      "one_liner": "The more human a robot looks, the more likeable it is — until it looks almost, but not quite, human, which feels unsettling.",
+      "explanation": "This hypothesis was proposed in 1970 by Japanese roboticist Masahiro Mori in the Japanese magazine Energy, under the original title “Bukimi no Tani Genshō.” He described it with a curve plotting affinity against human likeness: the more human-like a robot is, the more people warm to it, but once its appearance gets very close to a real person while still having subtle flaws, affinity plunges sharply into revulsion, forming a “valley” — only once a robot becomes indistinguishable from an actual human does affinity rise again. He also noted that movement amplifies this effect. The implication for humanoid design is to either stay clearly “non-human,” mechanical-looking or cartoonish, or be equally realistic in every dimension, avoiding a mismatch such as lifelike skin paired with stiff, robotic expressions. IEEE Spectrum published an authorized full English translation of the original essay in 2012.",
+      "example": "Mori's own example: a finely crafted prosthetic hand can look very realistic, but the moment you shake it and feel it is cold and limp, a sudden sense of unease sets in.",
+      "related": [
+        "Humanoid Robot",
+        "Ultra-realistic Humanoid",
+        "Human-Robot Interaction",
+        "Ameca (Expressive Humanoid)",
+        "Sophia (Robot)"
+      ]
+    },
+    {
+      "key": "concept-09#4",
+      "name_en": "Visuomotor Policy",
+      "aliases": [],
+      "one_liner": "A control policy that maps camera images directly to robot actions, usually a neural network.",
+      "explanation": "A “policy” is a mapping from observations to actions; a visuomotor policy specifically takes input that is mostly images, often with proprioceptive state such as joint angles added, and outputs motor commands, joint positions, or end-effector pose. The term was popularized by Sergey Levine, Chelsea Finn, and colleagues' 2015 paper “End-to-End Training of Deep Visuomotor Policies”: using a convolutional network with about 92,000 parameters, it mapped raw images directly to joint torques to complete tasks such as screwing on a bottle cap, showing that training perception and control jointly worked better than training them separately. Today's ACT, Diffusion Policy, and language-augmented VLA models are all visuomotor policies, most commonly trained with imitation learning or reinforcement learning.",
+      "example": "The Diffusion Policy paper is literally titled “Visuomotor Policy Learning via Action Diffusion”: it takes in camera images and outputs a sequence of robot-arm actions to complete manipulation tasks such as pushing a T-shaped block.",
+      "related": [
+        "Policy",
+        "End-to-end",
+        "Diffusion Policy",
+        "Imitation Learning",
+        "Vision-Language-Action Model",
+        "End-to-End Visuomotor Policies (Guided Policy Search)"
+      ]
+    },
+    {
+      "key": "concept-09#5",
+      "name_en": "Active Exploration",
+      "aliases": [],
+      "one_liner": "An agent deciding for itself where to look and what to touch, actively gathering information about the unknown.",
+      "explanation": "As opposed to passively receiving data, active exploration means an agent chooses how to move and interact so as to gather information at as low a cost as possible. In navigation, this usually means placing a robot in an unfamiliar house and asking it to cover and map as much of it as possible within a limited number of steps, a prerequisite capability for downstream tasks like object search and embodied question answering. The classic approach is frontier exploration, heading toward the boundary between known and unknown areas; a learning-based method such as Active Neural SLAM (2020) builds a map with a neural network, with a global policy choosing a long-term goal and a local policy handling the walk there. In manipulation, active exploration can also mean pushing or shaking an object to discover hidden properties such as its mass or its articulated structure. “Exploration” in reinforcement learning is a related but broader concept.",
+      "example": "In the Habitat simulator, an Active Neural SLAM agent moves through an unfamiliar apartment on its own and draws a top-down map; a variant of the method also won the CVPR 2019 Habitat PointGoal Navigation Challenge.",
+      "related": [
+        "Frontier Exploration",
+        "Active Perception",
+        "Interactive Perception",
+        "Exploration vs. Exploitation",
+        "Simultaneous Localization and Mapping",
+        "Navigation"
+      ]
+    },
+    {
+      "key": "concept-09#6",
+      "name_en": "Aerial Manipulation",
+      "aliases": [],
+      "one_liner": "Fitting a flying platform such as a drone with an arm or gripper so it can physically contact objects in the air.",
+      "explanation": "This field combines a flying platform's mobility with a robot arm's manipulation ability. The common form is a multirotor drone carrying one or more arms or grippers, though helicopters and dedicated platforms able to produce thrust in multiple directions also exist. Unlike an ordinary drone used only for photography or mapping, this kind of system must grasp, press, plug in, unplug, or perform contact-based inspection while hovering or flying. The difficulty is that the arm's motion and contact forces disturb the aircraft's own attitude in turn, so flight and manipulation must be modeled and controlled together, all while payload and flight time remain tightly limited. The EU's AEROARMS project (2015–2019, led by Anibal Ollero's group at the University of Seville) built drones with multiple arms for inspecting and maintaining industrial facilities such as oil refineries.",
+      "example": "The AEROARMS project's multi-arm drone completed its final review demonstration at a refinery in Germany, flying up to pipes at height to perform contact-based inspection in place of a worker climbing up.",
+      "related": [
+        "UAV (Aerial Robot)",
+        "Mobile Manipulation",
+        "Contact-rich Manipulation",
+        "Inspection Robot",
+        "Aerial Vision-and-Language Navigation (UAV VLN)",
+        "Whole-body Control"
+      ]
+    },
+    {
+      "key": "concept-09#7",
+      "name_en": "Aerial Vision-and-Language Navigation",
+      "aliases": [
+        "UAV VLN",
+        "Aerial VLN"
+      ],
+      "one_liner": "Having a drone understand a natural-language instruction and fly to a target location in a 3D outdoor space such as a city.",
+      "explanation": "Vision-and-language navigation (VLN) originally studied ground robots walking indoors by following language instructions; aerial VLN brings this to drones: the agent sees a first-person view and flies outdoors following an instruction describing landmarks and a route. Compared with the ground setting, it adds an extra dimension, altitude; paths routinely run hundreds of meters, instructions have to reference more landmarks, and both localization and long-range memory become harder. A representative benchmark is AerialVLN (ICCV 2023), built on Unreal Engine 4 and Microsoft AirSim across 25 city-scale scenes, collecting 8,446 flight paths and 25,338 instructions with an average path length of 661.8 meters; actions include moving forward, turning left or right, ascending, descending, strafing left or right, and stopping.",
+      "example": "On the AerialVLN test set, following instructions averaging 83 English words, the CMA baseline reaches a success rate of only 1.6%, compared with 80.8% for humans — a very large gap.",
+      "related": [
+        "Vision-and-Language Navigation",
+        "UAV (Aerial Robot)",
+        "R2R / VLN-CE Benchmarks",
+        "Navigation",
+        "Long-horizon Task",
+        "Aerial Manipulation"
+      ]
+    },
+    {
+      "key": "concept-09#8",
+      "name_en": "Asimov's Three Laws of Robotics",
+      "aliases": [
+        "Robot Constitution"
+      ],
+      "one_liner": "Asimov's three rules of robot behavior, and their modern descendant, the rule sets large models use to keep robots safe.",
+      "explanation": "Science fiction writer Isaac Asimov fully stated these in his 1942 short story “Runaround”: first, a robot may not injure a human being or, through inaction, allow a human being to come to harm; second, a robot must obey orders given by human beings, except where such orders conflict with the first law; third, a robot must protect its own existence as long as this does not conflict with the first two laws. A higher-priority “zeroth law” was added later: a robot may not harm humanity as a whole. The three laws were purely a fictional device. Now that large models are being connected to robots, Google DeepMind has borrowed the idea to propose a “robot constitution”: a set of safety rules written in natural language and placed in the prompt, so the model constrains itself when choosing tasks and deciding on actions. This supplements, rather than replaces, physical safety measures such as force limiting and emergency stops.",
+      "example": "Google DeepMind's AutoRT (2024) writes a robot constitution inspired by the three laws into its prompt, ruling out tasks involving people, animals, sharp objects, or electrical appliances; the 2025 ASIMOV benchmark uses an automatically generated and iteratively revised constitution to evaluate semantic safety, reaching an alignment rate of up to 84.3%.",
+      "related": [
+        "Embodied Safety",
+        "Safety Filter",
+        "Functional Safety",
+        "Emergency Stop",
+        "AutoRT",
+        "Gemini Robotics"
+      ]
+    },
+    {
+      "key": "concept-09#9",
+      "name_en": "Audio-Visual Navigation",
+      "aliases": [],
+      "one_liner": "An agent using both 'eyes' and 'ears' together to find a sound-emitting target in a 3D environment.",
+      "explanation": "This adds hearing on top of visual navigation: the agent receives both a first-person view and audio at the same time, and has to walk to an object that is making a sound. Sound can travel around walls and reflect off surfaces in a room, so it both hints at direction and reveals the space's structure, which is especially useful when the target is out of view. SoundSpaces (ECCV 2020) is an early landmark in this area: built on geometric acoustics, it renders sound for two sets of real scans, Matterport3D and Replica, and plugs into the Habitat simulator, where agents are trained with multimodal deep reinforcement learning. Later work on “semantic audio-visual navigation” has objects emit short, semantically appropriate sounds, such as a toilet flushing or a door creaking, and requires the agent to keep heading to the source from memory even after the sound has stopped.",
+      "example": "In SoundSpaces, an agent is placed in an unfamiliar apartment and hears a sound coming from somewhere; it has to combine vision and audio to walk all the way to the source and stop there.",
+      "related": [
+        "Navigation",
+        "Object-Goal Navigation",
+        "Point-Goal Navigation",
+        "Multimodal Perception",
+        "Microphone Array",
+        "Habitat"
+      ]
+    },
+    {
+      "key": "concept-09#10",
+      "name_en": "Behavioral Generalization",
+      "aliases": [],
+      "one_liner": "A policy still succeeding when a change in the situation forces the 'correct action' itself to change.",
+      "explanation": "This is one dimension of generalization for robot policies. The STAR-Gen taxonomy, proposed in 2025 by Jensen Gao, Dorsa Sadigh, and colleagues, splits manipulation generalization into three categories: visual generalization, where the image changes, such as a new background or lighting; semantic generalization, where the language instruction or concept changes; and behavioral generalization, where the change means even the action an expert should take has to change too. Behavioral generalization covers cases such as: an object's position changes, an object's shape changes so the grasp itself must change, the tabletop becomes cluttered or its height changes, hidden object properties such as mass or friction change, or even the robot itself changes. This kind of variation cannot be handled just by “recognizing” the change — the policy also has to “act” correctly, which requires enough diversity of actions in the training data.",
+      "example": "In training the cup always sits at the center of the table; at test time it is moved to a corner, or swapped for a cup that can only be picked up by its handle — the policy has to change its trajectory and grasp, which is behavioral generalization. Just changing the tablecloth's color, by contrast, is visual generalization.",
+      "related": [
+        "Generalization",
+        "Visual Generalization",
+        "Semantic Generalization",
+        "Spatial Generalization",
+        "Object Generalization",
+        "Cross-Embodiment"
+      ]
+    },
+    {
+      "key": "concept-09#11",
+      "name_en": "Bin Picking",
+      "aliases": [],
+      "one_liner": "A robot identifying and picking parts or items, one at a time, out of a cluttered bin.",
+      "explanation": "This is a classic task in industry and logistics: parts or goods are piled randomly in a bin, in a mix of orientations, occluding or even tangled with each other, and the robot must first use a camera, usually 3D vision, to identify a target, estimate its pose or a graspable point, then plan a path that avoids the bin's walls, and pick items out one at a time with a suction cup or gripper. In manufacturing this is often called “3D vision-guided bin picking,” used for machine tending and feeding parts onto a line; in logistics it means picking a single item out of a tote. Amazon's Picking Challenge, held from 2015 to 2017, turned this into a hot topic in robotics research. The main remaining difficulties today are transparent, reflective, and soft objects, along with entirely new items the system has never seen.",
+      "example": "At an auto-parts factory, a structured-light camera photographs a bin of jumbled metal parts, an algorithm computes each part's 6D pose, and the robot arm picks them out one by one and places them at the machine's loading position.",
+      "related": [
+        "Grasping",
+        "Grasp Pose Detection",
+        "6D Pose Estimation",
+        "3D Vision-guided Picking",
+        "Machine Tending",
+        "Amazon Picking Challenge"
+      ]
+    }
+  ]
+}

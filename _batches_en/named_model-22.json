@@ -1,0 +1,116 @@
+{
+  "batch": "named_model-22",
+  "terms": [
+    {
+      "key": "named_model-22#0",
+      "name_en": "RoboAgent",
+      "abbr": "MT-ACT",
+      "aliases": ["MT-ACT", "Multi-Task Action Chunking Transformer", "RoboAgent: Generalization and Efficiency in Robot Manipulation via Semantic Augmentations and Action Chunking"],
+      "one_liner": "A multi-skill kitchen manipulation agent from CMU and Meta, trained on just 7,500 demonstrations.",
+      "explanation": "RoboAgent was released by Carnegie Mellon University and Meta AI in September 2023 (accepted at ICRA 2024), addressing the question of whether a small amount of real-robot data can still train a robot with many skills, given how expensive that data is. The approach combines two ideas. First, semantic augmentation: the Segment Anything Model (SAM) segments objects in each frame, and their shape, color, and texture are then altered to multiply the existing data. Second, MT-ACT (Multi-Task Action Chunking Transformer), which extends ACT's action chunking (predicting a short block of future actions at once) to a multi-task setting where a language instruction distinguishes between tasks. Using only 7,500 teleoperated trajectories, a single policy learned 12 skills across 38 kitchen tasks, outperforming prior methods by more than 40% in unseen scenarios. The associated data was open-sourced under the name RoboSet.",
+      "example": "A single demonstration of 'pull open the drawer' can be semantically augmented into many training samples with different-looking drawers and countertops, all used together to train MT-ACT.",
+      "related": ["Action Chunking", "ACT", "Data Augmentation", "Segment Anything Model", "Multi-Task Learning", "Language-conditioned Policy"]
+    },
+    {
+      "key": "named_model-22#1",
+      "name_en": "RoboBrain",
+      "aliases": ["RoboBrain 1.0", "RoboBrain 2.0", "RoboBrain 2.5", "BAAI embodied brain model"],
+      "one_liner": "An open-source series of embodied 'brain' models from BAAI in Beijing, responsible for task planning and spatial understanding.",
+      "explanation": "RoboBrain is a series of open-source embodied 'brain' models from the Beijing Academy of Artificial Intelligence (BAAI). Given an image and an instruction, it outputs intermediate results such as task decomposition, affordances (where an object can be grasped or pressed), and end-effector trajectories, which are then handed to a lower-level controller for execution; it does not directly output motor commands itself. Version 1.0 was released in February 2025 and accepted at CVPR 2025, together with the ShareRobot annotated dataset; version 2.0's technical report followed in July 2025, with 7B and 32B sizes, adding capabilities such as spatial referring and long-horizon planning for multi-robot collaboration; version 2.5 began releasing 8B and 4B weights from January 2026 onward, upgrading from predicting 2D image coordinates to predicting 3D spatial trajectories with depth, and adding a general-purpose reward model that estimates task progress. RoboBrain is one of the more complete open-source 'brain' models in the domestic 'brain-cerebellum' hierarchical approach.",
+      "example": "Given a kitchen photo and the instruction 'put the bowl in the microwave,' RoboBrain first breaks the task into sub-steps, then marks on the image where the bowl should be grasped and the hand's movement trajectory, for a lower-level controller to execute.",
+      "related": ["Embodied Foundation Model", "Brain–Cerebellum Architecture (Robot Brain & Cerebellum)", "Affordance", "Spatial Reasoning", "RoboOS", "Beijing Academy of Artificial Intelligence"]
+    },
+    {
+      "key": "named_model-22#2",
+      "name_en": "RoboCat",
+      "aliases": ["RoboCat: A Self-Improving Generalist Agent for Robotic Manipulation"],
+      "one_liner": "DeepMind's cross-embodiment manipulation agent, built on Gato, that generates its own data to keep improving.",
+      "explanation": "RoboCat is a robot manipulation agent released by Google DeepMind in June 2023, reusing the architecture of Gato, DeepMind's multimodal generalist model: it is a decision Transformer conditioned on a goal image — given a picture of 'what the task looks like when done,' it outputs actions. It trains on millions of trajectories from a variety of real and simulated robot arms, and can handle robots whose observation and action formats differ from one another. Its defining feature is a 'self-improvement' loop: a task-specific version is first fine-tuned on 100 to 1,000 human demonstrations, then lets the robot practice roughly 10,000 times on its own to generate new data, which is folded back into the training set to retrain the generalist model. According to DeepMind's blog, later versions raised the success rate on new tasks from 36% to 74%. RoboCat is an early landmark demonstrating that cross-embodiment data can speed up learning new skills.",
+      "example": "RoboCat learned to operate a new robot arm fitted with a three-fingered gripper within a few hours, reaching an 86% success rate at grasping a gear after just 1,000 demonstrations.",
+      "related": ["Gato", "Decision Transformer", "Cross-Embodiment", "Self-improvement", "Goal-conditioned Policy", "Google DeepMind"]
+    },
+    {
+      "key": "named_model-22#3",
+      "name_en": "RoboFlamingo",
+      "aliases": ["Vision-Language Foundation Models as Effective Robot Imitators"],
+      "one_liner": "An early piece of work that fine-tuned the open-source OpenFlamingo vision-language model directly into a robot manipulation policy.",
+      "explanation": "RoboFlamingo was released in November 2023 by ByteDance Research together with Tsinghua University, Shanghai Jiao Tong University, and the National University of Singapore, one of the earlier efforts to turn an open-source vision-language model (VLM) directly into a manipulation policy. It uses OpenFlamingo as its backbone, which at each step understands the current image and the language instruction, followed by an explicit policy head (such as an LSTM) that aggregates history and outputs the robot arm's actions; it is fine-tuned with imitation learning purely on language-annotated demonstration data. This split between 'understanding' and 'decision-making' let it be trained on a single 8-GPU server. On the CALVIN long-horizon benchmark, it completed an average of 4.09 consecutive tasks, clearly ahead of prior methods, though the paper only validated it in simulation. The same authors later expanded this idea into the systematic study RoboVLMs.",
+      "example": "Given five consecutive instructions in CALVIN (such as 'open the drawer' and 'push the blue block to the left'), RoboFlamingo could on average complete about 4 of them in a row.",
+      "related": ["Vision-Language Model", "Vision-Language-Action Model", "CALVIN", "Imitation Learning", "RoboVLMs", "Flamingo"]
+    },
+    {
+      "key": "named_model-22#4",
+      "name_en": "RoboMamba",
+      "aliases": ["RoboMamba: Efficient Vision-Language-Action Model for Robotic Reasoning and Manipulation"],
+      "one_liner": "An efficient VLA that replaces the Transformer language backbone with the Mamba state-space model.",
+      "explanation": "RoboMamba was released by Peking University together with Zhiping AI and the Beijing Academy of Artificial Intelligence in June 2024, accepted at NeurIPS 2024. VLAs at the time mostly used Transformer-based large language models as their backbone, which made inference slow and expensive. RoboMamba instead uses Mamba, a selective state-space model whose computation scales linearly with sequence length, as the language model, attached to a vision encoder; it first goes through alignment pretraining and joint training on general and robot-instruction data to gain reasoning ability, then the whole model is frozen and only a very small policy head (about 0.1% of the model's parameters) is added to predict the end effector's SE(3) pose — its position and orientation. The paper reports roughly 3x faster inference than existing VLAs, with competitive pose prediction in both simulation and on a real robot.",
+      "example": "RoboMamba can answer a reasoning question like 'which object on the table could be used to hold water,' and also output the position and orientation the gripper should reach after receiving a manipulation instruction.",
+      "related": ["Mamba", "State Space Model", "Vision-Language-Action Model", "Inference Latency", "End-Effector Pose", "Parameter-Efficient Fine-Tuning"]
+    },
+    {
+      "key": "named_model-22#5",
+      "name_en": "Robometer",
+      "aliases": ["RBM-1M", "Robometer: Scaling General-Purpose Robotic Reward Models via Trajectory Comparisons"],
+      "one_liner": "A general-purpose robot reward model trained on both task-progress labels and pairwise trajectory comparisons.",
+      "explanation": "Robometer was released in March 2026 by researchers from the University of Southern California, the University of Washington, MIT, the Allen Institute for AI, NVIDIA, and other institutions, accepted at RSS 2026. Both reinforcement learning and data curation need a reward model that can judge how well a robot is doing, but earlier approaches relied mainly on frame-by-frame progress labels on expert demonstrations, leaving large amounts of failed and suboptimal trajectories unused. Robometer combines two supervision signals: a frame-level progress loss that anchors the reward's scale using expert data, and a preference loss from pairwise trajectory comparisons that learns which of two trajectories is better, which lets it also learn from failure data. The authors built RBM-1M, a dataset of more than one million trajectories spanning 21 robot embodiments, and the model is based on Qwen3-VL (main version 4B). The resulting reward can be used for online and offline reinforcement learning, failure detection, and retrieving data for imitation learning.",
+      "example": "Given a video of a robot performing 'put the cup in the drawer,' Robometer outputs a frame-by-frame task-progress score; this curve can be used directly as a dense reward for reinforcement learning, or to judge whether the attempt failed.",
+      "related": ["Reward Model", "Progress Reward Model", "VLM-as-Reward (Vision-Language Models as Reward Models)", "Dense Reward", "Success Detector", "Failure Data"]
+    },
+    {
+      "key": "named_model-22#6",
+      "name_en": "RoboMonkey",
+      "aliases": ["RoboMonkey: Scaling Test-Time Sampling and Verification for Vision-Language-Action Models"],
+      "one_liner": "A method that samples several candidate action sets at deployment time and uses a VLM-based verifier to pick the best one, improving VLA robustness.",
+      "explanation": "RoboMonkey was released by researchers at Stanford, UC Berkeley, and NVIDIA in June 2025, accepted at CoRL 2025, bringing the 'test-time scaling' idea from large language models over to VLAs. It leaves the original policy untouched: at deployment time, it samples several actions from the VLA, adds Gaussian perturbations, and uses majority voting to build a candidate set; a vision-language-model-based action verifier then scores the candidates and picks the best one to execute. The verifier is trained on automatically synthesized preference data (ranked by each candidate action's distance to the ground-truth action); the authors found that verification accuracy keeps improving with more synthetic data, and action error follows a roughly power-law relationship with the number of samples. Paired with models like OpenVLA, it delivers a 25-point absolute improvement on out-of-distribution tasks and 9 points on in-distribution tasks; an optimized serving engine can sample and verify 16 candidate actions in about 650 milliseconds.",
+      "example": "When OpenVLA encounters an object it has never seen, RoboMonkey has it sample several sets of candidate grasping actions at once, and the verifier picks out the set most likely to succeed for execution.",
+      "related": ["Inference-Time Compute (Test-Time Scaling)", "Best-of-N Sampling", "Value-Guided Sampling", "Vision-Language-Action Model", "OpenVLA", "Reward Model"]
+    },
+    {
+      "key": "named_model-22#7",
+      "name_en": "RoboPoint",
+      "aliases": ["RoboPoint: A Vision-Language Model for Spatial Affordance Prediction for Robotics"],
+      "one_liner": "A vision-language model that points to where to place or grasp something on an image, following a language instruction.",
+      "explanation": "RoboPoint was released by the University of Washington, NVIDIA, the Allen Institute for AI, and others in June 2024, accepted at CoRL 2024. It focuses on spatial affordance: given an image and an instruction (such as 'put it in the empty spot to the right of the plate'), it marks a set of feasible target locations on the image as 2D points, which are then projected into 3D using a depth map and handed to a motion planner for execution. Its training data is entirely synthesized automatically from procedurally generated 3D scenes, requiring no real-robot data or human demonstrations; the language backbone is Vicuna-13B. The paper reports 21.8% higher spatial-affordance prediction accuracy than GPT-4o and the visual-prompting method PIVOT, and 30.5% higher downstream task success, with applications in manipulation, navigation, and AR assistance. This 'output a point, then hand off to a planner' pattern is a common intermediate representation between VLMs and robots.",
+      "example": "For the instruction 'put the cup in the empty spot between the two books,' RoboPoint outputs a set of points on the image falling within the empty spot, and the robot arm uses one of them as the placement target.",
+      "related": ["Affordance", "Pointing (2D Point Prediction)", "Spatial Reasoning", "Intermediate Representation", "Synthetic Data", "PIVOT"]
+    },
+    {
+      "key": "named_model-22#8",
+      "name_en": "Robot Parkour Learning",
+      "aliases": ["Quadruped Robot Parkour Learning"],
+      "one_liner": "A parkour policy that lets a low-cost quadruped robot dog climb, jump, crawl, and squeeze through obstacles using only a depth camera.",
+      "explanation": "Robot Parkour Learning was released by the Shanghai Qi Zhi Institute, Tsinghua University, Stanford, CMU, ShanghaiTech, and other institutions in September 2023, receiving an oral presentation at CoRL 2023 and reaching the finals for the Best Systems Paper Award. It teaches low-cost quadruped robots like Unitree's A1 and Go1 to climb high obstacles, leap wide gaps, crawl under low barriers, squeeze through narrow gaps, and run. The method has three steps: first, reinforcement learning pretraining in simulation, where the robot is allowed to 'pass through' obstacles, treating physics violations as only a soft penalty to encourage exploration; then fine-tuning each individual skill with full physical constraints restored; finally, using DAgger to distill the several specialized skills into a single vision-based policy that relies only on an onboard depth camera. Once deployed on a real robot, it can choose the appropriate action for the obstacle in front of it on its own, without relying on animal motion references.",
+      "example": "A robot dog encounters a low horizontal bar; based on its depth image, the policy automatically chooses to lower its body and crawl under it rather than trying to jump over it.",
+      "related": ["Parkour", "Perceptive Locomotion", "Teacher-Student Distillation", "Dataset Aggregation", "Sim-to-Real Transfer", "Extreme Parkour"]
+    },
+    {
+      "key": "named_model-22#9",
+      "name_en": "Robot Utility Models",
+      "abbr": "RUM",
+      "aliases": ["RUM", "RUMs", "Robot Utility Models: General Policies for Zero-Shot Deployment in New Environments"],
+      "one_liner": "Policies that perform single tasks such as opening a cabinet or a drawer in unfamiliar homes with no fine-tuning at all.",
+      "explanation": "Robot Utility Models (RUM) was released by researchers at New York University, Hello Robot, and Meta in September 2024. The problem it addresses: robot policies usually need fresh data collection and fine-tuning every time they move to a new room, whereas language and vision models can be used off the shelf. The authors trained one specialist policy each for five tasks — opening a cabinet, opening a drawer, picking up a tissue, picking up a paper bag, and righting a fallen object — using Stick-v2, a handheld gripper fitted with an iPhone, to collect about 1,000 demonstrations per task across roughly 40 environments, with VQ-BeT as the policy architecture. At deployment, GPT-4o judges whether an attempt succeeded and triggers a retry on failure. The result is about 90% success on unseen environments and objects, and the policies transfer to other robots such as the xArm. The authors' main conclusion is that data diversity matters more than the training algorithm or policy architecture. Code, data, and hardware designs are all open-sourced.",
+      "example": "RUM's cabinet-opening policy is mounted on a Hello Robot Stretch and placed in an apartment where no data was ever collected; without any fine-tuning, it goes and opens the kitchen cabinet.",
+      "related": ["Zero-shot", "Scene / Environment Generalization", "Handheld Gripper Data Collection", "Dobb·E", "BeT / VQ-BeT", "Specialist Policy"]
+    },
+    {
+      "key": "named_model-22#10",
+      "name_en": "RFM-1",
+      "abbr": "RFM-1",
+      "aliases": ["Robotics Foundation Model 1", "Covariant RFM-1"],
+      "one_liner": "Covariant's roughly 8-billion-parameter robot foundation model, trained on warehouse picking data.",
+      "explanation": "RFM-1 is a robot foundation model released by warehouse-robotics AI company Covariant on March 11, 2024, with about 8 billion parameters. Its training data comes from Covariant's own picking arms deployed in warehouses across 15 countries, reportedly amounting to tens of millions of trajectories, including images, video, joint angles, and readings such as force and suction-cup vacuum level, plus text. Both its inputs and outputs can be text, images, video, or robot actions: it can understand natural-language instructions, and it can also predict what the scene will look like after a given action, effectively acting as a learned physics simulator to anticipate the consequences of an action. Its limitation is that it mainly covers vacuum-suction warehouse picking, with limited generalization to entirely new objects and situations. In August 2024, Amazon obtained a non-exclusive license to Covariant's technology and brought on founders Pieter Abbeel, Peter Chen, and Rocky Duan.",
+      "example": "An operator can tell a picking arm in natural language to 'pick up the red one'; RFM-1 can also generate a predicted image of the scene after executing a given grasp, letting the outcome be anticipated in advance.",
+      "related": ["Foundation Model", "World Model", "Bin Picking", "Covariant", "Vacuum Suction Cup", "Amazon Frontier AI & Robotics"]
+    },
+    {
+      "key": "named_model-22#11",
+      "name_en": "RoboVLMs",
+      "aliases": ["Towards Generalist Robot Policies: What Matters in Building Vision-Language-Action Models", "What Matters in Building Vision-Language-Action Models for Generalist Robots"],
+      "one_liner": "A systematic study and open-source framework comparing which VLM backbone, architecture, and training data work best for building a VLA.",
+      "explanation": "RoboVLMs was released in December 2024 by Tsinghua University, ByteDance Research, the Institute of Automation at the Chinese Academy of Sciences, Shanghai Jiao Tong University, the National University of Singapore, and others. It is both a systematic experimental study and an open-source framework of the same name that makes it easy to plug a new vision-language model into a VLA. It answers several of the key design choices when building a VLA: which VLM backbone to use, how to organize action output and history information, and when to bring in cross-embodiment data. The authors compared more than 8 VLM backbones and 4 policy architectures across over 600 experiments. The main findings: an independent policy head that outputs continuous actions and takes in multiple frames of history performs best; backbones with thorough vision-language pretraining, such as KosMos and PaliGemma, do noticeably better; and pretraining on cross-embodiment data first helps robustness. The best configuration averaged 4.49 consecutive completed tasks on CALVIN.",
+      "example": "To try a new vision-language model as a VLA backbone, one can swap just the backbone inside the RoboVLMs framework while keeping everything else fixed, and compare it directly against the KosMos and PaliGemma versions on CALVIN.",
+      "related": ["Vision-Language-Action Model", "RoboFlamingo", "Action Head", "Cross-Embodiment Data", "PaliGemma", "Ablation Study"]
+    }
+  ]
+}

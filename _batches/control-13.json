@@ -1,0 +1,194 @@
+{"category": "control", "batch": 13, "terms": [
+{
+"name_zh": "ISO/TS 15066 协作机器人安全标准",
+"name_en": "ISO/TS 15066 Robots and Robotic Devices — Collaborative Robots",
+"abbr": "ISO/TS 15066",
+"aliases": ["ISO/TS 15066:2016", "TS 15066", "协作机器人安全技术规范"],
+"tier": 3,
+"one_liner": "ISO 2016 年发布的协作机器人安全技术规范，规定人机接触时的力和压强上限。",
+"explanation": "ISO/TS 15066 是国际标准化组织 2016 年发布的技术规范（TS），用来补充工业机器人安全标准 ISO 10218，专讲人和机器人不隔围栏、共用工作空间时怎么保证安全。它细化了四种协作方式：安全级监控停止（人进入协作区时机器人停住并受监控）、手动引导（人手推着机器人走）、速度与分离监控（人越近机器人越慢，太近就停）、功率与力限制（允许接触，但限制撞击的力）。最常被引用的是按身体部位给出的力和压强上限，分瞬态接触（人被撞后能自由躲开）和准静态接触（人被夹在机器人和固定物之间）两种情形，面部、太阳穴、咽喉等敏感部位要避免接触。美国对应的技术报告是 RIA TR R15.606-2016。据报道，2025 年修订的 ISO 10218-2 已把协作应用的相关要求并入正文。",
+"example": "协作臂和工人在同一张装配台上干活时，集成商通常按「功率与力限制」方式配置，再用专用测力装置在工人手部等可能被碰到的位置实测碰撞力和压强，确认低于规范给出的对应限值后才能投用。",
+"related": ["协作机器人", "功率与力限制", "速度与分离监控", "ISO 10218 工业机器人安全标准（2025 版）", "人机协作", "物理人机交互"],
+"sources": [
+{"title": "OSHA Technical Manual, Section IV Chapter 4: Industrial Robot Systems and Industrial Robot System Safety", "url": "https://www.osha.gov/otm/section-4-safety-hazards/chapter-4"},
+{"title": "ISO 10218 - Wikipedia", "url": "https://en.wikipedia.org/wiki/ISO_10218"}
+],
+"as_of": "2025"
+},
+{
+"name_zh": "迭代学习控制",
+"name_en": "Iterative Learning Control",
+"abbr": "ILC",
+"aliases": ["ILC", "迭代学习"],
+"tier": 3,
+"one_liner": "让重复做同一动作的系统，用上一次的跟踪误差修正下一次的控制输入。",
+"explanation": "迭代学习控制针对反复执行同一任务的系统，比如机械臂每个工作节拍都走同一条轨迹。通常认为它由 Arimoto、Kawamura、Miyazaki 在 1984 年的论文《Bettering operation of robots by learning》中提出。思路很直接：第 k 次执行完，记下每个时刻的跟踪误差 e_k(t)，下一次的输入改成 u_{k+1}(t) = u_k(t) + L·e_k(t)，u 是控制输入，L 是人为设计的学习增益，实际中常再加一个低通滤波，防止噪声被逐轮放大。普通反馈控制只能在误差出现之后纠正，ILC 则把上一轮的误差提前写进下一轮的前馈，因此能把模型不准、摩擦这类每次都一样的误差逐轮压下去。前提是每次的初始状态和参考轨迹基本相同，对随机扰动和从没做过的新任务帮不上忙，所以常与 PID 反馈一起用。",
+"example": "工业机械臂每个节拍重复同一条焊接轨迹：第 1 轮记录下关节在拐角处的滞后，第 2 轮在对应时刻提前多给一点力矩，如此逐轮修正，拐角处的跟踪误差越来越小。",
+"related": ["前馈控制", "PID 控制", "轨迹跟踪", "自适应控制", "示教再现"],
+"sources": [
+{"title": "Iterative learning control - Wikipedia", "url": "https://en.wikipedia.org/wiki/Iterative_learning_control"}
+],
+"as_of": ""
+},
+{
+"name_zh": "迭代线性二次调节器",
+"name_en": "Iterative Linear Quadratic Regulator",
+"abbr": "iLQR",
+"aliases": ["迭代 LQR", "Iterative LQR"],
+"tier": 3,
+"one_liner": "把非线性系统沿当前轨迹反复线性化、每轮用 LQR 求修正量的轨迹优化算法。",
+"explanation": "iLQR 是一种轨迹优化算法，一般以 Li 与 Todorov 2004 年的论文为出处。LQR 只能处理线性系统，而机器人动力学是非线性的。iLQR 的做法是：先给一条初始控制序列并模拟出轨迹；在轨迹的每个时刻把动力学线性化、把代价函数做二次近似，得到一个时变 LQR 问题；从终点往回做一遍 Riccati 递推（反向传播），求出每一步的修正量和反馈增益，再从起点往前模拟出新轨迹（正向传播）；重复直到收敛。它是微分动态规划（DDP，Mayne 1966 年提出）的简化版：DDP 还用到动力学的二阶导数，iLQR 省掉这一项，实践中通常收敛得差不多快、计算更省。结果除了一条轨迹，还附带沿途的反馈增益。和 MPC 结合时，每个控制周期从当前状态重解一遍；考虑噪声的扩展版叫 iLQG。",
+"example": "DeepMind 开源的 MuJoCo MPC（MJPC）内置了 iLQG 规划器：每个控制周期以当前状态为起点，重新优化一段未来的控制序列，用来实时控制仿真中的机器人模型。",
+"related": ["线性二次调节器", "微分动态规划", "轨迹优化", "模型预测控制", "非线性模型预测控制", "MuJoCo MPC"],
+"sources": [
+{"title": "Underactuated Robotics (Russ Tedrake), Ch. Trajectory Optimization: Iterative LQR and DDP", "url": "https://underactuated.mit.edu/trajopt.html"},
+{"title": "Differential dynamic programming - Wikipedia", "url": "https://en.wikipedia.org/wiki/Differential_dynamic_programming"},
+{"title": "MuJoCo MPC (MJPC) README", "url": "https://github.com/google-deepmind/mujoco_mpc"}
+],
+"as_of": ""
+},
+{
+"name_zh": "时间抖动",
+"name_en": "Jitter (Timing Jitter)",
+"abbr": "",
+"aliases": ["抖动", "周期抖动", "调度抖动", "timing jitter"],
+"tier": 3,
+"one_liner": "周期性任务的实际执行时刻偏离理想节拍的波动，是衡量实时性的关键指标。",
+"explanation": "抖动指本该按固定周期发生的事件，实际发生时刻相对理想时刻的偏差和波动。机器人里最常说的是控制回路的调度抖动：比如 1 kHz 的关节控制回路，理想情况下每 1 ms 执行一次，实际间隔却可能忽长忽短。它和控制延迟不是一回事：延迟是从读传感器到发出指令隔了多久，抖动是这段时间每次是否一样。离散控制器通常假定采样周期固定，抖动会让积分、微分项算偏，轻则振动，重则失稳；指令没按时送到驱动器还可能触发报错停机。所以实时系统追求的是确定性而不只是快，ROS 2 设计文档就强调实时系统靠确定的调度来定义，而不是低延迟。常用 cyclictest 测量线程唤醒时刻的波动，降低抖动的手段包括 PREEMPT_RT 实时内核、CPU 隔离、EtherCAT 这类确定性总线。",
+"example": "Franka 机械臂的底层控制以 1 kHz 运行，libfranka 要求用户的控制回调在很短的时间窗内算完，否则这一周期的指令不被接受；因此跑力矩控制时一般要装实时内核，并避免在控制线程里做打印、动态分配内存这类耗时不定的操作。",
+"related": ["实时控制", "控制频率", "控制延迟", "实时内核补丁", "EtherCAT 总线", "硬实时"],
+"sources": [
+{"title": "ROS 2 Design: Introduction to Real-time Systems", "url": "https://design.ros2.org/articles/realtime_background.html"},
+{"title": "libfranka include/franka/robot.h（1 kHz 控制回调说明）", "url": "https://raw.githubusercontent.com/frankaemika/libfranka/master/include/franka/robot.h"}
+],
+"as_of": ""
+},
+{
+"name_zh": "关节阻抗控制",
+"name_en": "Joint Impedance Control",
+"abbr": "",
+"aliases": ["关节空间阻抗控制", "Joint-space Impedance Control"],
+"tier": 3,
+"one_liner": "让机器人每个关节表现得像弹簧加阻尼器，被推时顺从让开而不是硬顶。",
+"explanation": "阻抗控制由 MIT 的 Neville Hogan 在 1984–1985 年的论文中系统提出，目标不是死死跟住某个位置或力，而是规定机器人受外力时有多「软」。关节阻抗控制把这种弹簧-阻尼行为设在每个关节上，典型控制律是 τ = K(q_d − q) + D(q̇_d − q̇) + 重力与科氏力补偿，其中 τ 是关节力矩，q、q_d 是实际和期望关节角，K 是刚度，D 是阻尼。形式上像 PD 控制，区别在于它要求关节能直接输出力矩并补偿动力学，K 往往刻意调小，让机器人碰到人或物体时被推开，而不是硬顶。与之相近的笛卡尔阻抗控制把弹簧设在末端的 x、y、z 和姿态上，更直观地规定手在哪个方向软；导纳控制则反过来，先测外力再算出该怎么动，适合本身很硬的位置控制型机械臂。",
+"example": "Franka 机械臂的内置控制器默认就是关节阻抗模式，libfranka 可用 setJointImpedance 设置各关节刚度；franka_ros 的示例控制器按「科氏补偿 + k·(q_d − q) + d·(q̇_d − q̇)」计算每个关节的指令力矩，让机械臂一边画圆一边保持柔顺。",
+"related": ["阻抗控制", "笛卡尔阻抗控制", "导纳控制", "力矩控制", "PD 控制", "重力补偿"],
+"sources": [
+{"title": "Impedance control - Wikipedia", "url": "https://en.wikipedia.org/wiki/Impedance_control"},
+{"title": "libfranka robot.h（setJointImpedance / ControllerMode::kJointImpedance）", "url": "https://raw.githubusercontent.com/frankaemika/libfranka/master/include/franka/robot.h"},
+{"title": "franka_ros joint_impedance_example_controller.cpp", "url": "https://github.com/frankaemika/franka_ros/blob/develop/franka_example_controllers/src/joint_impedance_example_controller.cpp"}
+],
+"as_of": ""
+},
+{
+"name_zh": "动力学约束规划",
+"name_en": "Kinodynamic Planning",
+"abbr": "",
+"aliases": ["运动动力学规划", "动力学规划", "Kinodynamic Motion Planning"],
+"tier": 3,
+"one_liner": "规划时同时满足避障和速度、加速度、力矩等动力学限制，直接给出可执行轨迹。",
+"explanation": "普通路径规划只管几何：从 A 到 B 找一条不撞障碍的路，走多快另算。动力学约束规划由 Donald、Xavier、Canny、Reif 在 1993 年命名，要求结果同时满足运动学约束（避障、关节限位）和动力学约束（速度、加速度、力或力矩上限）。因此它通常在状态空间里搜索，状态同时包含位置和速度，而且只能沿系统真正做得出的运动去扩展，比如汽车不能横移。代表方法是 LaValle 与 Kuffner 2001 年的随机动力学规划：扩展 RRT 搜索树时不直接连直线，而是施加一个控制输入、按动力学模型积分一小段得到新状态。另一条常见路线是先规划几何路径、再做时间参数化，更简单，但对跑、跳、高速飞行这类强动力学任务可能找不到可行解。轨迹优化和 MPC 也常用来求解这类问题。",
+"example": "让四足机器人跳上台阶，只算出几何上的落脚路线不够：还要保证起跳时关节力矩够用、腾空时质心沿抛物线运动、落地速度不超限，这就要把动力学约束放进规划里一起求解。",
+"related": ["运动规划", "快速扩展随机树", "轨迹优化", "时间最优路径参数化", "非完整约束", "状态空间"],
+"sources": [
+{"title": "Kinodynamic planning - Wikipedia", "url": "https://en.wikipedia.org/wiki/Kinodynamic_planning"},
+{"title": "Rapidly exploring random tree - Wikipedia（引 LaValle & Kuffner 2001, Randomized Kinodynamic Planning, IJRR）", "url": "https://en.wikipedia.org/wiki/Rapidly_exploring_random_tree"}
+],
+"as_of": ""
+},
+{
+"name_zh": "线性二次高斯控制",
+"name_en": "Linear Quadratic Gaussian Control",
+"abbr": "LQG",
+"aliases": ["LQG 控制", "线性二次高斯"],
+"tier": 3,
+"one_liner": "状态测不全且有噪声时，先用卡尔曼滤波估计状态、再用 LQR 求控制的最优方法。",
+"explanation": "LQG 是一个经典最优控制问题：系统是线性的，过程和测量都带高斯白噪声，状态不能全部直接测到，目标是让二次型代价的期望值最小。它的解由两块拼成：卡尔曼滤波器从带噪声的传感器读数里估计当前状态 x̂，LQR 再用这个估计值算控制量 u = −K·x̂（K 是 LQR 增益）。两块可以分开设计、各自最优，拼在一起仍是整体最优，这叫分离原理。和 LQR 的区别在于：LQR 假设状态全部精确已知，LQG 面对的是测量不全、有噪声的现实情况。要注意 LQR 自带不错的稳定裕度，LQG 却没有这种保证，Doyle 1978 年的论文专门指出了这一点，所以工程上还要另外检查鲁棒性。它是理解机器人「状态估计 + 控制」分工的基础模型。",
+"example": "倒立摆小车只装了测小车位置和摆角的编码器，速度需要估计且读数有噪声：用卡尔曼滤波估计位置、速度、摆角、角速度四个状态，再乘上 LQR 增益算出电机指令，就构成一个 LQG 控制器。",
+"related": ["线性二次调节器", "卡尔曼滤波", "状态估计", "最优控制", "鲁棒控制", "状态观测器"],
+"sources": [
+{"title": "Linear–quadratic–Gaussian control - Wikipedia", "url": "https://en.wikipedia.org/wiki/Linear%E2%80%93quadratic%E2%80%93Gaussian_control"}
+],
+"as_of": ""
+},
+{
+"name_zh": "线性二次调节器",
+"name_en": "Linear Quadratic Regulator",
+"abbr": "LQR",
+"aliases": ["LQR 控制", "线性二次型调节器"],
+"tier": 3,
+"one_liner": "线性系统的最优反馈控制：权衡状态误差和控制代价，解出固定增益 u = −Kx。",
+"explanation": "LQR 是最基础的最优控制方法，理论在 1960 年前后由卡尔曼等人奠定。它假设系统是线性的：ẋ = Ax + Bu，x 是状态，u 是控制输入，矩阵 A、B 描述系统；代价是二次型，即对时间积分 xᵀQx + uᵀRu。Q 表示多在意状态偏离目标，R 表示多在意控制用力，二者由人来调。求解一个 Riccati 方程就得到增益矩阵 K，最优控制是 u = −Kx，运行时只是一次矩阵乘法。和 PID 相比，LQR 天然处理多输入多输出，并直接在「误差」和「用力」之间权衡；和 MPC 相比，它处理不了力矩上限这类约束。机器人是非线性的，常见做法是在平衡点附近线性化再用 LQR，只在该点附近有效；沿一条轨迹逐点线性化就得到时变 LQR，这也是 iLQR 的基础。",
+"example": "把倒立摆或 Acrobot（两连杆体操机器人）在竖直向上的平衡点附近线性化，用 LQR 算出增益，就能把它稳稳顶在倒立位置；两轮平衡车的平衡控制也常用这一套。",
+"related": ["线性二次高斯控制", "迭代线性二次调节器", "最优控制", "模型预测控制", "PID 控制", "倒立摆模型"],
+"sources": [
+{"title": "Underactuated Robotics (Russ Tedrake), Ch. Linear Quadratic Regulators", "url": "https://underactuated.mit.edu/lqr.html"},
+{"title": "Linear–quadratic regulator - Wikipedia", "url": "https://en.wikipedia.org/wiki/Linear%E2%80%93quadratic_regulator"}
+],
+"as_of": ""
+},
+{
+"name_zh": "李雅普诺夫稳定性",
+"name_en": "Lyapunov Stability",
+"abbr": "",
+"aliases": ["李雅普诺夫函数", "Lyapunov function", "李雅普诺夫第二方法", "李雅普诺夫直接法"],
+"tier": 3,
+"one_liner": "判断系统受扰后能否回到平衡点的理论，常用一个只减不增的「能量函数」来证明。",
+"explanation": "李雅普诺夫稳定性来自俄国数学家李雅普诺夫 1892 年的博士论文，是分析非线性系统稳定性的基础。它分几档：从平衡点附近出发的状态始终不跑远，叫李雅普诺夫稳定；不但不跑远，最终还回到平衡点，叫渐近稳定；回去的速度至少按指数衰减，叫指数稳定。最常用的是第二方法（直接法）：不去解微分方程，而是找一个函数 V(x)，在平衡点等于 0、其他地方大于 0，并且沿系统轨迹随时间不增加（dV/dt ≤ 0），就能证明稳定；严格减小则渐近稳定。V 可以理解为广义能量，但不必是真实的物理能量。难点在于没有通用方法构造 V。机器人里 PD 加重力补偿、阻抗控制、无源性控制的稳定性证明都靠它，控制李雅普诺夫函数、控制障碍函数也是在它基础上发展出来的。",
+"example": "带阻尼的单摆：取 V = 动能 + 势能（以最低点为零），可以算出沿运动轨迹 dV/dt = −b·θ̇²（b 是阻尼系数，θ̇ 是角速度），能量只减不增，于是不用解出摆的运动方程就知道最低点是稳定的；再配合 LaSalle 不变性原理，还能证明摆最终停在最低点。",
+"related": ["控制李雅普诺夫函数", "控制障碍函数", "无源性控制", "阻抗控制", "动态稳定", "鲁棒控制"],
+"sources": [
+{"title": "Lyapunov stability - Wikipedia", "url": "https://en.wikipedia.org/wiki/Lyapunov_stability"}
+],
+"as_of": ""
+},
+{
+"name_zh": "最小加加速度轨迹",
+"name_en": "Minimum-Jerk Trajectory",
+"abbr": "",
+"aliases": ["最小急动度轨迹", "最小 jerk 轨迹", "Minimum Jerk"],
+"tier": 3,
+"one_liner": "让加加速度（加速度的变化率）平方积分最小的轨迹，运动平滑、接近人手动作。",
+"explanation": "Jerk（加加速度、急动度）是加速度对时间的导数，jerk 大意味着运动突兀、冲击大。最小加加速度轨迹就是在给定起点、终点和时长时，让 jerk 平方的积分最小的轨迹。最有名的出处是 Flash 与 Hogan 1985 年发表在 Journal of Neuroscience 的论文：人手在平面上的点到点伸手动作近似直线、速度曲线呈钟形，与这个模型的预测一致。一维、起止速度和加速度都为 0 时，解是一个五次多项式：x(t) = x₀ + (x_f − x₀)(10τ³ − 15τ⁴ + 6τ⁵)，x₀、x_f 是起点和终点，τ = t/T 是归一化时间，T 是总时长。所以它正是五次多项式插值在边界速度、加速度为零时的特例。机器人里常用它生成点到点运动或平滑插值，减少对电机和减速器的冲击。若改为限制 jerk 的最大值而非最小化其积分，就是 S 型速度曲线的思路。",
+"example": "机械臂把杯子从桌面一处移到另一处、总时长 2 秒：按上面的公式插值，末端速度从 0 平滑升到中点时最大、再平滑降回 0，起步和停下都没有顿挫。",
+"related": ["加加速度", "五次多项式插值", "S 型速度曲线", "轨迹规划", "最小 Snap 轨迹（微分平坦）", "时间参数化"],
+"sources": [
+{"title": "Flash & Hogan (1985), The coordination of arm movements: an experimentally confirmed mathematical model, J. Neurosci. 5(7):1688–1703", "url": "https://doi.org/10.1523/JNEUROSCI.05-07-01688.1985"}
+],
+"as_of": ""
+},
+{
+"name_zh": "最小 Snap 轨迹（微分平坦）",
+"name_en": "Minimum-Snap Trajectory / Differential Flatness",
+"abbr": "",
+"aliases": ["Minimum Snap", "最小 snap 轨迹", "微分平坦", "Differential Flatness"],
+"tier": 3,
+"one_liner": "让位置四阶导数（snap）平方积分最小的分段多项式轨迹，常用于四旋翼无人机。",
+"explanation": "Snap 是位置对时间的四阶导数，即 jerk 再求一次导。这个方法和微分平坦性绑在一起：微分平坦由 Fliess 等人 1995 年提出，指系统存在一组「平坦输出」，全部状态和控制输入都能写成这组输出及其各阶导数的函数。Mellinger 与 Kumar 在 ICRA 2011 的论文中利用四旋翼的微分平坦性，平坦输出取位置 x、y、z 和偏航角 ψ。这样只要在这四个量上规划出足够光滑的曲线，就能直接算出姿态和电机指令，不必在高维状态空间里采样搜索、反复模拟。电机指令和姿态角加速度与 snap 成正比，所以最小化 snap 能让指令变化平缓、可执行。具体做法是用分段多项式穿过一串航点，把 snap 平方积分写成二次规划求多项式系数；Richter 等人 2013 年把它改写成数值稳定的无约束二次规划，并和几何路径规划结合。",
+"example": "Richter、Bry、Roy 2013 年用这套方法，先找出避障的航点，再生成最小 snap 多项式轨迹，让四旋翼在密集的室内环境中自主飞行，速度最高达 8 m/s。",
+"related": ["最小加加速度轨迹", "轨迹优化", "二次规划", "动力学约束规划", "无人机（空中机器人）", "加加速度"],
+"sources": [
+{"title": "Richter, Bry, Roy: Polynomial Trajectory Planning for Aggressive Quadrotor Flight in Dense Indoor Environments (ISRR 2013)", "url": "https://groups.csail.mit.edu/rrg/papers/Richter_ISRR13.pdf"},
+{"title": "Mellinger & Kumar: Minimum snap trajectory generation and control for quadrotors (ICRA 2011)", "url": "https://doi.org/10.1109/ICRA.2011.5980409"},
+{"title": "Flatness (systems theory) - Wikipedia", "url": "https://en.wikipedia.org/wiki/Flatness_(systems_theory)"}
+],
+"as_of": ""
+},
+{
+"name_zh": "模型预测路径积分控制",
+"name_en": "Model Predictive Path Integral Control",
+"abbr": "MPPI",
+"aliases": ["MPPI 控制", "信息论 MPC", "IT-MPC"],
+"tier": 3,
+"one_liner": "每个周期随机采样大量控制序列并模拟，按代价加权平均出动作的采样式 MPC。",
+"explanation": "MPPI 是一种基于采样的模型预测控制，由佐治亚理工的 Grady Williams、Evangelos Theodorou 等人在 2015–2017 年间提出，理论来自路径积分最优控制和信息论。和普通 MPC 一样，它每个周期只执行优化结果的第一步，然后从新状态重来。不同在于求解方式：以上一轮的控制序列为中心加随机噪声，采样成百上千条候选控制序列，用动力学模型把每条向前模拟，算出各自的代价 S，再按 exp(−S/λ) 加权平均得到新的控制序列，λ 是温度参数，越小越偏向代价最低的几条。它不需要求梯度或线性化，代价函数可以不光滑（比如碰撞惩罚），动力学也可以是神经网络，各条样本互相独立，适合 GPU 并行。缺点是需要大量样本，动作维度高时效率下降。和交叉熵方法相比，后者只用代价最低的一批样本更新，MPPI 则按指数权重用上全部样本。",
+"example": "在 1:5 比例的 AutoRally 越野车上，MPPI 在 GPU 上并行模拟几千条 2–3 秒长的轨迹，控制频率 40–60 Hz，完成泥地赛道上的激进驾驶；ROS 2 导航框架 Nav2 也内置了 MPPI 控制器，默认每周期采样 1000 条轨迹，在普通 CPU 上可跑到 50 Hz 以上。",
+"related": ["模型预测控制", "采样式 MPC", "交叉熵方法", "DIAL-MPC", "Nav2", "最优控制"],
+"sources": [
+{"title": "Williams et al.: Information Theoretic Model Predictive Control: Theory and Applications to Autonomous Driving (arXiv:1707.02342, T-RO)", "url": "https://arxiv.org/abs/1707.02342"},
+{"title": "Williams, Aldrich, Theodorou: Model Predictive Path Integral Control using Covariance Variable Importance Sampling (arXiv:1509.01149)", "url": "https://arxiv.org/abs/1509.01149"},
+{"title": "Nav2 MPPI Controller README", "url": "https://github.com/ros-navigation/navigation2/blob/main/nav2_mppi_controller/README.md"}
+],
+"as_of": "2026-09"
+}
+]}

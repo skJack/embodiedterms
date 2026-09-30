@@ -1,0 +1,405 @@
+{
+ "category": "training",
+ "batch": 5,
+ "terms": [
+  {
+   "name_zh": "逆强化学习",
+   "name_en": "Inverse Reinforcement Learning",
+   "abbr": "IRL",
+   "aliases": [
+    "反向强化学习",
+    "逆向强化学习"
+   ],
+   "tier": 2,
+   "one_liner": "从专家的示范行为反推出它背后在优化的奖励函数。",
+   "explanation": "逆强化学习把强化学习倒过来用：强化学习是给定奖励函数（给行为打分的规则）去学策略，逆强化学习则是观察专家示范，反推专家在优化什么奖励。Stuart Russell 在 1998 年提出这个问题，Andrew Ng 与 Russell 在 2000 年给出第一批算法，Abbeel 与 Ng 在 2004 年把它用于「学徒学习」：先推出奖励，再用强化学习求策略。它的价值在于很多任务的奖励难以手写，而学到的奖励比直接照抄动作更容易迁移到新环境。难点是同一段行为可以用很多种奖励解释，需要最大熵等额外假设来消除歧义。后来的生成对抗模仿学习（GAIL）、对抗运动先验（AMP）都延续了这条思路。",
+   "example": "Abbeel、Coates 与 Ng 用学徒学习让无人直升机从人类飞手的示范中学会翻滚、筋斗、自转着陆等特技动作，而不是靠人手写奖励函数。",
+   "related": [
+    "强化学习",
+    "奖励函数",
+    "模仿学习",
+    "生成对抗模仿学习",
+    "对抗运动先验",
+    "行为克隆"
+   ],
+   "sources": [
+    {
+     "title": "Apprenticeship learning（Wikipedia，含 Inverse reinforcement learning 一节）",
+     "url": "https://en.wikipedia.org/wiki/Apprenticeship_learning"
+    },
+    {
+     "title": "A Survey of Inverse Reinforcement Learning: Challenges, Methods and Progress (arXiv 1806.06877)",
+     "url": "https://arxiv.org/abs/1806.06877"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "知识蒸馏",
+   "name_en": "Knowledge Distillation",
+   "abbr": "KD",
+   "aliases": [
+    "蒸馏",
+    "模型蒸馏"
+   ],
+   "tier": 2,
+   "one_liner": "让小的学生模型去模仿大的教师模型的输出，把能力压缩进小模型。",
+   "explanation": "知识蒸馏由 Hinton、Vinyals 和 Dean 在 2015 年的论文中系统提出：先训练一个大而强的教师模型，再让小的学生模型去拟合教师输出的概率分布（称为软标签），而不只拟合真值标签。论文通过调高 softmax 的「温度」让软标签更平滑，暴露出类别之间的相似关系，学生因此能学到更多信息。它解决的是大模型部署贵、推理慢的问题。在具身智能里，蒸馏常以教师-学生形式出现：教师在仿真里使用真机拿不到的特权信息（如地形、接触状态）训练，学生只用真机传感器去模仿教师的动作，从而实现仿真到现实迁移；它也用于把多步去噪的扩散策略蒸馏成少步模型，降低推理延迟。",
+   "example": "Lee 等人 2020 年发表在 Science Robotics 的 ANYmal 四足工作中，教师策略在仿真里能看到地形真值和足端接触，学生策略只输入本体感知历史、通过模仿教师来学习，最终零样本部署到泥地、雪地、碎石等野外地形。",
+   "related": [
+    "教师-学生蒸馏",
+    "特权信息",
+    "策略蒸馏",
+    "在线策略蒸馏",
+    "KL 散度",
+    "扩散步数蒸馏"
+   ],
+   "sources": [
+    {
+     "title": "Distilling the Knowledge in a Neural Network (arXiv 1503.02531)",
+     "url": "https://arxiv.org/abs/1503.02531"
+    },
+    {
+     "title": "Learning Quadrupedal Locomotion over Challenging Terrain (Science Robotics 2020, arXiv 2010.11251)",
+     "url": "https://arxiv.org/abs/2010.11251"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "KL 散度",
+   "name_en": "Kullback-Leibler Divergence",
+   "abbr": "KL",
+   "aliases": [
+    "相对熵",
+    "KL divergence",
+    "I 散度"
+   ],
+   "tier": 2,
+   "one_liner": "衡量一个概率分布偏离另一个分布有多远的量，而且不对称。",
+   "explanation": "KL 散度由 Solomon Kullback 和 Richard Leibler 在 1951 年提出，离散情形下 D_KL(P‖Q)=Σ P(x)·log(P(x)/Q(x))，表示用分布 Q 去近似真实分布 P 时多付出的信息代价。它总是非负，只有两个分布相同时才为 0；但它不对称，D_KL(P‖Q) 一般不等于 D_KL(Q‖P)，所以不是严格意义上的距离。机器学习里它随处可见：交叉熵等于 KL 散度加上 P 自身的熵，最小化交叉熵就是在最小化 KL；变分自编码器用 KL 项把隐变量拉向标准正态分布；PPO、RLHF 和部分离线强化学习用 KL 惩罚约束新策略别离参考策略太远；知识蒸馏也用它让学生贴近教师。",
+   "example": "ACT 的训练损失是动作重建误差加上 β 倍的 KL 项（论文取 β=10），KL 项约束条件变分自编码器编码出的风格变量 z 贴近标准正态分布，推理时直接把 z 设为先验均值 0。",
+   "related": [
+    "交叉熵",
+    "KL 正则化",
+    "变分自编码器",
+    "近端策略优化",
+    "知识蒸馏",
+    "最大似然估计 / 负对数似然"
+   ],
+   "sources": [
+    {
+     "title": "Kullback–Leibler divergence（Wikipedia）",
+     "url": "https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence"
+    },
+    {
+     "title": "Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware (ACT, arXiv 2304.13705)",
+     "url": "https://arxiv.org/abs/2304.13705"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "L1 损失",
+   "name_en": "L1 Loss",
+   "abbr": "",
+   "aliases": [
+    "平均绝对误差",
+    "MAE",
+    "绝对值损失"
+   ],
+   "tier": 2,
+   "one_liner": "用预测值与真值之差的绝对值来计算误差的损失函数。",
+   "explanation": "L1 损失把每个预测值与真值之差取绝对值再求和，按样本取平均时叫平均绝对误差（MAE）。和把误差平方的 L2 损失（均方误差）相比，它对大误差是线性惩罚而不是平方放大，因此受离群点影响更小；但它的梯度大小恒定，快到目标时不会自动变小。从概率角度看，最小化 L1 损失相当于假设误差服从拉普拉斯分布做最大似然估计，最优解趋向中位数而不是均值。在具身智能里，L1 常用于连续动作回归：ACT 用 L1 做动作序列重建，作者称它比更常见的 L2 能更精确地建模动作序列；OpenVLA-OFT 也改用 L1 回归直接输出连续动作。",
+   "example": "OpenVLA-OFT 把 OpenVLA 逐个生成离散动作 token 的方式，换成并行解码、动作分块加 L1 回归输出连续动作，动作生成吞吐量提高 26 倍，LIBERO 四个任务集的平均成功率从 76.5% 提到 97.1%。",
+   "related": [
+    "均方误差",
+    "损失函数",
+    "连续动作回归",
+    "ACT",
+    "OpenVLA-OFT",
+    "动作分块"
+   ],
+   "sources": [
+    {
+     "title": "Linear regression: Loss（Google Machine Learning Crash Course）",
+     "url": "https://developers.google.com/machine-learning/crash-course/linear-regression/loss"
+    },
+    {
+     "title": "Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware (ACT, arXiv 2304.13705)",
+     "url": "https://arxiv.org/abs/2304.13705"
+    },
+    {
+     "title": "Fine-Tuning Vision-Language-Action Models: Optimizing Speed and Success (OpenVLA-OFT, arXiv 2502.19645)",
+     "url": "https://arxiv.org/abs/2502.19645"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "学习率",
+   "name_en": "Learning Rate",
+   "abbr": "LR",
+   "aliases": [
+    "步长",
+    "step size"
+   ],
+   "tier": 2,
+   "one_liner": "梯度下降每次更新参数时迈出的步子大小，是最关键的超参数之一。",
+   "explanation": "学习率是优化算法里控制每一步参数更新幅度的超参数：参数沿负梯度方向移动，移动量等于学习率乘以梯度（Adam 等自适应优化器还会按每个参数的历史梯度再做缩放）。设得太大，参数会越过最低点，损失来回震荡甚至发散成 NaN；设得太小，收敛很慢，或停在不理想的位置。它通常是调参时最先要调的量，并且和批大小有关：批大小加大时常按比例放大学习率（线性缩放规则）。实际训练很少全程用一个固定值，而是配合学习率调度，先预热、再逐步衰减。微调预训练大模型时一般用比从零训练小得多的学习率，以免破坏已经学到的能力。",
+   "example": "LLaVA 第一阶段只训练投影层时学习率取 2e-3，第二阶段连同语言模型一起微调时降到 2e-5；OpenVLA 训练全程固定用 2e-5，作者发现加学习率预热没有带来收益；ACT 则用 1e-5。",
+   "related": [
+    "学习率调度（预热与余弦退火）",
+    "梯度下降",
+    "优化器",
+    "AdamW 优化器",
+    "批大小",
+    "超参数"
+   ],
+   "sources": [
+    {
+     "title": "Learning rate（Wikipedia）",
+     "url": "https://en.wikipedia.org/wiki/Learning_rate"
+    },
+    {
+     "title": "Visual Instruction Tuning (LLaVA, arXiv 2304.08485)",
+     "url": "https://arxiv.org/abs/2304.08485"
+    },
+    {
+     "title": "OpenVLA: An Open-Source Vision-Language-Action Model (arXiv 2406.09246)",
+     "url": "https://arxiv.org/abs/2406.09246"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "学习率调度（预热与余弦退火）",
+   "name_en": "Learning Rate Schedule (Warmup / Cosine Decay)",
+   "abbr": "",
+   "aliases": [
+    "学习率预热",
+    "warmup",
+    "余弦退火",
+    "cosine decay",
+    "学习率衰减"
+   ],
+   "tier": 2,
+   "one_liner": "让学习率随训练步数变化：先预热升上去，再按余弦曲线慢慢降下来。",
+   "explanation": "学习率调度指按预先设定的规则在训练中改变学习率，而不是全程用同一个值。最常见的组合是「预热 + 余弦退火」。预热是在训练开头一段步数里把学习率从接近 0 线性升到峰值：这时参数刚随机初始化或刚接上新模块，梯度很不稳定，一上来就用大学习率容易发散。Goyal 等人 2017 年用渐进预热配合线性缩放规则，把 ResNet-50 的批大小扩到 8192 仍保持精度。预热之后，学习率按余弦曲线平滑降到很小的值，让模型在后期细致收敛，这种余弦形状来自 Loshchilov 和 Hutter 的 SGDR 论文（ICLR 2017）。其他常见调度还有阶梯衰减、指数衰减和线性衰减。",
+   "example": "openpi 微调 π0 的默认配置：前 1000 步把学习率线性升到 2.5e-5，之后在 30000 步内按余弦曲线降到 2.5e-6。",
+   "related": [
+    "学习率",
+    "优化器",
+    "AdamW 优化器",
+    "批大小",
+    "收敛",
+    "微调"
+   ],
+   "sources": [
+    {
+     "title": "SGDR: Stochastic Gradient Descent with Warm Restarts (arXiv 1608.03983)",
+     "url": "https://arxiv.org/abs/1608.03983"
+    },
+    {
+     "title": "Accurate, Large Minibatch SGD: Training ImageNet in 1 Hour (arXiv 1706.02677)",
+     "url": "https://arxiv.org/abs/1706.02677"
+    },
+    {
+     "title": "openpi optimizer.py（CosineDecaySchedule 默认参数）",
+     "url": "https://github.com/Physical-Intelligence/openpi/blob/main/src/openpi/training/optimizer.py"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "低秩适配",
+   "name_en": "Low-Rank Adaptation",
+   "abbr": "LoRA",
+   "aliases": [
+    "LoRA 微调",
+    "低秩自适应",
+    "低秩适应"
+   ],
+   "tier": 2,
+   "one_liner": "冻结大模型原有权重，只训练旁路插入的两个小矩阵来完成微调。",
+   "explanation": "LoRA 由微软的 Edward Hu 等人在 2021 年提出，是最常用的参数高效微调方法。做法是冻结预训练权重 W，在选定的层（常见是 Transformer 注意力里的投影矩阵）旁边加一条旁路 B·A：A、B 是两个很窄的矩阵，秩 r 远小于原矩阵的维度，微调时只训练它们；训练完可以把 B·A 直接加回 W，推理时不增加额外延迟。论文报告，与用 Adam 全量微调 GPT-3 175B 相比，可训练参数减少约 1 万倍，显存需求降到约三分之一。对具身智能来说，VLA 大多建立在数十亿参数的视觉语言模型上，LoRA 让普通实验室也能用单张消费级显卡把模型适配到自己的机器人和任务上。",
+   "example": "OpenVLA 论文中，rank 32 的 LoRA 只训练约 1.4% 的参数，成功率 68.2%，与全参数微调的 69.7% 基本持平；openpi 给出的 π0 LoRA 微调显存需求为 22.5GB 以上，可在 RTX 4090 上跑，全参数微调则需要 70GB 以上。",
+   "related": [
+    "参数高效微调",
+    "全参数微调",
+    "适配器",
+    "微调",
+    "冻结骨干网络",
+    "OpenVLA"
+   ],
+   "sources": [
+    {
+     "title": "LoRA: Low-Rank Adaptation of Large Language Models (arXiv 2106.09685)",
+     "url": "https://arxiv.org/abs/2106.09685"
+    },
+    {
+     "title": "OpenVLA: An Open-Source Vision-Language-Action Model (arXiv 2406.09246)",
+     "url": "https://arxiv.org/abs/2406.09246"
+    },
+    {
+     "title": "openpi（Physical Intelligence 官方仓库，显存需求表）",
+     "url": "https://github.com/Physical-Intelligence/openpi"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "马尔可夫决策过程",
+   "name_en": "Markov Decision Process",
+   "abbr": "MDP",
+   "aliases": [
+    "马氏决策过程"
+   ],
+   "tier": 2,
+   "one_liner": "描述智能体看状态、做动作、拿奖励、进入新状态这一循环的标准数学框架。",
+   "explanation": "马尔可夫决策过程是强化学习的标准数学模型，常写成五元组 (S, A, P, R, γ)：状态空间、动作空间、状态转移概率（在状态 s 做动作 a 后到达下一状态的概率）、奖励函数，以及让远期奖励打折的折扣因子。核心假设是马尔可夫性：下一步只取决于当前状态和动作，与更早的历史无关。它的数学基础来自 Richard Bellman 1957 年前后的动态规划工作，贝尔曼方程、价值函数、策略梯度都建立在它之上。强化学习的目标就是在 MDP 中找一个策略，使期望累计折扣回报最大。真实机器人往往看不全状态（如被挡住的物体），这时要用部分可观测马尔可夫决策过程（POMDP）建模，实践中常靠输入历史观测弥补。",
+   "example": "训练四足机器人行走时，状态可以包括关节角度、关节速度、机身姿态和速度指令，动作是 12 个关节的目标角度，奖励按跟上指令速度加分、按能耗和摔倒扣分，策略每个控制周期根据当前状态输出一次动作。",
+   "related": [
+    "强化学习",
+    "部分可观测马尔可夫决策过程",
+    "贝尔曼方程",
+    "奖励函数",
+    "折扣因子",
+    "策略"
+   ],
+   "sources": [
+    {
+     "title": "Markov decision process（Wikipedia）",
+     "url": "https://en.wikipedia.org/wiki/Markov_decision_process"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "大规模并行强化学习",
+   "name_en": "Massively Parallel Reinforcement Learning",
+   "abbr": "",
+   "aliases": [
+    "并行环境训练",
+    "GPU 并行强化学习"
+   ],
+   "tier": 2,
+   "one_liner": "在一张 GPU 上同时跑成千上万个仿真环境采数据，几分钟就能训出运控策略。",
+   "explanation": "大规模并行强化学习指把物理仿真和神经网络训练都放在 GPU 上，同时运行数千个独立的仿真环境，一次采集海量交互数据来训练策略。强化学习需要大量试错，过去多用 CPU 仿真、环境数量少，训练腿足运动策略往往要十几到上百小时。2021 年英伟达的 Isaac Gym 让仿真数据以 PyTorch 张量形式直接留在 GPU 上，报告比 CPU 仿真方案快 2–3 个数量级；同年 Rudin 等人在单张 GPU 上并行 4096 个 ANYmal 环境、用 PPO 训练，平地行走不到 4 分钟、复杂地形约 20 分钟即可训完。这套范式让强化学习成为四足和人形机器人运动控制的主流方案，常用工具有 Isaac Lab、legged_gym 等。",
+   "example": "Rudin 等人开源的 legged_gym 在单张 RTX A6000 上同时仿真 4096 台 ANYmal，用游戏式的地形课程自动调整难度，约 20 分钟训出能走复杂地形的策略，并迁移到真实的 ANYmal C 上。",
+   "related": [
+    "GPU 并行仿真",
+    "并行环境",
+    "近端策略优化",
+    "Isaac Lab",
+    "legged_gym",
+    "仿真到现实迁移"
+   ],
+   "sources": [
+    {
+     "title": "Learning to Walk in Minutes Using Massively Parallel Deep Reinforcement Learning (arXiv 2109.11978)",
+     "url": "https://arxiv.org/abs/2109.11978"
+    },
+    {
+     "title": "Isaac Gym: High Performance GPU-Based Physics Simulation For Robot Learning (arXiv 2108.10470)",
+     "url": "https://arxiv.org/abs/2108.10470"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "最大似然估计 / 负对数似然",
+   "name_en": "Maximum Likelihood Estimation / Negative Log-Likelihood",
+   "abbr": "MLE / NLL",
+   "aliases": [
+    "极大似然估计",
+    "对数似然",
+    "NLL 损失"
+   ],
+   "tier": 2,
+   "one_liner": "找一组参数让观测数据出现的概率最大；取负对数后就成了要最小化的损失。",
+   "explanation": "最大似然估计是统计学最基本的参数估计方法：假设数据来自某个带参数的概率模型，选出让已观测数据出现概率（似然）最大的那组参数。计算时取对数把连乘变成求和，再加负号变成最小化问题，这就是深度学习里的负对数似然损失。许多常见损失都是它的特例：分类用的交叉熵是类别分布下的负对数似然；误差服从高斯分布时，最大似然等价于最小化均方误差；误差服从拉普拉斯分布时对应 L1 损失。它也等价于最小化数据分布与模型分布之间的 KL 散度。在具身智能里，行为克隆本质上就是对专家动作做最大似然估计：把动作离散化的 VLA 用交叉熵预测动作 token，高斯策略则直接最小化动作的负对数似然。",
+   "example": "OpenVLA 把每个动作维度在训练数据 1% 到 99% 分位数之间均匀分成 256 个箱，再用标准的下一个 token 预测目标、只在动作 token 上算交叉熵，这就是在对专家动作做最大似然估计。",
+   "related": [
+    "交叉熵",
+    "KL 散度",
+    "均方误差",
+    "行为克隆",
+    "损失函数",
+    "高斯策略"
+   ],
+   "sources": [
+    {
+     "title": "Maximum likelihood estimation（Wikipedia）",
+     "url": "https://en.wikipedia.org/wiki/Maximum_likelihood_estimation"
+    },
+    {
+     "title": "OpenVLA: An Open-Source Vision-Language-Action Model (arXiv 2406.09246)",
+     "url": "https://arxiv.org/abs/2406.09246"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "均方误差",
+   "name_en": "Mean Squared Error",
+   "abbr": "MSE",
+   "aliases": [
+    "L2 损失",
+    "平方误差损失"
+   ],
+   "tier": 2,
+   "one_liner": "预测值与真值之差的平方再取平均，是最常用的回归损失。",
+   "explanation": "均方误差把每个样本的预测值与真值之差平方后取平均，不取平均的平方和常叫 L2 损失。它处处可导，误差越小梯度越小，优化平稳，是回归任务的默认损失；从概率角度看，最小化 MSE 等价于假设误差服从高斯分布时的最大似然估计，最优解是条件均值。平方会放大大误差，所以它比 L1 损失更容易被离群点带偏。在机器人模仿学习里它有个出名的问题：同一场景下演示者有时从左绕、有时从右绕，用 MSE 直接回归动作会学成两者的平均，走出一条哪边都不是的中间路线，这就是动作多峰性问题，也是扩散策略、流匹配等生成式策略流行的原因之一。扩散模型的训练目标本身也是 MSE，只是回归对象换成了加进去的噪声。",
+   "example": "扩散策略（Diffusion Policy）训练时，把随机噪声加到专家动作序列上，让网络预测加进去的噪声，损失就是预测噪声与真实噪声之间的 MSE；论文指出最小化这个损失也在最小化数据分布与模型分布之间 KL 散度的变分下界。",
+   "related": [
+    "L1 损失",
+    "损失函数",
+    "最大似然估计 / 负对数似然",
+    "动作多峰性",
+    "连续动作回归",
+    "去噪损失"
+   ],
+   "sources": [
+    {
+     "title": "Linear regression: Loss（Google Machine Learning Crash Course）",
+     "url": "https://developers.google.com/machine-learning/crash-course/linear-regression/loss"
+    },
+    {
+     "title": "Diffusion Policy: Visuomotor Policy Learning via Action Diffusion (arXiv 2303.04137)",
+     "url": "https://arxiv.org/abs/2303.04137"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "模态对齐",
+   "name_en": "Modality Alignment (Alignment Pre-training Stage)",
+   "abbr": "",
+   "aliases": [
+    "对齐预训练",
+    "特征对齐预训练",
+    "跨模态对齐"
+   ],
+   "tier": 2,
+   "one_liner": "把图像等新模态的特征映射到语言模型能读懂的表示空间里。",
+   "explanation": "模态对齐指让图像、语言、机器人状态或动作等不同模态的表示落到一个可以互相对应的空间里。狭义上常指多模态大模型训练的第一阶段「对齐预训练」：以 LLaVA（2023）为例，它冻结 CLIP 视觉编码器和大语言模型，只用约 59.5 万对图文数据训练中间的投影层，让图像特征变成语言模型能处理的视觉 token；第二阶段再把投影层和语言模型一起用指令数据微调。先单独对齐，是为了让随机初始化的投影层先学会产出合理的视觉 token，再放开语言模型。广义上，CLIP 用对比学习把图文嵌入拉进同一空间也算模态对齐。VLA 给视觉语言模型接上状态编码器和动作头时也面临同样的问题。",
+   "example": "LLaVA 第一阶段在过滤后的 CC3M 子集（59.5 万图文对）上只训练投影矩阵 1 个 epoch，学习率 2e-3；第二阶段冻结视觉编码器，用 15.8 万条多模态指令数据微调投影层和语言模型。",
+   "related": [
+    "投影层",
+    "视觉语言模型",
+    "多模态大语言模型",
+    "CLIP",
+    "冻结骨干网络",
+    "知识隔离"
+   ],
+   "sources": [
+    {
+     "title": "Visual Instruction Tuning (LLaVA, arXiv 2304.08485)",
+     "url": "https://arxiv.org/abs/2304.08485"
+    }
+   ],
+   "as_of": ""
+  }
+ ]
+}

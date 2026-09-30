@@ -1,0 +1,365 @@
+{
+ "category": "named_model",
+ "batch": 2,
+ "terms": [
+  {
+   "name_zh": "智元 GO-2（Genie Operator-2）",
+   "name_en": "AgiBot Genie Operator-2 (GO-2)",
+   "abbr": "GO-2",
+   "aliases": [
+    "Genie Operator-2",
+    "GO-2（ViLLA）"
+   ],
+   "tier": 2,
+   "one_liner": "智元 2026 年发布的第二代具身基座模型，先在动作空间里规划再执行",
+   "explanation": "智元机器人（AgiBot）2026 年 4 月 17 日在上海「2026 合作伙伴大会」上发布的具身基座模型，是 2025 年 GO-1 的后继，官方称它为 ViLLA 具身基座模型。核心有两点：一是「动作思维链」，模型先在动作空间里生成一串粗粒度的动作意图作为宏观计划，而不是先写文字或生成图像再推出动作，相关论文 ACoT-VLA 被 CVPR 2026 接收；二是异步双系统，低频的语义规划模块出计划，高频的动作跟随模块结合实时观测输出控制信号，这部分设计被 ACL 2026 接收。官方报告 LIBERO 平均成功率 98.5%、LIBERO-Plus 零样本 86.6%。同场发布的还有世界动作模型 GE-2，用来在虚拟环境里测试策略。",
+   "example": "官方称只用仿真数据训练的 GO-2，在真机测试中成功率达到 82.9%。",
+   "related": [
+    "智元 GO-1（启元大模型）",
+    "ViLLA 架构",
+    "动作思维链",
+    "快慢双系统",
+    "智元机器人",
+    "LIBERO"
+   ],
+   "sources": [
+    {
+     "title": "AGIBOT Unveils Genie Operator-2 (GO-2) Next-Gen Embodied Foundation Model",
+     "url": "https://www.agibot.com/article/231/detail/56.html"
+    },
+    {
+     "title": "AGIBOT Unveils New Generation of Embodied AI Robots and Models (APC 2026, 2026-04-17)",
+     "url": "https://www.agibot.com/article/231/detail/63.html"
+    },
+    {
+     "title": "ACoT-VLA (AgibotTech GitHub)",
+     "url": "https://github.com/AgibotTech/ACoT-VLA"
+    }
+   ],
+   "as_of": "2026-04"
+  },
+  {
+   "name_zh": "ASAP",
+   "name_en": "ASAP: Aligning Simulation and Real-World Physics for Learning Agile Humanoid Whole-Body Skills",
+   "abbr": "ASAP",
+   "aliases": [],
+   "tier": 2,
+   "one_liner": "用真机数据学一个动作修正模型来缩小虚实差距，让人形机器人做高难动作",
+   "explanation": "卡内基梅隆大学与英伟达 2025 年 2 月发布的人形全身控制方法，发表于 RSS 2025。仿真里练好的动作到真机上常常走样，因为仿真的物理和真实电机、接触不一致，即虚实差距。ASAP 分两步：先在仿真里用重定向后的人类动作数据训练运动跟踪策略；再把策略部署到真机采集轨迹，训练一个增量（残差）动作模型，学出「仿真里要额外补多少动作才能和真机表现一致」，把它接进仿真器后微调原策略。在宇树 G1 上，它的效果优于系统辨识、域随机化等常用做法，代码已开源。",
+   "example": "宇树 G1 借助 ASAP 复现 C 罗、科比、詹姆斯等球星的标志性庆祝动作，以及 1 米以上的前跳和侧跳。",
+   "related": [
+    "仿真到现实迁移",
+    "虚实差距",
+    "残差策略",
+    "运动跟踪",
+    "宇树 G1",
+    "域随机化"
+   ],
+   "sources": [
+    {
+     "title": "ASAP (arXiv 2502.01143)",
+     "url": "https://arxiv.org/abs/2502.01143"
+    },
+    {
+     "title": "ASAP 项目主页",
+     "url": "https://agile.human2humanoid.com/"
+    }
+   ],
+   "as_of": "2025-04"
+  },
+  {
+   "name_zh": "BeyondMimic",
+   "name_en": "BeyondMimic: From Motion Tracking to Versatile Humanoid Control via Guided Diffusion",
+   "abbr": "",
+   "aliases": [],
+   "tier": 2,
+   "one_liner": "先让人形稳定复现人类动作，再蒸馏成可引导的扩散模型去做新任务",
+   "explanation": "加州大学伯克利分校 Koushil Sreenath 组与斯坦福 C. Karen Liu 组 2025 年 8 月发布的人形全身控制框架，分两步。第一步是运动跟踪：用一套简洁统一的强化学习配方，在仿真里学会复现 LAFAN1 动捕数据中的动作，再零样本部署到宇树 G1 真机，能做空中侧手翻、旋转踢、冲刺跑等高动态动作。第二步把选出的多个跟踪策略蒸馏进一个隐空间扩散模型，推理时用简单的代价函数引导采样，不用重新训练就能完成航点导航、摇杆遥控、避障等新任务。它把「模仿动作」推进到「用动作先验做通用控制」，运动跟踪代码已开源。",
+   "example": "同一个扩散模型，换一个代价函数就能从「跟着摇杆走」切换成「绕开障碍走到指定点」。",
+   "related": [
+    "运动跟踪",
+    "扩散模型",
+    "DeepMimic",
+    "ASAP",
+    "宇树 G1",
+    "LAFAN1 动捕数据集"
+   ],
+   "sources": [
+    {
+     "title": "BeyondMimic (arXiv 2508.08241)",
+     "url": "https://arxiv.org/abs/2508.08241"
+    },
+    {
+     "title": "BeyondMimic 项目主页",
+     "url": "https://beyondmimic.github.io/"
+    }
+   ],
+   "as_of": "2025-11"
+  },
+  {
+   "name_zh": "代码即策略",
+   "name_en": "Code as Policies: Language Model Programs for Embodied Control",
+   "abbr": "CaP",
+   "aliases": [
+    "Code as Policies"
+   ],
+   "tier": 2,
+   "one_liner": "让大语言模型直接写 Python 程序，调用感知和控制接口来指挥机器人",
+   "explanation": "谷歌机器人团队（Robotics at Google）2022 年 9 月发布。此前用大语言模型控制机器人，多是让模型从固定技能列表里挑下一步，如 SayCan。代码即策略让擅长写代码的大模型根据自然语言指令直接生成 Python 程序：调用物体检测等感知接口拿到位置，用 NumPy 算坐标，再调用抓取、移动等控制原语，还能写循环和条件判断；遇到未定义的函数就递归地再生成，即分层代码生成。这样能处理需要空间推理、要给出具体数值的模糊指令。论文在桌面操作、白板绘画和移动机器人上做了演示，大模型写代码驱动机器人的思路在后来的 VoxPoser、Eureka 中也能看到。",
+   "example": "指令「把积木在靠近顶部的位置排成一条横线」，模型生成的代码先检测所有积木位置，算出桌面上方一排等间距目标点，再逐个调用抓取放置函数。",
+   "related": [
+    "大语言模型",
+    "SayCan",
+    "大模型任务规划",
+    "VoxPoser",
+    "Eureka",
+    "原子技能"
+   ],
+   "sources": [
+    {
+     "title": "Code as Policies (arXiv 2209.07753)",
+     "url": "https://arxiv.org/abs/2209.07753"
+    },
+    {
+     "title": "Code as Policies 项目主页",
+     "url": "https://code-as-policies.github.io/"
+    }
+   ],
+   "as_of": "2022-09"
+  },
+  {
+   "name_zh": "DeepMimic",
+   "name_en": "DeepMimic: Example-Guided Deep Reinforcement Learning of Physics-Based Character Skills",
+   "abbr": "",
+   "aliases": [],
+   "tier": 2,
+   "one_liner": "用强化学习让仿真角色模仿动捕片段，学会空翻、武术等物理上可行的动作",
+   "explanation": "加州大学伯克利分校与不列颠哥伦比亚大学的彭学斌（Xue Bin Peng）等人 2018 年发表于 SIGGRAPH。纯靠强化学习训练的仿真角色动作常常僵硬、不像人。DeepMimic 加了模仿奖励：角色在物理仿真里每一步的姿态越接近参考动作片段（如动捕数据）得分越高，还可叠加任务奖励。它的两个训练技巧后来成了标配：参考状态初始化，即从参考动作的随机一帧开始回合；提前终止，即摔倒就结束回合。它让人形、Atlas 机器人、恐龙等角色学会了行走、翻腾和武术动作。如今人形机器人的运动跟踪路线，如 ASAP、BeyondMimic，都延续了这套思路。",
+   "example": "给仿真人形角色一段人类后空翻的动捕片段，训练后它能在物理仿真里完成后空翻并站稳。",
+   "related": [
+    "运动跟踪",
+    "强化学习",
+    "参考状态初始化",
+    "提前终止",
+    "对抗运动先验",
+    "动作捕捉"
+   ],
+   "sources": [
+    {
+     "title": "DeepMimic (arXiv 1804.02717)",
+     "url": "https://arxiv.org/abs/1804.02717"
+    }
+   ],
+   "as_of": "2018-04"
+  },
+  {
+   "name_zh": "DreamerV3",
+   "name_en": "DreamerV3: Mastering Diverse Domains through World Models",
+   "abbr": "",
+   "aliases": [
+    "Dreamer 系列",
+    "DreamerV1",
+    "DreamerV2"
+   ],
+   "tier": 2,
+   "one_liner": "在学到的世界模型里靠想象训练策略、一套超参数通用的强化学习算法",
+   "explanation": "Dreamer 系列由 Danijar Hafner 主导：2019 年的 Dreamer 提出在隐空间里想象未来来学习行为；2020 年的 DreamerV2 改用离散隐变量，在 Atari 上首次让靠世界模型学习的智能体达到人类水平，并超过 Rainbow、IQN 等顶尖单卡无模型方法；DreamerV3 于 2023 年 1 月公开，2025 年发表于《自然》。做法是先从交互经验中学一个世界模型，预测下一步的隐状态和奖励，再让策略在模型生成的想象轨迹里训练，真实环境主要用来收集数据。它靠归一化、平衡、变换等稳健性技巧，用同一套超参数解决 150 多个不同任务，并成为首个不用人类数据和课程、从零在《我的世界》里挖到钻石的算法。",
+   "example": "在《我的世界》里，DreamerV3 不借助人类演示，从零学会砍树、做工具，最终挖到钻石。",
+   "related": [
+    "世界模型",
+    "循环状态空间模型",
+    "想象中学习",
+    "基于模型的强化学习",
+    "DayDreamer",
+    "Dreamer 4"
+   ],
+   "sources": [
+    {
+     "title": "DreamerV3 (arXiv 2301.04104)",
+     "url": "https://arxiv.org/abs/2301.04104"
+    },
+    {
+     "title": "DreamerV3 项目页（Danijar Hafner）",
+     "url": "https://danijar.com/project/dreamerv3/"
+    },
+    {
+     "title": "DreamerV2: Mastering Atari with Discrete World Models (arXiv 2010.02193)",
+     "url": "https://arxiv.org/abs/2010.02193"
+    }
+   ],
+   "as_of": "2025"
+  },
+  {
+   "name_zh": "Eureka",
+   "name_en": "Eureka: Human-Level Reward Design via Coding Large Language Models",
+   "abbr": "",
+   "aliases": [],
+   "tier": 2,
+   "one_liner": "让 GPT-4 写奖励函数代码并反复改进，自动为强化学习设计奖励",
+   "explanation": "英伟达与宾夕法尼亚大学、加州理工、得克萨斯大学奥斯汀分校 2023 年 10 月发布，发表于 ICLR 2024。强化学习的效果高度依赖奖励函数，而手写奖励费时又靠经验。Eureka 把环境源代码和任务描述交给 GPT-4，让它一次写出多份奖励函数代码，分别在 GPU 并行仿真里训练策略，再把训练中各奖励项的统计反馈给模型（奖励反思），让它改写出下一轮更好的版本，像进化搜索一样迭代。在 10 种机器人形态、29 个开源强化学习环境上，它设计的奖励在 83% 的任务上超过人类专家，平均归一化提升 52%。后续的 DrEureka 把这套思路用到仿真到现实迁移上。",
+   "example": "仿真中的 Shadow 灵巧手用 Eureka 设计的奖励，学会让笔在指间快速连续旋转。",
+   "related": [
+    "奖励函数",
+    "奖励工程",
+    "大语言模型",
+    "DrEureka",
+    "代码即策略",
+    "Isaac Gym"
+   ],
+   "sources": [
+    {
+     "title": "Eureka (arXiv 2310.12931)",
+     "url": "https://arxiv.org/abs/2310.12931"
+    }
+   ],
+   "as_of": "2024-04"
+  },
+  {
+   "name_zh": "Helix 02",
+   "name_en": "Figure Helix 02 (Full-Body Autonomy)",
+   "abbr": "",
+   "aliases": [
+    "Helix-02"
+   ],
+   "tier": 2,
+   "one_liner": "Figure 2026 年发布的人形全身控制模型，从像素直接控制全身完成长程任务",
+   "explanation": "美国 Figure AI 2026 年 1 月 27 日发布，是 2025 年 2 月 Helix 的升级版。初代 Helix 用快慢双系统控制上半身；Helix 02 扩展到整台机器人，行走和操作统一协调，并改成三层：System 2 理解场景和语言、给出行为目标；System 1 以 200Hz 把全部传感器输入直接映射成全身关节指令；新增的 System 0 以 1kHz 运行，约 1000 万参数，用 1000 多小时人体动作数据训练，负责平衡、接触和全身协调。硬件上新增掌心相机和能感知约 3 克力的指尖触觉。官方演示了一段 4 分钟、围绕洗碗机、含 61 个边走边操作动作的端到端自主任务。",
+   "example": "从药板里取出药片、用注射器精确推出 5 毫升液体、拧开瓶盖，都是官方展示的 Helix 02 灵巧任务。",
+   "related": [
+    "Helix",
+    "Figure AI",
+    "快慢双系统",
+    "System 0（三层系统架构）",
+    "运动操作一体化",
+    "全身控制"
+   ],
+   "sources": [
+    {
+     "title": "Helix 02: Full-Body Autonomy (Figure AI)",
+     "url": "https://www.figure.ai/news/helix-02"
+    }
+   ],
+   "as_of": "2026-01"
+  },
+  {
+   "name_zh": "Gemini Robotics 1.5",
+   "name_en": "Gemini Robotics 1.5 (thinking VLA with Motion Transfer)",
+   "abbr": "",
+   "aliases": [],
+   "tier": 2,
+   "one_liner": "谷歌 DeepMind 的 VLA，出动作前先思考，技能可跨机器人迁移",
+   "explanation": "谷歌 DeepMind 2025 年 9 月 25 日发布，是同年 3 月初代 Gemini Robotics 的升级版视觉-语言-动作模型（VLA）。新特点有两个。一是先思考再行动：出动作前先用自然语言生成一段内部推理，把语义复杂的指令拆成简单小段。二是动作迁移（Motion Transfer）：只在 ALOHA 2 双臂平台上训练过的任务，可直接在 Apptronik Apollo 人形和双臂 Franka 上执行，反之亦然，即跨本体复用技能。它与同时发布的具身推理模型 Gemini Robotics-ER 1.5 配合：ER 1.5 做高层规划，用自然语言逐步指挥 1.5 执行。1.5 当时只向部分合作伙伴开放。",
+   "example": "只在 ALOHA 2 双臂平台上教过的任务，不另外训练，也能在 Apollo 人形机器人上完成。",
+   "related": [
+    "Gemini Robotics",
+    "Gemini Robotics-ER",
+    "视觉-语言-动作模型",
+    "跨本体",
+    "具身思维链",
+    "Apptronik Apollo"
+   ],
+   "sources": [
+    {
+     "title": "Gemini Robotics 1.5 brings AI agents into the physical world (Google DeepMind)",
+     "url": "https://deepmind.google/discover/blog/gemini-robotics-15-brings-ai-agents-into-the-physical-world/"
+    }
+   ],
+   "as_of": "2025-09"
+  },
+  {
+   "name_zh": "Gemini Robotics 2",
+   "name_en": "Gemini Robotics 2 (incl. full-body humanoid control)",
+   "abbr": "",
+   "aliases": [],
+   "tier": 2,
+   "one_liner": "谷歌 DeepMind 2026 年的新一代机器人模型，能控制人形全身",
+   "explanation": "谷歌 DeepMind 2026 年 7 月 30 日发布，是 1.5 之后的新一代，包含三个模型：VLA 模型 Gemini Robotics 2、具身推理模型 Gemini Robotics ER 2、可在机器人本地运行的 On-Device 2。主要新能力是全身控制：它能驱动整台人形机器人边走、边蹲、边操作物体，官方在 Apptronik Apollo 2 上演示了从货架取物等多步任务。它还能控制 22 自由度的五指 SharpaWave 灵巧手，也支持普通二指夹爪；On-Device 2 适配新的双臂本体只需几小时。VLA 和 On-Device 版本目前只对早期合作伙伴开放，ER 2 可在 Google AI Studio 使用。",
+   "example": "Apptronik Apollo 2 人形机器人在 Gemini Robotics 2 控制下走到货架前、下蹲、取出物品，完成多步任务。",
+   "related": [
+    "Gemini Robotics 1.5",
+    "Gemini Robotics-ER",
+    "Gemini Robotics On-Device",
+    "全身控制",
+    "Apptronik Apollo",
+    "Sharpa Wave 灵巧手"
+   ],
+   "sources": [
+    {
+     "title": "Gemini Robotics 2 brings whole body intelligence to robots (Google DeepMind)",
+     "url": "https://deepmind.google/blog/gemini-robotics-2-brings-whole-body-intelligence-to-robots/"
+    },
+    {
+     "title": "Gemini Robotics 模型页 (Google DeepMind)",
+     "url": "https://deepmind.google/models/gemini-robotics/"
+    }
+   ],
+   "as_of": "2026-07"
+  },
+  {
+   "name_zh": "Gemini Robotics-ER",
+   "name_en": "Gemini Robotics-ER (Embodied Reasoning)",
+   "abbr": "",
+   "aliases": [
+    "Gemini Robotics-ER 1.5",
+    "Gemini Robotics-ER 1.6",
+    "Gemini Robotics ER 2"
+   ],
+   "tier": 2,
+   "one_liner": "谷歌 DeepMind 的具身推理模型，负责看懂空间、做规划、判进度",
+   "explanation": "ER 即 Embodied Reasoning（具身推理）。谷歌 DeepMind 2025 年 3 月随初代 Gemini Robotics 推出，是基于 Gemini、强化了 3D 感知和空间理解的视觉语言模型，能指出物体位置、预测抓取点和轨迹。它一般不直接出关节动作，而是回答「东西在哪、先做哪步、做完没有」，再把计划交给 VLA 或机器人接口执行，相当于快慢双系统里的慢系统。2025 年 9 月的 ER 1.5 通过 Gemini API 开放，之后更新到 1.6；2026 年 7 月的 ER 2 加入视频理解和进度跟踪，能编排动作模型完成多步任务、协调多台机器人，还能调用 Google 搜索等工具。",
+   "example": "ER 2 看着机器人作业的视频判断当前步骤是否完成，没完成就让它重试，完成了再调度下一步。",
+   "related": [
+    "具身推理",
+    "具身推理模型",
+    "Gemini Robotics",
+    "Gemini Robotics 1.5",
+    "ERQA 具身推理问答基准",
+    "大脑-小脑架构（大小脑）"
+   ],
+   "sources": [
+    {
+     "title": "Gemini Robotics: Bringing AI into the Physical World (arXiv 2503.20020)",
+     "url": "https://arxiv.org/abs/2503.20020"
+    },
+    {
+     "title": "Gemini Robotics ER - Google DeepMind",
+     "url": "https://deepmind.google/models/gemini-robotics/gemini-robotics-er/"
+    },
+    {
+     "title": "Gemini Robotics ER 2 (Google blog)",
+     "url": "https://blog.google/innovation-and-ai/models-and-research/google-deepmind/gemini-robotics-er-2/"
+    }
+   ],
+   "as_of": "2026-07"
+  },
+  {
+   "name_zh": "GEN-0",
+   "name_en": "GEN-0: Embodied Foundation Models That Scale with Physical Interaction (Generalist AI)",
+   "abbr": "",
+   "aliases": [],
+   "tier": 2,
+   "one_liner": "Generalist AI 用 27 万小时真实数据训练的具身基础模型",
+   "explanation": "美国机器人公司 Generalist AI 2025 年 11 月 4 日发布的具身基础模型，训练数据是超过 27 万小时的真实操作轨迹，来自全球数千个家庭、仓库和工作场所，官方称每周还在新增约 1 万小时。它的主要结论是缩放规律：预训练数据越多，下游表现按幂律提升；模型规模在约 70 亿参数处出现「相变」，10 亿参数的小模型面对海量数据会「骨化」、学不进新东西，更大的模型则持续变好。架构上它用「和声推理」（Harmonic Reasoning），让感知和动作 token 以异步、连续时间的流并行，不依赖快慢双系统。后续有 2026 年 4 月的 GEN-1 和 8 月的 GEN-1.5。",
+   "example": "官方实验中，10 亿参数的模型在大规模数据上训练会停滞，而 70 亿参数以上的模型随数据增加持续进步。",
+   "related": [
+    "GEN-1",
+    "Generalist AI",
+    "缩放定律",
+    "骨化（模型骨化）",
+    "具身大模型",
+    "真机数据"
+   ],
+   "sources": [
+    {
+     "title": "GEN-0: Embodied Foundation Models That Scale with Physical Interaction (Generalist AI)",
+     "url": "https://generalistai.com/blog/gen-0"
+    },
+    {
+     "title": "Generalist AI Blog",
+     "url": "https://generalistai.com/blog"
+    }
+   ],
+   "as_of": "2025-11"
+  }
+ ]
+}

@@ -1,0 +1,420 @@
+{
+  "category": "sim",
+  "batch": 3,
+  "terms": [
+    {
+      "name_zh": "关节体仿真",
+      "name_en": "Articulated-Body Simulation (Articulation)",
+      "abbr": "",
+      "aliases": [
+        "多刚体仿真",
+        "Articulation",
+        "铰接体仿真"
+      ],
+      "tier": 2,
+      "one_liner": "把机器人当作由关节串起来的一组刚体，计算它怎么运动、受多大力的仿真。",
+      "explanation": "机器人由连杆（刚性零件）和关节连成树状结构，关节体仿真就是专门计算这类系统运动的技术。做法有两种：一种把每个连杆当独立刚体，再用约束把它们连住（最大坐标），关节可能慢慢漂移、拉开；另一种只用根部位姿加各关节角描述整台机器人（约化坐标，也叫广义坐标），关节天然不会脱开，Featherstone 1987 年的著作给出了这类高效算法。PhysX 的 Articulation 和 MuJoCo 都走约化坐标路线，PhysX 文档称它关节误差为零、能承受更大的质量比，计算量随自由度而不是连杆数增长。代价是只支持树状结构，并联踝关节这类闭链要额外加约束。",
+      "example": "在 Isaac Sim 里导入 Franka 机械臂的 URDF，会得到一个固定基座的 Articulation：7 个转动关节加 2 个手指移动关节，仿真状态就是这 9 个关节的位置和速度。",
+      "related": [
+        "刚体仿真",
+        "铰接体算法",
+        "广义坐标",
+        "关节坐标仿真 vs 笛卡尔坐标仿真（约化坐标 / 最大坐标）",
+        "PhysX",
+        "MuJoCo"
+      ],
+      "sources": [
+        {
+          "title": "NVIDIA PhysX 5 Documentation: Articulations",
+          "url": "https://nvidia-omniverse.github.io/PhysX/physx/5.4.1/docs/Articulations.html"
+        },
+        {
+          "title": "MuJoCo Documentation: Computation",
+          "url": "https://mujoco.readthedocs.io/en/stable/computation/index.html"
+        },
+        {
+          "title": "Wikipedia: Featherstone's algorithm",
+          "url": "https://en.wikipedia.org/wiki/Featherstone%27s_algorithm"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "平均完成长度",
+      "name_en": "Average Length (CALVIN)",
+      "abbr": "Avg. Len",
+      "aliases": [
+        "平均连续完成任务数",
+        "Average Successful Sequence Length",
+        "平均序列长度"
+      ],
+      "tier": 2,
+      "one_liner": "CALVIN 评测里策略平均能连续完成几条指令，满分 5。",
+      "explanation": "平均完成长度是 CALVIN 长程评测的核心指标。评测时让策略依次跑 1000 条指令链，每条链由 5 个连续的语言指令组成（如先开抽屉、再把方块推进抽屉），每个子任务最多 360 步；一旦某个子任务失败，这条链就结束。记下每条链连续做成了几个（0–5），取平均就是 Avg. Len。它等于「连续完成至少 1 个、2 个……5 个任务的成功率」之和，所以既看单步能力，也看长程衔接中误差会不会累积。论文通常在 ABC→D（在 A、B、C 三个环境训练，在没见过的 D 上测）设置下报告这个数，用来比较模型的泛化和长程能力。",
+      "example": "CALVIN 论文的基线 MCIL 在 D→D 设置下，连续完成 1–5 个任务的成功率分别为 48.9%、12.9%、2.6%、0.5%、0.08%，加起来约 0.65，即平均连续完成不到 1 个任务。",
+      "related": [
+        "CALVIN",
+        "成功率",
+        "长程任务",
+        "语言条件策略",
+        "闭环评测",
+        "进度分数"
+      ],
+      "sources": [
+        {
+          "title": "CALVIN: A Benchmark for Language-Conditioned Policy Learning for Long-Horizon Robot Manipulation Tasks (arXiv 2112.03227)",
+          "url": "https://arxiv.org/abs/2112.03227"
+        },
+        {
+          "title": "CALVIN 官方评测脚本 evaluate_policy.py",
+          "url": "https://github.com/mees/calvin/blob/main/calvin_models/calvin_agent/evaluation/evaluate_policy.py"
+        },
+        {
+          "title": "CALVIN 评测工具 utils.py（avg_seq_len 计算）",
+          "url": "https://github.com/mees/calvin/blob/main/calvin_models/calvin_agent/evaluation/utils.py"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "BEHAVIOR-1K",
+      "name_en": "BEHAVIOR-1K (BEHAVIOR Challenge)",
+      "abbr": "",
+      "aliases": [
+        "BEHAVIOR",
+        "BEHAVIOR Challenge",
+        "BEHAVIOR 挑战赛"
+      ],
+      "tier": 2,
+      "one_liner": "斯坦福做的 1000 个日常家务任务仿真基准，跑在 OmniGibson 上。",
+      "explanation": "BEHAVIOR-1K 是斯坦福视觉与学习实验室推出的具身智能基准，李飞飞、吴佳俊等参与指导，初版发表于 CoRL 2022。任务来自一项「你希望机器人帮你做什么」的调查，整理出 1000 个日常活动，分布在 50 个可交互场景（住宅、花园、餐厅、办公室等）中，标注了 9000 多个带物理和语义属性的物体；任务目标用 BDDL（一种用逻辑谓词描述目标状态的语言）定义。配套仿真器 OmniGibson 基于英伟达 Isaac Sim，支持刚体、软体和液体。团队从 2025 年开始办 BEHAVIOR Challenge，2026 年第二届要求完成 100 个完整家务任务，提供 2 万条、共 1950 小时的遥操作演示，按带部分得分的平均任务成功分数排名。",
+      "example": "2026 BEHAVIOR Challenge 提供 π0.5 和 GR00T N1.7 作为基线，参赛策略用 RGB、深度和本体感知输入控制机器人做家务，提交截止 2026 年 10 月 16 日，总奖金 1.1 万美元。",
+      "related": [
+        "OmniGibson",
+        "Isaac Sim",
+        "家务任务",
+        "长程任务",
+        "基准测试",
+        "移动操作"
+      ],
+      "sources": [
+        {
+          "title": "BEHAVIOR 官网",
+          "url": "https://behavior.stanford.edu/"
+        },
+        {
+          "title": "BEHAVIOR-1K: A Human-Centered, Embodied AI Benchmark with 1,000 Everyday Activities and Realistic Simulation (arXiv 2403.09227)",
+          "url": "https://arxiv.org/abs/2403.09227"
+        },
+        {
+          "title": "2026 BEHAVIOR Challenge",
+          "url": "https://behavior.stanford.edu/challenge/index.html"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "CALVIN",
+      "name_en": "CALVIN Benchmark",
+      "abbr": "",
+      "aliases": [
+        "CALVIN ABC→D",
+        "Composing Actions from Language and Vision"
+      ],
+      "tier": 2,
+      "one_liner": "考机器人能否连续听懂并完成 5 条语言指令的桌面操作仿真基准。",
+      "explanation": "CALVIN（Composing Actions from Language and Vision）是德国弗莱堡大学 Oier Mees、Wolfram Burgard 等人发布的开源仿真基准，发表于 RA-L 2022，获当年该刊最佳论文奖。场景是一张桌子加一台 7 自由度 Franka 机械臂，桌上有抽屉、滑门、按钮、开关和三个彩色方块，用 PyBullet 仿真；共有 A、B、C、D 四个环境，结构相同，但纹理和部件位置不同。它提供约 24 小时的遥操作「玩耍」数据（其中只有 1% 配了语言标注），定义了 34 种任务，主评测要求连续执行 5 条语言指令，用平均完成长度打分。最常用的 ABC→D 设置在三个环境训练、在第四个没见过的环境测试，考察泛化能力。",
+      "example": "论文给出的一条测试链：「打开抽屉」→「把方块推进抽屉」→「从抽屉里拿出方块」→「把方块叠起来」→「关上抽屉」，机器人每完成一步才进入下一步。",
+      "related": [
+        "平均完成长度",
+        "语言条件策略",
+        "长程任务",
+        "LIBERO",
+        "PyBullet",
+        "玩耍数据"
+      ],
+      "sources": [
+        {
+          "title": "CALVIN: A Benchmark for Language-Conditioned Policy Learning for Long-Horizon Robot Manipulation Tasks (arXiv 2112.03227)",
+          "url": "https://arxiv.org/abs/2112.03227"
+        },
+        {
+          "title": "CALVIN GitHub 仓库",
+          "url": "https://github.com/mees/calvin"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "闭环评测",
+      "name_en": "Closed-loop Evaluation",
+      "abbr": "",
+      "aliases": [
+        "闭环测试",
+        "在线评测"
+      ],
+      "tier": 2,
+      "one_liner": "让策略真正控制机器人、边看边做，按任务最后有没有完成来打分。",
+      "explanation": "闭环评测指把策略放进仿真或真实环境里实际运行：每一步用最新观测算出动作，动作改变环境，环境再给出新观测，循环到任务成功、失败或超时，再统计成功率等指标。与之相对的开环评测只在离线数据上比较模型预测的动作和人类演示差多少（如均方误差），模型的动作不会影响后续输入。问题在于模仿学习的小误差会把机器人带进演示里没见过的状态并越积越大，离线误差看不出这一点。SimplerEnv 论文实测发现，验证集均方误差不能很好反映策略的真机表现；自动驾驶领域 CVPR 2024 的一项研究也指出开环规划指标会误导结论。因此 VLA 论文一般以仿真或真机的闭环成功率为准。",
+      "example": "在 LIBERO 上测一个 VLA：每个任务从不同初始状态各跑若干回合，策略实时控制仿真机械臂，最后报告成功率，这是闭环评测；只算它在测试集上预测动作的均方误差，则属于开环评测。",
+      "related": [
+        "开环评测",
+        "仿真评测",
+        "真机评测",
+        "推演",
+        "复合误差",
+        "SimplerEnv"
+      ],
+      "sources": [
+        {
+          "title": "Evaluating Real-World Robot Manipulation Policies in Simulation (SIMPLER, arXiv 2405.05941)",
+          "url": "https://arxiv.org/html/2405.05941"
+        },
+        {
+          "title": "Is Ego Status All You Need for Open-Loop End-to-End Autonomous Driving? (arXiv 2312.03031)",
+          "url": "https://arxiv.org/abs/2312.03031"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "碰撞检测（物理引擎）",
+      "name_en": "Collision Detection",
+      "abbr": "",
+      "aliases": [
+        "broad phase / narrow phase",
+        "粗检测/细检测",
+        "宽相/窄相检测"
+      ],
+      "tier": 2,
+      "one_liner": "物理引擎每一步找出哪些物体碰上了、碰在哪、穿进去多深。",
+      "explanation": "碰撞检测是物理引擎每个仿真步都要做的一环，输出一份接触列表（接触点、法向、穿透深度），再交给求解器算接触力。场景里 n 个物体两两配对有 n(n−1)/2 种，逐对精算太慢，所以一般分两级：粗检测（broad phase）用包围盒排序等廉价方法，如扫掠剪枝（sweep-and-prune），快速排除明显碰不到的物体对；细检测（narrow phase）再对剩下的对按形状精确计算，凸体之间常用 GJK/EPA 算法。MuJoCo 在两级之间还加了一层基于包围盒层次树的中间检测，并用 contype/conaffinity 位掩码跳过不需要检测的对。注意它和机器人本体安全里检测真实撞击的「碰撞检测」不是一回事。",
+      "example": "MuJoCo 里一台机器人和桌面、方块的所有几何体，先经扫掠剪枝筛出可能相碰的物体对，再做包围球测试过滤；最后，球、盒子这类基本形状之间用解析公式直接算，涉及网格的物体对（网格先换成凸包）交给 GJK/EPA，算出接触点和穿透深度。",
+      "related": [
+        "碰撞体",
+        "宽相 / 窄相碰撞检测",
+        "GJK 算法",
+        "包围盒",
+        "碰撞过滤（碰撞组）",
+        "连续碰撞检测（隧穿问题）"
+      ],
+      "sources": [
+        {
+          "title": "MuJoCo Documentation: Computation - Collision detection",
+          "url": "https://mujoco.readthedocs.io/en/stable/computation/index.html"
+        },
+        {
+          "title": "NVIDIA PhysX 5 Documentation: Rigid Body Collision",
+          "url": "https://nvidia-omniverse.github.io/PhysX/physx/5.4.1/docs/RigidBodyCollision.html"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "碰撞体",
+      "name_en": "Collision Geometry (Collider)",
+      "abbr": "",
+      "aliases": [
+        "碰撞网格",
+        "碰撞形状",
+        "Collision Mesh",
+        "Collider",
+        "视觉网格 vs 碰撞网格"
+      ],
+      "tier": 2,
+      "one_liner": "物理引擎用来算碰撞的简化形状，通常和画面上看到的模型不是同一个。",
+      "explanation": "仿真里的物体一般有两套几何：视觉网格用于渲染，面数多、追求好看；碰撞体交给物理引擎做碰撞检测，追求算得快、算得稳。碰撞体通常是球、胶囊、盒子等基本形状，或凸包（能包住物体的最小凸多面体），因为这些形状有高效的碰撞算法。MuJoCo 会把用户给的非凸网格自动换成凸包参与碰撞；Isaac Sim 默认也用凸包，需要更贴合时可以选凸分解（把物体拆成多个凸块）或 SDF（符号距离场）网格。碰撞体太粗，杯子会被当成实心、把手抓不住；太细又拖慢仿真。URDF 里每个连杆分别写 <visual> 和 <collision>，就是这个区分。",
+      "example": "一只马克杯如果只用一个凸包当碰撞体，杯口会被封住，仿真里放不进勺子；用 CoACD 等工具凸分解成多个凸块后，杯壁、杯底和把手才能分别参与碰撞。",
+      "related": [
+        "凸分解",
+        "CoACD / V-HACD 凸分解工具",
+        "碰撞检测（物理引擎）",
+        "统一机器人描述格式",
+        "符号距离场",
+        "穿模"
+      ],
+      "sources": [
+        {
+          "title": "Isaac Sim Documentation: Simulation Fundamentals（Collision approximations）",
+          "url": "https://docs.isaacsim.omniverse.nvidia.com/latest/physics/simulation_fundamentals.html"
+        },
+        {
+          "title": "MuJoCo Documentation: Computation - Collision detection",
+          "url": "https://mujoco.readthedocs.io/en/stable/computation/index.html"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "接触模型",
+      "name_en": "Contact Model",
+      "abbr": "",
+      "aliases": [
+        "接触动力学",
+        "Contact Dynamics"
+      ],
+      "tier": 2,
+      "one_liner": "物理引擎里规定两个物体接触时产生多大力、怎么摩擦的数学规则。",
+      "explanation": "碰撞检测只回答「碰没碰、碰在哪」，接触模型回答「接触后受多大的力」：法向力阻止物体互相穿透，切向摩擦力阻止滑动，摩擦力大小受摩擦锥限制，不超过摩擦系数乘以法向力。经典做法是硬接触，把「没接触就没有力、有力就不能穿透」写成互补条件，归结为线性互补问题（LCP），带摩擦时是 NP 难问题，各引擎多用近似解法。MuJoCo 采用软接触：允许少量穿透，把接触力写成一个凸优化问题的唯一解，用 solref、solimp 等参数调软硬。接触模型准不准，直接影响抓取、插孔、足式行走这类依赖接触的任务能否从仿真迁移到真机。",
+      "example": "在 MuJoCo 中，geom 的 condim 设为 3 时只算法向力和平面内的滑动摩擦；设为 4 会加上扭转摩擦，官方文档说这有助于模拟软指尖、让抓取更稳；设为 6 再加滚动摩擦。",
+      "related": [
+        "软接触",
+        "线性互补问题",
+        "摩擦锥",
+        "约束求解器",
+        "碰撞检测（物理引擎）",
+        "库仑摩擦"
+      ],
+      "sources": [
+        {
+          "title": "MuJoCo Documentation: Computation - Soft contact model",
+          "url": "https://mujoco.readthedocs.io/en/stable/computation/index.html"
+        },
+        {
+          "title": "Isaac Sim Documentation: Simulation Fundamentals",
+          "url": "https://docs.isaacsim.omniverse.nvidia.com/latest/physics/simulation_fundamentals.html"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "控制降频",
+      "name_en": "Control Decimation",
+      "abbr": "",
+      "aliases": [
+        "decimation",
+        "物理频率与控制频率之比"
+      ],
+      "tier": 2,
+      "one_liner": "策略每出一个动作，物理引擎要跑几个仿真步；这个步数就是 decimation。",
+      "explanation": "物理引擎为了算得稳，需要很小的时间步（通常几毫秒），而策略网络没必要、也来不及那么高频地出动作。控制降频就是让策略每输出一次动作，仿真器用这个动作（或由它换算出的 PD 目标）连续推进 N 个物理步，N 叫 decimation。Isaac Lab 和 legged_gym 都用这个参数，环境走一步的时长等于物理步长乘以 decimation。取值要兼顾两头：太大，策略反应慢；太小，浪费训练算力，而且和真机控制频率对不上，会加大虚实差距。部署到真机时，策略一般按同样的频率运行，底层电机的 PD 控制则跑在更高频率上。",
+      "example": "legged_gym 默认物理步长 0.005 秒、decimation = 4，所以策略每 0.02 秒出一次动作，即 50 Hz 控制，而关节 PD 控制在 200 Hz 的物理步里执行。",
+      "related": [
+        "仿真步长",
+        "控制频率",
+        "策略推理频率",
+        "PD 控制",
+        "子步",
+        "Isaac Lab"
+      ],
+      "sources": [
+        {
+          "title": "Isaac Lab API: isaaclab.envs（ManagerBasedEnvCfg.decimation）",
+          "url": "https://isaac-sim.github.io/IsaacLab/main/source/api/lab/isaaclab.envs.html"
+        },
+        {
+          "title": "legged_gym: legged_robot_config.py",
+          "url": "https://github.com/leggedrobotics/legged_gym/blob/master/legged_gym/envs/base/legged_robot_config.py"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "软体仿真",
+      "name_en": "Deformable-Body Simulation",
+      "abbr": "",
+      "aliases": [
+        "可变形体仿真",
+        "Soft-Body Simulation",
+        "柔性体仿真"
+      ],
+      "tier": 2,
+      "one_liner": "模拟布、绳、海绵、面团、液体这类会变形物体的物理仿真。",
+      "explanation": "刚体仿真假设物体形状不变，几个数就能描述位姿；软体仿真要处理受力会变形的物体，状态变成成百上千个节点或粒子的位置，计算量和数值难度都高得多。常用方法有：有限元法（FEM，把物体切成四面体网格，按杨氏模量、泊松比等材料参数算形变，适合弹性体）、基于位置的动力学（PBD，快且稳，常用于布和绳）、物质点法（MPM，适合面团、沙子这类大变形材料）。PhysX 的软体用 GPU 上的 FEM；Genesis 集成了 FEM、MPM、PBD/SPH 等求解器。它是叠衣服、揉面等柔性物体操作研究的基础，但和真实材料的差距通常比刚体仿真更大。",
+      "example": "SoftGym（CoRL 2020）基于粒子仿真器 NVIDIA FleX，提供铺平布料、折布、拉直绳子、倒水等任务，用来测试强化学习算法操作可变形物体的能力。",
+      "related": [
+        "有限元法",
+        "物质点法",
+        "基于位置的动力学",
+        "布料仿真",
+        "柔性物体操作",
+        "SoftGym"
+      ],
+      "sources": [
+        {
+          "title": "NVIDIA PhysX 5 Documentation: Soft Bodies",
+          "url": "https://nvidia-omniverse.github.io/PhysX/physx/5.4.1/docs/SoftBodies.html"
+        },
+        {
+          "title": "SoftGym: Benchmarking Deep Reinforcement Learning for Deformable Object Manipulation (arXiv 2011.07215)",
+          "url": "https://arxiv.org/abs/2011.07215"
+        },
+        {
+          "title": "Genesis GitHub 仓库",
+          "url": "https://github.com/Genesis-Embodied-AI/Genesis"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "可微仿真",
+      "name_en": "Differentiable Simulation",
+      "abbr": "",
+      "aliases": [
+        "可微物理",
+        "Differentiable Physics",
+        "可微物理引擎"
+      ],
+      "tier": 2,
+      "one_liner": "能对仿真结果求梯度的仿真器，可以直接用梯度下降优化动作或物理参数。",
+      "explanation": "普通仿真器只能正向算出「给这个动作，下一步会怎样」；可微仿真器还能用自动微分反向算出结果对动作、初始状态或物理参数（质量、摩擦等）的梯度。这样就能像训练神经网络一样，用梯度下降直接优化控制序列、策略网络或辨识物理参数，不必像强化学习那样靠大量试错来估计梯度。代表工作有 ICLR 2020 的 DiffTaichi、谷歌的 Brax，以及 MuJoCo 的 JAX 版 MJX（其 Warp 后端不支持自动微分）。难点在接触：碰撞让动力学出现突变，梯度可能很大、很噪或为零；Suh 等人在 ICML 2022 的研究指出，刚度和不连续性会削弱这类一阶梯度的效果。",
+      "example": "DiffTaichi 论文实现了 10 个可微仿真器，用它们优化神经网络控制器时，通常几十次迭代就能收敛。",
+      "related": [
+        "物理引擎",
+        "MJX",
+        "Brax",
+        "Warp",
+        "轨迹优化",
+        "系统辨识"
+      ],
+      "sources": [
+        {
+          "title": "DiffTaichi: Differentiable Programming for Physical Simulation (arXiv 1910.00935)",
+          "url": "https://arxiv.org/abs/1910.00935"
+        },
+        {
+          "title": "A Review of Differentiable Simulators (arXiv 2407.05560)",
+          "url": "https://arxiv.org/abs/2407.05560"
+        },
+        {
+          "title": "Do Differentiable Simulators Give Better Policy Gradients? (arXiv 2202.00817)",
+          "url": "https://arxiv.org/abs/2202.00817"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "动力学随机化",
+      "name_en": "Dynamics Randomization",
+      "abbr": "",
+      "aliases": [
+        "物理参数随机化",
+        "摩擦/质量随机化",
+        "Physics Randomization"
+      ],
+      "tier": 2,
+      "one_liner": "训练时随机改变仿真里的质量、摩擦等物理参数，让策略能适应真机。",
+      "explanation": "动力学随机化是域随机化的一种，专门随机化物理参数，而不是画面外观。仿真里的质量、摩擦、阻尼、电机增益、延迟等不可能和真机完全一致，只在一组固定参数下训练，策略容易过拟合仿真。做法是每个回合开始时，从设定范围里重新采样这些参数，逼策略在各种物理条件下都能完成任务；真机参数落在这个范围内时，策略就更可能直接可用。代表工作是 Peng 等人 2018 年的论文：在推冰球任务中随机化 95 个参数，纯仿真训练的策略直接部署到 Fetch 机械臂上，表现与仿真相近。如今 Isaac Lab、legged_gym 训练足式机器人时，常随机化地面摩擦、负载质量并施加随机推搡。",
+      "example": "legged_gym 默认把地面摩擦系数在 0.5–1.25 之间随机采样，并每 15 秒随机推一下机器人，逼策略学会在不同地面和外力扰动下保持行走。",
+      "related": [
+        "域随机化",
+        "仿真到现实迁移",
+        "虚实差距",
+        "视觉随机化",
+        "自动域随机化",
+        "系统辨识"
+      ],
+      "sources": [
+        {
+          "title": "Sim-to-Real Transfer of Robotic Control with Dynamics Randomization (arXiv 1710.06537)",
+          "url": "https://arxiv.org/abs/1710.06537"
+        },
+        {
+          "title": "legged_gym: legged_robot_config.py（domain_rand）",
+          "url": "https://github.com/leggedrobotics/legged_gym/blob/master/legged_gym/envs/base/legged_robot_config.py"
+        }
+      ],
+      "as_of": ""
+    }
+  ]
+}

@@ -1,0 +1,381 @@
+{
+  "category": "concept",
+  "batch": 12,
+  "terms": [
+    {
+      "name_zh": "部分可观测马尔可夫决策过程",
+      "name_en": "Partially Observable Markov Decision Process",
+      "abbr": "POMDP",
+      "aliases": [
+        "部分可观察马尔可夫决策过程"
+      ],
+      "tier": 3,
+      "one_liner": "智能体看不全真实状态、只能凭观测推断时的决策数学框架。",
+      "explanation": "部分可观测马尔可夫决策过程是马尔可夫决策过程（MDP，序贯决策的标准模型）的扩展：智能体拿不到真实状态，只能得到带噪声、不完整的观测。Åström 在 1965 年提出这一框架，1998 年 Kaelbling、Littman 等人把它系统引入人工智能规划。常用做法是维护一个「信念」，即对真实状态的概率分布，每拿到新观测就按贝叶斯公式更新。机器人几乎总处在部分可观测的环境里：相机有遮挡，抽屉里看不见，物体多重要拿起来才知道。精确求解计算量极大，实际中常用近似规划，或让策略网络输入历史帧、加记忆模块来隐式估计状态。",
+      "example": "机器人要从一排关着门的柜子里找杯子，开门前看不到杯子在哪，只能根据已经看过的柜格更新「杯子可能在哪一格」的概率，再决定下一扇先开哪个。",
+      "related": [
+        "马尔可夫决策过程",
+        "观测",
+        "状态空间",
+        "具身记忆",
+        "记忆增强 VLA",
+        "强化学习"
+      ],
+      "sources": [
+        {
+          "title": "Partially observable Markov decision process - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Partially_observable_Markov_decision_process"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "轴孔装配",
+      "name_en": "Peg-in-Hole Insertion",
+      "abbr": "",
+      "aliases": [
+        "孔轴装配",
+        "插孔任务",
+        "插销入孔",
+        "Peg-in-Hole Assembly"
+      ],
+      "tier": 3,
+      "one_liner": "把销、轴或插头插进配合孔里的装配任务，考验精度和力控。",
+      "explanation": "轴孔装配指机器人把一个零件（轴、销、插头）插入另一个零件的孔里，是工业装配中最典型、研究最多的操作之一，也常被当作接触丰富操作（过程中持续接触、受力复杂的操作）的标准测试题。难点在于配合间隙往往很小，只靠位置控制容易卡阻或楔死，需要根据接触力不断微调。2025 年《中国机械工程学报》英文版的一篇综述把过程分为搜孔、对准、插入三个阶段，把方法归为被动柔顺（如远中心柔顺装置）、主动柔顺（力控、阻抗控制）和结合学习的智能柔顺装配。模仿学习、强化学习和仿真到现实迁移的研究也常拿它做基准任务。",
+      "example": "ALOHA 仿真里的 Insertion 任务：左右两只机械臂分别抓起插座和插销，在空中把插销插进插座。",
+      "related": [
+        "接触丰富操作",
+        "装配",
+        "力控",
+        "阻抗控制",
+        "远中心柔顺装置（RCC）",
+        "Factory / IndustReal 接触丰富装配仿真"
+      ],
+      "sources": [
+        {
+          "title": "Advances in Robotic Peg-in-Hole Assembly: A Comprehensive Review (Chinese Journal of Mechanical Engineering, 2025)",
+          "url": "https://link.springer.com/article/10.1186/s10033-025-01349-w"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "感知行走",
+      "name_en": "Perceptive Locomotion",
+      "abbr": "",
+      "aliases": [
+        "感知型运动",
+        "视觉行走",
+        "感知式足式运动"
+      ],
+      "tier": 3,
+      "one_liner": "足式机器人借助相机、激光雷达看清前方地形，再决定怎么迈步。",
+      "explanation": "感知行走指腿足机器人同时使用本体感知（关节角度、IMU 等身体内部信号）和外部感知（深度相机、激光雷达建的高程图等），提前看到台阶、沟坎和障碍再调整步态；与之相对的是只靠本体感知「摸着走」的盲走。难点在于外部感知不总可靠：雪地、高草、反光都会让地图出错。苏黎世联邦理工 Miki 等人 2022 年发表在《Science Robotics》的工作，用基于注意力的循环编码器融合两类输入，在仿真中训练后部署到 ANYmal 四足上，感知失真时会自动更多依赖本体感知。如今人形和四足的爬楼梯、跑酷大多属于感知行走。",
+      "example": "Miki 等人的控制器驱动 ANYmal 四足在阿尔卑斯山完成一段约一小时的徒步路线，用时与给人类徒步者的推荐时间相当。",
+      "related": [
+        "盲走",
+        "腿足运动",
+        "复杂地形行走",
+        "高程图",
+        "本体感知",
+        "外部感知"
+      ],
+      "sources": [
+        {
+          "title": "Learning robust perceptive locomotion for quadrupedal robots in the wild (Science Robotics, 2022)",
+          "url": "https://arxiv.org/abs/2201.08117"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "物理人机交互",
+      "name_en": "Physical Human-Robot Interaction",
+      "abbr": "pHRI",
+      "aliases": [
+        "物理人机互动",
+        "人机物理交互"
+      ],
+      "tier": 3,
+      "one_liner": "人和机器人之间有直接身体接触、相互传递力的交互。",
+      "explanation": "物理人机交互研究人与机器人发生身体接触、互相施力的情形，比如人手推着机械臂示教、人和机器人一起抬东西、人穿戴外骨骼，是人机交互中最看重安全的一支。Haddadin 与 Croft 在《Springer 机器人手册》第二版（2016）的综述中把核心问题归为四块：人体安全（碰撞伤害分析与标准）、适合交互的机器人设计（轻量、力矩可控、能感知接触）、顾及人的运动规划，以及交互规划与反射式控制。常用技术有碰撞检测、阻抗/导纳控制、关节力矩传感，以及 ISO/TS 15066 规定的功率与力限制。",
+      "example": "拖动示教：操作者直接握住协作机械臂末端拖到目标位置，机器人进入零力或低阻抗模式顺着人手的力运动，同时记录轨迹以便复现。",
+      "related": [
+        "人机交互",
+        "人机协作",
+        "阻抗控制",
+        "功率与力限制",
+        "ISO/TS 15066 协作机器人安全标准",
+        "拖动示教"
+      ],
+      "sources": [
+        {
+          "title": "Physical Human-Robot Interaction (Haddadin & Croft, Springer Handbook of Robotics, 2016)",
+          "url": "https://research.monash.edu/en/publications/physical-human-robot-interaction"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "质检",
+      "name_en": "Quality Inspection (Visual Inspection Task)",
+      "abbr": "",
+      "aliases": [
+        "质量检测",
+        "视觉检测",
+        "外观检测"
+      ],
+      "tier": 3,
+      "one_liner": "让机器人用相机等传感器检查产品有没有缺陷或装错。",
+      "explanation": "质检是工业生产中检查产品或部件是否合格的工序。传统做法是在产线上固定相机做机器视觉检测，例如电路板制造常用的自动光学检测（AOI），拍照查找缺件、偏移、焊点异常等。具身智能语境下的「质检」更多指让人形或移动操作机器人走到工位，自己调整视角，必要时动手配合（拉一下安全带、看一眼门锁）再判断结果，因此常被当作人形机器人进厂实训最先尝试的任务之一。它对视觉检测精度、位姿估计以及能否跟上产线节拍都有要求。",
+      "example": "据报道，优必选 Walker S 在蔚来工厂实训时承担车门锁质检、安全带检测和车灯盖板质检，检测时实时采集图像并在系统里标注是否合格；2025 年东风柳汽计划部署的 20 台 Walker S1，任务清单里也包括多项检测工序。",
+      "related": [
+        "机器视觉（工业视觉）",
+        "目标检测",
+        "进厂实训",
+        "场景落地",
+        "人形机器人",
+        "工业机器人"
+      ],
+      "sources": [
+        {
+          "title": "人形机器人「打工搭子」来了：优必选Walker S进车厂「实习」 会贴车标还能做质检（财联社）",
+          "url": "https://www.cls.cn/detail/1602283"
+        },
+        {
+          "title": "全球首次！人形机器人批量进入汽车工厂（北京亦庄）",
+          "url": "https://www.ncsti.gov.cn/kjdt/scyq/bjjjjskfq/jkdt/202504/t20250403_200518.html"
+        },
+        {
+          "title": "Automated optical inspection - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Automated_optical_inspection"
+        }
+      ],
+      "as_of": "2025-04"
+    },
+    {
+      "name_zh": "物体重排",
+      "name_en": "Rearrangement",
+      "abbr": "",
+      "aliases": [
+        "重排任务",
+        "物体整理",
+        "场景重排"
+      ],
+      "tier": 3,
+      "one_liner": "把环境里的物体挪动、摆放成指定目标状态的具身任务。",
+      "explanation": "物体重排是 2020 年 Batra、Levine、Malik 等十余位学者在《Rearrangement: A Challenge for Embodied AI》中提出的统一任务框架：给定一个物理环境，智能体要通过移动物体、开关柜门抽屉等操作，把环境带到指定的目标状态。目标可以用物体位姿、目标图像、自然语言给出，也可以让智能体先亲眼看一遍目标状态。它把导航、感知、抓取放置和长程规划放进同一个可度量的任务里，收拾房间、摆餐具、整理货架都能写成重排问题。AI2-THOR、Habitat 等平台都推出过对应基准。",
+      "example": "AI2-THOR 的 Visual Room Rearrangement（CVPR 2021）：智能体先在房间里走一圈记住物体摆放，之后部分物体被挪动或开合状态被改变，它要把一切恢复原样；配套数据集 RoomR 含 120 个场景、72 类物体、6000 种设置。",
+      "related": [
+        "家务任务",
+        "移动操作",
+        "长程任务",
+        "抓取放置",
+        "具身智能体",
+        "Habitat"
+      ],
+      "sources": [
+        {
+          "title": "Rearrangement: A Challenge for Embodied AI (arXiv 2011.01975)",
+          "url": "https://arxiv.org/abs/2011.01975"
+        },
+        {
+          "title": "Visual Room Rearrangement (CVPR 2021)",
+          "url": "https://arxiv.org/abs/2103.16544"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "语义泛化",
+      "name_en": "Semantic Generalization",
+      "abbr": "",
+      "aliases": [],
+      "tier": 3,
+      "one_liner": "面对没见过的物体、概念或指令说法，仍能理解意思并正确执行。",
+      "explanation": "语义泛化是评测机器人策略、尤其是视觉-语言-动作模型（VLA）时常用的一个泛化维度，看模型能否在「意思层面」举一反三：没见过的物体类别、新的容器、换一种说法的指令、需要常识或概念推理的任务。它和视觉泛化（背景、光照、纹理变化）、执行层面的泛化（物体位置、初始姿态变化）相区分。2025 年的《What Can RL Bring to VLA Generalization?》按视觉、语义、执行三类构造测试，语义类包括未见物体、未见容器、未见指令表述、干扰容器等。VLA 被寄予厚望，一大原因就是能从互联网图文预训练中继承语义知识。",
+      "example": "RT-2 能执行「把可乐罐移到泰勒·斯威夫特的照片旁」或「捡起可以当临时锤子用的东西」（它选了石头），这些概念并不在机器人训练数据里。",
+      "related": [
+        "泛化",
+        "视觉泛化",
+        "物体泛化",
+        "组合泛化",
+        "视觉-语言-动作模型",
+        "RT-2"
+      ],
+      "sources": [
+        {
+          "title": "What Can RL Bring to VLA Generalization? An Empirical Study (arXiv 2505.19789)",
+          "url": "https://arxiv.org/abs/2505.19789"
+        },
+        {
+          "title": "RT-2: New model translates vision and language into action (Google DeepMind)",
+          "url": "https://deepmind.google/discover/blog/rt-2-new-model-translates-vision-and-language-into-action/"
+        }
+      ],
+      "as_of": "2025-05"
+    },
+    {
+      "name_zh": "感觉运动技能",
+      "name_en": "Sensorimotor Skills",
+      "abbr": "",
+      "aliases": [
+        "感知运动技能",
+        "感觉-运动技能"
+      ],
+      "tier": 3,
+      "one_liner": "把感官信息实时转成身体动作的能力，比如抓、走、接、拧。",
+      "explanation": "感觉运动技能一词源自认知科学和神经科学，指把视觉、触觉、本体感觉等感官输入和肌肉动作紧密耦合起来完成的技能，如伸手抓物、走路保持平衡、接住抛来的球。在机器人领域，它泛指需要感知与控制实时闭环配合的底层能力。莫拉维克悖论指出，人觉得毫不费力的感觉运动技能对机器反而最难，因为它们是长期进化打磨出来的。2015 年 Levine 等人的端到端视觉运动策略工作用卷积网络直接把图像映射成电机力矩，是用深度学习学这类技能的代表作；今天的视觉运动策略和 VLA，本质上也是在学感觉运动技能。",
+      "example": "拧瓶盖：机器人要一边看瓶口位置，一边根据手上的受力微调角度和力度，Levine 等人的端到端视觉运动策略就把它当作测试任务之一。",
+      "related": [
+        "莫拉维克悖论",
+        "感知-行动闭环",
+        "视觉运动策略",
+        "具身认知",
+        "端到端视觉运动策略（引导策略搜索）"
+      ],
+      "sources": [
+        {
+          "title": "Moravec's paradox - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Moravec%27s_paradox"
+        },
+        {
+          "title": "End-to-End Training of Deep Visuomotor Policies (arXiv 1504.00702)",
+          "url": "https://arxiv.org/abs/1504.00702"
+        },
+        {
+          "title": "Sensory-motor coupling - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Sensory-motor_coupling"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "社交导航",
+      "name_en": "Social Navigation",
+      "abbr": "",
+      "aliases": [
+        "人群导航",
+        "社会化导航",
+        "社交机器人导航"
+      ],
+      "tier": 3,
+      "one_liner": "机器人在人群中移动，既要到达目标，也要守人的社交习惯。",
+      "explanation": "社交导航研究机器人在有人的环境里（商场、车站、办公室、家里）怎么移动：不仅要避免碰撞、到达目的地，还要让周围的人觉得自然舒适，比如保持合适的个人空间、不从两个说话的人中间穿过、主动礼让。Mavrogiannis 等人 2023 年在 ACM THRI 的综述把核心挑战归为运动规划、行为设计和评测三类，并指出领域缺少统一评测标准。常见方法有速度障碍法（如 ORCA）、社会力模型，以及在仿真中用强化学习或模仿学习训练的策略。Meta 的 Habitat 3.0 把「找到并跟随一个人」也定义成社交导航任务。",
+      "example": "Habitat 3.0 的社交导航任务：机器人在没见过的家庭场景里找到一个人形化身并跟随，全程保持 1 到 2 米的安全距离，一旦碰撞就判失败。",
+      "related": [
+        "导航",
+        "人机交互",
+        "速度障碍法 / ORCA",
+        "Habitat",
+        "具身安全"
+      ],
+      "sources": [
+        {
+          "title": "Core Challenges of Social Robot Navigation: A Survey (ACM THRI, 2023)",
+          "url": "https://dl.acm.org/doi/10.1145/3583741"
+        },
+        {
+          "title": "Habitat 3.0: A Co-Habitat for Humans, Avatars and Robots",
+          "url": "https://huggingface.co/papers/2310.13724"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "可引导性",
+      "name_en": "Steerability",
+      "abbr": "",
+      "aliases": [
+        "可操控性",
+        "可驾驭性"
+      ],
+      "tier": 3,
+      "one_liner": "不重新训练，只靠提示或条件就能改变模型具体怎么做事的能力。",
+      "explanation": "可引导性原本多见于大语言模型领域，指用户能否用提示词、系统指令等在推理时调整模型的行为。放到机器人基础模型上，它指策略不仅知道「做什么」，还能按提示改变「怎么做」。Physical Intelligence 在 2026 年 4 月发布的 π0.7 把它当作核心卖点：训练时给每段数据配上多样的上下文，包括描述任务和子步骤的语言、速度与质量等元数据、关节或末端控制模式标签、视觉子目标图像；推理时就能用这些条件引导它换一种做法，还能靠语言一步步教它完成没练过的任务。带标签的失败数据、次优数据也因此可以拿来训练。",
+      "example": "研究者用逐步的语言指导（如「用左夹爪打开空气炸锅」「把红薯放进去」）让 π0.7 操作训练中没专门采集过示范的厨房电器。",
+      "related": [
+        "π0.7",
+        "指令跟随",
+        "语言纠正（实时语言反馈）",
+        "提示词 / 提示工程",
+        "语言条件策略",
+        "目标条件策略"
+      ],
+      "sources": [
+        {
+          "title": "π0.7: a Steerable Generalist Robotic Foundation Model with Emergent Capabilities (arXiv 2604.15483)",
+          "url": "https://arxiv.org/abs/2604.15483"
+        },
+        {
+          "title": "π0.7: a Steerable Model with Emergent Capabilities (Physical Intelligence blog)",
+          "url": "https://www.pi.website/blog/pi07"
+        }
+      ],
+      "as_of": "2026-04"
+    },
+    {
+      "name_zh": "包容架构（行为式机器人）",
+      "name_en": "Subsumption Architecture / Behavior-based Robotics",
+      "abbr": "",
+      "aliases": [
+        "包容式架构",
+        "分层包容结构",
+        "基于行为的机器人学",
+        "行为式机器人学"
+      ],
+      "tier": 3,
+      "one_liner": "用多层简单行为直连感知与动作、高层可压制低层的机器人控制架构。",
+      "explanation": "包容架构由 MIT 的 Rodney Brooks 于 1986 年在论文《A robust layered control system for a mobile robot》中提出，是行为式机器人学的代表。它反对「先建完整世界模型、再规划、再执行」的感知-规划-行动流程，把控制拆成若干并行的行为层，每层用简单的有限状态机把传感器直接连到执行器：底层避障，上层漫游、探索；高层可以用抑制和压制信号改写低层的输入输出，从而「包容」低层行为。它反应快、鲁棒，但难以支撑复杂推理和语言理解，常被视为具身认知和人工智能行为主义学派的源头之一。",
+      "example": "Brooks 实验室的六足机器人 Genghis 靠分层的简单行为实现行走；另一台机器人 Herbert 用同样的思路在办公室里收集空饮料罐。",
+      "related": [
+        "感知-规划-行动范式",
+        "人工智能三大学派（符号主义 / 连接主义 / 行为主义）",
+        "具身认知",
+        "有限状态机",
+        "莫拉维克悖论",
+        "行为树"
+      ],
+      "sources": [
+        {
+          "title": "Subsumption architecture - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Subsumption_architecture"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "群体智能",
+      "name_en": "Swarm Intelligence",
+      "abbr": "SI",
+      "aliases": [
+        "集群智能",
+        "群智能",
+        "Collective Intelligence",
+        "群体机器人（Swarm Robotics）"
+      ],
+      "tier": 3,
+      "one_liner": "大量简单个体只按局部规则互动，整体却涌现出智能行为。",
+      "explanation": "群体智能指由许多简单个体组成、没有中央控制的系统所表现出的集体行为：每个个体只感知邻居、遵循简单规则，整体却能自组织出觅食、筑巢、编队等复杂结果，蚁群、蜂群、鸟群、鱼群都是自然界的例子。这个术语由 Beni 和 Wang 在 1989 年研究细胞机器人系统时提出。它催生了蚁群优化、粒子群优化等算法，也发展出群体机器人学：用大量低成本机器人协作完成搜索、覆盖、搬运、编队等任务，优点是容易扩展，个别机器人损坏也不影响整体。它和多机器人协作、多智能体强化学习关系密切。",
+      "example": "哈佛大学 2014 年在《Science》发表的 Kilobot 实验：1024 台直径只有几厘米的小机器人只靠红外和邻居通信，就自组装成五角星、字母 K 等形状。",
+      "related": [
+        "多机器人协作",
+        "多智能体强化学习",
+        "涌现能力",
+        "多智能体路径规划",
+        "无人机（空中机器人）"
+      ],
+      "sources": [
+        {
+          "title": "Swarm intelligence - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Swarm_intelligence"
+        },
+        {
+          "title": "A self-organizing thousand-robot swarm (Harvard SEAS, 2014)",
+          "url": "https://seas.harvard.edu/news/self-organizing-thousand-robot-swarm"
+        }
+      ],
+      "as_of": ""
+    }
+  ]
+}

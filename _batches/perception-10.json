@@ -1,0 +1,194 @@
+{"category": "perception", "batch": 10, "terms": [
+{
+  "name_zh": "主动感知",
+  "name_en": "Active Perception",
+  "abbr": "",
+  "aliases": ["主动视觉", "Active Vision", "主动传感", "Active Sensing"],
+  "tier": 3,
+  "one_liner": "机器人为了看清、摸清目标，主动移动传感器或身体去获取信息。",
+  "explanation": "主动感知指智能体不只是被动接收传感器数据，而是根据任务和当前判断，主动决定看哪里、怎么看、什么时候看。这一思路由 Ruzena Bajcsy 在 1985 年提出、1988 年发表于《Proceedings of the IEEE》，同年 Aloimonos 等人提出「主动视觉」。2016 年 Bajcsy、Aloimonos、Tsotsos 的综述给出定义：智能体知道为什么要感知，再选择感知什么，并决定如何、何时、在哪里感知。它要解决的是单个视角信息不够的问题，比如遮挡、目标在视野外、光线差。具身智能里的常见形式有转头换视角、调整腕部相机、伸手摸一下确认材质，和下一最佳视角规划、交互式感知、主动探索关系密切。",
+  "example": "杯子被纸盒挡住一半，人形机器人转头、弯腰换个角度再拍一张，确认杯柄朝向后再去抓。",
+  "related": ["交互式感知", "下一最佳视角", "主动探索", "感知-行动闭环", "具身感知", "头部相机"],
+  "sources": [
+    {"title": "Revisiting Active Perception (Bajcsy, Aloimonos, Tsotsos, arXiv:1603.02729)", "url": "https://arxiv.org/abs/1603.02729"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "主动双目",
+  "name_en": "Active Stereo (IR-Projected Stereo)",
+  "abbr": "",
+  "aliases": ["红外主动立体", "主动立体视觉", "投射纹理双目", "Projected Texture Stereo"],
+  "tier": 3,
+  "one_liner": "双目相机加一个红外投射器打出散斑纹理，帮左右图像匹配算出深度。",
+  "explanation": "主动双目是一种深度相机方案：两颗红外相机像普通双目一样按视差三角测距，同时由红外投射器往场景打出随机点状图案。普通（被动）双目靠两张图里的纹理做匹配，白墙、纯色桌面这类无纹理表面会匹配失败，出现深度空洞；投射的散斑给这些表面人为加上纹理，让匹配不再有歧义。英特尔 RealSense 的 R200、D400 系列走的就是这条路线，其技术论文指出投射图案不需要事先知道结构，只要纹理稠密、在匹配方向上不重复即可，这是它和要解码已知图案的结构光的区别。由于相机也能利用阳光照亮的自然纹理，这类相机在室外仍可工作。奥比中光 Gemini 330 系列也宣传主动加被动双目结合。",
+  "example": "RealSense D435 这类相机拍纯白桌面时，打开红外投射器后桌面上布满散斑，深度图不再是大片空洞。",
+  "related": ["双目相机", "结构光", "散斑结构光", "深度相机", "立体匹配", "RealSense 深度相机（D435i / D405）"],
+  "sources": [
+    {"title": "Intel RealSense Stereoscopic Depth Cameras (Keselman et al., arXiv:1705.05548)", "url": "https://arxiv.org/abs/1705.05548"},
+    {"title": "Orbbec Gemini 335 产品页", "url": "https://www.orbbec.com/products/stereo-vision-camera/gemini-335/"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "自适应蒙特卡洛定位",
+  "name_en": "Adaptive Monte Carlo Localization",
+  "abbr": "AMCL",
+  "aliases": ["AMCL", "KLD 采样蒙特卡洛定位", "amcl"],
+  "tier": 3,
+  "one_liner": "用粒子滤波在已知二维地图里估计移动机器人位置和朝向的经典算法。",
+  "explanation": "AMCL 是移动机器人在已知二维地图里给自己定位的概率方法，也是 ROS 导航栈的默认定位模块。它用粒子滤波（用一大群「可能位姿」样本表示不确定性）跟踪机器人：机器人移动时按里程计推动粒子；激光雷达扫描到来时，比较每个粒子处应看到的地图和实测扫描，吻合的粒子权重高，再按权重重采样。「自适应」指采用 Dieter Fox 提出的 KLD 采样，粒子数随不确定度自动增减：刚开机位置不明时用得多，收敛后用得少。ROS 1 的 amcl 包源自 Player 项目的同名驱动，ROS 2 的 nav2_amcl 是它的移植版，默认粒子数 500 到 2000，输出 map 到 odom 的坐标变换。它依赖事先用 SLAM 建好的地图，多用于室内轮式底盘。",
+  "example": "ROS 小车开机后，在 RViz 里点一下大致初始位置，AMCL 的粒子云随着小车移动逐渐收拢到真实位置，之后导航才能按地图规划路线。",
+  "related": ["粒子滤波", "同步定位与建图", "占据栅格地图", "Nav2", "2D激光雷达", "轮式里程计"],
+  "sources": [
+    {"title": "ROS amcl package.xml（ros-planning/navigation）", "url": "https://github.com/ros-planning/navigation/blob/noetic-devel/amcl/package.xml"},
+    {"title": "Nav2 nav2_amcl README", "url": "https://github.com/ros-navigation/navigation2/blob/main/nav2_amcl/README.md"},
+    {"title": "Nav2 amcl_node.cpp（参数默认值）", "url": "https://github.com/ros-navigation/navigation2/blob/main/nav2_amcl/src/amcl_node.cpp"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "可供性检测",
+  "name_en": "Affordance Detection / Affordance Grounding",
+  "abbr": "",
+  "aliases": ["可供性预测", "可供性定位", "可供性图", "Affordance Map", "功能区域检测"],
+  "tier": 3,
+  "one_liner": "从图像或点云里找出物体哪里能握、能按、能倒，并标到具体区域上。",
+  "explanation": "可供性指物体为行动者提供的动作可能，比如杯柄可握、按钮可按。可供性检测就是把这种可能落到具体像素或点上：输入 RGB 图、深度图或点云，输出每个区域对应的动作标签或热力图（可供性图）。早期代表 AffordanceNet（Do 等，ICRA 2018）一边检测物体，一边给物体上每个像素分配最可能的可供性标签。「可供性定位」更强调按给定动作词找区域，如 Luo 等人在 CVPR 2022 提出的 AGD20K 数据集（2 万多张图、36 类可供性），从第三人称的人-物交互图里学习，再迁移到物体图上。它补上了「认出物体」到「知道怎么操作」之间的缺口，结果常作为中间表示交给抓取规划或策略。近年也有用视觉语言模型直接预测可操作点的做法，如 RoboPoint。",
+  "example": "指令是「倒杯水」时，可供性检测在水壶图上把把手标成「握持」区域、壶嘴标成「倾倒」区域，抓取模块只在把手上采样抓取位姿。",
+  "related": ["可供性", "抓取位姿检测", "任务导向抓取（功能性抓取）", "RoboPoint", "VRB（从人类视频学可供性）", "中间表示"],
+  "sources": [
+    {"title": "AffordanceNet: An End-to-End Deep Learning Approach for Object Affordance Detection (arXiv:1709.07326)", "url": "https://arxiv.org/abs/1709.07326"},
+    {"title": "Learning Affordance Grounding from Exocentric Images (CVPR 2022, arXiv:2203.09905)", "url": "https://arxiv.org/abs/2203.09905"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "Allan 方差（IMU 噪声标定）",
+  "name_en": "Allan Variance",
+  "abbr": "",
+  "aliases": ["阿伦方差", "艾伦方差", "Allan 偏差", "Allan Deviation", "双样本方差", "AVAR"],
+  "tier": 3,
+  "one_liner": "看传感器噪声随平均时长怎么变的统计方法，常用来标定 IMU 噪声参数。",
+  "explanation": "Allan 方差是 David W. Allan 在 1966 年为衡量原子钟、晶振频率稳定度提出的「双样本方差」，后来成为陀螺仪、加速度计噪声标定的标准方法，IEEE Std 952-1997（光纤陀螺测试规范）给出了从中读取噪声参数的做法。具体做法是让 IMU 静止采集很长一段数据，按不同平均时长 τ 分段求均值，再算相邻段均值之差的方差，画成双对数曲线。曲线上斜率 −1/2 的段对应白噪声（噪声密度），斜率 +1/2 的段对应零偏随机游走。Kalibr 的 IMU 噪声模型文档建议静止录 15 到 24 小时，在 τ=1 秒处读白噪声、在 τ=3 秒处读随机游走线。读出的参数要填进视觉惯性里程计、相机-IMU 联合标定和卡尔曼滤波的配置，填错会让融合算法过分相信或过分怀疑 IMU。",
+  "example": "做相机-IMU 联合标定前，把 IMU 静置录一整晚数据，用 allan_variance_ros 画出曲线，读出陀螺仪和加速度计的噪声密度、随机游走，再写进 Kalibr 的 IMU 配置文件。",
+  "related": ["惯性测量单元", "传感器漂移（零漂）", "相机-IMU联合标定", "Kalibr", "视觉惯性里程计", "卡尔曼滤波"],
+  "sources": [
+    {"title": "Kalibr Wiki: IMU Noise Model", "url": "https://github.com/ethz-asl/kalibr/wiki/IMU-Noise-Model"},
+    {"title": "Wikipedia: Allan variance", "url": "https://en.wikipedia.org/wiki/Allan_variance"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "AnyTouch",
+  "name_en": "AnyTouch: Learning Unified Static-Dynamic Representation across Multiple Visuo-tactile Sensors",
+  "abbr": "",
+  "aliases": ["AnyTouch 2（后续版本）"],
+  "tier": 3,
+  "one_liner": "人大胡迪团队等提出的跨多种视触觉传感器的统一触觉表征模型，兼顾静态和动态。",
+  "explanation": "AnyTouch 是中国人民大学胡迪团队联合北京邮电大学方斌等人提出的视触觉表征学习框架，发表于 ICLR 2025。视触觉传感器用相机拍弹性胶层的形变，但不同型号成像差别大，数据和模型难以通用。作者先采集 TacQuad 数据集：用 GelSight Mini、DIGIT、自制的 DuraGel 和 Tac3D 四种传感器触碰同一物体的同一位置，得到 72,606 帧对齐的接触数据，并配有视觉图像和触觉属性的文字描述。模型同时接收触觉图像和触觉视频，用掩码建模学像素级细节，再通过与视觉、语言对齐以及跨传感器匹配，学出与传感器无关的语义特征。团队 2026 年 2 月又发布 AnyTouch 2，重点转向带力信息的动态触觉感知。",
+  "example": "论文的真机实验中，机械臂只凭触觉反馈从圆筒里倒出 60 克小珠，用倒出质量与目标质量的误差评估不同触觉表征的效果。",
+  "related": ["视触觉传感器", "触觉表征学习", "GelSight Mini", "DIGIT 视触觉传感器", "Sparsh", "视触觉融合"],
+  "sources": [
+    {"title": "AnyTouch (ICLR 2025, arXiv:2502.12191)", "url": "https://arxiv.org/abs/2502.12191"},
+    {"title": "AnyTouch 2: General Optical Tactile Representation Learning For Dynamic Tactile Perception (arXiv:2602.09617)", "url": "https://arxiv.org/abs/2602.09617"}
+  ],
+  "as_of": "2026-02"
+},
+{
+  "name_zh": "铰接结构估计",
+  "name_en": "Articulation Estimation",
+  "abbr": "",
+  "aliases": ["关节参数估计", "铰接模型估计", "铰接物体位姿估计", "Articulated Object Pose Estimation"],
+  "tier": 3,
+  "one_liner": "从观测中推断物体有哪些部件、靠什么关节相连、绕哪根轴动、现在开了多少。",
+  "explanation": "铰接物体（柜门、抽屉、笔记本电脑、剪刀）由多个刚性部件通过关节连接。铰接结构估计要从图像或点云中推断：部件怎么划分，每个关节是转动还是平移，关节轴的位置和方向，以及当前关节状态（比如门开了多少度）。机器人开门、拉抽屉前需要这些信息，用力方向不对就会卡住甚至损坏物体。代表工作有 Xiaolong Li、王鹤、Shuran Song 等提出的 ANCSH，能从单帧深度点云估计同类别未见物体的部件位姿、关节参数和关节状态；Ditto（Zhenyu Jiang、Yuke Zhu 等，CVPR 2022）利用交互前后两次观测，重建部件几何并估计关节模型，结果可以放进物理仿真，相当于给铰接物体建数字孪生。",
+  "example": "机器人面对一个没见过的橱柜，先推一下柜门，对比推前推后的点云，估计出门轴是竖直转轴、位于柜体左边缘，再沿圆弧轨迹把门拉开。",
+  "related": ["铰接物体", "铰接物体操作", "PartNet-Mobility 数据集", "交互式感知", "数字孪生", "6D位姿估计"],
+  "sources": [
+    {"title": "Category-Level Articulated Object Pose Estimation (ANCSH, arXiv:1912.11913)", "url": "https://arxiv.org/abs/1912.11913"},
+    {"title": "Ditto: Building Digital Twins of Articulated Objects from Interaction (arXiv:2202.08227)", "url": "https://arxiv.org/abs/2202.08227"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "ArUco码",
+  "name_en": "ArUco Marker",
+  "abbr": "",
+  "aliases": ["ArUco", "ArUco 标记", "方形基准标记", "Fiducial Marker"],
+  "tier": 3,
+  "one_liner": "黑边包着黑白方格编码的方形标签，相机识别它就能算出自己相对标签的位姿。",
+  "explanation": "ArUco 是西班牙科尔多瓦大学 AVA 研究组（Rafael Muñoz、Sergio Garrido 等）开发的方形基准标记及其开源检测库。每个标记外圈是粗黑边，内部是黑白方格组成的二进制矩阵，编码一个 ID：黑边便于在图像里快速找到，二进制编码可做错误检测和纠正，也能判断标记转了多少度。一组可用的编码叫字典，比如 4×4 标记含 16 位。一个标记的四个角点就足以用 PnP 求出相机相对标记的 6D 位姿。OpenCV 的 aruco 模块基于这个库，4.7 版起放进 objdetect 模块。机器人里常用于手眼标定、ChArUco 标定板（把 ArUco 嵌进棋盘格），或贴在物体、工作台上快速拿到位姿真值。它和 AprilTag 是同一类技术。",
+  "example": "采集数据时在桌角贴一个 ArUco 码，腕部相机每帧检测它，就能把相机位姿换算到桌面坐标系下，顺便检查手眼标定准不准。",
+  "related": ["AprilTag", "标定板", "手眼标定", "PnP（透视n点）", "相机标定", "OpenCV"],
+  "sources": [
+    {"title": "OpenCV 教程：Detection of ArUco Markers", "url": "https://github.com/opencv/opencv/blob/4.x/doc/tutorials/objdetect/aruco_detection/aruco_detection.markdown"},
+    {"title": "ArUco 项目页（University of Córdoba, AVA group）", "url": "https://www.uco.es/investiga/grupos/ava/portfolio/aruco/"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "姿态解算（AHRS 航姿参考系统）",
+  "name_en": "Attitude Estimation / Attitude and Heading Reference System",
+  "abbr": "AHRS",
+  "aliases": ["姿态估计", "航姿参考系统", "IMU 姿态融合"],
+  "tier": 3,
+  "one_liner": "融合陀螺仪、加速度计（和磁力计）数据，实时算出横滚、俯仰、偏航角。",
+  "explanation": "姿态解算指用惯性传感器数据算出物体在空间中的朝向，常用横滚、俯仰、偏航角或四元数表示。AHRS（航姿参考系统）原是航空仪表，由三轴陀螺仪、加速度计、磁力计加机载计算组成，直接输出姿态和航向；IMU 通常只输出原始角速度和加速度。原理上，陀螺仪积分得到角度，短时准但会漂移；加速度计能测出重力方向，可校正横滚和俯仰；偏航角没有重力参考，要靠磁力计或视觉等其他来源校正。常用融合算法有卡尔曼滤波、互补滤波，以及 Madgwick 算法（2009 年博士研究期间提出，现以 Fusion 为名开源）和 Mahony 滤波。足式和人形机器人的控制策略常把解算出的姿态（或投影重力）和角速度作为输入，姿态误差会直接影响平衡控制。",
+  "example": "四足机器人侧面被推一下，IMU 姿态解算实时给出机身横滚角的变化，运动控制策略据此迈步恢复平衡。",
+  "related": ["惯性测量单元", "互补滤波", "卡尔曼滤波", "投影重力", "横滚-俯仰-偏航角", "四元数"],
+  "sources": [
+    {"title": "Wikipedia: Attitude and heading reference system", "url": "https://en.wikipedia.org/wiki/Attitude_and_heading_reference_system"},
+    {"title": "x-io Technologies: Open source IMU and AHRS algorithms (Madgwick / Fusion)", "url": "https://x-io.co.uk/open-source-imu-and-ahrs-algorithms/"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "语音识别",
+  "name_en": "Automatic Speech Recognition",
+  "abbr": "ASR",
+  "aliases": ["自动语音识别", "语音转文字", "Speech-to-Text", "STT"],
+  "tier": 3,
+  "one_liner": "把人说的话自动转成文字，是机器人听懂口头指令的第一步。",
+  "explanation": "语音识别是把语音信号转换成文字的技术，也叫语音转文字（STT）。常用评测指标是词错误率 WER，即（替换数＋删除数＋插入数）除以参考词数，中文一般按字计算，称字错误率 CER。近年的代表模型是 OpenAI 2022 年发布的 Whisper，用 68 万小时弱监督的多语种音频训练，在多个标准基准上不经微调就接近有监督方法的成绩，模型和推理代码都已开源。在具身智能系统里，语音识别通常是交互链路的入口：麦克风阵列拾音、降噪后交给 ASR 转成文字，再送进大语言模型或 VLA 生成计划和动作，最后用语音合成（TTS）回话。也有原生多模态模型直接输入音频、不经过文字中转。机器人上还要应对电机噪声、远场拾音等问题。",
+  "example": "用户说「把桌上的红杯子递给我」，Whisper 之类的 ASR 模型先把它转成文字，再作为语言指令交给 VLA 模型执行。",
+  "related": ["麦克风阵列", "大语言模型", "指令跟随", "人机交互", "原生多模态", "视觉-语言-动作模型"],
+  "sources": [
+    {"title": "Robust Speech Recognition via Large-Scale Weak Supervision (Whisper, arXiv:2212.04356)", "url": "https://arxiv.org/abs/2212.04356"},
+    {"title": "Wikipedia: Speech recognition", "url": "https://en.wikipedia.org/wiki/Speech_recognition"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "ADD / ADD-S 位姿误差指标",
+  "name_en": "Average Distance of Model Points (ADD / ADD-S)",
+  "abbr": "ADD / ADD-S",
+  "aliases": ["ADD", "ADD-S", "ADI", "平均模型点距离"],
+  "tier": 3,
+  "one_liner": "把物体模型分别按真值和预测位姿摆好，算点的平均距离，用来评 6D 位姿估计。",
+  "explanation": "ADD 是 6D 物体位姿估计最常用的误差指标，由 Hinterstoisser 等人在 ACCV 2012 随 LINEMOD 数据集提出。做法是取物体 3D 模型上的点，分别用真值位姿和预测位姿变换，求对应点距离的平均值；常见判定是平均距离小于模型直径的 10% 就算估计正确，报告正确率。对称物体（碗、罐头）转个角度看起来一样，逐点对应会冤枉合理的预测，于是改用 ADD-S：每个点去找另一组里最近的点再求平均，BOP 基准里称为 ADI。PoseCNN（2018）在 YCB-Video 上把阈值从 0 扫到 10 厘米，报告准确率-阈值曲线下面积（AUC），后来成为常见写法。BOP 基准指出 ADI 可能给视觉上明显没对齐的位姿打出很低误差，所以改用 VSD、MSSD、MSPD 三个指标。",
+  "example": "一个直径 20 厘米的锅，按 10% 直径规则阈值是 2 厘米：预测位姿下模型点与真值点平均偏离 1.5 厘米算正确，偏离 3 厘米算错误。",
+  "related": ["6D位姿估计", "BOP 位姿估计基准", "FoundationPose", "YCB 物体集", "倒角距离", "位姿"],
+  "sources": [
+    {"title": "PoseCNN: A Convolutional Neural Network for 6D Object Pose Estimation in Cluttered Scenes (arXiv:1711.00199)", "url": "https://arxiv.org/abs/1711.00199"},
+    {"title": "BOP Challenge 2019：pose-error functions", "url": "https://bop.felk.cvut.cz/challenges/bop-challenge-2019/"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "BioTac",
+  "name_en": "BioTac (SynTouch biomimetic fingertip tactile sensor)",
+  "abbr": "",
+  "aliases": ["SynTouch BioTac", "BioTac SP", "仿生指尖触觉传感器"],
+  "tier": 3,
+  "one_liner": "SynTouch 公司的仿人指尖触觉传感器，可感知接触力、微振动和温度。",
+  "explanation": "BioTac 是美国 SynTouch 公司推出的指尖形触觉传感器，源自 Gerald Loeb 团队（Wettels、Fishel 等）的仿生触觉研究。它的结构是刚性内核外包橡胶皮肤，中间充有导电液体；内核表面布有 19 个感测电极和 4 个激励电极，接触时液层变形，各电极电压随之变化，可据此推断接触位置、力的大小和方向。它还能感知微振动和温度，前者可用于识别纹理、检测打滑，后者可用于区分材料。BioTac 曾是机器人触觉研究的高端标杆，常装在灵巧手指尖，积累了滑移方向、抓取稳定性等公开数据集。它的问题是电极信号与形变的关系复杂、难以解释，英伟达 2021 年的论文专门为此建模。据 2024 年的相关论文描述，该传感器已停产，这些数据集也随之难以复用。",
+  "example": "BioTac SP 滑移方向数据集：把 BioTac 装在机械手指尖，记录抓取过程中的电极信号，用来训练模型判断物体正朝哪个方向滑动。",
+  "related": ["触觉传感器", "滑移检测", "电子皮肤", "视触觉传感器", "GelSight", "灵巧手"],
+  "sources": [
+    {"title": "Interpreting and Predicting Tactile Signals for the SynTouch BioTac (NVIDIA, arXiv:2101.05452)", "url": "https://arxiv.org/abs/2101.05452"},
+    {"title": "ACROSS: A Deformation-Based Cross-Modal Representation for Robotic Tactile Perception (arXiv:2411.08533)", "url": "https://arxiv.org/abs/2411.08533"}
+  ],
+  "as_of": "2024-11"
+}
+]}

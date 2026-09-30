@@ -1,0 +1,413 @@
+{
+ "category": "concept",
+ "batch": 7,
+ "terms": [
+  {
+   "name_zh": "物体泛化",
+   "name_en": "Object Generalization",
+   "abbr": "",
+   "aliases": [
+    "新物体泛化",
+    "未见物体泛化"
+   ],
+   "tier": 2,
+   "one_liner": "策略换到训练时没见过的新物体上，仍能完成同一任务的能力。",
+   "explanation": "物体泛化是评测机器人策略时最常见的一类泛化，指把物体换成训练数据里没出现过的（新类别、新形状尺寸、新颜色材质）后，任务还能不能做成。OpenVLA 的评测把它拆得更细：颜色外观变化算视觉泛化，大小形状变化算物理泛化，没见过的目标物体算语义泛化。它重要是因为真实家庭和工厂里的物体种类几乎无穷，不可能每样都采数据。2024 年一项模仿学习数据缩放研究发现，策略对新物体的泛化随训练物体种类数呈幂律增长，物体多样性比单纯堆演示条数更管用。",
+   "example": "只用 3 种杯子采了「把杯子放到盘子上」的演示，测试时换成没见过的马克杯、纸杯和玻璃杯，看成功率掉多少。",
+   "related": [
+    "泛化",
+    "场景泛化",
+    "位置泛化（空间泛化）",
+    "语义泛化",
+    "视觉泛化",
+    "零样本"
+   ],
+   "sources": [
+    {
+     "title": "OpenVLA: An Open-Source Vision-Language-Action Model",
+     "url": "https://arxiv.org/html/2406.09246"
+    },
+    {
+     "title": "Data Scaling Laws in Imitation Learning for Robotic Manipulation",
+     "url": "https://arxiv.org/abs/2410.18647"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "物体目标导航",
+   "name_en": "Object-Goal Navigation",
+   "abbr": "ObjectNav",
+   "aliases": [
+    "目标物体导航",
+    "物体导航",
+    "ObjectGoal Navigation"
+   ],
+   "tier": 2,
+   "one_liner": "只告诉机器人物体类别（如「椅子」），让它在陌生房子里自己找过去。",
+   "explanation": "物体目标导航是具身导航的标准任务之一。2018 年导航评测工作组论文把导航目标分为点目标、物体目标、区域目标，2020 年的 ObjectNav Revisited 又统一了评测细则。设定是：智能体被放在没见过的室内环境随机位置，只拿到一个物体类别名，靠第一人称 RGB-D 相机边走边找。Habitat 2020 挑战赛规定，智能体主动发出「停止」时离任一该类物体不超过 1 米、且从停止处能看到它才算成功，常用指标是成功率和路径长度加权成功率 SPL。它比点目标导航难，因为要认出物体、推测它通常在哪，还要高效探索。",
+   "example": "在 Habitat 仿真器里给智能体指令「找到马桶」，它从客厅出发，推断马桶多半在卫生间，探索到后在 1 米以内停下。",
+   "related": [
+    "导航",
+    "点目标导航",
+    "图像目标导航",
+    "视觉语言导航",
+    "路径长度加权成功率",
+    "Habitat"
+   ],
+   "sources": [
+    {
+     "title": "ObjectNav Revisited: On Evaluation of Embodied Agents Navigating to Objects",
+     "url": "https://arxiv.org/abs/2006.13171"
+    },
+    {
+     "title": "Habitat Challenge 2020",
+     "url": "https://aihabitat.org/challenge/2020/"
+    },
+    {
+     "title": "On Evaluation of Embodied Navigation Agents",
+     "url": "https://arxiv.org/abs/1807.06757"
+    }
+   ],
+   "as_of": "2020-06"
+  },
+  {
+   "name_zh": "开放词汇",
+   "name_en": "Open-vocabulary",
+   "abbr": "",
+   "aliases": [
+    "开集词汇",
+    "开放词表"
+   ],
+   "tier": 2,
+   "one_liner": "模型能认出或处理训练标注类别之外、用任意文字描述的物体和概念。",
+   "explanation": "传统检测、分割模型只认训练时固定的一组类别（比如 COCO 的 80 类），叫封闭词汇。开放词汇指模型能接受任意文字作为类别，包括标注里从没出现过的词。2020 年 Zareian 等人提出开放词汇目标检测 OVR-CNN：先用大量图文对学一个视觉-语义共享空间，再用少量框标注训练检测器。之后 CLIP 这类图文对比模型让这条路线普及，出现了 OWL-ViT、Grounding DINO、YOLO-World 等。在具身智能里，开放词汇让机器人能听懂事先没定义过的物体名，常用于开放词汇抓取、导航和移动操作。",
+   "example": "OK-Robot 在真实家庭里接收「把毛绒兔子放进篮子」这类任意物体名的指令，先用开放词汇模型找到物体，再抓取放置。",
+   "related": [
+    "开放词汇检测",
+    "开放词汇分割",
+    "零样本",
+    "CLIP",
+    "OK-Robot",
+    "开放世界"
+   ],
+   "sources": [
+    {
+     "title": "Open-Vocabulary Object Detection Using Captions",
+     "url": "https://arxiv.org/abs/2011.10678"
+    },
+    {
+     "title": "OK-Robot: What Really Matters in Integrating Open-Knowledge Models for Robotics",
+     "url": "https://arxiv.org/abs/2401.12202"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "开放世界",
+   "name_en": "Open-world",
+   "abbr": "",
+   "aliases": [
+    "开放环境",
+    "In-the-wild",
+    "真实开放场景"
+   ],
+   "tier": 2,
+   "one_liner": "环境不受控、不断冒出训练时没见过的东西，系统仍要正常工作的设定。",
+   "explanation": "开放世界是相对「封闭世界」假设而言的：后者默认测试时出现的类别和场景都在训练范围内。2014 年 Bendale 和 Boult 在视觉识别里正式定义开放世界识别，要求系统能发现未知类别、标为未知，再逐步学会它们。具身智能里这个词用得更宽，泛指走出实验室，进入真实家庭、商店、户外等不受控环境，物体、布局、光照和人的行为都无法提前穷举。Physical Intelligence 2025 年发布的 π0.5 就以开放世界泛化为目标，展示了在全新家庭里收拾厨房、卧室等长程任务。这通常要靠多样化数据和互联网知识迁移来支撑。",
+   "example": "π0.5 被放进训练数据里从没出现过的住户家中，接到「收拾厨房」这类指令后自行完成多步清理。",
+   "related": [
+    "开放词汇",
+    "分布外",
+    "场景泛化",
+    "长尾问题",
+    "π0.5",
+    "野外数据"
+   ],
+   "sources": [
+    {
+     "title": "Towards Open World Recognition",
+     "url": "https://arxiv.org/abs/1412.5687"
+    },
+    {
+     "title": "π0.5: a Vision-Language-Action Model with Open-World Generalization",
+     "url": "https://arxiv.org/abs/2504.16054"
+    }
+   ],
+   "as_of": "2025-04"
+  },
+  {
+   "name_zh": "跑酷",
+   "name_en": "Parkour",
+   "abbr": "",
+   "aliases": [
+    "机器人跑酷"
+   ],
+   "tier": 2,
+   "one_liner": "腿足机器人靠视觉连续攀爬、跳跃、钻过障碍的高动态运动技能。",
+   "explanation": "跑酷原是人类街头运动，在机器人领域指四足或人形机器人快速通过高台、沟壑、矮栏、窄缝等障碍，是检验运动控制极限的代表任务。波士顿动力液压版 Atlas 的跑酷表演用的是离线轨迹优化做好的动作模板，再由模型预测控制和实时感知微调。2023 年起学习方法成为主流：Robot Parkour Learning（CoRL 2023）和 Extreme Parkour 先在仿真里用强化学习训练，再蒸馏成只看深度相机的端到端策略，直接部署到低成本四足上；2024 年 Humanoid Parkour Learning 把类似做法用到人形机器人。",
+   "example": "Extreme Parkour 中，一台低成本四足只凭前置深度相机，跳上约两倍身高的台子、跨过约两倍身长的沟。",
+   "related": [
+    "腿足运动",
+    "感知行走",
+    "Robot Parkour Learning",
+    "Extreme Parkour",
+    "仿真到现实迁移",
+    "教师-学生蒸馏"
+   ],
+   "sources": [
+    {
+     "title": "Robot Parkour Learning",
+     "url": "https://arxiv.org/abs/2309.05665"
+    },
+    {
+     "title": "Extreme Parkour with Legged Robots",
+     "url": "https://arxiv.org/abs/2309.14341"
+    },
+    {
+     "title": "Flipping the Script with Atlas (Boston Dynamics)",
+     "url": "https://bostondynamics.com/blog/flipping-the-script-with-atlas/"
+    }
+   ],
+   "as_of": "2024-06"
+  },
+  {
+   "name_zh": "感知-行动闭环",
+   "name_en": "Perception-Action Loop",
+   "abbr": "",
+   "aliases": [
+    "感知-动作循环",
+    "感知运动回路",
+    "感知-行动循环"
+   ],
+   "tier": 2,
+   "one_liner": "感知决定动作，动作又改变下一刻的感知，两者不断循环往复。",
+   "explanation": "感知-行动闭环描述智能体和环境之间持续往复的过程：传感器拿到观测，策略给出动作，动作改变了环境和自身位置，于是下一刻看到的东西也变了。这个想法来自认知科学和生态心理学，Gibson、Varela 等人都强调感知不是被动接收，而是和身体运动耦合在一起；机器人学家 Rodney Brooks 也主张智能要通过身体与世界相连。它是具身智能和离身 AI 的关键区别：图像分类模型看一张图给一个答案就结束，机器人策略则要以每秒几次到几十次的频率反复观测、出动作、再观测，才能纠正误差、应对变化。",
+   "example": "机械臂抓杯子时，手腕相机每帧都看到杯子和夹爪的相对位置，策略据此修正下一步；杯子被碰歪了也能跟过去重新对准。",
+   "related": [
+    "具身智能",
+    "闭环",
+    "开环",
+    "具身认知",
+    "感知-规划-行动范式",
+    "主动感知"
+   ],
+   "sources": [
+    {
+     "title": "Embodied cognition - Wikipedia",
+     "url": "https://en.wikipedia.org/wiki/Embodied_cognition"
+    },
+    {
+     "title": "Sensory-motor coupling - Wikipedia",
+     "url": "https://en.wikipedia.org/wiki/Sensory-motor_coupling"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "物理图灵测试",
+   "name_en": "Physical Turing Test",
+   "abbr": "",
+   "aliases": [
+    "物理版图灵测试"
+   ],
+   "tier": 2,
+   "one_liner": "分不出一件现实中的体力活是人干的还是机器人干的，就算通过。",
+   "explanation": "物理图灵测试是英伟达 AI 总监 Jim Fan（范麟熙）在 2025 年 5 月红杉资本 AI Ascent 大会演讲中提出的说法，把图灵测试从「聊天分不出人机」搬到物理世界：让机器人完成真实的家务等体力活，如果人看结果分辨不出是人还是机器做的，就算通过。他在演讲里主张用大规模仿真来弥补机器人训练数据的不足，并介绍了数字孪生、数字表亲等思路。类似想法更早就有，认知科学家 Harnad 提出的「完全图灵测试」也要求同时检验感知和操作物体的能力。这个词现在常被用来形容通用家务机器人的终极目标。",
+   "example": "Jim Fan 举的场景：周日晚上开完派对家里一片狼藉，周一回家发现屋子已收拾干净、还摆好了烛光晚餐，你分不清是人还是机器人做的。",
+   "related": [
+    "具身智能",
+    "物理AI",
+    "通用机器人",
+    "家务任务",
+    "莫拉维克悖论",
+    "数字表亲"
+   ],
+   "sources": [
+    {
+     "title": "The Physical Turing Test: Jim Fan on Nvidia's Roadmap for Embodied AI (Sequoia Capital, YouTube)",
+     "url": "https://www.youtube.com/watch?v=_2NijXqBESI"
+    },
+    {
+     "title": "AI Ascent 2025 (Sequoia Capital)",
+     "url": "https://www.sequoiacap.com/article/ai-ascent-2025/"
+    },
+    {
+     "title": "Turing test - Wikipedia",
+     "url": "https://en.wikipedia.org/wiki/Turing_test"
+    }
+   ],
+   "as_of": "2025-05"
+  },
+  {
+   "name_zh": "点目标导航",
+   "name_en": "Point-Goal Navigation",
+   "abbr": "PointNav",
+   "aliases": [
+    "点导航",
+    "PointGoal Navigation"
+   ],
+   "tier": 2,
+   "one_liner": "给出相对起点的目标坐标，让机器人在陌生环境里自己走到那个点。",
+   "explanation": "点目标导航是 2018 年导航评测工作组论文定义的最基础的具身导航任务：智能体在没见过的环境里出生，目标用相对起点的坐标给出（如「向北 5 米、向西 3 米」），不用认物体，只需避障、规划并走到位。Habitat 2020 挑战赛规定，发出停止动作时距目标 0.36 米（两倍机身半径）以内算成功，用路径长度加权成功率 SPL 衡量走得是否高效。2019 年 Wijmans 等人的 DD-PPO 用 25 亿步仿真经验训练，在有 RGB-D 相机和 GPS+指南针时基本「解决」了该任务；2020 年挑战赛又去掉 GPS+指南针并加入噪声，更接近真机。",
+   "example": "在 Habitat 里给智能体目标「向北 5 米、向西 3 米」，它只靠第一人称 RGB-D 相机绕开沙发和墙，在 0.36 米内停下即为成功。",
+   "related": [
+    "导航",
+    "物体目标导航",
+    "路径长度加权成功率",
+    "Habitat",
+    "图像目标导航",
+    "视觉里程计"
+   ],
+   "sources": [
+    {
+     "title": "On Evaluation of Embodied Navigation Agents",
+     "url": "https://arxiv.org/abs/1807.06757"
+    },
+    {
+     "title": "Habitat Challenge 2020",
+     "url": "https://aihabitat.org/challenge/2020/"
+    },
+    {
+     "title": "DD-PPO: Learning Near-Perfect PointGoal Navigators from 2.5 Billion Frames",
+     "url": "https://arxiv.org/abs/1911.00357"
+    }
+   ],
+   "as_of": "2020-06"
+  },
+  {
+   "name_zh": "位置泛化（空间泛化）",
+   "name_en": "Position / Spatial Generalization",
+   "abbr": "",
+   "aliases": [
+    "空间泛化",
+    "位置泛化",
+    "运动泛化",
+    "Motion Generalization"
+   ],
+   "tier": 2,
+   "one_liner": "物体摆到训练时没出现过的位置或朝向，策略仍能做对的能力。",
+   "explanation": "位置泛化指任务和物体都不变，只是物体或机器人自身的初始位置、朝向换到训练数据没覆盖的地方，策略还能不能成功。OpenVLA 的评测把它叫「运动泛化」，定义就是没见过的物体位置和朝向。它是视觉运动策略的常见短板：模仿学习得到的策略往往只在演示覆盖过的区域附近可靠，物体挪远一点成功率就明显下降，所以采数据时要在桌面不同位置反复摆放。DemoGen 为此用一条真人演示合成出大量不同位置的演示；LIBERO-Plus 发现，只要稍微扰动机器人初始状态或相机视角，一些 VLA 的成功率就会从 95% 跌到 30% 以下。",
+   "example": "训练时方块只放在桌面左半边，测试时放到右半边或旋转 90 度，看机械臂能否照样抓起。",
+   "related": [
+    "泛化",
+    "物体泛化",
+    "场景泛化",
+    "分布外",
+    "DemoGen",
+    "LIBERO-Plus"
+   ],
+   "sources": [
+    {
+     "title": "OpenVLA: An Open-Source Vision-Language-Action Model",
+     "url": "https://arxiv.org/html/2406.09246"
+    },
+    {
+     "title": "DemoGen: Synthetic Demonstration Generation for Data-Efficient Visuomotor Policy Learning",
+     "url": "https://arxiv.org/abs/2502.16932"
+    },
+    {
+     "title": "LIBERO-Plus: In-depth Robustness Analysis of Vision-Language-Action Models",
+     "url": "https://arxiv.org/abs/2510.13626"
+    }
+   ],
+   "as_of": "2025-10"
+  },
+  {
+   "name_zh": "推理（思考）",
+   "name_en": "Reasoning",
+   "abbr": "",
+   "aliases": [
+    "推理能力",
+    "思考"
+   ],
+   "tier": 2,
+   "one_liner": "模型给出答案或动作前先分析、拆解、规划的能力，不是前向计算那个推理。",
+   "explanation": "中文「推理」对应两个英文词：Inference 指模型跑一次前向计算得到输出，Reasoning 指分析条件、拆解步骤、得出结论的能力，本条讲后者。大语言模型靠思维链（先写中间步骤再作答）提升了推理表现，具身智能随后把它搬到机器人上：2024 年的具身思维链 ECoT 让 VLA 出动作前先写子任务、物体框和夹爪位置，在 OpenVLA 上把成功率提高了 28 个百分点；谷歌 DeepMind 2025 年 9 月发布的 Gemini Robotics 1.5 会在动作前先生成自然语言思考，再由高层的 Gemini Robotics-ER 1.5 做规划。推理有助于长程、多步、需要常识的任务，代价是延迟增加。",
+   "example": "让机器人「按颜色分拣衣服」，它先想清楚「白衣服放白筐、其他放黑筐」，再规划「先拿起红毛衣放进黑筐」，最后执行动作。",
+   "related": [
+    "推理（前向计算）",
+    "思维链",
+    "具身思维链",
+    "具身推理",
+    "Gemini Robotics 1.5",
+    "快慢双系统"
+   ],
+   "sources": [
+    {
+     "title": "Robotic Control via Embodied Chain-of-Thought Reasoning",
+     "url": "https://arxiv.org/abs/2407.08693"
+    },
+    {
+     "title": "Gemini Robotics 1.5 brings AI agents into the physical world (Google DeepMind)",
+     "url": "https://deepmind.google/discover/blog/gemini-robotics-15-brings-ai-agents-into-the-physical-world/"
+    }
+   ],
+   "as_of": "2025-09"
+  },
+  {
+   "name_zh": "装配",
+   "name_en": "Robotic Assembly",
+   "abbr": "",
+   "aliases": [
+    "机器人装配",
+    "组装"
+   ],
+   "tier": 2,
+   "one_liner": "让机器人把零件插、拧、扣、卡到一起，组成部件或产品的操作任务。",
+   "explanation": "装配是工业机器人最传统、也最难全自动化的任务之一，包括轴孔插入、齿轮啮合、插接插头、拧螺母、挂皮带、布线束等。难点在于零件配合间隙很小，常常比视觉定位误差还小，必须靠力觉或柔顺控制在接触中摸索对准，属于典型的接触丰富操作。美国国家标准与技术研究院（NIST）为此设计了一套装配任务板作为评测基准。传统方案依赖精密夹具和示教编程，换产品就得重新调试；学习方法正在补这一块，例如英伟达的 IndustReal 在仿真里用强化学习训练插装策略，再直接迁移到真实机械臂上。",
+   "example": "机械臂把一根圆柱销插进配合很紧的孔里：先移到孔上方，接触后靠力反馈微调位置，对准后再压入。",
+   "related": [
+    "轴孔装配",
+    "接触丰富操作",
+    "力控",
+    "柔顺控制",
+    "Factory / IndustReal 接触丰富装配仿真",
+    "工业机器人"
+   ],
+   "sources": [
+    {
+     "title": "NIST Robotic Grasping and Manipulation for Assembly - Assembly Performance Metrics and Test Methods",
+     "url": "https://www.nist.gov/el/intelligent-systems-division-73500/robotic-grasping-and-manipulation-assembly/assembly"
+    },
+    {
+     "title": "IndustReal: Transferring Contact-Rich Assembly Tasks from Simulation to Reality",
+     "url": "https://arxiv.org/abs/2305.17110"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "鲁棒性",
+   "name_en": "Robustness",
+   "abbr": "",
+   "aliases": [
+    "稳健性",
+    "抗干扰能力"
+   ],
+   "tier": 2,
+   "one_liner": "输入或环境出现干扰、噪声、小变化时，系统表现不明显下降的能力。",
+   "explanation": "鲁棒性是英文 robust（强健）的音译，指系统在输入出错、环境扰动或条件变化时仍能正常工作的能力。它和泛化有重叠但侧重不同：泛化问「换成新物体、新场景还行不行」，鲁棒性更关注同一任务遇到光照变化、相机偏移、传感器噪声、被人推一下等干扰时会不会崩。真实世界的扰动无处不在，所以机器人对鲁棒性要求很高。2025 年的 LIBERO-Plus 在仿真基准 LIBERO 上系统加入七类扰动，发现一些 VLA 在相机视角或初始状态稍变时成功率从 95% 跌到 30% 以下，还常常忽略语言指令。常用提升手段有域随机化、数据增强和扰动训练。",
+   "example": "四足机器人行走时被人从侧面踹一脚，仍能调整步伐站稳；机械臂策略在相机被碰歪几厘米后照样能抓到物体。",
+   "related": [
+    "泛化",
+    "域随机化",
+    "数据增强",
+    "分布外",
+    "泛化与鲁棒性评测",
+    "推恢复"
+   ],
+   "sources": [
+    {
+     "title": "Robustness (computer science) - Wikipedia",
+     "url": "https://en.wikipedia.org/wiki/Robustness_(computer_science)"
+    },
+    {
+     "title": "LIBERO-Plus: In-depth Robustness Analysis of Vision-Language-Action Models",
+     "url": "https://arxiv.org/abs/2510.13626"
+    }
+   ],
+   "as_of": "2025-10"
+  }
+ ]
+}

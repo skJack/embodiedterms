@@ -1,0 +1,226 @@
+{
+ "batch": "robot-01",
+ "terms": [
+  {
+   "key": "robot-01#0",
+   "name_en": "ALOHA",
+   "aliases": [
+    "A Low-cost Open-source Hardware System for Bimanual Teleoperation"
+   ],
+   "one_liner": "Stanford's open-source, low-cost bimanual teleoperation platform, priced at around $20,000.",
+   "explanation": "ALOHA is an open-source bimanual (two-armed) robot hardware platform released in 2023 by Tony Zhao, Chelsea Finn, and colleagues at Stanford, with collaborators from Berkeley and Meta, alongside the paper “Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware.” A full setup costs about $20,000. It uses two small leader arms, moved by hand, to drive two matching follower arms for teleoperation data collection, along with four cameras (two fixed, two wrist-mounted). The same paper introduced the ACT algorithm, which could learn precise bimanual tasks such as threading a zip tie or inserting a battery from only about 10 minutes of demonstrations. ALOHA lowered the barrier to collecting bimanual manipulation data, and later spawned variants such as Mobile ALOHA and ALOHA 2; it has also become a common real-robot platform for many VLA papers.",
+   "example": "Both π0 and ACT have been demonstrated on ALOHA-style bimanual platforms performing tasks such as folding laundry and inserting batteries.",
+   "related": [
+    "Action Chunking with Transformers",
+    "Mobile ALOHA",
+    "ALOHA 2",
+    "Leader-Follower Teleoperation",
+    "Bimanual Manipulation",
+    "Trossen Robotics ViperX 300"
+   ]
+  },
+  {
+   "key": "robot-01#1",
+   "name_en": "Boston Dynamics Atlas (Electric)",
+   "aliases": [
+    "Atlas",
+    "Electric Atlas"
+   ],
+   "one_liner": "Boston Dynamics' fully electric humanoid robot, introduced in 2024 for factory work.",
+   "explanation": "Electric Atlas is the humanoid robot Boston Dynamics (now part of Hyundai Motor Group) unveiled in April 2024, replacing the retired hydraulic Atlas. It switched to electric motors, giving its joints a wide, sometimes full-circle range of rotation, so its movements no longer need to mimic human posture. At CES in January 2026, Boston Dynamics unveiled the production version: 56 degrees of freedom, an arm span of about 2.3 meters, the ability to lift 50 kg, roughly 4 hours of battery life with the ability to walk itself back to a charging station to swap batteries, and support for autonomous, teleoperated, and tablet-controlled modes. The company says its entire 2026 deployment is going to Hyundai's car factories and to Google DeepMind, with whom it is jointly training foundation models.",
+   "example": "Atlas moves and sequences car parts inside a Hyundai factory.",
+   "related": [
+    "Boston Dynamics Atlas (Hydraulic)",
+    "Boston Dynamics",
+    "Hyundai Motor Group",
+    "Google DeepMind",
+    "Full-size Humanoid Robot",
+    "Humanoid Robot"
+   ]
+  },
+  {
+   "key": "robot-01#2",
+   "name_en": "Boston Dynamics Spot",
+   "aliases": [
+    "Spot"
+   ],
+   "one_liner": "Boston Dynamics' commercial quadruped robot dog, used mainly for industrial inspection.",
+   "explanation": "Spot is the quadruped robot from Boston Dynamics that went on commercial sale in June 2020, when the base kit was priced at $74,500 (now quote-only). It has 12 degrees of freedom across its four legs, weighs about 32.5 kg, can carry roughly 14 kg on its back, reaches a top speed of about 1.6 m/s, and can climb stairs and cross slopes and rubble. Its back carries an expansion interface for payloads such as a robot arm, thermal camera, or lidar, and it is commonly used for automated inspection in factories and power plants and for surveying hazardous sites. It was one of the first legged robots to be commercialized at scale, and is often treated as the reference example of a quadruped robot.",
+   "example": "A power plant runs Spot on a fixed patrol route to read gauges and check equipment temperature.",
+   "related": [
+    "Quadruped Robot",
+    "Boston Dynamics",
+    "Inspection Robot",
+    "Legged Mobile Manipulator",
+    "ANYbotics ANYmal",
+    "Unitree Go2"
+   ]
+  },
+  {
+   "key": "robot-01#3",
+   "name_en": "Figure 03",
+   "aliases": [
+    "F.03"
+   ],
+   "one_liner": "Figure AI's third-generation humanoid robot, released in 2025 for home use and mass production.",
+   "explanation": "Figure 03 is the third-generation humanoid robot from the US company Figure AI, released on October 9, 2025, succeeding Figure 02. It was designed around Figure's own VLA model, Helix: its fingertips have tactile sensors said to sense forces as small as about 3 grams, its palms carry cameras, its outer shell uses a washable soft fabric, and coils built into its feet allow 2 kW wireless charging. It is reported to stand about 1.73 meters tall and weigh about 61 kg. It was also designed for mass manufacturing, built on Figure's BotQ production line, which the company says can reach an annual capacity of 12,000 units on its first line.",
+   "example": "In Figure's release video, Figure 03 uses Helix to fold laundry and load a dishwasher at home.",
+   "related": [
+    "Figure AI",
+    "Figure Helix",
+    "Figure Helix 02 (Full-Body Autonomy)",
+    "Figure 02",
+    "BotQ",
+    "Humanoid Robot"
+   ]
+  },
+  {
+   "key": "robot-01#4",
+   "name_en": "Franka Emika Panda / Franka Research 3",
+   "aliases": [
+    "Franka",
+    "Franka Panda",
+    "Panda",
+    "FR3",
+    "Franka Research 3"
+   ],
+   "one_liner": "A German-made 7-DoF force-controlled robot arm, one of the most common single arms in robotics research.",
+   "explanation": "The Franka arm was developed by Franka Emika of Munich, Germany; the early model was called Panda, and its research successor is the Franka Research 3 (FR3). It has 7 degrees of freedom, one more than the 6 needed to set an end effector's position and orientation, giving it extra flexibility, and all 7 joints carry torque sensors, enabling compliant force control. It has a 3 kg payload, an 855 mm reach, repeatability of ±0.1 mm, and can be controlled in real time at 1 kHz through its FCI interface. After the company filed for bankruptcy in 2023, it was acquired by Agile Robots and renamed Franka Robotics. Thanks to its strong force control and open interfaces, it has been used to collect large numbers of robot-learning datasets, including DROID and Open X-Embodiment.",
+   "example": "The DROID dataset was collected using Franka Panda arms across hundreds of real-world scenes.",
+   "related": [
+    "7-DoF Robot Arm",
+    "Joint Torque Sensor",
+    "libfranka / Franka Control Interface",
+    "DROID",
+    "Collaborative Robot",
+    "Agile Robots"
+   ]
+  },
+  {
+   "key": "robot-01#5",
+   "name_en": "Galbot G1",
+   "aliases": [],
+   "one_liner": "Galbot's wheeled, dual-arm humanoid robot with a foldable, height-adjustable leg.",
+   "explanation": "Galbot G1 is the wheeled humanoid robot released in June 2024 by the Beijing company Galbot. Instead of two legs, it has a single foldable, telescoping leg on an omnidirectional wheeled base, using a “kneeling” and a “standing” posture to cover a pick-and-place height range of 0 to 2.1 meters off the ground. According to the company's published specs, it stands up to 1.73 meters tall, has two 7-DoF arms (21 degrees of freedom total, excluding the base and end effectors), a 5 kg payload per arm, roughly 8 hours of battery life, and an NVIDIA Orin as its main controller. It targets picking and carrying tasks in supermarkets, pharmacies, and factories; its underlying grasping and navigation models are trained largely on synthetic simulation data.",
+   "example": "Galbot G1 picks medicine from shelves against orders inside an unstaffed pharmacy.",
+   "related": [
+    "Wheeled Humanoid Robot",
+    "GraspVLA",
+    "AstraBrain",
+    "Galbot S1",
+    "Mobile Manipulator",
+    "Synthetic Data"
+   ]
+  },
+  {
+   "key": "robot-01#6",
+   "name_en": "Humanoid Robot",
+   "aliases": [],
+   "one_liner": "A robot with a human-like body: a torso, two arms, and usually two legs.",
+   "explanation": "A humanoid robot is a robot whose body structure imitates a human's: generally a head, torso, and two arms, with most walking on two legs, though some use a wheeled base instead of legs (a “wheeled humanoid”). The whole body typically has somewhere between twenty and fifty-plus degrees of freedom, meaning independently movable joints. The case for a human-shaped body is that human environments, such as stairs, door handles, and tools, are all designed for humans, so a humanoid can use them directly, and human video and teleoperation data also transfer to it more easily. The hard parts are bipedal balance, whole-body coordinated control, and cost. Early examples include Honda's ASIMO; recent ones include Boston Dynamics' Atlas, Tesla's Optimus, Figure 03, and Unitree's G1.",
+   "example": "Unitree G1 and Tesla Optimus are both bipedal humanoids; Galbot G1 is a wheeled humanoid.",
+   "related": [
+    "Full-size Humanoid Robot",
+    "Wheeled Humanoid Robot",
+    "Bipedal Locomotion",
+    "Whole-Body Control",
+    "Tesla Optimus",
+    "Unitree G1"
+   ]
+  },
+  {
+   "key": "robot-01#7",
+   "name_en": "Quadruped Robot",
+   "aliases": [
+    "Robot Dog"
+   ],
+   "one_liner": "A legged robot that walks on four legs, commonly known as a robot dog.",
+   "explanation": "A quadruped robot moves on four legs, commonly with 3 joints per leg, for about 12 degrees of freedom across the whole body. Compared with a biped, it always has multiple legs on the ground, giving it inherently better stability; compared with a wheeled robot, it can cross steps, rubble, and slopes. This made it the first type of legged robot to reach commercial scale, used mainly for industrial inspection, security, surveying, and research and education; adding a robot arm on its back turns it into a mobile manipulator. In recent years, the dominant approach has been to train a locomotion policy with reinforcement learning in simulation, then transfer it to the real robot. Representative examples include Boston Dynamics' Spot, ANYbotics' ANYmal, Unitree's Go2, and DEEP Robotics' Jueying series.",
+   "example": "A locomotion gait trained with reinforcement learning in simulation for a Unitree Go2 can be deployed directly onto the real robot.",
+   "related": [
+    "Legged Locomotion",
+    "Boston Dynamics Spot",
+    "Unitree Go2",
+    "ANYbotics ANYmal",
+    "RL-based Locomotion Control",
+    "Sim-to-Real Transfer"
+   ]
+  },
+  {
+   "key": "robot-01#8",
+   "name_en": "Robotic Arm",
+   "aliases": [
+    "Manipulator",
+    "Robot Arm"
+   ],
+   "one_liner": "An arm-shaped robot made of joints and links, with a gripper or tool mounted at the end.",
+   "explanation": "A robotic arm is a chain of links and joints with a fixed base and an end effector, such as a gripper, suction cup, or dexterous hand, at the tip. Six degrees of freedom are enough for the end effector to reach any position and orientation in space, while a 7-DoF arm has one redundant joint, letting it work around obstacles. Arms split broadly into industrial arms, built for speed and precision and typically fenced off from people, and collaborative arms, which add force sensing and are designed to work alongside people. Most manipulation tasks studied in embodied AI, such as grasping, assembly, and folding laundry, are performed on robotic arms; common ones include Franka, UR5e, WidowX, and the low-cost SO-100.",
+   "example": "Most of the data in the Open X-Embodiment dataset comes from single-arm or dual-arm robotic arms.",
+   "related": [
+    "Degrees of Freedom",
+    "End Effector",
+    "Collaborative Robot",
+    "Industrial Robot",
+    "7-DoF Robot Arm",
+    "Franka Emika Panda / Franka Research 3"
+   ]
+  },
+  {
+   "key": "robot-01#9",
+   "name_en": "Tesla Optimus",
+   "aliases": [
+    "Optimus",
+    "Optimus Gen 2"
+   ],
+   "one_liner": "Tesla's general-purpose bipedal humanoid robot project.",
+   "explanation": "Optimus is Tesla's humanoid robot project, first unveiled at AI Day in August 2021, shown as a prototype in 2022, and released in its second generation (Gen 2) in December 2023. Published specs: about 1.73 meters tall, roughly 57 kg, able to carry about 20 kg; Gen 2's hand originally had 11 degrees of freedom, and a new hand shown in 2024 increased that to 22. Tesla intends to reuse its self-driving vision neural networks and its battery and motor supply chain to build the humanoid, and Elon Musk has repeatedly said the target price is around $20,000–30,000. As of September 2026, the third generation aimed at mass production has not yet formally launched, though the company says its Fremont factory is installing a line reportedly aimed at a run rate in the millions per year.",
+   "example": "At Tesla's 2024 We, Robot event, Optimus poured drinks for guests; some of its movements were later reported to have been remotely teleoperated.",
+   "related": [
+    "Tesla",
+    "Tesla Optimus V3 (Optimus Gen 3)",
+    "Tesla Optimus Hand",
+    "Tesla (Optimus) Supply Chain",
+    "Tesla We, Robot Event (2024)",
+    "Humanoid Robot"
+   ]
+  },
+  {
+   "key": "robot-01#10",
+   "name_en": "Unitree G1",
+   "aliases": [
+    "G1"
+   ],
+   "one_liner": "Unitree's small bipedal humanoid robot, one of the most common humanoid platforms in research.",
+   "explanation": "G1 is the bipedal humanoid robot Hangzhou-based Unitree Robotics released in May 2024, launched starting at RMB 99,000 (about $16,000), bringing humanoid robot prices into a range university labs could afford. Published specs: standing height about 1.32 meters, weight about 35 kg including battery, 23 to 43 joint motors across the body depending on configuration (the EDU version can add a waist joint and dexterous hands), 6 degrees of freedom per leg, about 2 hours of battery life, and a foldable, storable frame. Because it is inexpensive, ships with an open SDK, and has ready-made reinforcement-learning training code, it has become one of the most common real robots used in locomotion control, whole-body teleoperation, and humanoid VLA papers.",
+   "example": "Many humanoid motion-imitation papers, such as BeyondMimic and TWIST, demonstrate their results on a real Unitree G1.",
+   "related": [
+    "Unitree Robotics",
+    "Unitree H1",
+    "Small-size Humanoid Robot",
+    "unitree_rl_gym",
+    "Unitree SDK2",
+    "Unitree Dex3-1"
+   ]
+  },
+  {
+   "key": "robot-01#11",
+   "name_en": "1X NEO",
+   "aliases": [
+    "NEO",
+    "NEO Gamma",
+    "NEO Beta"
+   ],
+   "one_liner": "1X's humanoid robot for the home, priced at $20,000.",
+   "explanation": "NEO is a home humanoid robot from 1X Technologies, a company that started in Norway and is now headquartered in the US. It released NEO Beta in 2024 and NEO Gamma in February 2025, then opened consumer preorders in October 2025: a $20,000 outright purchase, or a $499-per-month subscription. It is reported to stand about 1.68 meters tall and weigh about 30 kg, able to lift 70 kg, with 22 degrees of freedom in its hands, tendon-driven actuation, a soft outer shell, and an operating noise level of about 22 decibels. Household tasks it cannot yet handle can be completed by a 1X employee taking over remotely, which has drawn privacy criticism. The company plans deliveries in the US starting in 2026; as of July 2026, no confirmed customer deliveries had been reported.",
+   "example": "A user schedules NEO to fold laundry through a phone app; for tasks it can't handle, they can book a remote operator to take over.",
+   "related": [
+    "1X Technologies",
+    "Redwood AI (1X)",
+    "1X World Model",
+    "1X EVE",
+    "Tendon-Driven Actuation",
+    "Remote Teleoperation Takeover"
+   ]
+  }
+ ]
+}

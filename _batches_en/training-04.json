@@ -1,0 +1,113 @@
+{
+  "batch": "training-04",
+  "terms": [
+    {
+      "key": "training-04#0",
+      "name_en": "Discount Factor",
+      "aliases": ["γ (gamma)", "Discount Rate"],
+      "one_liner": "The coefficient in reinforcement learning that discounts future rewards, controlling how much the agent weighs long-term payoff.",
+      "explanation": "The discount factor is a basic reinforcement-learning hyperparameter, written γ, with a value between 0 and 1. When computing the return (the sum of rewards accumulated from the current moment onward), a reward k steps in the future gets multiplied by γ raised to the k-th power. It serves two purposes: expressing that a reward received sooner is more certain and more valuable than one received later, and turning an infinitely long sum of rewards into a finite, well-behaved value, which makes it solvable with the Bellman equation (the recursive relationship that defines a value function). A γ closer to 1 makes the agent weigh long-term outcomes more heavily, but also makes the value estimate harder to learn and noisier; a smaller γ makes the agent more shortsighted. Robot reinforcement learning commonly uses a γ around 0.99. It appears in the definitions of return, the value function, and the advantage function.",
+      "example": "legged_gym (ETH's open-source reinforcement-learning framework for training legged robots) sets gamma = 0.99 in its PPO config: a reward 100 steps away is weighted by roughly 0.99 to the 100th power, about 0.37.",
+      "related": ["Return", "Reward Function", "Value Function", "Bellman Equation", "Generalized Advantage Estimation", "Markov Decision Process"]
+    },
+    {
+      "key": "training-04#1",
+      "name_en": "Distributed Training",
+      "aliases": ["Data Parallelism", "Model Parallelism", "Tensor Parallelism", "Pipeline Parallelism", "Multi-GPU Training"],
+      "one_liner": "Splitting a single training run across multiple GPUs or machines so larger models and more data can be trained.",
+      "explanation": "When a model or dataset is too large for one GPU to hold or process, training gets split across multiple GPUs or machines. There are two main approaches. Data parallelism puts a full copy of the model on each GPU, has each one process a different slice of the data, and after backpropagation averages the gradients across GPUs before applying a synchronized update — PyTorch's DDP (Distributed Data Parallel) works this way. Model parallelism instead splits the model itself across GPUs; NVIDIA's Megatron-LM, for instance, splits each Transformer layer's matrices across multiple GPUs (tensor parallelism), and there's also pipeline parallelism, which assigns different layers to different GPUs. FSDP (Fully Sharded Data Parallel) still splits by data, but also shards the parameters, gradients, and optimizer state across GPUs, substantially cutting memory use per device. Pretraining and full fine-tuning of multi-billion-parameter VLA models depend on these techniques.",
+      "example": "OpenVLA (7B parameters) was pretrained on 64 A100 GPUs over 14 days; the paper's full fine-tuning also needs 8 A100s running 5–15 hours, and its memory-usage tests split the model across 2 GPUs with FSDP.",
+      "related": ["Distributed Data Parallel", "Fully Sharded Data Parallel", "DeepSpeed", "Mixed-Precision Training", "Gradient Accumulation", "Batch Size"]
+    },
+    {
+      "key": "training-04#2",
+      "name_en": "Dropout",
+      "aliases": ["Dropout Regularization"],
+      "one_liner": "Randomly “turning off” some neurons during training, a regularization technique that keeps a network from memorizing the training data.",
+      "explanation": "Dropout comes from Hinton's group; Srivastava, Hinton, and colleagues published the systematic paper in JMLR in 2014. At every training step, each neuron's output is randomly zeroed out with some set probability, which is equivalent to training a different “sub-network” each time; at test time dropout is turned off, the full network is used, and the weights are rescaled accordingly to approximate the average over all those sub-networks. This keeps neurons from relying too heavily on each other, which reduces overfitting — doing well on training data but poorly on new data. It's commonly combined with weight decay, data augmentation, and early stopping; a dropout probability of 0.1 is common in Transformers. Robot demonstration datasets often have only dozens to a few hundred examples and overfit easily, so dropout is a common setting there.",
+      "example": "The official ACT (Action Chunking with Transformers) code uses a default Transformer dropout of 0.1. The reinforcement-learning algorithm DroQ adds dropout and layer normalization inside its Q-network, matching the sample efficiency of the larger ensemble method REDQ while using computation close to plain SAC.",
+      "related": ["Regularization", "Overfitting", "Early Stopping", "Data Augmentation", "Normalization Layers (LayerNorm / RMSNorm / BatchNorm)"]
+    },
+    {
+      "key": "training-04#3",
+      "name_en": "Early Stopping",
+      "aliases": [],
+      "one_liner": "Stopping training once validation performance stops improving, and keeping the checkpoint that performed best.",
+      "explanation": "Early stopping is one of the most common regularization techniques. During training, the model is periodically evaluated on a validation set (data held out from training, used specifically to pick a model): once training loss keeps falling but validation loss starts rising, the model has begun to overfit, so training stops and the checkpoint with the best validation performance is kept instead of the final one. In practice, a “patience” value is often set — stop only after several rounds in a row with no improvement — to avoid being misled by noise. In robot imitation learning this needs extra care: low validation loss doesn't guarantee a high real-robot success rate. robomimic's research found the training objective and the evaluation objective don't always agree, so which step training stops at matters a great deal, and many projects save several checkpoints and pick among them using simulation or real-robot rollouts instead. Don't confuse this with “early termination” in reinforcement learning, which ends a single episode early, for instance when the robot falls.",
+      "example": "Say a grasping policy is trained with validation action error computed once per epoch: the error is lowest at epoch 30 and doesn't improve for 10 epochs after that, so training stops and the epoch-30 checkpoint is kept.",
+      "related": ["Overfitting", "Training / Validation / Test Set", "Checkpoint", "Regularization", "Training Epoch", "Early Termination"]
+    },
+    {
+      "key": "training-04#4",
+      "name_en": "Epoch",
+      "aliases": ["Training Epoch"],
+      "one_liner": "One complete pass of the model through the entire training set.",
+      "explanation": "An epoch is a unit for measuring training progress. Training data is split into batches, and processing one batch and applying one parameter update is called an iteration (also called a step); once every sample in the training set has been processed once, that's one epoch, so the number of iterations per epoch is roughly the total sample count divided by the batch size. Too few epochs causes underfitting, too many causes overfitting, and early stopping is often used to decide where to stop. Large-model pretraining datasets are so enormous that the data is often passed over only once or a few times, so progress there is more often measured in training steps or tokens seen; small-scale robot demonstration datasets, by contrast, are often trained for many epochs. Reinforcement learning uses the term slightly differently: PPO reuses the same batch of rollout data several times, and each pass is also called an epoch.",
+      "example": "With 50 demonstrations totaling 20,000 frames and a batch size of 64, one epoch is roughly 313 steps. legged_gym's PPO config trains 5 epochs on each batch of rollout data (num_learning_epochs = 5).",
+      "related": ["Batch Size", "Gradient Descent", "Early Stopping", "Overfitting", "Underfitting", "Proximal Policy Optimization"]
+    },
+    {
+      "key": "training-04#5",
+      "name_en": "Experience Replay",
+      "aliases": ["Replay Buffer"],
+      "one_liner": "Storing an agent's past interactions in a buffer and sampling them randomly during training, instead of using each one only once.",
+      "explanation": "Experience replay is a data-reuse mechanism in reinforcement learning, proposed by Long-Ji Lin in the early 1990s and popularized when DeepMind's DQN (Deep Q-Network) combined it with deep networks in 2013. At every step, the agent stores the transition — state, action, reward, next state — into a buffer of limited capacity, overwriting the oldest entries once it's full; training then samples random mini-batches from this buffer to update the network. This has two benefits: each piece of data can be reused many times, improving sample efficiency; and random sampling breaks the strong correlation between consecutive steps, making training more stable. Because the sampled data comes from an older policy, any algorithm using it must be off-policy, such as DQN or SAC. Real-robot reinforcement learning, where samples are expensive, relies on this especially heavily.",
+      "example": "DQN playing Atari keeps the most recent 1 million frames in its replay buffer. HIL-SERL uses two buffers — one for human demonstrations and intervention data, one for the policy's own interactions — and samples half of each training batch from each.",
+      "related": ["Off-Policy", "Deep Q-Network", "Soft Actor-Critic", "Hindsight Experience Replay", "Sample Efficiency", "HIL-SERL"]
+    },
+    {
+      "key": "training-04#6",
+      "name_en": "Exploration vs. Exploitation",
+      "aliases": ["Exploration-Exploitation Trade-off", "Exploration-Exploitation Dilemma"],
+      "one_liner": "The trade-off between trying new actions to find something better and using the best-known action to collect reward now.",
+      "explanation": "This is a fundamental tension in reinforcement learning and sequential decision-making. Exploitation means picking the action that currently looks best given what the agent already knows; exploration means trying an uncertain, unfamiliar action, which may pay off worse in the short term but could reveal a better strategy. Pure exploitation easily gets stuck on a suboptimal solution, while pure exploration never cashes in on the reward it finds. The classic framework for studying this is the multi-armed bandit problem; common strategies include ε-greedy (pick a random action with small probability ε), UCB (upper confidence bound, which favors options with more uncertainty), and Thompson sampling. Deep reinforcement learning also uses entropy regularization (encouraging the policy to stay somewhat random) and intrinsic reward (rewarding “curiosity”). Exploration is harder on real robots: unconstrained trial and error can damage the hardware, so policies are often first brought into a reasonable region using demonstration data or simulation, and only then explore in a controlled way.",
+      "example": "When SimpleVLA-RL fine-tunes a VLA with reinforcement learning, it raises the rollout sampling temperature from 1.0 to 1.6 and widens the clipping range from 0.2 to 0.28, so the model generates more varied trajectories and explores more.",
+      "related": ["Intrinsic Reward", "Entropy Regularization", "Reinforcement Learning", "Sample Efficiency", "Safe Reinforcement Learning", "Real-Robot Reinforcement Learning"]
+    },
+    {
+      "key": "training-04#7",
+      "name_en": "Full Fine-Tuning",
+      "aliases": ["Full-parameter Fine-Tuning"],
+      "one_liner": "Fine-tuning that updates every parameter of a pretrained model, rather than training just a small subset of them.",
+      "explanation": "Fine-tuning means continuing to train a pretrained model on data for a downstream task. Full fine-tuning updates every weight; the alternative is parameter-efficient fine-tuning (PEFT), which trains only a small number of new or selected parameters, such as LoRA (low-rank adaptation). Full fine-tuning has the most freedom to adapt, and when data is plentiful and the target task differs a lot from pretraining, it usually performs best — but it's expensive: every parameter needs its own stored gradient and optimizer state, pushing memory needs to several times that of plain inference, and a full copy of the model must be saved per task; with little data it's also more prone to overfitting or catastrophic forgetting, where the model loses old abilities while learning a new task. When adapting a VLA to a new robot or task, full fine-tuning and LoRA are the two most common choices, and picking between them comes down to available GPU memory and how much data there is.",
+      "example": "The OpenVLA (7B) paper reports full fine-tuning needing 8 A100s running 5–15 hours, reaching 69.7% success; LoRA trains only 1.4% of the parameters, fits on a single A100, and reaches 68.2%. The openpi repository lists π0 full fine-tuning as needing over 70 GB of memory versus about 22.5 GB for LoRA.",
+      "related": ["Fine-tuning", "Parameter-Efficient Fine-Tuning", "Low-Rank Adaptation", "Catastrophic Forgetting", "Backbone Freezing", "Supervised Fine-Tuning"]
+    },
+    {
+      "key": "training-04#8",
+      "name_en": "Gradient Descent",
+      "aliases": ["Stochastic Gradient Descent", "SGD", "Mini-batch Gradient Descent"],
+      "one_liner": "An optimization method that nudges parameters step by step opposite the loss function's gradient, making the loss smaller each time.",
+      "explanation": "Gradient descent is the core optimization method for training neural networks, generally credited to the mathematician Augustin-Louis Cauchy in 1847. The gradient is the loss function's partial derivative with respect to each parameter, pointing in the direction the loss increases fastest; each step moves the parameters a bit in the opposite direction, and how far is set by the learning rate — too small and convergence is slow, too large and the loss oscillates or even diverges. Because deep-learning datasets are large, each step usually estimates the gradient from just a small batch of data, called stochastic (mini-batch) gradient descent, or SGD. The gradient itself is computed by backpropagation. The Adam and AdamW optimizers commonly used to train large models like VLAs today are refinements of gradient descent that add momentum and adaptive step sizes.",
+      "example": "Training a behavior-cloning policy: each step takes 64 frames of demonstration, computes the mean squared error between predicted and demonstrated actions, runs backpropagation to get the gradient, then updates once via “parameter ← parameter − learning rate × gradient.”",
+      "related": ["Backpropagation", "Learning Rate", "Optimizer", "Loss Function", "Batch Size", "AdamW"]
+    },
+    {
+      "key": "training-04#9",
+      "name_en": "Ground Truth",
+      "aliases": ["GT", "Gold Label"],
+      "one_liner": "The real data treated as the “correct answer” for training and evaluating a model.",
+      "explanation": "Ground truth originally comes from remote sensing, where it referred to data collected on the ground to calibrate satellite measurements; machine learning and statistical modeling borrowed the term to mean whatever data is treated as the correct answer during training and evaluation, such as an image's class label or an object's true position. Ground truth isn't necessarily perfect — human annotators make mistakes and sensors have error — so data quality directly caps how good a model can get. In embodied AI, imitation learning treats the actions recorded during human teleoperation as the action ground truth; a simulator can read out an object's exact pose, contact forces, and other precise state directly, so it's often used as ground truth for training a perception module, or as privileged information for a teacher policy; real-robot experiments often use poses measured by a motion-capture system as ground truth for evaluating an algorithm.",
+      "example": "When training a 6D pose-estimation model on simulator-rendered images, each image's true object pose comes straight from the simulator — that's ground truth, and it needs no human labeling.",
+      "related": ["Data Annotation", "Privileged Information", "Supervised Learning", "Action Labels", "Synthetic Data", "Motion Capture"]
+    },
+    {
+      "key": "training-04#10",
+      "name_en": "Group Relative Policy Optimization",
+      "aliases": ["GRPO"],
+      "one_liner": "A reinforcement-learning algorithm that samples a group of outputs for the same input and uses their relative scores instead of a value network.",
+      "explanation": "GRPO was introduced by the DeepSeek team in the DeepSeekMath paper (February 2024) as a variant of PPO (Proximal Policy Optimization). PPO needs a separately trained value network (a “critic,” roughly as large as the policy itself) to estimate a baseline; GRPO removes it. For the same input, it samples a group of outputs, scores each one, and uses “score minus the group's mean, divided by the group's standard deviation” as each output's advantage, saving a large amount of memory. It also adds the KL divergence (a measure of how far the policy has drifted) from a reference model directly into the loss, to constrain how much the policy changes per update. GRPO became widely adopted after DeepSeek-R1 used it to train reasoning ability. The embodied-AI field has begun applying it to RL fine-tuning of VLAs too: several rollouts are sampled for the same task and given a reward of 0 or 1 depending on success.",
+      "example": "SimpleVLA-RL trains OpenVLA-OFT with GRPO: it samples 8 rollouts per task, scores success as 1 and failure as 0, drops the KL term, and filters out groups that are all successes or all failures, raising the average LIBERO success rate from 91.0% to 99.1%.",
+      "related": ["Proximal Policy Optimization", "Advantage Function", "RL Fine-tuning", "Reinforcement Learning from Verifiable Rewards", "KL Regularization", "SimpleVLA-RL"]
+    },
+    {
+      "key": "training-04#11",
+      "name_en": "Human-in-the-Loop",
+      "aliases": ["HITL", "Human Intervention"],
+      "one_liner": "Keeping a person inside a robot's training or operating loop to correct, take over, or give feedback in real time.",
+      "explanation": "Human-in-the-loop broadly describes a system that needs a person involved while it runs: taking over control when the robot errs, providing a corrective action, scoring an outcome, or confirming a critical decision. In robot learning, its main job is covering the gap left by offline imitation learning: once a policy drifts into a state the demonstrations never covered, it tends to get further and further off track (compounding error), and human corrections at exactly those states supply the missing data. Notable methods include DAgger and 2018's HG-DAgger (a human takes over when they judge things are about to go wrong, and the segments they took over become new training data), and UC Berkeley's HIL-SERL (2024), where a person intervenes on real-robot reinforcement learning at any time using a 3D mouse, letting the robot learn precision assembly, bimanual coordination, and similar tasks in 1 to 2.5 hours. Human takeover during deployment and remote-teleoperation fallback also fall under this umbrella, and the intervention rate is a common way to measure how autonomous a system really is.",
+      "example": "During HIL-SERL training, an operator holds a SpaceMouse and watches over the robot, taking over just before it's about to fail; that intervention data goes into both the demonstration buffer and the reinforcement-learning buffer, speeding up learning.",
+      "related": ["DAgger (Dataset Aggregation)", "Human-Gated DAgger", "HIL-SERL", "Intervention Data", "Intervention Rate", "Shared Autonomy"]
+    }
+  ]
+}

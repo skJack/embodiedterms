@@ -1,0 +1,386 @@
+{
+  "category": "perception",
+  "batch": 15,
+  "terms": [
+    {
+      "name_zh": "足底力传感器",
+      "name_en": "Foot Force Sensor",
+      "abbr": "",
+      "aliases": [
+        "足端力传感器",
+        "足底压力传感器",
+        "Foot Contact Sensor"
+      ],
+      "tier": 3,
+      "one_liner": "装在足式机器人脚底或脚踝，测脚和地面之间接触力的传感器",
+      "explanation": "足式机器人脚端用来测触地力的传感器，常见形式有：四足足端的单轴力或压力传感器、人形机器人脚踝处的六维力传感器、铺在脚掌上的压力阵列。它回答两个问题：这只脚着地没有，地面反作用力有多大。前一个用于接触估计和腿式里程计（知道哪只脚在支撑，才能推算机身怎么移动），后一个可以算出压力中心、零力矩点，用来判断平衡。脚端每一步都受冲击，传感器容易磨损、读数也会漂移，所以不少四足产品不装它，改用关节力矩或电机电流做无传感器力估计。以宇树 Go2 为例，只有 EDU 版配足端力传感器。",
+      "example": "宇树 Go1 等四足的旧版 SDK（unitree_legged_sdk）在底层状态 LowState 里用 footForce 字段给出四只脚各一个力读数，控制程序可以据此判断每只脚的触地时刻。",
+      "related": [
+        "接触估计",
+        "六维力传感器",
+        "地面反作用力",
+        "零力矩点",
+        "腿式里程计",
+        "无传感器力估计"
+      ],
+      "sources": [
+        {
+          "title": "Unitree Go2 产品页（规格表：足端力传感器仅 EDU 版）",
+          "url": "https://www.unitree.com/go2"
+        },
+        {
+          "title": "unitree_legged_sdk comm.h（LowState footForce 字段）",
+          "url": "https://github.com/unitreerobotics/unitree_legged_sdk/blob/master/include/unitree_legged_sdk/comm.h"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "FoundationStereo",
+      "name_en": "FoundationStereo: Zero-Shot Stereo Matching",
+      "abbr": "",
+      "aliases": [
+        "Fast-FoundationStereo"
+      ],
+      "tier": 3,
+      "one_liner": "英伟达的双目立体匹配基础模型，换场景不用微调也能出深度",
+      "explanation": "英伟达 Bowen Wen 等人提出的立体匹配模型，发表于 CVPR 2025。输入左右两张相机图像，输出稠密视差图，再用基线和焦距换算成深度或点云。以往的立体匹配网络换到新场景往往要重新微调；FoundationStereo 用约 100 万对高真实感合成双目图（FSD 数据集）训练，并通过旁路微调（side-tuning）引入视觉基础模型的单目深度先验，缩小仿真与真实的差距，做到零样本泛化，官方称发布时在 Middlebury 和 ETH3D 榜单排第一。机器人里常用它从双目图像得到更完整的深度，供抓取和位姿估计使用；2025 年 12 月又推出实时版 Fast-FoundationStereo。",
+      "example": "用双目相机拍下桌面的左右两张图，送进 FoundationStereo 得到深度图和点云，再交给 FoundationPose 估计目标物体的 6D 位姿。",
+      "related": [
+        "立体匹配",
+        "视差",
+        "双目相机",
+        "深度估计",
+        "FoundationPose",
+        "Depth Anything"
+      ],
+      "sources": [
+        {
+          "title": "FoundationStereo: Zero-Shot Stereo Matching (arXiv 2501.09898)",
+          "url": "https://arxiv.org/abs/2501.09898"
+        },
+        {
+          "title": "NVlabs/FoundationStereo GitHub",
+          "url": "https://github.com/NVlabs/FoundationStereo"
+        }
+      ],
+      "as_of": "2025-12"
+    },
+    {
+      "name_zh": "FMCW 激光雷达（调频连续波激光雷达）",
+      "name_en": "Frequency-Modulated Continuous-Wave LiDAR",
+      "abbr": "FMCW",
+      "aliases": [
+        "FMCW LiDAR",
+        "调频连续波激光雷达",
+        "相干激光雷达",
+        "4D 激光雷达"
+      ],
+      "tier": 3,
+      "one_liner": "连续发射调频激光，每个点同时测出距离和速度的激光雷达",
+      "explanation": "激光雷达的一种测距体制。常见的飞行时间（ToF）雷达发射短脉冲，计算回波往返时间；FMCW 雷达连续发射频率随时间周期变化的激光，把回波和本地光做相干混频，频率差对应距离，多普勒频移直接给出该点沿视线方向的速度，所以厂商常称它为 4D 激光雷达。它只响应和自身频率、波长匹配的光，受阳光和其他雷达串扰的影响小；多工作在 1550 nm 波段，人眼安全限值允许更高功率。代价是要用相干收发器件，结构复杂、成本高。目前主要用在自动驾驶，代表厂商有 Aeva、Aurora 等；机器人上常见的仍是 ToF 激光雷达。",
+      "example": "Aeva 的 FMCW 激光雷达每个点除了三维坐标还带一个速度值，单帧就能把正在走动的行人和静止的柱子分开，不必比较前后两帧。",
+      "related": [
+        "激光雷达",
+        "飞行时间法",
+        "固态激光雷达",
+        "毫米波雷达",
+        "自动驾驶",
+        "多传感器融合"
+      ],
+      "sources": [
+        {
+          "title": "Aurora: FMCW Lidar — The Self-Driving Game-Changer",
+          "url": "https://aurora.tech/blog/fmcw-lidar-the-self-driving-game-changer"
+        },
+        {
+          "title": "Aeva 官网（FMCW 4D LiDAR）",
+          "url": "https://www.aeva.com/"
+        },
+        {
+          "title": "Wikipedia: Continuous-wave radar（FMCW 原理）",
+          "url": "https://en.wikipedia.org/wiki/Continuous-wave_radar"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "高斯泼溅 SLAM",
+      "name_en": "Gaussian Splatting SLAM (e.g. SplaTAM / MonoGS)",
+      "abbr": "",
+      "aliases": [
+        "3DGS SLAM",
+        "SplaTAM",
+        "MonoGS"
+      ],
+      "tier": 3,
+      "one_liner": "用 3D 高斯泼溅当地图，边定位边建出能逼真渲染的场景",
+      "explanation": "一类把 3D 高斯泼溅（用大量带颜色和透明度的 3D 高斯椭球表示场景，渲染很快）当作地图表示的 SLAM 方法，2023 年底起集中出现。代表作有 SplaTAM（卡内基梅隆大学等，CVPR 2024，输入 RGB-D 视频）和 MonoGS（帝国理工 Andrew Davison 组，CVPR 2024，首个单目版本，约 3 帧每秒实时运行）。跟踪时把当前地图渲染成图像，和真实观测比较，反向优化相机位姿；建图时增加、删除和调整高斯。相比点云或 TSDF 地图，它在定位的同时得到能渲染任意新视角的稠密地图，适合机器人做现实到仿真、数字孪生和导航建图。",
+      "example": "SplaTAM 用一台手持 RGB-D 相机扫一遍房间，边估计相机轨迹边建出高斯地图，之后可以从没拍过的角度渲染出这个房间的图像。",
+      "related": [
+        "3D高斯泼溅",
+        "同步定位与建图",
+        "视觉SLAM",
+        "神经辐射场",
+        "新视角合成",
+        "现实到仿真"
+      ],
+      "sources": [
+        {
+          "title": "SplaTAM: Splat, Track & Map 3D Gaussians for Dense RGB-D SLAM (arXiv 2312.02126)",
+          "url": "https://arxiv.org/abs/2312.02126"
+        },
+        {
+          "title": "Gaussian Splatting SLAM / MonoGS (arXiv 2312.06741)",
+          "url": "https://arxiv.org/abs/2312.06741"
+        }
+      ],
+      "as_of": "2024-06"
+    },
+    {
+      "name_zh": "GelSight Mini",
+      "name_en": "GelSight Mini",
+      "abbr": "",
+      "aliases": [],
+      "tier": 3,
+      "one_liner": "GelSight 公司的商用小型视触觉传感器，插 USB 即可用",
+      "explanation": "GelSight 公司推出的小型视触觉传感器，这家公司源自 MIT Edward Adelson 组的 GelSight 技术。传感器内部的相机拍摄软硅胶被按压后的形变，用光度立体恢复接触面的三维形状；胶面带标记点时，可以跟踪标记点位移来估计剪切力和滑动。官方称它是首款空间分辨率超过人类触觉的商用触觉传感器。据官方 GitHub，它用一根 USB 3 线同时供电和传数据，帧率 25 FPS，并提供 Python 示例做三维点云重建和标记点跟踪。它体积小、价格面向科研和爱好者，适合直接装在夹爪指尖，是实验室里常用的视触觉传感器之一。",
+      "example": "把两块 GelSight Mini 装在二指夹爪的两个指尖上，抓起物体后用触觉图像看接触区域和标记点位移，判断物体是否开始滑动。",
+      "related": [
+        "GelSight",
+        "视触觉传感器",
+        "光度立体",
+        "标记点跟踪",
+        "触觉图像",
+        "滑移检测"
+      ],
+      "sources": [
+        {
+          "title": "GelSight Mini 官方产品页",
+          "url": "https://www.gelsight.com/gelsightmini/"
+        },
+        {
+          "title": "gelsightinc/gsrobotics GitHub（Mini SDK 与 FAQ）",
+          "url": "https://github.com/gelsightinc/gsrobotics"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "GelSlim",
+      "name_en": "GelSlim",
+      "abbr": "",
+      "aliases": [
+        "GelSlim 3.0"
+      ],
+      "tier": 3,
+      "one_liner": "MIT 做的细长手指形视触觉传感器，能装在夹爪上抓东西",
+      "explanation": "MIT Alberto Rodriguez 课题组（MCube 实验室）与 Edward Adelson 等合作的一系列手指形视触觉传感器，属于 GelSight 家族。原版 GelSight 光路长、体积大，难以伸进杂乱环境；2018 年的初代 GelSlim（Donlon 等）用镜面和导光改造光路，把传感器做成细长手指，换上更耐磨的胶和织物表皮，并用标定保持成像稳定。2021 年的 GelSlim 3.0（Taylor、Dong、Rodriguez）进一步缩小，能实时测接触形状、估计三维接触力分布、检测初始滑移，指尖模块卡扣可换，设计和软件开源。",
+      "example": "把 GelSlim 3.0 装在小型平行夹爪上做料箱里的无序抓取，用触觉图像估计物体在手里的位置并检测是否开始打滑。",
+      "related": [
+        "GelSight",
+        "视触觉传感器",
+        "滑移检测",
+        "无序抓取",
+        "二指夹爪",
+        "GelSight Mini"
+      ],
+      "sources": [
+        {
+          "title": "GelSlim: A High-Resolution, Compact, Robust, and Calibrated Tactile-sensing Finger (arXiv 1803.00628)",
+          "url": "https://arxiv.org/abs/1803.00628"
+        },
+        {
+          "title": "GelSlim3.0: High-Resolution Measurement of Shape, Force and Slip in a Compact Tactile-Sensing Finger (arXiv 2103.12269)",
+          "url": "https://arxiv.org/abs/2103.12269"
+        }
+      ],
+      "as_of": "2021-03"
+    },
+    {
+      "name_zh": "手势识别",
+      "name_en": "Gesture Recognition",
+      "abbr": "",
+      "aliases": [
+        "手势检测",
+        "Hand Gesture Recognition"
+      ],
+      "tier": 3,
+      "one_liner": "让机器从图像或传感器信号里认出人做的手势并理解其含义",
+      "explanation": "计算机视觉和人机交互里的一个任务：从普通相机、深度相机、数据手套或肌电信号中识别人的手势（如握拳、竖大拇指、指向某处）。静态手势只看某一时刻的手形，动态手势要看一段动作轨迹（如挥手）。现在常见的做法是先检测手部关键点，再根据关键点分类。它和手部姿态估计的区别是：后者恢复完整的三维手形，手势识别只输出类别。在具身智能里，手势识别用于人机交互，比如用手势让机器人停下、跟随或去拿指向的物体；遥操作系统也会把特定手势映射成控制命令，如张合夹爪、切换模式。",
+      "example": "谷歌 MediaPipe Gesture Recognizer 默认能识别握拳、张开手掌、竖起食指、拇指向上、拇指向下、比 V 等手势，同时输出手部关键点，可以用来实现「张开手掌让机器人停下」。",
+      "related": [
+        "手部姿态估计",
+        "人机交互",
+        "关键点检测",
+        "MediaPipe（手部/人体关键点）",
+        "数据手套",
+        "遥操作"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Gesture recognition",
+          "url": "https://en.wikipedia.org/wiki/Gesture_recognition"
+        },
+        {
+          "title": "MediaPipe Gesture Recognizer 官方文档",
+          "url": "https://developers.google.com/edge/mediapipe/solutions/vision/gesture_recognizer"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "GMSL 相机接口",
+      "name_en": "Gigabit Multimedia Serial Link",
+      "abbr": "GMSL",
+      "aliases": [
+        "GMSL2",
+        "GMSL3",
+        "千兆多媒体串行链路"
+      ],
+      "tier": 3,
+      "one_liner": "用一根同轴线给相机供电并高速传图的车规级串行链路",
+      "explanation": "GMSL 是 Maxim 公司 2008 年推出的车载串行传输技术，2021 年 Maxim 被亚德诺（ADI）收购后归其所有。相机端的串行器把图像数据打包，经一根同轴线或屏蔽双绞线送到主机端的解串器，再转成 MIPI CSI-2 接入处理器；同一根线还能供电、传双向控制信号，线长可达 15 米。GMSL2 带宽 6 Gb/s，GMSL3 为 12 Gb/s。USB 相机线短、接头易松、抗干扰差；GMSL 出自汽车辅助驾驶，抗电磁干扰好，多路相机还能汇进同一个解串器，所以自动驾驶以及人形、移动机器人的多相机方案常用它接 Jetson 等主控。",
+      "example": "在 Jetson AGX Orin 上，多台 GMSL 相机经解串器接入同一个 CSI 端口，靠虚拟通道区分各路图像；英伟达文档称 AGX Orin 系列在使用 ISP 时最多支持 16 路虚拟通道。",
+      "related": [
+        "MIPI CSI-2 相机接口",
+        "英伟达 Jetson",
+        "多传感器时间同步",
+        "CMOS 图像传感器",
+        "自动驾驶",
+        "RGB相机"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Gigabit Multimedia Serial Link",
+          "url": "https://en.wikipedia.org/wiki/Gigabit_Multimedia_Serial_Link"
+        },
+        {
+          "title": "NVIDIA Jetson 开发者指南：Jetson Virtual Channel with GMSL Camera Framework",
+          "url": "https://docs.nvidia.com/jetson/archives/r36.4/DeveloperGuide/SD/CameraDevelopment/JetsonVirtualChannelWithGmslCameraFramework.html"
+        }
+      ],
+      "as_of": "2024"
+    },
+    {
+      "name_zh": "全局快门 / 卷帘快门",
+      "name_en": "Global Shutter / Rolling Shutter",
+      "abbr": "",
+      "aliases": [
+        "全局曝光",
+        "卷帘曝光",
+        "果冻效应"
+      ],
+      "tier": 3,
+      "one_liner": "相机同时曝光全部像素，还是一行一行依次曝光的两种方式",
+      "explanation": "图像传感器的两种曝光和读出方式。全局快门让所有像素在同一时刻曝光；卷帘快门从上到下逐行曝光、读出，上下行之间有时间差。许多 CMOS 相机用卷帘快门，因为结构简单、成本低、感光好。但拍快速运动的物体，或者相机自己在晃，画面就会歪斜、扭曲、抖动，这就是「果冻效应」；闪光灯下还可能只有一部分画面被照亮。对机器人来说，腕部相机跟着机械臂移动、足式机器人走路时机身抖动，卷帘快门会给 SLAM、视觉惯性里程计、相机标定带来误差，所以这类场景常选全局快门相机，或者在算法里对卷帘快门的逐行时间差建模补偿。",
+      "example": "用卷帘快门相机拍高速旋转的螺旋桨，桨叶会被拍成弯曲甚至断开的奇怪形状；换成全局快门相机就不会。",
+      "related": [
+        "CMOS 图像传感器",
+        "RGB相机",
+        "视觉惯性里程计",
+        "腕部相机",
+        "事件相机",
+        "相机标定"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Rolling shutter",
+          "url": "https://en.wikipedia.org/wiki/Rolling_shutter"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "GNSS / RTK 定位",
+      "name_en": "GNSS / Real-Time Kinematic Positioning",
+      "abbr": "GNSS / RTK",
+      "aliases": [
+        "RTK",
+        "实时动态差分定位",
+        "载波相位差分",
+        "卫星定位"
+      ],
+      "tier": 3,
+      "one_liner": "用卫星导航加基准站差分校正，在户外做到厘米级定位",
+      "explanation": "GNSS 是全球卫星导航系统的统称，包括 GPS、北斗、GLONASS、伽利略等，单独使用时定位误差一般在米级。RTK（实时动态差分）在已知坐标的位置架一个基准站，把它观测到的卫星载波相位实时发给移动端，两边做差分消去大部分公共误差，再解出载波的整周数，精度可达厘米级；网络 RTK 用多个基准站扩大覆盖范围。它的局限是需要看得见天空，在室内、楼宇之间和树荫下会因遮挡和多路径反射失效，所以实际系统通常和 IMU、轮式里程计、激光 SLAM 融合。具身智能里主要用在户外机器人上，如巡检四足、农业和割草机器人、无人机、自动驾驶车辆。",
+      "example": "户外巡检四足机器人背上装 RTK 天线，和 IMU、激光雷达融合定位，按预先设定的经纬度路点在园区里自主巡逻。",
+      "related": [
+        "惯性测量单元",
+        "多传感器融合",
+        "状态估计",
+        "激光SLAM",
+        "巡检机器人",
+        "自动驾驶"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Real-time kinematic positioning",
+          "url": "https://en.wikipedia.org/wiki/Real-time_kinematic_positioning"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "GraspGen",
+      "name_en": "GraspGen: A Diffusion-based Framework for 6-DOF Grasping with On-Generator Training",
+      "abbr": "",
+      "aliases": [],
+      "tier": 3,
+      "one_liner": "英伟达用扩散模型生成 6 自由度抓取位姿、再打分筛选的框架",
+      "explanation": "英伟达 2025 年 7 月公开的 6 自由度抓取生成框架（Murali、Fox、Eppner 等）。输入物体点云，先用扩散 Transformer 生成大量候选抓取位姿（夹爪的三维位置加朝向），再用判别器给每个抓取打分、筛掉差的；判别器直接用生成器采样出的抓取来训练（论文称 on-generator training）。它同时发布了超过 5300 万个仿真抓取的数据集，覆盖 Franka 夹爪、Robotiq 2F-140、吸盘等末端执行器，针对的是学习型抓取换夹爪、换真实场景就不好用的问题。论文报告它在 FetchBench 仿真基准上达到最好水平，真机上面对有噪声的点云也能工作。",
+      "example": "先用分割模型从深度点云里抠出目标物体，把物体点云交给 GraspGen 得到一批带分数的抓取位姿，挑分数最高且可达的一个，交给 cuRobo 规划机械臂轨迹去执行。",
+      "related": [
+        "抓取位姿检测",
+        "扩散模型",
+        "Contact-GraspNet",
+        "AnyGrasp",
+        "抓取规划",
+        "cuRobo"
+      ],
+      "sources": [
+        {
+          "title": "GraspGen (arXiv 2507.13097)",
+          "url": "https://arxiv.org/abs/2507.13097"
+        },
+        {
+          "title": "GraspGen 项目主页",
+          "url": "https://graspgen.github.io/"
+        }
+      ],
+      "as_of": "2025-07"
+    },
+    {
+      "name_zh": "Grounded-SAM",
+      "name_en": "Grounded SAM: Assembling Open-World Models for Diverse Visual Tasks",
+      "abbr": "",
+      "aliases": [
+        "Grounded SAM",
+        "Grounded-Segment-Anything"
+      ],
+      "tier": 3,
+      "one_liner": "用一句文字就能把图里对应物体框出来并精细分割的开源流水线",
+      "explanation": "IDEA 研究院开源的开放世界视觉流水线，2024 年 1 月发布技术报告。核心是把两个模型串起来：Grounding DINO 按文字描述找物体、输出检测框，SAM（分割一切模型）拿到框后输出像素级掩码。这样输入任意文字，比如「红色杯子」，就能得到对应物体的掩码，不用为新类别重新训练；它还能接 RAM、BLIP 自动打标签，接 Stable Diffusion 做图像编辑。报告称其在 SegInW 零样本分割基准上达到 48.7 mAP。机器人里常用它按语言指定目标、抠出物体点云再做抓取或位姿估计，也用来自动标注数据；后续的 Grounded SAM 2 接入 SAM 2，能在视频里跟踪物体。",
+      "example": "机器人收到「把香蕉放进碗里」，先用 Grounded-SAM 分别分割出 banana 和 bowl 的掩码，再结合深度图算出两者的三维位置，交给抓取和运动规划模块。",
+      "related": [
+        "Grounding DINO",
+        "分割一切模型",
+        "开放词汇分割",
+        "开放词汇检测",
+        "SAM 2（视频分割一切）",
+        "自动标注"
+      ],
+      "sources": [
+        {
+          "title": "Grounded SAM: Assembling Open-World Models for Diverse Visual Tasks (arXiv 2401.14159)",
+          "url": "https://arxiv.org/abs/2401.14159"
+        },
+        {
+          "title": "IDEA-Research/Grounded-Segment-Anything GitHub",
+          "url": "https://github.com/IDEA-Research/Grounded-Segment-Anything"
+        }
+      ],
+      "as_of": "2024-01"
+    }
+  ]
+}

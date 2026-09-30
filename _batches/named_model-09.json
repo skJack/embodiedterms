@@ -1,0 +1,386 @@
+{
+ "category": "named_model",
+ "batch": 9,
+ "terms": [
+  {
+   "name_zh": "Dex-Net（GQ-CNN 抓取网络）",
+   "name_en": "Dex-Net 2.0 / Grasp Quality CNN (Berkeley AUTOLAB)",
+   "abbr": "Dex-Net",
+   "aliases": [
+    "Dexterity Network",
+    "Dex-Net 2.0",
+    "GQ-CNN",
+    "Grasp Quality CNN",
+    "抓取质量卷积网络"
+   ],
+   "tier": 3,
+   "one_liner": "伯克利用仿真合成数据训练的抓取打分网络，从深度图判断哪种抓法最稳。",
+   "explanation": "Dex-Net 是加州大学伯克利分校 Ken Goldberg 团队（AUTOLAB）的抓取项目，最有名的是 2017 年发表于 RSS 的 Dex-Net 2.0。它不采真机数据，而是在大量 3D 物体模型上用解析抓取指标（按几何和力学公式算抓取稳不稳）批量打标签，合成了 670 万组「点云 + 抓取 + 标签」，再训练卷积网络 GQ-CNN：输入深度图和候选抓取（平面位置、角度、深度），输出成功概率，机器人挑分最高的执行。它是「仿真合成数据训练、直接上真机」在抓取上的早期代表；后续 3.0 扩展到吸盘，4.0（Science Robotics 2019）同时用夹爪和吸盘做无序抓取。",
+   "example": "Dex-Net 2.0 在 ABB YuMi 机器人上用 GQ-CNN 规划二指夹爪抓取：对 8 个已知物体成功率 93%，对没见过的家居物体，被判为「稳」的抓取精度约 99%。",
+   "related": [
+    "抓取",
+    "抓取质量指标",
+    "无序抓取",
+    "合成数据",
+    "卷积神经网络",
+    "抓取位姿检测"
+   ],
+   "sources": [
+    {
+     "title": "Dex-Net 2.0: Deep Learning to Plan Robust Grasps with Synthetic Point Clouds and Analytic Grasp Metrics (arXiv:1703.09312)",
+     "url": "https://arxiv.org/abs/1703.09312"
+    },
+    {
+     "title": "Dex-Net 项目主页（Berkeley AUTOLAB）",
+     "url": "https://berkeleyautomation.github.io/dex-net/"
+    }
+   ],
+   "as_of": "2019"
+  },
+  {
+   "name_zh": "DexGraspVLA",
+   "name_en": "DexGraspVLA: A Vision-Language-Action Framework Towards General Dexterous Grasping",
+   "abbr": "",
+   "aliases": [],
+   "tier": 3,
+   "one_liner": "北大与灵初智能的分层灵巧手抓取框架：大模型负责规划，扩散策略负责出动作。",
+   "explanation": "DexGraspVLA 由北京大学人工智能研究院、北大-灵初智能（PsiBot）联合实验室等团队于 2025 年 2 月发布，后被 AAAI 2026 收为口头报告。它分两层：上层用现成的视觉语言模型（如 Qwen-VL）理解指令、在画面中框出目标物体；下层是扩散控制器，用 SAM 和 Cutie 持续跟踪目标掩码，用冻结的 DINOv2 提取视觉特征，再由扩散 Transformer 输出机械臂和灵巧手动作。核心思路是先借基础模型把多变的图像和语言转成较稳定的表示，缩小训练与测试场景的差异，这样只靠少量人类演示做模仿学习也能泛化到大量新场景。",
+   "example": "用 36 种家居物体采集 2094 条杂乱场景抓取演示训练后，在 360 个新物体、6 种新背景、3 种新光照组合出的约 1287 种场景里零样本测试，综合成功率 90.8%（睿尔曼 7 自由度机械臂 + 灵初 6 自由度 G0-R 灵巧手）。",
+   "related": [
+    "视觉-语言-动作模型",
+    "灵巧操作",
+    "分层架构",
+    "扩散策略",
+    "DINOv2",
+    "灵初智能"
+   ],
+   "sources": [
+    {
+     "title": "DexGraspVLA (arXiv:2502.20900)",
+     "url": "https://arxiv.org/abs/2502.20900"
+    },
+    {
+     "title": "DexGraspVLA 项目主页",
+     "url": "https://dexgraspvla.github.io/"
+    }
+   ],
+   "as_of": "2025-11"
+  },
+  {
+   "name_zh": "DexterityGen",
+   "name_en": "DexterityGen: Foundation Controller for Unprecedented Dexterity",
+   "abbr": "DexGen",
+   "aliases": [
+    "DexGen"
+   ],
+   "tier": 3,
+   "one_liner": "Meta 与伯克利的灵巧手底层控制器：把人粗略的遥操作指令变成精细手指动作。",
+   "explanation": "DexterityGen（简称 DexGen）是 Meta FAIR 与加州大学伯克利分校团队 2025 年 2 月发布的灵巧手控制方法。灵巧手自由度高，人直接遥操作很难稳定完成手内转笔、拧螺丝这类精细动作；纯强化学习又难学会长程复杂任务。它的分工是：先在仿真里用强化学习训练大量手内旋转、平移等运动基元，收集约 10¹⁰ 条状态转移；再用这些数据训练一个扩散模型当「基础控制器」，根据当前观测生成指尖关键点运动，由逆动力学模型换算成关节指令。部署时上层（如人的遥操作）只给粗略意图，DexGen 把它细化成稳定的灵巧动作，并能拒绝危险动作。",
+   "example": "在 Franka 机械臂 + Allegro 灵巧手上，操作员戴 Manus 数据手套遥操作，借助 DexGen 完成调整和使用笔、注射器、螺丝刀等动作；论文报告物体保持不掉落的时长比基线提升 10–100 倍。",
+   "related": [
+    "灵巧操作",
+    "手内操作",
+    "强化学习",
+    "扩散模型",
+    "遥操作",
+    "Meta FAIR"
+   ],
+   "sources": [
+    {
+     "title": "DexterityGen: Foundation Controller for Unprecedented Dexterity (arXiv:2502.04307)",
+     "url": "https://arxiv.org/abs/2502.04307"
+    },
+    {
+     "title": "DexGen 项目主页",
+     "url": "https://zhaohengyin.github.io/dexteritygen/"
+    }
+   ],
+   "as_of": "2025-02"
+  },
+  {
+   "name_zh": "DextrAH-G",
+   "name_en": "DextrAH-G: Pixels-to-Action Dexterous Arm-Hand Grasping with Geometric Fabrics",
+   "abbr": "",
+   "aliases": [],
+   "tier": 3,
+   "one_liner": "英伟达的臂手灵巧抓取系统：全在仿真里训练，只看深度图就能连续抓取搬运。",
+   "explanation": "DextrAH-G 是英伟达联合斯坦福、犹他大学、伯克利研究者于 2024 年 7 月发布的灵巧抓取方法，发表于 CoRL 2024。它控制 KUKA 机械臂加 Allegro 灵巧手共 23 个电机，难点在于动作维度高、仿真到真机有差距、还要防碰撞和守关节限位。做法分三步：在 Isaac Gym 里用强化学习训练能看到物体真实位姿等特权信息的教师策略；蒸馏成只看深度图的学生策略；零样本部署到真机。关键是策略输出不直接下发电机，而是交给几何织物（Geometric Fabrics，英伟达的反应式运动生成方法）执行，由它负责避障、限位和保持姿态，既保护硬件也便于强化学习探索。",
+   "example": "在装箱测试中，DextrAH-G 只靠一台固定在桌边的 RealSense 深度相机连续抓取、搬运物体，256 次尝试成功率 87%，每次抓放循环约 10.7 秒。",
+   "related": [
+    "Geometric Fabrics",
+    "灵巧操作",
+    "教师-学生蒸馏",
+    "特权信息",
+    "仿真到现实迁移",
+    "Isaac Gym"
+   ],
+   "sources": [
+    {
+     "title": "DextrAH-G (arXiv:2407.02274)",
+     "url": "https://arxiv.org/abs/2407.02274"
+    },
+    {
+     "title": "DextrAH-G 项目主页",
+     "url": "https://sites.google.com/view/dextrah-g"
+    }
+   ],
+   "as_of": "2024-10"
+  },
+  {
+   "name_zh": "DexVLA",
+   "name_en": "DexVLA: Vision-Language Model with Plug-In Diffusion Expert for General Robot Control",
+   "abbr": "",
+   "aliases": [],
+   "tier": 3,
+   "one_liner": "美的等提出的 VLA：视觉语言模型接上约十亿参数的扩散动作专家，适配多种本体。",
+   "explanation": "DexVLA 由美的集团、华东师范大学、上海大学的研究者于 2025 年 2 月发布，发表于 CoRL 2025。它把视觉语言模型 Qwen2-VL（20 亿参数）和一个可插拔的扩散动作专家拼在一起：VLM 负责看图和理解指令，动作专家基于 ScaleDP 架构扩到约 10 亿参数，用多个输出头适配不同机器人，专门生成连续动作。训练按「本体课程」分三阶段：先用约 100 小时跨本体数据单独预训练动作专家；再接上 VLM、对齐到具体本体；最后用标注了子步骤的数据做任务后训练。它想解决早期 VLA 动作表示弱、训练贵、换机器人难的问题，和 π0 同属「VLM + 动作专家」路线。",
+   "example": "论文在 Franka 单臂（夹爪或灵巧手）、双臂 UR5e 和松灵双臂上测试；不做任务专门适配就能叠衬衫（得分 0.92），在完整叠衣任务上得分 0.4，同条件下 π0 为 0.2。",
+   "related": [
+    "视觉-语言-动作模型",
+    "动作专家",
+    "扩散动作头",
+    "跨本体",
+    "π0",
+    "通义千问 Qwen-VL"
+   ],
+   "sources": [
+    {
+     "title": "DexVLA (arXiv:2502.05855)",
+     "url": "https://arxiv.org/abs/2502.05855"
+    },
+    {
+     "title": "DexVLA 论文 HTML 全文 v3",
+     "url": "https://arxiv.org/html/2502.05855v3"
+    }
+   ],
+   "as_of": "2025-08"
+  },
+  {
+   "name_zh": "DIAMOND（扩散世界模型）",
+   "name_en": "DIAMOND: Diffusion for World Modeling (Visual Details Matter in Atari)",
+   "abbr": "DIAMOND",
+   "aliases": [
+    "Diffusion for World Modeling"
+   ],
+   "tier": 3,
+   "one_liner": "用扩散模型逐帧生成画面当世界模型，让强化学习智能体在生成的环境里练游戏。",
+   "explanation": "DIAMOND 由日内瓦大学、爱丁堡大学和微软研究院的研究者于 2024 年 5 月发布，是 NeurIPS 2024 Spotlight 论文。此前不少世界模型（如 IRIS、DreamerV3）把画面压成离散 token 或隐变量再预测，容易丢掉小而关键的视觉细节。DIAMOND 直接用扩散模型根据过去几帧和动作生成下一帧图像，并梳理了让它稳定做长时间预测的关键设计。智能体完全在这个生成环境里用强化学习训练，再到真实游戏中测试：在 Atari 100k 基准上平均人类归一化分数 1.46，是当时纯世界模型训练智能体的最好成绩。它还展示了扩散世界模型可当可交互的游戏引擎，与 GameNGen、Genie 思路相近。",
+   "example": "作者用 87 小时《反恐精英：全球攻势》（CS:GO）人类对局数据训练了一个 3.81 亿参数的扩散世界模型，在 RTX 3090 上约 10 帧/秒运行，人可以用键鼠在里面实时「玩」。",
+   "related": [
+    "世界模型",
+    "扩散模型",
+    "想象中学习",
+    "GameNGen（神经游戏引擎）",
+    "DreamerV3",
+    "Atari 游戏基准（街机学习环境 / Atari 100k）"
+   ],
+   "sources": [
+    {
+     "title": "Diffusion for World Modeling: Visual Details Matter in Atari (arXiv:2405.12399)",
+     "url": "https://arxiv.org/abs/2405.12399"
+    },
+    {
+     "title": "DIAMOND 项目主页",
+     "url": "https://diamond-wm.github.io/"
+    }
+   ],
+   "as_of": "2024-10"
+  },
+  {
+   "name_zh": "Diffuser（扩散规划器）",
+   "name_en": "Diffuser (Planning with Diffusion for Flexible Behavior Synthesis)",
+   "abbr": "",
+   "aliases": [
+    "Planning with Diffusion",
+    "扩散规划"
+   ],
+   "tier": 3,
+   "one_liner": "把整条轨迹当作去噪对象生成的规划方法，最早把扩散模型用于决策的工作之一。",
+   "explanation": "Diffuser 是 ICML 2022 的一篇论文，作者是 UC 伯克利的 Michael Janner、Sergey Levine 和 MIT 的 Yilun Du、Joshua Tenenbaum。传统基于模型的强化学习先学动力学模型、再用优化器规划，模型误差常被规划器放大。Diffuser 把两步合一：用扩散模型直接建模「状态 + 动作」的整段轨迹，规划就是从噪声出发反复去噪出一条轨迹。想要高回报，就在去噪时用价值函数梯度做引导；想到达指定目标，就固定起点和终点、让模型补全中间（类似图像修补）。同一模型不重训就能换任务。它是后来 Decision Diffuser、扩散策略等「扩散模型做决策」路线的先驱。",
+   "example": "在 Maze2D 迷宫任务里固定起点和终点状态，Diffuser 通过去噪「补全」出中间整条可行路径；在积木堆叠任务里，换一个引导函数就能让同一模型按不同约束堆塔。",
+   "related": [
+    "扩散模型",
+    "基于模型的强化学习",
+    "轨迹优化",
+    "Decision Diffuser",
+    "扩散策略",
+    "离线强化学习"
+   ],
+   "sources": [
+    {
+     "title": "Planning with Diffusion for Flexible Behavior Synthesis (arXiv:2205.09991)",
+     "url": "https://arxiv.org/abs/2205.09991"
+    },
+    {
+     "title": "Diffuser 项目主页",
+     "url": "https://diffusion-planning.github.io/"
+    }
+   ],
+   "as_of": "2022"
+  },
+  {
+   "name_zh": "DPPO（扩散策略策略优化）",
+   "name_en": "Diffusion Policy Policy Optimization",
+   "abbr": "DPPO",
+   "aliases": [
+    "扩散策略策略优化"
+   ],
+   "tier": 3,
+   "one_liner": "用 PPO 策略梯度直接强化学习微调扩散策略，把每一步去噪也当成决策步骤。",
+   "explanation": "DPPO 由普林斯顿大学 Allen Z. Ren 等人联合 MIT、丰田研究院、卡内基梅隆大学、哈佛大学的研究者于 2024 年 9 月提出，发表于 ICLR 2025。扩散策略靠模仿学习训练，效果受限于演示质量；策略梯度类强化学习（如 PPO）需要算动作概率，而扩散模型多步去噪不好直接算，此前普遍认为这样微调效率低。DPPO 把过程拆成两层马尔可夫决策过程：外层是和环境交互，内层把每一步去噪看成一次高斯采样的「动作」，每步概率都能算，于是可以用 PPO 端到端微调。实验显示它探索贴近演示数据分布、训练稳定、微调后更鲁棒，是扩散和流匹配策略做强化学习微调的常用基线。",
+   "example": "在 Furniture-Bench 家具装配仿真任务上，DPPO 把预训练扩散策略的成功率从 57% 提到 97%（One-Leg）、从 12% 提到 87%（Lamp），装配策略还能零样本迁移到真机。",
+   "related": [
+    "扩散策略",
+    "近端策略优化",
+    "强化学习微调",
+    "策略梯度",
+    "仿真到现实迁移",
+    "ReinFlow"
+   ],
+   "sources": [
+    {
+     "title": "Diffusion Policy Policy Optimization (arXiv:2409.00588)",
+     "url": "https://arxiv.org/abs/2409.00588"
+    },
+    {
+     "title": "DPPO 项目主页",
+     "url": "https://diffusion-ppo.github.io/"
+    },
+    {
+     "title": "Allen Z. Ren 个人主页（论文列表，标注 ICLR 2025）",
+     "url": "https://allenzren.github.io/"
+    }
+   ],
+   "as_of": "2025"
+  },
+  {
+   "name_zh": "DSRL（扩散策略噪声空间强化学习）",
+   "name_en": "Diffusion Steering via Reinforcement Learning (Steering Your Diffusion Policy with Latent Space RL)",
+   "abbr": "DSRL",
+   "aliases": [
+    "Diffusion Steering",
+    "扩散引导强化学习"
+   ],
+   "tier": 3,
+   "one_liner": "不改扩散策略的权重，只用强化学习挑选输入噪声，引导它产生更好的动作。",
+   "explanation": "DSRL 由 UC 伯克利 Sergey Levine 组的 Andrew Wagenmaker 等人与华盛顿大学、亚马逊的研究者于 2025 年 6 月提出，发表于 CoRL 2025。扩散策略生成动作时先采一个随机噪声再去噪，同一观测下换不同初始噪声会得到不同动作。DSRL 把这个初始噪声当作新的「动作空间」，训练一个小的强化学习策略（MLP）根据观测输出噪声，再交给冻结的扩散策略去噪。基础策略权重完全不动，只需黑盒调用；由于噪声最终都映射成演示数据里合理的动作，探索更有方向，需要的真机交互也少。它适合让行为克隆训练出的策略在新环境里快速自主改进，是噪声空间策略引导的代表工作。",
+   "example": "作者把公开的 π0（DROID 权重）当作黑盒，只在它的噪声空间上跑强化学习，就在真机操作任务上改进了表现，无需微调 π0 本身。",
+   "related": [
+    "噪声空间策略引导",
+    "扩散策略",
+    "π0",
+    "真机强化学习",
+    "残差强化学习",
+    "DPPO"
+   ],
+   "sources": [
+    {
+     "title": "Steering Your Diffusion Policy with Latent Space Reinforcement Learning (arXiv:2506.15799)",
+     "url": "https://arxiv.org/abs/2506.15799"
+    },
+    {
+     "title": "DSRL 项目主页",
+     "url": "https://diffusion-steering.github.io/"
+    }
+   ],
+   "as_of": "2025-06"
+  },
+  {
+   "name_zh": "DIAL-MPC（扩散式退火足式 MPC）",
+   "name_en": "Diffusion-Inspired Annealing for Legged MPC",
+   "abbr": "DIAL-MPC",
+   "aliases": [
+    "Full-Order Sampling-Based MPC for Torque-Level Locomotion Control via Diffusion-Style Annealing"
+   ],
+   "tier": 3,
+   "one_liner": "免训练的足式机器人采样式 MPC：借扩散模型逐步退火的思路，实时优化全身动作。",
+   "explanation": "DIAL-MPC 由卡内基梅隆大学 Guanya Shi 团队（LeCAR Lab）于 2024 年 9 月提出，入选 ICRA 2025 最佳论文候选。足式机器人的实时最优控制通常要简化模型（如单刚体模型）或预先指定接触时序，因为完整动力学维度高、非凸。采样式 MPC（如 MPPI）每个控制周期随机采很多动作序列，在模型里推演后加权平均，但一轮采样容易噪声大或陷入局部解。作者分析了 MPPI 与单步扩散去噪的联系，改成像扩散模型那样多轮迭代、噪声逐步退火：先大范围搜索，再逐渐精细收敛。它无需训练和模型简化，直接在全阶动力学上实时做力矩级控制。",
+   "example": "在宇树 Go2 四足机器人上，DIAL-MPC 实时完成带负载的精确跳跃和轨迹跟踪；论文报告其跟踪误差比标准 MPPI 低 13.4 倍，攀爬任务比强化学习策略好约 50%，全程无需训练。",
+   "related": [
+    "采样式 MPC",
+    "模型预测路径积分控制",
+    "模型预测控制",
+    "腿足运动",
+    "扩散模型",
+    "宇树 Go2"
+   ],
+   "sources": [
+    {
+     "title": "Full-Order Sampling-Based MPC for Torque-Level Locomotion Control via Diffusion-Style Annealing (arXiv:2409.15610)",
+     "url": "https://arxiv.org/abs/2409.15610"
+    },
+    {
+     "title": "DIAL-MPC 项目主页（LeCAR Lab）",
+     "url": "https://lecar-lab.github.io/dial-mpc/"
+    }
+   ],
+   "as_of": "2025"
+  },
+  {
+   "name_zh": "DINO-WM",
+   "name_en": "DINO-WM: World Models on Pre-trained Visual Features enable Zero-shot Planning",
+   "abbr": "DINO-WM",
+   "aliases": [
+    "DINO World Model"
+   ],
+   "tier": 3,
+   "one_liner": "在 DINOv2 图像特征空间里预测未来的世界模型，训练后能零样本规划到新目标。",
+   "explanation": "DINO-WM 由纽约大学的 Gaoyue Zhou、Hengkai Pan 与 Yann LeCun、Lerrel Pinto（后两位同属 Meta FAIR）提出，2024 年 11 月发布，发表于 ICML 2025。很多世界模型要重建像素，或和任务奖励绑定。DINO-WM 用预训练且冻结的 DINOv2 提取图块（patch）特征，只训练一个预测器：给定当前特征和动作，预测下一步特征，不重建图像。训练只用离线收集的轨迹，不需要专家演示、奖励模型或逆动力学模型。测试时给一张目标图像，用模型预测控制（MPC）搜索动作序列，让预测出的未来特征尽量接近目标特征，实现零样本规划。它代表了在预训练表征的隐空间里做世界模型的路线，与 JEPA、V-JEPA 2 思路相近。",
+   "example": "在 Push-T 任务中给出目标摆放图像，DINO-WM 在特征空间里推演不同推动动作，选出让 T 形块最接近目标位姿的序列；同一方法还用于迷宫导航、绳子和颗粒物操作等环境。",
+   "related": [
+    "世界模型",
+    "隐空间世界模型",
+    "DINOv2",
+    "模型预测控制",
+    "联合嵌入预测架构",
+    "V-JEPA 2"
+   ],
+   "sources": [
+    {
+     "title": "DINO-WM (arXiv:2411.04983)",
+     "url": "https://arxiv.org/abs/2411.04983"
+    },
+    {
+     "title": "DINO-WM 项目主页",
+     "url": "https://dino-wm.github.io/"
+    },
+    {
+     "title": "Gaoyue Zhou 个人主页（标注 ICML 2025）",
+     "url": "https://gaoyuezhou.github.io/"
+    }
+   ],
+   "as_of": "2025"
+  },
+  {
+   "name_zh": "Discrete Diffusion VLA（离散扩散 VLA）",
+   "name_en": "Discrete Diffusion VLA: Bringing Discrete Diffusion to Action Decoding in Vision-Language-Action Policies",
+   "abbr": "",
+   "aliases": [
+    "离散扩散 VLA"
+   ],
+   "tier": 3,
+   "one_liner": "用离散扩散解码 VLA 动作：动作 token 并行生成，先定有把握的再逐步补全。",
+   "explanation": "Discrete Diffusion VLA 由香港大学、上海交通大学等机构的研究者（通讯作者穆尧、罗平）于 2025 年 8 月发布，已被 ICML 2026 接收。OpenVLA 这类离散 VLA 把动作分箱成 token 后自回归地逐个生成，慢且早期错误无法回改；π0 这类连续扩散头则要另接动作模块。它在 OpenVLA（Prismatic-7B，Llama 2 底座）上把动作块 token 改为双向注意力，用离散扩散（掩码预测）解码：初始全是掩码，每轮并行预测，先确定置信度高的 token，其余继续迭代，并把不够确定的已填 token 重新掩码修正。动作解码和语言模型共用一个 Transformer 与交叉熵目标，也更好保留了原 VLM 的能力。",
+   "example": "在仿真基准上，它在 LIBERO 平均成功率 96.4%，SimplerEnv-Fractal 视觉匹配 71.2%，SimplerEnv-Bridge 54.2%；作者还在松灵 Cobot Magic 平台上做了真机验证。",
+   "related": [
+    "离散扩散",
+    "视觉-语言-动作模型",
+    "OpenVLA",
+    "分箱离散化",
+    "并行解码",
+    "自回归解码"
+   ],
+   "sources": [
+    {
+     "title": "Discrete Diffusion VLA (arXiv:2508.20072)",
+     "url": "https://arxiv.org/abs/2508.20072"
+    },
+    {
+     "title": "Discrete Diffusion VLA 论文 HTML 全文 v4",
+     "url": "https://arxiv.org/html/2508.20072v4"
+    }
+   ],
+   "as_of": "2026-05"
+  }
+ ]
+}

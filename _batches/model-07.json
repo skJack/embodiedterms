@@ -1,0 +1,445 @@
+{
+ "category": "model",
+ "batch": 7,
+ "terms": [
+  {
+   "name_zh": "投影层",
+   "name_en": "Projector / Connector",
+   "abbr": "",
+   "aliases": [
+    "连接器",
+    "适配层",
+    "模态投影器",
+    "Projector",
+    "Connector",
+    "Vision-Language Connector"
+   ],
+   "tier": 2,
+   "one_liner": "把视觉编码器输出的特征映射到语言模型输入空间的小网络。",
+   "explanation": "投影层是多模态模型里连接两个预训练模块的小网络，最常见的用途是把视觉编码器输出的图像特征，映射成大语言模型能直接读入的向量。之所以需要它，是因为两边各自预训练，特征维度和分布都对不上。LLaVA 最初只用一个线性层，LLaVA-1.5 换成两层 MLP（多层感知机）后效果更好；更复杂的做法有 Q-Former、Perceiver 重采样器，它们还会顺带压缩 token 数量。训练 VLM 时常先冻结两端、只训投影层，完成模态对齐。VLA 里同样的思路也用于机器人状态和动作：用线性层或 MLP 把关节角等低维向量投影到模型的嵌入维度。",
+   "example": "OpenVLA 把 SigLIP 和 DINOv2 两路图像特征按通道拼接，再经一个两层 MLP 投影层送进 Llama 2 7B 语言模型。",
+   "related": [
+    "视觉编码器",
+    "多模态融合",
+    "Q-Former",
+    "Perceiver 重采样器",
+    "模态对齐",
+    "LLaVA（视觉指令微调架构）"
+   ],
+   "sources": [
+    {
+     "title": "OpenVLA: An Open-Source Vision-Language-Action Model (arXiv 2406.09246)",
+     "url": "https://arxiv.org/abs/2406.09246"
+    },
+    {
+     "title": "Improved Baselines with Visual Instruction Tuning (LLaVA-1.5, arXiv 2310.03744)",
+     "url": "https://arxiv.org/abs/2310.03744"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "提示词 / 提示工程",
+   "name_en": "Prompt / Prompt Engineering",
+   "abbr": "",
+   "aliases": [
+    "Prompt",
+    "提示",
+    "提示语",
+    "Prompting",
+    "提示设计"
+   ],
+   "tier": 2,
+   "one_liner": "提示词是输入给模型的文字；提示工程是设计它以得到想要输出的方法。",
+   "explanation": "提示词（prompt）指输入给大语言模型或多模态模型的文字，可包含任务说明、背景信息、示例和输出格式要求。提示工程是反复改写、测试提示词，让模型稳定给出所需结果的做法，不改模型参数；常见技巧有给几个示例（少样本）、让模型先写出推理步骤（思维链）、规定输出格式。在具身智能里有两种用法：一是用大模型做任务规划时，靠提示词告诉模型机器人会哪些技能、场景里有什么，SayCan、代码即策略都依赖精心设计的提示词；二是 VLA 接收的自然语言指令，代码里也常直接叫 prompt。与之相对，软提示是可训练的向量而不是文字。",
+   "example": "用 openpi 调用 π0.5 时，输入里除了相机图像，还有一项 prompt 写着「pick up the fork」，模型据此输出拿起叉子的动作块。",
+   "related": [
+    "大语言模型",
+    "思维链",
+    "上下文学习",
+    "代码即策略",
+    "SayCan",
+    "提示微调 / 软提示"
+   ],
+   "sources": [
+    {
+     "title": "Claude Docs: Prompt engineering overview",
+     "url": "https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/overview"
+    },
+    {
+     "title": "openpi (Physical Intelligence) README",
+     "url": "https://github.com/Physical-Intelligence/openpi"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "通义千问 Qwen-VL",
+   "name_en": "Qwen-VL series (Qwen-VL / Qwen2-VL / Qwen2.5-VL / Qwen3-VL)",
+   "abbr": "Qwen-VL",
+   "aliases": [
+    "通义千问视觉语言模型",
+    "千问 VL",
+    "Qwen2-VL",
+    "Qwen2.5-VL",
+    "Qwen3-VL"
+   ],
+   "tier": 2,
+   "one_liner": "阿里通义千问团队的开源视觉语言模型系列，常被用作 VLA 的骨干。",
+   "explanation": "Qwen-VL 是阿里巴巴通义千问（Qwen）团队发布的视觉语言模型系列，能看图、看视频并用文字回答。初代发布于 2023 年 8 月；Qwen2.5-VL 发布于 2025 年初，有 3B 到 72B 多种规模，支持动态分辨率输入，能用框或点标出物体位置；Qwen3-VL 从 2025 年 9 月起陆续发布，有 2B 到 32B 的稠密版和 30B-A3B、235B-A22B 两个混合专家版，原生支持 256K 上下文。权重开放、有小尺寸、定位能力强，使它常被选作 VLA 的视觉语言骨干。2026 年 2 月起的 Qwen3.5 等主线模型本身已原生支持图像输入。",
+   "example": "小米 Xiaomi-Robotics-0 以 Qwen3-VL-4B-Instruct 为视觉语言骨干，后接扩散 Transformer 生成动作；上海 AI 实验室的 InternVLA-M1 用 Qwen2.5-VL-3B 做 System 2。",
+   "related": [
+    "视觉语言模型",
+    "多模态大语言模型",
+    "PaliGemma",
+    "InternVL（书生·万象）",
+    "视觉-语言-动作模型",
+    "动态分辨率（原生分辨率输入）"
+   ],
+   "sources": [
+    {
+     "title": "QwenLM/Qwen3-VL GitHub (News)",
+     "url": "https://github.com/QwenLM/Qwen3-VL"
+    },
+    {
+     "title": "Qwen2.5-VL Technical Report (arXiv 2502.13923)",
+     "url": "https://arxiv.org/abs/2502.13923"
+    },
+    {
+     "title": "Xiaomi-Robotics-0 (arXiv 2602.12684)",
+     "url": "https://arxiv.org/abs/2602.12684"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "实时动作分块",
+   "name_en": "Real-Time Chunking",
+   "abbr": "RTC",
+   "aliases": [
+    "实时分块",
+    "Real-Time Execution of Action Chunking Flow Policies",
+    "推理时 RTC",
+    "训练时 RTC",
+    "Training-time RTC"
+   ],
+   "tier": 2,
+   "one_liner": "边执行当前动作块边算下一块，并让新块与已执行动作平滑衔接的方法。",
+   "explanation": "实时动作分块是 Physical Intelligence 的 Kevin Black 等人 2025 年提出的推理算法（NeurIPS 2025）。大模型算一个动作块要上百毫秒，同步执行会在块间停顿，异步执行又可能让新旧两块对不上而跳变。RTC 在执行当前块时就开始算下一块：推理期间必然执行掉的几步被「冻结」，其余部分当作补全（inpainting）问题，在流匹配去噪时加引导项、用软掩码逐步放松约束，让新旧块平滑衔接。它无需重新训练，论文在 π0.5 上演示了延迟超过 300 毫秒仍能划火柴点蜡烛。2025 年 12 月又有了训练时 RTC，训练中模拟延迟，省掉推理时的引导计算。",
+   "example": "在 LeRobot 里给 π0.5 打开 RTC 配置，并按实测推理耗时填入延迟步数，机器人执行动作块时就不再每块停顿等待下一块。",
+   "related": [
+    "动作分块",
+    "异步推理",
+    "推理延迟",
+    "流匹配",
+    "时序集成",
+    "π0.5"
+   ],
+   "sources": [
+    {
+     "title": "Real-Time Execution of Action Chunking Flow Policies (arXiv 2506.07339)",
+     "url": "https://arxiv.org/abs/2506.07339"
+    },
+    {
+     "title": "Training-Time Action Conditioning for Efficient Real-Time Chunking (arXiv 2512.05964)",
+     "url": "https://arxiv.org/abs/2512.05964"
+    },
+    {
+     "title": "LeRobot Docs: Real-Time Chunking (RTC)",
+     "url": "https://huggingface.co/docs/lerobot/main/en/rtc"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "循环神经网络",
+   "name_en": "Recurrent Neural Network",
+   "abbr": "RNN",
+   "aliases": [
+    "循环网络",
+    "LSTM",
+    "GRU",
+    "长短期记忆网络",
+    "门控循环单元"
+   ],
+   "tier": 2,
+   "one_liner": "按时间步逐个处理序列、用隐藏状态记住过去信息的神经网络。",
+   "explanation": "循环神经网络是一类处理序列的神经网络：每读入一个时间步的输入，就结合上一步的隐藏状态（记录历史的向量）算出新状态，各步共用同一套参数。普通 RNN 在长序列上容易梯度消失、记不住久远信息，于是有了带门控的变体：1997 年 Hochreiter 和 Schmidhuber 提出长短期记忆网络 LSTM，2014 年 Cho 等人提出更精简的门控循环单元 GRU。RNN 必须逐步计算、难以并行训练，在语言领域已基本被 Transformer 取代；但它推理时每步只需更新一个状态、开销小，机器人里仍常用来做需要记忆历史的策略。",
+   "example": "模仿学习库 robomimic 提供 BC-RNN 算法：用 LSTM 依次读入过去若干步的观测、输出当前动作，常被用作扩散策略等新方法的对比基线。",
+   "related": [
+    "Transformer",
+    "长短期记忆网络 / 门控循环单元",
+    "梯度消失 / 梯度爆炸",
+    "状态空间模型",
+    "循环状态空间模型",
+    "历史编码器"
+   ],
+   "sources": [
+    {
+     "title": "Dive into Deep Learning: Long Short-Term Memory (LSTM)",
+     "url": "https://d2l.ai/chapter_recurrent-modern/lstm.html"
+    },
+    {
+     "title": "Dive into Deep Learning: Gated Recurrent Units (GRU)",
+     "url": "https://d2l.ai/chapter_recurrent-modern/gru.html"
+    },
+    {
+     "title": "robomimic Documentation: Overview",
+     "url": "https://robomimic.github.io/docs/introduction/overview.html"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "残差网络",
+   "name_en": "Residual Network",
+   "abbr": "ResNet",
+   "aliases": [
+    "ResNet-18",
+    "ResNet-50",
+    "残差连接",
+    "跳跃连接",
+    "Residual Connection",
+    "Skip Connection"
+   ],
+   "tier": 2,
+   "one_liner": "用跳跃连接让每层只学输入与输出之差，从而能训练很深的卷积网络。",
+   "explanation": "残差网络由微软亚洲研究院的何恺明等人在 2015 年提出，论文获 CVPR 2016 最佳论文。此前卷积网络层数一多反而更难训练、精度下降。ResNet 在每个模块里加一条跳跃连接，把输入直接加到输出上，模块只需学习输入与目标之间的「残差」，梯度也能沿这条捷径直接回传。靠这个设计，网络做到了 152 层，并拿下 ILSVRC 2015 图像分类冠军。残差连接后来成了几乎所有深度网络的标配，Transformer 每一层也有。机器人学习中，ResNet-18 等小型 ResNet 常作图像编码器，ACT 和扩散策略都用它把相机画面变成特征。",
+   "example": "ACT 用 ResNet-18 把每张 480×640 的相机图像压成 15×20×512 的特征图，再展平成 300 个 token 送进 Transformer。",
+   "related": [
+    "卷积神经网络",
+    "骨干网络",
+    "视觉编码器",
+    "梯度消失 / 梯度爆炸",
+    "ACT",
+    "扩散策略"
+   ],
+   "sources": [
+    {
+     "title": "Deep Residual Learning for Image Recognition (arXiv 1512.03385)",
+     "url": "https://arxiv.org/abs/1512.03385"
+    },
+    {
+     "title": "Dive into Deep Learning: Residual Networks (ResNet)",
+     "url": "https://d2l.ai/chapter_convolutional-modern/resnet.html"
+    },
+    {
+     "title": "Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware (ACT, arXiv 2304.13705)",
+     "url": "https://arxiv.org/abs/2304.13705"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "自注意力",
+   "name_en": "Self-Attention",
+   "abbr": "",
+   "aliases": [
+    "内部注意力",
+    "Intra-Attention",
+    "多头自注意力",
+    "Multi-Head Self-Attention"
+   ],
+   "tier": 2,
+   "one_liner": "让序列中每个元素参考同一序列其他元素、按相关度汇总信息的机制。",
+   "explanation": "自注意力是 Transformer 的核心运算，因 2017 年 Vaswani 等人的论文《Attention Is All You Need》而普及。对序列里每个 token，先用可学习矩阵算出查询（Q）、键（K）、值（V）三个向量；拿它的查询与所有 token 的键做点积，经 Softmax 变成权重，再对值加权求和，得到它的新表示。「自」指查询和键值来自同一条序列，来自不同序列就叫交叉注意力。它一步就能连接任意两个位置、便于并行，但计算量随序列长度平方增长。VLA 里图像、文字、状态 token 常放进同一个自注意力里混合，再用注意力掩码规定谁能看谁。",
+   "example": "π0 把图像、语言指令、机器人状态和带噪动作的 token 拼成一条序列，经自注意力相互交换信息，最后从动作 token 的输出解出动作。",
+   "related": [
+    "注意力机制",
+    "Transformer",
+    "交叉注意力",
+    "注意力掩码",
+    "Softmax（归一化指数函数）",
+    "位置编码"
+   ],
+   "sources": [
+    {
+     "title": "Attention Is All You Need (arXiv 1706.03762)",
+     "url": "https://arxiv.org/abs/1706.03762"
+    },
+    {
+     "title": "Dive into Deep Learning: Self-Attention and Positional Encoding",
+     "url": "https://d2l.ai/chapter_attention-mechanisms-and-transformers/self-attention-and-positional-encoding.html"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "SigLIP",
+   "name_en": "Sigmoid Loss for Language-Image Pre-training",
+   "abbr": "SigLIP",
+   "aliases": [
+    "SigLIP 2",
+    "SigLIP-So400m",
+    "Sigmoid 损失图文预训练"
+   ],
+   "tier": 2,
+   "one_liner": "谷歌用 Sigmoid 损失训练的图文模型，其图像编码器被许多 VLA 采用。",
+   "explanation": "SigLIP 是谷歌 Xiaohua Zhai 等人 2023 年提出的图文预训练方法（ICCV 2023）。它和 CLIP 一样训练图像、文本两个编码器，让配对的图文向量靠近；区别在损失函数：CLIP 用 Softmax 在整批样本上归一化，SigLIP 把每对图文单独当作「是否匹配」的二分类，用 Sigmoid 损失，不依赖全批归一化，小批量也训得好、更省显存。它的视觉编码器（如约 4 亿参数的 So400m）是许多 VLM 和 VLA 的图像输入端。2025 年 2 月的 SigLIP 2 加入字幕生成、自蒸馏等训练目标，多语言、定位和稠密特征都有提升。",
+   "example": "π0 的骨干 PaliGemma 由 SigLIP-So400m 视觉编码器和 Gemma-2B 语言模型组成；OpenVLA 则把 SigLIP 与 DINOv2 的特征拼在一起使用。",
+   "related": [
+    "CLIP",
+    "对比学习",
+    "视觉编码器",
+    "PaliGemma",
+    "DINOv2",
+    "Softmax（归一化指数函数）"
+   ],
+   "sources": [
+    {
+     "title": "Sigmoid Loss for Language Image Pre-Training (arXiv 2303.15343)",
+     "url": "https://arxiv.org/abs/2303.15343"
+    },
+    {
+     "title": "SigLIP 2: Multilingual Vision-Language Encoders (arXiv 2502.14786)",
+     "url": "https://arxiv.org/abs/2502.14786"
+    },
+    {
+     "title": "PaliGemma: A versatile 3B VLM for transfer (arXiv 2407.07726)",
+     "url": "https://arxiv.org/abs/2407.07726"
+    }
+   ],
+   "as_of": "2025-02"
+  },
+  {
+   "name_zh": "Softmax（归一化指数函数）",
+   "name_en": "Softmax",
+   "abbr": "",
+   "aliases": [
+    "归一化指数函数",
+    "Softmax 函数",
+    "软最大值函数",
+    "温度 Softmax"
+   ],
+   "tier": 2,
+   "one_liner": "把一组任意实数变成全为正、加起来等于 1 的概率分布的函数。",
+   "explanation": "Softmax 把一个实数向量的每个元素取指数，再除以所有指数之和，得到一组全为正、总和为 1 的数，可当作概率；原值越大概率越高，差距被指数放大。它在深度学习里有两大用处：一是分类输出层，把模型输出的分数（logits）变成各类别概率，再配合交叉熵损失训练；二是注意力机制里，把查询与各个键的相似度变成权重。先把分数除以温度参数再做 Softmax，可以调节分布的尖锐程度：温度低时近似只选最大值，温度高时更平均。RT-2、OpenVLA 把连续动作切成若干区间，也是用 Softmax 给出每个区间的概率。",
+   "example": "分类器对「杯子、碗、盘子」打出 2.0、1.0、0.1 三个分数，经 Softmax 约得到 0.66、0.24、0.10 的概率。",
+   "related": [
+    "交叉熵",
+    "注意力机制",
+    "自注意力",
+    "解码策略（贪心 / 温度采样 / Top-k / Top-p）",
+    "空间 Softmax",
+    "分箱离散化"
+   ],
+   "sources": [
+    {
+     "title": "动手学深度学习：softmax 回归",
+     "url": "https://zh.d2l.ai/chapter_linear-networks/softmax-regression.html"
+    },
+    {
+     "title": "Dive into Deep Learning: Softmax Regression",
+     "url": "https://d2l.ai/chapter_linear-classification/softmax-regression.html"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "状态编码器",
+   "name_en": "State / Proprioception Encoder",
+   "abbr": "",
+   "aliases": [
+    "本体感知编码器",
+    "Proprioception Encoder",
+    "State Encoder",
+    "状态投影层",
+    "State Projector"
+   ],
+   "tier": 2,
+   "one_liner": "把机器人关节角、夹爪开合等自身状态变成模型可用向量的小网络。",
+   "explanation": "状态编码器处理机器人的本体感知信息，即关节角、末端位姿、夹爪开合度等不靠相机就能读到的自身状态。这些是几维到几十维的数值向量，要先映射到模型的嵌入维度，才能和图像、文字 token 一起送进 Transformer。实现通常很简单：π0 和 ACT 各用一个线性层；GR00T N1 为每种本体各配一个 MLP，以适配不同机器人的状态维度。状态输入让策略知道手臂此刻在哪，但也有副作用：Octo 团队发现加入本体状态后效果常变差，推测是模型过度依赖状态与动作之间的强相关，即因果混淆。",
+   "example": "双臂 ALOHA 的状态是两臂共 14 个关节位置；ACT 用一个线性层把这 14 维向量投影成 512 维，作为一个 token 与图像特征一起送入 Transformer 编码器。",
+   "related": [
+    "本体感知",
+    "投影层",
+    "本体专属头",
+    "动作与状态归一化",
+    "因果混淆",
+    "历史编码器"
+   ],
+   "sources": [
+    {
+     "title": "π0: A Vision-Language-Action Flow Model for General Robot Control (arXiv 2410.24164)",
+     "url": "https://arxiv.org/abs/2410.24164"
+    },
+    {
+     "title": "GR00T N1: An Open Foundation Model for Generalist Humanoid Robots (arXiv 2503.14734)",
+     "url": "https://arxiv.org/abs/2503.14734"
+    },
+    {
+     "title": "Octo: An Open-Source Generalist Robot Policy (arXiv 2405.12213)",
+     "url": "https://arxiv.org/abs/2405.12213"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "时序集成",
+   "name_en": "Temporal Ensembling",
+   "abbr": "",
+   "aliases": [
+    "时间集成",
+    "Temporal Ensemble",
+    "动作集成",
+    "Action Ensemble"
+   ],
+   "tier": 2,
+   "one_liner": "每步都预测动作块，把多个块对同一时刻的预测加权平均后再执行。",
+   "explanation": "时序集成是 2023 年 ACT 论文（Tony Zhao 等人）提出的动作块执行方式。朴素的动作分块每 k 步才看一次新观测，换块时动作容易突变。时序集成改为每个控制步都调用一次策略，于是同一时刻会有多个重叠块给出的预测，按指数权重 w_i = exp(-m·i) 加权平均后再执行，i=0 对应最早的那次预测；m 越小，新观测的影响进来得越快。它不增加训练成本，只多耗推理算力，在 ACT 的消融实验中带来约 3.3 个百分点的成功率提升。代价是每步都要推理，大模型延迟高时难以使用，后来的实时动作分块（RTC）就把它当作对比基线。",
+   "example": "ACT 每步预测未来 k 步动作，当前时刻 t 会收到 t、t-1、t-2 等多次预测里各自对 t 给出的动作，加权平均后再发给机械臂，因此 ALOHA 双臂的动作更平滑。",
+   "related": [
+    "动作分块",
+    "ACT",
+    "实时动作分块",
+    "动作平滑",
+    "复合误差",
+    "动作视界"
+   ],
+   "sources": [
+    {
+     "title": "Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware (ACT, arXiv 2304.13705)",
+     "url": "https://arxiv.org/abs/2304.13705"
+    },
+    {
+     "title": "Real-Time Execution of Action Chunking Flow Policies (arXiv 2506.07339)",
+     "url": "https://arxiv.org/abs/2506.07339"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "文本编码器",
+   "name_en": "Text Encoder",
+   "abbr": "",
+   "aliases": [
+    "语言编码器",
+    "Language Encoder",
+    "指令编码器"
+   ],
+   "tier": 2,
+   "one_liner": "把文字指令转换成向量序列，供模型其他部分使用的网络。",
+   "explanation": "文本编码器把一段文字（如「把杯子放进水槽」）切成 token 后转换成向量，作为策略或生成模型的条件输入。它通常是预训练好的语言模型，训练机器人策略时常冻结不动：Octo 用约 1.1 亿参数的 T5-base，RDT-1B 用冻结的 T5-XXL；CLIP、SigLIP 各带一个与图像对齐的文本编码器；文生图、文生视频模型也靠它读懂提示词。它把预训练得到的语言知识带进策略，帮模型区分不同指令。以大语言模型为骨干的 VLA（如 OpenVLA、π0）不再单设文本编码器，文字直接作为 token 进入语言模型本身。",
+   "example": "Octo 用冻结的 t5-base 把指令编码成 16 个语言 token，与图像 token 一起送入 Transformer；论文试过换更大的 T5 或微调它，都没有带来提升。",
+   "related": [
+    "语言条件策略",
+    "CLIP",
+    "SigLIP",
+    "大语言模型",
+    "嵌入向量",
+    "FiLM 特征调制"
+   ],
+   "sources": [
+    {
+     "title": "Octo: An Open-Source Generalist Robot Policy (arXiv 2405.12213)",
+     "url": "https://arxiv.org/abs/2405.12213"
+    },
+    {
+     "title": "RDT-1B: a Diffusion Foundation Model for Bimanual Manipulation (arXiv 2410.07864)",
+     "url": "https://arxiv.org/abs/2410.07864"
+    }
+   ],
+   "as_of": ""
+  }
+ ]
+}

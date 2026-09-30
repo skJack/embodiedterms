@@ -1,0 +1,15 @@
+{
+  // 具身智能新手名词表 embodiedterms.com：纯静态网站，用 Cloudflare Workers 的静态资源托管
+  // 更新流程：python3 _tools/build.py && python3 _tools/build_site.py && npx wrangler deploy
+  "name": "embodied-glossary",
+  "compatibility_date": "2026-09-26",
+  "workers_dev": false,
+  "routes": [
+    { "pattern": "embodiedterms.com", "custom_domain": true },
+    { "pattern": "www.embodiedterms.com", "custom_domain": true }
+  ],
+  "assets": {
+    "directory": "./site",
+    "not_found_handling": "404-page"
+  }
+}

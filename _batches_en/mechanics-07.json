@@ -1,0 +1,235 @@
+{
+ "batch": "mechanics-07",
+ "terms": [
+  {
+   "key": "mechanics-07#0",
+   "name_en": "Quasi-Static Assumption",
+   "aliases": [
+    "Quasistatic Approximation"
+   ],
+   "one_liner": "Assuming motion is slow enough that inertial forces can be ignored, so every instant can be analyzed as a force balance.",
+   "explanation": "The quasi-static assumption is a common simplification in robot manipulation analysis: velocities and accelerations are assumed small enough that inertial forces (the mass-times-acceleration term) can be neglected, so at every instant the external and contact forces are in balance, and the full dynamics equation collapses into static equilibrium — every force and torque sums to zero. Lynch and Park's textbook Modern Robotics uses it throughout its chapter on grasping and manipulation to analyze tasks like supporting, gripping, and pushing. Its benefit is that dynamics never needs to be integrated over time: it's enough to check, at each contact, whether it's sticking or slipping, and whether the contact force stays inside the friction cone (the range of directions friction allows). Slow pushing, peg-in-hole insertion, and grasp-stability analysis are mostly built on this assumption. The cost is that it breaks down once motion speeds up: flinging, throwing, and fast flipping — dynamic manipulation tasks — require going back to full rigid-body dynamics.",
+   "example": "The “ruler trick”: balance a long ruler horizontally on two index fingers, then slowly bring the fingers together. The ruler slides on one finger, then the other, then both, but its center of mass always stays between the two fingers, so it never falls — quasi-static force balance predicts exactly which finger slips and when. Move the fingers too fast, and the analysis breaks down, and the ruler falls.",
+   "related": [
+    "Statics",
+    "Rigid-Body Dynamics",
+    "Coulomb Friction",
+    "Friction Cone",
+    "Non-Prehensile Manipulation",
+    "Slip"
+   ]
+  },
+  {
+   "key": "mechanics-07#1",
+   "name_en": "Quaternion Component Order (wxyz vs. xyzw)",
+   "aliases": [
+    "Scalar-First / Scalar-Last",
+    "wxyz",
+    "xyzw",
+    "Hamilton Convention",
+    "JPL Convention"
+   ],
+   "one_liner": "Whether a quaternion's real part w is stored first or last — a convention that differs across software libraries.",
+   "explanation": "A unit quaternion represents rotation with four numbers: a real part w and imaginary parts x, y, z. The component order convention is whether w is stored first (wxyz, “scalar-first”) or last (xyzw, “scalar-last”) — and software isn't consistent about it: ROS messages and SciPy default to xyzw, while MuJoCo and Isaac Sim Core use wxyz; Isaac Lab 2.x used wxyz, but 3.0 switched to xyzw to align with Warp, PhysX, and Newton. A deeper-level split is the Hamilton versus JPL convention: according to Joan Solà's survey, Hamilton's convention defines ij=k (right-handed), while JPL's defines ji=k (left-handed), so the exact same four numbers represent opposite rotations under the two conventions; robotics mostly uses Hamilton, while aerospace often uses JPL. Getting the order wrong when combining data from different sources is a classic beginner mistake — the code runs fine, but every orientation comes out wrong.",
+   "example": "“No rotation” is written (1, 0, 0, 0) in wxyz, but (0, 0, 0, 1) in xyzw. Read a ROS-recorded (0, 0, 0, 1) into MuJoCo as if it were wxyz, and it gets interpreted as a 180° rotation about z — the robot starts out facing backward.",
+   "related": [
+    "Quaternion",
+    "Quaternion Double Cover",
+    "Right-Handed Frame & Axis Conventions",
+    "Coordinate Transformation",
+    "MuJoCo",
+    "Isaac Lab"
+   ]
+  },
+  {
+   "key": "mechanics-07#2",
+   "name_en": "Reach (Arm Reach / Working Radius)",
+   "aliases": [
+    "Arm Reach",
+    "Working Radius",
+    "Max Reach"
+   ],
+   "one_liner": "The farthest distance a fully extended arm can reach from its base center — a basic spec for choosing a robot.",
+   "explanation": "Reach is a basic spec on a robot arm's datasheet, generally meaning the maximum distance from the base's rotation center to the wrist center or the flange (the interface where the end-of-arm tool mounts); the exact measurement point depends on each manufacturer's datasheet. It roughly outlines the outer boundary of the workspace (every position the end effector can reach) — an arm with an 0.85 m reach can cover, very roughly, a region of radius 0.85 m centered on the base. But reach doesn't equal a genuinely usable range: as the arm nears full extension it approaches a singular configuration (a posture where the end effector can't move in certain directions), losing dexterity and constraining end-effector orientation; the gripper's own length and the torque limits imposed by the payload also eat into the practical range. For tabletop or mobile manipulation, reach determines how deep a table can be or how close a mobile base has to park, and it's also commonly used to compare a humanoid's arm against a human arm.",
+   "example": "Franka Research 3's official specs list an 855 mm reach, a 3 kg payload, and 7 degrees of freedom. Mounted at the edge of a table, it likely can't reach an object about 1 meter from that edge — the base would need to move closer, or the object would need to be moved in.",
+   "related": [
+    "Workspace",
+    "Robot Arm",
+    "Payload",
+    "Singular Configuration",
+    "Reachability Map / Inverse Reachability Map",
+    "Degrees of Freedom (DoF)"
+   ]
+  },
+  {
+   "key": "mechanics-07#3",
+   "name_en": "Right-Handed Frame & Axis Conventions",
+   "aliases": [
+    "REP 103",
+    "Z-up vs. Y-up",
+    "Camera Optical Frame",
+    "ENU"
+   ],
+   "one_liner": "Conventions for how x, y, z are arranged and which axis points up — inconsistent across software, and a frequent source of bugs.",
+   "explanation": "A right-handed coordinate frame is one where x, y, and z follow the right-hand rule: point the right thumb, index, and middle fingers along x, y, and z respectively, so x crossed with y gives z; a positive rotation about an axis is the direction the fingers curl when the right thumb points along that axis's positive direction. ROS's REP 103 (drafted starting 2010) specifies that a body frame points x forward, y left, and z up, and that geographic coordinates use east-north-up (ENU); cameras get a separate frame with an _optical suffix, where z points forward, x points right, and y points down. Another point of disagreement is which axis points up: ROS, MuJoCo, and Isaac Sim default to Z-up, while glTF specifies Y-up; a USD camera looks down −Z with +Y up, which differs from ROS's optical frame by a 180° rotation about x. Importing a mesh, motion-capture data, or a point cloud without reconciling these conventions leads to models lying on their side, mirrored left-right, or point clouds turned upside down.",
+   "example": "A depth camera's point cloud comes out in the optical frame, where z points forward; used directly as if it were the body frame (x forward, z up), objects on a table would appear to stand up in midair, as if rotated 90° — a fixed rotation has to be applied first, converting from the camera_optical frame to the camera_link frame.",
+   "related": [
+    "Coordinate Frame",
+    "Coordinate Transformation",
+    "Camera Frame",
+    "TF Tree",
+    "REP 105 Frame Conventions (map / odom / base_link)",
+    "Quaternion Component Order (wxyz vs. xyzw)"
+   ]
+  },
+  {
+   "key": "mechanics-07#4",
+   "name_en": "Rigid Body",
+   "aliases": [],
+   "one_liner": "An idealized object where the distance between any two internal points never changes, no matter what force it feels.",
+   "explanation": "A rigid body is an idealized model from classical mechanics: no matter how much force is applied, the distance between any two points inside the object stays exactly the same — it never deforms at all. No object is a truly perfect rigid body in reality, but anything that deforms very little, like a metal link, a cup, or a wooden block, can be approximated this way. The payoff is a very compact description: in 3D space, a rigid body's state needs only 6 numbers — 3 for the position of a reference point (usually the center of mass) and 3 for orientation (as a rotation matrix, quaternion, or Euler angles) — that is, 6 degrees of freedom. Almost all of robotics modeling is built on this idealization: every link of an arm, a grasped object, and every “body” in MuJoCo or Isaac Sim is treated as a rigid body; objects that visibly deform, like cloth, rope, or dough, need soft-body simulation instead.",
+   "example": "In simulation, a gripper holding a block is completely determined by recording just its 3D position plus one quaternion — 7 numbers, corresponding to 6 degrees of freedom. A T-shirt, by contrast, needs hundreds or thousands of mesh vertices just to describe its shape.",
+   "related": [
+    "Rigid-Body Dynamics",
+    "Pose",
+    "Degrees of Freedom (DoF)",
+    "Link",
+    "Rigid-Body Simulation",
+    "Soft-Body Simulation"
+   ]
+  },
+  {
+   "key": "mechanics-07#5",
+   "name_en": "Rigid-Body Dynamics",
+   "aliases": [],
+   "one_liner": "The study of how forces and torques cause acceleration and rotation in one or more connected rigid bodies.",
+   "explanation": "Rigid-body dynamics studies how one or more rigid bodies, connected by joints, move under applied forces and torques. A single rigid body obeys the Newton-Euler equations: F=ma governs translation (F is net force, m is mass, a is the center of mass's acceleration), and τ=Iα+ω×(Iω) governs rotation (τ is net torque, I is the inertia tensor, α is angular acceleration, ω is angular velocity). A multi-body system like a robot arm is usually written M(q)q̈+c(q,q̇)+g(q)=τ: q is the joint angle vector, M is the mass matrix, c is the Coriolis and centrifugal term, g is the gravity term, and τ is joint torque. Given torques, solving for motion is forward dynamics, computed at every step by a physics simulator; given a desired motion, solving for the required torques is inverse dynamics, used for torque control and gravity compensation. Roy Featherstone's book Rigid Body Dynamics Algorithms is the standard reference, and MuJoCo's relevant algorithms are based on it.",
+   "example": "When an arm holds a cup of water perfectly still, q̇ and q̈ are both zero, so the equation reduces to g(q)=τ — the result is exactly the torque each joint needs to output to counteract gravity, which is gravity compensation.",
+   "related": [
+    "Newton-Euler Equations",
+    "Euler-Lagrange Equations",
+    "Mass Matrix",
+    "Forward Dynamics",
+    "Inverse Dynamics",
+    "Physics Engine"
+   ]
+  },
+  {
+   "key": "mechanics-07#6",
+   "name_en": "Serial Mechanism",
+   "aliases": [
+    "Serial Manipulator",
+    "Open-Chain Mechanism"
+   ],
+   "one_liner": "A mechanism whose links connect end-to-end through joints from base to tip, with no closed loop.",
+   "explanation": "A serial mechanism, also called an open-chain mechanism, is a string of rigid links connected end-to-end by joints, running from a fixed base all the way to the end effector, with no closed loop anywhere along the way. Each joint is usually driven by its own motor, and the end-effector pose is simply the product of each joint's transform chained together, so forward kinematics (joint angles to end-effector pose) has a unique solution, while inverse kinematics can have multiple. Six-axis industrial arms, 7-DoF collaborative arms, SCARA robots, and a single humanoid arm are all serial structures. The advantages are a workspace that's large relative to the mechanism's footprint and an intuitive structure; the disadvantages are that error and deflection accumulate link by link along the chain, and each proximal joint has to carry the weight of every motor farther out, giving lower stiffness and payload capacity than a parallel mechanism (where several chains connect to the end effector at once, forming closed loops, as in a Delta robot or a Stewart platform).",
+   "example": "A UR5e's six joints — base, shoulder, elbow, and three wrist joints — connect one after another in sequence, a textbook serial mechanism. A person standing with both feet on the ground, by contrast, forms a closed loop from the ground, up one leg, through the hip, down the other leg, and back to the ground — a closed-chain mechanism.",
+   "related": [
+    "Parallel Mechanism",
+    "Kinematic Chain",
+    "Link",
+    "Forward Kinematics",
+    "Robot Arm",
+    "6-Axis Robot Arm"
+   ]
+  },
+  {
+   "key": "mechanics-07#7",
+   "name_en": "Slip",
+   "aliases": [
+    "Sliding",
+    "Slippage",
+    "Foot Slip"
+   ],
+   "one_liner": "Relative sliding between contact surfaces, usually because the tangential force needed exceeds the friction limit.",
+   "explanation": "Slip means two touching objects have relative motion at their contact point; the opposite state, where the contact point stays relatively still, is called sticking. Under the common Coulomb friction model, the tangential friction force f_t must satisfy f_t ≤ μf_n (μ is the friction coefficient, f_n is the normal force); the moment the tangential force actually needed exceeds this limit, the contact switches from sticking to sliding, at which point friction equals exactly μf_n and points opposite the direction of motion — geometrically, the contact force has left the friction cone. In manipulation, a grasp that slips can drop or spin an object out of position, so the fix is either more grip force or slip detection with a tactile sensor; in legged robots, a support foot that slips is a common cause of falling, so reinforcement-learning training often penalizes horizontal velocity at the contact foot. Deliberately controlled sliding is also a skill in its own right — pushing an object across a table, or letting it rotate between the fingers.",
+   "example": "A two-finger gripper holds a 0.5 kg cup vertically, with its roughly 4.9 N of weight split between the two contact points' friction. If μ = 0.5, each finger needs at least about 4.9 N of normal force (2×0.5×4.9≈4.9 N), or the cup slides downward. Humanoid-Gym's foot_slip reward term penalizes a foot's horizontal velocity whenever it's in contact with the ground.",
+   "related": [
+    "Coulomb Friction",
+    "Friction Cone",
+    "Friction Coefficient",
+    "Slip Detection",
+    "Force Closure",
+    "Stance Phase / Swing Phase"
+   ]
+  },
+  {
+   "key": "mechanics-07#8",
+   "name_en": "Special Orthogonal Group SO(3)",
+   "aliases": [
+    "SO(3)",
+    "SO3",
+    "Special Euclidean Group SE(3)",
+    "Lie Algebra"
+   ],
+   "one_liner": "The set of every rotation in 3D space, whose elements are orthogonal matrices with determinant 1.",
+   "explanation": "SO(3) is the group of every rotation in 3D space: its elements are 3×3 rotation matrices satisfying RᵀR=I (Rᵀ is the transpose, I is the identity — this is what “orthogonal” means) and det R=1 (determinant 1, which rules out mirror reflections). Multiplying two rotations together gives another rotation, but the order matters. SO(3) is a 3-dimensional curved space (a manifold), not an ordinary vector space, so rotations can't simply be added together or averaged — which is exactly why methods like quaternions, the 6D representation, and spherical interpolation exist. Folding in translation as well gives the special Euclidean group SE(3): a rigid-body pose represented by a 4×4 homogeneous transformation matrix, with 6 degrees of freedom in total. Both are Lie groups; the tangent space at their identity element is called a Lie algebra, written so(3) and se(3) — so(3) turns out to be exactly the set of 3×3 skew-symmetric matrices, which correspond one-to-one with 3D angular velocity vectors, and convert back to a rotation through the exponential map.",
+   "example": "An arm's end-effector pose is a 4×4 matrix in SE(3): the upper-left 3×3 block is an SO(3) rotation, and the upper-right column is position. A matrix obtained by having a neural network directly regress 9 numbers generally won't satisfy RᵀR=I, so it needs to be projected back onto SO(3) using SVD or Gram-Schmidt orthogonalization.",
+   "related": [
+    "Rotation Matrix",
+    "Lie Group",
+    "Exponential Map",
+    "Skew-Symmetric Matrix",
+    "Homogeneous Transformation Matrix",
+    "6D Rotation Representation"
+   ]
+  },
+  {
+   "key": "mechanics-07#9",
+   "name_en": "Spherical Joint",
+   "aliases": [
+    "Ball Joint",
+    "Ball-and-Socket Joint"
+   ],
+   "one_liner": "A three-degree-of-freedom joint that lets one part rotate about a fixed point in any direction, but not translate.",
+   "explanation": "A spherical joint, also called a ball joint or ball-and-socket joint, has one part's ball-shaped head seated inside another part's socket: the two can rotate about the ball's center in any direction, but can't translate relative to each other, giving 3 rotational degrees of freedom — functionally similar to a human shoulder or hip, and often written S in mechanism notation. Passive ball joints are used extensively in the linkages of parallel mechanisms like the Stewart platform. Real robot arms rarely drive a spherical joint with a single motor; instead, they approximate one with three revolute joints whose axes intersect at a point, as in a spherical wrist. In simulation, MuJoCo offers a ball joint type, representing rotation with a unit quaternion, so it takes up 4 numbers in qpos but only 3 in qvel; URDF has no spherical joint type at all, so it's usually approximated by chaining three revolute joints together.",
+   "example": "Setting a humanoid robot's shoulder as a ball joint in MuJoCo lets a single quaternion describe the upper arm's orientation; exporting that to URDF for ROS requires splitting it into three separate revolute joints — shoulder pitch, roll, and yaw.",
+   "related": [
+    "Revolute Joint",
+    "Spherical Wrist",
+    "Parallel Mechanism",
+    "Degrees of Freedom (DoF)",
+    "MuJoCo",
+    "URDF (Unified Robot Description Format)"
+   ]
+  },
+  {
+   "key": "mechanics-07#10",
+   "name_en": "Spherical Linear Interpolation (SLERP)",
+   "aliases": [
+    "Slerp",
+    "Quaternion Slerp"
+   ],
+   "one_liner": "A way to smoothly blend between two rotations along the shortest arc, at a constant angular speed.",
+   "explanation": "Spherical linear interpolation (Slerp) generates the intermediate rotations between two given rotations; Ken Shoemake introduced it to computer graphics in a 1985 SIGGRAPH paper. Treating a unit quaternion as a point on the unit sphere in four dimensions, Slerp moves along the great-circle arc connecting the two points: slerp(q₀,q₁;t) = [sin((1−t)Ω)/sinΩ]·q₀ + [sin(tΩ)/sinΩ]·q₁, where t runs from 0 to 1 as progress along the interpolation and Ω is the angle between the two quaternions. The result is a rotation about a fixed axis at constant angular speed. Interpolating quaternions or Euler angles linearly instead produces uneven rotation speed, or even takes the long way around; and because q and −q represent the same rotation, an implementation has to check whether the two quaternions' dot product is negative and flip one of them first, to guarantee it takes the short arc. In robotics, it's commonly used to interpolate end-effector orientation trajectories, to upsample a low-frequency policy's output into high-frequency control commands, and to resample motion-capture data.",
+   "example": "If a policy outputs a target end-effector orientation at 10 Hz but the low-level controller runs at 500 Hz, SciPy's Slerp class can interpolate 50 intermediate orientations between each pair of consecutive targets, so the end effector rotates there at a constant rate.",
+   "related": [
+    "Quaternion",
+    "Quaternion Double Cover",
+    "Trajectory Interpolation",
+    "Special Orthogonal Group SO(3)",
+    "Geodesic Rotation Distance",
+    "Euler Angles"
+   ]
+  },
+  {
+   "key": "mechanics-07#11",
+   "name_en": "Stance Phase / Swing Phase",
+   "aliases": [
+    "Stance",
+    "Swing"
+   ],
+   "one_liner": "The gait phase where a foot is on the ground bearing weight is stance; the phase where it swings through the air is swing.",
+   "explanation": "Stance phase and swing phase are the basic building blocks for describing gaits, applicable to both people and legged robots: the phase where a leg's foot is in contact with the ground, bearing body weight and driving the body forward, is stance phase; the phase where the foot leaves the ground and swings forward toward its next landing spot is swing phase, and together the two make up one gait cycle for that leg. Normal adult walking spends roughly 60% of the cycle in stance and 40% in swing, with the period when both feet are down at once called double support; running adds a flight phase where both feet leave the ground together. The fraction of the cycle spent in stance is called the duty factor, and different gaits — such as a quadruped's diagonal trot — are, at bottom, just different ways of staggering each leg's stance phase relative to the others. Control needs differ sharply between the two: a stance leg has to generate ground reaction force, maintain balance, and avoid slipping, while a swing leg has to lift clear of obstacles and choose where to land — so both MPC and RL-based locomotion controllers need to know which phase each leg is currently in.",
+   "example": "Humanoid-Gym generates each foot's stance mask with a sinusoidal phase clock: a positive sine value means the left foot is in stance, a negative value means the right foot is in stance, and a value near zero counts both feet as in stance (double support). The reward function then requires whichever foot should be down to be down, and whichever should be swinging to be off the ground.",
+   "related": [
+    "Gait",
+    "Gait Cycle and Duty Factor",
+    "Double Support",
+    "Flight Phase (Aerial Phase)",
+    "Contact Schedule (Gait Scheduler)",
+    "Foot Trajectory Planning"
+   ]
+  }
+ ]
+}

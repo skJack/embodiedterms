@@ -1,0 +1,411 @@
+{
+ "category": "sim",
+ "batch": 7,
+ "terms": [
+  {
+   "name_zh": "RoboCasa",
+   "name_en": "RoboCasa (RoboCasa365)",
+   "abbr": "",
+   "aliases": [
+    "RoboCasa365"
+   ],
+   "tier": 2,
+   "one_liner": "UT Austin 做的大规模厨房家务仿真框架与基准，最新版叫 RoboCasa365。",
+   "explanation": "RoboCasa 是得州大学奥斯汀分校朱玉可（Yuke Zhu）团队的家庭场景仿真框架，建在 robosuite 和 MuJoCo 之上，初版发表于 RSS 2024，含 120 个厨房场景、100 个任务，并用 MimicGen（从少量人类演示自动扩增轨迹的工具）扩充数据。2026 年 2 月发布的 RoboCasa365（ICLR 2026）扩展到 2500 多个厨房场景、3200 多个物体、365 个日常任务，附 600 多小时人类演示和 1600 多小时自动生成数据，并设多任务排行榜。它解决真机家务数据贵、难复现的问题，常用来比较通用策略。",
+   "example": "RoboCasa365 官方排行榜在同一批厨房任务上对比 Diffusion Policy、π 系列和 GR00T 等策略的多任务表现。",
+   "related": [
+    "robosuite",
+    "MimicGen",
+    "仿真资产",
+    "基准测试",
+    "家务任务",
+    "GR00T N1 系列"
+   ],
+   "sources": [
+    {
+     "title": "RoboCasa 官网（RoboCasa365）",
+     "url": "https://robocasa.ai/"
+    },
+    {
+     "title": "RoboCasa: Large-Scale Simulation of Everyday Tasks for Generalist Robots (arXiv 2406.02523)",
+     "url": "https://arxiv.org/abs/2406.02523"
+    },
+    {
+     "title": "robocasa/robocasa GitHub README",
+     "url": "https://github.com/robocasa/robocasa"
+    }
+   ],
+   "as_of": "2026-05"
+  },
+  {
+   "name_zh": "RoboChallenge",
+   "name_en": "RoboChallenge",
+   "abbr": "",
+   "aliases": [
+    "Table30"
+   ],
+   "tier": 2,
+   "one_liner": "原力灵机与 Hugging Face 办的真机在线评测平台，首个基准叫 Table30。",
+   "explanation": "RoboChallenge 是原力灵机（Dexmal）联合 Hugging Face 于 2025 年 10 月推出的真机评测系统。参评者不必交出模型权重，而是在自己机器上跑模型，通过接口远程操控平台上的真实机器人。首个基准 Table30 含 30 个桌面操作任务，考察精确三维定位、遮挡、依赖前序步骤等难点，机器人有 UR5、Franka Panda、Cobot Magic ALOHA 双臂和 ARX-5 四类。每个任务推演 10 次，报告成功率和按阶段计分的进度分数。它针对的是仿真分数不等于真机能力、各实验室真机条件不可比的问题。",
+   "example": "RoboChallenge 论文用 Table30 对比了 π0、π0.5、CogACT 和 OpenVLA 系列变体在单任务训练与通用训练两种设定下的表现。",
+   "related": [
+    "真机评测",
+    "成功率",
+    "进度分数",
+    "评测协议",
+    "原力灵机",
+    "RoboArena"
+   ],
+   "sources": [
+    {
+     "title": "RoboChallenge: Large-scale Real-robot Evaluation of Embodied Policies (arXiv 2510.17950)",
+     "url": "https://arxiv.org/abs/2510.17950"
+    },
+    {
+     "title": "RoboChallenge 论文 HTML 全文",
+     "url": "https://arxiv.org/html/2510.17950"
+    }
+   ],
+   "as_of": "2025-10"
+  },
+  {
+   "name_zh": "RoboMimic",
+   "name_en": "robomimic",
+   "abbr": "",
+   "aliases": [
+    "robomimic"
+   ],
+   "tier": 2,
+   "one_liner": "斯坦福与 UT Austin 研究者做的演示学习框架，含标准数据集和离线学习算法。",
+   "explanation": "robomimic 是 ARISE 计划下由斯坦福、UT Austin 研究者开发的演示学习框架，配套论文发表于 CoRL 2021。它在 robosuite 仿真里提供 Lift、Can、Square、Transport、Tool Hang 五个操作任务的数据：PH 是一名熟练操作员的 200 条演示，MH 是 6 名操作员的 300 条，MG 是强化学习智能体生成的数据。框架内置行为克隆、BC-RNN（能看历史的行为克隆）和多种离线强化学习算法，后续版本加入扩散策略。论文发现看历史的模型更强、数据质量影响很大；这套数据后来成了模仿学习论文的常用仿真基准。",
+   "example": "扩散策略（Diffusion Policy）论文就在 robomimic 的 Lift、Can、Square、Transport、Tool Hang 任务上与 BC-RNN 等方法比较成功率。",
+   "related": [
+    "robosuite",
+    "行为克隆",
+    "离线强化学习",
+    "演示数据",
+    "扩散策略",
+    "RoboTurk"
+   ],
+   "sources": [
+    {
+     "title": "robomimic 官网",
+     "url": "https://robomimic.github.io/"
+    },
+    {
+     "title": "robomimic v0.1 数据集说明",
+     "url": "https://robomimic.github.io/docs/datasets/robomimic_v0.1.html"
+    },
+    {
+     "title": "What Matters in Learning from Offline Human Demonstrations for Robot Manipulation (arXiv 2108.03298)",
+     "url": "https://arxiv.org/abs/2108.03298"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "robosuite",
+   "name_en": "robosuite",
+   "abbr": "",
+   "aliases": [
+    "robosuite v1.5"
+   ],
+   "tier": 2,
+   "one_liner": "基于 MuJoCo 的模块化机器人学习仿真框架和基准，由 ARISE 计划维护。",
+   "explanation": "robosuite 是斯坦福和 UT Austin 研究者在 ARISE 计划下开发的开源仿真框架，底层用 MuJoCo，论文 2020 年发布。它把机器人、夹爪、控制器、场景和任务拆成可组合的模块，提供关节空间和笛卡尔空间（直接控制末端位姿）控制器，内置举方块、叠方块、开门、擦桌子等单臂任务和三个双臂任务，支持遥操作采集演示。2024 年 10 月的 v1.5 加入人形等本体、全身控制器、照片级渲染和传感器模型。robomimic、RoboCasa 都建在它之上，是模仿学习和强化学习研究的常用底座。",
+   "example": "robomimic 的 Lift、Can、Square 等标准数据集就是在 robosuite 环境里用 Franka Panda 机械臂采集的。",
+   "related": [
+    "MuJoCo",
+    "RoboMimic",
+    "RoboCasa",
+    "MimicGen",
+    "仿真器",
+    "3D 鼠标遥操作"
+   ],
+   "sources": [
+    {
+     "title": "robosuite 官网",
+     "url": "https://robosuite.ai/"
+    },
+    {
+     "title": "robosuite 文档：Environments",
+     "url": "https://robosuite.ai/docs/modules/environments.html"
+    },
+    {
+     "title": "robosuite: A Modular Simulation Framework and Benchmark for Robot Learning (arXiv 2009.12293)",
+     "url": "https://arxiv.org/abs/2009.12293"
+    }
+   ],
+   "as_of": "2024-10"
+  },
+  {
+   "name_zh": "RoboTwin",
+   "name_en": "RoboTwin (RoboTwin 2.0)",
+   "abbr": "",
+   "aliases": [
+    "RoboTwin 2.0"
+   ],
+   "tier": 2,
+   "one_liner": "港大、上海 AI 实验室等推出的双臂操作仿真数据生成器与评测基准。",
+   "explanation": "RoboTwin 是面向双臂操作的仿真数据生成与评测平台，由香港大学 MMLab、上海人工智能实验室、清华、上海交大等十几家机构推出，基于 SAPIEN 仿真器，1.0 版获 CVPR 2025 Highlight。2025 年 6 月的 2.0 版让多模态大模型自动写专家操作代码，在仿真里验证后生成轨迹，覆盖 50 个双臂任务、5 种机器人本体、731 个物体，预采集 10 万多条轨迹。它在杂物、背景纹理、光照、桌面高度、语言指令五个维度做域随机化（训练时随机改变环境条件），以提升真机鲁棒性，也是 VLA 常用的双臂评测基准。",
+   "example": "RoboTwin 2.0 论文报告，用其强随机化数据训练的 VLA 在未见过的真实场景中表现相对提升 367%；CVPR 2025 MEIS 研讨会还基于它举办了挑战赛。",
+   "related": [
+    "双臂操作",
+    "域随机化",
+    "合成数据",
+    "SAPIEN",
+    "基准测试",
+    "跨本体"
+   ],
+   "sources": [
+    {
+     "title": "RoboTwin 官网",
+     "url": "https://robotwin-platform.github.io/"
+    },
+    {
+     "title": "RoboTwin 2.0 (arXiv 2506.18088)",
+     "url": "https://arxiv.org/abs/2506.18088"
+    }
+   ],
+   "as_of": "2025-06"
+  },
+  {
+   "name_zh": "推演",
+   "name_en": "Rollout",
+   "abbr": "",
+   "aliases": [
+    "rollout",
+    "滚动执行"
+   ],
+   "tier": 2,
+   "one_liner": "让策略在环境里从开始一直执行到结束，得到一整段交互轨迹。",
+   "explanation": "Rollout 指把策略放进环境（仿真或真机），从初始状态按「观测—动作—环境变化」循环执行，直到成功、失败或超时，得到一条完整轨迹。OpenAI 的教程 Spinning Up 写道，轨迹也常被称为 episode（回合）或 rollout。常见用法：强化学习里用它收集数据来更新策略；评测时说「每个任务 rollout 50 次」，就是跑 50 个回合统计成功率；基于模型的强化学习里，在世界模型中往后「想象」几步也叫 rollout。大模型强化学习对同一提示采样多条回答也沿用这个词。",
+   "example": "RoboChallenge 的 Table30 基准对每个任务做 10 次 rollout，再按成功率和进度分数给模型打分。",
+   "related": [
+    "轨迹",
+    "回合",
+    "成功率",
+    "闭环评测",
+    "想象中学习",
+    "同策略"
+   ],
+   "sources": [
+    {
+     "title": "OpenAI Spinning Up: Key Concepts in RL",
+     "url": "https://spinningup.openai.com/en/latest/spinningup/rl_intro.html"
+    },
+    {
+     "title": "RoboChallenge 论文 HTML 全文 (arXiv 2510.17950)",
+     "url": "https://arxiv.org/html/2510.17950"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "R2R / VLN-CE 视觉语言导航基准",
+   "name_en": "Room-to-Room / VLN in Continuous Environments",
+   "abbr": "R2R / VLN-CE",
+   "aliases": [
+    "R2R",
+    "VLN-CE",
+    "RxR",
+    "R2R-CE",
+    "RxR-CE",
+    "Room-to-Room"
+   ],
+   "tier": 2,
+   "one_liner": "视觉语言导航最常用的基准：照着人写的路线说明在陌生房屋里走到终点。",
+   "explanation": "R2R（Room-to-Room）由澳大利亚国立大学、阿德莱德大学等团队于 2018 年随 Matterport3D 模拟器发布，基于 90 栋真实建筑扫描，含约 2.2 万条人写的路线指令，智能体只能在预建导航图的节点间跳转。2020 年俄勒冈州立大学、佐治亚理工与 Facebook AI 提出 VLN-CE，把 R2R 搬进 Habitat 的连续环境，智能体要用「前进 0.25 米、左转 15 度、停止」这类底层动作行走，更接近真实机器人，成绩也明显下降。谷歌 2020 年的 RxR 含 12.6 万条英语、印地语、泰卢固语指令。常用指标有成功率、SPL（路径长度加权成功率）和 nDTW。",
+   "example": "VLN-CE 官方的跨模态注意力基线在 R2R 连续环境测试集上成功率 0.28、SPL 0.25，可见连续环境比导航图版本难得多。",
+   "related": [
+    "视觉语言导航",
+    "Habitat",
+    "Matterport3D 数据集",
+    "路径长度加权成功率",
+    "归一化动态时间规整",
+    "NaVILA"
+   ],
+   "sources": [
+    {
+     "title": "Room-to-Room (R2R) 官网",
+     "url": "https://bringmeaspoon.org/"
+    },
+    {
+     "title": "VLN-CE 项目页",
+     "url": "https://jacobkrantz.github.io/vlnce/"
+    },
+    {
+     "title": "jacobkrantz/VLN-CE GitHub（含 RxR-Habitat）",
+     "url": "https://github.com/jacobkrantz/VLN-CE"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "传感器仿真",
+   "name_en": "Sensor Simulation",
+   "abbr": "",
+   "aliases": [
+    "相机/激光雷达/IMU 仿真",
+    "Sensor Modeling"
+   ],
+   "tier": 2,
+   "one_liner": "在仿真器里生成相机、激光雷达、IMU、力传感器等的模拟读数。",
+   "explanation": "传感器仿真指仿真器根据虚拟场景状态，算出各传感器「应该读到什么」。相机图像和深度图靠渲染；激光雷达、雷达靠发射虚拟射线或光线追踪算距离；IMU（惯性测量单元）读数来自刚体的加速度和角速度；接触力、关节力矩取自物理求解器。做得好的还会加入噪声、畸变、延迟、深度缺失等真实传感器的毛病。英伟达 Isaac Sim 把传感器分为相机类、RTX 光线追踪类（激光雷达、雷达、声学）和基于物理的类（接触、IMU 等）。策略看到的正是这些读数，和真机差太多就会造成虚实差距。",
+   "example": "Isaac Sim 提供基于光线追踪的 RTX 激光雷达和雷达仿真；robosuite v1.5 也加入了传感器模型。",
+   "related": [
+    "渲染",
+    "光线追踪",
+    "触觉仿真",
+    "虚实差距",
+    "仿真保真度",
+    "视觉随机化"
+   ],
+   "sources": [
+    {
+     "title": "Isaac Sim 文档：Sensors",
+     "url": "https://docs.isaacsim.omniverse.nvidia.com/latest/sensors/index.html"
+    },
+    {
+     "title": "Choi et al., On the use of simulation in robotics (PNAS 2021)",
+     "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7817170/"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "仿真-真机相关性",
+   "name_en": "Sim-to-Real Correlation (Pearson r)",
+   "abbr": "",
+   "aliases": [
+    "真机对齐度",
+    "Sim-Real Alignment",
+    "皮尔逊相关系数"
+   ],
+   "tier": 2,
+   "one_liner": "衡量仿真评测成绩能否反映真机表现，常用皮尔逊相关系数 r 表示。",
+   "explanation": "用仿真做评测前，要先确认仿真里分高的策略在真机上也强。常见做法是挑一组策略，分别在仿真和真机上测成功率，再算两组数字的皮尔逊相关系数 r（-1 到 1，越接近 1 越一致）。2024 年的 SIMPLER（SimplerEnv）论文用 RT-1、RT-1-X、Octo 等策略在 Google Robot 和 WidowX 上做了这类对比，并指出 r 只看线性拟合、看不出排名是否被搞反，因此另提出平均最大排名违背（MMRV，越低越好）。相关性高，仿真基准才能代替昂贵的真机测试挑模型；相关性低，仿真里的提升可能只是拟合了仿真器。",
+   "example": "SIMPLER 靠视觉匹配（绿幕贴真实背景、对齐纹理）和控制参数的系统辨识缩小差距，基于约 1500 个评测回合展示仿真与真机成绩强相关。",
+   "related": [
+    "仿真评测",
+    "真机评测",
+    "平均最大排名违背",
+    "SimplerEnv",
+    "视觉匹配",
+    "虚实差距"
+   ],
+   "sources": [
+    {
+     "title": "Evaluating Real-World Robot Manipulation Policies in Simulation (SIMPLER, arXiv 2405.05941)",
+     "url": "https://arxiv.org/abs/2405.05941"
+    },
+    {
+     "title": "SIMPLER 项目页",
+     "url": "https://simpler-env.github.io/"
+    }
+   ],
+   "as_of": "2024-05"
+  },
+  {
+   "name_zh": "仿真到仿真迁移",
+   "name_en": "Sim-to-Sim Transfer",
+   "abbr": "Sim2Sim",
+   "aliases": [
+    "Sim-to-Sim",
+    "跨仿真器验证"
+   ],
+   "tier": 2,
+   "one_liner": "把在一个仿真器里训好的策略放到另一个仿真器里跑，提前暴露问题。",
+   "explanation": "Sim2Sim 常见于足式和人形机器人的强化学习流程：先在 Isaac Gym、Isaac Lab 等 GPU 并行仿真器里大规模训练，再把策略原样放进接触模型、求解器都不同的 MuJoCo 等仿真器测试。换了仿真器就走不稳，说明策略钻了原仿真器的空子，直接上真机风险很大。宇树 unitree_rl_gym 把流程写成「训练 → 回放 → Sim2Sim → Sim2Real」；星动纪元 2024 年开源的 Humanoid-Gym 也提供 Isaac Gym 到 MuJoCo 的验证管线。它成本低、不怕摔坏机器，但通过了也不保证真机成功。",
+   "example": "用 unitree_rl_gym 在 Isaac Gym 里训练宇树 G1 行走策略后，先跑它的 Sim2Sim 脚本在 MuJoCo 中检验，再部署到实机。",
+   "related": [
+    "仿真到现实迁移",
+    "虚实差距",
+    "Isaac Gym",
+    "MuJoCo",
+    "Humanoid-Gym",
+    "unitree_rl_gym"
+   ],
+   "sources": [
+    {
+     "title": "unitreerobotics/unitree_rl_gym GitHub",
+     "url": "https://github.com/unitreerobotics/unitree_rl_gym"
+    },
+    {
+     "title": "roboterax/humanoid-gym GitHub",
+     "url": "https://github.com/roboterax/humanoid-gym"
+    },
+    {
+     "title": "Humanoid-Gym: Reinforcement Learning for Humanoid Robot with Zero-Shot Sim2Real Transfer (arXiv 2404.05695)",
+     "url": "https://arxiv.org/abs/2404.05695"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "仿真资产",
+   "name_en": "Simulation Assets",
+   "abbr": "",
+   "aliases": [
+    "3D 资产",
+    "场景资产",
+    "Sim Assets"
+   ],
+   "tier": 2,
+   "one_liner": "仿真里用的机器人、物体和场景模型，既要外观像，也要带物理属性。",
+   "explanation": "仿真资产是搭仿真环境的原材料，包括机器人模型（常用 URDF、MJCF 描述连杆和关节）、可操作物体、家具和整个房间场景。和游戏模型不同，它除了外观网格和材质，还要有碰撞体（常用凸分解把复杂网格拆成凸块）、质量、摩擦系数、铰接关节（如抽屉滑轨、门铰链）和语义标签。英伟达基于 OpenUSD 的 SimReady 资产就强调带物理属性、语义标注和传感器属性。资产数量和多样性决定能生成多少种训练场景，直接影响策略泛化；常见来源有 Objaverse、PartNet-Mobility 和生成式 3D 模型。",
+   "example": "RoboTwin 2.0 的物体库 RoboTwin-OD 含 731 个物体，其中 534 个自建网格、153 个取自 Objaverse、44 个铰接物体来自 PartNet-Mobility。",
+   "related": [
+    "SimReady 资产",
+    "凸分解",
+    "铰接物体",
+    "Objaverse 3D 资产库",
+    "通用场景描述",
+    "统一机器人描述格式"
+   ],
+   "sources": [
+    {
+     "title": "NVIDIA SimReady 文档",
+     "url": "https://docs.omniverse.nvidia.com/simready/latest/index.html"
+    },
+    {
+     "title": "RoboTwin 官网（RoboTwin-OD）",
+     "url": "https://robotwin-platform.github.io/"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "仿真保真度",
+   "name_en": "Simulation Fidelity",
+   "abbr": "",
+   "aliases": [
+    "物理保真度",
+    "视觉保真度"
+   ],
+   "tier": 2,
+   "one_liner": "仿真和真实世界有多像：物理上算得准不准，看起来像不像。",
+   "explanation": "仿真保真度通常分两块：物理保真度，看动力学、接触、摩擦、柔性物体、电机特性算得准不准；视觉或传感器保真度，看渲染图像、深度、激光雷达读数和真实传感器是否一致。保真度越高虚实差距越小，但计算越慢。Choi 等人 2021 年在 PNAS 的综述指出，游戏引擎追求「看着合理」而非精确，实际使用常要减少求解迭代次数、用刚性地面代替可变形地面等妥协。所以实践中常配合域随机化、系统辨识；SIMPLER 等工作也表明，做策略评测不一定需要完全逼真的数字孪生。",
+   "example": "SIMPLER 没有重建完整的数字孪生，只用绿幕贴真实背景、对齐纹理并辨识控制参数，就让仿真评测成绩与真机强相关。",
+   "related": [
+    "虚实差距",
+    "物理引擎",
+    "渲染",
+    "传感器仿真",
+    "数字孪生",
+    "域随机化"
+   ],
+   "sources": [
+    {
+     "title": "Choi et al., On the use of simulation in robotics: Opportunities, challenges, and suggestions for moving forward (PNAS 2021)",
+     "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC7817170/"
+    },
+    {
+     "title": "Evaluating Real-World Robot Manipulation Policies in Simulation (SIMPLER, arXiv 2405.05941)",
+     "url": "https://arxiv.org/abs/2405.05941"
+    }
+   ],
+   "as_of": ""
+  }
+ ]
+}

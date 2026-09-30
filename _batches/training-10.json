@@ -1,0 +1,202 @@
+{
+  "category": "training",
+  "batch": 10,
+  "terms": [
+    {
+      "name_zh": "辅助损失 / 辅助任务",
+      "name_en": "Auxiliary Loss / Auxiliary Task",
+      "abbr": "",
+      "aliases": ["辅助目标", "Auxiliary Objective"],
+      "tier": 3,
+      "one_liner": "主训练目标之外额外加的预测任务和损失项，帮模型学到更好的特征。",
+      "explanation": "辅助任务是指在主训练目标（比如输出动作、最大化奖励）之外，让同一个网络再做一些相关预测，每个预测对应一项辅助损失，按权重加进总损失一起优化。它们和主任务共用骨干网络（负责提取特征的主干部分），多出来的监督信号能让特征学得更快、更稳；推理时这些额外分支通常直接丢掉。强化学习里奖励稀疏、学习信号弱，辅助任务尤其有用：DeepMind 2016 年的 UNREAL 智能体加了像素控制、奖励预测、价值回放三类辅助任务，在 3D 迷宫 Labyrinth 上学习速度约快 10 倍。机器人模仿学习和 VLA 里也常让模型顺带预测未来画面、物体位置或子任务文字。辅助损失权重过大会和主任务争抢模型容量，需要调节。",
+      "example": "DeepMind 2016 年的导航智能体在 3D 迷宫里学找目标时，同一网络还要预测画面深度、判断自己是否回到了走过的位置（回环分类）；这两项辅助损失明显提升了导航表现。",
+      "related": ["损失函数", "表征学习", "多任务学习", "强化学习", "稀疏奖励", "骨干网络"],
+      "sources": [
+        {"title": "Reinforcement Learning with Unsupervised Auxiliary Tasks (UNREAL, arXiv 1611.05397)", "url": "https://arxiv.org/abs/1611.05397"},
+        {"title": "Learning to Navigate in Complex Environments (arXiv 1611.03673)", "url": "https://arxiv.org/abs/1611.03673"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "最优 N 采样",
+      "name_en": "Best-of-N Sampling",
+      "abbr": "BoN",
+      "aliases": ["测试时验证器", "Test-Time Verifier", "多采样重排序", "Best-of-N 重排序"],
+      "tier": 3,
+      "one_liner": "一次采样 N 个候选输出，用打分器挑出分数最高的那个去执行。",
+      "explanation": "最优 N 采样是一种推理时计算（推理阶段多花算力换效果）的方法：让生成式模型对同一输入采样 N 个候选，再用验证器（奖励模型、价值函数或 VLM 裁判）给每个候选打分，只保留最高分的那个。它在大语言模型里用得很普遍，好处是不用重新训练原模型。机器人里的代表工作有两个：V-GPS（CoRL 2024）用离线强化学习学到的价值函数给通用策略的候选动作重排序，同一个价值函数在 5 种不同策略、共 12 个任务上都带来提升；RoboMonkey（CoRL 2025，斯坦福、伯克利、英伟达等）先采样多个动作、加高斯扰动并投票，再用训练好的 VLM 验证器挑选，分布外任务上绝对提升 25%。代价是每一步要多次前向计算，推理延迟增加；效果上限取决于验证器打分准不准。",
+      "example": "RoboMonkey 在每个控制步里让 OpenVLA 等 VLA 模型对同一帧画面生成多个候选动作，由 VLM 验证器逐个打分，机器人只执行得分最高的那个动作。",
+      "related": ["推理时计算", "价值引导采样", "RoboMonkey", "V-GPS", "奖励模型", "VLM 作奖励模型"],
+      "sources": [
+        {"title": "RoboMonkey: Scaling Test-Time Sampling and Verification for Vision-Language-Action Models (arXiv 2506.17811)", "url": "https://arxiv.org/abs/2506.17811"},
+        {"title": "RoboMonkey 项目页", "url": "https://robomonkey-vla.github.io/"},
+        {"title": "Steering Your Generalists: Improving Robotic Foundation Models via Value Guidance (arXiv 2410.13816)", "url": "https://arxiv.org/abs/2410.13816"}
+      ],
+      "as_of": "2025-09"
+    },
+    {
+      "name_zh": "自举",
+      "name_en": "Bootstrapping (in RL)",
+      "abbr": "",
+      "aliases": ["自举法", "Bootstrap"],
+      "tier": 3,
+      "one_liner": "用自己对下一状态价值的当前估计，来更新当前状态的价值估计。",
+      "explanation": "自举是强化学习中更新价值函数的一种基本做法：更新时部分依赖已有的价值估计，而不是只依赖实际拿到的奖励。时序差分（TD）学习是典型例子，更新某一步的价值时，目标取「这一步的奖励 + 折扣后的下一状态价值估计」，不用等整局结束；与之相对，蒙特卡洛方法必须跑完一整个回合，用实际回报来更新。自举的好处是每一步都能学、方差小、能用于没有终点的任务；代价是目标本身带偏差，估计误差会一路传下去。自举、神经网络这类函数近似、异策略学习三者同时出现时训练容易不稳定，被称为「致命三角」，DQN 的经验回放和目标网络就是为稳定训练而设计的。它和统计学里的 bootstrap 重抽样不是一回事。",
+      "example": "机械臂开抽屉，每步奖励为 0、抽屉拉开时得 1。TD 学习更新「已握住把手」这个状态的价值时，直接拿「抽屉已拉开一半」状态当前的价值估计乘以折扣因子当目标，不必等这一回合结束。",
+      "related": ["时序差分学习", "价值函数", "贝尔曼方程", "目标网络", "蒙特卡洛方法（蒙特卡洛回报）", "Q 值高估"],
+      "sources": [
+        {"title": "Lilian Weng: A (Long) Peek into Reinforcement Learning", "url": "https://lilianweng.github.io/posts/2018-02-19-rl-overview/"},
+        {"title": "Wikipedia: Temporal difference learning", "url": "https://en.wikipedia.org/wiki/Temporal_difference_learning"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "校准 Q 学习",
+      "name_en": "Calibrated Q-Learning",
+      "abbr": "Cal-QL",
+      "aliases": ["Calibrated Offline RL Pre-Training"],
+      "tier": 3,
+      "one_liner": "给保守 Q 学习加「校准」约束，让离线预训练后能平滑转入在线微调。",
+      "explanation": "Cal-QL 由 Nakamoto、Chelsea Finn、Aviral Kumar、Sergey Levine 等人在 2023 年提出，发表于 NeurIPS 2023，面向离线到在线强化学习：先用固定数据集离线预训练，再上环境在线微调。作者发现，用保守 Q 学习（CQL）预训练得到的 Q 值被压得过低，比任何正常策略的真实回报都小；一开始在线微调，Q 值剧烈调整尺度，策略会先把离线学到的东西「忘掉」，性能掉一截再慢慢爬回来。Cal-QL 加了一个校准约束：学到的 Q 值仍是当前策略真实价值的下界，但不能低于某个参考策略的价值，实践中参考策略就用数据集的行为策略，其价值用蒙特卡洛回报估计。实现上只需在 CQL 代码上改一行，在 11 个微调基准任务中 9 个超过已有方法。",
+      "example": "Cal-QL 论文的测试任务包括 FrankaKitchen（控制 9 自由度 Franka 机械臂按顺序完成厨房子任务）和 Adroit（28 自由度五指手转笔、开门等），流程都是先离线预训练、再在线微调。",
+      "related": ["保守 Q 学习", "离线到在线强化学习", "离线强化学习", "Q 函数", "强化学习微调", "利用先验数据的强化学习"],
+      "sources": [
+        {"title": "Cal-QL: Calibrated Offline RL Pre-Training for Efficient Online Fine-Tuning (arXiv 2303.05479)", "url": "https://arxiv.org/abs/2303.05479"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "因果混淆",
+      "name_en": "Causal Confusion (Causal Misidentification)",
+      "abbr": "",
+      "aliases": ["捷径学习（模仿学习中）", "因果误识别", "Causal Misidentification"],
+      "tier": 3,
+      "one_liner": "模仿学习把和专家动作相关、但不是原因的线索当成依据，部署时出错。",
+      "explanation": "因果混淆由 de Haan、Jayaraman、Levine 在 NeurIPS 2019 论文中系统提出。行为克隆把模仿当成监督学习，看观测直接回归专家动作，只学相关性，不区分谁是因、谁是果；如果训练数据里某个线索和专家动作高度相关，模型就会依赖它。训练时这类线索一直在，损失很低；部署时策略自己走出的状态和专家不同（分布偏移），线索不再可靠，策略就出错。反直觉的症状是：给模型更多输入信息，表现反而更差，输入里带历史信息时尤其常见。论文提出用有针对性的干预，即在环境里试执行或询问专家，来找出正确的因果结构，效果优于 DAgger 等基线。它提醒我们，机器人策略的输入不是越多越好。",
+      "example": "论文里的驾驶例子：模型 A 看完整画面（含仪表盘），模型 B 的仪表盘被遮住。两者训练损失都很低，上路后 B 开得好、A 不行，因为仪表盘上有踩刹车就会亮的指示灯，A 学成了「灯亮才刹车」，把刹车的结果当成了原因。",
+      "related": ["行为克隆", "模仿学习", "分布偏移（协变量偏移）", "复合误差", "DAgger（数据集聚合）", "过拟合"],
+      "sources": [
+        {"title": "Causal Confusion in Imitation Learning (arXiv 1905.11979)", "url": "https://arxiv.org/abs/1905.11979"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "保守 Q 学习",
+      "name_en": "Conservative Q-Learning",
+      "abbr": "CQL",
+      "aliases": [],
+      "tier": 3,
+      "one_liner": "刻意压低数据集外动作的 Q 值，让离线强化学习不被虚高的估计带偏。",
+      "explanation": "CQL 由 Aviral Kumar、Aurick Zhou、George Tucker、Sergey Levine 在 2020 年提出（NeurIPS 2020），是离线强化学习（只用固定数据集、不再和环境交互）的代表算法。普通 Q 学习直接拿来离线训练会失败：策略倾向于挑数据里没出现过的动作，这些动作的 Q 值（估计某状态下做某动作的长期回报）没被数据纠正过，常被高估，策略就朝这些虚高的方向跑。CQL 在标准贝尔曼误差之外加一个正则项：压低策略可能选的动作的 Q 值，同时抬高数据集中实际动作的 Q 值，使学到的价值成为真实价值的下界。它容易接到现有的深度 Q 学习或演员-评论家算法上，论文报告最终回报常为已有离线方法的 2–5 倍。Cal-QL 等后续方法都在它的基础上改进。",
+      "example": "谷歌 DeepMind 2023 年的 Q-Transformer 用 Transformer 表示机器人多任务 Q 函数，在人类演示加自主采集的真实机器人离线数据上训练，用的就是一个改造版的 CQL 保守正则项。",
+      "related": ["离线强化学习", "校准 Q 学习", "Q 函数", "Q 值高估", "外推误差", "Q-Transformer"],
+      "sources": [
+        {"title": "Conservative Q-Learning for Offline Reinforcement Learning (arXiv 2006.04779)", "url": "https://arxiv.org/abs/2006.04779"},
+        {"title": "NeurIPS 2020 Proceedings: Conservative Q-Learning for Offline Reinforcement Learning", "url": "https://proceedings.neurips.cc/paper/2020/hash/0d2b2061826a5df3221116a5085a6052-Abstract.html"},
+        {"title": "Q-Transformer: Scalable Offline Reinforcement Learning via Autoregressive Q-Functions (arXiv 2309.10150)", "url": "https://arxiv.org/abs/2309.10150"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "持续学习",
+      "name_en": "Continual Learning",
+      "abbr": "",
+      "aliases": ["终身学习", "Lifelong Learning", "增量学习"],
+      "tier": 3,
+      "one_liner": "让模型按顺序学新任务、新数据，同时不忘掉以前学会的东西。",
+      "explanation": "持续学习研究模型在整个使用周期里不断接收新任务、新数据时，如何逐步积累和更新知识。最大障碍是灾难性遗忘：神经网络在新数据上接着训练，旧任务的表现会大幅下降。核心取舍是「稳定性-可塑性」平衡，既要保住旧知识，又要能学新东西。常见思路包括正则化（如 DeepMind 2017 年的 EWC，放慢对旧任务重要权重的更新）、回放（把旧数据或生成的旧样本混进来一起训练）和结构扩展（给新任务单独加参数）。对机器人来说，部署后会不断遇到新物体、新场景，理想情况是边用边学，而不是每次从头重训；2023 年的 LIBERO 基准专为终身机器人学习设计，含 4 个任务套件共 130 个任务。VLA 微调后丢掉原 VLM 的语言和常识能力，也属于遗忘问题。",
+      "example": "一台家用机器人先学会叠毛巾，之后又陆续学开冰箱、洗碗；持续学习要求学完洗碗后，叠毛巾的成功率不明显下降。",
+      "related": ["灾难性遗忘", "迁移学习", "微调", "多任务学习", "LIBERO", "知识隔离"],
+      "sources": [
+        {"title": "A Comprehensive Survey of Continual Learning: Theory, Method and Application (arXiv 2302.00487)", "url": "https://arxiv.org/abs/2302.00487"},
+        {"title": "Overcoming catastrophic forgetting in neural networks (EWC, arXiv 1612.00796)", "url": "https://arxiv.org/abs/1612.00796"},
+        {"title": "LIBERO: Benchmarking Knowledge Transfer for Lifelong Robot Learning (arXiv 2306.03310)", "url": "https://arxiv.org/abs/2306.03310"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "信用分配",
+      "name_en": "Credit Assignment",
+      "abbr": "",
+      "aliases": ["贡献度分配", "信用分配问题", "Credit Assignment Problem", "CAP"],
+      "tier": 3,
+      "one_liner": "最终拿到奖励或惩罚时，判断之前哪些动作该记功、哪些该担责。",
+      "explanation": "信用分配问题在 Marvin Minsky 1961 年的综述《Steps Toward Artificial Intelligence》中就被专门讨论：一个复杂策略成功了，功劳该如何分给其中涉及的众多决策。他举的例子是，赢一盘棋可能涉及上百万个决策，能不能每个决策平分百万分之一的功劳。在强化学习里它主要指时间上的信用分配：奖励常常延迟到任务结束才出现，中间还混着噪声和偶然因素，智能体要从有限的经验中学出每个动作对最终结果的影响。常用手段包括时序差分学习与自举、折扣因子、优势函数和广义优势估计（GAE）、奖励塑形（加中间奖励）、分层强化学习等。机器人长程任务动作步数多、奖励稀疏，信用分配是强化学习在这里难用的主要原因之一。",
+      "example": "机械臂叠 5 块积木，只有全部叠好才得 1 分。某一回合失败了，原因可能是第 2 块放歪、也可能是第 4 块松手太早；信用分配要从大量这样的回合里学出每一步动作各该负多少责任。",
+      "related": ["稀疏奖励", "时序差分学习", "优势函数", "广义优势估计", "奖励塑形", "长程任务"],
+      "sources": [
+        {"title": "A Survey of Temporal Credit Assignment in Deep Reinforcement Learning (arXiv 2312.01072)", "url": "https://arxiv.org/abs/2312.01072"},
+        {"title": "Minsky (1961): Steps Toward Artificial Intelligence (Proceedings of the IRE)", "url": "https://courses.csail.mit.edu/6.803/pdf/steps.pdf"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "深度确定性策略梯度",
+      "name_en": "Deep Deterministic Policy Gradient",
+      "abbr": "DDPG",
+      "aliases": [],
+      "tier": 3,
+      "one_liner": "把 DQN 扩展到连续动作的演员-评论家算法，策略直接输出一个确定动作。",
+      "explanation": "DDPG 由 DeepMind 的 Lillicrap 等人在 2015 年提出（ICLR 2016），理论基础是 Silver 等人 2014 年的确定性策略梯度（DPG）。DQN 只能处理离散动作，因为要在所有动作里找 Q 值最大的那个，而机械臂关节角这类连续动作没法逐一枚举。DDPG 用两个网络：评论家学 Q 函数，演员（策略网络）直接输出一个确定动作，并沿着「让 Q 值变大」的梯度方向更新。它是异策略算法，沿用 DQN 的经验回放和目标网络，训练时在动作上加噪声来探索。原论文在 20 多个仿真物理任务上验证，其中不少任务可以直接从像素学习。DDPG 对超参数敏感、容易高估 Q 值，后来的 TD3（双延迟 DDPG）针对高估做了改进，SAC 等算法在实践中也更常用。",
+      "example": "OpenAI 2017 年的后见之明经验回放（HER）实验，就是用 DDPG 在仿真中训练 7 自由度 Fetch 机械臂完成推物、滑动、抓取放置任务，并把策略部署到了真实机器人上。",
+      "related": ["双延迟深度确定性策略梯度", "软演员-评论家", "深度 Q 网络", "确定性策略 / 随机策略", "异策略", "后见之明经验回放"],
+      "sources": [
+        {"title": "Continuous control with deep reinforcement learning (arXiv 1509.02971)", "url": "https://arxiv.org/abs/1509.02971"},
+        {"title": "OpenAI Spinning Up: Deep Deterministic Policy Gradient", "url": "https://spinningup.openai.com/en/latest/algorithms/ddpg.html"},
+        {"title": "Hindsight Experience Replay (arXiv 1707.01495)", "url": "https://arxiv.org/abs/1707.01495"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "去噪损失",
+      "name_en": "Denoising Loss (Diffusion Loss)",
+      "abbr": "",
+      "aliases": ["扩散损失", "噪声预测损失", "ε 预测损失", "L_simple"],
+      "tier": 3,
+      "one_liner": "扩散模型的训练目标：给干净数据加噪，让网络预测出加进去的噪声。",
+      "explanation": "去噪损失是训练扩散模型用的损失函数，最常见的形式来自 Ho、Jain、Abbeel 2020 年的 DDPM 论文：随机选一个加噪步 t，按噪声调度把高斯噪声混进真实样本，让网络根据带噪样本和 t 预测所加的噪声，损失就是预测噪声与真实噪声的均方误差。论文称之为简化目标 L_simple，它是变分下界的一种加权形式，并与去噪分数匹配相对应，实践中生成质量比直接优化完整下界更好。网络也可以改为预测干净样本 x0 或速度 v，即不同的预测目标参数化。机器人里的扩散策略（Diffusion Policy）把动作序列当作要生成的数据、以观测为条件，用同样的噪声预测均方误差训练；π0 这类流匹配模型用的是形式相近的流匹配损失。",
+      "example": "训练扩散策略时，从演示中取一段未来动作序列，随机选一个噪声步加噪；网络看着当前相机画面和带噪动作，输出它认为混进去的噪声，与真实噪声算均方误差后反向传播。",
+      "related": ["扩散模型", "去噪扩散概率模型", "噪声调度", "预测目标参数化（ε / x0 / v 预测）", "流匹配损失", "扩散策略"],
+      "sources": [
+        {"title": "Denoising Diffusion Probabilistic Models (arXiv 2006.11239)", "url": "https://arxiv.org/abs/2006.11239"},
+        {"title": "Diffusion Policy: Visuomotor Policy Learning via Action Diffusion (arXiv 2303.04137)", "url": "https://arxiv.org/abs/2303.04137"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "确定性策略 / 随机策略",
+      "name_en": "Deterministic vs. Stochastic Policy",
+      "abbr": "",
+      "aliases": ["确定性策略", "随机策略", "Deterministic Policy", "Stochastic Policy"],
+      "tier": 3,
+      "one_liner": "确定性策略同一状态总给同一动作；随机策略给出动作的概率分布再采样。",
+      "explanation": "这是按输出形式对策略（从观测到动作的映射）做的分类。确定性策略写作 a = μ(s)，同一状态永远输出同一个动作；随机策略写作 a ~ π(·|s)，输出的是动作的概率分布，每次采样可能不同。离散动作常用分类分布，像分类器一样用 softmax 给出各动作概率；连续动作常用对角高斯分布，网络输出均值和对数标准差。强化学习里随机策略自带探索，PPO、SAC 用的都是它；DDPG、TD3 用确定性策略，训练时另外加噪声探索，好处是策略梯度估计更高效。模仿学习里用均方误差回归的行为克隆本质上是确定性的，演示中同一场景有多种做法时会被平均成一个错误动作；扩散策略、高斯混合模型等随机策略能表示这种动作多峰性。",
+      "example": "机械臂绕过障碍物去抓杯子，演示里一半从左绕、一半从右绕。用均方误差回归的确定性策略会输出两者的平均，直直撞向障碍物；扩散策略这类随机策略每次采样会落在左绕或右绕中的一种。",
+      "related": ["策略", "高斯策略", "动作多峰性", "深度确定性策略梯度", "扩散策略", "探索与利用"],
+      "sources": [
+        {"title": "OpenAI Spinning Up: Key Concepts in RL (Policies)", "url": "https://spinningup.openai.com/en/latest/spinningup/rl_intro.html"},
+        {"title": "Deterministic Policy Gradient Algorithms (ICML 2014)", "url": "https://proceedings.mlr.press/v32/silver14.html"},
+        {"title": "Diffusion Policy: Visuomotor Policy Learning via Action Diffusion (arXiv 2303.04137)", "url": "https://arxiv.org/abs/2303.04137"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "扩散步数蒸馏",
+      "name_en": "Diffusion Step Distillation (e.g., Distribution Matching Distillation)",
+      "abbr": "DMD",
+      "aliases": ["步数蒸馏", "少步蒸馏", "分布匹配蒸馏", "Distribution Matching Distillation", "渐进式蒸馏"],
+      "tier": 3,
+      "one_liner": "把要去噪几十上百步的扩散模型，压成一步或几步就能出结果的学生模型。",
+      "explanation": "扩散模型生成一个样本要反复去噪几十到上千步，速度慢。步数蒸馏用训练好的多步模型当老师，训练一个只需很少步数的学生。早期代表是谷歌 Salimans 与 Ho 的渐进式蒸馏（ICLR 2022），每轮把步数减半，从最多 8192 步压到 4 步。分布匹配蒸馏（DMD）由 MIT 与 Adobe 的 Yin 等人提出（CVPR 2024）：不要求学生逐样本复现老师的去噪轨迹，而是让一步生成器的输出分布整体贴近老师，用两个扩散模型给出的分数（数据分布的梯度）之差近似 KL 散度的梯度；后续 DMD2 加入 GAN 损失并支持多步。机器人里，扩散策略推理慢会拖累控制频率，常用这类蒸馏提速；CausVid、Self Forcing 等自回归视频生成工作也用 DMD 类损失实现实时生成。一致性蒸馏是另一条路线。",
+      "example": "One-Step Diffusion Policy 以训练好的扩散策略为老师，额外花 2%–10% 的预训练开销蒸馏出一步生成器，在真实 Franka 机械臂任务上动作输出频率从约 1.5 Hz 提到 62 Hz。",
+      "related": ["扩散模型", "去噪步数", "一致性模型", "单步生成", "知识蒸馏", "Consistency Policy（一致性策略）"],
+      "sources": [
+        {"title": "One-step Diffusion with Distribution Matching Distillation (arXiv 2311.18828)", "url": "https://arxiv.org/abs/2311.18828"},
+        {"title": "Progressive Distillation for Fast Sampling of Diffusion Models (arXiv 2202.00512)", "url": "https://arxiv.org/abs/2202.00512"},
+        {"title": "One-Step Diffusion Policy: Fast Visuomotor Policies via Diffusion Distillation (arXiv 2410.21257)", "url": "https://arxiv.org/abs/2410.21257"}
+      ],
+      "as_of": ""
+    }
+  ]
+}

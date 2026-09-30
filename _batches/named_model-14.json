@@ -1,0 +1,383 @@
+{
+  "category": "named_model",
+  "batch": 14,
+  "terms": [
+    {
+      "name_zh": "字节 GR-1",
+      "name_en": "GR-1: Unleashing Large-Scale Video Generative Pre-training for Visual Robot Manipulation (ByteDance)",
+      "abbr": "GR-1",
+      "aliases": [
+        "字节跳动 GR-1"
+      ],
+      "tier": 3,
+      "one_liner": "字节跳动 2023 年底的操作模型，先在视频上学预测未来画面，再学出动作。",
+      "explanation": "GR-1 由字节跳动研究团队（ByteDance Research）2023 年 12 月发布，发表于 ICLR 2024。它是一个 GPT 式 Transformer：输入语言指令、一段历史图像和机器人状态，同时输出未来画面和机器人动作。训练分两步：先在大规模视频上做视频预测预训练，只学「下一帧会是什么样」，不需要动作标签；再用机器人数据微调，让模型边预测画面边输出动作。作者的思路是，预测视频能让模型学到物体怎么被推动、怎么变化，这些知识对操作有用。在 CALVIN 基准上，它把成功率从 88.9% 提到 94.9%，零样本泛化到没见过场景的成功率从 53.3% 提到 85.4%。它是字节 GR 系列的第一代，后续有 GR-2、GR-3。注意别和傅利叶的人形机器人 GR-1 混淆。",
+      "example": "在 CALVIN 仿真厨房桌面里，GR-1 按语言指令连续完成「打开抽屉」「把蓝色方块推到左边」「打开灯泡」等一串子任务。",
+      "related": [
+        "视频预测模型",
+        "字节 GR-2",
+        "字节 GR-3",
+        "CALVIN",
+        "语言条件策略",
+        "预训练"
+      ],
+      "sources": [
+        {
+          "title": "Unleashing Large-Scale Video Generative Pre-training for Visual Robot Manipulation (arXiv 2312.13139)",
+          "url": "https://arxiv.org/abs/2312.13139"
+        },
+        {
+          "title": "GR-1 项目页",
+          "url": "https://gr1-manipulation.github.io/"
+        },
+        {
+          "title": "bytedance/GR-1 GitHub 仓库（ICLR 2024）",
+          "url": "https://github.com/bytedance/GR-1"
+        }
+      ],
+      "as_of": "2024-01"
+    },
+    {
+      "name_zh": "字节 GR-2",
+      "name_en": "GR-2: A Generative Video-Language-Action Model with Web-Scale Knowledge for Robot Manipulation (ByteDance)",
+      "abbr": "GR-2",
+      "aliases": [
+        "字节跳动 GR-2"
+      ],
+      "tier": 3,
+      "one_liner": "字节跳动 2024 年的第二代操作模型，先在 3800 万段网络视频上预训练。",
+      "explanation": "GR-2 由字节跳动研究团队 2024 年 10 月发布，是 GR-1 的升级版，作者称之为「视频-语言-动作模型」。第一阶段在 3800 万段互联网视频（超过 500 亿 token）上做视频生成预训练，数据来自 Howto100M、Ego4D、Something-Something V2、EPIC-KITCHENS 等人类日常视频，让模型学会画面接下来会怎么变；第二阶段用机器人轨迹微调，同时预测未来画面和动作轨迹。图像用 VQGAN 切成离散 token，动作轨迹由条件变分自编码器（CVAE）生成。报告称它在 100 多个任务上平均成功率 97.7%，对新背景、新环境、新物体和新任务的泛化也较强。真机部署在 Kinova Gen3 机械臂上，配合轨迹优化和实时跟踪的全身控制算法执行动作。",
+      "example": "在工业无序抓取实验中，要从杂乱料箱里挑出指定物品，覆盖 122 种物体（其中 67 种训练时没见过），GR-2 平均成功率 79.0%，GR-1 只有 33.3%。",
+      "related": [
+        "字节 GR-1",
+        "字节 GR-3",
+        "视频生成模型",
+        "人类视频预训练",
+        "条件变分自编码器",
+        "无序抓取"
+      ],
+      "sources": [
+        {
+          "title": "GR-2: A Generative Video-Language-Action Model with Web-Scale Knowledge for Robot Manipulation (arXiv 2410.06158)",
+          "url": "https://arxiv.org/abs/2410.06158"
+        },
+        {
+          "title": "GR-2 论文 HTML 全文",
+          "url": "https://arxiv.org/html/2410.06158v1"
+        }
+      ],
+      "as_of": "2024-10"
+    },
+    {
+      "name_zh": "字节 GR-Dexter",
+      "name_en": "GR-Dexter (ByteDance Seed VLA for bimanual high-DoF dexterous-hand robots)",
+      "abbr": "GR-Dexter",
+      "aliases": [
+        "GR-Dexter Technical Report"
+      ],
+      "tier": 3,
+      "one_liner": "字节 Seed 2025 年底发布的双臂灵巧手 VLA，把手、遥操作和模型一起做。",
+      "explanation": "GR-Dexter 由字节跳动 Seed 团队 2025 年 12 月底以技术报告形式发布。多数 VLA（视觉-语言-动作模型）只控制二指夹爪；换成双手高自由度灵巧手后，动作空间变大、手常挡住物体、真机数据也更贵。GR-Dexter 把硬件、数据和模型放在一起解决：自研 21 自由度、连杆驱动的 ByteDexter V2 灵巧手，指尖带压阻式触觉传感器，装在两台 Franka Research 3 机械臂上；用 Meta Quest 头显加 Manus 数据手套做双手遥操作采数据；模型沿用 GR-3 的混合 Transformer 结构，约 40 亿参数，训练时混合遥操作轨迹、视觉语言数据、筛选过的跨本体数据，以及 800 多小时人类手部轨迹数据。",
+      "example": "长程任务「整理化妆品」在常规摆放下成功率 0.97，换成 5 种没见过的摆放后仍有 0.89；通用抓放任务面对 23 种没见过的物体，成功率 0.85。",
+      "related": [
+        "灵巧操作",
+        "双臂操作",
+        "灵巧手",
+        "字节 GR-3",
+        "视觉-语言-动作模型",
+        "数据手套"
+      ],
+      "sources": [
+        {
+          "title": "GR-Dexter Technical Report (arXiv 2512.24210)",
+          "url": "https://arxiv.org/abs/2512.24210"
+        },
+        {
+          "title": "GR-Dexter 技术报告 HTML 全文",
+          "url": "https://arxiv.org/html/2512.24210v2"
+        }
+      ],
+      "as_of": "2025-12"
+    },
+    {
+      "name_zh": "字节 GR-RL",
+      "name_en": "GR-RL: Going Dexterous and Precise for Long-Horizon Robotic Manipulation (ByteDance Seed)",
+      "abbr": "",
+      "aliases": [
+        "GR-RL"
+      ],
+      "tier": 3,
+      "one_liner": "字节 Seed 用强化学习把通用 VLA 练成专家，首个能自主穿鞋带的学习型策略。",
+      "explanation": "GR-RL 由字节跳动 Seed 团队 2025 年 12 月发布，以通用模型 GR-3 为起点。它的出发点是：常规 VLA 默认人类演示是最优的，但在精细的长程灵巧任务里，演示常带抖动和多余动作。GR-RL 分三步：先用稀疏奖励做离线强化学习，把学到的 Q 值当作「任务进度」估计，删掉对进度没有贡献的片段；再做形态对称增强，即左右翻转图像、交换左右腕部相机、同步改写指令里的左右，扩充数据；最后做在线强化学习，学一个隐空间噪声预测器，引导基于流匹配的策略往高回报方向输出，让训练和实际部署时的行为对齐。实验平台是带两条 7 自由度机械臂的轮式机器人 ByteMini-v2。",
+      "example": "穿鞋带：把鞋带依次穿过鞋上的多个鞋眼，需要长程规划、毫米级精度和对软鞋带的柔顺操作。GR-RL 成功率 83.3%，作者称这是首个能自主完成该任务的学习型策略。",
+      "related": [
+        "字节 GR-3",
+        "强化学习微调",
+        "离线强化学习",
+        "噪声空间策略引导",
+        "数据筛选",
+        "长程任务"
+      ],
+      "sources": [
+        {
+          "title": "GR-RL: Going Dexterous and Precise for Long-Horizon Robotic Manipulation (arXiv 2512.01801)",
+          "url": "https://arxiv.org/abs/2512.01801"
+        },
+        {
+          "title": "GR-RL 论文 HTML 全文",
+          "url": "https://arxiv.org/html/2512.01801v3"
+        }
+      ],
+      "as_of": "2025-12"
+    },
+    {
+      "name_zh": "GRAPE",
+      "name_en": "GRAPE: Generalizing Robot Policy via Preference Alignment",
+      "abbr": "GRAPE",
+      "aliases": [
+        "偏好对齐机器人策略"
+      ],
+      "tier": 3,
+      "one_liner": "用成功和失败轨迹做偏好对齐，提升 VLA 在新任务上泛化的方法。",
+      "explanation": "GRAPE 由北卡罗来纳大学教堂山分校、华盛顿大学、芝加哥大学的研究者 2024 年 11 月提出，实验以 OpenVLA 为基础模型。多数 VLA 只对成功示范做行为克隆（照着示范学），没见过失败，不知道哪些做法要避免，泛化到新任务时容易出错。GRAPE 借鉴大语言模型的偏好对齐思路：让模型自己执行多次，按得分给整条轨迹排出好坏，再用「轨迹级偏好优化」（TPO）让模型偏向好轨迹，失败轨迹也能提供信息。打分时先把复杂任务拆成若干阶段，由视觉语言模型为各阶段生成时空约束作为评分依据；换一套约束，就能按「更安全」「更高效」等不同目标来对齐。",
+      "example": "作者报告，GRAPE 让训练内任务和未见任务的成功率分别提升 51.79% 和 58.20%；按安全、效率目标对齐时，碰撞率下降 37.44%，执行步数减少 11.15%。",
+      "related": [
+        "直接偏好优化",
+        "视觉-语言-动作模型",
+        "OpenVLA",
+        "行为克隆",
+        "泛化",
+        "强化学习微调"
+      ],
+      "sources": [
+        {
+          "title": "GRAPE: Generalizing Robot Policy via Preference Alignment (arXiv 2411.19309)",
+          "url": "https://arxiv.org/abs/2411.19309"
+        },
+        {
+          "title": "GRAPE 项目页",
+          "url": "https://grape-vla.github.io/"
+        }
+      ],
+      "as_of": "2025-02"
+    },
+    {
+      "name_zh": "银河通用 GraspVLA",
+      "name_en": "GraspVLA: a Grasping Foundation Model Pre-trained on Billion-scale Synthetic Action Data (Galbot)",
+      "abbr": "",
+      "aliases": [
+        "GraspVLA"
+      ],
+      "tier": 3,
+      "one_liner": "银河通用等 2025 年发布的抓取大模型，主要靠十亿帧仿真合成数据预训练。",
+      "explanation": "GraspVLA 由银河通用机器人（Galbot）联合北京大学王鹤团队、香港大学、北京智源人工智能研究院提出，2025 年 5 月发布，发表于 CoRL 2025。真机数据贵且难扩大规模，团队改在仿真里大规模生成：SynGrasp-1B 数据集约 10 亿帧，覆盖 240 类、1 万多个物体模型，对初始姿态、摆放、背景、光照、材质做大量随机化（域随机化），并用照片级渲染缩小虚实差距。模型采用「渐进式动作生成」：先自回归地预测目标物体的 2D 检测框，再预测抓取位姿，最后用流匹配生成动作块；训练时把合成数据和互联网图文数据一起用，让它能按开放词汇指令抓没见过类别的物体。数据集和模型权重已开源。",
+      "example": "只用合成数据预训练后，模型可以零样本抓取真实桌面上没见过的物体；若某个场景要求特定抓法，再用少量真机示范做少样本微调即可。",
+      "related": [
+        "SynGrasp-1B 数据集",
+        "合成数据",
+        "仿真到现实迁移",
+        "域随机化",
+        "流匹配",
+        "抓取"
+      ],
+      "sources": [
+        {
+          "title": "GraspVLA: a Grasping Foundation Model Pre-trained on Billion-scale Synthetic Action Data (arXiv 2505.03233)",
+          "url": "https://arxiv.org/abs/2505.03233"
+        },
+        {
+          "title": "GraspVLA 项目页",
+          "url": "https://pku-epic.github.io/GraspVLA-web/"
+        }
+      ],
+      "as_of": "2025-08"
+    },
+    {
+      "name_zh": "H2O（人到人形）",
+      "name_en": "H2O: Learning Human-to-Humanoid Real-Time Whole-Body Teleoperation",
+      "abbr": "H2O",
+      "aliases": [
+        "Human to Humanoid"
+      ],
+      "tier": 3,
+      "one_liner": "CMU 2024 年的人形遥操作框架，用一个 RGB 相机让机器人实时模仿人的全身动作。",
+      "explanation": "H2O 由卡内基梅隆大学石冠亚、Changliu Liu、Kris Kitani 等团队 2024 年 3 月发布，发表于 IROS 2024（口头报告），一作为 Tairan He 和 Zhengyi Luo。它只用一个普通 RGB 相机：姿态估计器 HybrIK 从画面实时算出人体姿态，再由强化学习训练的全身跟踪策略驱动宇树 H1 照着做。关键一步是「sim-to-data」：先把 AMASS 人体动捕数据集里约 1 万段动作重定向到 H1 身上，再在仿真里用一个能看到特权信息的模仿策略去试做，把机器人做不到的动作筛掉，剩约 8500 段用来训练；训练好的策略不做额外调参就部署到真机。作者称这是首个基于学习的实时全身人形遥操作。后续工作 OmniH2O 扩展到 VR 遥操作和从遥操作数据自主学习。",
+      "example": "操作员站在摄像头前走路、踢腿、转身、挥手、打拳，H1 实时跟着做出同样的动作，还演示了后跳。",
+      "related": [
+        "全身遥操作",
+        "动作重定向",
+        "运动跟踪",
+        "OmniH2O",
+        "AMASS 人体动捕数据集",
+        "宇树 H1"
+      ],
+      "sources": [
+        {
+          "title": "Learning Human-to-Humanoid Real-Time Whole-Body Teleoperation (arXiv 2403.04436)",
+          "url": "https://arxiv.org/abs/2403.04436"
+        },
+        {
+          "title": "H2O 项目页",
+          "url": "https://human2humanoid.com/"
+        }
+      ],
+      "as_of": "2024-10"
+    },
+    {
+      "name_zh": "HAMSTER（分层动作模型）",
+      "name_en": "HAMSTER: Hierarchical Action Models for Open-World Robot Manipulation",
+      "abbr": "HAMSTER",
+      "aliases": [
+        "分层动作模型"
+      ],
+      "tier": 3,
+      "one_liner": "英伟达等 2025 年的分层 VLA：高层画 2D 路径，底层 3D 策略照着做。",
+      "explanation": "HAMSTER 由英伟达、华盛顿大学、南加州大学的研究者 2025 年 2 月提出，发表于 ICLR 2025。常规 VLA 直接把视觉语言模型（VLM）微调成输出动作，只能用昂贵的真机数据训练。HAMSTER 把系统拆成两层：高层是微调过的 VLM（基于 VILA），看一张 RGB 图和任务描述，画出一条粗略的 2D 路径，表示末端执行器大致该怎么走；底层是能处理 3D 输入的控制策略（论文试了 RVT-2 和 3D Diffuser Actor），把这条路径当引导去做精确操作。高层只需输出 2D 路径，所以能用便宜的「域外数据」训练，比如无动作标签的视频、手绘草图、仿真数据；高层不管精细动作，底层不管任务推理，各做擅长的事。",
+      "example": "在真机上沿 7 个泛化维度（如新物体、新背景、新指令语义）测试，HAMSTER 比 OpenVLA 平均成功率高约 20%，相对提升约 50%。",
+      "related": [
+        "分层架构",
+        "中间表示",
+        "视觉-语言-动作模型",
+        "RVT-2",
+        "3D Diffuser Actor",
+        "OpenVLA"
+      ],
+      "sources": [
+        {
+          "title": "HAMSTER: Hierarchical Action Models For Open-World Robot Manipulation (arXiv 2502.05485)",
+          "url": "https://arxiv.org/abs/2502.05485"
+        },
+        {
+          "title": "HAMSTER 项目页",
+          "url": "https://hamster-robot.github.io/"
+        }
+      ],
+      "as_of": "2025-05"
+    },
+    {
+      "name_zh": "异构预训练 Transformer",
+      "name_en": "Heterogeneous Pre-trained Transformers",
+      "abbr": "HPT",
+      "aliases": [
+        "HPT"
+      ],
+      "tier": 3,
+      "one_liner": "MIT 何恺明团队 2024 年提出，用共享主干网络统一预训练各种机器人数据。",
+      "explanation": "HPT 由 MIT CSAIL 的 Lirui Wang、何恺明与 Meta FAIR 的陈鑫磊等人 2024 年 9 月发布，发表于 NeurIPS 2024（Spotlight）。机器人数据很「异构」：不同机器人的相机数量、关节数、控制方式都不同，很难放进一个模型一起训练。HPT 把网络拆成三段：每种本体配一个小的 stem（编码器），把本体感知和图像转成固定数量的 token；中间是一个大的共享 Transformer 主干（trunk），学习与本体、任务无关的表示；输出端的 head 按任务把表示映射成动作。预训练用了 50 多个数据集、约 20 万条轨迹，来源包括真机遥操作、仿真、人类视频和已部署的机器人。",
+      "example": "把预训练好的主干接到一台新机器人上，只需为它训练新的 stem 和 head；作者报告在多个仿真基准和真机的未见任务上，微调后策略性能提升 20% 以上。",
+      "related": [
+        "跨本体",
+        "异构数据",
+        "预训练",
+        "本体专属头",
+        "缩放定律",
+        "Open X-Embodiment 数据集"
+      ],
+      "sources": [
+        {
+          "title": "Scaling Proprioceptive-Visual Learning with Heterogeneous Pre-trained Transformers (arXiv 2409.20537)",
+          "url": "https://arxiv.org/abs/2409.20537"
+        },
+        {
+          "title": "HPT 项目页",
+          "url": "https://liruiw.github.io/hpt/"
+        }
+      ],
+      "as_of": "2024-12"
+    },
+    {
+      "name_zh": "Hi Robot",
+      "name_en": "Hi Robot: Open-Ended Instruction Following with Hierarchical Vision-Language-Action Models",
+      "abbr": "",
+      "aliases": [
+        "Hierarchical Interactive Robot"
+      ],
+      "tier": 3,
+      "one_liner": "PI 2025 年的分层系统：高层 VLM 拆解复杂指令，低层 π0 执行。",
+      "explanation": "Hi Robot 由 Physical Intelligence 联合斯坦福大学、UC 伯克利的研究者 2025 年 2 月发布，发表于 ICML 2025。单个 VLA 擅长执行「拿起杯子」这类简单指令，但难以处理带限制条件的复杂要求，也难以应对执行途中用户的插话纠正。Hi Robot 分两层：高层是基于 PaliGemma-3B 的视觉语言模型，看当前画面和用户的话，推理出下一步该执行的简单指令，还能口头回应用户；低层是 π0，把简单指令变成连续动作。训练高层时，团队把遥操作示范切成短技能片段，再让一个大 VLM 反推「用户当时可能说了什么、机器人该怎么回答」，合成对话式训练数据，省去人工标注。系统在单臂 UR5e、双臂 ARX 和移动双臂 ARX 上做了测试。",
+      "example": "用户说「给我做个素食三明治」，高层会把它拆成逐步取配料的子指令并跳过肉类；收拾桌子时用户说「那不是垃圾」，机器人会停下并调整做法。",
+      "related": [
+        "分层架构",
+        "快慢双系统",
+        "π0",
+        "指令跟随",
+        "语言纠正（实时语言反馈）",
+        "Physical Intelligence"
+      ],
+      "sources": [
+        {
+          "title": "Hi Robot: Open-Ended Instruction Following with Hierarchical Vision-Language-Action Models (arXiv 2502.19417)",
+          "url": "https://arxiv.org/abs/2502.19417"
+        },
+        {
+          "title": "Hi Robot 论文 HTML 全文",
+          "url": "https://arxiv.org/html/2502.19417v2"
+        }
+      ],
+      "as_of": "2025-07"
+    },
+    {
+      "name_zh": "地平线 HoloBrain-0",
+      "name_en": "HoloBrain-0 (Horizon Robotics open-source VLA foundation model)",
+      "abbr": "HoloBrain",
+      "aliases": [
+        "HoloBrain-0 Technical Report",
+        "地平线 HoloBrain"
+      ],
+      "tier": 3,
+      "one_liner": "地平线 2026 年初开源的 VLA 框架，把相机参数和机器人结构作为先验输入模型。",
+      "explanation": "HoloBrain-0 由地平线（Horizon Robotics）团队 2026 年 2 月发布技术报告并开源。它的核心设计是在 VLA 里显式加入机器人本体先验：多视角相机的参数，以及描述机器人关节结构的 URDF 文件，用来增强 3D 空间推理、适配不同本体。训练走「预训练再后训练」路线：预训练数据来自双臂 Piper、智元 G1、Franka 等真机，仿真中的双臂 UR5、双臂 ARX，以及人类手部视频数据集 EgoDex，再针对具体任务后训练。报告称它在 RoboTwin 2.0、LIBERO、GenieSim 仿真基准上达到最优，在真机长程任务上表现也较好。开源内容包括预训练模型、各仿真套件和真机任务的后训练检查点，以及覆盖数据整理、训练、部署的全栈工具链 RoboOrchard。",
+      "example": "它有一个约 2 亿参数（0.2B）的轻量版本，基于 GroundingDINO-Tiny，效果可与大得多的基线相当，推理延迟低，适合直接部署在机器人端侧芯片上；另有基于 Qwen2.5-VL-3B 的约 11 亿参数（1.1B）版本。",
+      "related": [
+        "视觉-语言-动作模型",
+        "跨本体",
+        "统一机器人描述格式",
+        "RoboTwin",
+        "端侧部署",
+        "地平线"
+      ],
+      "sources": [
+        {
+          "title": "HoloBrain-0 Technical Report (arXiv 2602.12062)",
+          "url": "https://arxiv.org/abs/2602.12062"
+        },
+        {
+          "title": "HoloBrain-0 技术报告 HTML 全文",
+          "url": "https://arxiv.org/html/2602.12062v1"
+        }
+      ],
+      "as_of": "2026-02"
+    },
+    {
+      "name_zh": "HOMIE",
+      "name_en": "HOMIE: Humanoid Loco-Manipulation with Isomorphic Exoskeleton Cockpit",
+      "abbr": "HOMIE",
+      "aliases": [
+        "OpenHomie"
+      ],
+      "tier": 3,
+      "one_liner": "上海 AI 实验室 2025 年的人形遥操作系统，用外骨骼、手套和踏板控制全身。",
+      "explanation": "HOMIE 由上海人工智能实验室与香港中文大学（庞江淼、林达华团队）2025 年 2 月发布，发表于 RSS 2025，已全部开源（OpenHomie）。人形机器人既要走又要用手干活（运动操作一体化），遥操作时很难同时控制上下半身。HOMIE 是半自主方案：下半身交给强化学习训练的策略，能按指令行走、转向、蹲到指定高度，同时适应上半身的任意姿态（训练中用了上半身姿态课程、高度跟踪奖励和左右对称性）；操作员用脚踏板下达移动指令，双臂戴与机器人同构的外骨骼（关节一一对应，读出的关节角直接当指令，不用逆运动学），手上戴基于霍尔传感器的动作感知手套控制灵巧手。整套硬件成本约 500 美元，在 Isaac Gym 仿真里为宇树 G1 和傅利叶 GR-1 都训练了策略，真机实验在宇树 G1 上完成。",
+      "example": "例如操作员踩踏板让机器人走到桌前并下蹲，同时用外骨骼臂和手套控制双手取物；作者报告完成任务的用时约为以往系统的一半。",
+      "related": [
+        "外骨骼遥操作",
+        "运动操作一体化",
+        "全身遥操作",
+        "数据手套",
+        "宇树 G1",
+        "上海人工智能实验室"
+      ],
+      "sources": [
+        {
+          "title": "HOMIE: Humanoid Loco-Manipulation with Isomorphic Exoskeleton Cockpit (arXiv 2502.13013)",
+          "url": "https://arxiv.org/abs/2502.13013"
+        },
+        {
+          "title": "HOMIE 项目页",
+          "url": "https://homietele.github.io/"
+        }
+      ],
+      "as_of": "2025-06"
+    }
+  ]
+}

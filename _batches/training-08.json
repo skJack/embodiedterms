@@ -1,0 +1,201 @@
+{"category": "training", "batch": 8, "terms": [
+{
+"name_zh": "奖励模型",
+"name_en": "Reward Model",
+"abbr": "RM",
+"aliases": ["学习式奖励", "Learned Reward Model", "奖励打分模型"],
+"tier": 2,
+"one_liner": "训练出来的打分网络，给一段行为或结果打出「做得好不好」的奖励分。",
+"explanation": "奖励模型是一个经过训练的神经网络：输入一段行为（机器人轨迹视频、大模型的一个回答等），输出一个奖励分，用来代替人手写的奖励函数。代表性工作是 Christiano 等人 2017 年用人类对两段轨迹的偏好比较来训练奖励模型，只花约一小时人工反馈就教会模拟机器人新动作；OpenAI 2022 年的 InstructGPT 把它放进 RLHF（基于人类反馈的强化学习）流程，成为大模型后训练的标准一步。机器人里很多任务难以写出精确奖励（比如「衣服叠整齐没有」），奖励模型让强化学习、失败检测、数据筛选有了可用信号。常见形式有成功检测器、进度奖励模型、直接让 VLM 打分；风险是策略会钻模型的漏洞，即奖励黑客。",
+"example": "Robometer（RSS 2026）在 100 多万条、包含大量失败和次优轨迹的数据集 RBM-1M 上训练，同时学「每一帧的任务进度」和「同一任务两条轨迹哪条更好」，得到可跨多种机器人使用的通用奖励模型。",
+"related": ["奖励函数", "基于人类反馈的强化学习", "进度奖励模型", "成功检测器", "VLM 作奖励模型", "奖励黑客"],
+"sources": [
+{"title": "Deep reinforcement learning from human preferences (Christiano et al., arXiv 1706.03741)", "url": "https://arxiv.org/abs/1706.03741"},
+{"title": "Training language models to follow instructions with human feedback (InstructGPT, arXiv 2203.02155)", "url": "https://arxiv.org/abs/2203.02155"},
+{"title": "Robometer: Scaling General-Purpose Robotic Reward Models via Trajectory Comparisons (arXiv 2603.02115)", "url": "https://arxiv.org/abs/2603.02115"}
+],
+"as_of": "2026-05"
+},
+{
+"name_zh": "奖励塑形",
+"name_en": "Reward Shaping",
+"abbr": "",
+"aliases": ["奖励整形", "奖励成形", "基于势函数的奖励塑形", "Potential-based Reward Shaping"],
+"tier": 2,
+"one_liner": "在任务原始奖励之外加上中间引导分，让智能体更快学会任务。",
+"explanation": "奖励塑形指在任务本身的奖励（例如只在成功时给 1 分）之外，额外加入对中间进展的奖励，比如机械臂离目标越近分越高。它主要解决稀疏奖励下智能体长时间拿不到反馈、学不动的问题。风险是加错会改变「最优行为」：经典例子是骑自行车的智能体因为「靠近目标有奖励、远离不扣分」，学会绕着目标转小圈。Ng、Harada、Russell 在 1999 年 ICML 论文中证明，只要附加奖励写成势函数之差 F=γΦ(s′)−Φ(s)（Φ 给每个状态打分，γ 是折扣因子），最优策略就不会改变，这叫基于势函数的奖励塑形。具身智能里腿足运控的奖励通常由速度跟踪、姿态、能耗、足端腾空时间等多项加权组成，本质就是大量手工塑形；Eureka 等工作尝试让大模型自动写这类奖励代码。",
+"example": "训练机械臂把方块推到目标点：原始奖励只在方块到位时给 1；塑形后每一步再奖励「夹爪到方块的距离缩短了多少」和「方块到目标的距离缩短了多少」，策略在训练早期就能拿到学习信号。",
+"related": ["稀疏奖励", "稠密奖励", "奖励函数", "奖励工程", "奖励黑客", "Eureka"],
+"sources": [
+{"title": "Policy Invariance Under Reward Transformations: Theory and Application to Reward Shaping (Ng, Harada, Russell, ICML 1999)", "url": "https://ai.stanford.edu/~ang/papers/shaping-icml99.pdf"},
+{"title": "Reward Hacking in Reinforcement Learning (Lilian Weng, 2024)", "url": "https://lilianweng.github.io/posts/2024-11-28-reward-hacking/"}
+],
+"as_of": ""
+},
+{
+"name_zh": "样本效率",
+"name_en": "Sample Efficiency",
+"abbr": "",
+"aliases": ["数据效率", "Data Efficiency"],
+"tier": 2,
+"one_liner": "学到同样水平要消耗多少数据或环境交互，用得越少效率越高。",
+"explanation": "样本效率衡量一个学习算法达到某个性能需要多少样本：强化学习里指与环境交互的步数，模仿学习里指演示条数。它在机器人上格外关键。仿真里可以靠 GPU 并行弥补，例如 Rudin 等人 2021 年在单块 GPU 上同时跑数千个 ANYmal 四足机器人，平地行走不到 4 分钟就训完；真机只能一步步实际执行，还有磨损和人工复位成本，所以真机强化学习必须用样本效率高的方法。常见提升手段有：用异策略算法配合经验回放反复利用旧数据、加入人类演示或纠正、基于模型的强化学习在想象中训练、使用预训练视觉表征。一般来说同策略的 PPO 样本效率较低，适合大规模并行仿真；SAC 一类异策略算法更省样本，常用于真机。",
+"example": "伯克利的 SERL 在真机上用异策略强化学习，每个任务平均 25–50 分钟训练就学会 PCB 板插装、线缆布线等任务；后续 HIL-SERL 加入人类纠正，1–2.5 小时即达到接近满分的成功率。",
+"related": ["异策略", "经验回放", "真机强化学习", "基于模型的强化学习", "大规模并行强化学习", "SERL"],
+"sources": [
+{"title": "SERL: A Software Suite for Sample-Efficient Robotic Reinforcement Learning (arXiv 2401.16013)", "url": "https://arxiv.org/abs/2401.16013"},
+{"title": "Precise and Dexterous Robotic Manipulation via Human-in-the-Loop Reinforcement Learning (HIL-SERL, arXiv 2410.21845)", "url": "https://arxiv.org/abs/2410.21845"},
+{"title": "Learning to Walk in Minutes Using Massively Parallel Deep Reinforcement Learning (arXiv 2109.11978)", "url": "https://arxiv.org/abs/2109.11978"}
+],
+"as_of": ""
+},
+{
+"name_zh": "自监督学习",
+"name_en": "Self-Supervised Learning",
+"abbr": "SSL",
+"aliases": ["自监督", "自监督预训练"],
+"tier": 2,
+"one_liner": "不用人工标注，从数据自身构造「题目和答案」来训练模型。",
+"explanation": "自监督学习指监督信号来自数据本身、不需要人工标签的训练方式：把输入的一部分藏起来，让模型根据其余部分去预测它。Yann LeCun 等人把它称为智能的「暗物质」并大力推广。常见形式有：遮住文本中的词让模型补全（BERT；GPT 的下一个 token 预测也常归入此类）、遮住 75% 的图像块再重建（MAE，掩码自编码器）、让同一内容不同视角的表征彼此靠近（对比学习）。它解决的是人工标注昂贵、数据量上不去的问题，是大模型预训练的基础。在具身智能里，带动作标签的机器人数据很少，研究者常先在海量人类视频上自监督预训练视觉表征或世界模型，再用少量机器人数据微调。",
+"example": "Meta 的 V-JEPA 2 先在超过 100 万小时互联网视频上自监督预训练，再用不到 62 小时、不带标签的 DROID 机器人视频训练出动作条件世界模型 V-JEPA 2-AC，在不同实验室的 Franka 机械臂上不做任务专门训练、靠图像目标规划完成抓取放置。",
+"related": ["对比学习", "掩码自编码器", "预训练", "表征学习", "下一个 token 预测", "V-JEPA 2"],
+"sources": [
+{"title": "Self-supervised learning: The dark matter of intelligence (Meta AI, 2021)", "url": "https://ai.meta.com/blog/self-supervised-learning-the-dark-matter-of-intelligence/"},
+{"title": "Masked Autoencoders Are Scalable Vision Learners (arXiv 2111.06377)", "url": "https://arxiv.org/abs/2111.06377"},
+{"title": "V-JEPA 2: Self-Supervised Video Models Enable Understanding, Prediction and Planning (arXiv 2506.09985)", "url": "https://arxiv.org/abs/2506.09985"}
+],
+"as_of": ""
+},
+{
+"name_zh": "软演员-评论家",
+"name_en": "Soft Actor-Critic",
+"abbr": "SAC",
+"aliases": ["SAC 算法", "最大熵演员-评论家"],
+"tier": 2,
+"one_liner": "在追求高回报的同时鼓励动作保持随机的异策略强化学习算法。",
+"explanation": "SAC 由伯克利 Tuomas Haarnoja、Sergey Levine 等人 2018 年提出（ICML 2018）。它属于演员-评论家方法：「演员」是输出动作的策略网络，「评论家」是估计动作好坏的 Q 函数。核心是最大熵目标：在最大化回报的同时让策略尽量随机（熵高），以鼓励探索、避免过早收敛到次优解，随机程度由温度系数 α 控制，后续版本可自动调节 α。它是异策略算法，能反复利用经验回放里的旧数据，因此样本效率高、对超参数不敏感，只用于连续动作空间。实现上同时学两个 Q 网络并取较小值，以抑制 Q 值高估。SAC 是真机强化学习的常用底座，SERL、HIL-SERL 用的 RLPD 算法就是在 SAC 基础上改进的。",
+"example": "SAC 的扩展论文把它用在真机上：Minitaur 四足机器人约 2 小时学会行走，Sawyer 机械臂约 2 小时学会堆积木，灵巧手直接从图像学会转阀门约需 20 小时。",
+"related": ["异策略", "熵正则化", "Q 函数", "经验回放", "双延迟深度确定性策略梯度", "SERL"],
+"sources": [
+{"title": "Soft Actor-Critic: Off-Policy Maximum Entropy Deep RL with a Stochastic Actor (arXiv 1801.01290)", "url": "https://arxiv.org/abs/1801.01290"},
+{"title": "Soft Actor Critic—Deep Reinforcement Learning with Real-World Robots (BAIR Blog, 2018)", "url": "https://bair.berkeley.edu/blog/2018/12/14/sac/"},
+{"title": "Soft Actor-Critic (OpenAI Spinning Up)", "url": "https://spinningup.openai.com/en/latest/algorithms/sac.html"}
+],
+"as_of": ""
+},
+{
+"name_zh": "稀疏奖励",
+"name_en": "Sparse Reward",
+"abbr": "",
+"aliases": ["二值奖励", "成功奖励", "Binary Reward"],
+"tier": 2,
+"one_liner": "只在完成任务等少数时刻给奖励，其余时间奖励都是 0。",
+"explanation": "稀疏奖励指环境绝大部分时间奖励为零，只有达成目标时才给信号，最典型的是二值奖励：成功记 1，否则记 0。好处是定义简单、不易被钻空子，直接对应「任务到底完成没有」；难点是智能体随机探索时很难碰巧成功，长时间拿不到任何学习信号，任务越长越难。常见对策有：用奖励塑形补充中间提示（相对的做法叫稠密奖励）、用人类演示给出成功样例、后见之明经验回放（HER，把失败轨迹实际到达的位置当作目标重新标注，从而变成「成功」样本）、课程学习由易到难。真机强化学习里常训练一个成功检测器来自动给出这种 0/1 奖励。",
+"example": "HIL-SERL 为每个任务遥操作采集约 200 个成功画面和 1000 个失败画面，训练一个二分类器当奖励：只有分类器判定任务完成时给正奖励，其余为 0；分类器在评估集上的准确率一般超过 95%。",
+"related": ["稠密奖励", "奖励塑形", "后见之明经验回放", "成功检测器", "探索与利用", "HIL-SERL"],
+"sources": [
+{"title": "Hindsight Experience Replay (arXiv 1707.01495)", "url": "https://arxiv.org/abs/1707.01495"},
+{"title": "Precise and Dexterous Robotic Manipulation via Human-in-the-Loop Reinforcement Learning (HIL-SERL)", "url": "https://arxiv.org/html/2410.21845"}
+],
+"as_of": ""
+},
+{
+"name_zh": "监督微调",
+"name_en": "Supervised Fine-Tuning",
+"abbr": "SFT",
+"aliases": ["有监督微调", "监督式微调"],
+"tier": 2,
+"one_liner": "用「输入—标准答案」成对数据，在预训练模型上继续做有监督训练。",
+"explanation": "监督微调指拿一个预训练好的模型，在整理好的高质量标注数据上继续训练，让它学会某种具体行为；训练目标就是让输出尽量贴近给定答案（语言输出用交叉熵，连续动作常用 L1 或均方误差）。这个叫法因 OpenAI 2022 年的 InstructGPT 流行：先用人写的示范回答做 SFT，再训练奖励模型、做 RLHF，成为大模型后训练的经典三步。机器人里，SFT 通常指在某台机器人、某些任务的遥操作演示上微调 VLA 等基础模型，本质就是行为克隆。它简单稳定，但只会模仿演示，遇到演示里没出现过的状态容易出错，所以常在 SFT 之后再接强化学习微调。",
+"example": "斯坦福的 OpenVLA-OFT 改进了 OpenVLA 的微调方式（并行解码、动作分块、连续动作表示加 L1 回归），在 LIBERO 仿真基准上把成功率从 76.5% 提升到 97.1%，动作生成吞吐提高 26 倍。",
+"related": ["微调", "行为克隆", "后训练", "指令微调", "强化学习微调", "基于人类反馈的强化学习"],
+"sources": [
+{"title": "Training language models to follow instructions with human feedback (InstructGPT, arXiv 2203.02155)", "url": "https://arxiv.org/abs/2203.02155"},
+{"title": "Fine-Tuning Vision-Language-Action Models: Optimizing Speed and Success (OpenVLA-OFT, arXiv 2502.19645)", "url": "https://arxiv.org/abs/2502.19645"}
+],
+"as_of": ""
+},
+{
+"name_zh": "教师-学生蒸馏",
+"name_en": "Teacher-Student Distillation",
+"abbr": "",
+"aliases": ["教师-学生训练", "师生框架", "Teacher-Student Training", "特权教师蒸馏"],
+"tier": 2,
+"one_liner": "先训练能看到特权信息的教师策略，再让只用真实传感器的学生去模仿它。",
+"explanation": "教师-学生蒸馏源自知识蒸馏（Hinton 等人 2015 年提出，用大模型的输出当软标签训练小模型）。在机器人里通常分两步：先在仿真中训练教师策略，教师可以直接读取真机拿不到的特权信息，如精确地形高度、摩擦系数、物体位姿，所以用强化学习比较容易学好；再训练学生策略，它只接收真机上能获得的观测（关节状态、IMU、相机图像等），通过模仿教师的动作或中间表示来学习，常用 DAgger 式在线纠正。这样把「难学的决策」和「难学的感知」拆开处理，是仿真到现实迁移的主流做法之一。代表工作有 2019 年自动驾驶领域的 Learning by Cheating，以及 ETH 2020 年的四足盲走控制器。",
+"example": "ETH 的 Lee 等人（Science Robotics 2020）让教师在仿真中读取地形等特权信息，学生只靠本体感知信号模仿教师；ANYmal 四足零样本部署到泥地、雪地、碎石、茂密植被和湍急水流等训练中没见过的野外环境。",
+"related": ["知识蒸馏", "特权信息", "策略蒸馏", "非对称演员-评论家", "仿真到现实迁移", "DAgger（数据集聚合）"],
+"sources": [
+{"title": "Learning Quadrupedal Locomotion over Challenging Terrain (Lee et al., Science Robotics 2020, arXiv 2010.11251)", "url": "https://arxiv.org/abs/2010.11251"},
+{"title": "Learning by Cheating (Chen et al., CoRL 2019, arXiv 1912.12294)", "url": "https://arxiv.org/abs/1912.12294"},
+{"title": "Distilling the Knowledge in a Neural Network (Hinton et al., arXiv 1503.02531)", "url": "https://arxiv.org/abs/1503.02531"}
+],
+"as_of": ""
+},
+{
+"name_zh": "时序差分学习",
+"name_en": "Temporal Difference Learning",
+"abbr": "TD",
+"aliases": ["TD 学习", "TD 误差", "时间差分学习"],
+"tier": 2,
+"one_liner": "用「这一步奖励 + 下一状态的估计价值」来更新当前价值估计的方法。",
+"explanation": "时序差分学习由 Richard Sutton 在 1988 年的论文中系统提出，是强化学习里估计价值函数（衡量某个状态或动作之后能拿多少总回报）的核心方法。它不必等一整局结束拿到真实回报，而是每走一步就更新：把「实际拿到的奖励 r + 折扣后的下一状态估计值 γV(s′)」当作目标，它与当前估计 V(s) 的差叫 TD 误差，按它修正 V(s)。这种「用估计去更新估计」的做法叫自举，比等整局结束再算的蒙特卡洛方法方差更小、能边走边学，代价是会引入偏差。Q 学习、DQN，以及 SAC、TD3 的评论家网络都靠 TD 目标训练；早期名作 TD-Gammon 用它学到了专家水平的西洋双陆棋。",
+"example": "机械臂走一步得到奖励 0，评论家估计下一状态价值为 0.8，折扣因子 γ=0.99，则 TD 目标为 0+0.99×0.8=0.792；若当前状态估值是 0.5，TD 误差为 0.292，网络就把当前估值往 0.792 的方向调一点。",
+"related": ["价值函数", "贝尔曼方程", "自举", "Q 学习", "蒙特卡洛方法（蒙特卡洛回报）", "广义优势估计"],
+"sources": [
+{"title": "Temporal difference learning (Wikipedia)", "url": "https://en.wikipedia.org/wiki/Temporal_difference_learning"},
+{"title": "Soft Actor-Critic (OpenAI Spinning Up)", "url": "https://spinningup.openai.com/en/latest/algorithms/sac.html"}
+],
+"as_of": ""
+},
+{
+"name_zh": "从零训练",
+"name_en": "Training from Scratch",
+"abbr": "",
+"aliases": ["随机初始化训练", "From Scratch"],
+"tier": 2,
+"one_liner": "参数随机初始化、不借用任何预训练权重，直接在目标数据上训练模型。",
+"explanation": "从零训练指网络权重从随机值开始，只用当前任务的数据训练，与「加载预训练模型再微调」相对。好处是不受预训练数据分布和模型结构的约束、流程简单；缺点是需要更多数据和训练时间，数据少时容易过拟合。何恺明等人 2018 年的《Rethinking ImageNet Pre-training》发现，目标检测只要训练足够久，从零训练也能追平 ImageNet 预训练，说明预训练的主要作用之一是加快收敛。机器人数据稀缺，论文里常把从零训练作为基线，用来衡量预训练表征或大规模预训练带来的收益；但并非总是预训练更好，比如扩散策略的视觉编码器就是不带预训练的 ResNet-18，端到端从零训练。",
+"example": "R3M 论文在 12 个仿真操作任务上对比：用 Ego4D 人类视频预训练的视觉表征，比从零训练视觉编码器的成功率高出 20% 以上。",
+"related": ["预训练", "微调", "基线方法", "过拟合", "迁移学习", "预训练视觉表征"],
+"sources": [
+{"title": "Rethinking ImageNet Pre-training (He et al., arXiv 1811.08883)", "url": "https://arxiv.org/abs/1811.08883"},
+{"title": "R3M: A Universal Visual Representation for Robot Manipulation (arXiv 2203.12601)", "url": "https://arxiv.org/abs/2203.12601"},
+{"title": "Diffusion Policy: Visuomotor Policy Learning via Action Diffusion (arXiv 2303.04137)", "url": "https://arxiv.org/html/2303.04137"}
+],
+"as_of": ""
+},
+{
+"name_zh": "免训练",
+"name_en": "Training-free",
+"abbr": "",
+"aliases": ["无需训练", "零训练", "Training-free Method"],
+"tier": 2,
+"one_liner": "不更新任何模型参数，直接组合现成模型或算法来完成新任务。",
+"explanation": "免训练指一个方法用于新任务时不做任何梯度更新：直接调用已训练好的基础模型（大语言模型、视觉语言模型、分割或位姿估计模型等），靠提示词、代码生成、搜索或优化求解把它们串起来。它的吸引力在于不用采集机器人数据、换任务只需换指令，适合数据稀缺的具身场景；局限是效果受限于现成模型的能力和中间表示的设计，精细、接触丰富的动作通常做不好。它和零样本不完全相同：零样本强调没见过目标任务的样本，模型本身可能专门训练过；免训练强调整个方法不再训练。论文里也常用它描述即插即用的推理加速手段，如免训练的视觉 token 剪枝。",
+"example": "斯坦福的 VoxPoser 让大语言模型写代码调用视觉语言模型，把「把毛巾挂到架子上」「关上最上层抽屉」这类指令转成 3D 价值地图，再由运动规划生成轨迹，论文明确说整个过程不涉及任何额外训练。",
+"related": ["零样本", "基础模型", "VoxPoser", "ReKep", "代码即策略", "视觉 token 剪枝"],
+"sources": [
+{"title": "VoxPoser: Composable 3D Value Maps for Robotic Manipulation with Language Models (project page)", "url": "https://voxposer.github.io/"},
+{"title": "ReKep: Spatio-Temporal Reasoning of Relational Keypoint Constraints for Robotic Manipulation (arXiv 2409.01652)", "url": "https://arxiv.org/abs/2409.01652"}
+],
+"as_of": ""
+},
+{
+"name_zh": "迁移学习",
+"name_en": "Transfer Learning",
+"abbr": "",
+"aliases": ["知识迁移"],
+"tier": 2,
+"one_liner": "把在一个任务或领域学到的知识，拿来帮助学习另一个相关任务。",
+"explanation": "迁移学习指把源任务（通常数据多）上学到的模型或表征用到目标任务（通常数据少）上，最常见的做法是先预训练、再微调。相关研究可追溯到 1976 年 Bozinovski 等人的神经网络工作；Yosinski 等人 2014 年发现，网络低层学到的是较通用的特征，越往高层越专门化，而且用迁移来的权重初始化，即使再微调也能提升泛化。迁移并不总有好处：源和目标差得太远时反而拖累性能，称为负迁移。具身智能几乎处处在做迁移：把互联网图文训练的 VLM 改造成 VLA、仿真到现实迁移、跨本体迁移、从人类视频迁移到机器人；领域自适应是它的一个子方向。",
+"example": "谷歌 DeepMind 的 RT-2 把在网络规模图文数据上训练的视觉语言模型，与机器人轨迹数据一起微调，动作写成文本 token；模型能执行训练数据里没有的指令，如「捡起灭绝的动物」，在泛化测试上约为 RT-1 等基线的 2 倍。",
+"related": ["预训练", "微调", "领域自适应", "仿真到现实迁移", "正迁移 / 负迁移", "RT-2"],
+"sources": [
+{"title": "Transfer learning (Wikipedia)", "url": "https://en.wikipedia.org/wiki/Transfer_learning"},
+{"title": "How transferable are features in deep neural networks? (Yosinski et al., arXiv 1411.1792)", "url": "https://arxiv.org/abs/1411.1792"},
+{"title": "RT-2: Vision-Language-Action Models Transfer Web Knowledge to Robotic Control (project page)", "url": "https://robotics-transformer2.github.io/"}
+],
+"as_of": ""
+}
+]}

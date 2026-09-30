@@ -1,0 +1,200 @@
+{
+  "category": "mechanics",
+  "batch": 6,
+  "terms": [
+    {
+      "name_zh": "奇异位形",
+      "name_en": "Kinematic Singularity",
+      "abbr": "",
+      "aliases": ["奇异点", "奇异构型", "奇异性", "运动学奇异", "Singularity", "Singular Configuration", "腕部奇异", "边界奇异"],
+      "tier": 2,
+      "one_liner": "雅可比矩阵降秩、末端在某些方向上动不了的机械臂姿态。",
+      "explanation": "奇异位形是机械臂的一类特殊姿态。雅可比矩阵（把关节速度换算成末端速度的矩阵）在多数姿态下满秩，到了奇异位形会降秩，末端在某个方向上无论关节怎么转都动不了。常见两类：边界奇异是手臂完全伸直、末端到了工作空间边缘；腕部奇异是六轴臂的两根腕部关节轴线转到共线，少了一个有效自由度。靠近奇异时，末端走一小段直线可能要求某些关节转得极快，逆解也容易发散。所以轨迹规划要避开它，数值逆解常用阻尼最小二乘压住关节速度，可操作度则用来衡量离奇异还有多远。",
+      "example": "平面两连杆臂完全伸直时，末端只能沿垂直于手臂的方向运动，沿手臂方向继续向外的速度无论如何都产生不了；此时沿手臂方向的外力由结构直接承受，关节不用出力。",
+      "related": ["雅可比矩阵", "可操作度", "阻尼最小二乘法", "雅可比伪逆", "球形手腕", "工作空间"],
+      "sources": [
+        {"title": "Modern Robotics 5.3: Singularities (Northwestern)", "url": "https://modernrobotics.northwestern.edu/nu-gm-book-resource/5-3-singularities/"},
+        {"title": "Modern Robotics 6.2: Numerical Inverse Kinematics (Part 1 of 2)", "url": "https://modernrobotics.northwestern.edu/nu-gm-book-resource/6-2-numerical-inverse-kinematics-part-1-of-2/"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "线性倒立摆模型",
+      "name_en": "Linear Inverted Pendulum Model",
+      "abbr": "LIPM",
+      "aliases": ["线性倒立摆", "线性倒立摆模式", "Linear Inverted Pendulum Mode", "LIP", "3D-LIPM", "三维线性倒立摆"],
+      "tier": 2,
+      "one_liner": "把双足机器人简化成质心高度不变的倒立摆，用来快速规划行走。",
+      "explanation": "线性倒立摆模型是双足行走最常用的简化模型，由梶田秀司（Shuuji Kajita）等人提出：1991 年在 ICRA 发表平面版本，2001 年在 IROS 发表三维版本 3D-LIPM。它把机器人看成集中在质心的一个质点加一根无质量的腿，并假设质心高度不变，原本非线性的倒立摆方程就变成线性的 ẍ = (g/z_c)(x − p)。x 是质心水平位置，p 是支撑点（压力中心，即 ZMP）位置，g 是重力加速度，z_c 是质心高度。线性方程有解析解、算得快，适合实时生成步态和做 ZMP 预观控制，捕获点也由它推出。代价是忽略了腿的质量和上身转动。",
+      "example": "质心高度 z_c = 0.8 m 时，g/z_c ≈ 12.3 s⁻²；质心若在支撑点前方 5 cm，水平加速度约 0.6 m/s²，并且越倒越快，机器人必须及时迈出下一步，把支撑点挪到前面。",
+      "related": ["倒立摆模型", "零力矩点", "捕获点", "小车-桌子模型", "ZMP 预观控制", "质心"],
+      "sources": [
+        {"title": "Kajita et al., The 3D Linear Inverted Pendulum Mode: A Simple Modeling for a Biped Walking Pattern Generation (IROS 2001)", "url": "https://doi.org/10.1109/IROS.2001.973365"},
+        {"title": "Kajita & Tani, Study of Dynamic Biped Locomotion on Rugged Terrain: Derivation and Application of the Linear Inverted Pendulum Mode (ICRA 1991)", "url": "https://doi.org/10.1109/ROBOT.1991.131811"},
+        {"title": "Underactuated Robotics (MIT, Tedrake): Simple Models of Walking and Running / Humanoids", "url": "https://underactuated.mit.edu/humanoids.html"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "质量矩阵",
+      "name_en": "Mass Matrix",
+      "abbr": "",
+      "aliases": ["惯性矩阵", "关节空间惯性矩阵", "广义质量矩阵", "Inertia Matrix", "Joint-Space Inertia Matrix", "JSIM", "M(q)"],
+      "tier": 2,
+      "one_liner": "机器人动力学方程里描述各关节有多难被加速的矩阵 M(q)。",
+      "explanation": "质量矩阵出现在机器人标准动力学方程 τ = M(q)q̈ + c(q, q̇) + g(q) 中：τ 是关节力矩，q、q̇、q̈ 是关节角及其一、二阶导数，c 是科里奥利力和离心力项，g 是重力项。M(q) 是 n×n 矩阵（n 为关节数），决定一组关节加速度需要多大力矩，动能也可写成 T = ½q̇ᵀM(q)q̇。它对称、正定，并随姿态变化：手臂伸直时肩关节要带动的惯性更大。非对角元表示关节间的惯性耦合，只加速肘关节，肩关节也会受到反作用力矩。计算力矩控制、操作空间控制和正动力学仿真都要用到它，Pinocchio、MuJoCo 等库可直接算出。",
+      "example": "平面两连杆臂：肘关节伸直时，质量矩阵里对应肩关节的对角元最大；同样的肩部力矩，伸直时产生的角加速度比肘部弯曲时小。",
+      "related": ["刚体动力学", "科里奥利力与离心力项", "复合刚体算法", "逆动力学", "正动力学", "拉格朗日方程"],
+      "sources": [
+        {"title": "Modern Robotics 8.1.3: Understanding the Mass Matrix (Northwestern)", "url": "https://modernrobotics.northwestern.edu/nu-gm-book-resource/8-1-3-understanding-the-mass-matrix/"},
+        {"title": "Wikipedia: Mass matrix", "url": "https://en.wikipedia.org/wiki/Mass_matrix"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "质量-弹簧-阻尼系统",
+      "name_en": "Mass-Spring-Damper System",
+      "abbr": "",
+      "aliases": ["质量-弹簧-阻尼模型", "弹簧阻尼模型", "弹簧-质量-阻尼系统", "Mass-Spring-Damper Model", "Spring-Mass-Damper System"],
+      "tier": 2,
+      "one_liner": "由质量、弹簧、阻尼器组成的最基础振动模型，控制和接触问题常用它近似。",
+      "explanation": "质量-弹簧-阻尼系统是力学和控制里最基础的动态模型：质量块 m 连着刚度为 k 的弹簧和阻尼系数为 c 的阻尼器，运动方程为 mẍ + cẋ + kx = F，x 是偏离平衡点的位移，F 是外力。弹簧把质量拉回平衡点，阻尼器消耗能量。由它定义固有频率 ωn = √(k/m) 和阻尼比 ζ = c/(2√(km))：ζ<1 会振荡着停下（欠阻尼），ζ=1 最快回到平衡且不超调（临界阻尼），ζ>1 慢慢爬回去（过阻尼）。机器人里到处是它：关节 PD 控制相当于虚拟弹簧加阻尼，阻抗控制让末端表现成期望的质量-弹簧-阻尼，不少仿真器的软接触也按弹簧-阻尼计算接触力。",
+      "example": "关节 PD 控制 τ = Kp(q_target − q) − Kd·q̇ 中，Kp 相当于弹簧刚度 k，Kd 相当于阻尼 c：Kd 取太小关节会来回晃，取太大动作会变迟钝。",
+      "related": ["阻尼比", "固有频率", "刚度", "阻尼", "阻抗控制", "PD 控制"],
+      "sources": [
+        {"title": "Wikipedia: Mass-spring-damper model", "url": "https://en.wikipedia.org/wiki/Mass-spring-damper_model"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "转动惯量",
+      "name_en": "Moment of Inertia",
+      "abbr": "",
+      "aliases": ["惯量", "质量惯性矩", "Rotational Inertia", "Mass Moment of Inertia"],
+      "tier": 2,
+      "one_liner": "物体绕某根轴转起来或停下来有多难的量，I = Σmr²。",
+      "explanation": "转动惯量描述物体绕某根轴转动时的惯性，定义为各部分质量乘以到转轴距离的平方再求和，I = Σmr²，单位 kg·m²；这个名称由欧拉在 1765 年提出。它在转动中的作用相当于平动中的质量：τ = Iα，τ 是力矩，α 是角加速度。质量相同时，分布离轴越远转动惯量越大：细杆绕中点是 ml²/12，绕端点变成 ml²/3。三维刚体要用 3×3 的惯性张量描述各方向的转动惯量。机器人设计常把电机往躯干方向放、用轻材料做小腿和手指，就是为了减小远端连杆的转动惯量，让摆动更快更省力。注意材料力学里的「截面惯性矩」是另一个量。",
+      "example": "不少双足和四足机器人把膝关节电机装在大腿根部附近，再通过连杆或皮带驱动膝关节，让小腿变轻、摆腿时的转动惯量变小。",
+      "related": ["惯性张量", "力矩", "平行轴定理", "惯性参数", "刚体动力学", "反射惯量"],
+      "sources": [
+        {"title": "Wikipedia: Moment of inertia", "url": "https://en.wikipedia.org/wiki/Moment_of_inertia"},
+        {"title": "Modern Robotics 8.2: Dynamics of a Single Rigid Body (Part 1 of 2)", "url": "https://modernrobotics.northwestern.edu/nu-gm-book-resource/8-2-dynamics-of-a-single-rigid-body-part-1-of-2/"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "牛顿-欧拉方程",
+      "name_en": "Newton-Euler Equations",
+      "abbr": "",
+      "aliases": ["牛顿-欧拉法", "牛顿-欧拉动力学方程", "Newton-Euler Formulation", "Newton-Euler Equations of Motion"],
+      "tier": 2,
+      "one_liner": "同时描述刚体平动（F = ma）和转动（欧拉方程）的一组动力学方程。",
+      "explanation": "牛顿-欧拉方程把牛顿第二定律和欧拉的刚体转动方程合在一起，描述刚体在力和力矩作用下的平动与转动：F = ma，τ = Iα + ω×(Iω)。F 是合外力，m 是质量，a 是质心加速度；τ 是绕质心的合力矩，I 是惯性张量，α 是角加速度，ω 是角速度，ω×(Iω) 是转动带来的陀螺项。机器人由多根连杆组成，每根都满足这组方程。经典的递归牛顿-欧拉算法先从基座到末端逐级算各连杆的速度和加速度，再从末端往回逐级算力和力矩，得到每个关节所需力矩，计算量随关节数线性增长。它与拉格朗日方程是建立机器人动力学的两条主要路线。",
+      "example": "已知机械臂此刻的关节角、角速度和想要的角加速度，用递归牛顿-欧拉算法即可算出每个电机该输出的力矩，这正是计算力矩控制里的前馈项。",
+      "related": ["递归牛顿-欧拉算法", "拉格朗日方程", "逆动力学", "刚体动力学", "惯性张量", "计算力矩控制"],
+      "sources": [
+        {"title": "Wikipedia: Newton–Euler equations", "url": "https://en.wikipedia.org/wiki/Newton%E2%80%93Euler_equations"},
+        {"title": "Modern Robotics 8.3: Newton-Euler Inverse Dynamics (Northwestern)", "url": "https://modernrobotics.northwestern.edu/nu-gm-book-resource/8-3-newton-euler-inverse-dynamics/"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "法向力与切向力（剪切力）",
+      "name_en": "Normal Force and Tangential (Shear) Force",
+      "abbr": "",
+      "aliases": ["法向力", "切向力", "剪切力", "正压力", "Normal Force", "Tangential Force", "Shear Force"],
+      "tier": 2,
+      "one_liner": "接触力垂直于接触面的分量叫法向力，平行于接触面的分量叫切向力（剪切力）。",
+      "explanation": "两个物体接触时，接触力可以分解成两部分：垂直于接触面的法向力，负责「压住」、防止穿透；平行于接触面的切向力，也叫剪切力，一般由摩擦提供，负责阻止相对滑动。二者由库仑摩擦定律联系：|f_t| ≤ μf_n，f_t 是切向力，f_n 是法向力，μ 是摩擦系数。需要的切向力超过 μ 倍法向力就会打滑，这个约束在三维里就是摩擦锥。机器人从侧面夹杯子时，杯子的重量全靠指尖的切向摩擦力托住，夹紧力（法向力）不够就会滑落。所以触觉传感器通常同时测法向力和剪切力，剪切力的变化是判断即将滑移的重要信号；足式机器人也要让地面反作用力留在摩擦锥内。",
+      "example": "两指夹爪从侧面夹起 0.3 kg 的杯子，摩擦系数 0.5：每根手指要提供约 1.5 N 向上的切向力，所以每指法向夹紧力至少约 3 N，实际还要留余量。",
+      "related": ["接触力", "库仑摩擦", "摩擦锥", "摩擦系数", "滑移检测", "触觉传感器"],
+      "sources": [
+        {"title": "Wikipedia: Normal force", "url": "https://en.wikipedia.org/wiki/Normal_force"},
+        {"title": "Wikipedia: Friction", "url": "https://en.wikipedia.org/wiki/Friction"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "零空间",
+      "name_en": "Null Space",
+      "abbr": "",
+      "aliases": ["核空间", "雅可比零空间", "零空间运动", "自运动", "Kernel", "Jacobian Null Space", "Self-Motion"],
+      "tier": 2,
+      "one_liner": "让矩阵输出为零的全部输入；对冗余机械臂，指不改变末端位姿的关节运动。",
+      "explanation": "零空间本是线性代数概念：矩阵 A 的零空间是所有满足 Ax = 0 的向量 x。机器人里常说的是雅可比矩阵 J 的零空间：J 把关节速度换算成末端速度，落在零空间里的关节速度不会让末端移动或转动。关节数多于任务所需自由度的冗余机械臂（如 7 轴臂做 6 维位姿任务）始终存在这种运动，叫自运动；非冗余臂只在奇异位形才出现。零空间控制就利用这一点：主任务保证末端跟踪目标，次要目标（避开关节限位、避障、远离奇异）通过投影矩阵 (I − J⁺J) 投到零空间执行，J⁺ 是雅可比伪逆，这样不干扰主任务。人形机器人全身控制里的任务优先级也靠层层零空间投影实现。",
+      "example": "7 轴机械臂把末端固定在杯子正上方不动，肘部仍能绕肩-腕连线画圈（臂型角变化），这就是一维自运动，可以用来让肘部躲开旁边的障碍物。",
+      "related": ["运动学冗余", "零空间控制", "雅可比伪逆", "任务优先级", "臂型角（肘部自运动角）", "雅可比矩阵"],
+      "sources": [
+        {"title": "Wikipedia: Kernel (linear algebra)", "url": "https://en.wikipedia.org/wiki/Kernel_(linear_algebra)"},
+        {"title": "StudyWolf: Robot control part 5 – Controlling in the null space", "url": "https://studywolf.wordpress.com/2013/09/17/robot-control-5-controlling-in-the-null-space/"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "数值逆解",
+      "name_en": "Numerical Inverse Kinematics",
+      "abbr": "",
+      "aliases": ["数值逆运动学", "数值 IK", "迭代法逆解", "Numerical IK", "Iterative IK"],
+      "tier": 2,
+      "one_liner": "从初始猜测出发反复迭代修正关节角，逼近目标末端位姿的逆运动学解法。",
+      "explanation": "逆运动学要根据期望的末端位姿求关节角。解析逆解靠推导闭式公式，只适用于结构特殊的机械臂；数值逆解更通用：从一个初始关节角出发，用正运动学算出当前末端与目标的误差，再借助雅可比矩阵把误差换算成关节角修正量，反复迭代直到误差足够小。最基本的是牛顿-拉夫森法配雅可比伪逆，常见改进有阻尼最小二乘（在奇异附近防止关节角暴跳）、雅可比转置法，以及把关节限位、避障写成约束的优化式求解。缺点是只收敛到离初值较近的一个解，也可能不收敛或陷入局部最优。实时控制中用上一时刻的关节角作初值，通常几步就收敛。KDL、TRAC-IK、mink 等库都提供数值 IK。",
+      "example": "VR 遥操作时，每帧把头显手柄的位姿作为机械臂末端目标，以上一帧的关节角为初值迭代几步数值 IK，就能实时得到各关节角。",
+      "related": ["逆运动学", "解析逆解", "雅可比伪逆", "阻尼最小二乘法", "雅可比转置法", "TRAC-IK"],
+      "sources": [
+        {"title": "Modern Robotics 6.2: Numerical Inverse Kinematics (Part 1 of 2)", "url": "https://modernrobotics.northwestern.edu/nu-gm-book-resource/6-2-numerical-inverse-kinematics-part-1-of-2/"},
+        {"title": "Modern Robotics 6.2: Numerical Inverse Kinematics (Part 2 of 2)", "url": "https://modernrobotics.northwestern.edu/nu-gm-book-resource/6-2-numerical-inverse-kinematics-part-2-of-2/"},
+        {"title": "Wikipedia: Inverse kinematics", "url": "https://en.wikipedia.org/wiki/Inverse_kinematics"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "并联机构",
+      "name_en": "Parallel Mechanism",
+      "abbr": "",
+      "aliases": ["并联机器人", "并联机械手", "Parallel Manipulator", "Parallel Robot"],
+      "tier": 2,
+      "one_liner": "用多条运动链同时连接基座和末端平台的机构，刚度高、速度快但工作空间小。",
+      "explanation": "并联机构指末端平台由两条或更多条独立运动链同时连到基座，形成闭环；与之相对，串联机构是一根链从基座连到末端，普通六轴机械臂就是串联。典型例子有六根伸缩杆撑起平台的 Stewart 平台（用于飞行模拟器），以及 20 世纪 80 年代初瑞士洛桑联邦理工学院 Reymond Clavel 团队发明的 Delta 机器人（俗称「蜘蛛手」），常用于食品、电子产品的高速分拣。并联机构的电机多装在基座上，运动部分轻，各支链分担负载，所以刚度高、精度高、速度快；代价是工作空间小、正运动学难解，并且有串联臂没有的额外奇异位形。不少人形机器人的踝关节也采用并联结构。",
+      "example": "Delta 机器人的三根主动臂各带一组平行四边形连杆，末端平台只平移不转动；据维基百科介绍，它每分钟可完成最多约 300 次拣放。",
+      "related": ["串联机构", "Delta 并联机器人（蜘蛛手）", "并联踝关节", "运动链", "奇异位形", "四连杆机构"],
+      "sources": [
+        {"title": "Wikipedia: Parallel manipulator", "url": "https://en.wikipedia.org/wiki/Parallel_manipulator"},
+        {"title": "Wikipedia: Delta robot", "url": "https://en.wikipedia.org/wiki/Delta_robot"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "移动关节",
+      "name_en": "Prismatic Joint",
+      "abbr": "",
+      "aliases": ["平移关节", "滑动关节", "直线关节", "移动副", "滑动副", "P 关节", "Slider Joint", "Sliding Pair"],
+      "tier": 2,
+      "one_liner": "只允许两个部件沿一根轴直线相对滑动、不能转动的单自由度关节。",
+      "explanation": "移动关节是机器人最基本的两种关节之一（另一种是转动关节）：它把两根连杆约束成只能沿同一轴线相对滑动、不能转动，提供 1 个平移自由度，关节变量是位移而不是角度。在机构学里它属于低副，也叫移动副；描述构型时常记作 P，比如 RRP 表示两个转动关节加一个移动关节。它通常由直线执行器驱动，如电机加滚珠丝杠的电动缸、液压缸或直线电机。直角坐标机器人的三根轴、SCARA 机器人的升降轴、复合机器人的升降柱、平行二指夹爪的开合都是移动关节。在 URDF 中关节类型写作 prismatic，并要给出运动轴方向和行程上下限。",
+      "example": "SCARA 机器人通常是两个水平转动关节加一个竖直移动关节：转动关节负责在平面内定位，移动关节负责把工具上下插入或提起。",
+      "related": ["转动关节", "线性执行器（直线执行器 / 电缸）", "直角坐标机器人", "SCARA 机器人", "运动副（转动副 / 移动副 / 低副 / 高副）", "统一机器人描述格式"],
+      "sources": [
+        {"title": "Wikipedia: Prismatic joint", "url": "https://en.wikipedia.org/wiki/Prismatic_joint"},
+        {"title": "Wikipedia: Linear actuator", "url": "https://en.wikipedia.org/wiki/Linear_actuator"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "投影重力",
+      "name_en": "Projected Gravity",
+      "abbr": "",
+      "aliases": ["重力投影", "投影重力向量", "Projected Gravity Vector", "projected_gravity", "projected_gravity_b"],
+      "tier": 2,
+      "one_liner": "把竖直向下的重力方向换到机器人机体坐标系下表示，告诉策略身体歪了多少。",
+      "explanation": "投影重力是足式和人形机器人强化学习中几乎必备的观测量：取世界坐标系下的单位重力方向 (0, 0, −1)，用躯干（基座）姿态四元数的逆旋转换到机体坐标系下表示。机器人站直时它等于 (0, 0, −1)；身体前倾或侧倾时 x、y 分量变为非零，大小反映俯仰和横滚的程度。它只包含倾斜信息、不含朝向（偏航角），而偏航角对保持平衡没用、在真机上还会漂移，所以比直接输入四元数更干净。真机上由 IMU 估计的姿态算出。legged_gym、Isaac Lab 都把它放进观测，奖励函数也常用其 x、y 分量的平方来惩罚身体不水平。",
+      "example": "宇树 unitree_rl_gym 的真机部署脚本读取 IMU 四元数，算出投影重力放进观测的第 4–6 维，与角速度、速度指令、关节角等一起输入行走策略。",
+      "related": ["本体感知", "惯性测量单元", "机体坐标系", "四元数", "强化学习运控", "横滚-俯仰-偏航角"],
+      "sources": [
+        {"title": "Isaac Lab API: isaaclab.envs.mdp (projected_gravity)", "url": "https://isaac-sim.github.io/IsaacLab/main/source/api/lab/isaaclab.envs.mdp.html"},
+        {"title": "legged_gym (ETH RSL): legged_robot.py", "url": "https://github.com/leggedrobotics/legged_gym/blob/master/legged_gym/envs/base/legged_robot.py"},
+        {"title": "unitree_rl_gym: deploy_real.py", "url": "https://github.com/unitreerobotics/unitree_rl_gym/blob/main/deploy/deploy_real/deploy_real.py"}
+      ],
+      "as_of": ""
+    }
+  ]
+}

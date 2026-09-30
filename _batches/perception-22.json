@@ -1,0 +1,387 @@
+{
+  "category": "perception",
+  "batch": 22,
+  "terms": [
+    {
+      "name_zh": "速腾聚创 AC1 主动相机",
+      "name_en": "RoboSense AC1 Active Camera",
+      "abbr": "",
+      "aliases": [
+        "RoboSense AC1",
+        "Active Camera AC1"
+      ],
+      "tier": 3,
+      "one_liner": "速腾聚创把深度传感、彩色相机和 IMU 集成在一起的机器人视觉传感器",
+      "explanation": "AC1 是激光雷达厂商速腾聚创（RoboSense）「主动相机」（Active Camera）系列的首款产品。它把全固态深度传感模块（VCSEL 激光发射加 SPAD 单光子探测芯片）、RGB 彩色相机和 IMU（惯性测量单元）做进一个模组，硬件层面完成同步融合，直接输出对齐的深度、图像和姿态数据。官网参数：最远测距 70 米，5 米内深度精度约 1 厘米，深度视场角 120°×60°，抗 100 kLux 强光。它针对的是机器人自己拼装雷达、相机、IMU 时标定同步麻烦，以及普通深度相机在室外强光下失效的问题。配套 AI-Ready 生态开源了驱动、标定、SLAM 和感知算法；后续型号 AC2 侧重近距离操作。",
+      "example": "给室外巡检机器人装一台 AC1，用官方开源的 robosense_ac_slam 同时利用深度、图像和 IMU 数据做激光-惯性-视觉里程计与建图。",
+      "related": [
+        "深度相机",
+        "直接飞行时间",
+        "SPAD（单光子雪崩二极管）",
+        "惯性测量单元",
+        "多传感器融合",
+        "速腾聚创"
+      ],
+      "sources": [
+        {
+          "title": "RoboSense AC1 产品页（英文）",
+          "url": "https://www.robosense.ai/en/rslidar/AC1"
+        },
+        {
+          "title": "速腾聚创 AC1 产品页（中文）",
+          "url": "https://www.robosense.cn/rslidar/AC1"
+        },
+        {
+          "title": "RoboSense-Robotics GitHub（AC 驱动、标定、SLAM 开源仓库）",
+          "url": "https://github.com/RoboSense-Robotics"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "速腾聚创 Airy",
+      "name_en": "RoboSense Airy",
+      "abbr": "",
+      "aliases": [
+        "速腾 Airy",
+        "RoboSense Airy 半球激光雷达"
+      ],
+      "tier": 3,
+      "one_liner": "速腾聚创面向机器人的半球视场数字激光雷达，360°×90° 一颗覆盖",
+      "explanation": "Airy 是速腾聚创推出的机器人用激光雷达，官方称为首款「数字化半球激光雷达」。体积约乒乓球大小（直径 60 毫米、高 63 毫米），重量不到 240 克；水平视场 360°、垂直视场 90°，有 192 线和 96 线版本；测距半径 60 米（10% 反射率目标约 30 米），测距精度约 1 厘米。传统旋转式激光雷达垂直视场窄，装在机器人上容易看不到脚下和身边近处，常要多颗拼接；半球视场让一颗雷达同时覆盖四周和近处地面。它采用芯片化收发和数字化探测方案，面向四足、人形、庭院机器人、AMR 和无人叉车，用于 SLAM 建图、避障和可通行性判断。",
+      "example": "四足机器狗头部装一颗 Airy，既能看到前方障碍，也能看到脚下台阶，减少避障和建图时的盲区。",
+      "related": [
+        "激光雷达",
+        "激光雷达线数",
+        "视场角",
+        "激光SLAM",
+        "览沃 Mid-360",
+        "速腾聚创"
+      ],
+      "sources": [
+        {
+          "title": "RoboSense Airy 产品页",
+          "url": "https://www.robosense.ai/en/rslidar/Airy"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "RTAB-Map",
+      "name_en": "RTAB-Map (Real-Time Appearance-Based Mapping)",
+      "abbr": "",
+      "aliases": [
+        "rtabmap",
+        "rtabmap_ros"
+      ],
+      "tier": 3,
+      "one_liner": "开源的图优化 SLAM 库，支持 RGB-D、双目和激光雷达建图定位",
+      "explanation": "RTAB-Map（实时基于外观的建图）是加拿大舍布鲁克大学 IntRoLab 的 Mathieu Labbé 与 François Michaud 开发的开源 SLAM（同步定位与建图）库。它把走过的位置组织成位姿图，用词袋模型（把图像特征量化成「视觉单词」来比对）做回环检测：认出「这里来过」就往图里加一条约束，再用图优化消除累积误差。它的内存管理机制只让一部分地点参与实时检测和优化，所以大场景、长时间运行也能保持实时。支持 RGB-D 相机、双目、3D 激光雷达和 2D 激光，通过 rtabmap_ros 接入 ROS，是移动机器人建图导航最常用的现成方案之一。",
+      "example": "在 ROS 2 里用一台 RGB-D 相机跑 rtabmap_ros，推着机器人在实验室走一圈，得到 3D 点云地图和 2D 占据栅格，交给 Nav2 做导航。",
+      "related": [
+        "同步定位与建图",
+        "视觉SLAM",
+        "回环检测",
+        "占据栅格地图",
+        "ROS 常用 SLAM 建图包（GMapping / SLAM Toolbox / RTAB-Map）",
+        "深度相机"
+      ],
+      "sources": [
+        {
+          "title": "RTAB-Map 官方主页（IntRoLab）",
+          "url": "https://introlab.github.io/rtabmap/"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "安全激光扫描仪 / 安全光幕",
+      "name_en": "Safety Laser Scanner / Safety Light Curtain",
+      "abbr": "",
+      "aliases": [
+        "安全激光雷达",
+        "安全光栅",
+        "电敏保护设备",
+        "ESPE"
+      ],
+      "tier": 3,
+      "one_liner": "经过安全认证的人员闯入检测设备，有人进入危险区就让机器停下",
+      "explanation": "两者都属于电敏保护设备（ESPE），是工业现场让机器「看见人就停」的安全传感器，需按 IEC 61496 等标准认证，输出的是安全级停机信号，而不是给算法用的普通数据。安全光幕由一对发射柱和接收柱组成，发射端向接收端打出一排平行红外光束，任一束被挡住就触发停机，常装在机床或机器人工作站入口。安全激光扫描仪是带安全认证的 2D 激光扫描设备，可在扫描平面内划出「警告区」和「保护区」：有人进入警告区时减速或报警，进入保护区就停机。它们让机器人不必全部用实体围栏隔开，也是 AMR 防撞和人机协作中速度与分离监控的常用硬件。",
+      "example": "机械臂上下料工位入口装一对安全光幕，工人伸手进去取料时光束被挡，机械臂立即保护性停止。",
+      "related": [
+        "功能安全",
+        "速度与分离监控",
+        "保护性停止",
+        "2D激光雷达",
+        "自主移动机器人",
+        "ISO 10218 工业机器人安全标准（2025 版）"
+      ],
+      "sources": [
+        {
+          "title": "Light curtain - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Light_curtain"
+        },
+        {
+          "title": "SICK Safety laser scanners",
+          "url": "https://www.sick.com/us/en/catalog/products/safety-systems-and-solutions/safety-laser-scanners/c/g187234"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "SAM 3D",
+      "name_en": "SAM 3D (SAM 3D Objects / SAM 3D Body)",
+      "abbr": "",
+      "aliases": [
+        "SAM 3D Objects",
+        "SAM 3D Body"
+      ],
+      "tier": 3,
+      "one_liner": "Meta 开源的单张图片 3D 重建模型，分物体版和人体版",
+      "explanation": "SAM 3D 是 Meta 于 2025 年 11 月 19 日发布的一组单图 3D 重建模型，属于「分割一切」（SAM）系列。SAM 3D Objects 输入一张图和目标物体的掩码，输出该物体完整的 3D 形状、纹理和在场景中的位置姿态，能处理遮挡、侧视等真实照片；SAM 3D Body 从单张图估计人体 3D 姿态和体型，输出 Meta 提出的 MHR（Momentum Human Rig）参数化人体网格，可用 2D 关键点或掩码做提示。权重、推理代码和评测集已按 SAM License 开放。对具身智能来说，它能把照片里的物体快速变成仿真资产，也能从人类图像和视频中提取人体姿态。",
+      "example": "拍一张桌上杯子的照片，先用 SAM 3 分割出杯子，再交给 SAM 3D Objects 生成带纹理的 3D 网格，导入仿真器作抓取训练资产。",
+      "related": [
+        "分割一切模型",
+        "SAM 3（可提示概念分割）",
+        "单图生成3D",
+        "人体网格恢复",
+        "仿真资产",
+        "SMPL 人体模型"
+      ],
+      "sources": [
+        {
+          "title": "Meta AI Blog: Introducing SAM 3D",
+          "url": "https://ai.meta.com/blog/sam-3d/"
+        },
+        {
+          "title": "facebookresearch/sam-3d-objects",
+          "url": "https://github.com/facebookresearch/sam-3d-objects"
+        },
+        {
+          "title": "facebookresearch/sam-3d-body",
+          "url": "https://github.com/facebookresearch/sam-3d-body"
+        }
+      ],
+      "as_of": "2026-06"
+    },
+    {
+      "name_zh": "SAM-6D",
+      "name_en": "SAM-6D: Segment Anything Model Meets Zero-Shot 6D Object Pose Estimation",
+      "abbr": "",
+      "aliases": [],
+      "tier": 3,
+      "one_liner": "借助 SAM 分割，对没见过的物体零样本估计 6D 位姿的方法",
+      "explanation": "SAM-6D 是 Jiehong Lin、贾奎等人（香港中文大学（深圳）、华南理工大学等）2023 年提出、发表于 CVPR 2024 的零样本 6D 物体位姿估计方法。6D 位姿指物体的 3D 位置加 3D 朝向，抓取和装配都离不开它；「零样本」指对训练时没见过的新物体，给出 CAD 模型即可估计，不用重新训练。方法分两步：先用 SAM 生成所有候选区域，按语义、外观、几何打分筛出目标物体；再把位姿估计看作模型点云与观测点云「部分对部分」的点匹配，粗到细两阶段求出位姿。输入为 RGB-D 图像、相机内参和 CAD 模型，论文报告在 BOP 基准 7 个核心数据集上超过当时已有方法。",
+      "example": "给定一个零件的 CAD 模型，SAM-6D 在杂乱料框的 RGB-D 图像里找出该零件并给出 6D 位姿，交给机械臂抓取。",
+      "related": [
+        "6D位姿估计",
+        "分割一切模型",
+        "FoundationPose",
+        "MegaPose",
+        "BOP 位姿估计基准",
+        "点云配准"
+      ],
+      "sources": [
+        {
+          "title": "arXiv 2311.15707: SAM-6D",
+          "url": "https://arxiv.org/abs/2311.15707"
+        },
+        {
+          "title": "JiehongLin/SAM-6D GitHub",
+          "url": "https://github.com/JiehongLin/SAM-6D"
+        }
+      ],
+      "as_of": "2024-06"
+    },
+    {
+      "name_zh": "场景流",
+      "name_en": "Scene Flow",
+      "abbr": "",
+      "aliases": [
+        "3D 光流",
+        "3D flow"
+      ],
+      "tier": 3,
+      "one_liner": "场景中每个 3D 点在相邻两帧之间的三维运动向量",
+      "explanation": "场景流是光流的三维版本：光流描述图像上每个像素在两帧之间的 2D 位移，场景流描述真实世界里每个点的 3D 位移。这个概念由 CMU 的 Vedula、Kanade 等人在 1999 年提出（2005 年发表于 TPAMI 的期刊版）。早期方法从多视角或双目图像求解，深度相机和激光雷达普及后，出现了直接在两帧点云上学习的网络，如 2018 年的 FlowNet3D。它能告诉系统「哪些东西在动、往哪动、动多快」，用于自动驾驶的运动分割和动态物体跟踪。在机器人操作中，预测物体上各点未来的 3D 运动轨迹（常称 3D flow）也被当作一种与本体无关的中间表示，用来从人类视频学技能再迁移到机器人。",
+      "example": "General Flow（2024）用人类 RGB-D 视频训练模型，按语言指令预测物体上各点未来的 3D 轨迹，再转成机器人动作，实现零样本技能迁移。",
+      "related": [
+        "光流",
+        "任意点跟踪",
+        "点云",
+        "中间表示",
+        "RAFT 光流",
+        "4D重建"
+      ],
+      "sources": [
+        {
+          "title": "Three-Dimensional Scene Flow (Vedula et al., CMU RI)",
+          "url": "https://publications.ri.cmu.edu/three-dimensional-scene-flow/"
+        },
+        {
+          "title": "arXiv 1806.01411: FlowNet3D",
+          "url": "https://arxiv.org/abs/1806.01411"
+        },
+        {
+          "title": "arXiv 1612.02590: Scene Flow Estimation: A Survey",
+          "url": "https://arxiv.org/abs/1612.02590"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "语义关键点",
+      "name_en": "Semantic Keypoints",
+      "abbr": "",
+      "aliases": [
+        "任务关键点",
+        "语义 3D 关键点"
+      ],
+      "tier": 3,
+      "one_liner": "用物体上几个有含义的点（如杯把、壶嘴）来表示物体，方便规划操作",
+      "explanation": "语义关键点是物体上带有明确含义的少数几个 3D 点，比如马克杯的把手中心、杯底中心，鞋子的鞋跟。和 6D 位姿相比，它不要求每个物体都有精确的 CAD 模板，同一类中形状差别很大的物体也能找到对应的点，因此适合类别级泛化。2019 年 MIT Tedrake 组的 kPAM 把它用于机器人操作：先检测语义 3D 关键点，再把任务写成关于这些点的几何约束（如「杯把挂到挂钩上」「杯底贴住桌面」），用优化求出机械臂的目标位姿，从而操作没见过的新物体。近年的 ReKep、OmniManip 等工作让视觉语言模型直接在图像上提出关键点和约束，所以也常被称为任务关键点。",
+      "example": "kPAM 中，对形状各异、没见过的马克杯，只检测杯把、杯底等几个关键点，就能规划出把杯子挂到杯架上的动作。",
+      "related": [
+        "关键点检测",
+        "ReKep",
+        "OmniManip",
+        "6D位姿估计",
+        "类别级位姿估计",
+        "可供性"
+      ],
+      "sources": [
+        {
+          "title": "arXiv 1903.06684: kPAM: KeyPoint Affordances for Category-Level Robotic Manipulation",
+          "url": "https://arxiv.org/abs/1903.06684"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "语义地图",
+      "name_en": "Semantic Map",
+      "abbr": "",
+      "aliases": [
+        "开放词汇语义地图",
+        "语言地图"
+      ],
+      "tier": 3,
+      "one_liner": "在几何地图上标注「这里是什么」，能按物体或自然语言查询的地图",
+      "explanation": "普通 SLAM 地图只记录哪里有障碍、表面在哪；语义地图在此基础上给地图中的点、栅格或物体附上类别标签或特征，能回答「冰箱在哪」「厨房在哪」。早期做法是用固定类别的检测或分割网络打标签；近几年流行开放词汇语义地图，把 CLIP、LSeg 等视觉语言模型的特征直接存进地图，用任意自然语言查询。代表工作 VLMaps（2022，弗赖堡大学与谷歌等）从 RGB-D 视频提取像素级视觉语言特征，借助深度反投影到 3D，再存进俯视栅格地图，能执行「去沙发和电视之间」这类带空间关系的导航指令。语义地图也可组织成 3D 场景图，是物体目标导航、视觉语言导航和移动操作常用的中间表示。",
+      "example": "VLMaps 让 LoCoBot 和无人机共用同一张语言地图，按「移到椅子右边三米」这类指令导航。",
+      "related": [
+        "语义SLAM",
+        "VLMaps",
+        "ConceptGraphs",
+        "3D场景图",
+        "物体目标导航",
+        "占据栅格地图"
+      ],
+      "sources": [
+        {
+          "title": "VLMaps 项目主页",
+          "url": "https://vlmaps.github.io/"
+        },
+        {
+          "title": "arXiv 2210.05714: Visual Language Maps for Robot Navigation",
+          "url": "https://arxiv.org/abs/2210.05714"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "语义SLAM",
+      "name_en": "Semantic SLAM",
+      "abbr": "",
+      "aliases": [
+        "度量-语义 SLAM",
+        "Metric-Semantic SLAM"
+      ],
+      "tier": 3,
+      "one_liner": "在定位建图的同时识别物体类别，输出带语义标签的地图",
+      "explanation": "语义 SLAM 是在传统 SLAM（同步定位与建图）里加入语义信息的一类方法：一边估计自身位姿、构建几何地图，一边用检测或分割网络识别墙、桌子、椅子等，把类别写进地图。语义也能反过来帮 SLAM，比如剔除人、车等会动的物体，减少它们对位姿估计的干扰，或以物体为地标做回环检测。代表工作有 2013 年以物体为单位建图的 SLAM++，以及 MIT SPARK 实验室 2019 年开源的 Kimera，它用相机和 IMU 在 CPU 上实时生成带语义标签的三维网格。近年也有基于 NeRF、3D 高斯泼溅的语义 SLAM，但在嵌入式平台上开销仍大。它的输出就是语义地图。",
+      "example": "Kimera 用双目相机加 IMU 在室内走一圈，实时输出带「墙、地板、椅子」等语义标签的 3D 网格地图。",
+      "related": [
+        "同步定位与建图",
+        "语义地图",
+        "视觉SLAM",
+        "3D场景图",
+        "高斯泼溅 SLAM",
+        "ConceptGraphs"
+      ],
+      "sources": [
+        {
+          "title": "arXiv 1910.02490: Kimera",
+          "url": "https://arxiv.org/abs/1910.02490"
+        },
+        {
+          "title": "arXiv 2505.12384: Is Semantic SLAM Ready for Embedded Systems?",
+          "url": "https://arxiv.org/abs/2505.12384"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "传感器漂移（零漂）",
+      "name_en": "Sensor Drift (Zero Drift / Bias Drift)",
+      "abbr": "",
+      "aliases": [
+        "零点漂移",
+        "温漂",
+        "IMU 漂移",
+        "Bias"
+      ],
+      "tier": 3,
+      "one_liner": "传感器在输入不变时，读数仍随时间或温度缓慢偏移的现象",
+      "explanation": "理想传感器没有输入时应输出 0，实际读数总带一个偏置（bias），而且这个偏置会随时间、温度和每次上电缓慢变化，这就是漂移，也叫零点漂移、温漂。机器人上最典型的是 IMU（惯性测量单元）漂移：姿态、速度、位置都靠对陀螺仪和加速度计读数积分得到，微小偏置会不断累积，陀螺仪的恒定偏置会让速度误差按时间二次方增长、位置误差按三次方增长，所以纯靠 IMU 推算位置很快就会发散。六维力传感器、关节力矩传感器也有零漂，使用前通常要重新置零。应对办法包括标定、温度补偿、用 Allan 方差表征噪声，以及与相机、激光雷达、GPS 融合，在卡尔曼滤波里把偏置当作状态在线估计。",
+      "example": "人形机器人原地站着不动，只用 IMU 积分出的偏航角也会慢慢变化，需要靠视觉惯性里程计或腿式里程计融合来修正。",
+      "related": [
+        "惯性测量单元",
+        "卡尔曼滤波",
+        "Allan 方差（IMU 噪声标定）",
+        "视觉惯性里程计",
+        "六维力传感器",
+        "状态估计"
+      ],
+      "sources": [
+        {
+          "title": "Inertial measurement unit - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Inertial_measurement_unit"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "无传感器力估计",
+      "name_en": "Sensorless Force Estimation",
+      "abbr": "",
+      "aliases": [
+        "电流估力",
+        "基于电机电流的力估计"
+      ],
+      "tier": 3,
+      "one_liner": "不装力传感器，用电机电流和动力学模型推算机器人受到的外力",
+      "explanation": "无传感器力估计指不安装专门的六维力传感器或关节力矩传感器，而是用电机电流（乘以力矩常数约等于电机输出力矩）、关节位置和速度，加上机器人动力学模型，推算机器人与外界接触时受的力。思路是：模型预测「没有外力时需要多少力矩」，实测力矩与预测值的差就归因于外力。常用工具是广义动量观测器，它不需要对加速度求导，噪声较小。好处是省掉昂贵易损的力传感器，低成本机械臂、四足和人形机器人都能借此做碰撞检测和粗略力控；难点是减速器摩擦、模型误差和温度变化会带来较大偏差，精度一般不如专用传感器。近年常用学习方法补偿残差力矩，如 2025 年的 K-VARK 和 2026 年用于轮腿机器人的混合估计方法。",
+      "example": "没有力传感器的机械臂比较电机电流与动力学模型预测值，发现关节力矩突然出现大偏差，判定撞到了人并立即停下。",
+      "related": [
+        "动量观测器",
+        "力矩常数（Kt）",
+        "碰撞检测（本体安全）",
+        "摩擦补偿",
+        "本体感受式执行器",
+        "六维力传感器"
+      ],
+      "sources": [
+        {
+          "title": "arXiv 2512.13009: K-VARK for Sensorless Force Estimation in Collaborative Robots",
+          "url": "https://arxiv.org/abs/2512.13009"
+        },
+        {
+          "title": "arXiv 2609.13779: Force-Aware RL with Hybrid Sensorless Force Estimation for Wheeled-Legged Loco-Manipulation",
+          "url": "https://arxiv.org/abs/2609.13779"
+        }
+      ],
+      "as_of": "2026-09"
+    }
+  ]
+}

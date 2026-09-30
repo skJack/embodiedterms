@@ -1,0 +1,199 @@
+{"category": "model", "batch": 9, "terms": [
+{
+"name_zh": "3D VLA",
+"name_en": "3D / Spatial Vision-Language-Action Model",
+"abbr": "",
+"aliases": ["空间 VLA", "Spatial VLA", "SpatialVLA", "SpatialVLA: Exploring Spatial Representations for Visual-Language-Action Model", "3D-VLA", "3D-VLA: A 3D Vision-Language-Action Generative World Model"],
+"tier": 3,
+"one_liner": "把深度、点云、3D 位置等空间信息显式放进模型的 VLA",
+"explanation": "普通 VLA（视觉-语言-动作模型，看图听指令直接输出动作）大多只吃 2D 图片，但机器人的动作发生在三维空间里，距离、高度、遮挡光靠 2D 图很难判断准。3D VLA 泛指在输入或中间表示里加入深度、点云或 3D 位置编码的一类 VLA。代表作有两篇：UMass Amherst 团队 2024 年 3 月的 3D-VLA，在 3D 大语言模型上加入交互 token，并用扩散模型生成目标图像和目标点云来「想象」操作后的场景；Qu 等人 2025 年 1 月的 SpatialVLA（RSS 2025），基于 PaliGemma2，用 Ego3D 位置编码把 3D 空间信息注入视觉特征，用自适应动作网格把连续动作离散成空间 token，并在 OXE 和 RH20T 的 110 万条真机轨迹上预训练。这类方法主要想让模型在换视角、换机器人时空间判断更稳。",
+"example": "SpatialVLA-4B 把每个图像块对应的 3D 位置编码进视觉 token，不需要相机标定，换到新机器人时可以重新划分动作网格来适配。",
+"related": ["视觉-语言-动作模型", "空间推理", "点云", "深度估计", "3D 扩散策略", "世界模型"],
+"sources": [
+{"title": "3D-VLA: A 3D Vision-Language-Action Generative World Model (arXiv 2403.09631)", "url": "https://arxiv.org/abs/2403.09631"},
+{"title": "SpatialVLA: Exploring Spatial Representations for Visual-Language-Action Model (arXiv 2501.15830)", "url": "https://arxiv.org/abs/2501.15830"},
+{"title": "SpatialVLA GitHub", "url": "https://github.com/SpatialVLA/SpatialVLA"}
+],
+"as_of": "2025-01"
+},
+{
+"name_zh": "4D 世界模型",
+"name_en": "4D World Model",
+"abbr": "",
+"aliases": ["4D 具身世界模型", "4D Embodied World Model"],
+"tier": 3,
+"one_liner": "预测三维场景随时间如何变化的世界模型（3D 空间加时间）",
+"explanation": "世界模型是给定当前观测和动作、预测世界接下来会变成什么样的模型。多数视频世界模型只生成 2D 画面，缺少深度和几何，机器人很难从中精确读出物体在空间里的位置。4D 世界模型把预测对象换成「3D 空间 + 时间」：每一帧都带几何信息，可以拼成随时间变化的三维场景。代表作是 UMass Amherst 等团队 2025 年 4 月发布的 TesserAct：在 CogVideoX 视频生成模型上微调，同时预测 RGB、深度和法向量（RGB-DN）视频，再重建成时序一致的 4D 场景；动作则由逆动力学模型（根据前后状态反推动作的网络）从点云特征里算出 7 自由度机械臂动作。它和 4D 重建、视频生成、空间智能都有交叉。",
+"example": "TesserAct 给定当前画面和一条语言指令，生成带深度和法向的未来视频，转成 4D 场景后，用 PointNet 编码点云并结合指令，输出 7-DoF 动作。",
+"related": ["世界模型", "4D重建", "视频生成模型", "逆动力学模型", "3D VLA", "空间智能"],
+"sources": [
+{"title": "TesserAct: Learning 4D Embodied World Models (arXiv 2504.20995)", "url": "https://arxiv.org/abs/2504.20995"},
+{"title": "TesserAct 论文 HTML 版", "url": "https://arxiv.org/html/2504.20995"}
+],
+"as_of": "2025-04"
+},
+{
+"name_zh": "动作思维链",
+"name_en": "Action Chain-of-Thought",
+"abbr": "ACoT",
+"aliases": ["Action-CoT", "ACoT-VLA"],
+"tier": 3,
+"one_liner": "让 VLA 先在动作空间里推出一条粗轨迹，再据此生成精细动作",
+"explanation": "思维链原指大模型先写出中间推理步骤再给答案。VLA 里已有的推理方式多是先预测子任务文字或生成目标图像，这些中间结果都不是动作本身。北京航空航天大学与智元机器人团队 2026 年 1 月提出 ACoT-VLA（已被 CVPR 2026 接收），主张直接在动作空间里推理：显式动作推理器（EAR）用流匹配先生成一条粗粒度参考轨迹；隐式动作推理器（IAR）用可学习查询从 VLM 内部特征中提取潜在动作先验；两路信息再通过交叉注意力引导动作头输出最终动作序列。论文报告 LIBERO 平均成功率 98.5%。它可以看作具身思维链、视觉思维链之后的另一种推理形式。另有 2026 年的导航工作也用 Action-CoT 指代逐步的动作推理。",
+"example": "ACoT-VLA 在智元 G1 真机上的三项操作任务里报告平均成功率 66.7%，在 LIBERO-Plus 上监督微调后平均成功率 88.0%。",
+"related": ["思维链", "具身思维链", "视觉思维链", "视觉-语言-动作模型", "动作头", "流匹配"],
+"sources": [
+{"title": "ACoT-VLA: Action Chain-of-Thought for Vision-Language-Action Models (arXiv 2601.11404)", "url": "https://arxiv.org/abs/2601.11404"},
+{"title": "ACoT-VLA 论文 HTML 版", "url": "https://arxiv.org/html/2601.11404"}
+],
+"as_of": "2026-01"
+},
+{
+"name_zh": "自适应层归一化",
+"name_en": "Adaptive Layer Normalization",
+"abbr": "AdaLN",
+"aliases": ["adaLN", "adaLN-Zero", "自适应 RMSNorm", "adaRMS"],
+"tier": 3,
+"one_liner": "用条件信息（如扩散时间步）动态算出层归一化的缩放和偏移",
+"explanation": "层归一化会把每个 token 的特征标准化，再乘缩放系数 γ、加偏移 β，这两个参数通常是训练后固定的。自适应层归一化改为由条件向量（如扩散时间步、类别、语言特征）经一个小 MLP 回归出 γ 和 β，条件一变，整层特征的分布跟着变，从而把条件「注入」网络，思路与 FiLM 特征调制相同。它沿用了 GAN 和 U-Net 扩散模型里的自适应归一化，2022 年 Peebles 和 Xie 在扩散 Transformer（DiT）里系统使用，并提出 adaLN-Zero：再回归一个门控系数并初始化为零，让每个 Transformer 块初始时等于恒等映射，训练更稳。具身领域里，英伟达 GR00T N1 的 DiT 动作模块就用 AdaLN 注入去噪步，同时用交叉注意力接收 VLM 特征。",
+"example": "openpi 的 π0.5 实现把流匹配时间步经两层 MLP 编码成 adarms_cond，用自适应 RMSNorm 的方式调制动作 token 所在的归一化层。",
+"related": ["FiLM 特征调制", "扩散 Transformer", "归一化层（层归一化 / RMSNorm / 批归一化）", "动作专家", "GR00T N1 系列", "交叉注意力"],
+"sources": [
+{"title": "Scalable Diffusion Models with Transformers (DiT, arXiv 2212.09748)", "url": "https://arxiv.org/html/2212.09748"},
+{"title": "GR00T N1: An Open Foundation Model for Generalist Humanoid Robots (arXiv 2503.14734)", "url": "https://arxiv.org/html/2503.14734"},
+{"title": "openpi pi0.py 源码", "url": "https://github.com/Physical-Intelligence/openpi/blob/main/src/openpi/models/pi0.py"}
+],
+"as_of": ""
+},
+{
+"name_zh": "注意力掩码",
+"name_en": "Attention Mask",
+"abbr": "",
+"aliases": ["块状因果注意力掩码", "Block-wise Causal Mask", "Blockwise Causal Attention Mask"],
+"tier": 3,
+"one_liner": "规定序列里每个 token 能「看到」哪些 token 的矩阵",
+"explanation": "Transformer 的自注意力默认让每个 token 参考序列里所有 token。注意力掩码在计算注意力分数时把不允许的位置屏蔽掉（通常加上负无穷，经 Softmax 后权重变成 0），从而控制信息流向。最常见的有两种：因果掩码，每个 token 只能看自己和前面的，用于 GPT 这类逐个生成的模型；填充掩码，屏蔽为凑齐长度而补的空位。VLA 里常用块状因果掩码：把输入分成几块，块内互相都能看，块与块之间只能看前面的块。这样既能保护预训练 VLM 原有的输入分布，又能让前面块的 KV 缓存在多步去噪时重复使用，节省推理时间。",
+"example": "π0 把序列分成「图像+语言」「机器人状态」「带噪动作」三块：第一块不看后面新加入的输入，以减少对 PaliGemma 预训练分布的干扰；状态块不看动作块，所以它的 KV 可以在采样时缓存。",
+"related": ["注意力机制", "因果注意力", "自注意力", "KV 缓存", "动作专家", "π0"],
+"sources": [
+{"title": "π0: A Vision-Language-Action Flow Model for General Robot Control (arXiv 2410.24164)", "url": "https://arxiv.org/html/2410.24164"}
+],
+"as_of": ""
+},
+{
+"name_zh": "自回归视频生成",
+"name_en": "Autoregressive Video Generation",
+"abbr": "",
+"aliases": ["因果视频生成", "Causal Video Generation", "流式视频生成"],
+"tier": 3,
+"one_liner": "按时间顺序一帧或一段接一段往后生成视频，可以边生成边播放",
+"explanation": "很多视频扩散模型一次生成整段视频，各帧双向互看，必须等整段算完才能输出，也难以中途接收新的动作输入。自回归视频生成改成按时间顺序往后续写：每一帧或每一小段只以已生成的内容为条件，配合因果注意力和 KV 缓存，就能流式输出、实时响应用户或机器人的动作，这正是可交互世界模型需要的。主要难点是误差累积（曝光偏差）：训练时模型看的是真实历史，推理时看的是自己生成的、带误差的历史，时间一长画面会崩。CausVid（CVPR 2025）把双向模型蒸馏成 4 步的因果模型，单卡 9.4 帧/秒；Self Forcing（NeurIPS 2025）在训练时就用模型自己的输出当历史，缩小训练和推理的差距。",
+"example": "谷歌 DeepMind 的 Genie 3 逐帧自回归生成画面，每一帧都要参考不断变长的历史轨迹，能以 720p、24 帧/秒实时交互。",
+"related": ["扩散强制", "Self Forcing（自强制训练）", "可交互世界模型", "视频生成模型", "曝光偏差（自回归误差累积）", "KV 缓存"],
+"sources": [
+{"title": "From Slow Bidirectional to Fast Autoregressive Video Diffusion Models (CausVid, arXiv 2412.07772)", "url": "https://arxiv.org/abs/2412.07772"},
+{"title": "Self Forcing: Bridging the Train-Test Gap in Autoregressive Video Diffusion (arXiv 2506.08009)", "url": "https://arxiv.org/abs/2506.08009"},
+{"title": "Genie 3: A new frontier for world models (Google DeepMind)", "url": "https://deepmind.google/discover/blog/genie-3-a-new-frontier-for-world-models/"}
+],
+"as_of": "2025-08"
+},
+{
+"name_zh": "BAGEL",
+"name_en": "BAGEL: Emerging Properties in Unified Multimodal Pretraining (ByteDance Seed)",
+"abbr": "",
+"aliases": ["BAGEL-7B-MoT"],
+"tier": 3,
+"one_liner": "字节 Seed 开源的统一多模态模型，同一个模型既能看懂图也能生成和编辑图",
+"explanation": "BAGEL 是字节跳动 Seed 团队 2025 年 5 月开源的统一多模态基础模型，代码和权重以 Apache 2.0 协议发布，一个模型同时做图文理解、文生图和图像编辑。它以 Qwen2.5 大语言模型为基础，采用混合 Transformer（MoT）结构：理解专家和生成专家各有一套参数，但每层所有 token 共享自注意力，激活参数 7B、总参数 14B；理解侧用 SigLIP2 视觉编码器，生成侧用 FLUX 的 VAE 把图像压到潜空间。模型在数万亿 token 的图文、视频、网页交错数据上预训练，论文报告随规模增大出现了自由形式图像编辑、未来帧预测、视角旋转和「世界导航」等能力。它展示了把理解和生成放进同一个模型的做法，和具身方向的统一多模态模型、世界模型路线相关。",
+"example": "给 BAGEL 一张图和一句修改指令，它能直接输出编辑后的图片；给出前进、转向等导航指令，它能生成视角移动后的画面。",
+"related": ["统一多模态模型", "混合 Transformer 架构", "SigLIP", "变分自编码器", "世界模型", "字节跳动 Seed"],
+"sources": [
+{"title": "BAGEL: Emerging Properties in Unified Multimodal Pretraining (arXiv 2505.14683)", "url": "https://arxiv.org/abs/2505.14683"},
+{"title": "ByteDance-Seed/Bagel GitHub", "url": "https://github.com/ByteDance-Seed/Bagel"},
+{"title": "BAGEL 论文 HTML 版", "url": "https://arxiv.org/html/2505.14683"}
+],
+"as_of": "2025-05"
+},
+{
+"name_zh": "行为基础模型",
+"name_en": "Behavior Foundation Model",
+"abbr": "BFM",
+"aliases": ["人形行为基础模型", "Behavioral Foundation Model"],
+"tier": 3,
+"one_liner": "经大规模预训练的人形全身控制模型，能零样本或快速适配多种运动任务",
+"explanation": "行为基础模型是人形机器人全身控制（同时协调腿、躯干和手臂的底层运动控制）方向近两年兴起的叫法。传统做法是每个任务单独训练一个强化学习控制器；BFM 先在大量人体动作数据和多样任务上预训练，学到可复用的基础技能和行为先验，然后通过「提示」——给一段参考动作、一个目标姿态或一个奖励函数——零样本或少量适配完成新任务，定位类似语言领域的基础模型。代表工作有 Meta 研究者 2025 年 4 月的 Meta Motivo（基于前向-后向表示的无监督强化学习）和 2025 年 11 月的 BFM-Zero（在宇树 G1 真机上部署，同一个策略可用于动作跟踪、到达目标姿态和奖励优化）。在分层架构里，它可以充当接收上层指令的下层运动控制器。",
+"example": "BFM-Zero 在宇树 G1 上用同一个预训练策略，不重新训练，就能按提示切换去跟踪一段人体动作或走到指定姿态。",
+"related": ["全身控制", "运动跟踪", "BFM-Zero", "Meta Motivo（人形行为基础模型）", "基础模型", "无监督技能发现"],
+"sources": [
+{"title": "A Survey of Behavior Foundation Model: Next-Generation Whole-Body Control System of Humanoid Robots (arXiv 2506.20487)", "url": "https://arxiv.org/abs/2506.20487"},
+{"title": "BFM-Zero: A Promptable Behavioral Foundation Model for Humanoid Control Using Unsupervised RL (arXiv 2511.04131)", "url": "https://arxiv.org/abs/2511.04131"},
+{"title": "arXiv 检索：behavior foundation model humanoid", "url": "https://arxiv.org/search/?query=%22behavior+foundation+model%22+humanoid&searchtype=all"}
+],
+"as_of": "2025-11"
+},
+{
+"name_zh": "字节对编码",
+"name_en": "Byte-Pair Encoding",
+"abbr": "BPE",
+"aliases": ["字节级 BPE", "Byte-level BPE"],
+"tier": 3,
+"one_liner": "反复合并最常见的相邻符号对来构建子词词表的分词算法",
+"explanation": "字节对编码最早由 Philip Gage 在 1994 年作为文本压缩算法提出；2016 年 Sennrich 等人把它用到神经机器翻译的分词上（ACL 2016），之后成为 GPT 等大语言模型分词器的主流方案。做法是：从单个字符或字节开始，统计语料里出现次数最多的相邻符号对，把它合并成一个新符号加入词表，重复直到词表达到设定大小。这样常见词是一个 token，罕见词拆成几个子词，既不会遇到词表外的词，序列也不会像逐字符切分那样长。字节级 BPE 先把文本转成 UTF-8 字节再合并，任何文本都能编码。在具身领域，Physical Intelligence 的 FAST 动作分词器也用 BPE 压缩动作序列。",
+"example": "FAST 先对每个动作维度做离散余弦变换，按比例缩放取整后展平，再训练 BPE（论文默认缩放 10、词表 1024），把一段动作压成较短的 token 序列给 VLA 自回归预测。",
+"related": ["分词器", "token（词元）", "动作分词器", "离散余弦变换", "π0-FAST", "大语言模型"],
+"sources": [
+{"title": "Neural Machine Translation of Rare Words with Subword Units (arXiv 1508.07909)", "url": "https://arxiv.org/abs/1508.07909"},
+{"title": "FAST: Efficient Action Tokenization for Vision-Language-Action Models (arXiv 2501.09747)", "url": "https://arxiv.org/html/2501.09747"},
+{"title": "Byte-pair encoding - Wikipedia", "url": "https://en.wikipedia.org/wiki/Byte-pair_encoding"}
+],
+"as_of": ""
+},
+{
+"name_zh": "无分类器引导",
+"name_en": "Classifier-Free Guidance",
+"abbr": "CFG",
+"aliases": ["引导强度", "Guidance Scale"],
+"tier": 3,
+"one_liner": "同时算有条件和无条件两种预测并按比例外推，让生成结果更贴合条件",
+"explanation": "无分类器引导由 Jonathan Ho 和 Tim Salimans 提出（2021 年 NeurIPS 研讨会短文，2022 年 arXiv 完整版），用于扩散模型、流匹配这类逐步去噪的生成模型。训练时随机丢掉一部分样本的条件（如文本提示），让同一个网络既学有条件预测、也学无条件预测；生成时每一步两种预测都算，用「无条件结果 + w ×（有条件结果 − 无条件结果）」作为最终方向，w 叫引导强度。w 越大，结果越贴合条件，但多样性下降，过大还会出现伪影。它替代了需要额外训练一个分类器的「分类器引导」，成为文生图、文生视频模型的常用设置，代价是每步多一次前向计算。具身领域里基于扩散的视频世界模型和动作生成模型也可以用它调节对语言指令的遵循程度。",
+"example": "在 Diffusers 里用 Stable Diffusion v1.5 文生图，把 guidance_scale 从 2.5 调到 10.5，图像会越来越贴合提示词，过高时开始出现伪影。",
+"related": ["扩散模型", "流匹配", "去噪步数", "文生视频 / 图生视频", "生成模型", "视频生成模型"],
+"sources": [
+{"title": "Classifier-Free Diffusion Guidance (arXiv 2207.12598)", "url": "https://arxiv.org/abs/2207.12598"},
+{"title": "Hugging Face Diffusers: Text-to-image（guidance_scale 说明）", "url": "https://huggingface.co/docs/diffusers/using-diffusers/conditional_image_generation"}
+],
+"as_of": ""
+},
+{
+"name_zh": "一致性模型",
+"name_en": "Consistency Model",
+"abbr": "",
+"aliases": ["一致性策略", "Consistency Policy", "一致性蒸馏", "Consistency Distillation"],
+"tier": 3,
+"one_liner": "能把噪声一步映射回数据的生成模型，用来把扩散的多步采样压到一两步",
+"explanation": "一致性模型由 OpenAI 的 Yang Song 等人在 2023 年提出（ICML 2023）。扩散模型生成时要沿去噪轨迹一步步走，常需几十到上百步，很慢。一致性模型训练一个函数，让同一条轨迹上任意时刻的带噪样本都映射到同一个终点（干净数据），这一性质叫「自一致性」；于是一步就能从纯噪声生成样本，也可以多走几步换取更高质量。训练有两种方式：从已训好的扩散模型蒸馏（一致性蒸馏），或直接从头训练。机器人方向，Prasad、Bohg 等人 2024 年的 Consistency Policy 把扩散策略蒸馏成一致性策略，推理比最快的替代加速方法还快约一个数量级、成功率相当，适合算力有限的机器人；ConRFT 等工作也用一致性策略做 VLA 的强化微调。",
+"example": "Consistency Policy 在 6 个仿真任务和 3 个真机任务上用笔记本 GPU 推理，速度约为其他加速方法的 10 倍，成功率与原扩散策略接近。",
+"related": ["扩散模型", "扩散策略", "单步生成", "知识蒸馏", "平均流", "ConRFT"],
+"sources": [
+{"title": "Consistency Models (arXiv 2303.01469)", "url": "https://arxiv.org/abs/2303.01469"},
+{"title": "Consistency Policy: Accelerated Visuomotor Policies via Consistency Distillation (arXiv 2405.07503)", "url": "https://arxiv.org/abs/2405.07503"}
+],
+"as_of": ""
+},
+{
+"name_zh": "上下文长度",
+"name_en": "Context Length",
+"abbr": "",
+"aliases": ["上下文窗口", "Context Window"],
+"tier": 3,
+"one_liner": "模型一次最多能处理的 token 数，决定它能同时「看到」多少输入",
+"explanation": "上下文长度（也叫上下文窗口）指 Transformer 类模型一次能处理的 token 总数上限，按 token 计，不按字数。超出长度的内容要么被截断，要么得先摘要再输入。自注意力的计算量随序列长度平方增长，KV 缓存占的显存随长度线性增长，所以上下文越长，推理越慢、越占显存。据 IBM 2024 年 10 月的整理，GPT-4o 和 Llama 3.1 为 12.8 万 token，Gemini 1.5 Pro 最高 200 万 token。对 VLA 来说图像特别占上下文：PaliGemma 在 224×224 分辨率下每张图就是 256 个视觉 token，多相机、多帧历史会让序列迅速变长，这是很多 VLA 只看当前帧、需要另外设计记忆模块或剪枝视觉 token 的原因之一。",
+"example": "用 PaliGemma 编码 3 路 224×224 相机画面，仅图像就占 768 个 token；如果每路再带 4 帧历史，就是 12 张图、3072 个 token。",
+"related": ["token（词元）", "KV 缓存", "视觉 token", "具身记忆", "记忆增强 VLA", "视觉 token 剪枝"],
+"sources": [
+{"title": "What is a context window? (IBM Think)", "url": "https://www.ibm.com/think/topics/context-window"},
+{"title": "PaliGemma – Google's Cutting-Edge Open Vision Language Model (Hugging Face Blog)", "url": "https://huggingface.co/blog/paligemma"}
+],
+"as_of": "2024-10"
+}
+]}

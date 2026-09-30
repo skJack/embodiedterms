@@ -1,0 +1,386 @@
+{
+ "category": "named_model",
+ "batch": 13,
+ "terms": [
+  {
+   "name_zh": "GEN-1",
+   "name_en": "GEN-1: Scaling Embodied Foundation Models to Mastery (Generalist AI)",
+   "abbr": "",
+   "aliases": [
+    "GEN-1.5"
+   ],
+   "tier": 3,
+   "one_liner": "Generalist AI 的第二代具身基础模型，主打把简单任务做到「熟练」",
+   "explanation": "美国机器人公司 Generalist AI 在 2026 年 4 月发布的具身基础模型，是 GEN-0 的后继，预训练用了超过 50 万小时的真实物理交互数据，主要是人佩戴低成本可穿戴设备做日常活动时采集的。官方把目标定为「熟练」（mastery）：可靠、快、能随机应变。据官方数据，每个任务只用约 1 小时机器人数据微调，就能在此前模型成功率约 64% 的任务上做到 99%，折纸盒约 12.1 秒一次，比此前最好水平快约 3 倍。2026 年 8 月的 GEN-1.5 出现了上下文学习能力（不改权重、看示范就会）：看一段 3–12 秒的示范即可做新任务，单次示范平均成功率约 59%。",
+   "example": "官方演示中 GEN-1 连续折纸盒 200 次、连续装方块 1800 次，用来展示长时间运行的可靠性。",
+   "related": [
+    "GEN-0",
+    "Generalist AI",
+    "具身大模型",
+    "上下文学习",
+    "缩放定律",
+    "真机数据"
+   ],
+   "sources": [
+    {
+     "title": "GEN-1: Scaling Embodied Foundation Models to Mastery (Generalist AI Blog)",
+     "url": "https://generalistai.com/blog/gen-1"
+    },
+    {
+     "title": "GEN-1.5: Embodied Foundation Models are One-Shot Learners (Generalist AI Blog)",
+     "url": "https://generalistai.com/blog/gen-1.5"
+    }
+   ],
+   "as_of": "2026-08"
+  },
+  {
+   "name_zh": "Gen2Act",
+   "name_en": "Gen2Act: Human Video Generation in Novel Scenarios enables Generalizable Robot Manipulation",
+   "abbr": "",
+   "aliases": [],
+   "tier": 3,
+   "one_liner": "先生成一段「人怎么做」的视频，再让机器人照着视频执行的操作方法",
+   "explanation": "Google DeepMind 与卡内基梅隆大学、斯坦福的研究者在 2024 年 9 月提出。它把「按语言指令操作」拆成两步：先用在网络视频上训练好的视频生成模型，不经微调、零样本地为当前场景生成一段人完成任务的视频；再由机器人策略看着这段视频执行，训练时加入点轨迹预测损失（预测画面里各点怎么移动），让策略读出视频中的运动信息。物体和动作的泛化交给见过海量网络视频的生成模型，机器人数据只需教会「把视频里的动作翻译成机器人动作」，因此能处理机器人数据里没出现过的物体类别和动作。",
+   "example": "机器人数据里没有的动作类型（如画圈搅动、朝新方向拖动物体），可以靠生成的人类视频引导完成；把多段任务串起来还能做「清理桌面」「做咖啡」这类长程任务。",
+   "related": [
+    "视频生成模型",
+    "人类视频数据",
+    "任意点跟踪",
+    "行为克隆",
+    "UniPi",
+    "DreamGen（GR00T Dreams）"
+   ],
+   "sources": [
+    {
+     "title": "Gen2Act (arXiv:2409.16283)",
+     "url": "https://arxiv.org/abs/2409.16283"
+    },
+    {
+     "title": "Gen2Act 项目主页",
+     "url": "https://homangab.github.io/gen2act/"
+    }
+   ],
+   "as_of": "2024-09"
+  },
+  {
+   "name_zh": "Genesis AI GENE-26.5",
+   "name_en": "GENE-26.5 (Genesis AI robotics foundation model)",
+   "abbr": "",
+   "aliases": [
+    "GENE-26.5",
+    "GENE"
+   ],
+   "tier": 3,
+   "one_liner": "Genesis AI 2026 年 5 月发布的首个机器人基础模型系统，主打灵巧操作",
+   "explanation": "机器人公司 Genesis AI 于 2026 年 5 月 7 日发布，是其 GENE 模型家族的第一个公开版本，名字里的 26.5 就是 2026 年 5 月。官方强调操作要当成全栈系统问题来做：用接近人手的高自由度灵巧手缩小本体差异；用带触觉的数据手套、第一人称视频和第三人称视频采集人类数据（与合作方累计超过 20 万小时）；模型用流匹配建模语言、视觉、本体感知、触觉和动作的联合分布；再用自研高真实度仿真 Genesis World 做大规模闭环评测，并自研低延迟控制栈。官方称多数高难技能只需不到 1 小时任务专属机器人数据。",
+   "example": "官方演示中，同一个模型以 1 倍速自主完成约 4 分钟、20 多个子任务的做饭流程，包括单手磕鸡蛋、一手扶番茄一手切。",
+   "related": [
+    "Genesis AI",
+    "Genesis",
+    "灵巧手",
+    "触觉手套",
+    "流匹配",
+    "本体差异"
+   ],
+   "sources": [
+    {
+     "title": "GENE-26.5: Advancing Robotic Manipulation to Human Level (Genesis AI Blog)",
+     "url": "https://www.genesis.ai/blog/gene-26-5-advancing-robotic-manipulation-to-human-level"
+    }
+   ],
+   "as_of": "2026-05"
+  },
+  {
+   "name_zh": "GVL（生成式价值学习）",
+   "name_en": "Generative Value Learning (Vision Language Models are In-Context Value Learners)",
+   "abbr": "GVL",
+   "aliases": [
+    "生成式价值学习"
+   ],
+   "tier": 3,
+   "one_liner": "让视觉语言模型给打乱顺序的视频帧估计任务进度，当通用价值函数用",
+   "explanation": "Google DeepMind 联合宾夕法尼亚大学、斯坦福在 2024 年 11 月提出，发表于 ICLR 2025。这里的「价值」指任务完成了百分之多少，可用来判断成败、筛选数据、给强化学习当奖励。直接让视觉语言模型（VLM）按时间顺序给每帧打分效果很差，因为相邻帧高度相关，模型容易只按先后给出单调上升的分数。GVL 先把视频帧打乱，再让模型（论文用 Gemini-1.5-Pro）逐帧估计完成度，逼它真正看画面内容。它不需要针对任务训练，在 300 多个真实任务上零样本或少样本可用，还能把人类视频、其他机器人的示例放进上下文来学习。",
+   "example": "用 GVL 给一批示范视频打进度分，预测进度与真实时间顺序相关性低的片段（多为失败或低质量示范）可被筛掉，再用剩下的数据训练模仿学习策略。",
+   "related": [
+    "进度奖励模型",
+    "VLM 作奖励模型",
+    "价值函数",
+    "成功检测器",
+    "上下文学习",
+    "数据筛选"
+   ],
+   "sources": [
+    {
+     "title": "Vision Language Models are In-Context Value Learners (arXiv:2411.04549)",
+     "url": "https://arxiv.org/abs/2411.04549"
+    },
+    {
+     "title": "Generative Value Learning 项目主页",
+     "url": "https://generative-value-learning.github.io/"
+    }
+   ],
+   "as_of": "2025-01"
+  },
+  {
+   "name_zh": "Genie 2",
+   "name_en": "Genie 2 (Google DeepMind)",
+   "abbr": "",
+   "aliases": [],
+   "tier": 3,
+   "one_liner": "谷歌 DeepMind 的大规模世界模型，从一张图生成可操控的 3D 世界",
+   "explanation": "Google DeepMind 于 2024 年 12 月 4 日发布的基础世界模型，是 Genie（初代）的后继。输入一张图片（可以是 Imagen 3 文生图的结果，也可以是真实照片），就能生成可用键盘鼠标操控的 3D 环境，画面一致性最长可保持约一分钟，多数示例在 10–20 秒。架构是在大规模视频数据上训练的自回归潜在扩散模型，即在压缩后的隐空间里一帧接一帧地去噪生成。它能模拟重力、水、烟等效果和物体交互，并记住移出视野的内容。主要用途是给 SIMA 等智能体提供多样的训练和评测环境，后续版本是 Genie 3。",
+   "example": "输入一张真实世界的照片，Genie 2 可以把它变成一个能用键盘操控、以第一人称视角走动的交互式 3D 场景。",
+   "related": [
+    "Genie（初代）",
+    "Genie 3",
+    "世界模型",
+    "可交互世界模型",
+    "潜在扩散模型",
+    "SIMA 2"
+   ],
+   "sources": [
+    {
+     "title": "Genie 2: A large-scale foundation world model (Google DeepMind Blog)",
+     "url": "https://deepmind.google/discover/blog/genie-2-a-large-scale-foundation-world-model/"
+    }
+   ],
+   "as_of": "2024-12"
+  },
+  {
+   "name_zh": "智元 Genie Envisioner 世界模型",
+   "name_en": "Genie Envisioner: A Unified World Foundation Platform for Robotic Manipulation (AgiBot)",
+   "abbr": "GE",
+   "aliases": [
+    "GE-Base",
+    "GE-Act",
+    "GE-Sim",
+    "GE-Act 2.0"
+   ],
+   "tier": 3,
+   "one_liner": "智元机器人把视频世界模型、策略、神经仿真器和评测合为一体的平台",
+   "explanation": "智元机器人（AgiBot）团队 2025 年 8 月发布的机器人操作平台。核心 GE-Base 是一个按语言指令生成视频的扩散模型，在 AgiBot World 约 100 万条、共 2967 小时的双臂真机数据上训练，学会预测接下来画面会怎么变。GE-Act 用约 1.6 亿参数的流匹配解码器把 GE-Base 的隐表示转成动作；GE-Sim 输入动作生成未来画面，当神经仿真器做闭环评测；EWMBench 用来衡量这类世界模型的质量。代码和权重已开源。2026 年 9 月的 GE-Act 2.0 改为全部在操作数据上从零训练，由自编码器、单步视觉规划器和逆动力学模型串成。",
+   "example": "论文中每个任务只用约 1 小时数据适配，GE-Act 就能迁移到松灵 Cobot Magic 等其他双臂平台上执行操作任务。",
+   "related": [
+    "智元机器人",
+    "世界动作模型",
+    "AgiBot World 数据集",
+    "EWMBench 具身世界模型评测",
+    "神经模拟器",
+    "智元 GO-1（启元大模型）"
+   ],
+   "sources": [
+    {
+     "title": "Genie Envisioner (arXiv:2508.05635)",
+     "url": "https://arxiv.org/abs/2508.05635"
+    },
+    {
+     "title": "AgibotTech/Genie-Envisioner (GitHub)",
+     "url": "https://github.com/AgibotTech/Genie-Envisioner"
+    },
+    {
+     "title": "GE-Act 2.0 项目主页",
+     "url": "https://ge-act-v2.github.io/"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "Genie（初代）",
+   "name_en": "Genie: Generative Interactive Environments",
+   "abbr": "",
+   "aliases": [
+    "Genie 1"
+   ],
+   "tier": 3,
+   "one_liner": "谷歌 DeepMind 从无标注视频里学出「可玩世界」的生成式交互环境模型",
+   "explanation": "Google DeepMind 于 2024 年 2 月发布，参数量 110 亿，是首个只用无标注互联网视频、以无监督方式训练出来的生成式交互环境。它由三部分组成：时空视频分词器，把视频压成离散 token；潜在动作模型，从前后两帧推断发生了哪种动作，动作只有一小组离散编号（论文中为 8 个）；自回归动力学模型，根据当前帧和动作预测下一帧。关键在于训练时不需要动作标签，却能让人逐帧操控生成的世界。它主要用 2D 平台跳跃游戏视频训练，也在 RT-1 机器人视频上做过验证；潜在动作的思路后来被 LAPA 等机器人预训练工作沿用。",
+   "example": "给 Genie 一张手绘草图，它会把草图变成一个可以按动作一帧帧玩下去的 2D 平台游戏。",
+   "related": [
+    "Genie 2",
+    "Genie 3",
+    "潜在动作模型",
+    "视频分词器",
+    "可交互世界模型",
+    "LAPA"
+   ],
+   "sources": [
+    {
+     "title": "Genie: Generative Interactive Environments (arXiv:2402.15391)",
+     "url": "https://arxiv.org/abs/2402.15391"
+    },
+    {
+     "title": "Genie 项目主页",
+     "url": "https://sites.google.com/view/genie-2024/home"
+    }
+   ],
+   "as_of": "2024-02"
+  },
+  {
+   "name_zh": "极佳 GigaBrain-0",
+   "name_en": "GigaBrain-0: A World Model-Powered Vision-Language-Action Model (GigaAI)",
+   "abbr": "",
+   "aliases": [
+    "GigaBrain",
+    "GigaBrain-0.5",
+    "GigaBrain-0.5M*",
+    "GigaBrain-0.7"
+   ],
+   "tier": 3,
+   "one_liner": "极佳科技用世界模型生成数据来训练的 VLA 模型系列",
+   "explanation": "极佳科技（GigaAI）2025 年 10 月发布的视觉-语言-动作模型（VLA）。它针对真机数据贵且少的问题，把大量训练数据换成世界模型生成的数据，包括视频生成、外观迁移、人类视频迁移、视角迁移和仿真到真实迁移。模型输入 RGB-D 图像增强空间感，先输出具身思维链（用语言写出中间推理）再出动作，并用知识隔离防止推理训练干扰动作。另有可跑在 Jetson AGX Orin 上的 GigaBrain-0-Small。后续 GigaBrain-0.5 用 1 万多小时真机数据训练，0.5M* 加入基于世界模型的强化学习，2026 年 8 月的 0.7 用 3.7 万多小时数据和三系统架构。",
+   "example": "论文把训练数据中世界模型生成数据的比例从 0 逐步提到 90%，模型对物体外观、摆放位置和相机视角变化的泛化随之明显提升。",
+   "related": [
+    "极佳科技",
+    "极佳 GigaWorld-0",
+    "视觉-语言-动作模型",
+    "具身思维链",
+    "知识隔离",
+    "合成数据"
+   ],
+   "sources": [
+    {
+     "title": "GigaBrain-0 (arXiv:2510.19430)",
+     "url": "https://arxiv.org/abs/2510.19430"
+    },
+    {
+     "title": "GigaBrain-0.5M* (arXiv:2602.12099)",
+     "url": "https://arxiv.org/abs/2602.12099"
+    },
+    {
+     "title": "GigaBrain-0.7 (arXiv:2608.15875)",
+     "url": "https://arxiv.org/abs/2608.15875"
+    }
+   ],
+   "as_of": "2026-08"
+  },
+  {
+   "name_zh": "极佳 GigaWorld-0",
+   "name_en": "GigaWorld-0: World Models as Data Engine to Empower Embodied AI (GigaAI)",
+   "abbr": "",
+   "aliases": [
+    "GigaWorld-0-Video",
+    "GigaWorld-0-3D"
+   ],
+   "tier": 3,
+   "one_liner": "极佳科技把世界模型当「数据引擎」、批量生成机器人训练数据的框架",
+   "explanation": "极佳科技（GigaAI）2025 年 11 月发布，定位是给视觉-语言-动作模型（VLA）生产训练数据的世界模型框架。它有两部分：GigaWorld-0-Video 用大规模视频生成模型产出纹理丰富的机器人操作视频，可细粒度控制外观、相机视角和动作语义；GigaWorld-0-3D 结合 3D 生成、3D 高斯泼溅重建、可微物理系统辨识和运动规划，保证几何一致、物理合理。配套训练框架 GigaTrain 用 FP8 精度和稀疏注意力节省算力。用这些合成数据训练的 GigaBrain-0 在真机上表现良好。代码和模型已开源；2026 年 7 月团队又推出面向策略评测的 GigaWorld-1。",
+   "example": "把一段真机操作视频改换桌面纹理、光照或相机视角，生成多份外观不同但动作一致的训练数据，用来提升 VLA 对外观变化的泛化。",
+   "related": [
+    "极佳 GigaBrain-0",
+    "极佳科技",
+    "世界模型",
+    "合成数据",
+    "3D高斯泼溅",
+    "世界模型评测"
+   ],
+   "sources": [
+    {
+     "title": "GigaWorld-0 (arXiv:2511.19861)",
+     "url": "https://arxiv.org/abs/2511.19861"
+    },
+    {
+     "title": "GigaWorld-0 项目主页",
+     "url": "https://giga-world-0.github.io/"
+    },
+    {
+     "title": "GigaWorld-1 (arXiv:2607.02642)",
+     "url": "https://arxiv.org/abs/2607.02642"
+    }
+   ],
+   "as_of": "2026-07"
+  },
+  {
+   "name_zh": "GMT",
+   "name_en": "GMT: General Motion Tracking for Humanoid Whole-Body Control",
+   "abbr": "GMT",
+   "aliases": [
+    "General Motion Tracking"
+   ],
+   "tier": 3,
+   "one_liner": "用一个统一策略让人形机器人跟踪各种人类动作的全身控制方法",
+   "explanation": "加州大学圣地亚哥分校（王小龙组）与西蒙弗雷泽大学（Xue Bin Peng）2025 年 6 月提出。动作跟踪指让机器人实时模仿一段参考动作，如人体动捕数据。以往方法常是一类动作一个策略或需逐类微调，GMT 用一个策略覆盖走、踢腿、踢球、跳舞等。关键有两点：自适应采样，训练时自动多练难的片段；动作混合专家（MoE），让网络不同部分专精不同类型的动作。训练先用 PPO 训出带特权信息的教师策略，再用 DAgger 蒸馏成只看本体感知的学生策略。数据取自 AMASS 与 LAFAN1 约 33 小时动作，在 23 自由度的宇树 G1 上实机部署。",
+   "example": "同一个 GMT 策略在宇树 G1 上既能做武术踢腿、踢球，也能模仿醉步、蹲走和跳舞，不必为每类动作单独训练。",
+   "related": [
+    "运动跟踪",
+    "混合专家模型",
+    "宇树 G1",
+    "教师-学生蒸馏",
+    "AMASS 人体动捕数据集",
+    "BeyondMimic"
+   ],
+   "sources": [
+    {
+     "title": "GMT (arXiv:2506.14770)",
+     "url": "https://arxiv.org/abs/2506.14770"
+    },
+    {
+     "title": "GMT 项目主页",
+     "url": "https://gmt-humanoid.github.io/"
+    }
+   ],
+   "as_of": "2025-09"
+  },
+  {
+   "name_zh": "GNM（通用导航模型）",
+   "name_en": "GNM: A General Navigation Model to Drive Any Robot",
+   "abbr": "GNM",
+   "aliases": [
+    "通用导航模型",
+    "General Navigation Model"
+   ],
+   "tier": 3,
+   "one_liner": "用 6 种机器人混合数据训练、能驱动不同机器人的通用视觉导航模型",
+   "explanation": "加州大学伯克利分校 Sergey Levine 组（Dhruv Shah 等）2022 年 10 月提出，发表于 ICRA 2023。它把 TurtleBot2、Jackal、Spot、遥控车、全地形车等 6 种机器人共约 60 小时导航数据合起来，训练一个图像目标导航策略：输入当前图像、过去几帧（用来推断「我是哪种机器人」的本体上下文）和目标图像，输出离目标的时间距离和接下来 5 个归一化路点。归一化动作空间让它能跨本体使用。结论是异构数据训出的一个策略比任何单一数据集训的都强，还能直接部署到训练集里没有的机器人上，例如四旋翼无人机。后续工作有 ViNT 和 NoMaD。",
+   "example": "部署时先建一张由沿途图像组成的拓扑地图，GNM 估计当前画面离各节点有多远，再用 Dijkstra 算法规划子目标序列，逐个导航过去。",
+   "related": [
+    "ViNT",
+    "NoMaD",
+    "跨本体",
+    "图像目标导航",
+    "拓扑地图",
+    "伯克利人工智能研究实验室"
+   ],
+   "sources": [
+    {
+     "title": "GNM: A General Navigation Model to Drive Any Robot (arXiv:2210.03370)",
+     "url": "https://arxiv.org/abs/2210.03370"
+    },
+    {
+     "title": "GNM 项目主页",
+     "url": "https://sites.google.com/view/drive-any-robot"
+    }
+   ],
+   "as_of": "2023-05"
+  },
+  {
+   "name_zh": "智平方 GOVLA（AlphaBrain）",
+   "name_en": "GOVLA (Global & Omni-body Vision-Language-Action) / Alpha Brain (AI² Robotics)",
+   "abbr": "GOVLA",
+   "aliases": [
+    "AlphaBrain",
+    "Alpha Brain",
+    "全域全身 VLA",
+    "AI2R Brain"
+   ],
+   "tier": 3,
+   "one_liner": "智平方的全域全身 VLA 大模型，能同时输出全身动作和移动轨迹",
+   "explanation": "智平方科技（AI² Robotics）2025 年 4 月发布 AlphaBot 2 机器人时推出，同时把原具身大模型品牌 AI2R Brain 升级为 Alpha Brain，其核心就是 GOVLA（全域全身视觉-语言-动作模型）。它由空间交互基础模型、慢系统和快系统三部分组成：慢系统（System 2）负责复杂推理、拆解任务和语言交互，快系统（System 1）输出全身控制动作和移动轨迹。官方的说法是常规 VLA 只输出机械臂动作、只能在桌面范围操作，GOVLA 面向从桌面到开放环境、从单臂到全身协同的任务，并在构建中融入了 DeepSeek 的技术来增强长程推理。",
+   "example": "官方举例：常规 VLA 机器人要人把食材放到桌上才能操作，搭载 GOVLA 的机器人可以自己去冰箱取食材、做好早餐再送到餐桌。",
+   "related": [
+    "智平方",
+    "智平方 AlphaBot",
+    "快慢双系统",
+    "视觉-语言-动作模型",
+    "RoboMamba",
+    "移动操作"
+   ],
+   "sources": [
+    {
+     "title": "智平方发布全新一代智能机器人AlphaBot 2，开启AGI终端新时代！（智平方官网）",
+     "url": "https://ai2robotics.com/%E6%99%BA%E5%B9%B3%E6%96%B9%E5%8F%91%E5%B8%83%E5%85%A8%E6%96%B0%E4%B8%80%E4%BB%A3%E6%99%BA%E8%83%BD%E6%9C%BA%E5%99%A8%E4%BA%BAalphabot-2%E5%BC%80%E5%90%AFagi%E7%BB%88%E7%AB%AF%E6%96%B0/"
+    }
+   ],
+   "as_of": "2025-04"
+  }
+ ]
+}

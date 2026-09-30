@@ -1,0 +1,205 @@
+{
+  "category": "named_model",
+  "batch": 15,
+  "terms": [
+    {
+      "name_zh": "HORA（手内物体旋转 + RMA）",
+      "name_en": "HORA: In-Hand Object Rotation via Rapid Motor Adaptation",
+      "abbr": "HORA",
+      "aliases": ["In-Hand Object Rotation via Rapid Motor Adaptation"],
+      "tier": 3,
+      "one_liner": "只靠指尖和关节本体感知，让机器手在手里持续转动各种物体的强化学习方法",
+      "explanation": "UC Berkeley 与 Meta AI 的 Haozhi Qi、Jitendra Malik 等人 2022 年 10 月发布，发表于 CoRL 2022。目标是让 Allegro 四指灵巧手只用指尖把物体绕一个轴持续转动。做法沿用快速运动适应（RMA）：先在仿真里用强化学习训练一个能看到物体大小、质量、摩擦等特权信息的基础策略，再训练一个适应模块，只从最近一段关节本体感知历史里推断这些物体属性。策略只用圆柱体在仿真中训练，不经微调就能部署到真机，转动大小、形状、重量各异的物体，稳定的「指步态」在训练中自然涌现。它是手内操作仿真到现实迁移的代表工作。",
+      "example": "在仿真中只见过圆柱体的策略，部署到真实 Allegro 手上后，不看摄像头也能转动形状、重量各不相同的日常物体。",
+      "related": ["快速运动适应", "手内操作", "灵巧操作", "特权信息", "仿真到现实迁移", "Allegro 灵巧手"],
+      "sources": [
+        {"title": "In-Hand Object Rotation via Rapid Motor Adaptation (arXiv 2210.04887)", "url": "https://arxiv.org/abs/2210.04887"},
+        {"title": "HORA project page", "url": "https://haozhi.io/hora/"}
+      ],
+      "as_of": "2022-10"
+    },
+    {
+      "name_zh": "HoST（人形起身）",
+      "name_en": "HoST: Learning Humanoid Standing-up Control across Diverse Postures",
+      "abbr": "HoST",
+      "aliases": ["Humanoid Standing-up Control", "人形机器人起身控制"],
+      "tier": 3,
+      "one_liner": "用强化学习从零学会让人形机器人从各种姿势自己站起来的控制框架",
+      "explanation": "上海人工智能实验室（庞江淼团队）联合上海交大、港大、浙大、港中文 2025 年 2 月发布，发表于 RSS 2025 并获最佳系统论文提名。它解决人形机器人摔倒后怎么自己站起来：以往方法要么只在仿真里跑、忽略真实电机限制，要么依赖针对某种地面预先设计的起身轨迹。HoST 不用参考动作，在多种仿真地形上用强化学习从零学习，用多个价值网络（critic）分别评估不同奖励组，配合课程学习；再加平滑正则和隐式速度上限，避免真机上抖动和动作过猛。训练后直接部署到宇树 G1，在室内外多种场景都能从躺卧、靠坐等姿势起身，是跌倒恢复方向的代表工作。",
+      "example": "宇树 G1 躺在地上或靠坐在墙边时，HoST 策略能直接控制它自己站起来，不需要人扶或吊架。",
+      "related": ["跌倒恢复（摔倒起身）", "强化学习运控", "课程学习", "仿真到现实迁移", "宇树 G1", "上海人工智能实验室"],
+      "sources": [
+        {"title": "Learning Humanoid Standing-up Control across Diverse Postures (arXiv 2502.08378)", "url": "https://arxiv.org/abs/2502.08378"},
+        {"title": "HoST project page", "url": "https://taohuang13.github.io/humanoid-standingup.github.io/"}
+      ],
+      "as_of": "2025-04"
+    },
+    {
+      "name_zh": "HOVER",
+      "name_en": "HOVER: Versatile Neural Whole-Body Controller for Humanoid Robots",
+      "abbr": "HOVER",
+      "aliases": ["HOVER 神经全身控制器"],
+      "tier": 3,
+      "one_liner": "英伟达等提出的人形机器人通用神经全身控制器，一个策略兼容多种指令模式",
+      "explanation": "英伟达（Linxi Fan、Yuke Zhu 等）联合 CMU、UC Berkeley、UT Austin、UCSD 2024 年 10 月发布，发表于 ICRA 2025。人形机器人做导航、边走边操作、桌面操作时需要的控制接口不同：导航关心躯干（根部）速度，桌面操作关心上半身关节位置。以前每种接口往往单独训练一个策略，彼此不通用。HOVER 先训练一个在仿真里模仿 AMASS 人体动作数据的教师全身动作跟踪策略，再蒸馏成一个学生策略；训练时对上、下半身指令分别施加模式掩码和稀疏掩码，让同一个策略能在 H2O、OmniH2O、ExBody、HumanPlus 等指令模式间切换而无需重训。代码基于 Isaac Lab 开源，真机部署在宇树 H1 上。",
+      "example": "同一个 HOVER 策略，可以只接收躯干速度指令让 H1 行走，也可以切换成只跟踪头和双手位置的 VR 遥操作模式。",
+      "related": ["全身控制", "学习型全身控制", "策略蒸馏", "运动跟踪", "OmniH2O", "英伟达 GEAR 实验室"],
+      "sources": [
+        {"title": "HOVER: Versatile Neural Whole-Body Controller for Humanoid Robots (arXiv 2410.21229)", "url": "https://arxiv.org/abs/2410.21229"},
+        {"title": "HOVER project page", "url": "https://hover-versatile-humanoid.github.io/"},
+        {"title": "NVlabs/HOVER (GitHub)", "url": "https://github.com/NVlabs/HOVER"}
+      ],
+      "as_of": "2025-03"
+    },
+    {
+      "name_zh": "HugWBC",
+      "name_en": "HugWBC: A Unified and General Humanoid Whole-Body Controller for Versatile Locomotion",
+      "abbr": "",
+      "aliases": ["HugWBC 人形统一通用全身控制器"],
+      "tier": 3,
+      "one_liner": "一个策略让人形机器人走、跑、跳、单脚蹦，并能调步频、抬脚高度的全身控制器",
+      "explanation": "上海交通大学（张伟楠组）与上海人工智能实验室（庞江淼）等 2025 年 2 月发布，发表于 RSS 2025。多数人形行走控制器只会一种固定走法，参数不能调，也难以扩展。HugWBC 设计了一套统一的指令空间：除了速度，还能指定步态（走/跑、跳跃、站立、单脚跳）、步频、抬脚高度、身体高度、腰部转动和身体俯仰。训练时加入对称性损失，并用「干预训练」让上半身可以被外部信号（如遥操作）接管，从而支持边走边操作。策略在 Isaac Gym 中训练，部署在宇树 H1 上，代码开源。",
+      "example": "遥控器让 H1 以指定步频和抬脚高度行走，同时操作员通过遥操作接管它的双臂去搬箱子。",
+      "related": ["全身控制", "学习型全身控制", "步态", "运动操作一体化", "宇树 H1", "HOVER"],
+      "sources": [
+        {"title": "HugWBC (arXiv 2502.03206)", "url": "https://arxiv.org/abs/2502.03206"},
+        {"title": "HugWBC project page", "url": "https://hugwbc.github.io/"},
+        {"title": "apexrl/HugWBC (GitHub)", "url": "https://github.com/apexrl/HugWBC"}
+      ],
+      "as_of": "2025-04"
+    },
+    {
+      "name_zh": "人形行走即下一个 token 预测",
+      "name_en": "Humanoid Locomotion as Next Token Prediction",
+      "abbr": "",
+      "aliases": ["Humanoid Locomotion as Next Token Prediction"],
+      "tier": 3,
+      "one_liner": "把人形机器人行走当成语言模型式的「预测下一个 token」问题来学",
+      "explanation": "UC Berkeley 的 Ilija Radosavovic、Koushil Sreenath、Jitendra Malik 等 2024 年 2 月发布。它把真实人形机器人控制写成类似语言建模的问题：用因果 Transformer 对观测和动作组成的传感器运动轨迹做自回归预测，每个 token 预测同一模态的下一个 token。这样缺少动作标签的数据（如从人类视频里提取的动作轨迹）也能参与训练。数据来自已有神经网络策略和基于模型控制器的仿真轨迹、人体动作捕捉数据和 YouTube 人类视频。模型部署到 Agility Robotics 的全尺寸人形 Digit 上，零样本在旧金山街头行走；只用 27 小时行走数据也能迁移到真机，还能泛化到训练中没有的倒退走指令。",
+      "example": "训练数据里没有倒退走的指令，模型部署后仍能按指令让 Digit 向后走。",
+      "related": ["下一个 token 预测", "自回归解码", "无动作标签视频", "双足行走", "Agility Digit 人形机器人", "真实世界人形强化学习行走"],
+      "sources": [
+        {"title": "Humanoid Locomotion as Next Token Prediction (arXiv 2402.19469)", "url": "https://arxiv.org/abs/2402.19469"},
+        {"title": "Project page", "url": "https://humanoid-next-token-prediction.github.io/"}
+      ],
+      "as_of": "2024-02"
+    },
+    {
+      "name_zh": "人形跑酷学习",
+      "name_en": "Humanoid Parkour Learning",
+      "abbr": "",
+      "aliases": ["Humanoid Parkour Learning", "人形机器人跑酷"],
+      "tier": 3,
+      "one_liner": "让人形机器人靠头部深度相机自主跳台、跨沟、跨栏的端到端跑酷策略",
+      "explanation": "上海期智研究院、上海科技大学与清华大学的 Ziwen Zhuang、Shenzhe Yao、Hang Zhao（赵行）2024 年 6 月发布，发表于 CoRL 2024，是同组四足工作 Robot Parkour Learning 的人形版。它不需要任何人体动作参考，用强化学习训练基于视觉的端到端全身控制策略：先在带分形噪声的地形上训练平地行走（噪声会自然促使机器人抬脚），再训练能直接读取地形真值的「特权」跑酷策略覆盖 10 类障碍，最后用 DAgger 蒸馏成只看头部深度相机图像的学生策略。部署在宇树 H1 上，可跳上 0.42 m 高台、跨越 0.8 m 宽沟、在野外以 1.8 m/s 奔跑，并能在只给转向指令时自主选择跑酷动作。",
+      "example": "操作员只用摇杆控制转向，H1 看到前方高台会自己选择起跳动作跳上去。",
+      "related": ["跑酷", "感知行走", "教师-学生蒸馏", "DAgger（数据集聚合）", "宇树 H1", "Robot Parkour Learning"],
+      "sources": [
+        {"title": "Humanoid Parkour Learning (arXiv 2406.10759)", "url": "https://arxiv.org/abs/2406.10759"},
+        {"title": "Humanoid Parkour Learning project page", "url": "https://humanoid4parkour.github.io/"}
+      ],
+      "as_of": "2024-09"
+    },
+    {
+      "name_zh": "腾讯混元世界模型",
+      "name_en": "HunyuanWorld (HunyuanWorld 1.0 / HunyuanWorld-Voyager, Tencent)",
+      "abbr": "HunyuanWorld",
+      "aliases": ["HunyuanWorld 1.0", "HunyuanWorld-Voyager", "HY-World", "WorldPlay"],
+      "tier": 3,
+      "one_liner": "腾讯混元开源的 3D 世界生成系列，能从文字或图片生成可漫游的 3D 场景",
+      "explanation": "腾讯混元团队的开源世界生成模型系列。2025 年 7 月的 HunyuanWorld 1.0 以 360° 全景图为中间表示，把场景按语义分层后重建成可导出的 3D 网格，从一句话或一张图生成可探索的 3D 世界；2025 年 9 月的 Voyager 是 RGB-D 视频扩散模型，沿用户给定的相机路径生成几何一致的彩色和深度视频，可直接得到 3D 点云。之后陆续发布 1.1（WorldMirror，从视频或多视角图重建）、1.5（WorldPlay，2025 年 12 月，实时交互式世界模型）和 HY-World 2.0（2026 年 4 月）。对具身智能来说，它主要用来批量生成仿真场景和资产，偏「生成 3D 环境」，和预测机器人动作后果的世界模型侧重点不同。",
+      "example": "输入一句「海边的木屋小镇」，HunyuanWorld 1.0 生成一个 360° 可漫游、可导出网格的 3D 场景，可导入游戏引擎或仿真器。",
+      "related": ["世界模型", "可交互世界模型", "生成式仿真", "Marble（World Labs）", "Genie 3", "空间智能"],
+      "sources": [
+        {"title": "HunyuanWorld 1.0 technical report (arXiv 2507.21809)", "url": "https://arxiv.org/abs/2507.21809"},
+        {"title": "Tencent-Hunyuan/HunyuanWorld-1.0 (GitHub, news timeline)", "url": "https://github.com/Tencent-Hunyuan/HunyuanWorld-1.0"},
+        {"title": "Voyager: Long-Range and World-Consistent Video Diffusion (arXiv 2506.04225)", "url": "https://arxiv.org/abs/2506.04225"}
+      ],
+      "as_of": "2026-05"
+    },
+    {
+      "name_zh": "腾讯 HY-Embodied（混元具身）",
+      "name_en": "Hy-Embodied series (Tencent Robotics X & Hunyuan: Hy-Embodied-0.5 VLM / VLA / -X)",
+      "abbr": "HY-Embodied",
+      "aliases": ["HY-Embodied-0.5", "HY-Embodied-0.5-X", "Hy-Embodied-0.5-VLA", "HY-VLA-0.5", "Hy-Embodied-VLM-1.0"],
+      "tier": 3,
+      "one_liner": "腾讯 Robotics X 与混元团队开源的具身基础模型系列，含具身 VLM 和 VLA",
+      "explanation": "腾讯 Robotics X 实验室与混元视觉团队推出的开源具身基础模型家族。2026 年 4 月的 HY-Embodied-0.5 是面向机器人的视觉语言模型，强化空间、时间感知和具身推理，采用混合 Transformer（MoT）架构，分 2B 激活（总 4B）的端侧版和 32B 版，开源了 MoT-2B；同月的 0.5-X 在其上继续后训练，侧重任务规划、风险判断等。6 月的 Hy-Embodied-0.5-VLA 在该骨干上加流匹配动作专家，用自研指尖 UMI 采集的 1 万多小时双臂数据训练，开源其中 2000 多小时；7 月又发布 MoE 架构的 VLM-1.0（约 3B 激活 / 30B 总参数）。项目页挂在腾讯 Tairos 具身智能开放平台。",
+      "example": "Hy-Embodied-0.5-VLA 在 RoboTwin 2.0 仿真基准上报告的成功率为 90.9%（Clean）和 90.1%（Randomized）。",
+      "related": ["具身大模型", "视觉语言模型", "视觉-语言-动作模型", "混合 Transformer 架构", "通用操作接口", "腾讯 Tairos"],
+      "sources": [
+        {"title": "Tencent-Hunyuan/HY-Embodied (GitHub)", "url": "https://github.com/Tencent-Hunyuan/HY-Embodied"},
+        {"title": "HY-Embodied-0.5: Embodied Foundation Models for Real-World Agents (arXiv 2604.07430)", "url": "https://arxiv.org/abs/2604.07430"},
+        {"title": "Tencent-Hunyuan/Hy-Embodied-0.5-VLA (GitHub)", "url": "https://github.com/Tencent-Hunyuan/Hy-Embodied-0.5-VLA"}
+      ],
+      "as_of": "2026-07"
+    },
+    {
+      "name_zh": "HIM（混合内部模型）",
+      "name_en": "Hybrid Internal Model: Learning Agile Legged Locomotion with Simulated Robot Response",
+      "abbr": "HIM",
+      "aliases": ["Hybrid Internal Model", "HIMLoco", "混合内部模型"],
+      "tier": 3,
+      "one_liner": "只用本体感知，从机器人自身响应推断地形和扰动的足式运控方法",
+      "explanation": "上海人工智能实验室 OpenRobotLab（庞江淼团队）2023 年 12 月发布，发表于 ICLR 2024，代码仓库名 HIMLoco。足式机器人的传感器只能给出不完整、带噪声的观测，地面摩擦、地形高度这类外部状态很难直接估计。HIM 借鉴经典控制里的内模控制思想，把这些外部状态当作扰动，根据机器人自身的响应去推断：用一个「混合内部嵌入」同时表示显式的机身速度和隐式的稳定性信息，并用对比学习让它贴近机器人的下一时刻状态。它只需要关节编码器和 IMU 的本体感知，省去教师-学生两阶段模仿，论文称在一张 RTX 4090 上训练约 1 小时就能让四足机器人应对多种地形和外力扰动。",
+      "example": "只靠关节编码器和 IMU 的四足机器人，在训练时没见过的地形和外力推搡下仍能保持行走。",
+      "related": ["腿足运动", "本体感知", "盲走", "对比学习", "快速运动适应", "上海人工智能实验室"],
+      "sources": [
+        {"title": "Hybrid Internal Model (arXiv 2312.11460)", "url": "https://arxiv.org/abs/2312.11460"},
+        {"title": "OpenRobotLab/HIMLoco (GitHub)", "url": "https://github.com/OpenRobotLab/HIMLoco"}
+      ],
+      "as_of": "2024-01"
+    },
+    {
+      "name_zh": "HybridVLA",
+      "name_en": "HybridVLA: Collaborative Diffusion and Autoregression in a Unified Vision-Language-Action Model",
+      "abbr": "",
+      "aliases": ["Hybrid-VLA"],
+      "tier": 3,
+      "one_liner": "在同一个大语言模型里同时做扩散和自回归两种动作预测的 VLA",
+      "explanation": "北京大学（仉尚航团队）联合北京智源研究院、香港中文大学、复旦大学 2025 年 3 月发布。自回归 VLA 把动作离散成 token，能继承视觉语言模型的推理能力，但离散化破坏了动作的连续性，影响精细控制；扩散 VLA 另接一个扩散头输出连续动作，却只用到 VLM 提取的特征，没借上逐 token 生成的推理能力。HybridVLA 把扩散去噪直接嵌入大语言模型的下一个 token 预测过程，一个模型同时产出扩散动作和自回归动作，再用「协同动作集成」自适应融合两者。模型基于 Prismatic 7B（LLaMA-2 骨干），论文报告在仿真和真机任务上平均成功率比此前最优方法分别高 14% 和 19%。",
+      "example": "同一个 HybridVLA 模型每一步会给出扩散和自回归两份动作预测，融合后再交给机械臂执行。",
+      "related": ["视觉-语言-动作模型", "自回归-扩散混合架构", "扩散动作头", "分箱离散化", "CogACT", "OpenVLA"],
+      "sources": [
+        {"title": "HybridVLA (arXiv 2503.10631)", "url": "https://arxiv.org/abs/2503.10631"},
+        {"title": "HybridVLA project page", "url": "https://hybrid-vla.github.io/"},
+        {"title": "PKU-HMI-Lab/Hybrid-VLA (GitHub)", "url": "https://github.com/PKU-HMI-Lab/Hybrid-VLA"}
+      ],
+      "as_of": "2025-06"
+    },
+    {
+      "name_zh": "iDP3",
+      "name_en": "Improved 3D Diffusion Policy (Generalizable Humanoid Manipulation with 3D Diffusion Policies)",
+      "abbr": "iDP3",
+      "aliases": ["Improved 3D Diffusion Policy", "改进版 3D 扩散策略"],
+      "tier": 3,
+      "one_liner": "改进版 3D 扩散策略，让人形机器人在单一场景采数据后泛化到新场景",
+      "explanation": "斯坦福大学 Yanjie Ze、Jiajun Wu 等联合 SFU、UPenn、UIUC、CMU 2024 年 10 月发布，发表于 IROS 2025，是 3D 扩散策略（DP3）的改进版。原 DP3 在世界坐标系下处理点云，需要相机标定和点云分割裁剪，不适合头部相机随身体移动的人形机器人。iDP3 改用相机坐标系下的「自我中心」3D 点云，免去标定和分割，同时扩大输入点云规模、改进视觉编码器、加长动作预测视界。配套系统包括基于 Apple Vision Pro 的上半身遥操作，以及装在升降推车上的 25 自由度傅利叶 GR1 人形平台（RealSense L515 深度相机）。只用一个场景采集的数据，机器人靠机载算力就能在多种新场景完成任务。",
+      "example": "只在一个场景采集演示数据训练的策略，部署后能在其他没见过的真实场景里完成同类操作。",
+      "related": ["3D 扩散策略", "扩散策略", "点云", "人形机器人", "傅利叶 GR-1", "VR 遥操作"],
+      "sources": [
+        {"title": "Generalizable Humanoid Manipulation with 3D Diffusion Policies (arXiv 2410.10803)", "url": "https://arxiv.org/abs/2410.10803"},
+        {"title": "Project page", "url": "https://humanoid-manipulation.github.io/"},
+        {"title": "YanjieZe/Improved-3D-Diffusion-Policy (GitHub)", "url": "https://github.com/YanjieZe/Improved-3D-Diffusion-Policy"}
+      ],
+      "as_of": "2025-09"
+    },
+    {
+      "name_zh": "Inner Monologue",
+      "name_en": "Inner Monologue: Embodied Reasoning through Planning with Language Models",
+      "abbr": "",
+      "aliases": ["内心独白"],
+      "tier": 3,
+      "one_liner": "把环境反馈写成文字喂回大语言模型，让机器人边做边调整计划",
+      "explanation": "谷歌机器人团队（Robotics at Google）的 Wenlong Huang、Fei Xia、Brian Ichter 等 2022 年 7 月发布，发表于 CoRL 2022。当时 SayCan 等工作已用大语言模型把高层指令拆成技能序列，但计划一次定下，执行中出错模型并不知道。Inner Monologue 不做额外训练，把多种反馈用自然语言写回 LLM 的提示：技能是否成功（成功检测）、场景里有什么（被动或主动场景描述）、人的补充指令，形成一段「内心独白」，让 LLM 据此决定下一步、重试或改计划。在仿真和真实桌面物体重排、真实厨房长程移动操作三个场景中，闭环语言反馈都明显提高了指令完成率。它是用 LLM 做机器人闭环规划的早期代表。",
+      "example": "例如机器人抓取失败时，成功检测器写回「动作失败」，LLM 读到后安排重新抓取，而不是直接执行下一步。",
+      "related": ["SayCan", "大模型任务规划", "成功检测器", "闭环", "长程任务", "代码即策略"],
+      "sources": [
+        {"title": "Inner Monologue (arXiv 2207.05608)", "url": "https://arxiv.org/abs/2207.05608"},
+        {"title": "Inner Monologue project page", "url": "https://innermonologue.github.io/"},
+        {"title": "Inner Monologue (PMLR v205, CoRL 2022)", "url": "https://proceedings.mlr.press/v205/huang23c.html"}
+      ],
+      "as_of": "2022-12"
+    }
+  ]
+}

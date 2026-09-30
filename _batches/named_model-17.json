@@ -1,0 +1,204 @@
+{
+  "category": "named_model",
+  "batch": 17,
+  "terms": [
+    {
+      "name_zh": "蚂蚁灵波 LingBot-VA",
+      "name_en": "LingBot-VA (Causal World Modeling for Robot Control, Robbyant)",
+      "abbr": "",
+      "aliases": ["LingBot-VA", "LingBot-VA 2.0"],
+      "tier": 3,
+      "one_liner": "蚂蚁灵波开源的视频-动作世界模型，边预测未来画面边输出机器人动作。",
+      "explanation": "LingBot-VA 是蚂蚁集团旗下具身智能公司蚂蚁灵波（Robbyant）2026 年 1 月开源的机器人控制模型，论文题为 Causal World Modeling for Robot Control，收录于 RSS 2026。它走「世界动作模型」路线：用自回归扩散一段段往后生成，在同一序列里交替预测未来视频帧和动作；视觉与动作 token 共享潜在空间，由混合 Transformer（MoT）处理。执行时每段都用真实观测纠偏（闭环推演），并让动作预测与电机执行异步并行以降低延迟。视频编码沿用通义万相 Wan2.2 的 VAE。2026 年 7 月推出 2.0 版，改为从零因果预训练并采用稀疏 MoE 骨干。",
+      "example": "官方报告在 RoboTwin 2.0 的 50 个双臂仿真任务上，简单/困难设置成功率分别为 92.9% 和 91.6%，LIBERO 平均 98.5%。",
+      "related": ["世界动作模型", "世界模型", "混合 Transformer 架构", "异步推理", "自回归视频生成", "蚂蚁灵波"],
+      "sources": [
+        {"title": "arXiv 2601.21998: Causal World Modeling for Robot Control", "url": "https://arxiv.org/abs/2601.21998"},
+        {"title": "GitHub: Robbyant/lingbot-va", "url": "https://github.com/Robbyant/lingbot-va"},
+        {"title": "arXiv 2607.08639: Native Video-Action Pretraining for Generalizable Robot Control (LingBot-VA 2.0)", "url": "https://arxiv.org/abs/2607.08639"}
+      ],
+      "as_of": "2026-07"
+    },
+    {
+      "name_zh": "蚂蚁灵波 LingBot-VLA",
+      "name_en": "LingBot-VLA (A Pragmatic VLA Foundation Model, Robbyant / Ant Group)",
+      "abbr": "",
+      "aliases": ["LingBot-VLA", "LingBot-VLA 2.0"],
+      "tier": 3,
+      "one_liner": "蚂蚁灵波开源的 VLA 基础模型，用约 2 万小时双臂真机数据预训练。",
+      "explanation": "LingBot-VLA 是蚂蚁灵波（Robbyant）2026 年 1 月开源的视觉-语言-动作（VLA）基础模型，论文题为 A Pragmatic VLA Foundation Model，强调实用：泛化好、适配新平台的数据和算力成本低。它以 Qwen2.5-VL-3B 为视觉语言骨干（也支持 PaliGemma），用 9 种主流双臂构型约 20,000 小时真机数据预训练，并在智元 G1、松灵、星海图 R1Pro 等 4 个平台上各跑 100 个任务（GM-100）做系统评测。配套训练代码 8 卡吞吐每秒 261 个样本，比已有 VLA 代码库快 1.5–2.8 倍。2026 年 7 月的 2.0 版把数据扩到约 6 万小时（含 1 万小时人类第一视角视频），动作扩展到头、腰、底盘和灵巧手。",
+      "example": "在 GM-100 评测里，每个任务只给 130 条后训练演示，再比较它与其他 VLA 在同一真机平台上的成功率。",
+      "related": ["视觉-语言-动作模型", "通义千问 Qwen-VL", "跨本体", "后训练", "π0", "蚂蚁灵波"],
+      "sources": [
+        {"title": "arXiv 2601.18692: A Pragmatic VLA Foundation Model", "url": "https://arxiv.org/abs/2601.18692"},
+        {"title": "Robbyant 官网：LingBot-VLA", "url": "https://technology.robbyant.com/lingbot-vla"},
+        {"title": "arXiv 2607.06403: From Foundation to Application (LingBot-VLA 2.0)", "url": "https://arxiv.org/abs/2607.06403"}
+      ],
+      "as_of": "2026-07"
+    },
+    {
+      "name_zh": "蚂蚁灵波 LingBot-World",
+      "name_en": "LingBot-World (Advancing Open-source World Models, Robbyant)",
+      "abbr": "",
+      "aliases": ["LingBot-World", "LingBot-World 2.0", "LingBot-World-Infinity"],
+      "tier": 3,
+      "one_liner": "蚂蚁灵波开源的可交互世界模型，按键盘和镜头指令实时生成后续画面。",
+      "explanation": "LingBot-World 是蚂蚁灵波（Robbyant）2026 年 1 月开源的世界模型，由通义万相 Wan2.2 视频生成模型改造而来。给定起始图像或文字描述后，用户用键盘动作或相机位姿逐步操控，模型接着生成相应画面，论文称之为世界模拟器。官方报告它能在分钟级时长内保持场景前后一致（称为长时记忆），并以每秒 16 帧、延迟不到 1 秒的速度实时交互；代码和权重以 Apache 2.0 协议开放，意在缩小开源与闭源世界模型的差距，面向内容创作、游戏和机器人学习。2026 年 7 月的 2.0 版（LingBot-World-Infinity）支持不限时长的交互，蒸馏出的实时版可驱动 720p 60fps 视频流，提供 14B 和 1.3B 两个规模。",
+      "example": "给一张室内照片作起点，按 W 前进、按 A/D 转向，模型逐段生成对应视角下的后续画面。",
+      "related": ["世界模型", "可交互世界模型", "Genie 3", "通义万相", "自回归视频生成", "蚂蚁灵波"],
+      "sources": [
+        {"title": "arXiv 2601.20540: Advancing Open-source World Models", "url": "https://arxiv.org/abs/2601.20540"},
+        {"title": "GitHub: Robbyant/lingbot-world", "url": "https://github.com/Robbyant/lingbot-world"},
+        {"title": "arXiv 2607.07534: Infinite Worlds with Versatile Interactions (LingBot-World 2.0)", "url": "https://arxiv.org/abs/2607.07534"}
+      ],
+      "as_of": "2026-07"
+    },
+    {
+      "name_zh": "LM-Nav",
+      "name_en": "LM-Nav: Robotic Navigation with Large Pre-Trained Models of Language, Vision, and Action",
+      "abbr": "LM-Nav",
+      "aliases": [],
+      "tier": 3,
+      "one_liner": "把 GPT-3、CLIP 和视觉导航模型拼起来，让机器人按自然语言指令导航。",
+      "explanation": "LM-Nav 是 Dhruv Shah、Brian Ichter、Sergey Levine 等人 2022 年 7 月发布的工作，发表于 CoRL 2022。用语言指挥机器人导航，通常需要大量带文字说明的轨迹数据，标注很贵。LM-Nav 不做任何微调、不用语言标注的机器人数据，而是组合三个现成的预训练模型：大语言模型 GPT-3 把指令拆成一串地标；图文模型 CLIP 判断机器人拍到的画面对应哪个地标；视觉导航模型 ViNG 用过去采集的图像建立环境拓扑图并执行到点策略。系统再搜索出按顺序经过这些地标的最短路线。它在真实户外环境完成了长距离导航，是用基础模型拼装机器人系统这一思路的早期代表。",
+      "example": "例如用户说「经过停车标志后去白色大楼」，GPT-3 提取出「停车标志」「白色大楼」两个地标，CLIP 在拓扑图里找到对应位置，ViNG 依次开过去。",
+      "related": ["视觉语言导航", "CLIP", "拓扑地图", "大模型任务规划", "GNM（通用导航模型）", "ViNT"],
+      "sources": [
+        {"title": "arXiv 2207.04429: LM-Nav", "url": "https://arxiv.org/abs/2207.04429"},
+        {"title": "LM-Nav 项目主页", "url": "https://sites.google.com/view/lmnav"}
+      ],
+      "as_of": "2022-07"
+    },
+    {
+      "name_zh": "Magma",
+      "name_en": "Magma: A Foundation Model for Multimodal AI Agents (Microsoft)",
+      "abbr": "",
+      "aliases": ["Magma-8B"],
+      "tier": 3,
+      "one_liner": "微软推出的多模态智能体基础模型，既能操作软件界面也能控制机械臂。",
+      "explanation": "Magma 是微软研究院 2025 年 2 月发布的多模态基础模型，发表于 CVPR 2025，开源版本为 Magma-8B（语言骨干为 Llama-3-8B）。它想用一个模型同时完成数字世界和物理世界的智能体任务：在网页、手机界面上点击操作（UI 导航），以及控制机械臂抓取放置。关键是两种标注：Set-of-Mark（SoM）给图中可操作的元素打上编号标记，让模型用「选哪个标记」表示在哪里动作；Trace-of-Mark（ToM）标出视频里标记点未来的运动轨迹，让模型学会预测接下来怎么动。借助 ToM，它能从大量没有动作标签的教学视频中学习时空规划。训练数据包括 UI 导航数据、Open X-Embodiment 机器人数据和网络视频。",
+      "example": "同一个 Magma-8B 既能在手机截图上输出「点击 3 号标记的按钮」，也能在机器人相机画面上输出机械臂的移动轨迹和夹爪动作。",
+      "related": ["视觉提示（Set-of-Mark 标记提示）", "视觉-语言-动作模型", "多模态大语言模型", "Open X-Embodiment 数据集", "Llama", "微软（微软研究院）"],
+      "sources": [
+        {"title": "arXiv 2502.13130: Magma", "url": "https://arxiv.org/abs/2502.13130"},
+        {"title": "GitHub: microsoft/Magma", "url": "https://github.com/microsoft/Magma"}
+      ],
+      "as_of": "2025-02"
+    },
+    {
+      "name_zh": "MANO 手部模型",
+      "name_en": "MANO (hand Model with Articulated and Non-rigid defOrmations)",
+      "abbr": "MANO",
+      "aliases": ["MANO 参数化手模型"],
+      "tier": 3,
+      "one_liner": "最常用的参数化 3D 人手模型，用少量形状和姿态参数描述一只手。",
+      "explanation": "MANO 全称 hand Model with Articulated and Non-rigid defOrmations，由德国马普智能系统研究所 Michael Black 团队（Javier Romero、Dimitrios Tzionas）提出，发表于 SIGGRAPH Asia 2017。它从 31 人约 1000 次高精度手部 3D 扫描中学得：输入形状参数（常用 10 维，描述手的大小和粗细）和姿态参数（各手指关节的旋转，可用主成分压缩到更低维），就输出一只带手指弯曲和皮肤形变的三维手部网格。它还能接到 SMPL 人体模型上组成 SMPL+H。在具身智能里，MANO 是从人手视频学灵巧操作的常用表示：HaMeR 等手部重建方法输出 MANO 参数，再经动作重定向映射到机器人灵巧手的关节上。",
+      "example": "从一段人拿杯子的第一人称视频逐帧估计 MANO 参数，得到手指关节角轨迹，再重定向给机器人灵巧手当示范。",
+      "related": ["SMPL 人体模型", "HaMeR", "手部姿态估计", "动作重定向", "灵巧手", "人类视频数据"],
+      "sources": [
+        {"title": "MANO 官网（MPI-IS）", "url": "https://mano.is.tue.mpg.de/"},
+        {"title": "arXiv 2201.02610: Embodied Hands: Modeling and Capturing Hands and Bodies Together", "url": "https://arxiv.org/abs/2201.02610"},
+        {"title": "GitHub: hassony2/manopth（MANO 的 PyTorch 实现）", "url": "https://github.com/hassony2/manopth"}
+      ],
+      "as_of": "2017-11"
+    },
+    {
+      "name_zh": "Marble（World Labs）",
+      "name_en": "Marble (World Labs 3D world generation model)",
+      "abbr": "",
+      "aliases": ["Marble"],
+      "tier": 3,
+      "one_liner": "World Labs 推出的世界生成产品，用文字或图片生成可导出的 3D 场景。",
+      "explanation": "Marble 是李飞飞联合创办的 World Labs 于 2025 年 11 月 12 日正式上线的生成式世界模型产品。用户输入文字、单张或多张图片、视频，或先用配套工具 Chisel 搭出粗略 3D 布局，Marble 就生成一个可自由走动查看的持久 3D 场景，并可导出为高斯泼溅（用大量半透明椭球表示场景）、三角网格（含用于碰撞的简化网格）或按指定相机路径渲染的视频。与逐帧生成画面的视频世界模型不同，它输出显式 3D 资产，可放进游戏引擎或仿真器使用。2026 年 7 月 World Labs 展示了用生成场景做真-仿-真机器人训练；9 月发布的底层模型 Atlas 将驱动后续版本的 Marble；9 月 28 日 AMD 宣布收购 World Labs，预计 2026 年底前完成交易。",
+      "example": "上传一张客厅照片，Marble 生成可环视的 3D 客厅，导出碰撞网格后放进仿真器，让机器人在其中练习导航。",
+      "related": ["空间智能", "世界模型", "3D高斯泼溅", "生成式仿真", "World Labs", "真-仿-真闭环"],
+      "sources": [
+        {"title": "World Labs: Marble: A Multimodal World Model", "url": "https://www.worldlabs.ai/blog/marble-world-model"},
+        {"title": "World Labs: Atlas: A World Model for Spatial Intelligence", "url": "https://www.worldlabs.ai/blog/atlas"},
+        {"title": "World Labs is Joining AMD", "url": "https://www.worldlabs.ai/blog/amd-announcement"}
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "MVP（掩码视觉预训练）",
+      "name_en": "MVP: Masked Visual Pre-training for Motor Control / Real-World Robot Learning with Masked Visual Pre-training",
+      "abbr": "MVP",
+      "aliases": ["掩码视觉预训练", "Masked Visual Pre-training"],
+      "tier": 3,
+      "one_liner": "用掩码自编码器在海量自然图像上预训练视觉编码器，再冻结给机器人用。",
+      "explanation": "MVP（Masked Visual Pre-training）指 UC 伯克利 Jitendra Malik、Trevor Darrell 团队的两篇工作：2022 年 3 月的 Masked Visual Pre-training for Motor Control（Tete Xiao 等）在仿真中验证，2022 年 10 月的 Real-World Robot Learning with Masked Visual Pre-training（Ilija Radosavovic 等，CoRL 2022）扩展到真机。做法是先用掩码自编码器（MAE，遮住图像大部分小块让网络补全）在网络图片和第一人称视频上自监督预训练 ViT 视觉编码器，然后冻结编码器，只在上面训练小的控制模块。结果显示这种表征优于 CLIP、ImageNet 监督预训练和从零训练；用 450 万张图训练的 3.07 亿参数 ViT 还能继续提升。它和 R3M、VC-1 一起推动了预训练视觉表征这一方向。",
+      "example": "把 MVP 预训练好的 ViT 冻结当作机器人的眼睛，只用少量演示训练上面的控制头，就能在新任务上学会抓取。",
+      "related": ["预训练视觉表征", "掩码自编码器", "自监督学习", "R3M", "VC-1", "视觉 Transformer"],
+      "sources": [
+        {"title": "arXiv 2203.06173: Masked Visual Pre-training for Motor Control", "url": "https://arxiv.org/abs/2203.06173"},
+        {"title": "arXiv 2210.03109: Real-World Robot Learning with Masked Visual Pre-training", "url": "https://arxiv.org/abs/2210.03109"}
+      ],
+      "as_of": "2022-10"
+    },
+    {
+      "name_zh": "MaskedMimic",
+      "name_en": "MaskedMimic: Unified Physics-Based Character Control Through Masked Motion Inpainting",
+      "abbr": "",
+      "aliases": [],
+      "tier": 3,
+      "one_liner": "英伟达提出的统一物理人形控制器，把各种控制方式都当作补全缺失动作。",
+      "explanation": "MaskedMimic 是英伟达研究院 Chen Tessler、Xue Bin Peng 等人 2024 年 9 月发布的工作，发表于 SIGGRAPH Asia 2024（ACM TOG）。过去在物理仿真里控制人形角色，跟踪动作、走路、伸手够物、按文字做动作往往各训一个策略、各写一套奖励。MaskedMimic 把它们统一成动作补全问题：只给出部分约束（几个关节的目标位置、若干关键帧、一句文字或要交互的物体），其余被遮住，模型生成完整且物理可行的全身动作。训练分两步：先用强化学习在 AMASS 动捕数据上训练一个完整跟踪参考动作的教师控制器，再用 DAgger 式行为克隆蒸馏成能处理随机遮挡输入的条件 VAE 学生策略。代码收录在英伟达开源框架 ProtoMotions 中。",
+      "example": "只给出 VR 头显和两个手柄对应的头、手目标位置，其余关节全部遮住，MaskedMimic 生成站立、走动、伸手的完整全身动作。",
+      "related": ["运动跟踪", "PHC", "DeepMimic", "条件变分自编码器", "DAgger（数据集聚合）", "ProtoMotions"],
+      "sources": [
+        {"title": "arXiv 2409.14393: MaskedMimic", "url": "https://arxiv.org/abs/2409.14393"},
+        {"title": "NVIDIA Research: MaskedMimic 项目页", "url": "https://research.nvidia.com/labs/par/maskedmimic/"}
+      ],
+      "as_of": "2024-09"
+    },
+    {
+      "name_zh": "昆仑万维 Matrix-Game",
+      "name_en": "Matrix-Game 2.0 (Skywork open-source real-time interactive world model)",
+      "abbr": "",
+      "aliases": ["Matrix-Game", "Matrix-Game 2.0", "Matrix-Game 3.0"],
+      "tier": 3,
+      "one_liner": "昆仑万维 Skywork 开源的实时可交互世界模型，按键鼠操作逐帧生成游戏画面。",
+      "explanation": "Matrix-Game 是昆仑万维旗下 Skywork AI 开源的可交互世界模型系列，1.0 版 2025 年 5 月发布，2.0 版 2025 年 8 月发布。模型读入当前画面和用户每一帧的键盘、鼠标操作，接着生成下一段视频，从而得到一个边玩边生成的游戏世界。2.0 的要点有三：用虚幻引擎和 GTA5 环境自动采集约 1200 小时带交互标注的视频；把键鼠动作逐帧注入模型；把扩散模型蒸馏成少步的因果自回归生成器，以 25 FPS 实时生成分钟级视频，权重和代码均开源。2026 年 3 月底发布的 3.0 版加入基于相机位置的长时记忆，用 5B 模型做到 720p、40 FPS。这类模型与 Genie 3 同属一条路线，被视为机器人仿真和数据生成的潜在工具。",
+      "example": "在 GTA 风格的驾驶场景里按住 W 并把鼠标右移，模型实时生成车辆前进并向右转的画面。",
+      "related": ["可交互世界模型", "世界模型", "Genie 3", "自回归视频生成", "Self Forcing（自强制训练）", "扩散步数蒸馏"],
+      "sources": [
+        {"title": "arXiv 2508.13009: Matrix-Game 2.0", "url": "https://arxiv.org/abs/2508.13009"},
+        {"title": "GitHub: SkyworkAI/Matrix-Game", "url": "https://github.com/SkyworkAI/Matrix-Game"},
+        {"title": "arXiv 2604.08995: Matrix-Game 3.0", "url": "https://arxiv.org/abs/2604.08995"}
+      ],
+      "as_of": "2026-04"
+    },
+    {
+      "name_zh": "MDM（人体动作扩散模型）",
+      "name_en": "MDM: Human Motion Diffusion Model",
+      "abbr": "MDM",
+      "aliases": ["Motion Diffusion Model", "人体动作扩散模型"],
+      "tier": 3,
+      "one_liner": "用扩散模型从文字或动作类别生成 3D 人体动作序列的代表性工作。",
+      "explanation": "MDM（Human Motion Diffusion Model）是以色列特拉维夫大学 Guy Tevet、Amit Bermano 等人 2022 年 9 月发布的工作，发表于 ICLR 2023。它把图像生成里的扩散模型用到人体动作上：以 Transformer 为网络，从噪声逐步去噪出一段关节动作序列，并用无分类器引导按文字或动作类别控制生成。一个关键设计是每一步直接预测干净动作而不是噪声，这样就能加上关节位置、速度和脚部接触等几何损失，让动作更自然。它在 HumanML3D、KIT 等文生动作基准上取得当时最好结果，成为后续大量动作生成工作的基线。在具身智能里，这类模型生成的人体动作可经动作重定向后，交给人形机器人的运动跟踪控制器执行。",
+      "example": "输入「一个人向前走几步然后坐下」，MDM 生成一段对应的 3D 人体骨架动作。",
+      "related": ["扩散模型", "人体动作生成模型（文本生成动作）", "HumanML3D 数据集", "无分类器引导", "动作重定向", "运动跟踪"],
+      "sources": [
+        {"title": "arXiv 2209.14916: Human Motion Diffusion Model", "url": "https://arxiv.org/abs/2209.14916"},
+        {"title": "MDM 项目主页", "url": "https://guytevet.github.io/mdm-page/"}
+      ],
+      "as_of": "2022-09"
+    },
+    {
+      "name_zh": "MemoryVLA",
+      "name_en": "MemoryVLA: Perceptual-Cognitive Memory in Vision-Language-Action Models for Robotic Manipulation",
+      "abbr": "",
+      "aliases": [],
+      "tier": 3,
+      "one_liner": "给 VLA 加上工作记忆和记忆库，让机器人记得之前看到和做过什么。",
+      "explanation": "MemoryVLA 是清华大学黄高团队与原力灵机（Dexmal）、旷视等机构合作的工作，2025 年 8 月发布，发表于 ICLR 2026。多数 VLA 只看当前画面决定动作，但很多操作任务光看当前一帧不够：例如按下按钮前后画面可能几乎一样，不记得历史就分不清按没按过。MemoryVLA 借用认知科学中工作记忆和情景记忆的概念：用 7B 视觉语言模型把观测编码成感知 token 和认知 token，作为工作记忆；另设记忆库保存过去的低层细节和高层语义，按需检索并与当前信息融合；最后由扩散动作专家输出一段动作。论文报告在 SimplerEnv-Bridge 上成功率 71.9%，LIBERO 上 96.5%，真机任务 84.0%，长时序任务提升明显。",
+      "example": "例如「依次按下三个按钮」，每次按完画面变化很小，靠记忆库记住已经按过哪个，才能避免重复按或漏按。",
+      "related": ["记忆增强 VLA", "具身记忆", "视觉-语言-动作模型", "长程任务", "扩散动作头", "原力灵机"],
+      "sources": [
+        {"title": "arXiv 2508.19236: MemoryVLA", "url": "https://arxiv.org/abs/2508.19236"},
+        {"title": "MemoryVLA 项目主页", "url": "https://shihao1895.github.io/MemoryVLA/"}
+      ],
+      "as_of": "2026-01"
+    }
+  ]
+}

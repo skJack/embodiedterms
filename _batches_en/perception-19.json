@@ -1,0 +1,113 @@
+{
+  "batch": "perception-19",
+  "terms": [
+    {
+      "key": "perception-19#0",
+      "name_en": "Azure Kinect DK",
+      "aliases": ["Kinect", "Microsoft Kinect", "Microsoft Azure Kinect DK"],
+      "one_liner": "A developer-oriented RGB-D camera from Microsoft that combines a depth sensor, color camera, microphone array, and IMU in one device.",
+      "explanation": "Azure Kinect DK is a developer kit Microsoft released in 2019. It packs a time-of-flight (ToF) depth camera — which measures distance from how long light takes to bounce back — a high-resolution color camera, a 7-microphone array, and an IMU (inertial measurement unit) into a single unit, along with a sensor SDK and a body-tracking SDK. Its depth data is high quality and comes with skeletal tracking, which made it a de facto standard RGB-D sensor in robotics and human-motion research. Microsoft announced in August 2023 that it was discontinuing the product. Orbbec’s Femto Bolt uses the same indirect time-of-flight (iToF) depth technology and is compatible with the Azure Kinect SDK interface; Microsoft has pointed to it as a replacement.",
+      "example": "The Azure Kinect body-tracking SDK reads out real-time skeletal joint positions, which a human-robot interaction system uses for pose recognition.",
+      "related": ["Depth Camera", "Indirect Time-of-Flight (iToF)", "Orbbec Femto Bolt", "Human Pose Estimation", "Microphone Array", "Inertial Measurement Unit (IMU)"]
+    },
+    {
+      "key": "perception-19#1",
+      "name_en": "Millimeter-Wave Radar",
+      "aliases": ["mmWave Radar", "mmWave", "4D Millimeter-Wave Radar"],
+      "one_liner": "A radar that transmits millimeter-wavelength electromagnetic waves to measure a target’s distance, speed, and bearing.",
+      "explanation": "Millimeter-wave radar operates in roughly the 30–300 GHz band; automotive systems typically use frequencies near 77 GHz. It transmits a frequency-modulated electromagnetic wave and computes a target’s distance, radial velocity (via the Doppler effect), and bearing angle from the reflected signal. Its advantages are that it works through rain, fog, and darkness, and measures velocity directly; its drawbacks are coarse angular resolution and a sparse point cloud, which make it hard to resolve an object’s shape. “4D” millimeter-wave radar additionally measures elevation angle, giving a denser point cloud. In self-driving cars it is fused with cameras and lidar as part of multi-sensor fusion; in robotics it is used mainly for safety guarding and detecting people nearby.",
+      "example": "A car’s forward-facing 77 GHz radar can still measure the distance and relative speed of the vehicle ahead in rain or fog, which is what makes adaptive cruise control work in bad weather.",
+      "related": ["LiDAR", "Multi-Sensor Fusion", "Autonomous Driving", "Ultrasonic Sensor", "Exteroception"]
+    },
+    {
+      "key": "perception-19#2",
+      "name_en": "MIPI CSI-2",
+      "aliases": ["CSI-2", "MIPI Camera Serial Interface 2", "CSI Camera Interface"],
+      "one_liner": "A high-speed serial interface standard that carries image data from a camera sensor to a processor.",
+      "explanation": "MIPI CSI-2 is a camera serial interface specification defined by the MIPI Alliance (Mobile Industry Processor Interface Alliance) that specifies how an image sensor sends raw pixel data to a processor — an SoC, or system-on-chip — at high speed. Nearly every phone camera uses it, and embedded boards such as NVIDIA’s Jetson and the Raspberry Pi also expose CSI ports. It has low latency and low power draw, and can connect directly into a chip’s onboard ISP (image signal processor). Its cable runs are short, however, so when a robot’s or car’s camera sits far from the main compute unit, the signal is typically extended over longer distances with serializers such as GMSL (Gigabit Multimedia Serial Link).",
+      "example": "A CSI camera module is wired to a Jetson Orin dev board with a ribbon cable, feeding images straight into the board’s onboard ISP.",
+      "related": ["GMSL Camera Interface", "CMOS Image Sensor", "ISP (Image Signal Processor)", "NVIDIA Jetson", "Embedded System"]
+    },
+    {
+      "key": "perception-19#3",
+      "name_en": "MoGe",
+      "aliases": ["Monocular Geometry Estimation", "MoGe-2"],
+      "one_liner": "A Microsoft Research model that estimates full 3D geometry from a single image, predicting a 3D point for every pixel.",
+      "explanation": "MoGe is a monocular geometry estimation model from Microsoft Research, presented as an oral paper at CVPR 2025. From a single ordinary photo, it directly predicts a point map — a 3D coordinate for every pixel — along with a depth map and the camera’s field of view. The first version predicts an affine-invariant point map, correct only up to an unknown scale and translation, trained with a specially designed global-alignment loss plus a multi-scale local-geometry loss. MoGe-2, released in June 2025, predicts point maps at true metric (real-world) scale and adds surface-normal estimation. Robots can use it to recover a scene’s geometry from a single camera image, without needing multiple viewpoints or stereo.",
+      "example": "Given a photo of a kitchen found online, MoGe outputs a 3D coordinate for every pixel plus the camera’s field of view, which can be converted directly into a point cloud.",
+      "related": ["Monocular Depth Estimation", "Point Map", "Metric Depth vs. Relative Depth", "Depth Anything", "DUSt3R", "Depth Pro"]
+    },
+    {
+      "key": "perception-19#4",
+      "name_en": "Multi-View Stereo",
+      "aliases": ["MVS", "Multi-View 3D Reconstruction"],
+      "one_liner": "A method that recovers a scene’s dense 3D structure from multiple photos whose camera positions are already known.",
+      "explanation": "Multi-view stereo (MVS) is a classic 3D reconstruction technique. Given each photo’s camera intrinsics and extrinsics — usually solved first by structure from motion (SfM) — it finds correspondences for the same physical point across multiple images, then triangulates to compute depth, producing a dense depth map or point cloud that can be turned into a mesh. SfM alone yields only a sparse set of feature points; MVS is what fills that in to a dense model. COLMAP is a widely used implementation of the classic pipeline; since 2018, deep-learning methods such as MVSNet have used neural networks to regress depth directly. MVS is a basic building block for digital twins, scanning real objects into simulation assets, and novel view synthesis.",
+      "example": "COLMAP first runs structure from motion on a set of photos taken around an object to recover the camera poses, then runs multi-view stereo to produce a dense point cloud.",
+      "related": ["Structure from Motion (SfM)", "COLMAP", "Triangulation", "Bundle Adjustment", "Neural Radiance Fields (NeRF)", "3D Gaussian Splatting"]
+    },
+    {
+      "key": "perception-19#5",
+      "name_en": "Next-Best-View Planning",
+      "aliases": ["NBV", "NBV Planning", "Best Next View"],
+      "one_liner": "Deciding where a sensor should look next, given what it has already seen, to gain the most useful information.",
+      "explanation": "Next-best-view (NBV) planning addresses this problem: given a partial set of observations so far, choose the next camera or scanner pose that will add the most new information for the least cost. It traces back to a 1985 ICRA paper by Connolly, who evaluated candidate viewpoints using a partial octree model. A common modern approach scores each candidate viewpoint by how many unknown voxels it would newly reveal in an occupancy map, combined with the cost of moving there. It is used for 3D-scanning objects, exploring a scene, and grasping occluded objects, and is one of the central problems in active perception.",
+      "example": "A robot arm with a wrist-mounted camera scans an unknown object, moving at each step to the pose that reveals the most previously unobserved area, until the 3D model is complete.",
+      "related": ["Active Perception", "Active Exploration", "Occupancy Grid Map", "Octree Map", "Occlusion", "Wrist Camera"]
+    },
+    {
+      "key": "perception-19#6",
+      "name_en": "Non-Maximum Suppression",
+      "aliases": ["NMS", "NMS Post-Processing"],
+      "one_liner": "A post-processing step that keeps only the highest-scoring box among a cluster of overlapping detection boxes.",
+      "explanation": "Object detectors often output several overlapping candidate boxes for the same object. Non-maximum suppression (NMS) sorts these by confidence score, keeps the highest-scoring box, and removes every other box whose IoU (intersection over union — the overlap area divided by the union area) with it exceeds a threshold; this repeats until no boxes remain unprocessed. It is the standard post-processing step in detectors such as YOLO and Faster R-CNN, and is also used in grasp-pose detection to remove duplicate grasp candidates. Setting the threshold too high leaves duplicate boxes behind; setting it too low can wrongly delete real objects that happen to sit close together. End-to-end detectors such as DETR are designed not to need NMS at all.",
+      "example": "A detector outputs five overlapping boxes for the same cup; NMS keeps the highest-scoring one and discards every other box whose IoU with it exceeds 0.5.",
+      "related": ["Object Detection", "Bounding Box", "Intersection over Union (IoU)", "YOLO", "DETR", "Grasp Pose Detection"]
+    },
+    {
+      "key": "perception-19#7",
+      "name_en": "Normal Distributions Transform",
+      "aliases": ["NDT", "NDT Scan Matching", "NDT Point Cloud Registration"],
+      "one_liner": "A point-cloud registration method that divides space into a grid, models each cell as a normal distribution, and aligns scans against it.",
+      "explanation": "The Normal Distributions Transform (NDT) is a point-cloud registration method, first proposed by Biber and Straßer in 2003 for matching 2D laser scans and later extended to 3D. It divides a reference point cloud into a voxel grid, represents the points in each voxel as a normal distribution defined by a mean and covariance, and then optimizes the pose of the incoming point cloud so that its transformed points fall in the highest-probability regions of these distributions. Unlike Iterative Closest Point (ICP), which searches for point-to-point correspondences, NDT needs no nearest-neighbor search, which makes it more robust to a poor initial guess and to noise. It is widely used to localize a lidar sensor within a pre-built map, and is implemented in both the Point Cloud Library (PCL) and Autoware.",
+      "example": "A self-driving car registers its current lidar scan against a pre-built point-cloud map using NDT to find its position within the map.",
+      "related": ["Point Cloud Registration", "Iterative Closest Point (ICP)", "LiDAR SLAM", "Relocalization", "Point Cloud Library (PCL)", "LiDAR"]
+    },
+    {
+      "key": "perception-19#8",
+      "name_en": "Normalized Object Coordinate Space",
+      "aliases": ["NOCS", "NOCS Map"],
+      "one_liner": "A shared, standardized coordinate frame for all objects in a category, used to estimate the pose and size of objects never seen before.",
+      "explanation": "NOCS was proposed by He Wang and colleagues at Stanford in a CVPR 2019 paper, for category-level pose estimation — estimating the pose of a specific object instance the model has never seen, within a category it was trained on. The idea is to align and rescale every object in a category into a shared canonical space normalized to a unit cube. Built on top of Mask R-CNN, the network predicts, for every pixel, that pixel’s coordinate within this canonical space (the NOCS map); this is then aligned with the depth map using a similarity transform to recover the object’s 6D pose and 3D size in one step. It requires no CAD model of the specific object, which makes it a representative approach for category-level pose estimation.",
+      "example": "A mug never seen during training is placed on a table; the model segments it and predicts its NOCS map, then combines that with the depth map to compute the mug’s position, orientation, and size.",
+      "related": ["Category-Level Pose Estimation", "6D Pose Estimation", "Instance Segmentation", "Mask R-CNN", "Depth Camera"]
+    },
+    {
+      "key": "perception-19#9",
+      "name_en": "Novel View Synthesis",
+      "aliases": ["NVS", "New View Synthesis"],
+      "one_liner": "Generating an image of a scene from a camera viewpoint that was never actually photographed, using a handful of existing photos.",
+      "explanation": "Novel view synthesis takes several images of a scene, usually with known camera poses, and renders what the scene would look like from a new camera position. Classic approaches reconstruct geometry with multi-view stereo and then apply texture; Neural Radiance Fields (NeRF), introduced in 2020, instead represent the scene with a neural network and render it through volume rendering, which substantially improved quality. 3D Gaussian Splatting, from 2023, represents the scene explicitly as a large number of 3D Gaussians and can render in real time. More recently, video generation models have also been used to generate novel views directly. In embodied AI, novel view synthesis is used to bring real-world scenes into simulation (real-to-sim) and to augment training data for policies with extra viewpoints.",
+      "example": "Dozens of phone photos taken while walking around an object are used to train a 3D Gaussian Splatting model, which can then render the object from any new angle.",
+      "related": ["Neural Radiance Fields (NeRF)", "3D Gaussian Splatting", "Multi-View Stereo", "Real-to-Sim", "Gaussian Splatting Simulation", "Video Generation Model"]
+    },
+    {
+      "key": "perception-19#10",
+      "name_en": "nvblox",
+      "aliases": ["NVIDIA nvblox", "Isaac ROS nvblox", "isaac_ros_nvblox"],
+      "one_liner": "An open-source, GPU-accelerated 3D mapping library from NVIDIA that builds real-time distance-field maps for obstacle avoidance.",
+      "explanation": "nvblox is an open-source voxel mapping library from NVIDIA, described in a paper at ICRA 2024. Running on the GPU, it incrementally fuses data from an RGB-D camera or lidar into a TSDF (truncated signed distance function, which records how far each voxel is from the nearest surface), and computes an ESDF (Euclidean signed distance field) in real time for collision checking during path planning. The paper reports speedups of up to 177x for surface reconstruction and up to 31x for distance-field computation. nvblox provides a ROS 2 interface as part of Isaac ROS, and can output costmaps for the Nav2 navigation stack to consume.",
+      "example": "A mobile robot builds a map on the GPU with an RGB-D camera and nvblox while driving, feeding the resulting costmap to Nav2 for obstacle avoidance.",
+      "related": ["Truncated Signed Distance Function (TSDF)", "Euclidean Signed Distance Field (ESDF)", "Isaac ROS", "Nav2", "Costmap", "Obstacle Avoidance"]
+    },
+    {
+      "key": "perception-19#11",
+      "name_en": "Occupancy Network",
+      "aliases": ["Occupancy Networks", "3D Occupancy Prediction", "Occupancy Grid Prediction"],
+      "one_liner": "A neural network that predicts, for every location in 3D space, whether it is occupied by an object.",
+      "explanation": "“Occupancy network” originally referred to work by Mescheder et al. at CVPR 2019: a network that takes an image or point cloud as input and, for any queried 3D point, outputs the probability that the point lies inside an object — an implicit representation used to reconstruct 3D shapes at a resolution not limited by a voxel grid. A second, unrelated sense of the term comes from self-driving cars: in 2022 Tesla publicly described an occupancy network that uses multiple onboard cameras to predict whether each voxel of space around the vehicle is occupied, and “3D occupancy prediction” has since become a popular task in autonomous-driving research. Its advantage is that it does not depend on a predefined list of object categories, so it can represent oddly shaped obstacles; it is closely related to occupancy grid maps and bird’s-eye-view perception.",
+      "example": "A camera-only self-driving system predicts whether each voxel of space around the car is occupied using multiple cameras, letting it avoid oddly shaped obstacles that aren’t in its list of detectable categories.",
+      "related": ["Occupancy Grid Map", "Implicit vs. Explicit Representation", "Bird’s-Eye View (BEV)", "Autonomous Driving", "Camera-Only / Vision-Only Approach", "Tesla AI Day"]
+    }
+  ]
+}

@@ -1,0 +1,284 @@
+{
+ "category": "model",
+ "batch": 16,
+ "terms": [
+  {
+   "name_zh": "速度场",
+   "name_en": "Velocity Field",
+   "abbr": "",
+   "aliases": [
+    "向量场",
+    "速度向量场",
+    "Vector Field"
+   ],
+   "tier": 3,
+   "one_liner": "流匹配模型学的函数：告诉样本在每个时刻该往哪个方向、以多快速度移动。",
+   "explanation": "速度场是流匹配（Flow Matching）和整流流（Rectified Flow）这类生成模型真正要学的东西，2022 年 Lipman 等人和 Liu 等人的论文分别用它做生成建模。它是一个函数 v(x, t)：输入当前样本 x 和时间 t（0 是纯噪声，1 是真实数据），输出 x 此刻该移动的方向和快慢。训练时，网络去回归一条事先定好的「噪声→数据」路径上的速度，最常用直线路径，目标速度就是「数据减噪声」，不用模拟整个生成过程；推理时从随机噪声出发，用 ODE 求解器（如欧拉法）沿速度场积分几步就得到样本。路径越直，需要的步数越少，所以通常比传统扩散模型采样更快。具身里 π0 的动作专家预测的就是动作块的速度场。",
+   "example": "π0 推理时先采样一段高斯噪声当作「动作块」，动作专家根据当前图像、指令和机器人状态预测速度场，用前向欧拉法积分 10 步，把噪声推成 50 步长的连续动作序列。",
+   "related": [
+    "流匹配",
+    "整流流",
+    "流匹配损失",
+    "扩散 / 流采样器（ODE / SDE 求解器）",
+    "动作专家",
+    "π0"
+   ],
+   "sources": [
+    {
+     "title": "Flow Matching for Generative Modeling (arXiv:2210.02747)",
+     "url": "https://arxiv.org/abs/2210.02747"
+    },
+    {
+     "title": "Flow Straight and Fast: Learning to Generate and Transfer Data with Rectified Flow (arXiv:2209.03003)",
+     "url": "https://arxiv.org/abs/2209.03003"
+    },
+    {
+     "title": "π0: A Vision-Language-Action Flow Model for General Robot Control (arXiv:2410.24164)",
+     "url": "https://arxiv.org/abs/2410.24164"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "视频分词器",
+   "name_en": "Video Tokenizer / Video VAE",
+   "abbr": "",
+   "aliases": [
+    "视频 VAE",
+    "3D 因果 VAE",
+    "Causal Video VAE",
+    "视频 tokenizer"
+   ],
+   "tier": 3,
+   "one_liner": "把视频压成少量 token 或潜在向量、又能还原回画面的编解码网络。",
+   "explanation": "视频分词器是视频生成模型和世界模型的前置模块：编码器把一段视频在时间和空间上同时压缩，得到离散 token 或连续潜在向量，解码器再还原成像素。输出离散 token 的一类（如谷歌的 MAGVIT-v2）靠量化把向量变成「词表编号」，方便接自回归 Transformer；输出连续向量的一类就是视频 VAE（变分自编码器），供潜在扩散模型在里面去噪。「因果」指时间方向上每帧只看前面的帧、第一帧单独编码，这样图像和视频能共用一个分词器，也能分段处理任意长的视频。压缩率决定后面的大模型要处理多少 token，重建质量又决定生成画面的清晰度上限。英伟达 Cosmos Tokenizer 提供 4×8×8、8×16×16 等多档压缩的连续和离散版本。",
+   "example": "通义万相 Wan2.1 的 Wan-VAE 是 3D 因果 VAE，时间压 4 倍、长宽各压 8 倍，靠特征缓存能编解码任意长度的 1080P 视频；扩散 Transformer 只在压缩后的潜在空间里去噪，最后交给解码器还原成画面。",
+   "related": [
+    "变分自编码器",
+    "潜在空间",
+    "时空块",
+    "向量量化",
+    "潜在扩散模型",
+    "Cosmos"
+   ],
+   "sources": [
+    {
+     "title": "Language Model Beats Diffusion -- Tokenizer is Key to Visual Generation (MAGVIT-v2, arXiv:2310.05737)",
+     "url": "https://arxiv.org/abs/2310.05737"
+    },
+    {
+     "title": "NVIDIA Cosmos Tokenizer (GitHub)",
+     "url": "https://github.com/NVIDIA/Cosmos-Tokenizer"
+    },
+    {
+     "title": "Wan: Open and Advanced Large-Scale Video Generative Models (arXiv:2503.20314)",
+     "url": "https://arxiv.org/abs/2503.20314"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "ViLLA 架构",
+   "name_en": "Vision-Language-Latent-Action",
+   "abbr": "ViLLA",
+   "aliases": [
+    "视觉-语言-潜在动作架构",
+    "潜在规划器 + 动作专家",
+    "Latent Planner + Action Expert"
+   ],
+   "tier": 3,
+   "one_liner": "智元 GO-1 用的分层架构：先预测潜在动作 token，再解码成真实动作。",
+   "explanation": "ViLLA 是智元机器人 2025 年 3 月发布通用具身基座模型 GO-1（Genie Operator-1）时提出的框架。普通 VLA（视觉-语言-动作模型）从图像和指令直接出动作，ViLLA 在中间加了一层「潜在动作」，分三部分：潜在动作模型（LAM）在人类视频（如 Ego4D）和机器人轨迹上训练，用逆动力学和正向动力学把相邻两帧的变化压成离散的潜在动作 token；潜在规划器以 InternVL2.5-2B 为骨干，根据多视角图像和指令预测这些 token；动作专家再用扩散目标把它们解码成连续的低层动作块。这样做的好处是没有动作标签的人类视频也能参与预训练，提高数据利用率。GO-1 于 2025 年 9 月开源，同时放出去掉潜在规划器的轻量版 GO-1 Air。",
+   "example": "GO-1 执行一条桌面任务指令时，潜在规划器先根据三路相机画面和指令输出几个潜在动作 token，相当于抽象的「接下来怎么动」；动作专家再以它们为条件去噪，生成未来 30 个时间步的连续动作。",
+   "related": [
+    "智元 GO-1（启元大模型）",
+    "潜在动作模型",
+    "潜在动作",
+    "动作专家",
+    "分层架构",
+    "潜在动作预训练"
+   ],
+   "sources": [
+    {
+     "title": "AgiBot World Colosseo: A Large-scale Manipulation Platform for Scalable and Intelligent Embodied Systems (arXiv:2503.06669)",
+     "url": "https://arxiv.org/abs/2503.06669"
+    },
+    {
+     "title": "OpenDriveLab/AgiBot-World (GitHub, GO-1 / GO-1 Air 开源)",
+     "url": "https://github.com/OpenDriveLab/AgiBot-World"
+    }
+   ],
+   "as_of": "2025-09"
+  },
+  {
+   "name_zh": "视觉-触觉-语言-动作模型",
+   "name_en": "Vision-Tactile-Language-Action Model",
+   "abbr": "VTLA",
+   "aliases": [
+    "触觉 VLA",
+    "视触觉 VLA",
+    "Tactile VLA"
+   ],
+   "tier": 3,
+   "one_liner": "在 VLA 基础上加入触觉输入的机器人模型，专攻需要「手感」的接触类任务。",
+   "explanation": "VTLA 指把触觉传感器信号和相机图像、语言指令一起输入、输出机器人动作的模型，是 VLA（视觉-语言-动作模型）的扩展。这个叫法出自 2025 年 5 月的论文《VTLA》，作者来自三星中国研究院、北京智源研究院和中科院自动化所：他们以 Qwen2-VL 7B 为底座，把夹爪指尖 GelStereo 视触觉传感器的读数整理成图像式输入，在仿真轴孔插装数据上训练，再用直接偏好优化（DPO）缓解「按 token 分类」和连续控制之间的不匹配。加触觉的原因是插装、拧盖、抓易碎物这类接触丰富任务里，接触点常被手指挡住，视觉看不出力的大小和是否打滑。现在 VTLA 已成为一类模型的统称，2026 年仍有工作研究如何用少量数据把现成 VLA 改造成 VTLA。",
+   "example": "原始 VTLA 论文的真机实验中，模型根据相机画面和指尖触觉图像逐步调整插入位置和角度，方形轴孔在 0.6 毫米间隙下插装成功率 95%，对没见过的轴形状也达到 95%–100%。",
+   "related": [
+    "视觉-语言-动作模型",
+    "视触觉传感器",
+    "视触觉融合",
+    "接触丰富操作",
+    "轴孔装配",
+    "力觉 VLA"
+   ],
+   "sources": [
+    {
+     "title": "VTLA: Vision-Tactile-Language-Action Model with Preference Learning for Insertion Manipulation (arXiv:2505.09577)",
+     "url": "https://arxiv.org/abs/2505.09577"
+    },
+    {
+     "title": "VT-Bridge: Bridging Pretrained Foundation VLAs to VTLAs via Lightweight Residual Adaptation (arXiv:2609.22606)",
+     "url": "https://arxiv.org/abs/2609.22606"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "视觉思维链",
+   "name_en": "Visual Chain-of-Thought",
+   "abbr": "Visual CoT",
+   "aliases": [
+    "视觉 CoT",
+    "视觉推理链"
+   ],
+   "tier": 3,
+   "one_liner": "让模型先产出图像、框选区域等视觉中间结果，再据此给出答案或动作。",
+   "explanation": "思维链（CoT）原本指让大语言模型先写出推理步骤再给答案；视觉思维链把中间步骤换成视觉形式。在多模态大模型领域，2024 年 Shao 等人发布的 Visual CoT 数据集含 43.8 万条带中间边界框的问答，训练模型先圈出图中关键区域、聚焦细看，再作答。机器人领域更常见的是先「想象」目标画面：2025 年英伟达、斯坦福等提出的 CoT-VLA（CVPR 2025）先自回归生成一张未来的子目标图像，再生成动作块，真机任务比此前最好的 VLA 高 17%，仿真高 6%。好处是把「要达到什么状态」显式画出来，便于检查、利于长程任务；代价是多生成一张图，推理更慢。它和用文字写子任务、物体位置的具身思维链，以及动作思维链，是几种并列的中间表示。",
+   "example": "CoT-VLA 接到一条操作指令后，先生成若干步之后应该出现的画面作为子目标（例如物体已被夹起并靠近目标位置），再以这张图为条件输出一段动作；执行完后重新观察，再想象下一张子目标图。",
+   "related": [
+    "思维链",
+    "具身思维链",
+    "动作思维链",
+    "CoT-VLA",
+    "视觉-语言-动作模型",
+    "视频预测模型"
+   ],
+   "sources": [
+    {
+     "title": "CoT-VLA: Visual Chain-of-Thought Reasoning for Vision-Language-Action Models (arXiv:2503.22020)",
+     "url": "https://arxiv.org/abs/2503.22020"
+    },
+    {
+     "title": "Visual CoT: Advancing Multi-Modal Language Models with a Comprehensive Dataset and Benchmark for Chain-of-Thought Reasoning (arXiv:2403.16999)",
+     "url": "https://arxiv.org/abs/2403.16999"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "视觉提示（Set-of-Mark 标记提示）",
+   "name_en": "Visual Prompting (Set-of-Mark / Mark-based Visual Prompting)",
+   "abbr": "SoM",
+   "aliases": [
+    "标记提示",
+    "SoM 提示",
+    "Set-of-Mark Prompting",
+    "Mark-based Visual Prompting"
+   ],
+   "tier": 3,
+   "one_liner": "在图片上画编号、框、点等标记，让视觉语言模型用「选标号」的方式指出位置。",
+   "explanation": "视觉提示指不改模型参数，直接在输入图像上加标记来引导视觉语言模型（VLM）。代表方法是微软研究院 2023 年 10 月提出的 Set-of-Mark（SoM）：先用 SAM、SEEM 等分割模型把图片切成若干区域，在每块上叠加数字、掩码或框，再向 GPT-4V 这类模型提问。VLM 直接输出精确像素坐标很难，但回答「3 号区域」容易得多；SoM 在零样本下的 RefCOCOg 指代分割上超过了专门微调的模型。机器人里常用它把「抓哪里、往哪放」变成选择题：MOKA（2024，伯克利）在图上标出候选关键点和路点，让 VLM 挑出抓取点和运动路线，再换算成机械臂动作；PIVOT 则在图上画出一批候选动作，让 VLM 挑选并迭代收窄。",
+   "example": "一张桌面照片先用 SAM 分割出每个物体并标上 1、2、3……，再问 GPT-4V「哪个是红色杯子」，模型回答「2」，程序就能取出 2 号区域的精确掩码，交给抓取模块使用。",
+   "related": [
+    "视觉语言模型",
+    "视觉定位（Grounding）",
+    "分割一切模型",
+    "MOKA（标记式视觉提示操作）",
+    "PIVOT（迭代视觉提示）",
+    "提示词 / 提示工程"
+   ],
+   "sources": [
+    {
+     "title": "Set-of-Mark Prompting Unleashes Extraordinary Visual Grounding in GPT-4V (arXiv:2310.11441)",
+     "url": "https://arxiv.org/abs/2310.11441"
+    },
+    {
+     "title": "MOKA: Open-World Robotic Manipulation through Mark-Based Visual Prompting (arXiv:2403.03174)",
+     "url": "https://arxiv.org/abs/2403.03174"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "视觉 token 剪枝",
+   "name_en": "Visual Token Pruning",
+   "abbr": "",
+   "aliases": [
+    "token 压缩",
+    "视觉 token 压缩",
+    "Token Pruning"
+   ],
+   "tier": 3,
+   "one_liner": "推理时丢掉或合并不重要的图像 token，让视觉语言模型和 VLA 跑得更快。",
+   "explanation": "VLM 和 VLA 会把每张图切成几百个视觉 token（图像小块对应的向量）送进语言模型，多相机、多帧时数量成倍增加，而注意力计算量随 token 数大致平方增长，是推理延迟的主要来源之一。视觉 token 剪枝按某种重要性分数（常用文本或动作 token 对它的注意力大小）只保留少数关键 token，其余删掉或合并，很多方法无需重训、即插即用。代表工作 FastV（ECCV 2024）发现第 2 层之后模型对图像 token 的注意力很稀疏，于是在浅层后砍掉一半，LLaVA-1.5-13B 的计算量降约 45% 而效果基本不变。机器人上它直接关系到控制频率：EfficientVLA 把视觉 token 筛选、跳层和缓存结合，让 CogACT 提速 1.93 倍；2025–2026 年又出现了大量 VLA 专用剪枝方法。",
+   "example": "FastV 让图像先照常经过语言模型的前两层，之后按注意力分数只保留一半最受关注的图像 token 进入后续层，不改权重、不用再训练，就明显减少了 LLaVA-1.5 的推理计算量。",
+   "related": [
+    "视觉 token",
+    "推理延迟",
+    "剪枝",
+    "注意力机制",
+    "KV 缓存",
+    "端侧部署"
+   ],
+   "sources": [
+    {
+     "title": "An Image is Worth 1/2 Tokens After Layer 2: Plug-and-Play Inference Acceleration for Large Vision-Language Models (FastV, arXiv:2403.06764)",
+     "url": "https://arxiv.org/abs/2403.06764"
+    },
+    {
+     "title": "EfficientVLA: Training-Free Acceleration and Compression for Vision-Language-Action Models (arXiv:2506.10100)",
+     "url": "https://arxiv.org/abs/2506.10100"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "通义万相",
+   "name_en": "Wan (Alibaba open video generation model)",
+   "abbr": "",
+   "aliases": [
+    "Wan2.1",
+    "Wan2.2",
+    "万相",
+    "Tongyi Wanxiang"
+   ],
+   "tier": 3,
+   "one_liner": "阿里通义团队的视频生成模型，Wan2.1/2.2 开放权重，常用作世界模型底座。",
+   "explanation": "通义万相是阿里巴巴通义团队的视觉生成模型系列，英文名 Wan。2025 年 2 月底开源的 Wan2.1 有 1.3B 和 14B 两种规模，Apache 2.0 许可，基于扩散 Transformer 并用流匹配训练，自带 3D 因果视频 VAE（Wan-VAE），文本编码器是 umT5，支持文生视频、图生视频和视频编辑。2025 年 7 月的 Wan2.2 改成两个约 14B 专家的混合专家结构（高噪声专家定布局、低噪声专家补细节，每步只激活一个），另有 5B 的文图生视频模型，之后又陆续放出音频驱动（S2V）、角色动画（Animate）等衍生模型。它已从海量视频里学到不少物体运动规律，又开放权重，研究者常拿它做世界模型或世界动作模型的起点。截至 2026 年 9 月，开放权重的主线仍是 Wan2.2 系列。",
+   "example": "英伟达的 DreamZero 以 Wan2.1-I2V-14B-480P 图生视频模型为骨干，在机器人数据上继续训练，让模型同时生成未来画面和对应动作，作为世界动作模型直接控制机器人。",
+   "related": [
+    "视频生成模型",
+    "扩散 Transformer",
+    "视频分词器",
+    "流匹配",
+    "混合专家模型",
+    "DreamZero"
+   ],
+   "sources": [
+    {
+     "title": "Wan: Open and Advanced Large-Scale Video Generative Models (arXiv:2503.20314)",
+     "url": "https://arxiv.org/abs/2503.20314"
+    },
+    {
+     "title": "Wan-Video/Wan2.2 (GitHub)",
+     "url": "https://github.com/Wan-Video/Wan2.2"
+    },
+    {
+     "title": "World Action Models are Zero-shot Policies (DreamZero, arXiv:2602.15922)",
+     "url": "https://arxiv.org/abs/2602.15922"
+    }
+   ],
+   "as_of": "2026-09"
+  }
+ ]
+}

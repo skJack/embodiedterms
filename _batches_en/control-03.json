@@ -1,0 +1,229 @@
+{
+ "batch": "control-03",
+ "terms": [
+  {
+   "key": "control-03#0",
+   "name_en": "Control Latency",
+   "aliases": [
+    "End-to-End Latency",
+    "Execution Latency",
+    "Perception-to-Action Latency"
+   ],
+   "one_liner": "The time gap between a sensor capturing data and the motor actually executing the corresponding action.",
+   "explanation": "Control latency is the total time a full sense-compute-execute cycle takes: camera exposure and data transfer, model inference, network or bus communication, and motor-drive response all count toward it, with end-to-end latency meaning the whole gap from when an observation is captured to when the corresponding action lands on the joints. Feedback control works by seeing an error and correcting it, so the larger the latency, the more outdated the information the controller is acting on — at best this makes motion sluggish and prone to overshoot, and at worst it causes oscillation and instability; the Smith predictor, proposed by O. J. M. Smith in 1957, is a classic technique for dealing with pure delay. A single VLA inference often takes tens to well over a hundred milliseconds, far longer than the underlying control cycle, which is why techniques like action chunking, asynchronous inference, and real-time chunking (RTC) exist. It's a broader notion than 'inference latency,' which measures only the model's own forward-pass time.",
+   "example": "Physical Intelligence's real-time chunking paper reports that π0.5 takes about 76 ms per inference on an RTX 4090, while the robot executes at 50 Hz (20 ms per step); by the time a new action is ready, the robot has already taken about 3 more steps, and without special handling, the boundary between action chunks shows up as a pause or a jump.",
+   "related": [
+    "Inference Latency",
+    "Control Frequency",
+    "Real-Time Chunking (RTC)",
+    "Asynchronous Inference",
+    "Action Chunking",
+    "Timing Jitter"
+   ]
+  },
+  {
+   "key": "control-03#1",
+   "name_en": "Convex Optimization",
+   "aliases": [
+    "Convex Programming"
+   ],
+   "one_liner": "Minimizing a convex function over a convex feasible region — a problem where any local optimum found is also the global one.",
+   "explanation": "Convex optimization studies minimizing a convex function over a convex set: min f(x) subject to x ∈ C. f is a convex function (its graph looks like a bowl, and the line segment between any two points on it lies above the curve), and C is a convex set (the line segment between any two points in the set stays inside the set). Its most important property is that any local optimum is automatically the global optimum; categories such as linear programming, quadratic programming, second-order cone programming, and semidefinite programming all have polynomial-time algorithms (such as interior-point methods), so they solve quickly and reliably. Real-time robot control leans on this heavily: convex MPC, the quadratic programs inside whole-body control, and contact-force allocation are all deliberately formulated as convex problems specifically so they can be solved reliably within a millisecond-scale budget. Non-convex problems, such as general trajectory optimization, are commonly approximated by breaking them into a sequence of convex subproblems, an approach called sequential quadratic programming.",
+   "example": "MIT Cheetah 3 (2018) simplified the quadruped into a single rigid body and formulated planning of ground-reaction forces over a horizon of up to 0.5 s as a convex quadratic program, solving it in under 1 ms and re-solving repeatedly at 20–30 Hz, producing gaits including trotting, galloping, and pronking.",
+   "related": [
+    "Quadratic Programming",
+    "Convex MPC",
+    "Model Predictive Control",
+    "Trajectory Optimization",
+    "Sequential Quadratic Programming",
+    "OSQP"
+   ]
+  },
+  {
+   "key": "control-03#2",
+   "name_en": "Costmap",
+   "aliases": [
+    "Cost Grid Map",
+    "costmap_2d"
+   ],
+   "one_liner": "A grid map of the ground where each cell is labeled with a cost of passing through it, used for navigation planning and obstacle avoidance.",
+   "explanation": "A costmap is the most common environment representation for mobile-robot navigation, built around ROS's costmap_2d and central to Nav2. It divides the ground into a regular 2D grid, with each cell storing a cost value from 0 to 255: in Nav2, 0 means free, 254 means a lethal obstacle, 253 means the robot's center entering that cell would definitely cause a collision (inflated based on the robot's footprint), and 255 means unknown. The map is built by stacking several layers: a static layer comes from a pre-built map, an obstacle layer and a voxel layer are written in real time from sensor data, and an inflation layer adds decaying cost around obstacles so planned paths automatically keep some distance from them. Global planning searches for a path on a costmap covering the whole map, while local control avoids obstacles on a smaller costmap centered on and moving with the robot.",
+   "example": "In a typical Nav2 example configuration, the local costmap is a 3 m × 3 m rolling window centered on the robot at 0.05 m resolution — a 60×60 grid — continuously refreshed as the robot moves.",
+   "related": [
+    "Occupancy Grid Map",
+    "Global Planning and Local Planning",
+    "Nav2",
+    "Path Planning",
+    "Obstacle Avoidance",
+    "Dynamic Window Approach"
+   ]
+  },
+  {
+   "key": "control-03#3",
+   "name_en": "Damping Mode",
+   "aliases": [
+    "Damp Mode",
+    "Protective Damping State"
+   ],
+   "one_liner": "A joint stops chasing its target position and only resists motion with damping, letting the robot settle down gently.",
+   "explanation": "Damping mode is a protective state for joint motors, provided directly by Unitree's SDK and remote control, among others. A joint motor commonly computes its output torque as τ = kp(q_target − q) + kd(q̇_target − q̇) + τff, where q is joint angle, q̇ is angular velocity, kp and kd are the stiffness and damping gains, and τff is a feedforward torque. Damping mode sets kp, τff, and the target velocity all to zero while keeping only kd, so τ = −kd·q̇: the joint applies no force while at rest, and resists as soon as it starts moving. Compared with zero-torque mode (where kd is also zero and the joint goes completely limp), damping mode lets the robot settle down slowly instead of collapsing abruptly, which is why it's commonly used as the safety fallback when a program exits or something goes wrong.",
+   "example": "In Unitree's unitree_rl_gym real-robot deployment workflow, pressing the remote's select button during locomotion control puts the robot into damping mode, where it sinks down and the program exits; in code, the damping command is simply kp = 0 and kd = 8 with zero feedforward torque for every motor, i.e. τ = −8·q̇.",
+   "related": [
+    "Damping",
+    "Stiffness and Damping Gains",
+    "MIT Mode",
+    "Emergency Stop",
+    "Protective Stop",
+    "Unitree SDK"
+   ]
+  },
+  {
+   "key": "control-03#4",
+   "name_en": "Dijkstra's Algorithm",
+   "aliases": [],
+   "one_liner": "A classic algorithm that finds the shortest path from a start node to every other node in a graph with non-negative edge weights.",
+   "explanation": "Dijkstra's algorithm was conceived by the Dutch computer scientist Edsger Dijkstra in 1956 and published in 1959, for finding the shortest single-source paths on a graph whose edge weights (traversal costs) are all non-negative. It works by tracking the currently known shortest distance to every node, repeatedly picking the not-yet-finalized node with the smallest distance, and using it to update the distances of its neighbors. It's guaranteed to find the optimal solution, and with a binary heap it runs in about O((V+E)logV), where V and E are the numbers of nodes and edges. A* is a generalization of it: A* adds an estimate of the remaining distance to the goal (a heuristic function) and prioritizes searching toward the target, so it expands fewer nodes. In robot navigation, each cell of a grid map is a node, and the value in the costmap serves as the edge weight; Nav2's default NavFn planner can be configured to expand with either Dijkstra or A*.",
+   "example": "Three points A, B, C: A→B costs 1, B→C costs 2, and a direct A→C link costs 4. The algorithm finalizes B first (at distance 1), then uses B to update C's distance from 4 down to 3, giving A→B→C as the final shortest path.",
+   "related": [
+    "A* Search",
+    "Path Planning",
+    "Costmap",
+    "Global Planning and Local Planning",
+    "Hybrid A*"
+   ]
+  },
+  {
+   "key": "control-03#5",
+   "name_en": "Extended Kalman Filter",
+   "aliases": [
+    "EKF"
+   ],
+   "one_liner": "Linearizes a nonlinear system around the current estimate, then applies the ordinary Kalman filter for state estimation.",
+   "explanation": "The extended Kalman filter generalizes the Kalman filter to nonlinear systems, and was developed mainly at NASA's Ames Research Center for navigation problems in the 1960s. The standard Kalman filter only applies to linear models; at every step, the EKF uses a Jacobian matrix (the partial derivatives of each output with respect to each state) to take a first-order Taylor expansion of the nonlinear motion and observation models around the current estimate, then runs the usual predict-update cycle: first the motion model projects forward the new state and its uncertainty, then a sensor reading corrects it. It's computationally cheap and its implementation is mature, making it the de facto standard in navigation; but it's only an approximation, and can diverge when nonlinearity is strong, in which case an unscented Kalman filter or an error-state Kalman filter is often used instead. Legged robots commonly use it to fuse IMU data with leg kinematics to estimate the body's pose and velocity.",
+   "example": "ROS's robot_localization package provides an ekf_localization_node that can fuse any number of input sources — wheel odometry, IMU, GPS, and so on — into a 15-dimensional state output: 3D position, orientation (roll/pitch/yaw), linear velocity, angular velocity, and linear acceleration.",
+   "related": [
+    "Kalman Filter",
+    "Unscented Kalman Filter",
+    "Error-State Kalman Filter",
+    "State Estimation",
+    "Leg Odometry",
+    "Multi-Sensor Fusion"
+   ]
+  },
+  {
+   "key": "control-03#6",
+   "name_en": "Fall Mitigation and Fall Recovery",
+   "aliases": [
+    "Humanoid Fall Safety",
+    "Fall Protection"
+   ],
+   "one_liner": "Two related abilities for a humanoid: minimizing damage while it falls, and getting itself back up afterward.",
+   "explanation": "A humanoid robot has a high center of mass and a small support base, so being pushed, stepping into a gap, or slipping can all cause a fall, and a single hard fall can damage joints, cameras, and the outer shell. Fall safety is usually split into three stages. Where possible, balance control and stepping (push recovery) are used to avoid falling in the first place. Once a fall becomes unavoidable, fall mitigation kicks in: bending the knees to lower the center of mass, reaching out an arm or stepping to make contact with the ground early, and adjusting posture to spread the impact onto sturdier parts of the body. After landing, fall recovery means getting back up from whatever position the robot ended up in. Earlier work mostly relied on hand-designed motion sequences and trajectory optimization — for example, Wang and Hauser in 2018 used contact-sequence tree search to plan multi-contact protective motions like stepping and bracing with the hands — while the mainstream approach in the last couple of years has been training a policy in simulation with reinforcement learning and transferring it to the real robot, with recent work starting to fold all three stages into a single policy.",
+   "example": "HoST (RSS 2025) used reinforcement learning in simulation to train Unitree's G1 to get up from a wide variety of fallen postures, without relying on any preset motion trajectory, and deployed it directly to indoor and outdoor scenes on the real robot; another piece of work from November 2025 combined a small number of human demonstrations with reinforcement learning on the G1 to unify fall prevention, impact mitigation, and getting up into a single policy.",
+   "related": [
+    "Fall Recovery (Standing Up)",
+    "HoST (Humanoid Standing-up Task)",
+    "Push Recovery",
+    "Balance Control",
+    "Damping Mode",
+    "Humanoid Robot"
+   ]
+  },
+  {
+   "key": "control-03#7",
+   "name_en": "Feedforward Control",
+   "aliases": [
+    "Feedforward Torque",
+    "Feedforward Compensation",
+    "τff"
+   ],
+   "one_liner": "Using a model to compute the needed control input in advance, and adding it directly, rather than waiting for an error to appear.",
+   "explanation": "Feedforward control uses a system model to compute, ahead of time, the control input needed for a known target trajectory or a measurable disturbance, and adds it directly to the output; feedback control, by contrast, corrects only after measuring an actual error. Pure feedforward is open-loop: if the model is inaccurate or there's an unmeasured disturbance, nothing corrects the resulting error, so in practice feedforward is usually combined with feedback — feedforward handles the bulk of the work, and feedback only cleans up the small remainder, which lets the system track more closely while allowing the feedback gains to be set lower, keeping the joints more compliant. Typical feedforward terms in robotics include gravity compensation, friction compensation, and the torque computed from a desired acceleration via inverse dynamics (this is exactly what computed-torque control is built on). A common joint-motor command is τ = τff + kp(q_target − q) + kd(q̇_target − q̇), where τff is the feedforward torque and the other two terms are PD feedback.",
+   "example": "A robot arm reaches out horizontally with a 1 kg payload hanging 0.5 m from the shoulder joint; the gravity torque from the payload alone is about 9.8×0.5≈4.9 N·m. Precomputing this and feeding it into τff means the PD feedback no longer has to widen the position error just to hold the payload up, and tracking error drops noticeably.",
+   "related": [
+    "Gravity Compensation",
+    "Friction Compensation",
+    "Computed Torque Control",
+    "PD Control",
+    "MIT Mode",
+    "Inverse Dynamics"
+   ]
+  },
+  {
+   "key": "control-03#8",
+   "name_en": "Finite State Machine",
+   "aliases": [
+    "FSM",
+    "State Machine"
+   ],
+   "one_liner": "A model where a system is always in exactly one of a fixed set of states, switching states according to fixed rules on each event.",
+   "explanation": "A finite state machine is a computational model in which a system is, at any moment, in exactly one of a fixed set of states, and moves to a different state according to predetermined rules whenever it receives a particular input or event, with each state corresponding to a fixed set of behaviors. A classic example is a subway turnstile: inserting a coin switches it from 'locked' to 'unlocked,' and someone passing through switches it back to 'locked.' In robotics it's commonly used to manage operating modes and task flow — such as the sequence from power-on zero-torque, to standing, to walking, to damping, or the 'approach → grasp → lift → place' sequence in a pick-and-place routine — with the benefit of clear, easy-to-check logic. Its drawback is that it becomes hard to maintain once the number of states and transitions grows large, which is why complex tasks increasingly use behavior trees instead, since they're more modular and adapt more easily to new situations on the fly.",
+   "example": "Unitree's G1 high-level motion interface manages modes directly by numbered states: 0 is zero-torque, 1 is damping, 2 is squatting, 3 is sitting, 4 is standing up, and 500 is start-moving; calling Damp() in the SDK simply switches the state machine to state 1.",
+   "related": [
+    "Behavior Tree",
+    "Damping Mode",
+    "Task Planning",
+    "Hierarchical Control",
+    "BehaviorTree.CPP",
+    "Unitree SDK"
+   ]
+  },
+  {
+   "key": "control-03#9",
+   "name_en": "Footstep Planning",
+   "aliases": [
+    "Foothold Planning"
+   ],
+   "one_liner": "Computing where and in what orientation a legged robot should plant each of its next footsteps.",
+   "explanation": "Footstep planning finds a sequence of safe foot placements (positions and orientations) for a biped or quadruped, taking it from its current position to a goal, while satisfying constraints such as keeping consecutive steps within the leg's reach and avoiding obstacles or gaps. It's a simplified version of full contact motion planning: it handles the whole-body dynamics only loosely, deciding just where the feet go and leaving exactly how the body moves to a controller further downstream. Approaches fall into roughly two categories. Discrete search builds a set of candidate steps and searches over them on a tree using something like A*. Continuous optimization is the other route — MIT's Deits and Tedrake, for example, decomposed the reachable footholds into a set of convex regions in 2014 and used mixed-integer convex optimization to find the globally optimal footstep sequence. Reinforcement-learning locomotion controllers, by contrast, usually decide footholds implicitly.",
+   "example": "Deits and Tedrake's planner guided an Atlas humanoid across a row of stepping stones; removing one stone made it automatically switch to a longer detour route. Short sequences of a few steps solved in under 1 second, while sequences of 10–30 steps took tens of seconds to a few minutes on a laptop.",
+   "related": [
+    "Gait Planning",
+    "Foot Trajectory Planning",
+    "Raibert Heuristic",
+    "Perceptive Locomotion",
+    "Elevation Map",
+    "Multi-Contact Planning"
+   ]
+  },
+  {
+   "key": "control-03#10",
+   "name_en": "Gait Planning",
+   "aliases": [
+    "Gait Scheduling",
+    "Gait Generation"
+   ],
+   "one_liner": "Deciding when each of a legged robot's feet touches down and lifts off, and the rhythm of its steps.",
+   "explanation": "Gait planning decides the contact timing of a legged robot's legs: within one gait cycle, when each leg touches down (stance phase) and when it lifts off (swing phase), what fraction of the cycle each leg spends on the ground (duty factor), and the phase offsets and stepping frequency between legs. Different combinations correspond to different gaits: for a quadruped, diagonal pairs together is trotting, same-side pairs together is pacing, front and rear pairs together is bounding, and all four legs lifting and landing together is pronking. In model-based control, a gait scheduler first lays out this contact timetable, MPC then allocates ground-reaction force to the supporting legs accordingly, and footstep planning decides where the swinging legs should land. Reinforcement-learning locomotion controllers commonly use a phase-clock signal or reward terms to guide the gait, or let a gait emerge on its own. It complements footstep planning: one decides when to step, the other decides where.",
+   "example": "MIT Cheetah's open-source code divides one gait cycle into 10 segments: a trot is written as the four legs having phase offsets (0,5,5,0), each supporting for 5 segments — meaning diagonal legs move together, and each leg is on the ground half the time — while a pronk has all four offsets at zero. Walk These Ways (2022) turns these phase offsets into a policy input command, with (0.5,0,0) giving a trot and (0,0.5,0) giving a bound.",
+   "related": [
+    "Gait",
+    "Contact Schedule (Gait Scheduler)",
+    "Gait Cycle and Duty Factor",
+    "Footstep Planning",
+    "Convex MPC",
+    "Central Pattern Generator"
+   ]
+  },
+  {
+   "key": "control-03#11",
+   "name_en": "Global Planning and Local Planning",
+   "aliases": [
+    "Global Planner",
+    "Local Planner",
+    "Local Controller"
+   ],
+   "one_liner": "Navigation split into two layers: global planning finds a route across the whole map, local planning follows it while dodging nearby obstacles.",
+   "explanation": "Mobile-robot navigation is usually split into two layers. The global planner (called 'planner' in Nav2) works on a costmap covering the entire map, using an algorithm such as Dijkstra, A*, or hybrid A* to compute a complete path from the current position to the goal, updated at a relatively low frequency. The local planner (called 'controller' in Nav2) only looks at a costmap covering a few meters around the robot and moving with it, computing velocity commands at a higher frequency (20 Hz by default in Nav2) to follow the global path while avoiding transient obstacles like pedestrians or carts, using algorithms such as the dynamic window approach, timed elastic bands, MPPI, or pure pursuit. This split exists because searching the whole map is too slow to do in real time, while looking only locally risks getting stuck in dead ends.",
+   "example": "An AMR delivering goods in a warehouse: the global planner first lays out a route down the shelving aisles to bin 3; along the way, someone pushes a cart across the aisle, the local controller spots the new obstacle in its local costmap, slows down and steers around it, and then rejoins the original route.",
+   "related": [
+    "Costmap",
+    "Nav2",
+    "A* Search",
+    "Dynamic Window Approach",
+    "Timed Elastic Band",
+    "Path Planning"
+   ]
+  }
+ ]
+}

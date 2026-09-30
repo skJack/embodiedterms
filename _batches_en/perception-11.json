@@ -1,0 +1,113 @@
+{
+  "batch": "perception-11",
+  "terms": [
+    {
+      "key": "perception-11#0",
+      "name_en": "Bird’s-Eye View",
+      "aliases": ["BEV", "BEV Perception", "BEV Representation"],
+      "one_liner": "A 2D top-down grid that fuses information from multiple sensors onto a single ground plane.",
+      "explanation": "A bird’s-eye view (BEV) is a 2D grid representation laid over the ground plane, viewed from directly above, where each cell stores features or semantics for that location. Autonomous driving was the first field to use it at scale: Lift-Splat-Shoot (NVIDIA, ECCV 2020) predicts a depth distribution for every pixel and then “splats” image features onto a BEV grid; BEVFormer (ECCV 2022, Shanghai AI Lab and others) uses Transformer cross-attention to query BEV features from multiple camera streams and fuses in past frames. The benefit is that multiple cameras and lidar can all be aligned into one coordinate frame, so detection, segmentation, and path planning can happen directly on this map. The occupancy grids, elevation maps, and semantic maps used in robot navigation are also essentially BEV representations; because BEV compresses away height information, tasks that depend more on height, like tabletop manipulation, usually switch to point clouds or voxels instead.",
+      "example": "A self-driving car converts images from its six surround-view cameras into a single BEV feature map centered on itself, covering tens of meters ahead, behind, and to each side; it draws boxes around vehicles and lane lines directly on this map before handing it to the planning module.",
+      "related": ["Autonomous Driving", "3D Object Detection", "Occupancy Network", "Elevation Map", "Multi-Sensor Fusion", "Semantic Map"]
+    },
+    {
+      "key": "perception-11#1",
+      "name_en": "BOP (Benchmark for 6D Object Pose Estimation)",
+      "aliases": ["BOP Challenge"],
+      "one_liner": "A public benchmark and yearly challenge for 6D object pose estimation, maintained by the Czech Technical University.",
+      "explanation": "BOP was introduced by Tomáš Hodaň and colleagues at ECCV 2018 and is maintained by the Czech Technical University in Prague. It unifies multiple object pose datasets — LM-O, T-LESS, YCB-V, and others — into a common format, provides a shared error function that handles pose ambiguity for symmetric objects, and runs an online evaluation system; it has held challenges in 2019, 2020, and 2022 through 2025, paired with workshops like R6D. The task has expanded from “seen objects” to “unseen objects”: the 2023 edition required methods to handle new objects quickly from just a CAD model, 2024 added a model-free task using only a reference video plus the BOP-H3 dataset, and 2025 added the BOP-Industrial dataset for industrial scenes. The 2024 report notes that 2D detection of unseen objects still lags detection of seen objects by about 35%, the main bottleneck. Methods including FoundationPose, MegaPose, and SAM-6D are all compared here.",
+      "example": "A newly proposed zero-shot pose estimation method is run on the BOP-Classic-Core dataset, and its results are uploaded to the BOP online evaluation system for an AR score, which is then compared against methods like FoundationPose on the leaderboard.",
+      "related": ["6D Pose Estimation", "FoundationPose", "MegaPose", "SAM-6D", "YCB Object Set", "Average Distance of Model Points (ADD / ADD-S)"]
+    },
+    {
+      "key": "perception-11#2",
+      "name_en": "Bundle Adjustment",
+      "aliases": ["BA"],
+      "one_liner": "Jointly fine-tunes all camera poses and 3D point coordinates to minimize reprojection error.",
+      "explanation": "Bundle adjustment traces back to photogrammetry in the 1950s; “bundle” refers to the bundle of light rays traveling from each 3D point to a camera’s optical center. Given feature points matched across multiple images, it treats every camera’s pose — sometimes intrinsics and distortion too — and every 3D point’s coordinates as unknowns, and minimizes reprojection error: the sum of squared distances between where each 3D point projects under the current parameters and where it was actually observed in the image. When image noise is zero-mean Gaussian, this is equivalent to maximum likelihood estimation. It is typically solved with nonlinear least-squares methods like Levenberg–Marquardt, exploiting the problem’s sparse structure for speed. Bundle adjustment is the core step of structure from motion (SfM) and the back end of visual SLAM — COLMAP reconstruction and ORB-SLAM’s local and global optimization are both running BA — with common solver libraries including Ceres, g2o, and GTSAM.",
+      "example": "Walking around a table taking dozens of photos with a phone: SfM first roughly estimates each photo’s camera pose and triangulates a sparse point cloud, then runs one pass of BA to jointly refine everything, dropping the reprojection error and making both the point cloud and camera trajectory more accurate.",
+      "related": ["Structure from Motion", "Reprojection Error", "Simultaneous Localization and Mapping", "SLAM Front End / Back End", "Factor Graph Optimization", "Ceres Solver"]
+    },
+    {
+      "key": "perception-11#3",
+      "name_en": "Camera Depth Models",
+      "aliases": ["CDM", "Manipulation as in Simulation"],
+      "one_liner": "A depth-repair model from ByteDance Seed that cleans up noisy depth-camera output into near-simulation-quality accurate depth.",
+      "explanation": "CDM comes from the September 2025 paper “Manipulation as in Simulation,” released by ByteDance Seed together with Shanghai Jiao Tong University, Zhejiang University, and Tsinghua University. Ordinary depth cameras produce noisy, incomplete depth on reflective, transparent, thin, and edge regions, which makes it hard for policies trained on depth or point clouds to transfer directly from simulation to a real robot. CDM is a software plug-in that sits right after the camera: it takes an RGB image and raw depth as input and outputs denoised, metric depth (real-world scale, in meters). Its training data comes from the authors’ “neural data engine,” which generates paired data at scale by simulating the depth noise patterns of specific camera models; models are provided per camera model, covering several RealSense models, the Azure Kinect, and the ZED 2i, and both the models and the ByteCameraDepth dataset are open source. The paper shows that a manipulation policy trained only on clean simulated depth, once paired with CDM, can handle articulated, reflective, and thin objects on a real robot with no added noise and no fine-tuning.",
+      "example": "A “put the bowl in the microwave” policy is trained in simulation using only clean depth images; at deployment, the RealSense’s raw depth is first passed through the matching CDM model, and the cleaned-up depth is then fed to the policy, with no real-robot data needed for fine-tuning.",
+      "related": ["Depth Completion", "Sim-to-Real Transfer", "Reality Gap", "Depth Camera", "Perceiving Transparent and Reflective Objects", "Robbyant LingBot-Depth"]
+    },
+    {
+      "key": "perception-11#4",
+      "name_en": "Camera-IMU Calibration",
+      "aliases": ["Visual-Inertial Calibration", "Camera-IMU Extrinsic and Time-Offset Calibration"],
+      "one_liner": "Finds the relative pose and time offset between a camera and an IMU so their data can be aligned and fused.",
+      "explanation": "Visual-inertial odometry (VIO, which estimates its own motion using a camera plus an IMU) needs to process both sensors’ data together, which requires knowing their spatial extrinsics (the IMU’s rotation and translation relative to the camera) and their time offset (the fixed delay between the two devices’ timestamps caused by triggering and transmission); solving for these two things is camera-IMU calibration. The most widely used offline tool is ETH’s open-source Kalibr, based on work by Furgale and colleagues at IROS 2013: it represents the motion trajectory with a continuous-time B-spline, has the device waved thoroughly along every axis in front of an Aprilgrid calibration board, and jointly optimizes the extrinsics and time offset; the IMU’s noise parameters are usually measured beforehand with Allan variance and fed in as input. Systems like VINS-Mono can also estimate the time offset online while running (Qin and Shen, IROS 2018). When calibration is inaccurate, VIO drifts noticeably or can even diverge.",
+      "example": "To calibrate the RealSense D435i on a handheld data-collection rig: record a data bag of translating and rotating in front of an Aprilgrid, use Kalibr to solve for the camera-to-IMU transform matrix and the time offset (usually on the order of milliseconds), and write it into VINS-Fusion’s configuration file.",
+      "related": ["Visual-Inertial Odometry", "Kalibr", "Inertial Measurement Unit", "Camera Extrinsics", "Multi-Sensor Time Synchronization (Timestamp Alignment)", "Allan Variance"]
+    },
+    {
+      "key": "perception-11#5",
+      "name_en": "Camera-LiDAR Extrinsic Calibration",
+      "aliases": ["LiDAR-Camera Calibration"],
+      "one_liner": "Finds the rotation and translation between a lidar and a camera so a point cloud can be projected accurately onto the image.",
+      "explanation": "Robots and self-driving cars often carry both a lidar and a camera: the lidar gives accurate range, the camera gives color and texture. Fusing the two first requires knowing the rigid-body transform — three rotation plus three translation parameters — from the lidar’s coordinate frame to the camera’s, i.e., the extrinsics. Target-based methods use a checkerboard, ChArUco, or Aprilgrid: corners are detected in the image, a matching plane is fit in the point cloud to find corresponding corners, and the transform is then solved. Target-free methods register directly against the structure and texture of the environment — for example, the tool Koide and colleagues at Japan’s AIST open-sourced at ICRA 2023, which also supports non-repetitive-scan lidars like Livox. The result is used to color a point cloud, project it onto an image to assist detection, or feed BEV fusion perception; a common sanity check is whether the edges of the projected point cloud line up with object edges in the image.",
+      "example": "A quadruped robot carries a Livox Mid-360 and an RGB camera; after calibration, the point cloud is projected onto the image to check whether points along a step’s edge land on the step’s outline in the image, and the same extrinsics are then used to color the point cloud into a colored map.",
+      "related": ["Camera Extrinsics", "Lidar", "Multi-Sensor Fusion", "Calibration Board", "Camera Calibration", "Bird’s-Eye View"]
+    },
+    {
+      "key": "perception-11#6",
+      "name_en": "Capacitive Tactile Sensing",
+      "aliases": ["Capacitive Sensor", "Capacitive Skin"],
+      "one_liner": "A tactile-sensing method that infers contact force from the change in capacitance as pressure alters electrode spacing or a dielectric layer.",
+      "explanation": "Capacitive tactile sensing is one of the main tactile-sensor principles, alongside piezoresistive, piezoelectric, magnetic, and vision-based sensing. The basic structure is two layers of electrodes sandwiching a compressible dielectric material: pressure changes the spacing or overlap area between the electrodes, which changes the capacitance, and readout circuitry converts that into pressure; arranging many such cells (taxels) into an array gives a full contact-pressure distribution. The advantages are high sensitivity, the ability to make sensors small, thin, and flexible, ease of covering large surfaces, and the ability to sense a hand approaching before contact; the drawbacks are susceptibility to parasitic capacitance and electromagnetic interference, temperature drift, and hysteresis introduced by the elastic dielectric layer. A well-known example is the large-area capacitive skin the Italian Institute of Technology (IIT) built for the iCub humanoid, with an improved version using a 3D fabric dielectric layer to reduce hysteresis.",
+      "example": "A layer of capacitive tactile skin stuck to a collaborative robot arm’s casing sees a sudden capacitance change when a human hand touches or approaches a given region, and the controller immediately slows down or stops in response.",
+      "related": ["Tactile Sensor", "Piezoresistive Tactile Sensing", "Piezoelectric Tactile Sensing", "Electronic Skin", "Taxel", "Proximity Sensor"]
+    },
+    {
+      "key": "perception-11#7",
+      "name_en": "Category-Level Pose Estimation",
+      "aliases": ["Category-Level 6D Pose", "Category-Level 6D Object Pose and Size Estimation"],
+      "one_liner": "Estimates 6D pose and size for an unseen object in a known category, without needing that exact object’s CAD model.",
+      "explanation": "Instance-level 6D pose estimation requires an accurate 3D model of each specific object beforehand, so it can only handle the exact objects seen during training. Category-level pose estimation relaxes this to: knowing only which category an object belongs to — cup, bowl, laptop, and so on — and estimating position, orientation, and 3D size for a new, unseen instance of that category. The difficulty is that objects in the same category can vary a lot in shape. He Wang and colleagues in Leonidas Guibas’s group at Stanford introduced NOCS (Normalized Object Coordinate Space) at CVPR 2019, which has a network map every pixel to a standardized coordinate shared across the category, then combines this with a depth map to solve for pose and size; they also released the CAMERA (synthetic) and REAL275 (real) datasets that are widely used since. This suits household tasks like “pick up any mug”; zero-shot methods like FoundationPose take a different approach, requiring a model or reference image of the new object instead.",
+      "example": "A robot sees a mug on the table it has never seen before; a network maps the mug’s pixels to the “mug” category’s standard coordinates, aligns this with the depth point cloud, and computes the mug’s position, orientation, and size, from which it plans a pose for grasping the handle.",
+      "related": ["6D Pose Estimation", "NOCS (Normalized Object Coordinate Space)", "FoundationPose", "Pose Tracking", "Object Generalization", "BOP (Benchmark for 6D Object Pose Estimation)"]
+    },
+    {
+      "key": "perception-11#8",
+      "name_en": "Chamfer Distance",
+      "aliases": ["CD"],
+      "one_liner": "Finds each point’s nearest neighbor in the other point cloud and averages the distances, to measure how close two shapes are.",
+      "explanation": "Chamfer distance measures how similar two point sets are: for each point in set A, it finds the nearest point in B and averages these distances (usually squared Euclidean distance); it then does the same from B to A and adds the two terms together. It doesn’t require the two sets to have the same number of points, or a one-to-one correspondence between points — it only needs nearest-neighbor search, and it’s differentiable almost everywhere, which makes it suitable as a loss function. The name comes from chamfer matching in early image matching work. Fan, Su, and Guibas used it alongside earth mover’s distance (EMD) as a loss for generating point clouds from a single image at CVPR 2017, after which it became a standard loss and evaluation metric for 3D reconstruction, point cloud completion, and shape generation; libraries like PyTorch3D provide it directly. Its drawback is insensitivity to point density, so predicted points can clump together, which is why papers often report it alongside EMD and F-score.",
+      "example": "A point cloud completion network takes in a point cloud of a chair captured from only one side and outputs a full set of points for the whole chair; during training, the chamfer distance between the output and the true complete point cloud is used as the loss — the smaller the distance, the better the completion.",
+      "related": ["Point Cloud", "Point Cloud / Shape Completion", "Single-Image 3D Generation", "Loss Function", "PointNet", "Feed-Forward 3D Reconstruction"]
+    },
+    {
+      "key": "perception-11#9",
+      "name_en": "CMOS Image Sensor",
+      "aliases": ["CIS", "Active-Pixel Sensor"],
+      "one_liner": "The chip inside a camera that turns light into a digital image, with amplification built into every pixel — the dominant sensor today.",
+      "explanation": "A CMOS image sensor is an active-pixel sensor built with CMOS manufacturing: each pixel has a photodiode that collects light-generated charge, which a handful of transistors then amplify and read out on the spot (commonly a 4-transistor design). In the early 1990s, Mitsubishi Electric and NASA’s Jet Propulsion Laboratory (Eric Fossum and colleagues) each independently built CMOS active-pixel sensors; they’re cheap, low-power, and can integrate analog-to-digital conversion and image processing on the same chip, and sales overtook CCDs in 2007 — today CMOS is overwhelmingly dominant. Sony is the largest manufacturer. For robotics, the sensor determines a camera’s resolution, frame rate, low-light noise, and dynamic range, as well as its shutter type: most CMOS sensors use a rolling shutter that exposes row by row, which skews the image under fast motion, so VIO and high-speed grasping applications often pick global-shutter models instead.",
+      "example": "When picking a wrist camera for a robot arm, check the shutter type, pixel size, and frame rate on the spec sheet; for a fast-moving arm, choose a global-shutter CMOS sensor so object edges in the image don’t come out skewed.",
+      "related": ["RGB Camera", "Global Shutter / Rolling Shutter", "ISP (Image Signal Processor)", "Event Camera", "Depth Camera", "MIPI CSI-2 Camera Interface"]
+    },
+    {
+      "key": "perception-11#10",
+      "name_en": "Complementary Filter",
+      "aliases": ["Mahony Complementary Filter"],
+      "one_liner": "A simple filter that blends the gyroscope for short-term accuracy and the accelerometer for long-term stability to estimate attitude angle.",
+      "explanation": "The complementary filter is the simplest and most common method for IMU attitude estimation. The gyroscope measures angular velocity, which integrates into an angle that’s smooth and accurate over short periods, but bias makes error accumulate into drift over time (a low-frequency error); the accelerometer can compute pitch and roll directly from the direction of gravity, which doesn’t drift long-term, but it’s noisy and disturbed by vibration and motion acceleration (a high-frequency error), and yaw needs a magnetometer as an additional reference. The complementary filter high-pass-filters the gyroscope-integrated result and low-pass-filters the accelerometer result, then adds them; a common formula is: angle = α × (previous angle + angular velocity × Δt) + (1 − α) × accelerometer angle, with α set close to 1. It’s extremely cheap to compute, which suits microcontrollers; Mahony and colleagues extended it to full 3D rotation (SO(3)) in IEEE TAC in 2008, giving the commonly used Mahony filter. It needs no noise model, but its weight has to be tuned by hand.",
+      "example": "A self-balancing robot’s main controller reads the IMU once per control cycle and computes the body’s pitch angle with a complementary filter using α = 0.98, feeding it back into the balance controller.",
+      "related": ["Inertial Measurement Unit", "Kalman Filter", "Extended Kalman Filter", "Attitude Estimation (AHRS)", "Sensor Drift (Bias Drift)", "State Estimation"]
+    },
+    {
+      "key": "perception-11#11",
+      "name_en": "ConceptGraphs",
+      "aliases": ["ConceptGraphs: Open-Vocabulary 3D Scene Graphs for Perception and Planning"],
+      "one_liner": "Fuses multi-view images into an open-vocabulary 3D object scene graph for large-model reasoning and robot planning.",
+      "explanation": "ConceptGraphs was proposed by a team from MIT, Université de Montréal, the University of Toronto, and others (lead author Qiao Gu), published at ICRA 2024. It uses a general-purpose segmentation model frame by frame to cut out object regions, extracts CLIP features for each region, projects them into 3D points using depth, and then merges regions belonging to the same object across viewpoints to obtain a set of 3D objects with semantic features attached. It then uses LLaVA to generate text descriptions for the objects and GPT-4 to infer spatial relationships between objects as edges, forming a 3D scene graph — nodes are objects, edges are relationships. The whole pipeline needs no 3D annotation and no model fine-tuning. The resulting graph can be converted to text for a large model to answer queries like “find a basketball”; the paper demonstrates object retrieval, relocalization, and navigation tasks that judge which obstacles can be pushed aside, on mobile robots like the Jackal.",
+      "example": "A robot first drives a loop through a house to build the scene graph; when the user says “find something to prop up my phone,” a large model picks “book” from the object descriptions in the graph, and the robot navigates to that node’s 3D location.",
+      "related": ["3D Scene Graph", "Open-Vocabulary", "Semantic Map", "CLIP", "LLM Task Planning", "SayPlan"]
+    }
+  ]
+}

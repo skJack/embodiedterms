@@ -1,0 +1,420 @@
+{
+  "category": "model",
+  "batch": 5,
+  "terms": [
+    {
+      "name_zh": "具身思维链",
+      "name_en": "Embodied Chain-of-Thought",
+      "abbr": "ECoT",
+      "aliases": [
+        "具身推理链",
+        "Embodied Chain-of-Thought Reasoning"
+      ],
+      "tier": 2,
+      "one_liner": "让机器人模型先写出计划、子任务、物体位置等推理，再输出动作。",
+      "explanation": "具身思维链由 UC 伯克利、斯坦福等机构的研究者在 2024 年提出。普通 VLA（视觉-语言-动作模型）看图听指令后直接出动作；ECoT 让模型先依次写出任务复述、整体计划、当前子任务、下一步移动方向、夹爪位置和画面中物体的边界框，再输出动作。和大语言模型的思维链不同，这些推理必须落在具体画面和机器人状态上。作者用现成基础模型自动给 BridgeData V2 标注推理过程，在 OpenVLA 上训练后，高难度泛化任务的绝对成功率提升 28%，没用额外机器人数据。代价是要多生成大量 token、推理变慢；2025 年同一团队的后续工作给出更轻量的训练方式，推理约快 3 倍。",
+      "example": "指令「把蘑菇放进锅里」时，ECoT 模型先写出计划（找蘑菇→抓起→移到锅上方→放下）、当前子任务「抓起蘑菇」、移动方向「向左下」，并标出蘑菇、锅的边界框和夹爪位置，最后才输出 7 维机械臂动作。",
+      "related": [
+        "思维链",
+        "具身推理",
+        "视觉-语言-动作模型",
+        "OpenVLA",
+        "视觉思维链",
+        "推理延迟"
+      ],
+      "sources": [
+        {
+          "title": "Robotic Control via Embodied Chain-of-Thought Reasoning (arXiv 2407.08693)",
+          "url": "https://arxiv.org/abs/2407.08693"
+        },
+        {
+          "title": "Embodied Chain-of-Thought Reasoning 项目页",
+          "url": "https://embodied-cot.github.io/"
+        },
+        {
+          "title": "Training Strategies for Efficient Embodied Reasoning (arXiv 2505.08243)",
+          "url": "https://arxiv.org/abs/2505.08243"
+        }
+      ],
+      "as_of": "2025-05"
+    },
+    {
+      "name_zh": "编码器-解码器",
+      "name_en": "Encoder-Decoder",
+      "abbr": "",
+      "aliases": [
+        "编解码器架构",
+        "Encoder-Decoder Architecture",
+        "序列到序列模型",
+        "Seq2Seq"
+      ],
+      "tier": 2,
+      "one_liner": "先把输入压成中间表示，再由另一部分据此生成输出的网络结构。",
+      "explanation": "编码器-解码器是一种通用的神经网络结构：编码器把输入（一句话、一张图、一组传感器读数）转成中间表示，解码器根据这个表示生成输出，输入输出长度可以不同。2014 年 Sutskever 等人用两个 LSTM（一种循环神经网络）做英译法，是它在序列到序列任务上的代表作；2017 年的原始 Transformer 也是这种结构，解码器通过交叉注意力读取编码器的结果。后来 GPT 类大模型多改用仅解码器结构，但机器人里它依然常见：ACT 用 Transformer 编码器融合多路相机画面和关节状态，再由解码器一次输出一整段动作。自编码器、变分自编码器也属于这一框架。",
+      "example": "ACT 控制 ALOHA 双臂：编码器读入 4 路相机图像和 14 维关节角，解码器输出未来 k 步（常取 100 步）的 14 维目标关节位置。",
+      "related": [
+        "Transformer",
+        "仅解码器架构",
+        "交叉注意力",
+        "自编码器",
+        "变分自编码器",
+        "ACT"
+      ],
+      "sources": [
+        {
+          "title": "Dive into Deep Learning: The Encoder–Decoder Architecture",
+          "url": "https://d2l.ai/chapter_recurrent-modern/encoder-decoder.html"
+        },
+        {
+          "title": "Sequence to Sequence Learning with Neural Networks (arXiv 1409.3215)",
+          "url": "https://arxiv.org/abs/1409.3215"
+        },
+        {
+          "title": "Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware (ACT, arXiv 2304.13705)",
+          "url": "https://arxiv.org/html/2304.13705"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "浮点运算量（FLOPs）",
+      "name_en": "Floating-Point Operations (FLOPs)",
+      "abbr": "FLOPs",
+      "aliases": [
+        "浮点运算次数",
+        "计算量",
+        "FLOP"
+      ],
+      "tier": 2,
+      "one_liner": "完成一次计算要做多少次浮点加法和乘法，衡量模型算得有多重。",
+      "explanation": "FLOPs 是 floating-point operations 的缩写，指完成一次计算所需的浮点运算总次数，用来衡量模型的计算量。小写 s 表示复数，和大写 S 表示「每秒」的 FLOPS（硬件算力）不是一回事。Transformer 有个常用估算：参数量为 N 的模型处理一个 token，前向约 2N 次浮点运算，算上反向传播的训练约 6N，出自 OpenAI 2020 年的缩放定律论文；训练总算力也常用 FLOPs 计。对机器人而言它直接影响推理延迟：同一块车载芯片上，FLOPs 越大的策略推理越慢、控制频率越低，所以端侧部署常靠缩小模型、剪掉视觉 token 来降 FLOPs。",
+      "example": "按 2N 粗算，一个 70 亿参数的 VLA 处理 1 个 token 的前向约 140 亿次浮点运算（14 GFLOPs）；一次输入 256 个图像 token，仅这部分就约 3.6 万亿次（不计注意力项）。",
+      "related": [
+        "参数量",
+        "缩放定律",
+        "浮点算力（FLOPS / TFLOPS）",
+        "推理延迟",
+        "端侧模型",
+        "视觉 token 剪枝"
+      ],
+      "sources": [
+        {
+          "title": "Scaling Laws for Neural Language Models (Kaplan et al., 2020)",
+          "url": "https://arxiv.org/abs/2001.08361"
+        },
+        {
+          "title": "Scaling Laws for Neural Language Models（ar5iv 全文，含 C≈6N 推导）",
+          "url": "https://ar5iv.labs.arxiv.org/html/2001.08361"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "正向动力学模型",
+      "name_en": "Forward Dynamics Model",
+      "abbr": "FDM",
+      "aliases": [
+        "前向动力学模型",
+        "学习型动力学模型",
+        "Forward Model",
+        "Learned Dynamics Model"
+      ],
+      "tier": 2,
+      "one_liner": "输入当前状态和动作，预测下一时刻状态会变成什么样的模型。",
+      "explanation": "正向动力学模型学的是「做了这个动作，世界会变成什么样」：输入当前状态（或观测）s_t 和动作 a_t，输出下一时刻状态 s_{t+1}。思路和力学里的正动力学（由力矩算出加速度）一致，但机器人学习里通常不靠物理公式，而是用神经网络从交互数据中学出来。有了它，机器人能先在模型里试多种动作序列、挑结果最好的执行，这正是基于模型的强化学习和模型预测控制（MPC）的做法。2017 年 Nagabandi 等人就用学到的神经网络动力学模型配合 MPC，让仿真中的多足机器人跟踪任意轨迹。如今的世界模型本质上是在图像或隐空间里做的大型正向动力学模型；它常与逆动力学模型成对出现，潜在动作模型的解码器也属于这一类。",
+      "example": "推方块任务：输入方块当前位置和「向右推 2 厘米」，模型预测推完后方块的新位置；MPC 用它比较几十种候选推法，选最接近目标的一种执行。",
+      "related": [
+        "逆动力学模型",
+        "世界模型",
+        "基于模型的强化学习",
+        "模型预测控制",
+        "正动力学",
+        "潜在动作模型"
+      ],
+      "sources": [
+        {
+          "title": "Neural Network Dynamics for Model-Based Deep RL with Model-Free Fine-Tuning (arXiv 1708.02596)",
+          "url": "https://arxiv.org/abs/1708.02596"
+        },
+        {
+          "title": "Curiosity-driven Exploration by Self-supervised Prediction (arXiv 1705.05363)",
+          "url": "https://arxiv.org/abs/1705.05363"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "生成对抗网络",
+      "name_en": "Generative Adversarial Network (GAN)",
+      "abbr": "GAN",
+      "aliases": [
+        "对抗生成网络",
+        "GAN"
+      ],
+      "tier": 2,
+      "one_liner": "生成器造假、判别器辨真假，两者对抗训练来生成逼真数据的模型。",
+      "explanation": "生成对抗网络由 Ian Goodfellow 等人在 2014 年提出，是一类生成模型。它包含两个网络：生成器把随机噪声变成样本，判别器判断样本来自真实数据还是生成器。两者轮流训练，生成器努力骗过判别器，判别器努力识破，理想情况下生成器最终学会真实数据的分布。GAN 一次前向就能出图，速度快，但训练不稳定，还容易模式坍缩（只生成少数几种样本），近年在图像和视频生成上大多被扩散模型取代。它的「判别器打分」思想在机器人里仍很常用：生成对抗模仿学习（GAIL）和对抗运动先验（AMP）都让判别器判断机器人动作像不像示范数据，再把结果当作奖励交给强化学习。",
+      "example": "AMP 训练仿真人形角色时，判别器对比策略做出的动作片段和动捕数据，越像真人奖励越高，角色因此学出自然的走跑姿态。",
+      "related": [
+        "生成模型",
+        "生成对抗模仿学习",
+        "对抗运动先验",
+        "扩散模型",
+        "变分自编码器",
+        "熵坍缩 / 模式坍缩"
+      ],
+      "sources": [
+        {
+          "title": "Generative Adversarial Networks (Goodfellow et al., arXiv 1406.2661)",
+          "url": "https://arxiv.org/abs/1406.2661"
+        },
+        {
+          "title": "AMP: Adversarial Motion Priors for Stylized Physics-Based Character Control (arXiv 2104.02180)",
+          "url": "https://arxiv.org/abs/2104.02180"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "生成模型",
+      "name_en": "Generative Model",
+      "abbr": "",
+      "aliases": [
+        "生成式模型"
+      ],
+      "tier": 2,
+      "one_liner": "学习数据的概率分布、能从中采样出新数据的模型。",
+      "explanation": "生成模型学习数据本身的分布 p(x)，或给定条件时的分布 p(x|c)，因此能造出新样本；与之相对的判别模型只学 p(y|x)，负责分类或打分。常见的生成模型有自回归模型（逐个预测下一个 token，如 GPT）、变分自编码器（VAE）、生成对抗网络（GAN）、扩散模型和流匹配。在具身智能里它主要用在三处：一是生成动作，示范数据中同一场景常有多种合理做法（动作多峰性），扩散策略、π0 等用扩散或流匹配建模整个动作分布，而不是回归一个平均值；二是生成未来画面，即世界模型和视频预测模型；三是生成训练数据，比如用视频生成模型合成机器人演示。",
+      "example": "示范里一半从左绕开障碍、一半从右绕：直接回归的模型会输出两者的平均，径直撞上去；扩散策略这类生成模型会采样出「从左绕」或「从右绕」中的一种。",
+      "related": [
+        "扩散模型",
+        "流匹配",
+        "变分自编码器",
+        "生成对抗网络",
+        "动作多峰性",
+        "扩散策略"
+      ],
+      "sources": [
+        {
+          "title": "Google Machine Learning: Background: What is a Generative Model?",
+          "url": "https://developers.google.com/machine-learning/gan/generative"
+        },
+        {
+          "title": "Diffusion Policy: Visuomotor Policy Learning via Action Diffusion (arXiv 2303.04137)",
+          "url": "https://arxiv.org/abs/2303.04137"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "逆动力学模型",
+      "name_en": "Inverse Dynamics Model",
+      "abbr": "IDM",
+      "aliases": [
+        "逆向动力学模型",
+        "Inverse Model"
+      ],
+      "tier": 2,
+      "one_liner": "看前后两帧画面，推断中间做了什么动作的模型。",
+      "explanation": "逆动力学模型和正向动力学模型方向相反：输入当前状态 s_t 和下一状态 s_{t+1}（或前后几帧画面），输出导致这一变化的动作 a_t。力学里的逆动力学是由期望运动反算关节力矩，机器人学习里的 IDM 则多用神经网络从数据中学出。它的主要用途是给没有动作标签的视频补标签：OpenAI 2022 年的 VPT 先用约 2000 小时带键鼠记录的 Minecraft 数据训练 IDM，再给约 7 万小时网络视频打上伪动作标签，用来预训练游戏智能体。IDM 能同时看到过去和未来的画面，比只看当前画面预测动作容易学得多。UniPi 等「先生成视频再出动作」的方法，也靠 IDM 把生成的画面翻译成机器人动作。",
+      "example": "输入两帧：第一帧夹爪张开停在杯子上方，第二帧夹爪已闭合、杯子被提起几厘米；IDM 输出「闭合夹爪并向上移动」对应的动作向量。",
+      "related": [
+        "正向动力学模型",
+        "潜在动作模型",
+        "伪动作标签",
+        "无动作标签视频",
+        "VPT（视频预训练）",
+        "UniPi"
+      ],
+      "sources": [
+        {
+          "title": "Video PreTraining (VPT): Learning to Act by Watching Unlabeled Online Videos (arXiv 2206.11795)",
+          "url": "https://arxiv.org/html/2206.11795"
+        },
+        {
+          "title": "Learning Universal Policies via Text-Guided Video Generation (UniPi, arXiv 2302.00111)",
+          "url": "https://arxiv.org/abs/2302.00111"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "联合嵌入预测架构",
+      "name_en": "Joint-Embedding Predictive Architecture",
+      "abbr": "JEPA",
+      "aliases": [
+        "I-JEPA",
+        "V-JEPA"
+      ],
+      "tier": 2,
+      "one_liner": "在抽象表征空间里预测被遮住或未来的内容，而不还原像素的自监督架构。",
+      "explanation": "JEPA 是 Yann LeCun 在 2022 年立场论文《A Path Towards Autonomous Machine Intelligence》中提出的架构，Meta 随后做出图像版 I-JEPA（2023）和视频版 V-JEPA。它把输入的一部分（上下文）编码后，让预测器去预测另一部分（被遮住的区域或未来帧）的表征，损失算在表征上而不是像素上，因此不必还原树叶纹理这类难以预测的细节，更专注物体和运动等语义信息，但要额外设计来防止表征坍缩。2025 年 6 月的 V-JEPA 2 用超过 100 万小时视频预训练，再用不到 62 小时机器人视频训练出动作条件版 V-JEPA 2-AC，能零样本在 Franka 机械臂上按目标图像规划抓放。LeCun 已于 2025 年 11 月离开 Meta，创办 AMI Labs 继续做世界模型。",
+      "example": "V-JEPA 2-AC 做抓放：给一张「杯子已放到盘子上」的目标图，模型在表征空间里推演多组候选动作的结果，选预测表征最接近目标图的那组执行。",
+      "related": [
+        "V-JEPA 2",
+        "世界模型",
+        "自监督学习",
+        "隐空间世界模型",
+        "掩码自编码器",
+        "表征坍缩"
+      ],
+      "sources": [
+        {
+          "title": "V-JEPA 2: Self-Supervised Video Models Enable Understanding, Prediction and Planning (arXiv 2506.09985)",
+          "url": "https://arxiv.org/abs/2506.09985"
+        },
+        {
+          "title": "Meta AI: I-JEPA, the first AI model based on Yann LeCun's vision",
+          "url": "https://ai.meta.com/blog/yann-lecun-ai-model-i-jepa/"
+        },
+        {
+          "title": "Wikipedia: Yann LeCun",
+          "url": "https://en.wikipedia.org/wiki/Yann_LeCun"
+        }
+      ],
+      "as_of": "2025-11"
+    },
+    {
+      "name_zh": "KV 缓存",
+      "name_en": "Key-Value Cache",
+      "abbr": "KV Cache",
+      "aliases": [
+        "键值缓存",
+        "KV Caching"
+      ],
+      "tier": 2,
+      "one_liner": "把已算过的注意力键和值存起来，生成后续 token 时直接复用。",
+      "explanation": "KV 缓存是 Transformer 推理时的标准加速手段。自注意力中每个 token 会算出查询（Q）、键（K）、值（V）三组向量；自回归生成时每步只新增一个 token，而前面 token 的 K 和 V 不会变。不缓存的话每步都要把整段前文重算一遍；缓存后每步只算新 token，再和存好的 K、V 做注意力，速度大幅提升。代价是显存：缓存随上下文长度线性增长，长上下文时常成为瓶颈，于是有量化缓存、滑动窗口等办法。它在 VLA 里同样关键：π0 把图像和语言组成的前缀的 K、V 缓存起来，流匹配的 10 步去噪只重算动作部分，整次推理约 73 毫秒。",
+      "example": "π0 一次推理：图像编码约 14 毫秒、前缀前向约 32 毫秒只算一次；动作专家 10 步去噪共约 27 毫秒，每步都复用同一份前缀 KV 缓存。",
+      "related": [
+        "自注意力",
+        "因果注意力",
+        "自回归解码",
+        "推理延迟",
+        "上下文长度",
+        "π0"
+      ],
+      "sources": [
+        {
+          "title": "Hugging Face Transformers: Cache strategies",
+          "url": "https://huggingface.co/docs/transformers/kv_cache"
+        },
+        {
+          "title": "π0: A Vision-Language-Action Flow Model for General Robot Control (arXiv 2410.24164)",
+          "url": "https://arxiv.org/html/2410.24164"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "大行为模型",
+      "name_en": "Large Behavior Model",
+      "abbr": "LBM",
+      "aliases": [
+        "大型行为模型",
+        "TRI 大行为模型",
+        "Large Behavior Model (Toyota Research Institute)",
+        "TRI LBM"
+      ],
+      "tier": 2,
+      "one_liner": "丰田研究院提出的多任务机器人通用策略，在大量示范数据上预训练。",
+      "explanation": "大行为模型是丰田研究院（TRI）类比大语言模型提出的说法，指在大量多任务机器人数据上预训练、直接输出动作的通用操作策略。TRI 在 2023 年 9 月发布扩散策略技能学习成果时提出要做 LBM；2025 年 7 月的论文给出具体实现：一个扩散 Transformer，输入腕部和场景相机图像、本体状态和语言指令，一次预测 16 步动作，训练数据约 1700 小时，其中约 468 小时是自家双臂遥操作。结论是预训练后学新任务所需数据少 3–5 倍，性能随预训练规模平稳提升。TRI 与波士顿动力 2024 年 10 月起合作，2025 年 8 月展示了单个 LBM 控制电动 Atlas 全身、连续完成边走边搬和分拣装箱。",
+      "example": "2025 年 8 月的演示中，Atlas 由一个 LBM 同时控制手脚，走动、下蹲、搬起零件并分拣装箱；有人把合上的箱子沿地面推过来时，它也能调整后继续干活。",
+      "related": [
+        "丰田研究院",
+        "扩散策略",
+        "基础模型",
+        "行为基础模型",
+        "视觉-语言-动作模型",
+        "波士顿动力 Atlas（电动版）"
+      ],
+      "sources": [
+        {
+          "title": "TRI LBM 项目页：A Careful Examination of Large Behavior Models for Multitask Dexterous Manipulation",
+          "url": "https://toyotaresearchinstitute.github.io/lbm1/"
+        },
+        {
+          "title": "TRI News (2023-09-19): Toyota Research Institute Unveils Breakthrough in Teaching Robots New Behaviors",
+          "url": "https://www.tri.global/news/toyota-research-institute-unveils-breakthrough-teaching-robots-new-behaviors"
+        },
+        {
+          "title": "TRI News (2025-08-20): AI-Powered Robot by Boston Dynamics and TRI Takes a Key Step Towards General-Purpose Humanoids",
+          "url": "https://tri.global/news/ai-powered-robot-boston-dynamics-and-toyota-research-institute-takes-key-step-towards-general"
+        }
+      ],
+      "as_of": "2025-08"
+    },
+    {
+      "name_zh": "潜在动作",
+      "name_en": "Latent Action",
+      "abbr": "",
+      "aliases": [
+        "隐动作",
+        "潜动作",
+        "隐式动作"
+      ],
+      "tier": 2,
+      "one_liner": "从前后画面变化里自动学出的抽象动作编码，不需要真实动作标签。",
+      "explanation": "潜在动作是模型从视频相邻帧的变化中自动归纳出的动作表示，通常是少量离散编码或一个低维向量。它针对的问题是：互联网上的人类视频、游戏视频极多，却没有关节角、按键这类真实动作标签，没法直接用来训练策略。潜在动作不对应任何具体机器人的关节，只描述「画面发生了哪类变化」，所以人手视频和不同机器人的视频都能共用一套编码。DeepMind 2024 年的 Genie 从约 3 万小时平台跳跃游戏视频中学出 8 个离散潜在动作，用来操控生成的游戏世界；LAPA、UniVLA、智元 GO-1 等则让 VLA 先预测潜在动作做预训练，再用少量真机数据学会把它映射成真实动作。",
+      "example": "Genie 学出的 8 个潜在动作编号在不同生成游戏里效果一致，大致对应向左、向右、跳跃这类操作，用户按编号就能操控从没见过的画面里的角色。",
+      "related": [
+        "潜在动作模型",
+        "潜在动作预训练",
+        "无动作标签视频",
+        "Genie（初代）",
+        "LAPA",
+        "智元 GO-1（启元大模型）"
+      ],
+      "sources": [
+        {
+          "title": "Genie: Generative Interactive Environments (arXiv 2402.15391)",
+          "url": "https://arxiv.org/html/2402.15391"
+        },
+        {
+          "title": "Latent Action Pretraining from Videos (LAPA, arXiv 2410.11758)",
+          "url": "https://arxiv.org/abs/2410.11758"
+        },
+        {
+          "title": "AgiBot World Colosseo (GO-1, arXiv 2503.06669)",
+          "url": "https://arxiv.org/abs/2503.06669"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "潜在动作模型",
+      "name_en": "Latent Action Model",
+      "abbr": "LAM",
+      "aliases": [
+        "隐动作模型"
+      ],
+      "tier": 2,
+      "one_liner": "从无标签视频学出潜在动作的模型，靠编码器加解码器重建下一帧来训练。",
+      "explanation": "潜在动作模型是产出潜在动作的那个网络。典型结构来自 DeepMind 2024 年的 Genie：编码器看当前帧和下一帧，输出一个潜在动作，作用相当于逆动力学模型；解码器只拿当前帧和这个潜在动作去重建下一帧，相当于正向动力学模型。中间用向量量化（VQ-VAE 的做法）把潜在动作限制在很小的离散码本里，Genie 只有 8 个码，这样潜在动作装不下整张图，只能记录「发生了什么变化」。训练好后，编码器就能给海量视频打潜在动作标签。常见难点是镜头晃动、背景有人走动等与任务无关的变化也会被编码进去，UniVLA 因此改在 DINO 特征空间里学，并借助语言指令剥离这些干扰。",
+      "example": "LAPA 分三步：先在视频上训练潜在动作量化模型，再训练 VLA 根据画面和指令预测潜在动作，最后用少量机器人数据微调，把潜在动作换成真实动作。",
+      "related": [
+        "潜在动作",
+        "逆动力学模型",
+        "正向动力学模型",
+        "向量量化变分自编码器",
+        "Genie（初代）",
+        "UniVLA"
+      ],
+      "sources": [
+        {
+          "title": "Genie: Generative Interactive Environments (arXiv 2402.15391)",
+          "url": "https://arxiv.org/html/2402.15391"
+        },
+        {
+          "title": "Latent Action Pretraining from Videos (LAPA, arXiv 2410.11758)",
+          "url": "https://arxiv.org/abs/2410.11758"
+        },
+        {
+          "title": "UniVLA: Learning to Act Anywhere with Task-centric Latent Actions (arXiv 2505.06111)",
+          "url": "https://arxiv.org/abs/2505.06111"
+        }
+      ],
+      "as_of": ""
+    }
+  ]
+}

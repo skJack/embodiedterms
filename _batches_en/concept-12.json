@@ -1,0 +1,113 @@
+{
+  "batch": "concept-12",
+  "terms": [
+    {
+      "key": "concept-12#0",
+      "name_en": "Partially Observable Markov Decision Process",
+      "aliases": ["POMDP", "Partially Observable MDP"],
+      "one_liner": "The decision-making framework for when an agent can't see the true state, only noisy observations of it.",
+      "explanation": "A Partially Observable Markov Decision Process extends the Markov Decision Process (MDP), the standard model for sequential decision-making, to cases where the agent cannot access the true state and only receives noisy, incomplete observations. Karl Åström introduced the framework in 1965, and Leslie Kaelbling, Michael Littman, and colleagues brought it systematically into AI planning in 1998. A common approach is to maintain a “belief” — a probability distribution over the true state — and update it with Bayes' rule each time a new observation arrives. Robots operate in partially observable settings almost by default: cameras get occluded, drawers hide their contents, and many objects only reveal what they are once picked up. Exact solutions are computationally intractable, so practical systems use approximate planning, or give the policy network a history of frames plus a memory module to implicitly estimate the state.",
+      "example": "A robot searching for a cup in a row of closed cabinets can't see inside before opening a door, so it updates a probability distribution over “which compartment the cup is likely in” based on the compartments it has already checked, then decides which door to open next.",
+      "related": ["Markov Decision Process", "Observation", "State Space", "Embodied Memory", "Memory-Augmented VLA", "Reinforcement Learning"]
+    },
+    {
+      "key": "concept-12#1",
+      "name_en": "Peg-in-Hole Insertion",
+      "aliases": ["Peg-in-Hole Assembly"],
+      "one_liner": "Inserting a pin, shaft, or plug into a matching hole, a task that tests precision and force control.",
+      "explanation": "Peg-in-hole insertion is the task of fitting one part, such as a shaft, pin, or plug, into a matching hole in another part. It is one of the most studied operations in industrial assembly and a standard testbed for contact-rich manipulation, meaning manipulation involving sustained, complex contact forces. The difficulty is that the clearance between parts is often tiny, so position control alone tends to jam or wedge the parts; the robot must continually adjust based on the contact forces it feels. A 2025 survey in the Chinese Journal of Mechanical Engineering (English edition) splits the process into three stages, search, alignment, and insertion, and groups methods into passive compliance (such as remote center compliance devices), active compliance (force control, impedance control), and learning-based intelligent compliant assembly. Imitation learning, reinforcement learning, and sim-to-real transfer research also commonly use it as a benchmark task.",
+      "example": "The Insertion task in the ALOHA simulation: two robot arms each pick up a socket and a plug, then insert the plug into the socket in midair.",
+      "related": ["Contact-rich Manipulation", "Robotic Assembly", "Force Control", "Impedance Control", "Remote Center Compliance Device", "Factory / IndustReal"]
+    },
+    {
+      "key": "concept-12#2",
+      "name_en": "Perceptive Locomotion",
+      "aliases": ["Vision-based Locomotion", "Perceptive Legged Locomotion"],
+      "one_liner": "A legged robot using cameras or lidar to see the terrain ahead and plan its steps accordingly.",
+      "explanation": "Perceptive locomotion means a legged robot uses both proprioception (internal body signals such as joint angles and IMU readings) and exteroception (external sensing, such as elevation maps built from depth cameras or lidar) to spot steps, ditches, and obstacles ahead of time and adjust its gait — in contrast to blind locomotion, which “feels” its way using proprioception alone. The difficulty is that exteroception is not always reliable: snow, tall grass, and reflective surfaces can all corrupt the map. Work by Miki and colleagues at ETH Zurich, published in Science Robotics in 2022, fused both kinds of input with an attention-based recurrent encoder, trained in simulation and deployed on the ANYmal quadruped; when perception is distorted, the controller automatically leans more on proprioception. Most stair-climbing and parkour behavior seen in today's humanoids and quadrupeds falls under perceptive locomotion.",
+      "example": "Miki and colleagues' controller drove an ANYmal quadruped through roughly an hour-long alpine hiking trail, finishing in about the time recommended for human hikers.",
+      "related": ["Blind Locomotion", "Legged Locomotion", "Rough-terrain Locomotion", "Elevation Map", "Proprioception", "Exteroception"]
+    },
+    {
+      "key": "concept-12#3",
+      "name_en": "Physical Human-Robot Interaction",
+      "aliases": ["pHRI", "Physical HRI"],
+      "one_liner": "Interaction where a person and a robot are in direct bodily contact, exchanging physical force.",
+      "explanation": "Physical human-robot interaction studies situations where a person and a robot are in bodily contact and exert force on each other: a person guiding an arm by hand, a person and robot carrying something together, a person wearing an exoskeleton. It is the branch of human-robot interaction most concerned with safety. In their survey in the second edition of the Springer Handbook of Robotics (2016), Haddadin and Croft group the core issues into four areas: human safety (analyzing collision injury and relevant standards), robot design suited to interaction (lightweight, torque-controllable, able to sense contact), motion planning that accounts for the human, and interaction planning with reflexive control. Common techniques include collision detection, impedance or admittance control, joint torque sensing, and the power and force limits set out in ISO/TS 15066.",
+      "example": "Kinesthetic teaching: an operator grips the end of a collaborative arm and drags it to a target position; the robot enters a zero-force or low-impedance mode that yields to the hand's force while recording the trajectory for later playback.",
+      "related": ["Human-Robot Interaction", "Human-Robot Collaboration", "Impedance Control", "Power and Force Limiting", "ISO/TS 15066", "Kinesthetic Teaching"]
+    },
+    {
+      "key": "concept-12#4",
+      "name_en": "Quality Inspection",
+      "aliases": ["Visual Inspection Task"],
+      "one_liner": "Using cameras and other sensors to have a robot check products for defects or assembly errors.",
+      "explanation": "Quality inspection is the step in manufacturing that checks whether a product or part meets specification. The traditional approach is a fixed camera on the production line doing machine-vision inspection: automated optical inspection (AOI) on circuit boards, for instance, photographs boards to spot missing parts, misalignment, or bad solder joints. In embodied-AI contexts, “quality inspection” more often means a humanoid or mobile manipulator walking up to a workstation, adjusting its own viewpoint, and, where needed, doing something physical (tugging a seatbelt, checking a lock) before judging the result, which is why it is often one of the first tasks tried in a humanoid's in-factory pilot program. It demands accurate visual detection, pose estimation, and the ability to keep pace with the line.",
+      "example": "UBTech's Walker S is reported to have handled door-lock inspection, seatbelt checks, and headlight-cover inspection during a pilot at a NIO factory, capturing images and flagging pass/fail in real time; the 20 Walker S1 units Dongfeng Liuzhou Motor planned to deploy in 2025 also had several inspection tasks on their task list.",
+      "related": ["Machine Vision (Industrial Vision)", "Object Detection", "In-Factory Training / Pilot Deployment", "Real-world Deployment", "Humanoid Robot", "Industrial Robot"]
+    },
+    {
+      "key": "concept-12#5",
+      "name_en": "Rearrangement",
+      "aliases": ["Object Rearrangement", "Scene Rearrangement"],
+      "one_liner": "An embodied task where a robot moves objects in an environment to match a specified goal state.",
+      "explanation": "Rearrangement is a unified task framework proposed in 2020 by Dhruv Batra, Sergey Levine, Jitendra Malik, and more than a dozen other researchers in “Rearrangement: A Challenge for Embodied AI.” Given a physical environment, the agent must move objects, open and close doors and drawers, and so on, to bring the environment to a specified goal state. The goal can be given as object poses, a goal image, or natural language, or the agent may first be shown the goal state directly. The framework packages navigation, perception, pick-and-place, and long-horizon planning into a single measurable task: tidying a room, setting a table, or restocking a shelf can all be written as rearrangement problems. Platforms such as AI2-THOR and Habitat have released corresponding benchmarks.",
+      "example": "AI2-THOR's Visual Room Rearrangement (CVPR 2021): an agent first walks through a room to memorize where objects sit; afterward some objects are moved or have their open/closed state changed, and it must restore everything to how it was. The accompanying RoomR dataset covers 120 scenes, 72 object categories, and 6,000 configurations.",
+      "related": ["Household Tasks", "Mobile Manipulation", "Long-horizon Task", "Pick-and-Place", "Embodied Agent", "Habitat"]
+    },
+    {
+      "key": "concept-12#6",
+      "name_en": "Semantic Generalization",
+      "aliases": [],
+      "one_liner": "Still understanding and correctly acting on unfamiliar objects, concepts, or phrasing it hasn't seen before.",
+      "explanation": "Semantic generalization is a generalization axis commonly used when evaluating robot policies, especially vision-language-action (VLA) models: whether a model can generalize at the level of meaning — unseen object categories, new containers, instructions phrased differently, or tasks requiring common-sense or conceptual reasoning. It is distinguished from visual generalization (changes in background, lighting, texture) and generalization at the execution level (changes in object position or starting pose). 2025's “What Can RL Bring to VLA Generalization?” builds tests along visual, semantic, and execution axes; the semantic category includes unseen objects, unseen containers, unseen instruction phrasings, and distractor containers. VLA models are seen as promising largely because they can inherit semantic knowledge from internet-scale image-text pretraining.",
+      "example": "RT-2 can carry out instructions such as “move the coke can next to the photo of Taylor Swift” or “pick up the thing that could be used as an improvised hammer” (it chose a rock) — concepts nowhere in the robot's own training data.",
+      "related": ["Generalization", "Visual Generalization", "Object Generalization", "Compositional Generalization", "Vision-Language-Action Model", "RT-2"]
+    },
+    {
+      "key": "concept-12#7",
+      "name_en": "Sensorimotor Skills",
+      "aliases": ["Sensorimotor Skill Learning"],
+      "one_liner": "The ability to turn sensory information into body movement in real time: grasping, walking, catching, twisting.",
+      "explanation": "Sensorimotor skills is a term from cognitive science and neuroscience for abilities that tightly couple sensory input, such as vision, touch, and proprioception, with muscle movement to complete a task: reaching for an object, walking while keeping balance, catching a thrown ball. In robotics it broadly refers to low-level capabilities that need perception and control to run in a real-time closed loop. Moravec's paradox observes that the sensorimotor skills people find effortless are actually the hardest for machines, precisely because they were refined over a long evolutionary history. Levine and colleagues' 2015 end-to-end visuomotor policy work, which used a convolutional network to map images directly to motor torques, is a landmark example of learning such skills with deep learning; today's visuomotor policies and VLA models are, at bottom, also learning sensorimotor skills.",
+      "example": "Unscrewing a bottle cap: a robot must watch the position of the cap while continuously adjusting the angle and force it applies based on what it feels in its hand — this was one of the test tasks in Levine and colleagues' end-to-end visuomotor policy work.",
+      "related": ["Moravec's Paradox", "Perception-Action Loop", "Visuomotor Policy", "Embodied Cognition", "Guided Policy Search"]
+    },
+    {
+      "key": "concept-12#8",
+      "name_en": "Social Navigation",
+      "aliases": ["Social Robot Navigation"],
+      "one_liner": "A robot moving through crowds of people, reaching its goal while respecting human social norms.",
+      "explanation": "Social navigation studies how a robot should move through environments with people in them, such as malls, stations, offices, and homes: not just avoiding collisions and reaching a destination, but moving in a way that feels natural and comfortable to the people around it, such as keeping an appropriate personal distance, not walking between two people talking, and yielding proactively. A 2023 survey by Mavrogiannis and colleagues in ACM Transactions on Human-Robot Interaction groups the core challenges into motion planning, behavior design, and evaluation, and notes that the field lacks a unified evaluation standard. Common methods include velocity-obstacle approaches such as ORCA, social-force models, and policies trained in simulation with reinforcement learning or imitation learning. Meta's Habitat 3.0 also defines “find and follow a person” as a social navigation task.",
+      "example": "In Habitat 3.0's social navigation task, a robot must find a humanoid avatar in a previously unseen home scene and follow it, maintaining a safety distance of 1 to 2 meters throughout; any collision counts as a failure.",
+      "related": ["Navigation", "Human-Robot Interaction", "Velocity Obstacles / ORCA", "Habitat", "Embodied Safety"]
+    },
+    {
+      "key": "concept-12#9",
+      "name_en": "Steerability",
+      "aliases": ["Steerable Policy"],
+      "one_liner": "The ability to change exactly how a model does something using prompts or conditioning, without retraining it.",
+      "explanation": "Steerability originally comes from the large-language-model world, where it refers to whether a user can adjust a model's behavior at inference time through prompts or system instructions. Applied to robot foundation models, it means a policy not only knows what to do but can also be prompted to change how it does it. Physical Intelligence's π0.7, released in April 2026, treats this as a core selling point: during training, each data segment is paired with diverse context, including language describing the task and its sub-steps, metadata such as speed and quality, labels for the joint-space or end-effector control mode, and images of visual sub-goals. At inference time, these same kinds of conditioning can steer the model toward a different way of doing things, and it can even be taught a task it never practiced through step-by-step language guidance. This also means labeled failure data and suboptimal data become usable for training.",
+      "example": "Researchers guided π0.7 through step-by-step language instructions, such as “open the air fryer with your left gripper” and “put the sweet potato in,” to operate a kitchen appliance it had never specifically been shown demonstrations for.",
+      "related": ["π0.7", "Instruction Following", "Language Corrections (Verbal Feedback)", "Prompt / Prompt Engineering", "Language-conditioned Policy", "Goal-conditioned Policy"]
+    },
+    {
+      "key": "concept-12#10",
+      "name_en": "Subsumption Architecture",
+      "aliases": ["Behavior-based Robotics"],
+      "one_liner": "A layered robot-control architecture wiring simple behaviors straight from sensing to action, where higher layers override lower ones.",
+      "explanation": "Subsumption architecture was introduced by MIT's Rodney Brooks in his 1986 paper “A Robust Layered Control System for a Mobile Robot,” and it is the foundational work of behavior-based robotics. It rejects the traditional sense-plan-act pipeline, which first builds a complete world model, then plans, then executes. Instead, control is split into several parallel behavior layers, each wiring sensors directly to actuators through a simple finite state machine: lower layers handle obstacle avoidance, higher layers handle wandering and exploration, and a higher layer can inhibit or override a lower layer's inputs and outputs, “subsuming” its behavior. The approach is fast and robust, but struggles to support complex reasoning and language understanding, and is often seen as one of the roots of both embodied cognition and the behaviorist school of AI.",
+      "example": "Genghis, a six-legged robot from Brooks's lab, walked using layered simple behaviors; another robot, Herbert, used the same approach to collect empty soda cans around an office.",
+      "related": ["Sense-Plan-Act", "Three Schools of AI", "Embodied Cognition", "Finite State Machine", "Moravec's Paradox", "Behavior Tree"]
+    },
+    {
+      "key": "concept-12#11",
+      "name_en": "Swarm Intelligence",
+      "aliases": ["SI", "Collective Intelligence", "Swarm Robotics"],
+      "one_liner": "Intelligent group behavior that emerges when many simple individuals interact only through local rules.",
+      "explanation": "Swarm intelligence refers to the collective behavior shown by systems made of many simple individuals with no central controller: each individual senses only its neighbors and follows simple rules, yet the group self-organizes into complex outcomes such as foraging, nest-building, or flocking. Ant colonies, bee hives, bird flocks, and fish schools are all natural examples. The term was coined by Beni and Wang in 1989 while studying cellular robotic systems. It gave rise to algorithms such as ant colony optimization and particle swarm optimization, and to swarm robotics: using large numbers of low-cost robots that cooperate on search, coverage, transport, and formation tasks. The approach scales easily, and losing an individual robot does not compromise the whole. It is closely related to multi-robot collaboration and multi-agent reinforcement learning.",
+      "example": "In a Harvard experiment published in Science in 2014, 1,024 Kilobots, each just a few centimeters across, self-assembled into shapes such as a five-pointed star and the letter K using only infrared communication with their neighbors.",
+      "related": ["Multi-robot Collaboration", "Multi-Agent Reinforcement Learning", "Emergent Abilities", "Multi-Agent Path Finding", "UAV / Aerial Robot (Drone)"]
+    }
+  ]
+}

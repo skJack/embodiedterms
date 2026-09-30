@@ -1,0 +1,420 @@
+{
+ "category": "control",
+ "batch": 15,
+ "terms": [
+  {
+   "name_zh": "基于位置的视觉伺服",
+   "name_en": "Position-Based Visual Servoing",
+   "abbr": "PBVS",
+   "aliases": [
+    "基于位姿的视觉伺服",
+    "3D 视觉伺服",
+    "Pose-Based Visual Servoing"
+   ],
+   "tier": 3,
+   "one_liner": "先从图像估出目标的 3D 位姿，再按位姿误差控制机器人运动的视觉伺服。",
+   "explanation": "视觉伺服指把相机图像直接放进控制回路，Chaumette 与 Hutchinson 2006 年的经典教程把它分成 PBVS 和 IBVS（基于图像的视觉伺服）两类。PBVS 先用相机内参和物体 3D 模型从图像里估出相机相对目标的位姿，把它与期望位姿之差作为误差 e（常用平移 t 加轴角 θu 表示），再按 v = −λL⁺e 算相机速度：λ 是增益，L⁺ 是交互矩阵（误差随相机速度变化的关系）的伪逆。优点是误差定义在三维空间，相机在空间里走的路线直观、接近直线；缺点是严重依赖标定和位姿估计，估偏了最终就停在偏的位置，而且目标可能在运动中移出画面。IBVS 直接比较图像上的特征点，对标定误差更宽容。",
+   "example": "腕部相机（眼在手上）看到桌上的零件，每帧用位姿估计算出零件相对相机的 6D 位姿，与「相机应处的预抓取位姿」相减得到误差，持续修正末端速度，误差收敛到零后再下爪。",
+   "related": [
+    "视觉伺服",
+    "基于图像的视觉伺服",
+    "6D位姿估计",
+    "相机标定",
+    "手眼标定",
+    "眼在手上"
+   ],
+   "sources": [
+    {
+     "title": "Chaumette & Hutchinson, Visual Servo Control Part I: Basic Approaches (IEEE RAM, 2006)",
+     "url": "https://www.irisa.fr/lagadic/pdf/2006_ieee_ram_chaumette.pdf"
+    },
+    {
+     "title": "Wikipedia: Visual servoing",
+     "url": "https://en.wikipedia.org/wiki/Visual_servoing"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "功率与力限制",
+   "name_en": "Power and Force Limiting",
+   "abbr": "PFL",
+   "aliases": [
+    "功率和力限制",
+    "力与功率限制",
+    "PFL 协作模式"
+   ],
+   "tier": 3,
+   "one_liner": "允许机器人碰到人，但把接触力和压强限制在不致伤阈值内的协作安全方式。",
+   "explanation": "PFL 是 ISO 10218 系列和 ISO/TS 15066 规定的几种协作方式之一（其余是安全级监控停止、手动引导、速度与分离监控），协作机器人不加围栏和人共处主要靠它。它不回避接触，而是限制接触后果：TS 15066 按身体部位给出允许的力和压强，并区分瞬态接触（人能被撞开）和准静态接触（被夹住），后者阈值更低。实现上靠本体轻、慢，或靠关节力矩传感器等安全功能在超限时减速、停车。TS 15066 给了估算允许速度的简化公式 v ≤ F_max/√k · √(1/m_R + 1/m_H)：F_max 是该部位允许的最大力，k 是该部位的等效刚度，m_R、m_H 是机器人等效质量和人体部位质量。据 UR 官方资料，2025 版 ISO 10218 已吸收 TS 15066 的大部分内容。",
+   "example": "按 TS 15066，手背被夹住（准静态接触）时允许 140 N，不夹住的瞬态接触可放宽到 280 N。一篇 ICRA 2021 论文据此公式算出：有夹手风险时，UR10e 末端速度要限制在约 0.13 m/s。",
+   "related": [
+    "协作机器人",
+    "ISO/TS 15066 协作机器人安全标准",
+    "速度与分离监控",
+    "保护性停止",
+    "碰撞检测（本体安全）",
+    "物理人机交互"
+   ],
+   "sources": [
+    {
+     "title": "OSHA Technical Manual, Section IV Chapter 4: Industrial Robot Systems and Industrial Robot System Safety",
+     "url": "https://www.osha.gov/otm/section-4-safety-hazards/chapter-4"
+    },
+    {
+     "title": "3D Collision-Force-Map for Safe Human-Robot Collaboration (arXiv:2009.01036, ICRA 2021)",
+     "url": "https://arxiv.org/abs/2009.01036"
+    },
+    {
+     "title": "Universal Robots: Safety FAQ",
+     "url": "https://www.universal-robots.com/articles/ur/safety/safety-faq/"
+    }
+   ],
+   "as_of": "2026-05"
+  },
+  {
+   "name_zh": "概率完备性",
+   "name_en": "Probabilistic Completeness",
+   "abbr": "",
+   "aliases": [
+    "概率完备",
+    "Probabilistically Complete"
+   ],
+   "tier": 3,
+   "one_liner": "只要解存在，采样越多、找到可行路径的概率就越趋近 1 的算法性质。",
+   "explanation": "运动规划里的「完备」指：有解就在有限时间内找到，无解就报告无解，只有组合式的精确规划能做到。PRM、RRT 这类基于随机采样的规划器做不到，退而保证概率完备：LaValle《Planning Algorithms》的说法是，只要解存在，随着采样点增多，找到解的概率收敛到 1。Karaman 与 Frazzoli 2011 年给出严格定义，并指出 RRT、PRM 找不到解的概率随样本数指数下降。它有两个局限：可行路径得离障碍留出一点余量，极窄的通道几乎采不到；无解时算法会一直跑，无法宣布无解。它常和「渐近最优性」一起出现，后者更强：样本无限增多时路径代价几乎必然收敛到最优。RRT 只有前者，RRT* 两者都有。",
+   "example": "MoveIt 调用 OMPL 规划器时要设规划时限：概率完备的算法给的时间越多越可能找到解；但如果目标位姿被障碍物完全包住，它不会报告「无解」，只会跑到超时返回失败。",
+   "related": [
+    "基于采样的规划",
+    "快速扩展随机树",
+    "RRT*",
+    "概率路线图",
+    "构型空间",
+    "运动规划"
+   ],
+   "sources": [
+    {
+     "title": "S. M. LaValle, Planning Algorithms, Chapter 5: Sampling-Based Motion Planning",
+     "url": "http://lavalle.pl/planning/ch5.pdf"
+    },
+    {
+     "title": "Karaman & Frazzoli, Sampling-based Algorithms for Optimal Motion Planning (arXiv:1105.1186, IJRR 2011)",
+     "url": "https://arxiv.org/abs/1105.1186"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "概率运动基元",
+   "name_en": "Probabilistic Movement Primitives",
+   "abbr": "ProMP",
+   "aliases": [
+    "概率运动原语",
+    "ProMPs",
+    "Probabilistic Movement Primitive"
+   ],
+   "tier": 3,
+   "one_liner": "用高斯分布描述一类示范轨迹的运动基元，可按经过点或目标条件化调整。",
+   "explanation": "ProMP 由 Paraschos、Daniel、Peters、Neumann 在 NIPS 2013 提出。每条轨迹写成 y_t = Φ_tᵀw + ε：Φ_t 是按时间排布的基函数（常用径向基函数），w 是权重，ε 是噪声。每次示范拟合出一个 w，再对这些 w 拟合一个高斯分布：均值代表典型动作，协方差记录示范之间的变化幅度和各关节之间的耦合，所以它表示的是「一族轨迹」而不是一条。要求某时刻经过某点时，用高斯条件化就能解析地得到新分布；几个 ProMP 还能同时激活、相互混合切换。论文还推导了能复现该轨迹分布的随机反馈控制器。和 DMP（动态运动基元）相比，DMP 用带吸引子的微分方程表示单条轨迹，ProMP 直接对轨迹分布建模，更擅长表达示范中的差异。",
+   "example": "原论文在 7 自由度 KUKA 轻量臂上打冰球：两组各 10 次示范，分别只改射门距离或只改角度；两个 ProMP 组合后只打中间、中等距离，对射门角度做条件化后就能按指定方向射门。",
+   "related": [
+    "动态运动基元",
+    "运动基元",
+    "模仿学习",
+    "高斯混合回归 / 任务参数化 GMM",
+    "演示数据",
+    "拖动示教"
+   ],
+   "sources": [
+    {
+     "title": "Paraschos et al., Probabilistic Movement Primitives (NIPS 2013) — abstract",
+     "url": "https://proceedings.neurips.cc/paper/2013/hash/e53a0a2978c28872a4505bdb51db06dc-Abstract.html"
+    },
+    {
+     "title": "Paraschos et al., Probabilistic Movement Primitives (NIPS 2013) — PDF",
+     "url": "https://proceedings.neurips.cc/paper_files/paper/2013/file/e53a0a2978c28872a4505bdb51db06dc-Paper.pdf"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "保护性停止",
+   "name_en": "Protective Stop",
+   "abbr": "",
+   "aliases": [
+    "保护停止",
+    "安全停止"
+   ],
+   "tier": 3,
+   "one_liner": "安全功能检测到超限或危险时，让机器人自动、受控地停下来的停止方式。",
+   "explanation": "保护性停止是工业和协作机器人安全标准 ISO 10218 里的基本安全功能：碰撞检测触发、力或速度超出安全设置、防护门被打开、光幕被遮挡时，控制器让机器人有序停下。它和急停不同：急停是人拍下红色按钮，只用于紧急情况，UR 的急停是先受控停稳再切断驱动电源；保护性停止多由系统自动触发。IEC 60204-1 把停止分成三类：0 类立即断电，1 类先停稳再断电，2 类停稳后不断电、原地保持，恢复最快。相近的还有协作模式里的「安全级监控停止」：人进入协作区时机器人停住等待，人离开后自动继续；据 UR 资料，ISO 10218-1:2025 已把它改称「监控静止」（monitored standstill）。",
+   "example": "UR 协作臂运行中撞到障碍物，任何力或力矩参数超出安全设置时都会自动触发保护性停止，需要操作员排除原因、确认后才能恢复运行。",
+   "related": [
+    "急停",
+    "功能安全",
+    "碰撞检测（本体安全）",
+    "碰撞反应",
+    "功率与力限制",
+    "速度与分离监控"
+   ],
+   "sources": [
+    {
+     "title": "Universal Robots: Safety FAQ（stop categories, protective stop, monitored standstill）",
+     "url": "https://www.universal-robots.com/articles/ur/safety/safety-faq/"
+    },
+    {
+     "title": "OSHA Technical Manual, Section IV Chapter 4: Industrial Robot Systems and Industrial Robot System Safety",
+     "url": "https://www.osha.gov/otm/section-4-safety-hazards/chapter-4"
+    }
+   ],
+   "as_of": "2026-05"
+  },
+  {
+   "name_zh": "纯追踪算法",
+   "name_en": "Pure Pursuit",
+   "abbr": "",
+   "aliases": [
+    "纯跟踪",
+    "纯追踪",
+    "Pure Pursuit Controller"
+   ],
+   "tier": 3,
+   "one_liner": "在路径前方取一个预瞄点，算出开过去所需圆弧曲率的路径跟踪方法。",
+   "explanation": "纯追踪是一种几何路径跟踪算法，卡内基梅隆大学 1980 年代先把它用在 Terragator 移动机器人上，后用于 NavLab 自动驾驶车，Coulter 1992 年的技术报告给出了标准推导。做法是：在路径上找离车一个「预瞄距离」L 的目标点，作一条从车当前位置出发、与车头方向相切并经过目标点的圆弧，其曲率 κ = 2x/L²，x 是目标点在车体坐标系下的横向偏移；再把曲率换算成转向角或角速度。唯一的参数就是 L：L 大，回到路径更平缓、不易来回摆，但弯道会切弯；L 小，跟得紧但容易振荡。它只管几何，不考虑动力学和障碍物，通常与全局规划、局部避障配合使用。",
+   "example": "ROS 2 导航栈 Nav2 自带 Regulated Pure Pursuit 控制器，适用于差速、阿克曼转向和足式机器人：它让预瞄距离随速度变化，并在急弯处或靠近障碍物时自动降速。",
+   "related": [
+    "轨迹跟踪",
+    "路径规划",
+    "全局规划与局部规划",
+    "动态窗口法",
+    "时间弹性带",
+    "Nav2"
+   ],
+   "sources": [
+    {
+     "title": "R. C. Coulter, Implementation of the Pure Pursuit Path Tracking Algorithm (CMU-RI-TR-92-01, 1992)",
+     "url": "https://publications.ri.cmu.edu/storage/publications/pub_files/pub3/coulter_r_craig_1992_1/coulter_r_craig_1992_1.pdf"
+    },
+    {
+     "title": "Nav2 Regulated Pure Pursuit Controller README",
+     "url": "https://github.com/ros-navigation/navigation2/tree/main/nav2_regulated_pure_pursuit_controller"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "五次多项式插值",
+   "name_en": "Quintic Polynomial Interpolation",
+   "abbr": "",
+   "aliases": [
+    "五次多项式轨迹",
+    "五次多项式时间缩放",
+    "Quintic Polynomial Trajectory",
+    "Quintic Time Scaling"
+   ],
+   "tier": 3,
+   "one_liner": "用五次多项式连接起点和终点，同时对齐两端的位置、速度和加速度。",
+   "explanation": "五次多项式插值是机器人点到点轨迹规划最基础的方法之一。把关节角或位置写成 q(t) = a₀ + a₁t + … + a₅t⁵，六个系数正好由六个边界条件唯一确定：起点和终点各自的位置、速度、加速度。三次多项式只能约束两端位置和速度，起止瞬间加速度会突变，加加速度（jerk，加速度的变化率）在理论上无穷大，容易引起振动；五次多项式能让两端加速度也为零，全程加速度连续、加加速度有限，起停更平稳。代价是同样时长下峰值速度更高，需检查是否超出关节限速。两端速度、加速度都为零时，归一化形式为 s(τ) = 10τ³ − 15τ⁴ + 6τ⁵（τ = t/T，T 为总时长），与最小加加速度轨迹一致。经过多个路点时可逐段拼接，保证路点处加速度也连续。",
+   "example": "Peter Corke 的 Robotics Toolbox for Python 中，jtraj() 用五次多项式生成关节空间轨迹，默认起止速度和加速度为零；quintic() 生成单个变量的同类轨迹。",
+   "related": [
+    "轨迹插值",
+    "三次样条插值",
+    "最小加加速度轨迹",
+    "加加速度",
+    "梯形速度曲线",
+    "时间参数化"
+   ],
+   "sources": [
+    {
+     "title": "Lynch & Park, Modern Robotics, Section 9.2 Polynomial Time Scaling (preprint PDF)",
+     "url": "https://hades.mech.northwestern.edu/images/7/7f/MR.pdf"
+    },
+    {
+     "title": "Robotics Toolbox for Python: Trajectories (quintic / jtraj / mtraj)",
+     "url": "https://petercorke.github.io/robotics-toolbox-python/arm_trajectory.html"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "Raibert 启发式",
+   "name_en": "Raibert Heuristic",
+   "abbr": "",
+   "aliases": [
+    "Raibert 落足点公式",
+    "Raibert 落脚点启发式",
+    "Raibert Foot Placement"
+   ],
+   "tier": 3,
+   "one_liner": "按身体速度把脚落在中性点前后，以此调节腿式机器人前进速度的落足规则。",
+   "explanation": "Raibert 启发式来自 Marc Raibert 1980 年代初在卡内基梅隆大学做的单腿跳跃机器人（他的实验室后来迁到 MIT，称 Leg Lab）。他把跳跃控制拆成三块独立处理：跳跃高度、身体姿态、前进速度，其中前进速度靠落脚位置来调。落脚点（相对髋部）取 x_f = ẋ·T_s/2 + k·(ẋ − ẋ_d)：ẋ 是当前前进速度，T_s 是支撑相时长，ẋ_d 是期望速度，k 是反馈增益。第一项叫「中性点」，脚踩在这里时，支撑期内身体前后对称地越过脚，速度基本不变；第二项是修正，跑得比期望快就把脚往前放来减速，反之往后放来加速。它不需要完整动力学模型，MIT Cheetah 等四足控制器至今仍用它的变体规划摆动腿落点，再交给 MPC 或全身控制算支撑力。",
+   "example": "MIT 开源的 Cheetah-Software 在凸 MPC 步态控制中，摆动腿落点取「速度 × 支撑时长 × 0.5 + 0.03 ×（实际速度 − 期望速度）」，再加一项转弯修正，正是 Raibert 公式的变体。",
+   "related": [
+    "落足点规划",
+    "足端轨迹规划",
+    "凸 MPC",
+    "捕获点",
+    "弹簧负载倒立摆",
+    "四足机器人"
+   ],
+   "sources": [
+    {
+     "title": "MIT Leg Laboratory: 3D One-Leg Hopper (1983–1984)",
+     "url": "http://www.ai.mit.edu/projects/leglab/robots/3D_hopper/3D_hopper.html"
+    },
+    {
+     "title": "mit-biomimetics/Cheetah-Software: ConvexMPCLocomotion.cpp（footstep placement）",
+     "url": "https://github.com/mit-biomimetics/Cheetah-Software/blob/master/user/MIT_Controller/Controllers/convexMPC/ConvexMPCLocomotion.cpp"
+    },
+    {
+     "title": "Di Carlo et al., Dynamic Locomotion in the MIT Cheetah 3 Through Convex Model-Predictive Control (2018)",
+     "url": "https://dspace.mit.edu/handle/1721.1/138000"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "黎曼运动策略",
+   "name_en": "Riemannian Motion Policies",
+   "abbr": "RMP",
+   "aliases": [
+    "RMPflow",
+    "Riemannian Motion Policy",
+    "黎曼运动策略流"
+   ],
+   "tier": 3,
+   "one_liner": "每个子目标给出期望加速度和重要性矩阵，按矩阵加权合成整机动作的反应式框架。",
+   "explanation": "RMP 由 NVIDIA 的 Ratliff、Fox 等人 2018 年提出。一个 RMP 是一对 (a, M)：a 是某个任务空间里的期望加速度，比如末端奔向目标、某个连杆远离障碍、关节远离限位；M 是黎曼度量，可理解为「这个子目标在各个方向上有多重要」。各子策略在自己的空间里定义，经雅可比矩阵「拉回」到关节空间，再按 M 加权合成一个关节加速度。这样互相冲突的要求能统一处理，权重还随状态变化，离障碍越近避障越占上风。同年的 RMPflow 把组合过程组织成计算图自动完成，并给出稳定性条件。它每个控制周期即时计算，能应对移动的目标和障碍，但只是局部方法，复杂场景要配合全局规划器。NVIDIA 后续的 Geometric Fabrics 是它的延续。",
+   "example": "Isaac Sim 的 Lula 运动生成工具以 RMPflow 为核心，组合目标、避碰、关节限位、阻尼等多个 RMP，让机械臂末端实时追随移动目标并绕开障碍。截至 2026 年 9 月，官方文档建议新开发改用实验性的 Robot Motion API。",
+   "related": [
+    "Geometric Fabrics",
+    "操作空间控制",
+    "避障",
+    "人工势场法",
+    "Isaac Sim",
+    "cuRobo"
+   ],
+   "sources": [
+    {
+     "title": "Ratliff et al., Riemannian Motion Policies (arXiv:1801.02854)",
+     "url": "https://arxiv.org/abs/1801.02854"
+    },
+    {
+     "title": "Cheng et al., RMPflow: A Computational Graph for Automatic Motion Policy Generation (arXiv:1811.07049, WAFR 2018)",
+     "url": "https://arxiv.org/abs/1811.07049"
+    },
+    {
+     "title": "Isaac Sim Documentation: RMPflow",
+     "url": "https://docs.isaacsim.omniverse.nvidia.com/latest/manipulators/concepts/rmpflow.html"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "鲁棒控制",
+   "name_en": "Robust Control",
+   "abbr": "",
+   "aliases": [
+    "稳健控制"
+   ],
+   "tier": 3,
+   "one_liner": "在模型不准、参数有界变化和外部扰动下，仍保证稳定和性能的控制设计方法。",
+   "explanation": "鲁棒控制是 1970 年代末起成形的一类控制理论，核心是在设计阶段就明确承认模型有误差：先给出不确定性的范围，比如负载质量在某个区间内、存在未建模的柔性或摩擦，再设计一个固定的控制器，保证范围内任何情况都稳定、性能不低于某个下限。代表方法有 Zames 等人开创的 H∞ 控制（让扰动对输出的最坏影响最小）、滑模控制等。它和自适应控制的区别是：鲁棒控制器参数固定，靠留余量扛住不确定性；自适应控制边运行边估计参数、调整控制器。代价是设计往往偏保守，也需要一个大致准确的模型。机器人上，负载变化、关节摩擦、地面软硬不同都是典型的不确定性；强化学习里用域随机化训练对参数变化不敏感的策略，追求的也是类似的鲁棒性。",
+   "example": "机械臂要搬 0–3 kg 之间任意重量的工件：鲁棒控制按「负载可能是区间内任意值」一次设计好控制器，保证每种情况都稳定、跟踪误差不超过界限；自适应控制则在抓起后在线估计实际质量，再调整控制参数。",
+   "related": [
+    "自适应控制",
+    "滑模控制",
+    "李雅普诺夫稳定性",
+    "扰动观测器",
+    "自抗扰控制",
+    "域随机化"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Robust control",
+     "url": "https://en.wikipedia.org/wiki/Robust_control"
+    },
+    {
+     "title": "Wikipedia: H-infinity methods in control theory",
+     "url": "https://en.wikipedia.org/wiki/H-infinity_methods_in_control_theory"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "RRT-Connect",
+   "name_en": "RRT-Connect (Bidirectional RRT)",
+   "abbr": "",
+   "aliases": [
+    "双向RRT",
+    "RRTConnect",
+    "Bidirectional RRT"
+   ],
+   "tier": 3,
+   "one_liner": "从起点和终点各长一棵随机树，并贪心地把两棵树接起来的路径规划算法。",
+   "explanation": "RRT-Connect 由 Kuffner 和 LaValle 在 ICRA 2000 提出，是快速扩展随机树（RRT）的双向版本。普通 RRT 只从起点长一棵树，偶尔试着连向终点；RRT-Connect 从起点和终点各长一棵树：每轮先让一棵树朝随机采样点扩展一步得到新节点，再让另一棵树朝这个新节点一步接一步地延伸，直到接上或被障碍挡住（CONNECT 启发式），接上就找到了路径，然后两棵树交换角色。这种贪心连接在障碍不太密的空间里通常很快，适合机械臂这类六七个自由度、只需回答一次「从 A 到 B」的单次查询。它是概率完备的，但不追求最短，路径往往曲折，需要后处理平滑。开源规划库 OMPL 把它实现为 RRTConnect，MoveIt 可直接调用。",
+   "example": "MoveIt 官方的 Panda 机械臂配置里，OMPL 规划器列表包含 RRTConnectkConfigDefault；选它规划出无碰路径后，一般还要经过路径平滑和时间参数化才下发执行。",
+   "related": [
+    "快速扩展随机树",
+    "RRT*",
+    "基于采样的规划",
+    "概率完备性",
+    "OMPL",
+    "路径平滑"
+   ],
+   "sources": [
+    {
+     "title": "OMPL: ompl::geometric::RRTConnect（Kuffner & LaValle, ICRA 2000, pp. 995–1001）",
+     "url": "https://ompl.kavrakilab.org/classompl_1_1geometric_1_1RRTConnect.html"
+    },
+    {
+     "title": "S. M. LaValle, Planning Algorithms, Chapter 5（bidirectional RDT/RRT）",
+     "url": "http://lavalle.pl/planning/ch5.pdf"
+    },
+    {
+     "title": "moveit_resources: panda_moveit_config/config/ompl_planning.yaml",
+     "url": "https://github.com/moveit/moveit_resources/blob/ros2/panda_moveit_config/config/ompl_planning.yaml"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "RRT*",
+   "name_en": "RRT* (Asymptotically Optimal RRT)",
+   "abbr": "RRT*",
+   "aliases": [
+    "RRT-star",
+    "RRTstar",
+    "最优 RRT",
+    "Optimal RRT"
+   ],
+   "tier": 3,
+   "one_liner": "在 RRT 上加入选父节点和重连两步，使路径随采样增多收敛到最优。",
+   "explanation": "RRT* 由 MIT 的 Karaman 和 Frazzoli 提出，系统论述见 2011 年的 IJRR 论文。他们证明普通 RRT 返回的路径代价几乎必然收敛到一个非最优值，于是在 RRT 上改了两步：新节点加入时，在一定半径内的邻居里挑一个使「起点到新节点总代价」最小的当父节点；再检查这些邻居，若改经新节点到达更便宜，就把它们重连到新节点下。邻域半径随节点数 n 按 γ(log n / n)^{1/d} 缩小，d 是空间维数，γ 是与空间大小有关的常数。这样路径代价会随采样增多几乎必然收敛到最优，即渐近最优，而计算量只比 RRT 多常数倍。缺点是收敛可能很慢，实际常给固定时间、用到超时为止。Informed RRT*、BIT* 等后续方法专门加速这一收敛。",
+   "example": "OMPL 的 RRTstar 规划器找到第一条可行路径后不会马上返回，而是继续采样、重连，在给定时间内不断缩短路径；如果设置了代价阈值，路径代价降到阈值以下就提前结束。",
+   "related": [
+    "快速扩展随机树",
+    "Informed RRT*",
+    "BIT*",
+    "概率完备性",
+    "概率路线图",
+    "RRT-Connect"
+   ],
+   "sources": [
+    {
+     "title": "Karaman & Frazzoli, Sampling-based Algorithms for Optimal Motion Planning (arXiv:1105.1186, IJRR 2011)",
+     "url": "https://arxiv.org/abs/1105.1186"
+    },
+    {
+     "title": "OMPL: ompl::geometric::RRTstar",
+     "url": "https://ompl.kavrakilab.org/classompl_1_1geometric_1_1RRTstar.html"
+    },
+    {
+     "title": "MoveIt 2 Documentation: OMPL Planner",
+     "url": "https://moveit.picknik.ai/main/doc/examples/ompl_interface/ompl_interface_tutorial.html"
+    }
+   ],
+   "as_of": ""
+  }
+ ]
+}

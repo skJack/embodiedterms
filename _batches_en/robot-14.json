@@ -1,0 +1,115 @@
+{
+  "batch": "robot-14",
+  "terms": [
+    {
+      "key": "robot-14#0",
+      "name_en": "ToddlerBot",
+      "aliases": [],
+      "one_liner": "Stanford's open-source toddler-sized humanoid robot, fully 3D-printed and built for machine-learning research.",
+      "explanation": "ToddlerBot is an open-source small humanoid robot from Stanford researchers Haochen Shi, Weizhuo Wang, Shuran Song, C. Karen Liu, and others, published at CoRL 2025. It stands about 0.56 m tall and weighs about 3.4 kg in the paper's version (later versions are slightly heavier, around 3.7 kg), with 30 actively driven degrees of freedom (7 per arm, 6 per leg, and 2 each in the neck and waist). The entire robot is 3D-printed from off-the-shelf parts, keeping total cost under $6,000, and the team released both the code and the assembly documentation. It's meant to solve the problem that humanoid robots are usually too expensive and too fragile to use for large-scale data collection and experimentation: because a ToddlerBot is cheap and quick to repair after a fall, researchers can freely run reinforcement-learning walking, collect data via VR teleoperation, and train diffusion policies for whole-body tasks like grasping and pushing boxes; it's also commonly used to validate sim-to-real transfer.",
+      "example": "In the paper, demonstration data is collected through VR teleoperation, then used to train a diffusion policy so ToddlerBot can perform whole-body manipulation tasks like grasping and pushing.",
+      "related": ["Small-size Humanoid Robot", "Open-source Hardware", "Humanoid Robot", "Sim-to-Real Transfer", "Diffusion Policy: Visuomotor Policy Learning via Action Diffusion", "VR Teleoperation"]
+    },
+    {
+      "key": "robot-14#1",
+      "name_en": "Toyota Human Support Robot",
+      "abbr": "HSR",
+      "aliases": ["Human Support Robot"],
+      "one_liner": "Toyota's single-arm mobile-manipulation robot for home care, widely used in household-service research.",
+      "explanation": "HSR is a life-assistance robot that Toyota released in 2012, meant to help elderly or mobility-limited people with small daily tasks, and it can also be operated remotely by a family member or caregiver. It's built as a cylindrical mobile base with a single arm: the base is 430 mm in diameter, the body height adjusts between 1,005 and 1,350 mm, it weighs about 37 kg, the arm reaches about 600 mm, its maximum payload is 1.2 kg, and its top speed is 0.8 km/h. In 2015, Toyota founded the HSR developer community, supplying the robot to universities and research institutions that share software with each other. Because its scale is close to household furniture and it can open doors and pick things up, it's become a common platform for household-service and mobile-manipulation research, and it's reportedly also used as a standard platform in RoboCup@Home.",
+      "example": "Researchers use an HSR in a simulated home environment to do tidying tasks like picking clutter up off the floor and putting it in a box.",
+      "related": ["Service Robot", "Mobile Manipulation", "Mobile Manipulator", "Household Tasks", "RoboCup", "Toyota Research Institute"]
+    },
+    {
+      "key": "robot-14#2",
+      "name_en": "Trossen Robotics ViperX 300",
+      "aliases": ["ViperX", "ViperX 300 S", "ViperX 300 6DOF"],
+      "one_liner": "Trossen's low-cost research robot arm, used as the follower arm in the original ALOHA system.",
+      "explanation": "ViperX 300 is a small research-and-education robot arm from the U.S. company Trossen Robotics (part of its Interbotix X series), driven by Dynamixel servos. Per Trossen's listing, the 300 S version has 6 degrees of freedom, a 750 mm reach, a 750 g payload (about three times that of the related WidowX 250), and repeats position within 1 mm. It's inexpensive, can be controlled directly through ROS, and has become the hardware base for many imitation-learning projects: Stanford's 2023 ALOHA bimanual teleoperation system used two ViperX 300 arms as the followers and two WidowX 250 arms as the leaders, and the ACT algorithm was first validated on exactly this hardware. Trossen's site shows the standard 300 S as discontinued, with a dedicated ALOHA-specific version now offered instead.",
+      "example": "On the ALOHA platform, an operator moves the WidowX leader arms by hand, and the two ViperX 300 arms mirror the motion in real time to complete fine tasks like threading a zip tie or inserting a battery.",
+      "related": ["ALOHA (A Low-cost Open-source Hardware System for Bimanual Teleoperation)", "Trossen Robotics WidowX 250", "Trossen Robotics", "ROBOTIS DYNAMIXEL Servo", "Action Chunking with Transformers", "Leader-Follower Teleoperation"]
+    },
+    {
+      "key": "robot-14#3",
+      "name_en": "TurtleBot",
+      "aliases": ["TurtleBot 3", "TurtleBot 4"],
+      "one_liner": "The most common open-source small wheeled mobile robot kit for learning ROS.",
+      "explanation": "TurtleBot is a low-cost, open-source personal robot kit created in November 2010 by Melonee Wise and Tully Foote at Willow Garage, growing up alongside ROS (Robot Operating System). It's a differential-drive wheeled base with sensors and an onboard computer, with no arm, used mainly to learn mapping, localization, and navigation. Two generations are current: TurtleBot 3, a collaboration between Open Robotics and ROBOTIS, with models like Burger and Waffle Pi; and TurtleBot 4, a collaboration between Open Robotics and Clearpath Robotics, built on the iRobot Create 3 base with lidar and an OAK-D depth camera, running ROS 2 by default. Official ROS tutorials and navigation frameworks like Nav2 use it heavily as their example platform, making it the standard teaching tool for getting started with mobile robots.",
+      "example": "Following the ROS 2 tutorials, a TurtleBot 4 runs SLAM to build a map of a room, then uses Nav2 to autonomously drive to a specified location.",
+      "related": ["Robot Operating System", "Robot Operating System 2", "Differential Drive Base", "Simultaneous Localization and Mapping", "ROS 2 Navigation Stack", "Wheeled Robot"]
+    },
+    {
+      "key": "robot-14#4",
+      "name_en": "Unmanned Aerial Vehicle (UAV)",
+      "abbr": "UAV",
+      "aliases": ["Aerial Robot", "Drone"],
+      "one_liner": "An aircraft with no onboard pilot, flown by remote control or autonomously — essentially a flying robot.",
+      "explanation": "An unmanned aerial vehicle (UAV) is an aircraft with no pilot on board; it can be remotely piloted or fly autonomously. Common forms include multirotors (such as quadcopters, which can take off vertically and hover, and are by far the most common), fixed-wing aircraft (longer range and endurance), and helicopter-style designs. In robotics, a UAV is treated as an “aerial robot”: it still needs state estimation, mapping, path planning, and control, but its motion happens in three-dimensional space and it's especially sensitive to weight and energy use. Directions connected to embodied AI include aerial vision-and-language navigation (flying to a target based on spoken instructions), aerial manipulation with an onboard arm, and coordinated multi-drone swarms. The open-source flight-controller stacks PX4 and ArduPilot are common research foundations, while DJI is the leading name in the consumer market.",
+      "example": "Telling a quadcopter “fly over to the house with the red roof” and having it plan its own flight path from camera images to get there is an example of aerial vision-and-language navigation.",
+      "related": ["Aerial Manipulation", "Aerial Vision-and-Language Navigation (UAV VLN)", "PX4 / ArduPilot (open-source flight control stacks)", "DJI", "Swarm Intelligence", "Motion Planning"]
+    },
+    {
+      "key": "robot-14#5",
+      "name_en": "UBTech UWORLD U1 Series",
+      "aliases": ["U1 PRO"],
+      "one_liner": "UBTech's hyper-realistic humanoid robot line, with a face and body modeled 1:1 on a real person.",
+      "explanation": "UWORLD U1 is a hyper-realistic humanoid robot line from UBTech. UBTech's own website lists it under a separate “Ultra-Bionic Humanoids” category, with the U1 PRO as the model currently offered, and the company says it is working toward mass production of a “1:1 full-scale ultra-bionic humanoid.” Hyper-realistic humanoids are built with faces and skin that closely resemble a real person, focused on expression and conversation for human-robot interaction rather than physical work like carrying or assembly — a different product line from UBTech's factory-oriented Walker S series. UBTech's website does not publish height, degrees-of-freedom, or pricing details for U1; this entry could not verify the Chinese series name “优世界” or its exact release date against the official site, so later official announcements should be treated as authoritative.",
+      "example": "",
+      "related": ["Hyper-Realistic Humanoid Robot", "UBTech Robotics", "Humanoid Robot", "Uncanny Valley", "Human-Robot Interaction", "Engineered Arts Ameca"]
+    },
+    {
+      "key": "robot-14#6",
+      "name_en": "UBTech Walker X",
+      "aliases": [],
+      "one_liner": "UBTech's bipedal service humanoid, built for exhibition guiding and interaction.",
+      "explanation": "Walker X is UBTech's commercial bipedal humanoid robot, reportedly released at the 2021 World Artificial Intelligence Conference, marking the Walker line's shift from research prototype to commercial showcase. Published specs: 130 cm tall, 63 kg, with 41 degrees of freedom across the body (6 per leg, 7 per arm, 6 per hand, and 3 in the neck), a top walking speed of 3 km/h, and about 2 hours of runtime. It can climb a 15 cm step and walk up a 20-degree slope, uses U-SLAM for visual navigation, has 7-degree-of-freedom arms with a 6-degree-of-freedom force-controlled humanlike hand, and its face is made of two flexible curved screens that can display a range of expressions. It's used mainly for exhibition guiding, reception, and research demonstrations; UBTech's later factory-oriented product line is the Walker S series.",
+      "example": "At a trade show, Walker X autonomously walks up to a booth, picks up an item with its hand to hand to a visitor, and interacts using its screen-based facial expressions.",
+      "related": ["UBTech Robotics", "UBTech Walker S2", "Humanoid Robot", "Bipedal Locomotion", "Dexterous Hand", "Guided Tours & Reception"]
+    },
+    {
+      "key": "robot-14#7",
+      "name_en": "UFACTORY xArm",
+      "aliases": ["xArm6", "xArm7", "xArm5", "Lite 6", "xArm 850"],
+      "one_liner": "A budget collaborative robot-arm line from Shenzhen's UFACTORY, a common choice in research labs.",
+      "explanation": "xArm is a line of lightweight collaborative robot arms from Shenzhen-based UFACTORY, using harmonic-drive gearboxes and servo motors at the joints, with built-in collision detection, at a price well below imported arms like Franka's or Universal Robots'. Per UFACTORY's site, the xArm 5, 6, and 7 have 5, 6, and 7 degrees of freedom respectively, all with a 700 mm reach, payloads of 3, 5, and 3.5 kg, and repeat positioning within ±0.1 mm; all three are listed starting at about $5,300. The entry-level Lite 6 has a 600 g payload and a 440 mm reach, while the xArm 850 has an 850 mm reach and a 5 kg payload. Because it has a Python SDK and ROS support and is cheap and durable, it's a common choice for university labs doing imitation learning and teleoperation data collection, and open-source teleoperation projects like GELLO offer an xArm-compatible version.",
+      "example": "A lab uses a GELLO leader arm to teleoperate an xArm 7 and collect towel-folding demonstrations, then trains a diffusion policy to reproduce the task.",
+      "related": ["Collaborative Robot", "6-Axis Robot Arm", "7-DoF Robot Arm", "Strain Wave Gear (Harmonic Drive)", "GELLO: A General, Low-Cost, and Intuitive Teleoperation Framework for Robot Manipulators", "Franka Emika Panda / Franka Research 3"]
+    },
+    {
+      "key": "robot-14#8",
+      "name_en": "Unitree A1",
+      "aliases": ["A1"],
+      "one_liner": "An early small-to-mid quadruped from Unitree, once a popular platform for reinforcement-learning locomotion research.",
+      "explanation": "A1 is an early small-to-mid-size quadruped robot from Unitree Robotics, reportedly launched around 2020, with direct-drive motors at the joints and a compact build. Published specs: a 5 kg payload, a maximum sustained running speed of 3.3 m/s (about 11.9 km/h), joints delivering up to 33.5 N·m of torque with a maximum joint speed of 21 rad/s, and 1–2.5 hours of runtime. Because it was priced far below platforms like ANYmal or Spot, it became a popular piece of hardware for academic work on reinforcement-learning locomotion and sim-to-real transfer around 2020–2022 — for example, the Rapid Motor Adaptation (RMA) paper ran its real-world experiments on an A1. Unitree later replaced it in its lineup with the Go1 and Go2.",
+      "example": "The RMA paper deploys a walking policy trained in simulation onto an A1, letting it walk stably across unfamiliar terrain such as grass, sand, and stairs.",
+      "related": ["Quadruped Robot", "Unitree Robotics", "Unitree Go1", "Rapid Motor Adaptation", "RL-based Locomotion Control", "Sim-to-Real Transfer"]
+    },
+    {
+      "key": "robot-14#9",
+      "name_en": "Unitree As2",
+      "aliases": ["As2-W"],
+      "one_liner": "Unitree's compact industrial-grade quadruped, about 20 kg, with a wheeled-leg variant called As2-W.",
+      "explanation": "As2 is a compact industrial quadruped from Unitree Robotics, positioned between the consumer-grade Go2 and the larger industrial B2. Published specs: about 20 kg including the battery, a standing footprint of 720 × 378 × 457 mm, 12 joint motors with up to about 95 N·m of joint torque, a standing payload of up to 65 kg and a continuous walking payload of about 15 kg, a speed range of 0–3.7 m/s (up to about 5 m/s on some models), roughly 4 hours and 20 km of continuous unloaded walking, and an IP54 rain rating. It comes in four editions — AIR, PRO, X, and EDU — with pricing not published on Unitree's site. As2-W is a wheeled-leg version in the same family, replacing the feet with driven wheels for fast, long-distance travel on flat ground. It's aimed at industrial uses like inspection and security, with the EDU edition open to further development.",
+      "example": "At a substation, an As2 carries a camera along a fixed inspection route and steps over curbs and stairs using its legs when needed.",
+      "related": ["Quadruped Robot", "Unitree Robotics", "Unitree Go2", "Unitree B2", "Wheel-legged Robot", "Inspection Robot"]
+    },
+    {
+      "key": "robot-14#10",
+      "name_en": "Unitree B2",
+      "aliases": ["B2"],
+      "one_liner": "Unitree's large industrial-grade quadruped, built for heavy payloads, long runtime, and IP67 protection.",
+      "explanation": "B2 is a large industrial quadruped from Unitree Robotics aimed at industrial use, reportedly released in late 2023, positioned to compete with industrial-grade products like Boston Dynamics' Spot. Published specs: about 60 kg including the battery; a standing payload of at least 120 kg and a walking payload over 40 kg; a top speed above 6 m/s, which Unitree calls the fastest among industrial-grade quadrupeds; a 2,250 Wh battery good for over 5 hours and over 20 km unloaded, and still over 4 hours carrying a 20 kg load; and an IP67 dust- and water-resistance rating. It's aimed mainly at power-grid and chemical-plant inspection, emergency response, and outdoor hauling — scenarios that call for heavy payload and long runtime — and can also carry a robot arm on its back for mobile manipulation. The B2-W in the same family is a wheeled-leg version.",
+      "example": "At a chemical plant, a B2 carries a gas detector and camera to inspect piping corridors in the rain, autonomously climbing stairs to reach an upper platform.",
+      "related": ["Quadruped Robot", "Unitree Robotics", "Unitree B2-W", "Inspection Robot", "Special-purpose Robot", "Boston Dynamics Spot"]
+    },
+    {
+      "key": "robot-14#11",
+      "name_en": "Unitree B2-W",
+      "aliases": [],
+      "one_liner": "A wheeled-leg version of Unitree's B2, with driven wheels for both walking and fast rolling.",
+      "explanation": "B2-W is a wheeled-leg robot Unitree Robotics built on the B2 platform, reportedly released in 2024: the feet at the end of all four legs are replaced with driven wheels, letting it roll like a vehicle on flat ground while still lifting a leg to step over curbs or rubble, combining a wheel's efficiency with a leg's ability to cross obstacles. Published specs: about 85 kg including the battery; a standing payload of up to 120 kg and a walking payload over 40 kg; a top speed of 15 km/h; about 30 km of unloaded range, dropping to about 25 km carrying a 40 kg load; and an IP67 rating. It suits scenarios with long distances and mixed terrain, such as campus patrol, long-distance outdoor transport, and emergency response, and its coordinated wheel-and-leg motion is often used to showcase reinforcement-learning locomotion-control capability.",
+      "example": "In the field, a B2-W carries supplies along a dirt road at high speed on its wheels, then lifts its legs to cross a ditch before rolling on.",
+      "related": ["Wheel-legged Robot", "Unitree B2", "Unitree Go2-W", "Unitree Robotics", "Inspection Robot", "RL-based Locomotion Control"]
+    }
+  ]
+}

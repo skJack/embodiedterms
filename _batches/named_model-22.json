@@ -1,0 +1,197 @@
+{"category": "named_model", "batch": 22, "terms": [
+{
+"name_zh": "RoboAgent（MT-ACT）",
+"name_en": "RoboAgent: Generalization and Efficiency in Robot Manipulation via Semantic Augmentations and Action Chunking",
+"abbr": "MT-ACT",
+"aliases": ["RoboAgent", "MT-ACT", "Multi-Task Action Chunking Transformer", "多任务动作分块 Transformer"],
+"tier": 3,
+"one_liner": "CMU 与 Meta 用 7500 条演示训出的多技能厨房操作智能体",
+"explanation": "RoboAgent 是卡内基梅隆大学和 Meta AI 在 2023 年 9 月发布的工作（ICRA 2024 录用），想回答：真机数据很贵，能不能用少量数据训出会多种技能的机器人。做法有两点：一是语义增强，用分割一切模型 SAM 分出画面中的物体，再改变其形状、颜色、纹理，把现有数据成倍扩充；二是提出 MT-ACT（多任务动作分块 Transformer），把 ACT 的动作分块（一次预测一小段未来动作）扩展到用语言指令区分任务的多任务场景。只用 7500 条遥操作轨迹，一个策略就学会 12 种技能、覆盖厨房里 38 个任务，在未见场景中比已有方法高出 40% 以上。相关数据以 RoboSet 名义开源。",
+"example": "一条「拉开抽屉」的演示经语义增强后，可以变成抽屉和台面外观各不相同的多条样本，一起用来训练 MT-ACT。",
+"related": ["动作分块", "ACT", "数据增强", "分割一切模型", "多任务学习", "语言条件策略"],
+"sources": [
+{"title": "arXiv 2309.01918: RoboAgent", "url": "https://arxiv.org/abs/2309.01918"},
+{"title": "RoboAgent 项目主页（RoboPen）", "url": "https://robopen.github.io/"}
+],
+"as_of": "2024-05"
+},
+{
+"name_zh": "智源 RoboBrain（具身大脑）",
+"name_en": "RoboBrain (BAAI embodied brain model)",
+"abbr": "",
+"aliases": ["RoboBrain 1.0", "RoboBrain 2.0", "RoboBrain 2.5", "具身大脑"],
+"tier": 3,
+"one_liner": "北京智源研究院开源的具身「大脑」模型系列，负责任务规划和空间理解",
+"explanation": "RoboBrain 是北京智源人工智能研究院（BAAI）推出的开源具身大脑模型系列。它看图、听指令，输出任务拆解、可供性（物体哪里能抓、能按）和末端轨迹等中间结果，交给下层控制器执行，本身不直接输出电机指令。1.0 版 2025 年 2 月发布、被 CVPR 2025 录用，配套标注数据集 ShareRobot；2.0 版 2025 年 7 月发布技术报告，有 7B 和 32B 两个尺寸，增加空间指代、多机协作的长程规划等能力；2.5 版 2026 年 1 月起陆续放出 8B、4B 权重，从在 2D 图上点坐标升级为预测带深度的 3D 空间轨迹，并加入估计任务进度的通用奖励模型。它是国内「大脑-小脑」分层路线里开源较完整的一套大脑模型。",
+"example": "给一张厨房照片和指令「把碗放进微波炉」，RoboBrain 先拆出子步骤，再在图上标出碗该抓的位置和手的移动轨迹，由底层控制器去执行。",
+"related": ["具身大模型", "大脑-小脑架构（大小脑）", "可供性", "空间推理", "RoboOS", "北京智源人工智能研究院"],
+"sources": [
+{"title": "arXiv 2502.21257: RoboBrain (CVPR 2025)", "url": "https://arxiv.org/abs/2502.21257"},
+{"title": "arXiv 2507.02029: RoboBrain 2.0 Technical Report", "url": "https://arxiv.org/abs/2507.02029"},
+{"title": "GitHub: FlagOpen/RoboBrain2.5", "url": "https://github.com/FlagOpen/RoboBrain2.5"}
+],
+"as_of": "2026-03"
+},
+{
+"name_zh": "RoboCat",
+"name_en": "RoboCat: A Self-Improving Generalist Agent for Robotic Manipulation",
+"abbr": "",
+"aliases": [],
+"tier": 3,
+"one_liner": "DeepMind 基于 Gato 的跨本体操作智能体，能自己生成数据迭代变强",
+"explanation": "RoboCat 是 Google DeepMind 在 2023 年 6 月发布的机器人操作智能体，架构沿用多模态通用模型 Gato，是一个以目标图像为条件的决策 Transformer：给它一张「任务完成后的样子」，它输出动作。它在多种真实和仿真机械臂的数百万条轨迹上训练，能处理观测和动作格式不同的机器人。最大特点是「自我提升」循环：新任务先用 100–1000 条人类演示微调出专用版本，让它自己练约 1 万次产生新数据，再把这些数据并入训练集重训通用模型。据 DeepMind 博客，后期版本在新任务上的成功率从 36% 提到 74%。它是较早证明跨本体数据能加快学新技能的代表工作。",
+"example": "RoboCat 在几小时内学会操作一台换成三指夹爪的新机械臂，用 1000 条演示后抓取齿轮的成功率达到 86%。",
+"related": ["Gato", "决策 Transformer", "跨本体", "自我提升", "目标条件策略", "谷歌 DeepMind"],
+"sources": [
+{"title": "arXiv 2306.11706: RoboCat", "url": "https://arxiv.org/abs/2306.11706"},
+{"title": "Google DeepMind 博客：RoboCat", "url": "https://deepmind.google/discover/blog/robocat-a-self-improving-robotic-agent/"}
+],
+"as_of": "2023-12"
+},
+{
+"name_zh": "RoboFlamingo",
+"name_en": "RoboFlamingo (Vision-Language Foundation Models as Effective Robot Imitators)",
+"abbr": "",
+"aliases": [],
+"tier": 3,
+"one_liner": "把开源 OpenFlamingo 视觉语言模型微调成机器人操作策略的早期工作",
+"explanation": "RoboFlamingo 由字节跳动研究院联合清华大学、上海交通大学、新加坡国立大学在 2023 年 11 月发布，是较早把开源视觉语言模型（VLM）直接改造成操作策略的工作。它以 OpenFlamingo 为骨干，每一步负责理解当前画面和语言指令，再接一个显式策略头（如 LSTM）汇总历史信息、输出机械臂动作，只在带语言标注的演示数据上做模仿学习微调。这种「理解」和「决策」分开的设计让它在一台 8 卡 GPU 服务器上就能训练。在 CALVIN 长程任务基准上，它平均能连续完成 4.09 个任务，明显高于此前方法；但论文只在仿真中验证。同一批作者后来把这条思路扩展成系统研究 RoboVLMs。",
+"example": "在 CALVIN 中连续给 5 条指令（如「打开抽屉」「把蓝色方块往左推」），RoboFlamingo 平均能连续做完约 4 条。",
+"related": ["视觉语言模型", "视觉-语言-动作模型", "CALVIN", "模仿学习", "RoboVLMs", "Flamingo"],
+"sources": [
+{"title": "arXiv 2311.01378: Vision-Language Foundation Models as Effective Robot Imitators", "url": "https://arxiv.org/abs/2311.01378"},
+{"title": "RoboFlamingo 项目主页", "url": "https://roboflamingo.github.io/"},
+{"title": "GitHub: RoboFlamingo", "url": "https://github.com/RoboFlamingo/RoboFlamingo"}
+],
+"as_of": "2024-02"
+},
+{
+"name_zh": "RoboMamba",
+"name_en": "RoboMamba: Efficient Vision-Language-Action Model for Robotic Reasoning and Manipulation",
+"abbr": "",
+"aliases": [],
+"tier": 3,
+"one_liner": "用 Mamba 状态空间模型替代 Transformer 做语言骨干的高效 VLA",
+"explanation": "RoboMamba 由北京大学联合智平方、北京智源人工智能研究院在 2024 年 6 月发布，NeurIPS 2024 录用。当时的 VLA 多以 Transformer 大语言模型为骨干，推理慢、算力贵。RoboMamba 改用 Mamba（一种选择性状态空间模型，计算量随序列长度线性增长）作语言模型，接上视觉编码器，先做对齐预训练和通用、机器人指令数据的协同训练，让它具备推理能力；再冻结整个模型，只加一个很小的策略头（约占模型参数 0.1%）预测末端执行器的 SE(3) 位姿，即位置和朝向。论文报告其推理速度约为已有 VLA 的 3 倍，在仿真和真机上的位姿预测也有竞争力。",
+"example": "RoboMamba 既能回答「桌上哪个东西能用来盛水」这类推理问题，也能在收到操作指令后输出夹爪应到达的位置和朝向。",
+"related": ["Mamba", "状态空间模型", "视觉-语言-动作模型", "推理延迟", "末端位姿", "参数高效微调"],
+"sources": [
+{"title": "arXiv 2406.04339: RoboMamba", "url": "https://arxiv.org/abs/2406.04339"},
+{"title": "RoboMamba 项目主页", "url": "https://sites.google.com/view/robomamba-web"}
+],
+"as_of": "2024-12"
+},
+{
+"name_zh": "Robometer",
+"name_en": "Robometer: Scaling General-Purpose Robotic Reward Models via Trajectory Comparisons",
+"abbr": "",
+"aliases": ["RBM-1M"],
+"tier": 3,
+"one_liner": "用任务进度加轨迹两两比较训练的通用机器人奖励模型",
+"explanation": "Robometer 由南加州大学、华盛顿大学、MIT、艾伦人工智能研究所、英伟达等机构在 2026 年 3 月发布，RSS 2026 录用。强化学习和数据筛选都需要一个能判断机器人「做得怎么样」的奖励模型，但以往方法主要依赖专家演示上的逐帧进度标注，大量失败和次优轨迹用不上。Robometer 同时用两种监督：帧级进度损失，在专家数据上锚定奖励的大小；轨迹比较的偏好损失，学会判断两条轨迹哪条更好，从而能利用失败数据。作者整理了超过 100 万条轨迹、覆盖 21 种机器人本体的 RBM-1M 数据集，模型基于 Qwen3-VL（主版本 4B）。得到的奖励可用于在线和离线强化学习、失败检测以及模仿学习的数据检索。",
+"example": "给一段机器人执行「把杯子放进抽屉」的视频，Robometer 逐帧输出任务进度分数，这条曲线可直接当强化学习的稠密奖励，也可用来判断这次尝试是否失败。",
+"related": ["奖励模型", "进度奖励模型", "VLM 作奖励模型", "稠密奖励", "成功检测器", "失败数据"],
+"sources": [
+{"title": "arXiv 2603.02115: Robometer", "url": "https://arxiv.org/abs/2603.02115"},
+{"title": "Robometer 项目主页", "url": "https://robometer.github.io/"}
+],
+"as_of": "2026-05"
+},
+{
+"name_zh": "RoboMonkey",
+"name_en": "RoboMonkey: Scaling Test-Time Sampling and Verification for Vision-Language-Action Models",
+"abbr": "",
+"aliases": [],
+"tier": 3,
+"one_liner": "部署时多采样几组动作、再用 VLM 验证器挑最优，提升 VLA 鲁棒性",
+"explanation": "RoboMonkey 由斯坦福、加州大学伯克利分校和英伟达的研究者在 2025 年 6 月发布，CoRL 2025 录用，把大语言模型里的「推理时扩展」思路搬到 VLA 上。它不改动原策略：部署时先从 VLA 采样若干动作，加高斯扰动并用多数投票构造候选集，再由一个基于视觉语言模型的动作验证器打分，选出最好的一组执行。验证器用自动合成的偏好数据训练（按候选动作与真值动作的距离排序），作者发现合成数据越多验证越准，动作误差与采样数量之间也呈近似幂律关系。配合 OpenVLA 等模型，它在分布外任务上绝对提升 25%，分布内提升 9%；优化后的服务引擎约 650 毫秒即可采样并验证 16 个候选动作。",
+"example": "OpenVLA 遇到没见过的物体时，RoboMonkey 让它一次采样多组抓取动作，由验证器挑出最可能成功的那组去执行。",
+"related": ["推理时计算", "最优 N 采样", "价值引导采样", "视觉-语言-动作模型", "OpenVLA", "奖励模型"],
+"sources": [
+{"title": "arXiv 2506.17811: RoboMonkey", "url": "https://arxiv.org/abs/2506.17811"},
+{"title": "RoboMonkey 项目主页", "url": "https://robomonkey-vla.github.io/"}
+],
+"as_of": "2025-07"
+},
+{
+"name_zh": "RoboPoint",
+"name_en": "RoboPoint: A Vision-Language Model for Spatial Affordance Prediction for Robotics",
+"abbr": "",
+"aliases": [],
+"tier": 3,
+"one_liner": "根据语言指令在图上点出「放哪里、抓哪里」的视觉语言模型",
+"explanation": "RoboPoint 由华盛顿大学、英伟达、艾伦人工智能研究所等在 2024 年 6 月发布，CoRL 2024 录用。它关注空间可供性：给一张图和一句指令（如「放到盘子右边的空位」），用一组 2D 点在图上标出可行的目标位置，再借助深度图投影到 3D，交给运动规划去执行。训练数据全部由程序化生成的 3D 场景自动合成，不需要真机数据或人工演示；语言骨干是 Vicuna-13B。论文报告其空间可供性预测准确率比 GPT-4o 和视觉提示方法 PIVOT 高 21.8%，下游任务成功率高 30.5%，可用于操作、导航和 AR 辅助。这种「先输出点、再交给规划器」的做法是 VLM 与机器人之间常见的中间表示。",
+"example": "指令「把杯子放到两本书之间的空位」，RoboPoint 在图上输出一组落在空位里的点，机械臂取其中一点作为放置目标。",
+"related": ["可供性", "指向（点预测）", "空间推理", "中间表示", "合成数据", "PIVOT（迭代视觉提示）"],
+"sources": [
+{"title": "arXiv 2406.10721: RoboPoint", "url": "https://arxiv.org/abs/2406.10721"},
+{"title": "RoboPoint 项目主页", "url": "https://robo-point.github.io/"}
+],
+"as_of": "2024-11"
+},
+{
+"name_zh": "Robot Parkour Learning",
+"name_en": "Robot Parkour Learning",
+"abbr": "",
+"aliases": ["机器狗跑酷学习"],
+"tier": 3,
+"one_liner": "让低成本四足机器狗只靠深度相机自主爬、跳、钻、挤的跑酷策略",
+"explanation": "Robot Parkour Learning 由上海期智研究院、清华大学、斯坦福、CMU、上海科技大学等团队在 2023 年 9 月发布，获 CoRL 2023 口头报告并进入最佳系统论文奖决赛。它让宇树 A1、Go1 这类低成本四足机器人学会攀上高障碍、跃过宽沟、钻过低矮障碍、挤过窄缝和奔跑。方法分三步：先在仿真里用强化学习预训练，允许机器人「穿过」障碍，把违反物理约束只作为软惩罚，方便探索；再恢复全部物理约束微调各项技能；最后用 DAgger 把多个专门技能蒸馏成一个只看机载深度相机的视觉策略。部署到真机后，它能根据眼前障碍自己选用合适动作，不依赖动物动作参考。",
+"example": "机器狗面前出现一根低矮横杆，策略根据深度图自动选择压低身体钻过去，而不是尝试跳过。",
+"related": ["跑酷", "感知行走", "教师-学生蒸馏", "DAgger（数据集聚合）", "仿真到现实迁移", "Extreme Parkour"],
+"sources": [
+{"title": "arXiv 2309.05665: Robot Parkour Learning", "url": "https://arxiv.org/abs/2309.05665"},
+{"title": "Robot Parkour Learning 项目主页", "url": "https://robot-parkour.github.io/"}
+],
+"as_of": "2023-11"
+},
+{
+"name_zh": "Robot Utility Models",
+"name_en": "Robot Utility Models: General Policies for Zero-Shot Deployment in New Environments",
+"abbr": "RUM",
+"aliases": ["RUM", "RUMs", "机器人效用模型"],
+"tier": 3,
+"one_liner": "不用微调就能在陌生家里执行开柜门、开抽屉等单项任务的策略",
+"explanation": "Robot Utility Models（RUM）由纽约大学、Hello Robot 和 Meta 的研究者在 2024 年 9 月发布。它针对的问题是：机器人策略换个房间通常就得重新采数据、微调，而语言和视觉模型可以拿来即用。作者为开柜门、开抽屉、拿纸巾、拿纸袋、扶正倒下的物体 5 个任务各训练一个专用策略：用装着 iPhone 的手持采集夹 Stick-v2，每个任务在约 40 个环境里采约 1000 条演示，策略结构选用 VQ-BeT；部署时再用 GPT-4o 判断是否成功，失败就重试。结果在未见过的环境和物体上成功率约 90%，并能迁移到 xArm 等其他机器人。作者的主要结论是数据的多样性比训练算法和策略结构更关键。代码、数据和硬件设计均已开源。",
+"example": "把 RUM 的开柜门策略装到 Hello Robot Stretch 上，放进一间从没采过数据的公寓，不做任何微调就去开厨房柜门。",
+"related": ["零样本", "场景泛化", "手持夹爪采集", "Dobb·E", "BeT / VQ-BeT", "专用策略"],
+"sources": [
+{"title": "arXiv 2409.05865: Robot Utility Models", "url": "https://arxiv.org/abs/2409.05865"},
+{"title": "Robot Utility Models 项目主页", "url": "https://robotutilitymodels.com/"}
+],
+"as_of": "2024-09"
+},
+{
+"name_zh": "Covariant RFM-1",
+"name_en": "RFM-1 (Robotics Foundation Model 1, Covariant)",
+"abbr": "RFM-1",
+"aliases": ["RFM-1", "Robotics Foundation Model 1"],
+"tier": 3,
+"one_liner": "Covariant 用仓库拣选数据训练的约 80 亿参数机器人基础模型",
+"explanation": "RFM-1 是仓储机器人 AI 公司 Covariant 在 2024 年 3 月 11 日发布的机器人基础模型，参数约 80 亿。训练数据来自该公司部署在 15 个国家仓库里的拣选机械臂，据报道达数千万条轨迹，包括图像、视频、关节角度、力和吸盘吸力等读数，另加文本。它的输入输出都可以是文本、图像、视频或机器人动作：既能听懂自然语言指令，也能预测执行某个动作后画面会怎样变化，相当于一个学出来的物理模拟器，用来预判动作后果。局限是主要覆盖仓库吸盘拣选场景，对全新物体和情境泛化有限。2024 年 8 月，亚马逊获得 Covariant 技术的非独家授权，并吸纳了创始人 Pieter Abbeel、Peter Chen、Rocky Duan 等加入。",
+"example": "操作员可以用自然语言让拣选臂「拿起红色的那件」；RFM-1 还能生成执行某个抓取动作后的预测画面，用来预判这次抓取的结果。",
+"related": ["基础模型", "世界模型", "无序抓取", "Covariant", "真空吸盘", "亚马逊前沿 AI 与机器人团队"],
+"sources": [
+{"title": "IEEE Spectrum: Covariant Announces a Universal AI Platform for Robots", "url": "https://spectrum.ieee.org/covariant-foundation-model"},
+{"title": "TechCrunch: Covariant is building ChatGPT for robots", "url": "https://techcrunch.com/2024/03/11/covariant-is-building-chatgpt-for-robots/"},
+{"title": "Wikipedia: Covariant (company)", "url": "https://en.wikipedia.org/wiki/Covariant_(company)"}
+],
+"as_of": "2024-08"
+},
+{
+"name_zh": "RoboVLMs",
+"name_en": "RoboVLMs (What Matters in Building Vision-Language-Action Models for Generalist Robots)",
+"abbr": "",
+"aliases": ["Towards Generalist Robot Policies: What Matters in Building Vision-Language-Action Models"],
+"tier": 3,
+"one_liner": "系统比较 VLA 骨干、结构和训练数据该怎么选的实验研究与开源框架",
+"explanation": "RoboVLMs 由清华大学、字节跳动研究院、中科院自动化所、上海交通大学、新加坡国立大学等在 2024 年 12 月发布，既是一篇系统实验研究，也是同名开源框架，可以方便地把新的视觉语言模型接成 VLA。它回答搭 VLA 时的几个关键选择：选哪个 VLM 骨干、动作输出和历史信息怎么组织、跨本体数据什么时候加入。作者比较了 8 种以上 VLM 骨干和 4 种策略结构，跑了 600 多组实验。主要结论包括：用连续动作的独立策略头、并输入多帧历史的结构表现最好；视觉-语言预训练充分的骨干（如 KosMos、PaliGemma）明显更好；先用跨本体数据预训练更有助于鲁棒性。最佳配置在 CALVIN 上平均连续完成 4.49 个任务。",
+"example": "想试一个新的视觉语言模型做 VLA 骨干时，可以在 RoboVLMs 框架里只替换骨干，其余设置不变，直接与 KosMos、PaliGemma 版本在 CALVIN 上对比。",
+"related": ["视觉-语言-动作模型", "RoboFlamingo", "动作头", "跨本体数据", "PaliGemma", "消融实验"],
+"sources": [
+{"title": "arXiv 2412.14058: RoboVLMs", "url": "https://arxiv.org/abs/2412.14058"},
+{"title": "RoboVLMs 项目主页", "url": "https://robovlms.github.io/"}
+],
+"as_of": "2026-02"
+}
+]}

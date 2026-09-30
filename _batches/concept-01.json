@@ -1,0 +1,198 @@
+{
+  "category": "concept",
+  "batch": 1,
+  "terms": [
+    {
+      "name_zh": "动作空间",
+      "name_en": "Action Space",
+      "abbr": "",
+      "aliases": ["连续动作空间", "离散动作空间", "Continuous Action Space", "Discrete Action Space"],
+      "tier": 1,
+      "one_liner": "智能体每一步能做出的所有动作的集合，以及动作的数值格式。",
+      "explanation": "动作空间是强化学习和机器人学习的基础概念，指智能体每一步可选的全部动作。它分两类：离散动作空间只有有限个选项，比如 Atari 游戏的几个按键；连续动作空间里动作是一串实数，比如机械臂各关节的目标角度，或末端执行器（臂最末端的夹爪或工具）的位移加夹爪开合。机器人的底层控制基本是连续动作空间，但也有离散的例子，如具身导航基准常用「前进、左转、右转、停止」几个动作。同一任务可以用关节角或末端位姿、增量或绝对值来表示动作，不同机器人的维度也不同，这正是跨本体训练要处理的难题。VLA 模型常见的做法是把连续动作离散成 token 输出，或用扩散、流匹配、直接回归等方式生成连续值。",
+      "example": "CartPole 小车只有「向左推」「向右推」两个动作，是离散动作空间；OpenVLA 输出的机械臂动作是 3 维平移 + 3 维旋转 + 1 维夹爪开合，共 7 维连续动作空间。",
+      "related": ["状态空间", "观测", "策略", "增量动作 / 绝对动作", "动作分词器", "统一动作空间"],
+      "sources": [
+        {"title": "OpenAI Spinning Up: Key Concepts in RL", "url": "https://spinningup.openai.com/en/latest/spinningup/rl_intro.html"},
+        {"title": "Gymnasium Documentation: Basic Usage", "url": "https://gymnasium.farama.org/introduction/basic_usage/"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "智能体与环境",
+      "name_en": "Agent and Environment (Agent-Environment Interaction)",
+      "abbr": "",
+      "aliases": ["智能体-环境交互", "Agent-Environment Loop", "Agent-Environment Interface"],
+      "tier": 1,
+      "one_liner": "做决策的一方叫智能体，它身处并能影响的外部世界叫环境。",
+      "explanation": "这是强化学习描述问题的基本框架。智能体是做决策的一方，环境是它之外、它能观察和影响的一切。两者循环交互：智能体看到当前观测，选一个动作；环境据此变到新状态，返回新观测和奖励（衡量好坏的一个数），如此往复直到回合结束。在具身智能里，智能体通常是机器人上运行的策略模型，环境是真实世界或仿真器，包括桌面、物体和周围的人。这个框架让导航、抓取、行走等不同问题能用同一套术语描述；Gymnasium 等强化学习环境库也按它设计接口，用 reset 开始新回合、用 step 执行一步动作。",
+      "example": "机械臂叠毛巾：智能体是叠毛巾的策略，环境是桌面、毛巾所在的真实场景；策略每一步根据相机画面（观测）输出一组关节动作，环境随之变化，再返回动作后的新画面。",
+      "related": ["强化学习", "马尔可夫决策过程", "观测", "动作空间", "奖励函数", "环境（Env）与 reset / step 接口"],
+      "sources": [
+        {"title": "OpenAI Spinning Up: Key Concepts in RL", "url": "https://spinningup.openai.com/en/latest/spinningup/rl_intro.html"},
+        {"title": "Gymnasium Documentation: Basic Usage", "url": "https://gymnasium.farama.org/introduction/basic_usage/"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "双臂操作",
+      "name_en": "Bimanual Manipulation",
+      "abbr": "",
+      "aliases": ["双手操作", "双臂协同操作", "Dual-arm Manipulation"],
+      "tier": 1,
+      "one_liner": "机器人用两条手臂互相配合，完成一个操作任务。",
+      "explanation": "双臂操作指机器人同时控制两条机械臂（或人形机器人的两只手）协同完成任务，比如一只手扶住瓶子、另一只手拧盖子，或两手一起叠衣服。很多日常任务单臂做不了或做不好，所以它是家务、装配等场景的核心能力。难点在于动作维度翻倍，两臂要在时间和空间上精确配合，还常碰到柔性物体和密集接触。2023 年 Tony Zhao、Chelsea Finn 等人的 ALOHA 用低成本双臂遥操作平台加 ACT 算法，每个任务只用约 10 分钟（50 条）演示，就让机器人在打开半透明调料杯、给遥控器装电池等精细任务上达到 80%–90% 的成功率，不过最难的穿扎带只有 20%；2024 年的 Mobile ALOHA 又把双臂装上了移动底盘。",
+      "example": "Mobile ALOHA 每个任务只用 20–50 条人类演示，就能自主完成煎虾装碗、打开双门壁柜放锅、呼叫并乘电梯等需要双臂配合加移动的任务。",
+      "related": ["双臂机器人", "ALOHA 双臂平台", "ACT", "Mobile ALOHA", "灵巧操作", "移动操作"],
+      "sources": [
+        {"title": "Learning Fine-Grained Bimanual Manipulation with Low-Cost Hardware (ALOHA / ACT)", "url": "https://arxiv.org/abs/2304.13705"},
+        {"title": "Mobile ALOHA: Learning Bimanual Mobile Manipulation with Low-Cost Whole-Body Teleoperation", "url": "https://arxiv.org/abs/2401.02117"}
+      ],
+      "as_of": "2024-01"
+    },
+    {
+      "name_zh": "大脑-小脑架构（大小脑）",
+      "name_en": "Brain–Cerebellum Architecture (Robot Brain & Cerebellum)",
+      "abbr": "",
+      "aliases": ["大小脑架构", "大脑+小脑", "具身大脑与运动小脑", "Brain-Cerebellum Hierarchical Architecture"],
+      "tier": 1,
+      "one_liner": "把机器人系统分成负责理解和规划的「大脑」、负责执行动作的「小脑」两层。",
+      "explanation": "这是国内具身智能圈对分层系统的通俗叫法，借用人脑分工。「大脑」通常是多模态大模型（能同时处理图像和文字的大模型），负责理解指令、感知场景、拆解任务和高层决策；「小脑」把子任务变成具体动作，可以是技能库、VLA 策略，也可以是强化学习或传统控制写成的运动控制器，频率更高、更贴近硬件。分层的好处是两层能分别训练和替换，一个大脑也能调度多台不同机器人。智源研究院 2025 年发布的 RoboOS 就采用这种架构：RoboBrain 作大脑，可插拔的小脑技能库负责执行。工信部 2023 年印发的《人形机器人创新发展指导意见》也按「大脑、小脑、肢体」划分关键技术。",
+      "example": "人形机器人听到「把桌上的水杯递给我」：大脑模型把它拆成走到桌前、抓起杯子、递给人三步，小脑里的行走控制器和抓取策略再分别执行。",
+      "related": ["快慢双系统", "分层架构", "具身大模型", "运动控制", "全身控制", "RoboOS"],
+      "sources": [
+        {"title": "RoboOS: A Hierarchical Embodied Framework for Cross-Embodiment and Multi-Agent Collaboration", "url": "https://arxiv.org/abs/2505.03673"},
+        {"title": "FlagOpen/RoboOS (GitHub)", "url": "https://github.com/FlagOpen/RoboOS"},
+        {"title": "工业和信息化部：《人形机器人创新发展指导意见》解读（2023-11）", "url": "https://www.miit.gov.cn/zwgk/zcjd/art/2023/art_e3f5686c2f0d49f9968b7ae011d558e1.html"}
+      ],
+      "as_of": "2025-06"
+    },
+    {
+      "name_zh": "闭环",
+      "name_en": "Closed-loop",
+      "abbr": "",
+      "aliases": ["闭环执行", "闭环控制", "反馈控制", "Closed-loop Control"],
+      "tier": 1,
+      "one_liner": "边做边看：每一步都根据最新观测结果调整下一步动作。",
+      "explanation": "闭环原是控制理论概念：控制器持续测量系统的实际输出，与目标比较，用偏差修正动作，比如定速巡航遇到上坡会自动加大动力。相对的开环是按预定指令执行、不看结果。在机器人学习里，闭环执行指策略在执行中不断读取新的相机图像和关节状态再决定下一步，因此能应对物体被碰歪、抓取打滑等意外；开环则是一次算好整段轨迹照着走。很多扩散策略和 VLA 一次输出一段动作块，只执行一部分就重新观测、重新预测（滚动时域控制），在动作连贯和及时反馈之间折中。「闭环评测」也指让策略真的在环境里跑，而不是只和数据集里的动作比对。",
+      "example": "机械臂去抓杯子时有人把杯子挪开 5 厘米：闭环策略从下一帧图像看到变化会改轨迹，开环执行则会照原计划抓空。",
+      "related": ["开环", "感知-行动闭环", "闭环评测", "动作分块", "视觉伺服", "模型预测控制"],
+      "sources": [
+        {"title": "Wikipedia: Closed-loop controller", "url": "https://en.wikipedia.org/wiki/Closed-loop_controller"},
+        {"title": "Diffusion Policy: Visuomotor Policy Learning via Action Diffusion", "url": "https://arxiv.org/abs/2303.04137"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "跨本体",
+      "name_en": "Cross-Embodiment",
+      "abbr": "",
+      "aliases": ["跨具身", "跨形态", "跨本体迁移", "Cross-embodiment Transfer", "Cross-embodiment Learning"],
+      "tier": 1,
+      "one_liner": "用多种不同机器人的数据训练一个模型，让它能控制不同机器人。",
+      "explanation": "本体指机器人的具体身体：几条臂、几个关节、用夹爪还是灵巧手、装了哪些相机。每种机器人单独采的数据都不多，跨本体学习就是把不同本体的数据合起来训练一个策略，让知识在机器人之间共享，并能迁移或微调到新机器人上。难点是各机器人的观测和动作空间不同，维度、坐标系、控制频率都不一样。2023 年 21 家机构合作的 Open X-Embodiment 汇集了 22 种机器人的数据，在其上训练的 RT-1-X、RT-2-X 出现正迁移，即其他机器人的数据让本机器人做得更好；2024 年的 CrossFormer 用 20 种本体的 90 万条轨迹训练单个策略，同时控制机械臂、轮式机器人、四足和无人机。",
+      "example": "Octo 在 Open X-Embodiment 的多机器人数据上预训练，之后几小时就能微调到观测和动作空间都不同的新机器人上。",
+      "related": ["本体", "本体差异", "跨本体数据", "Open X-Embodiment 数据集", "RT-X", "CrossFormer"],
+      "sources": [
+        {"title": "Open X-Embodiment: Robotic Learning Datasets and RT-X Models", "url": "https://arxiv.org/abs/2310.08864"},
+        {"title": "Scaling Cross-Embodied Learning: One Policy for Manipulation, Navigation, Locomotion and Aviation (CrossFormer)", "url": "https://arxiv.org/abs/2408.11812"}
+      ],
+      "as_of": "2024-08"
+    },
+    {
+      "name_zh": "灵巧操作",
+      "name_en": "Dexterous Manipulation",
+      "abbr": "",
+      "aliases": ["灵巧手操作", "多指灵巧操作"],
+      "tier": 1,
+      "one_liner": "用多指灵巧手，靠手指协调和力度调节来抓取、翻转、摆弄物体。",
+      "explanation": "灵巧操作指机器人手（通常是多指灵巧手）通过多根手指的精细协调和力度调节，去抓取、调整姿态并操作物体，比如在手里转动方块、用手指拧瓶盖、调整握笔姿势。相比二指夹爪的一开一合，它更接近人手，是让机器人使用人类工具、处理复杂物品的关键。难点是关节多、自由度高，接触频繁且难建模，触觉感知和数据采集也都难。代表工作是 OpenAI 2018 年在仿真中用强化学习加域随机化（随机改变摩擦、外观等参数）训练 Shadow 灵巧手转物体，再直接迁移到真机，并自发学出了指步态（手指轮流松开、换位，接力转动物体）等类似人手的技巧；近年更多工作用遥操作或人手视频做模仿学习。",
+      "example": "OpenAI 的 Dactyl 用 Shadow 灵巧手把手里的积木转到指定朝向：积木姿态由三台普通相机的画面估计，指尖位置靠动作捕捉系统测量，没用触觉，策略全部在仿真中训练。",
+      "related": ["灵巧手", "手内操作", "接触丰富操作", "触觉传感器", "Dactyl（OpenAI 魔方灵巧手）", "双臂操作"],
+      "sources": [
+        {"title": "Learning Dexterous In-Hand Manipulation (OpenAI)", "url": "https://arxiv.org/abs/1808.00177"},
+        {"title": "Dexterous Manipulation through Imitation Learning: A Survey", "url": "https://arxiv.org/abs/2504.03515"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "具身智能",
+      "name_en": "Embodied AI",
+      "abbr": "",
+      "aliases": ["具身人工智能", "Embodied Intelligence", "EAI", "Embodied Artificial Intelligence"],
+      "tier": 1,
+      "one_liner": "有身体、能在物理世界中感知、决策和行动的人工智能。",
+      "explanation": "具身智能指拥有物理实体（或仿真中的身体），通过与环境实时交互来感知、决策和行动的智能系统，典型载体是机器人和自动驾驶汽车。与之相对的是离身智能，比如 ChatGPT 这类只处理文字图片、不直接作用于物理世界的模型。思想源头常追溯到图灵 1950 年的论文《计算机器与智能》，以及 20 世纪 80–90 年代布鲁克斯等人强调身体与环境交互的机器人研究。它的核心是「感知—决策—行动—反馈」的闭环。近几年大语言模型和视觉语言模型让机器人能理解开放指令，具身智能成为热点，常被视为实现通用人工智能（AGI）的关键一环。",
+      "example": "家用机器人听到「把脏衣服放进洗衣机」，要自己找到衣服、走过去、抓起来、打开机门放进去，全程靠视觉反馈调整动作，这是具身智能；ChatGPT 只能告诉你步骤，属于离身智能。",
+      "related": ["离身智能", "物理AI", "具身智能体", "具身认知", "通用机器人", "视觉-语言-动作模型"],
+      "sources": [
+        {"title": "维基百科：具身智能", "url": "https://zh.wikipedia.org/wiki/具身智能"},
+        {"title": "Aligning Cyber Space with Physical World: A Comprehensive Survey on Embodied AI", "url": "https://arxiv.org/abs/2407.06886"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "回合",
+      "name_en": "Episode",
+      "abbr": "",
+      "aliases": ["轮次", "一集", "幕"],
+      "tier": 1,
+      "one_liner": "从环境重置开始，到任务完成、失败或超时为止的一次完整尝试。",
+      "explanation": "回合是强化学习和机器人学习里的时间单位：环境重置到初始状态后，智能体一步步行动，直到任务完成、失败或达到步数上限，这一整段就是一个回合，记录下的观测和动作序列就是一条轨迹。Gymnasium 用两个标志区分结束原因：terminated 表示任务本身完成或失败，truncated 表示被时间上限等外部条件截断。在机器人模仿学习中，一条演示数据通常对应一个回合；评测时说「每个任务跑 50 个回合」，就是让机器人从头尝试 50 次再统计成功率。注意它和训练轮次（epoch，把整个数据集过一遍）不是一回事。",
+      "example": "叠衣服任务里，从把一件皱衣服摊到桌上开始，到机器人叠好或 2 分钟超时为止，算一个回合。",
+      "related": ["轨迹", "推演", "成功率", "训练轮次", "终止与截断", "演示数据"],
+      "sources": [
+        {"title": "Gymnasium Documentation: Basic Usage", "url": "https://gymnasium.farama.org/introduction/basic_usage/"},
+        {"title": "OpenAI Spinning Up: Key Concepts in RL", "url": "https://spinningup.openai.com/en/latest/spinningup/rl_intro.html"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "通用机器人",
+      "name_en": "General-purpose Robot",
+      "abbr": "",
+      "aliases": ["通才机器人", "Generalist Robot", "通用型机器人"],
+      "tier": 1,
+      "one_liner": "不为单一任务定制、能在多种场景下完成多种任务的机器人。",
+      "explanation": "通用机器人是相对专用机器人说的。传统工业机器人为某条产线、某道工序编程，换任务就要重新编程、改工装；通用机器人希望像人一样，一套硬件加一个智能系统就能做很多事，还能应付没见过的物体和环境。硬件上多选人形或双臂移动平台，因为门、工具、楼梯都是按人体设计的，Figure 等公司就以此作为做人形的理由；软件上依赖通用策略或具身大模型，从大规模数据中学到跨任务能力，例如 Physical Intelligence 的 π0 用单臂、双臂和移动操作机器人的数据训练，能叠衣服、收拾桌子、组装纸箱。目前各家产品离这个目标都还有距离，它是具身智能的长期方向。",
+      "example": "Figure 在落款 2022 年 5 月的公司规划（Master Plan）里提出做「通用人形机器人」：用一种人形硬件承担大量原本由人做的工作，而不是为每个任务造一种专用机器人。",
+      "related": ["具身智能", "通用策略（通才策略）", "人形机器人", "工业机器人", "具身大模型", "π0"],
+      "sources": [
+        {"title": "Figure AI: Master Plan", "url": "https://www.figure.ai/master-plan"},
+        {"title": "π0: A Vision-Language-Action Flow Model for General Robot Control", "url": "https://arxiv.org/abs/2410.24164"}
+      ],
+      "as_of": "2024-10"
+    },
+    {
+      "name_zh": "通用策略（通才策略）",
+      "name_en": "Generalist Policy",
+      "abbr": "",
+      "aliases": ["通才策略", "通用机器人策略", "Generalist Robot Policy"],
+      "tier": 1,
+      "one_liner": "一个模型就能执行多种任务、适配多种场景甚至多种机器人的控制策略。",
+      "explanation": "策略是把观测映射成动作的模型。通用策略指用大规模、多任务、常常跨机器人的数据训练出的单个策略，能按语言指令或目标图像完成许多不同任务，在新场景下也有一定泛化能力；与之相对的专用策略只为一个任务或一台机器人训练。它通常先大规模预训练，再用少量目标场景数据微调到具体机器人和任务，思路类似大语言模型。代表作有 2024 年的开源模型 Octo（在 Open X-Embodiment 的 80 万条轨迹上训练，可在消费级显卡上几小时内微调到新机器人）、OpenVLA，以及 Physical Intelligence 的 π0 系列。如今多数 VLA 模型都以通用策略为目标。",
+      "example": "给 Octo 一句语言指令，或一张任务完成后的目标图像，它都能据此输出机械臂动作，不需要为每个任务单独训练一个模型。",
+      "related": ["策略", "专用策略", "Octo", "π0", "视觉-语言-动作模型", "跨本体"],
+      "sources": [
+        {"title": "Octo: An Open-Source Generalist Robot Policy", "url": "https://arxiv.org/abs/2405.12213"},
+        {"title": "π0: A Vision-Language-Action Flow Model for General Robot Control", "url": "https://arxiv.org/abs/2410.24164"}
+      ],
+      "as_of": "2024-10"
+    },
+    {
+      "name_zh": "泛化",
+      "name_en": "Generalization",
+      "abbr": "",
+      "aliases": ["泛化能力"],
+      "tier": 1,
+      "one_liner": "模型在训练时没见过的新情况下，仍然能做对的能力。",
+      "explanation": "泛化是机器学习的核心概念，指模型在训练数据之外的新样本上依然表现良好，而不只是记住训练集（只记住训练集、换新数据就变差叫过拟合）。机器人学习里泛化尤其难，因为真实世界变化太多：换块桌布、换个杯子、挪个位置、换种说法，都可能让策略失败。所以研究者常按变化类型分开评测，如物体泛化、场景泛化、位置泛化、指令泛化。2025 年 Jensen Gao、Dorsa Sadigh 等人提出的 STAR-Gen 把泛化分为视觉（外观和背景变化）、语义（概念和指令变化）、行为（需要不同的动作方式）三类，并发现开源 VLA 模型尽管用互联网规模的语言数据预训练过，在语义泛化上仍常常吃力。泛化能力是衡量通用策略的主要标准。",
+      "example": "策略只在白色桌面上练过抓红色方块；测试时换成木纹桌面（视觉泛化），或把指令改成「抓那个能装水的东西」（语义泛化），就能检验它的泛化能力。",
+      "related": ["过拟合", "分布外", "零样本", "物体泛化", "视觉泛化", "语义泛化"],
+      "sources": [
+        {"title": "A Taxonomy for Evaluating Generalist Robot Manipulation Policies (STAR-Gen)", "url": "https://arxiv.org/abs/2503.01238"}
+      ],
+      "as_of": "2025-03"
+    }
+  ]
+}

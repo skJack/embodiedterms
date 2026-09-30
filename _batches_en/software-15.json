@@ -1,0 +1,113 @@
+{
+  "batch": "software-15",
+  "terms": [
+    {
+      "key": "software-15#0",
+      "name_en": "PDDLStream",
+      "aliases": [],
+      "one_liner": "A framework that combines a symbolic planner with continuous samplers to do task and motion planning.",
+      "explanation": "PDDLStream is a planning framework proposed by Caelan Garrett, Tomás Lozano-Pérez, and Leslie Kaelbling at MIT, with the paper published at ICAPS 2020 and the code open-sourced. It extends PDDL (Planning Domain Definition Language, a standard way of describing planning problems) with “streams”: conditional samplers that generate continuous values on demand, such as grasp poses, placement locations, inverse-kinematics solutions, or collision-free paths. The planner first assumes these values exist and optimistically searches out a symbolic plan, then calls the samplers to verify and fill in the actual values, backtracking and re-searching if that fails. It addresses a gap between pure symbolic planners, which can't handle continuous geometry, and pure motion planners, which don't understand task ordering — making it a common baseline in task and motion planning (TAMP).",
+      "example": "Have a robot arm retrieve a cup blocked by a box: PDDLStream plans “move the box aside, then grasp the cup,” and uses its streams to sample a grasp pose and collision-free trajectory for each step.",
+      "related": ["Task and motion planning (TAMP)", "Planning Domain Definition Language (PDDL)", "Symbolic planning", "Motion planning", "Inverse kinematics"]
+    },
+    {
+      "key": "software-15#1",
+      "name_en": "Pink",
+      "aliases": ["pink (Python package)"],
+      "one_liner": "A Python differential inverse-kinematics library built on Pinocchio, solving joint velocities from weighted tasks.",
+      "explanation": "Pink is an open-source Python library by Stéphane Caron that uses Pinocchio (a rigid-body dynamics library) under the hood to compute kinematics and Jacobians. It takes a differential inverse-kinematics approach: goals like “move the end effector to this pose,” “hold this orientation,” or “stay within joint limits” are written as weighted tasks and constraints, and on every control cycle Pink solves a quadratic program to get joint velocities, which are then integrated to update the joint angles. The advantage is that multiple objectives can be balanced at once, and redundant degrees of freedom and joint limits are handled naturally. It's commonly used for teleoperation, motion retargeting, and whole-body inverse kinematics on humanoids and robot arms; the equivalent library in the MuJoCo ecosystem is mink.",
+      "example": "When teleoperating a humanoid in VR, use Pink to track both wrist poses while constraining the torso orientation, solving for all arm joint angles in real time.",
+      "related": ["Pinocchio", "mink", "Differential kinematics", "Inverse kinematics", "Quadratic programming", "Whole-body inverse kinematics"]
+    },
+    {
+      "key": "software-15#2",
+      "name_en": "PlotJuggler",
+      "aliases": [],
+      "one_liner": "Open-source time-series plotting tool commonly used to inspect ROS topics and log data.",
+      "explanation": "PlotJuggler is an open-source desktop tool by Davide Faconti, built on Qt, dedicated to plotting time-series data as curves. It can read CSV files, ROS/ROS 2 rosbag logs, PX4's ULog format, and other logs, and can also subscribe live to ROS topics, MQTT, ZeroMQ, and other data streams through plugins. Fields can be plotted just by dragging them in, and it supports multiple linked, synchronized-zoom windows and custom formulas — for example, differentiating a velocity signal or computing the difference between two signals. When debugging a robot, it's most commonly used to check whether the actual joint position is keeping up with the commanded one, whether the IMU is noisy, or whether the control loop is running at a stable rate.",
+      "example": "While tuning a legged robot, overlay the desired joint angle and the encoder reading on the same plot to spot at a glance which joint is lagging behind its command.",
+      "related": ["rosbag", "ROS 2", "Foxglove", "Rerun", "RViz", "Topic"]
+    },
+    {
+      "key": "software-15#3",
+      "name_en": "Precision Time Protocol",
+      "aliases": ["PTP", "IEEE 1588", "gPTP"],
+      "one_liner": "A synchronization protocol that aligns multiple devices' clocks over Ethernet to sub-microsecond precision.",
+      "explanation": "The Precision Time Protocol (PTP) is defined by the IEEE 1588 standard, used to synchronize clocks across devices on a local network. The network elects one device as the master clock; the others exchange timestamped messages with it to measure link delay and clock offset, then correct themselves accordingly. When network cards support hardware timestamping, accuracy can reach the sub-microsecond range, far tighter than common NTP synchronization. gPTP, defined by IEEE 802.1AS, is a trimmed-down profile of PTP used mainly in automotive and other time-sensitive networks. On a robot, the camera, lidar, IMU, and main computer each have their own clock, and without synchronization, multi-sensor fusion and data logging end up misaligned in time — which is why PTP is often used to give everything a common time base. On Linux, linuxptp (ptp4l, phc2sys) is the common implementation.",
+      "example": "On a data-collection rig, the main computer acts as the PTP master clock, with the lidar and industrial cameras as slaves, so every point-cloud frame and image frame carries a directly comparable timestamp.",
+      "related": ["Multi-sensor time synchronization (timestamp alignment)", "Multi-sensor fusion", "Lidar", "EtherCAT bus", "Real-time kernel patch (PREEMPT_RT)"]
+    },
+    {
+      "key": "software-15#4",
+      "name_en": "PREEMPT_RT",
+      "aliases": ["PREEMPT_RT real-time Linux patch", "RT-Linux", "real-time Linux"],
+      "one_liner": "A real-time patch set that makes the Linux kernel almost fully preemptible, cutting worst-case latency.",
+      "explanation": "PREEMPT_RT is a real-time patch set maintained for years by the Linux community. It converts most of the kernel's non-interruptible code paths into preemptible ones, turns interrupt handlers into threads, and replaces spinlocks with sleepable mutexes, pushing the worst-case response latency for high-priority tasks down to roughly tens of microseconds. It was merged into the mainline kernel in 2024 (version 6.12); before that, it had to be patched in and compiled by hand. Robot control needs to send commands on time, every cycle — a stock kernel's occasional multi-millisecond stall can make a motor jitter or trip a safety cutoff — so tools like ros2_control, EtherCAT masters, and Franka's libfranka typically require or recommend a real-time kernel.",
+      "example": "Before controlling a Franka arm at 1 kHz with libfranka, install a PREEMPT_RT kernel on Ubuntu first, or communication timeout errors are likely.",
+      "related": ["Real-time operating system", "Hard real-time", "Real-time control", "Timing jitter", "EtherCAT master", "Xenomai"]
+    },
+    {
+      "key": "software-15#5",
+      "name_en": "Protocol Buffers",
+      "aliases": ["Protobuf", "proto"],
+      "one_liner": "Google's open-source, language-neutral format for serializing structured data compactly and quickly.",
+      "explanation": "Protobuf (Protocol Buffers) is a data serialization mechanism developed by Google and open-sourced in 2008. Developers first define a message's structure — field names, types, and numeric tags — in a .proto file, then use the protoc compiler to generate reading and writing code for languages such as C++, Python, and Go; the data itself is transmitted and stored in a compact binary format. Compared with JSON, it uses less bandwidth, parses faster, and lets old and new versions of a message stay compatible after fields are added. It's the default interface description and encoding format for gRPC, and is also supported by robotics tools such as the MCAP logging format and Foxglove, making it common for communication between a robot and the cloud or an inference server.",
+      "example": "When deploying a policy as a remote inference service, define the “image + joint state → action chunk” request and response format in a .proto file, then call it over gRPC.",
+      "related": ["gRPC", "Message", "MCAP format", "Middleware", "ZeroMQ", "LCM"]
+    },
+    {
+      "key": "software-15#6",
+      "name_en": "PX4 / ArduPilot",
+      "aliases": ["PX4", "ArduPilot", "open-source flight stacks"],
+      "one_liner": "The two leading open-source autopilot software stacks, used on drones, fixed-wing aircraft, and uncrewed ground or water vehicles.",
+      "explanation": "PX4 and ArduPilot are the two major open-source autopilot software stacks. PX4 originated at ETH Zurich and is now hosted by the Dronecode Foundation under the Linux Foundation, under a BSD license; ArduPilot grew out of the Arduino hobbyist community and uses a GPLv3 license. Both run on a flight-controller board and handle attitude estimation, attitude and position control, waypoint missions, and failsafe behavior; both support multirotors, fixed-wing aircraft, VTOL, ground vehicles, and boats, communicate with a ground station or onboard computer over the MAVLink protocol, and offer software-in-the-loop simulation. For aerial-robotics or drone-navigation research, they're typically used as the low-level controller, with higher-level algorithms running in ROS 2 on an onboard computer.",
+      "example": "When researching vision-language navigation for drones, the policy on the onboard computer outputs velocity commands, which are sent to PX4 over ROS 2, and PX4 handles the low-level attitude and motor control.",
+      "related": ["Uncrewed aerial vehicle (aerial robot)", "Aerial vision-language navigation (drone VLN)", "ROS 2", "Hardware-in-the-loop / software-in-the-loop simulation", "Gazebo"]
+    },
+    {
+      "key": "software-15#7",
+      "name_en": "PyRoki",
+      "aliases": ["Python Robot Kinematics"],
+      "one_liner": "UC Berkeley's open-source JAX toolkit for solving robot kinematics optimization problems.",
+      "explanation": "PyRoki is a Python toolkit open-sourced in 2025 by a team at UC Berkeley, built on JAX (Google's numerical computing library that supports automatic differentiation and compiling to GPU). It formulates problems like inverse kinematics, trajectory optimization, and motion retargeting uniformly as nonlinear optimization over “cost terms plus constraints”: users combine modules for collision avoidance, joint limits, end-effector pose, and so on as needed, and the solver runs on CPU or GPU with support for batched computation. The authors report that it's faster than some existing tools for inverse kinematics. It's often used alongside Viser, a visualization tool from the same group, and is well suited to research prototypes such as retargeting human hand or body motion onto a robot, or generating training data.",
+      "example": "Take wrist trajectories estimated from a video of a human demonstration, and use PyRoki to optimize them into joint trajectories for a bimanual robot while avoiding self-collision.",
+      "related": ["Inverse kinematics", "Trajectory optimization", "Motion retargeting", "JAX", "Viser", "Pink"]
+    },
+    {
+      "key": "software-15#8",
+      "name_en": "qpOASES",
+      "aliases": [],
+      "one_liner": "Open-source quadratic-program solver based on an online active-set method, commonly used in MPC.",
+      "explanation": "qpOASES is an open-source C++ quadratic programming (QP) solver developed by Hans Joachim Ferreau and colleagues at KU Leuven in Belgium, now hosted on COIN-OR. It uses a parametric online active-set method: since two consecutive problems to be solved are usually only slightly different, it can reuse information about which constraints were active last time as a “warm start,” which makes it especially well suited to model predictive control (MPC), where a QP must be solved on every control cycle. It works best on small-to-medium, fairly dense problems, provides MATLAB and Python interfaces, and is integrated into optimization frameworks such as CasADi and acados. It shows up frequently in convex-MPC implementations for legged robots.",
+      "example": "A quadruped robot's convex MPC needs to solve for foot contact forces over the next several steps on every cycle, which can be handed to qpOASES for a warm-started solve.",
+      "related": ["Quadratic programming", "Model predictive control", "Convex MPC", "OSQP", "acados", "CasADi"]
+    },
+    {
+      "key": "software-15#9",
+      "name_en": "Qt",
+      "aliases": ["PyQt", "PySide"],
+      "one_liner": "A cross-platform C++ GUI framework commonly used for robot operator-side software interfaces.",
+      "explanation": "Qt is a cross-platform C++ application development framework, originally released by the Norwegian company Trolltech in the 1990s and now maintained by The Qt Company under a dual open-source (GPL/LGPL) and commercial license. It offers both a traditional widget-based interface (Qt Widgets) and a declarative one (QML / Qt Quick), and the same codebase can be built for Windows, Linux, macOS, and embedded devices; Python developers can use it through PyQt or the official PySide bindings. Operator-side robotics software — tuning panels, data-collection clients, teaching interfaces — is frequently written in Qt, and ROS's own RViz, rqt, and PlotJuggler are all built on it as well.",
+      "example": "Write an operator interface for a custom robot arm: use Qt to build a UI that shows each joint's angle and current draw, with enable, home, and e-stop buttons.",
+      "related": ["Host computer (upper computer)", "RViz", "rqt", "PlotJuggler", "Python and C++ (common embodied-AI languages)"]
+    },
+    {
+      "key": "software-15#10",
+      "name_en": "ROS 2 Quality of Service (QoS)",
+      "aliases": ["QoS", "QoS policies"],
+      "one_liner": "The ROS 2 settings that control how a message is delivered — reliably or not, how many kept.",
+      "explanation": "Quality of Service (QoS) is originally a general networking concept. ROS 2 is built on DDS (Data Distribution Service) middleware, and applies QoS settings to every publisher and subscriber individually. Common policies include: reliability (guaranteed delivery with retransmission, versus best-effort), durability (whether a subscriber that joins late still receives earlier messages), history (keep the last N messages, or all of them), queue depth, plus deadline and liveliness settings. Choosing them well trades off dropped data against latency — for example, for high-rate sensor data, it's often better to drop a frame than to let messages queue up. A common beginner mistake is mismatched QoS between publisher and subscriber: the topic name is correct, but no messages ever arrive.",
+      "example": "A camera driver publishes images as best-effort; if the subscriber is set to reliable mode, the two are incompatible, and the subscribing node receives no frames at all.",
+      "related": ["ROS 2", "Data Distribution Service (DDS)", "Publish/subscribe", "Topic", "Middleware", "ROS middleware interface (RMW)"]
+    },
+    {
+      "key": "software-15#11",
+      "name_en": "Ray",
+      "aliases": [],
+      "one_liner": "Open-source distributed computing framework for scaling Python programs across many machines and GPUs.",
+      "explanation": "Ray originated at UC Berkeley's RISELab, with its paper published at OSDI in 2018; it's now developed primarily by Anyscale and remains free and open source. It lets an ordinary Python function or class become a parallel unit — a stateless task or a stateful actor — just by adding a decorator, letting a cluster run it in parallel while Ray handles scheduling, data transfer, and fault tolerance. Built on top of this core are libraries such as Ray Train (distributed training), Ray Tune (hyperparameter search), RLlib (reinforcement learning), Ray Data, and Ray Serve. Reinforcement learning needs to schedule large numbers of simulation, inference, and training processes at once, and large-model RL frameworks such as veRL use Ray to orchestrate these components.",
+      "example": "When fine-tuning a VLA with reinforcement learning, use Ray actors to run simulation rollout, policy inference, and parameter updates on separate GPUs, all coordinated by one driver process.",
+      "related": ["veRL", "Distributed training (data parallelism / model parallelism)", "Actor-learner decoupled architecture", "Slurm cluster scheduling", "Large-scale parallel reinforcement learning"]
+    }
+  ]
+}

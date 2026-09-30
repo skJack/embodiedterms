@@ -1,0 +1,230 @@
+{
+  "batch": "named_model-19",
+  "terms": [
+    {
+      "key": "named_model-19#0",
+      "name_en": "NaVid",
+      "aliases": [
+        "Uni-NaVid",
+        "Video-based VLM Plans the Next Step for Vision-and-Language Navigation"
+      ],
+      "one_liner": "A 2024 video-LLM navigation method from Peking University and others that decides the next step using only monocular video.",
+      "explanation": "NaVid was proposed in February 2024 by He Wang's group at Peking University together with the Beijing Academy of Artificial Intelligence, the University of Adelaide, Galbot, and others, published at RSS 2024, addressing vision-and-language navigation (reaching a destination by following a one-sentence instruction). Earlier methods mostly relied on maps, odometry, or depth maps; NaVid uses only monocular RGB video: the current frame is compressed to 64 tokens and each history frame to 4, fed into a video large language model built on Vicuna-7B, which outputs the next step directly in text, such as how far to move forward, how much to turn, or to stop. Using only RGB, it reaches a 37.4% success rate on R2R-CE, and transfers to a real robot. The follow-up Uni-NaVid (RSS 2025) merges four task types — instruction navigation, object finding, embodied question answering, and person following — into a single model, trained on 3.6 million samples.",
+      "example": "Tested across 4 real indoor scenes with 200 instructions total, NaVid running on a Turtlebot4 achieved about 66% success on simple instructions and about 48% on multi-step compound instructions.",
+      "related": [
+        "Vision-and-Language Navigation",
+        "R2R / VLN-CE Benchmark",
+        "Vision-Language Model",
+        "NaVILA",
+        "NavFoM (Galbot)",
+        "Sim-to-Real Transfer"
+      ]
+    },
+    {
+      "key": "named_model-19#1",
+      "name_en": "NavFoM (Galbot)",
+      "aliases": [
+        "Embodied Navigation Foundation Model"
+      ],
+      "one_liner": "A 2025 navigation foundation model from Galbot and Peking University, with one set of weights adapting to many embodiments and navigation tasks.",
+      "explanation": "NavFoM was proposed by Galbot together with Peking University, the University of Adelaide, Zhejiang University, and others; the paper went up on arXiv in September 2025, and the company formally launched it in November, promoted as “the world's first cross-embodiment, all-around navigation foundation model.” Earlier navigation models were mostly trained separately, one robot and one task at a time; NavFoM instead uses 8.02 million navigation samples (quadruped, drone, wheeled robot, car) plus 4.76 million image-text and video question-answer samples to simultaneously learn instruction navigation, object finding, target tracking, and autonomous driving. It uses Qwen2-7B as its language backbone, concatenating DINOv2 and SigLIP visual features, with special tokens marking which camera and which moment each frame comes from, supporting 1 to 8 camera feeds; an MLP finally outputs waypoints, handed off to the embodiment's local planner for execution.",
+      "example": "The same weights, with no task-specific fine-tuning, are evaluated on benchmarks including VLN-CE instruction navigation, HM3D-OVON open-vocabulary object finding, EVT-Bench target tracking, and NAVSIM autonomous driving; Peking University and Galbot's later UrbanVLA was also trained on top of it.",
+      "related": [
+        "Cross-Embodiment",
+        "Vision-and-Language Navigation",
+        "Embodied Visual Tracking",
+        "TrackVLA (Galbot)",
+        "NaVid",
+        "AstraBrain (Galbot)"
+      ]
+    },
+    {
+      "key": "named_model-19#2",
+      "name_en": "Navigation World Models (Meta)",
+      "aliases": [
+        "NWM"
+      ],
+      "one_liner": "A late-2024 Meta video world model for navigation that imagines what you'd see after taking a given action.",
+      "explanation": "Navigation World Models was proposed by Amir Bar, Yann LeCun, and colleagues at Meta FAIR, together with NYU and Berkeley, posted to arXiv in December 2024, and received a CVPR 2025 best-paper honorable mention. It is a controllable video-generation model: given past frames and a navigation action (which way to go, how much to turn), it predicts the footage you'd see next. The model is a 1-billion-parameter conditional diffusion Transformer (CDiT), trained on first-person video from both humans and robots. With it, a robot can simulate several candidate routes inside the model first and pick whichever reaches the goal; it can also score and rank trajectories sampled by an existing policy like NoMaD; and it can imagine walking through an unfamiliar environment given just a single photo. The authors also note that generating for a long time in an unfamiliar environment gradually drifts the footage back toward the training data.",
+      "example": "Given a starting photo and a goal photo, NWM generates the along-the-way footage for a batch of candidate action sequences one by one, and picks whichever ends up closest to the goal photo to execute.",
+      "related": [
+        "World Model",
+        "Video Prediction Model",
+        "Diffusion Transformer",
+        "NoMaD",
+        "Image-Goal Navigation",
+        "Meta FAIR"
+      ]
+    },
+    {
+      "key": "named_model-19#3",
+      "name_en": "NaVILA",
+      "aliases": [
+        "Legged Robot Vision-Language-Action Model for Navigation"
+      ],
+      "one_liner": "A legged-robot navigation VLA where a large model gives mid-level actions in text and an RL locomotion controller does the walking.",
+      "explanation": "NaVILA was proposed by Xiaolong Wang's group at UC San Diego together with NVIDIA and USC, posted to arXiv in December 2024, published at RSS 2025. A vision-language model is good at understanding images and instructions, but outputting leg joint commands directly is hard, so NaVILA splits into two layers: the high level is a VLA fine-tuned from NVIDIA's VILA (8B), which looks at the camera view and the instruction and outputs, in text, a mid-level action with distance and angle, such as “move forward 75 centimeters”; the low level is a locomotion policy trained with reinforcement learning that reads a lidar-generated height map and turns that mid-level action into commands for a quadruped's 12 joints. Besides simulated navigation data, training data also includes about 2,000 first-person YouTube tour videos. It reaches a 54% success rate on R2R-CE, and the paper also released VLN-CE-Isaac, a benchmark built on Isaac Lab.",
+      "example": "In real-robot tests across 25 instructions spanning office, home, and outdoor settings, NaVILA running on a Unitree Go2 quadruped reached 88% success, and 75% on complex multi-room instructions; the same model also works on a Booster T1 humanoid with no retraining.",
+      "related": [
+        "Vision-and-Language Navigation",
+        "Vision-Language-Action Model",
+        "Legged Locomotion",
+        "Hierarchical Architecture",
+        "RL-based Locomotion Control",
+        "NaVid"
+      ]
+    },
+    {
+      "key": "named_model-19#4",
+      "name_en": "Neural Descriptor Fields",
+      "aliases": [
+        "NDF",
+        "SE(3)-Equivariant Object Representations for Manipulation"
+      ],
+      "one_liner": "An MIT 2021 object representation that transfers a manipulation skill to new objects of the same category, in new poses, from just a few demonstrations.",
+      "explanation": "Neural Descriptor Fields were proposed by Anthony Simeonov, Yilun Du, Pulkit Agrawal, Vincent Sitzmann, and colleagues at MIT, posted to arXiv in December 2021, published at ICRA 2022. It represents an object as a function: given any 3D point near the object, it outputs a descriptor vector, such that functionally equivalent locations on objects of the same category — the handle of different mugs, say — get similar descriptors. The descriptor comes from an occupancy network self-supervised on a 3D-reconstruction task, with no manual keypoint labeling needed. The network is SE(3)-equivariant (however the object rotates or moves, the descriptors transform the same way), so it can handle the object upright, on its side, or upside down. During a demonstration, the descriptors of a set of points near the gripper are recorded; at test time, optimization finds the gripper pose whose descriptors best match them.",
+      "example": "Given just 10 demonstrations of “grasp the mug's rim and hang it on a rack,” a Franka arm can hang up mugs it has never seen, in any orientation; the paper reports an overall success rate above 85%.",
+      "related": [
+        "Object-Centric Representation",
+        "Equivariant Policy / Equivariant Neural Network",
+        "Few-shot",
+        "Pick-and-Place",
+        "Pose",
+        "Imitation Learning"
+      ]
+    },
+    {
+      "key": "named_model-19#5",
+      "name_en": "NoMaD",
+      "aliases": [
+        "Goal Masked Diffusion Policies for Navigation and Exploration"
+      ],
+      "one_liner": "A 2023 Berkeley navigation diffusion policy where one model can both explore freely and head toward a goal image.",
+      "explanation": "NoMaD was proposed in October 2023 by Sergey Levine's group at UC Berkeley (Ajay Sridhar, Dhruv Shah, and others), published at ICRA 2024, where the project page says it won that year's best paper award. Robot navigation commonly needs two things: goal-free exploration in an unfamiliar environment, and heading toward a goal once a photo of it is seen. Previously this took two separate models; NoMaD merges them with “goal masking”: half of training samples have the goal image masked out, and at inference, masking it produces exploration while revealing it produces goal-reaching. It uses a ViNT-style Transformer to encode recent frames and the goal image, then a diffusion model to generate a future sequence of waypoints, able to express multiple viable options at a fork in the path (action multimodality). The model has about 19 million parameters, and was trained on more than 100 hours of real, multi-robot data from GNM, SACSoN, and others.",
+      "example": "Exploring real environments on a LoCoBot, NoMaD reaches a 98% success rate with an average of 0.2 collisions; a compared baseline that first generates a sub-goal image with diffusion and then navigates gets 77% and 1.7 collisions, while also having about 15 times more parameters.",
+      "related": [
+        "Diffusion Policy",
+        "ViNT",
+        "GNM",
+        "Image-Goal Navigation",
+        "Active Exploration",
+        "Action Multimodality"
+      ]
+    },
+    {
+      "key": "named_model-19#6",
+      "name_en": "NVIDIA Cosmos Predict",
+      "aliases": [
+        "Cosmos-Predict1",
+        "Cosmos-Predict2",
+        "Cosmos-Predict2.5"
+      ],
+      "one_liner": "The video world model branch of NVIDIA's Cosmos family, generating what comes next from text, an image, or video.",
+      "explanation": "Cosmos Predict is the branch of NVIDIA's Cosmos world foundation model family responsible for predicting future frames. Predict1 launched with the Cosmos platform in January 2025, with 7B/14B diffusion models and several autoregressive model sizes; Predict2 opened up in June 2025, with 2B and 14B video models; Predict2.5, from October 2025, switched to flow-based generation, uses Cosmos-Reason1 as its text encoder, and merges text-to-video, image-to-video, and video continuation into one model. It's positioned as a fine-tunable base for robotics and autonomous driving: post-trained on robot data, it can become an action-conditioned simulator, a multi-view generator, or be used directly as a policy (as in Cosmos Policy). Starting in 2026, NVIDIA has shifted its main focus to the unified Cosmos 3, and the Predict repository is no longer under active development.",
+      "example": "NVIDIA provides a version of Cosmos-Predict2 post-trained with action conditioning on the Bridge robot dataset: given the current frame and a sequence of arm actions, it generates video of what happens after executing them; GR00T Dreams also uses a post-trained version of it to generate robot training video.",
+      "related": [
+        "NVIDIA Cosmos",
+        "World Foundation Model",
+        "Video Generation Model",
+        "Cosmos Policy",
+        "DreamGen (GR00T Dreams)",
+        "Cosmos 3"
+      ]
+    },
+    {
+      "key": "named_model-19#7",
+      "name_en": "NVIDIA Cosmos Reason",
+      "aliases": [
+        "Cosmos-Reason1",
+        "Cosmos-Reason2"
+      ],
+      "one_liner": "NVIDIA's reasoning vision-language model for physical AI, which watches a video, reasons through it in writing, then answers.",
+      "explanation": "Cosmos Reason is the vision-language model in NVIDIA's Cosmos family responsible for understanding and reasoning. Cosmos-Reason1, from March 2025, trains in two steps: supervised fine-tuning on physical-AI data first, then reinforcement learning, so the model writes out a chain of thought before answering; the paper covers 7B and 56B sizes, with the open-sourced version being the 7B built on Qwen2.5-VL. It focuses on physical common sense (space, time, basic physics) and embodied reasoning (what a robot should do next). Cosmos-Reason2, from December 2025, switched to Qwen3-VL, offered at 2B and 8B, with a 32B added in April 2026. Common uses include flagging physical errors in generated video, filtering and annotating training data, and serving as a robot's planning module; Cosmos-Predict2.5 uses it as a text encoder, and the driving model Alpamayo also uses it as its backbone.",
+      "example": "Given an AI-generated robot manipulation video and asked “does this footage obey physics,” it first outputs its reasoning process (such as whether an object moves without cause, or clips through another object), then gives its judgment, which can be used to automatically filter out unqualified synthetic data.",
+      "related": [
+        "Vision-Language Model",
+        "Embodied Reasoning Model",
+        "Chain of Thought",
+        "NVIDIA Cosmos",
+        "Qwen-VL",
+        "NVIDIA Alpamayo"
+      ]
+    },
+    {
+      "key": "named_model-19#8",
+      "name_en": "NVIDIA Cosmos Transfer",
+      "aliases": [
+        "Cosmos-Transfer1",
+        "Cosmos-Transfer2.5"
+      ],
+      "one_liner": "NVIDIA's controllable video-generation model that produces photorealistic video conditioned on structure maps like depth, segmentation, and edges.",
+      "explanation": "Cosmos Transfer is the conditional-generation branch of NVIDIA's Cosmos family, using a multi-branch ControlNet structure (feeding extra structure maps in as generation conditions). Given spatial control signals such as a segmentation map, depth map, edge map, blurred footage, high-definition map, or lidar, it outputs photorealistic video that keeps the same layout and motion, but can change lighting, weather, and materials. Cosmos-Transfer1, from March 2025, can assign different weights to different control signals at different locations in the frame; Cosmos-Transfer2.5, from October 2025, has 2B parameters and is built on Predict2.5, with a low-latency distilled version following in February 2026. Its main use is data augmentation: turning simulator-rendered robot or driving footage into photorealistic video to narrow the sim-to-real gap, or turning a piece of real footage into rainy or nighttime versions to expand training data.",
+      "example": "Render a robot-arm grasping video in Isaac Sim, extract its depth and segmentation maps, and feed them to Cosmos Transfer; swapping in different text prompts yields multiple photorealistic versions with different backgrounds and lighting, used to train a policy more robust to visual distractions.",
+      "related": [
+        "NVIDIA Cosmos",
+        "Sim-to-Real Transfer",
+        "Sim-to-Real Gap (Reality Gap)",
+        "Generative Data Augmentation",
+        "Synthetic Data",
+        "NVIDIA Cosmos Predict"
+      ]
+    },
+    {
+      "key": "named_model-19#9",
+      "name_en": "NVIDIA Alpamayo",
+      "aliases": [
+        "Alpamayo-R1",
+        "Alpamayo 1",
+        "Alpamayo-R1-10B",
+        "NVIDIA DRIVE Alpamayo-R1"
+      ],
+      "one_liner": "NVIDIA's open autonomous-driving reasoning VLA, which writes out in text why it's driving this way before outputting a trajectory.",
+      "explanation": "Alpamayo-R1 is NVIDIA's autonomous-driving vision-language-action model; the paper went up on arXiv in late October 2025, weights opened on Hugging Face in December, and it was renamed Alpamayo 1 at CES in January 2026, released together with the AlpaSim simulation framework and more than 1,700 hours of open driving data. It targets rare, long-tail road situations: imitating trajectories alone tends to fail in unseen scenarios, so the model first writes out a “causal chain” of reasoning (what it sees, and therefore what to do), then generates the trajectory. The open version uses the Cosmos-Reason vision-language model as its backbone (8.2B), plus a 2.3B diffusion-based action expert, taking in 4 camera feeds and the ego vehicle's motion history, and outputting a 6.4-second future trajectory. The paper reports up to 12% better planning accuracy on hard scenarios, a 35% drop in close-call near-misses in closed-loop simulation, and about 99 milliseconds of onboard latency.",
+      "example": "When the lane ahead is blocked by construction cones, the model first outputs an explanation — such as “lane ahead is closed, need to slow down and change lanes to go around” — then gives the corresponding 6.4-second driving trajectory, letting an engineer check the text against the trajectory to see why it drove that way.",
+      "related": [
+        "Vision-Language-Action Model",
+        "Autonomous Driving",
+        "Chain of Thought",
+        "NVIDIA Cosmos Reason",
+        "Action Expert",
+        "Long-tail Problem"
+      ]
+    },
+    {
+      "key": "named_model-19#10",
+      "name_en": "OK-Robot",
+      "aliases": [
+        "What Really Matters in Integrating Open-Knowledge Models for Robotics"
+      ],
+      "one_liner": "A 2024 NYU pick-and-place system built by combining off-the-shelf vision-language models with navigation and grasping modules.",
+      "explanation": "OK-Robot was proposed by Lerrel Pinto's group at NYU in collaboration with Meta (Peiqi Liu, Mahi Shafiullah, and others), posted to arXiv in January 2024, published at RSS 2024. “OK” stands for Open Knowledge, meaning models pretrained openly on internet-scale data. It trains no new end-to-end policy; instead, it combines off-the-shelf modules: first, a lidar-equipped iPhone (using the Record3D app) scans the room once to build a voxel map carrying semantic features like CLIP's; on receiving an instruction like “put this object somewhere,” it finds the object in the map, navigates to it, computes a grasp pose with AnyGrasp, then navigates to the target location and places it down. The whole system runs on a Hello Robot Stretch, with no retraining needed when moving to a new home. The paper's focus is summarizing which details actually determine success or failure when assembling a system like this, and it tallies the causes of failure.",
+      "example": "Across 171 pick-and-place attempts in 10 real homes in New York, overall success rate was 58.5%, rising to 82% in tidier environments; the most common failures were the semantic map locating the wrong object (9.3%), a difficult grasp pose (8.0%), and hardware issues (7.5%).",
+      "related": [
+        "Open-vocabulary",
+        "Zero-shot",
+        "Mobile Manipulation",
+        "AnyGrasp",
+        "Hello Robot Stretch",
+        "Semantic Map"
+      ]
+    },
+    {
+      "key": "named_model-19#11",
+      "name_en": "OKAMI",
+      "aliases": [
+        "Teaching Humanoid Robots Manipulation Skills through Single Video Imitation"
+      ],
+      "one_liner": "A 2024 UT Austin and NVIDIA method that teaches a humanoid robot to manipulate objects from watching a single human video.",
+      "explanation": "OKAMI was proposed by Yuke Zhu's group at UT Austin together with NVIDIA Research, posted to arXiv in October 2024, an oral presentation at CoRL 2024. The goal is to have a humanoid robot learn a manipulation task from watching just a single RGB-D video of a human demonstration, with no teleoperation data collection needed. The first step analyzes the video: GPT-4V identifies task-relevant objects, Grounded-SAM segments and Cutie tracks them, and the person's body and hand motion is reconstructed (using the SMPL-H model) to get a reference plan. The second step is object-aware motion retargeting: it first locates where the objects are in the current scene, then adjusts the human arm trajectory to that object position before mapping it onto the robot, with finger motion transferred along with it. The experimental platform is a Fourier GR1 humanoid fitted with two 6-degree-of-freedom Inspire dexterous hands. Successfully executed trajectories can also serve as data for training a closed-loop visuomotor policy.",
+      "example": "Across 6 tasks — bagging groceries, sprinkling salt, putting a snack on a plate, closing a laptop, and others — OKAMI's average success rate is 71.7%, 58.3 percentage points above the baseline ORION; a visuomotor policy trained on the trajectories it produces reaches an average success rate of 79.2%.",
+      "related": [
+        "Imitation Learning from Observation",
+        "Motion Retargeting",
+        "Human Video Data",
+        "One-shot Imitation Learning",
+        "Humanoid Robot",
+        "Fourier GR-1"
+      ]
+    }
+  ]
+}

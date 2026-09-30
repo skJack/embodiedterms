@@ -1,0 +1,423 @@
+{
+ "category": "data",
+ "batch": 11,
+ "terms": [
+  {
+   "name_zh": "指令增强",
+   "name_en": "Instruction Augmentation",
+   "abbr": "",
+   "aliases": [
+    "语言增强",
+    "Language Augmentation",
+    "指令改写"
+   ],
+   "tier": 3,
+   "one_liner": "给机器人轨迹自动补写或改写语言指令，让同一段动作配上更多种说法。",
+   "explanation": "指令增强是面向语言条件策略（按文字指令行动的策略）的一类数据处理方法：不采新的机器人动作，只给已有轨迹补上或改写语言标签。人工给每条示教写指令成本高，写法也单一，模型换个说法就听不懂。代表工作是谷歌机器人团队 2022 年提出、发表于 RSS 2023 的 DIAL：先用少量人工标注数据微调 CLIP（图文匹配模型），再让大语言模型提出候选指令，由 CLIP 打分挑出与轨迹画面相符的说法，给 8 万条示教（其中 96.5% 没有人工语言标注）重新贴标签，最后做行为克隆。更简单的做法是只让大模型把原指令改写成多种同义说法。它和事后重标注、自动标注属于同一思路。",
+   "example": "DIAL 训练出的策略在 60 条原数据集里没出现过的新指令上做了测试，涵盖空间关系描述、换一种说法的描述和新语义技能三类。",
+   "related": [
+    "语言标注",
+    "事后重标注",
+    "自动标注",
+    "数据增强",
+    "语言条件策略",
+    "CLIP"
+   ],
+   "sources": [
+    {
+     "title": "Robotic Skill Acquisition via Instruction Augmentation with Vision-Language Models (arXiv 2211.11736)",
+     "url": "https://arxiv.org/abs/2211.11736"
+    },
+    {
+     "title": "DIAL 项目主页",
+     "url": "https://instructionaugmentation.github.io/"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "InternData-A1 数据集",
+   "name_en": "InternData-A1",
+   "abbr": "",
+   "aliases": [
+    "InternData A1"
+   ],
+   "tier": 3,
+   "one_liner": "上海 AI 实验室发布的大规模仿真合成数据集，用于预训练通用机器人策略。",
+   "explanation": "InternData-A1 是上海人工智能实验室（InternRobotics 团队，北京大学参与）2025 年 11 月发布的机器人操作合成数据集，全部在仿真中生成：超过 63 万条轨迹、7433 小时，覆盖 4 种本体（ARX Lift-2、AgileX Split ALOHA、A2D、Franka）、70 个任务、227 个场景，包含刚体、铰接、柔性物体和流体操作。流水线把技能、任务和本体解耦后自由组合，用 cuRobo 做运动规划，并对相机、光照、物体摆放做域随机化（随机扰动，让模型不依赖固定外观）。论文结论是：只用这份合成数据预训练 π0，在 49 个仿真任务、5 个真机任务和 4 个长程灵巧任务上可与用 π 真机数据预训练的官方 π0 相当。数据以 CC BY-NC-SA 4.0 协议开放在 Hugging Face。",
+   "example": "论文报告，部分任务用不到 1600 条仿真样本就能达到 200 条真机样本的效果；70 个任务里有 10 个不用任何真机数据，就在真机上取得了较高成功率。",
+   "related": [
+    "合成数据",
+    "仿真数据",
+    "π0",
+    "上海AI实验室 InternVLA 系列",
+    "cuRobo",
+    "域随机化"
+   ],
+   "sources": [
+    {
+     "title": "InternData-A1: Pioneering High-Fidelity Synthetic Data for Pre-training Generalist Policy (arXiv 2511.16651)",
+     "url": "https://arxiv.org/abs/2511.16651"
+    },
+    {
+     "title": "InternData-A1 数据集页面（Hugging Face）",
+     "url": "https://huggingface.co/datasets/InternRobotics/InternData-A1"
+    }
+   ],
+   "as_of": "2026-01"
+  },
+  {
+   "name_zh": "LAFAN1 动捕数据集",
+   "name_en": "LAFAN1 (Ubisoft La Forge Animation Dataset)",
+   "abbr": "",
+   "aliases": [
+    "LAFAN",
+    "LaFAN1"
+   ],
+   "tier": 3,
+   "one_liner": "育碧 La Forge 公开的人体动捕数据集，常作人形机器人模仿动作的来源。",
+   "explanation": "LAFAN1 是育碧（Ubisoft）研发部门 La Forge 随 SIGGRAPH 2020 论文《Robust Motion In-betweening》公开的光学动捕数据集（光学动捕：身上贴反光标记点、用多台相机追踪）。它包含 5 名演员的 77 段序列、约 49.7 万帧、30 帧/秒，合计约 4.6 小时，动作有走、跑、跳、格斗、爬行、摔倒后起身、跳舞、翻越障碍等，以 BVH 骨骼动画格式发布，协议为 CC BY-NC-ND 4.0（署名、非商用、禁止演绎）。它原本用于游戏动画的中间帧补全，近年在人形机器人领域用得很多：先用动作重定向把人体动作映射到机器人关节，再在仿真里用强化学习训练运动跟踪策略。宇树发布过重定向到自家人形机器人的 LAFAN1 版本，GMR 重定向工具也直接支持它的 BVH 文件。",
+   "example": "伯克利 BeyondMimic 的开源代码直接使用宇树重定向后的 LAFAN1 动作训练跟踪策略，作者称数据集中适合上真机的动作都能不调参数直接训练。",
+   "related": [
+    "AMASS 人体动捕数据集",
+    "光学动捕",
+    "动作重定向",
+    "GMR 通用动作重定向",
+    "BeyondMimic",
+    "运动跟踪"
+   ],
+   "sources": [
+    {
+     "title": "Ubisoft La Forge Animation Dataset（LAFAN1）GitHub",
+     "url": "https://github.com/ubisoft/ubisoft-laforge-animation-dataset"
+    },
+    {
+     "title": "GMR: General Motion Retargeting（GitHub）",
+     "url": "https://github.com/YanjieZe/GMR"
+    },
+    {
+     "title": "BeyondMimic whole_body_tracking（GitHub）",
+     "url": "https://github.com/HybridRobotics/whole_body_tracking"
+    }
+   ],
+   "as_of": "2020"
+  },
+  {
+   "name_zh": "Language-Table 数据集",
+   "name_en": "Language-Table",
+   "abbr": "",
+   "aliases": [
+    "Language Table",
+    "language_table"
+   ],
+   "tier": 3,
+   "one_liner": "谷歌发布的桌面推积木数据集，含近 60 万条带自然语言指令的轨迹。",
+   "explanation": "Language-Table 是谷歌机器人团队随 2022 年论文《Interactive Language: Talking to Robots in Real Time》开源的数据集、仿真环境和基准。场景很简单：UFACTORY xArm6 机械臂装一根圆柱形末端，在桌面上推动彩色积木；动作只是平面上的 2D 位移，频率 5 Hz。数据由 4 台机器人、10 名遥操作员采集，再由众包人员回看视频、标出每段行为的起止并写成指令（即事后重标注）。合计近 60 万条带语言标签的轨迹，其中真机 44.2 万条、人工操作的仿真 18.1 万条，另有若干脚本生成的仿真子集。训练出的策略能执行约 8.7 万种不同的指令说法，估计成功率 93.5%。它主要用于研究实时语言交互和指令跟随，后来也被 Open X-Embodiment 收录。",
+   "example": "操作者可以边看边说，比如先让机器人把某块积木推到另一块旁边，看结果再追加下一句，逐步拼出更复杂的长程目标，机器人实时响应每一句指令。",
+   "related": [
+    "桌面操作",
+    "语言条件策略",
+    "指令跟随",
+    "事后重标注",
+    "Open X-Embodiment 数据集",
+    "PaLM-E"
+   ],
+   "sources": [
+    {
+     "title": "Interactive Language 项目主页",
+     "url": "https://interactive-language.github.io/"
+    },
+    {
+     "title": "google-research/language-table（GitHub）",
+     "url": "https://github.com/google-research/language-table"
+    },
+    {
+     "title": "Interactive Language: Talking to Robots in Real Time (arXiv 2210.06407)",
+     "url": "https://arxiv.org/abs/2210.06407"
+    }
+   ],
+   "as_of": "2022-10"
+  },
+  {
+   "name_zh": "视频动捕（无标记动捕）",
+   "name_en": "Markerless / Video-based Motion Capture",
+   "abbr": "",
+   "aliases": [
+    "无标记动捕",
+    "单目动捕",
+    "Markerless Mocap",
+    "视觉动捕"
+   ],
+   "tier": 3,
+   "one_liner": "不贴标记点、不穿动捕服，直接从普通视频里估计人体三维动作。",
+   "explanation": "视频动捕指不依赖反光标记点或惯性传感器，只用一台或几台普通相机拍摄，再由计算机视觉算法估计人体（包括手）的三维姿态和运动轨迹。与光学动捕相比，它不需要专门场地和穿戴准备，也能处理手机拍摄或互联网视频，因此能大量获取人类动作；代价是精度较低、噪声较多，单目视频还有深度和尺度不确定、遮挡等问题，通常需要后处理或物理约束修正。常用模型有 WHAM、GVHMR（浙江大学，从单目视频恢复世界坐标系下的人体运动）等，手部常用 HaMeR。在具身智能中，它是人形机器人从人类视频学动作、做实时遥操作的数据入口：估计出的人体动作经动作重定向映射到机器人上，再用于训练运动跟踪策略。",
+   "example": "HumanPlus 用一台 RGB 相机实时估计人的身体（WHAM）和手部（HaMeR）姿态，让人形机器人跟随操作员动作；伯克利 VideoMimic 从随手拍的单目视频里同时重建人体轨迹和场景几何，训练人形机器人上下楼梯、坐下和起身。",
+   "related": [
+    "动作捕捉",
+    "光学动捕",
+    "人体网格恢复",
+    "GVHMR",
+    "HumanPlus",
+    "VideoMimic"
+   ],
+   "sources": [
+    {
+     "title": "Motion capture - Wikipedia（Markerless 部分）",
+     "url": "https://en.wikipedia.org/wiki/Motion_capture"
+    },
+    {
+     "title": "HumanPlus: Humanoid Shadowing and Imitation from Humans (arXiv 2406.10454)",
+     "url": "https://arxiv.org/abs/2406.10454"
+    },
+    {
+     "title": "VideoMimic 项目主页",
+     "url": "https://www.videomimic.net/"
+    }
+   ],
+   "as_of": "2025-09"
+  },
+  {
+   "name_zh": "Matterport3D 数据集",
+   "name_en": "Matterport3D",
+   "abbr": "MP3D",
+   "aliases": [
+    "Matterport 3D",
+    "MP3D"
+   ],
+   "tier": 3,
+   "one_liner": "90 栋真实建筑的室内 RGB-D 扫描数据集，是室内导航研究的常用场景库。",
+   "explanation": "Matterport3D（缩写 MP3D）由普林斯顿大学、斯坦福大学等机构的研究者发表于 2017 年 3DV 会议，数据来自 Matterport 三维扫描相机。它覆盖 90 栋建筑规模的真实室内场景，共 194,400 张 RGB-D 图像（彩色图加深度图），拼成 10,800 张全景图，并提供表面重建网格、相机位姿和 2D/3D 语义分割标注。它的意义在于让研究者能在真实房屋的数字副本里训练和评测智能体，不必每次都把机器人搬进真实住宅：视觉语言导航基准 R2R 就建在它之上，Habitat 等仿真平台也把它作为标准场景，用于点目标导航、物体目标导航等任务。后来的 HM3D 把场景数扩展到 1000 个。获取数据前需要签署使用条款。",
+   "example": "R2R 基准在 Matterport3D 的 90 栋建筑里标注了约 2.2 万条导航指令（平均 29 个词），智能体要听懂类似「穿过厨房，在楼梯旁的门口停下」的描述并走到终点。",
+   "related": [
+    "HM3D 数据集",
+    "Habitat",
+    "R2R / VLN-CE 视觉语言导航基准",
+    "视觉语言导航",
+    "物体目标导航",
+    "ScanNet 数据集"
+   ],
+   "sources": [
+    {
+     "title": "Matterport3D 项目主页",
+     "url": "https://niessner.github.io/Matterport/"
+    },
+    {
+     "title": "Room-to-Room (R2R) 数据集主页",
+     "url": "https://bringmeaspoon.org/"
+    }
+   ],
+   "as_of": "2017"
+  },
+  {
+   "name_zh": "MCAP 格式",
+   "name_en": "MCAP",
+   "abbr": "MCAP",
+   "aliases": [
+    ".mcap",
+    "MCAP 文件"
+   ],
+   "tier": 3,
+   "one_liner": "Foxglove 推出的开源多模态日志文件格式，ROS 2 录包默认用它。",
+   "explanation": "MCAP 是机器人软件公司 Foxglove 设计的开源容器文件格式，用来把多路带时间戳的数据（相机图像、点云、关节状态、控制指令等）按发布/订阅的频道存进同一个文件。它不绑定序列化方式，ROS 消息、Protobuf、JSON 等都能存，并把消息结构定义（schema）一起写进文件，代码更新多年后仍能读懂；采用只追加写入，程序意外退出时已写入的数据不易损坏；支持分块 LZ4/Zstd 压缩和索引，便于按时间段快速读取。从 2023 年 5 月的 ROS 2 Iron 起，它取代 SQLite 成为 rosbag2 的默认存储格式。官方提供 C++、Python、Go、Rust、Swift、TypeScript 读写库。在具身数据采集中，它常用作原始录制格式，之后再转成 LeRobot、RLDS 等训练用格式。",
+   "example": "英伟达 Isaac Teleop 遥操作框架用 MCAP 录制和回放采集数据，并能与 LeRobot 数据集格式互通；录好的 .mcap 文件也可以直接用 Foxglove 可视化工具打开回看。",
+   "related": [
+    "rosbag",
+    "ROS 2",
+    "Foxglove",
+    "HDF5 格式",
+    "LeRobot 数据集格式",
+    "Isaac Teleop 遥操作框架"
+   ],
+   "sources": [
+    {
+     "title": "MCAP 官网",
+     "url": "https://mcap.dev/"
+    },
+    {
+     "title": "Foxglove: MCAP as the ROS 2 default bag format",
+     "url": "https://foxglove.dev/blog/mcap-as-the-ros2-default-bag-format"
+    },
+    {
+     "title": "ros2/rosbag2（GitHub）",
+     "url": "https://github.com/ros2/rosbag2"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "BimanualYAM 数据集",
+   "name_en": "MolmoAct2-BimanualYAM Dataset",
+   "abbr": "",
+   "aliases": [
+    "MolmoAct2-BimanualYAM",
+    "MolmoAct 2-Bimanual YAM"
+   ],
+   "tier": 3,
+   "one_liner": "Ai2 为 MolmoAct2 采集开源的双臂遥操作数据集，超过 720 小时。",
+   "explanation": "MolmoAct2-BimanualYAM 是艾伦人工智能研究所（Ai2）2026 年 5 月随 MolmoAct2 模型一起开源的双臂操作数据集，在 Cortex AI 支持下采集整理。数据是两台 I2RT YAM 机械臂的遥操作示教（每臂 6 个关节加 1 个夹爪，动作为 14 维关节位置），总计超过 720 小时；Hugging Face 上的合并版本含 32,246 条轨迹、约 7600 万帧（30 帧/秒），以桌面双臂任务为主，如叠毛巾、扫描商品、给手机充电，每条轨迹附有标注的语言指令。Ai2 称它是迄今最大的开源双臂数据集，数据量是初代 MolmoAct 所用机器人数据的 30 多倍。数据采用 LeRobot v3.0 格式、Apache 2.0 协议，可直接用来预训练或微调双臂 VLA。",
+   "example": "MolmoAct2 把这份数据作为主要训练数据之一，再混入其他机器人数据集；Ai2 称训练后的模型不必针对每个任务单独微调就能完成双臂操作。",
+   "related": [
+    "MolmoAct",
+    "I2RT YAM 机械臂",
+    "双臂操作",
+    "遥操作",
+    "LeRobot 数据集格式",
+    "艾伦人工智能研究所"
+   ],
+   "sources": [
+    {
+     "title": "Ai2 博客：MolmoAct 2",
+     "url": "https://allenai.org/blog/molmoact2"
+    },
+    {
+     "title": "allenai/MolmoAct2-BimanualYAM-Dataset（Hugging Face）",
+     "url": "https://huggingface.co/datasets/allenai/MolmoAct2-BimanualYAM-Dataset"
+    },
+    {
+     "title": "MolmoAct2: Action Reasoning Models for Real-world Deployment (arXiv 2605.02881)",
+     "url": "https://arxiv.org/abs/2605.02881"
+    }
+   ],
+   "as_of": "2026-06"
+  },
+  {
+   "name_zh": "神经轨迹",
+   "name_en": "Neural Trajectories",
+   "abbr": "",
+   "aliases": [
+    "神经轨迹数据"
+   ],
+   "tier": 3,
+   "one_liner": "用视频世界模型生成、再补上伪动作标签的合成机器人训练数据。",
+   "explanation": "神经轨迹是英伟达 GEAR 实验室在 GR00T N1（2025 年 3 月）和 DreamGen（2025 年 5 月）中使用的说法，指由视频世界模型生成的合成机器人数据。流程分四步：先在目标机器人的真实数据上微调视频生成模型，让它学会这台机器人的外观和运动方式；再给定初始画面和语言指令，生成机器人执行任务的视频，可以是没采集过的新动作或新环境；然后用潜在动作模型或逆动力学模型（由前后画面反推动作的模型）给视频补上伪动作标签；最后把这些视频加伪动作与真实数据一起训练视觉运动策略。与仿真合成数据相比，它不需要搭建仿真场景和资产，但生成画面的物理合理性不一定可靠，需要专门评估，DreamGen Bench 就是为此设计的。",
+   "example": "GR00T N1 在约 88 小时真机数据的基础上生成了约 827 小时神经轨迹（约 10 倍），用 3600 块 L40 GPU 花了约 1.5 天；与真实数据协同训练后，GR-1 人形机器人 8 个真机任务的平均成功率提高 5.8 个百分点。",
+   "related": [
+    "DreamGen（GR00T Dreams）",
+    "GR00T N1 系列",
+    "合成数据",
+    "伪动作标签",
+    "逆动力学模型",
+    "潜在动作模型"
+   ],
+   "sources": [
+    {
+     "title": "DreamGen 项目主页（NVIDIA GEAR）",
+     "url": "https://research.nvidia.com/labs/gear/dreamgen/"
+    },
+    {
+     "title": "GR00T N1: An Open Foundation Model for Generalist Humanoid Robots (arXiv 2503.14734)",
+     "url": "https://arxiv.org/abs/2503.14734"
+    },
+    {
+     "title": "DreamGen: Unlocking Generalization in Robot Learning through Video World Models (arXiv 2505.12705)",
+     "url": "https://arxiv.org/abs/2505.12705"
+    }
+   ],
+   "as_of": "2025-06"
+  },
+  {
+   "name_zh": "空操作 / 静止帧过滤",
+   "name_en": "No-op (Idle) Action Filtering",
+   "abbr": "",
+   "aliases": [
+    "No-op Filtering",
+    "空动作过滤",
+    "静止帧剔除",
+    "no_noops"
+   ],
+   "tier": 3,
+   "one_liner": "训练前删掉示教里机器人没动的时间步，避免模型学会「原地卡住」。",
+   "explanation": "空操作（no-op）指示教轨迹里动作几乎为零、机器人状态不变的时间步，常见于遥操作开头的等待、操作员中途停顿，或录制程序在第一步填入的零动作。空操作过滤就是在训练前把这些时间步删掉。原因是模仿学习会照单全收：表达能力强的单步策略学到这些样本后，部署时可能在某个状态反复输出零动作，机器人就停在那里不动。OpenVLA（2024）论文记录了这个问题：原始 BridgeData V2 每条示教的第一步都是全零动作，不处理直接训练，策略会频繁输出零动作而卡住；在 LIBERO 上，他们删掉平移和旋转分量接近零、且不改变夹爪状态的动作，并称这一步对 OpenVLA 这类模型至关重要。判断时必须同时看夹爪，否则会误删手臂不动、只开合夹爪的有效动作。",
+   "example": "OpenVLA 开源脚本的判定规则是：除夹爪外各维动作的范数小于 1e-4，且夹爪指令与上一步相同。处理后的 LIBERO 数据名带 no_noops 后缀，π0 的官方代码 openpi 做 LIBERO 微调时也直接用这份数据。",
+   "related": [
+    "数据清洗",
+    "OpenVLA",
+    "LIBERO",
+    "BridgeData V2 数据集",
+    "行为克隆",
+    "数据质检"
+   ],
+   "sources": [
+    {
+     "title": "OpenVLA: An Open-Source Vision-Language-Action Model (arXiv 2406.09246)",
+     "url": "https://arxiv.org/abs/2406.09246"
+    },
+    {
+     "title": "OpenVLA regenerate_libero_dataset.py（GitHub）",
+     "url": "https://github.com/openvla/openvla/blob/main/experiments/robot/libero/regenerate_libero_dataset.py"
+    },
+    {
+     "title": "openpi convert_libero_data_to_lerobot.py（GitHub）",
+     "url": "https://github.com/Physical-Intelligence/openpi/blob/main/examples/libero/convert_libero_data_to_lerobot.py"
+    }
+   ],
+   "as_of": "2024-06"
+  },
+  {
+   "name_zh": "Isaac Teleop 遥操作框架",
+   "name_en": "NVIDIA Isaac Teleop",
+   "abbr": "",
+   "aliases": [
+    "Isaac Teleop",
+    "IsaacTeleop",
+    "IsaacCapture"
+   ],
+   "tier": 3,
+   "one_liner": "英伟达开源的遥操作与数据采集框架，统一接入 XR 头显、手套等设备。",
+   "explanation": "Isaac Teleop 是英伟达开源（Apache 2.0）的遥操作与示教数据采集框架，2025 年 11 月发布首个版本，从 Isaac Lab 3.0 Beta 起与其配套，也支持 Isaac Sim、ROS 2 和真机。它要解决的是每种头显、手套、机器人都得单独写对接代码、数据格式各不相同的问题：统一接入 Apple Vision Pro、PICO、Quest 等 XR 头显和数据手套、脚踏板、身体追踪器，并统一打时间戳；用可组合的重定向模块把人的动作映射到不同机器人；用 MCAP 录制回放，并与 LeRobot 格式互通。已支持 XR 控制夹爪或灵巧手、坐姿全身遥操作（HOMIE）、基于 SONIC 的全身遥操作，以及不用机器人的第一人称采集。据 GitHub 信息，2026 年仓库已更名为 NVIDIA/IsaacCapture，文档仍称 Isaac Teleop。",
+   "example": "在 Isaac Lab 里戴上 Apple Vision Pro 等 XR 头显，用手部动作遥操作仿真中的机械臂完成示教，录下的 MCAP 数据再转成 LeRobot 格式用来训练策略。",
+   "related": [
+    "遥操作",
+    "VR 遥操作",
+    "动作重定向",
+    "Isaac Lab",
+    "MCAP 格式",
+    "HOMIE"
+   ],
+   "sources": [
+    {
+     "title": "NVIDIA Isaac Teleop（GitHub，现为 NVIDIA/IsaacCapture）",
+     "url": "https://github.com/NVIDIA/IsaacCapture"
+    },
+    {
+     "title": "Isaac Teleop Architecture 文档",
+     "url": "https://github.com/NVIDIA/IsaacCapture/blob/main/docs/source/overview/architecture.rst"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "NVIDIA 物理 AI 数据集",
+   "name_en": "NVIDIA Physical AI Dataset",
+   "abbr": "",
+   "aliases": [
+    "PhysicalAI 数据集",
+    "NVIDIA PhysicalAI Dataset",
+    "英伟达物理 AI 数据集"
+   ],
+   "tier": 3,
+   "one_liner": "英伟达在 Hugging Face 上开放的机器人与自动驾驶数据集合集。",
+   "explanation": "NVIDIA Physical AI Dataset 是英伟达在 2025 年 3 月 18 日 GTC 大会上宣布、托管在 Hugging Face 的开放数据集合集，面向机器人和自动驾驶等物理 AI 开发，真实与合成数据兼有。首批约 15 TB，含 32 万多条机器人训练轨迹和最多 1000 个 OpenUSD 资产。它不是单个文件，而是 nvidia 账号下一系列以 PhysicalAI- 开头的数据集，例如 GR00T N1 后训练用的仿真轨迹、GR00T 遥操作数据、SimReady 仓库资产、约 1700 小时的多传感器自动驾驶数据，以及 2026 年新增的世界模型合成场景数据。截至 2026 年 9 月，这一前缀下已有 40 多个数据集，各子集许可证不同，使用前要分别查看。",
+   "example": "GR00T-X-Embodiment-Sim 子集提供 GR00T N1 后训练用的仿真轨迹，仅 GR-1 人形机器人桌面操作部分就有 24 万条，可直接下载用来微调 GR00T。",
+   "related": [
+    "英伟达",
+    "GR00T N1 系列",
+    "合成数据",
+    "SimReady 资产",
+    "自动驾驶",
+    "物理AI"
+   ],
+   "sources": [
+    {
+     "title": "NVIDIA 博客：NVIDIA Releases Open Physical AI Dataset",
+     "url": "https://blogs.nvidia.com/blog/open-physical-ai-dataset/"
+    },
+    {
+     "title": "nvidia/PhysicalAI-Robotics-GR00T-X-Embodiment-Sim（Hugging Face）",
+     "url": "https://huggingface.co/datasets/nvidia/PhysicalAI-Robotics-GR00T-X-Embodiment-Sim"
+    }
+   ],
+   "as_of": "2026-09"
+  }
+ ]
+}

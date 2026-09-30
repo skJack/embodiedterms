@@ -1,0 +1,230 @@
+{
+ "batch": "data-02",
+ "terms": [
+  {
+   "key": "data-02#0",
+   "name_en": "Teleoperation",
+   "aliases": [
+    "teleop",
+    "Remote Operation"
+   ],
+   "one_liner": "A human controls a robot in real time while the process is recorded to produce training data.",
+   "explanation": "Teleoperation originally just means operating a machine from a distance — the everyday term “remote control” in academic and technical usage. In embodied AI it is the primary way to collect demonstration data: an operator issues commands through a leader-follower arm, a VR headset, a 3D mouse, or a motion-capture glove, the robot follows along, and the system simultaneously logs camera footage, joint state, and the action taken at every step, producing the “observation-action” pairs that imitation learning needs. Because the data is recorded directly on the robot's own body, the resulting policy can be deployed as-is, with no mismatch between a human hand and a robotic one; the trade-off is that it needs a real robot and a skilled data collector, and is slow and expensive. Handheld capture devices like UMI, and learning from human video, both exist to get around this bottleneck.",
+   "example": "The ALOHA bimanual platform uses leader-follower teleoperation: an operator moves a pair of leader arms while a matching pair of follower arms tracks them in real time, with the whole hardware setup costing about $20,000. On most tasks, ACT needed just 50 such recorded demonstrations (about 10–20 minutes) to learn fine-grained skills like uncapping a condiment jar or inserting a battery into a remote control.",
+   "related": [
+    "Demonstration Data",
+    "Leader-Follower Teleoperation",
+    "VR Teleoperation",
+    "Data Collector (Teleoperator)",
+    "Imitation Learning",
+    "Universal Manipulation Interface"
+   ]
+  },
+  {
+   "key": "data-02#1",
+   "name_en": "Universal Manipulation Interface",
+   "aliases": [
+    "UMI",
+    "UMI Gripper",
+    "Handheld UMI Collection"
+   ],
+   "one_liner": "A handheld gripper for recording demonstrations without a real robot, producing data that trains policies deployable on actual arms.",
+   "explanation": "UMI was proposed in February 2024 by researchers at Stanford, Columbia, and the Toyota Research Institute (Cheng Chi, Shuran Song, and colleagues). A person holds a 3D-printed parallel gripper and performs tasks directly; the gripper carries a 155° fisheye GoPro plus small mirrors on either side for extra viewpoints. Afterward, the visual SLAM algorithm ORB-SLAM3, combined with the GoPro's built-in IMU (inertial measurement unit), recovers the gripper's 6-degree-of-freedom pose in space, while marker tracking recovers how far the fingers opened, together yielding action labels. Because the handheld gripper matches the position of the gripper and camera mounted on a real robot, collection needs no robot present at all, so data can be gathered at home, outdoors, or anywhere in the real world. Paired with latency matching (compensating for the different camera and motor delays across robots) and a relative-trajectory action representation, the same policy can be deployed on both a UR5e and a Franka.",
+   "example": "The paper trained policies on UMI data that could set a cup down, wash dishes, toss objects into matching bins, and fold clothes with two arms. The gripper hardware costs about $73, the GoPro and accessories about $298, and on the cup-placing task it collected about 111 demonstrations per hour — more than 3 times faster than SpaceMouse (3D mouse) teleoperation.",
+   "related": [
+    "Handheld Gripper Data Collection",
+    "Robot-free (Embodiment-free) Data Collection",
+    "FastUMI: A Scalable and Hardware-Independent Universal Manipulation Interface",
+    "UMI on Legs: Making Manipulation Policies Mobile with Manipulation-Centric Whole-body Controllers",
+    "DexUMI: Using Human Hand as the Universal Manipulation Interface for Dexterous Manipulation",
+    "RDT2 (Robotics Diffusion Transformer 2): Exploring the Scaling Limit of UMI Data Towards Zero-Shot Cross-Embodiment Generalization"
+   ]
+  },
+  {
+   "key": "data-02#2",
+   "name_en": "VR Teleoperation",
+   "aliases": [
+    "XR Teleoperation",
+    "Headset Teleoperation"
+   ],
+   "one_liner": "Controlling a robot in real time by wearing a VR/XR headset and using hand tracking or controllers.",
+   "explanation": "VR teleoperation is a form of teleoperation: the operator wears a VR/XR headset, which displays the video streamed back from the robot's camera; the headset's hand tracking or controllers read out the human's wrist and finger poses, which are then converted into robot commands through inverse kinematics and motion retargeting (translating human hand pose into robot joint angles). It is cheaper and more portable than a leader-follower arm, and suits humanoid robots and dexterous hands, which have many more degrees of freedom — datasets such as BridgeData V2, DROID, and AgiBot World have all used it. Its downside is that it usually has no force feedback, and hand tracking has latency and jitter, making it less stable than a leader-follower arm for fine-contact tasks; AgiBot World's paper also notes that its VR setup could only produce a few preset dexterous-hand gestures, switching to motion capture for more complex tasks.",
+   "example": "Open-TeleVision uses an Apple Vision Pro to control a Unitree H1: the robot's head follows the operator's head movements, its stereo camera feed streams back to the headset, and both hands follow via dex-retargeting; Unitree's open-source xr_teleoperate supports Apple Vision Pro, PICO 4 Ultra Enterprise, and Meta Quest 3, and saves each episode for imitation learning.",
+   "related": [
+    "Teleoperation",
+    "Open-TeleVision: Teleoperation with Immersive Active Visual Feedback",
+    "Apple Vision Pro",
+    "Motion Retargeting",
+    "Unitree xr_teleoperate",
+    "VR Headset"
+   ]
+  },
+  {
+   "key": "data-02#3",
+   "name_en": "Action Label",
+   "aliases": [
+    "Action Annotation"
+   ],
+   "one_liner": "The action value a robot executed at each moment in a dataset — the “answer” imitation learning tries to fit.",
+   "explanation": "An action label is the action value aligned with each frame of observation in robot data — end-effector displacement and rotation, target joint angles, gripper opening. During teleoperation, the system records it directly; handheld capture methods like UMI instead recover it afterward with algorithms such as SLAM. Behavior cloning treats the observation as input and the action label as the supervision signal, so a label's frequency, coordinate frame, and whether it's absolute or incremental all directly shape what the model learns; RT-1-X and similar models unify data from different sources into a 7-dimensional action (3 for position, 3 for rotation, 1 for the gripper). Action labels can only be captured on a robot or with special equipment, which is the main reason robot data is expensive — hence approaches that use an inverse dynamics model to add pseudo action labels to video, or that learn latent actions instead.",
+   "example": "OpenAI's VPT first trained an inverse dynamics model on 1,962 hours of Minecraft footage recorded by contractors along with their keyboard and mouse input, then used it to add pseudo action labels to about 70,000 hours of web video, ultimately training an agent capable of crafting a diamond tool.",
+   "related": [
+    "Observation-Action Pair",
+    "Behavior Cloning",
+    "Action Space",
+    "Pseudo Action Labels",
+    "Inverse Dynamics Model",
+    "Action-free Video"
+   ]
+  },
+  {
+   "key": "data-02#4",
+   "name_en": "Action-free Video",
+   "aliases": [
+    "Actionless Video"
+   ],
+   "one_liner": "Video that has only images, no frame-by-frame action record, like human videos and web videos.",
+   "explanation": "Action-free video means an image sequence with no frame-by-frame action labels, commonly sourced from human-manipulation videos on the web, egocentric video, and robot footage where only the images were kept. It vastly outnumbers robot data with actions attached, and it carries a great deal of information about how objects move and how tasks are broken down, but it cannot be used directly for behavior cloning. Common uses fall into a few groups: training an inverse dynamics model to fill in pseudo action labels; learning discrete “latent actions” from adjacent-frame changes for pretraining, as in LAPA and Genie; first generating future frames and then inferring the action, as in UniPi and AVDC; or using it only to pretrain visual representations and world models. LAPA reports that a model pretrained this way outperformed a VLA trained with robot action labels on real-robot tasks.",
+   "example": "AVDC trains using only action-free RGB video: it first synthesizes video of a robot completing the task with a video-generation model, then infers how the robot should move from the dense correspondence (optical flow) between adjacent frames, validated on tabletop manipulation and navigation tasks.",
+   "related": [
+    "Latent Action Pretraining",
+    "Human Video Data",
+    "Internet Video Data",
+    "Pseudo Action Labels",
+    "Latent Action Model",
+    "Imitation from Observation"
+   ]
+  },
+  {
+   "key": "data-02#5",
+   "name_en": "AgiBot World",
+   "aliases": [
+    "AgiBot World Colosseo",
+    "AgiBot World Alpha",
+    "AgiBot World Beta",
+    "AgiBot World 2026"
+   ],
+   "one_liner": "A large-scale real-robot manipulation dataset from AgiBot and partners, with the Beta release exceeding a million trajectories.",
+   "explanation": "AgiBot World is a real-robot manipulation dataset released by AgiBot Robotics together with the University of Hong Kong, the Shanghai AI Laboratory, and others. The Alpha release, in December 2024, contained about 92,000 trajectories; the Beta release, in March 2025, expanded to over 1 million trajectories (about 2,976 hours), covering 217 tasks across 5 scene categories, recorded by 100 AgiBot G1 robots teleoperated with VR and motion capture inside roughly 4,000 square meters of collection space, with task- and substep-level language annotations checked by human quality control; AgiBot's own GO-1 model was trained on it. AgiBot World 2026, a preview released in 2026, switches to the G2 robot collecting in real commercial spaces and homes. It is licensed CC BY-NC-SA 4.0 and cannot be used commercially.",
+   "example": "The technical report states that a policy pretrained on AgiBot World outperformed one pretrained on Open X-Embodiment by about 30% on average, both in-distribution and out-of-distribution.",
+   "related": [
+    "AgiBot",
+    "Genie Operator-1 (AgiBot GO-1)",
+    "Open X-Embodiment",
+    "Embodied AI Training Ground (Robot Data Collection Center)",
+    "Real-Robot Data",
+    "AgiBot Genie G1"
+   ]
+  },
+  {
+   "key": "data-02#6",
+   "name_en": "AMASS (Archive of Motion Capture as Surface Shapes)",
+   "aliases": [
+    "AMASS"
+   ],
+   "one_liner": "A large human-motion library that unifies 15 optical motion-capture datasets into the SMPL body-model format.",
+   "explanation": "AMASS was proposed by Mahmood, Black, and colleagues at the Max Planck Institute for Intelligent Systems in Germany, published at ICCV 2019. Before it, different optical mocap datasets each used their own marker layouts and skeleton definitions, making them hard to combine. The authors used a method called MoSh++ to fit raw marker data to sequences of the SMPL parametric body model (which describes a person's pose and shape with a few dozen parameters), unifying 15 datasets into more than 300 subjects, over 11,000 motion sequences, and more than 40 hours in total. In embodied AI it is a standard source of human motion for training humanoid robots' motion tracking and whole-body control: SMPL motions are first retargeted into robot joint trajectories, then a policy is trained in simulation with reinforcement learning to track them. It requires registration and is intended for research use.",
+   "example": "H2O retargeted about 13,000 motions from AMASS onto the Unitree H1, yielding 10,000 retargeted sequences, then used an imitation policy in simulation to filter out motions the robot physically couldn't perform, leaving about 8,500 sequences for training a whole-body humanoid teleoperation policy.",
+   "related": [
+    "Skinned Multi-Person Linear Model",
+    "Motion Retargeting",
+    "Motion Tracking",
+    "Optical Motion Capture",
+    "LAFAN1 (Ubisoft La Forge Animation Dataset)",
+    "H2O: Learning Human-to-Humanoid Real-Time Whole-Body Teleoperation"
+   ]
+  },
+  {
+   "key": "data-02#7",
+   "name_en": "Apple Vision Pro",
+   "aliases": [
+    "AVP"
+   ],
+   "one_liner": "Apple's head-mounted display, whose hand tracking embodied-AI researchers commonly use for teleoperation and collecting human data.",
+   "explanation": "Apple Vision Pro is a headset Apple unveiled at WWDC in June 2023 and began selling in the US on February 2, 2024, starting at $3,499; it originally shipped with an M2 chip plus an R1 chip dedicated to processing sensor input, and has 12 cameras, 5 sensors, and 6 microphones, with an M5 version following in October 2025. It is not a robotics product, but its system tracks the wrist and fingers' 3D pose in real time and has a high-resolution stereo display, so embodied-AI research has adopted it for teleoperation: a human's hand motion, after retargeting, drives the robot, and the robot's head camera streams back to the headset. It can also record egocentric video and 3D hand trajectories in sync while a person does chores, which is used to collect human manipulation data.",
+   "example": "Open-TeleVision used a Vision Pro to remotely control a Unitree H1 — the author, at MIT, controlled a robot physically located at UC San Diego; Apple itself used Vision Pro to record EgoDex, an 829-hour, 194-task egocentric dataset of human hand manipulation.",
+   "related": [
+    "VR Teleoperation",
+    "VR Headset",
+    "Open-TeleVision: Teleoperation with Immersive Active Visual Feedback",
+    "EgoDex",
+    "Egocentric Video",
+    "Meta Quest 3 / PICO 4 Ultra XR Headsets"
+   ]
+  },
+  {
+   "key": "data-02#8",
+   "name_en": "BridgeData V2",
+   "aliases": [
+    "Bridge Dataset",
+    "Bridge V2"
+   ],
+   "one_liner": "A roughly 60,000-trajectory multi-task manipulation dataset collected by UC Berkeley on a low-cost WidowX arm.",
+   "explanation": "BridgeData V2 was released in August 2023 by UC Berkeley's Sergey Levine group and others, collected entirely on a 6-DoF WidowX 250 arm, totaling 60,096 trajectories: 50,365 are demonstrations from VR-controller teleoperation, and 9,731 come from a scripted pick-and-place policy. It covers 24 environments — a toy kitchen, a sink, a tabletop — and 13 skill categories such as pick-and-place, pushing, wiping, opening and closing drawers, and folding cloth, recorded at a 5 Hz control frequency, with every trajectory paired with a language instruction and released under a CC BY 4.0 license. Because the hardware is cheap and the data is open, it was folded into Open X-Embodiment and is a staple for pretraining and evaluating open models like Octo and OpenVLA.",
+   "example": "SimplerEnv recreates Bridge's WidowX setup in simulation, with four tasks — put the spoon on the towel, put the carrot on the plate, stack the green block on the yellow one, and put the eggplant in the basket — designed specifically to evaluate policies trained on Bridge data.",
+   "related": [
+    "Open X-Embodiment",
+    "Trossen Robotics WidowX 250",
+    "SimplerEnv (SIMPLER: Simulated Manipulation Policy Evaluation for Real Robot Setups)",
+    "OpenVLA: An Open-Source Vision-Language-Action Model",
+    "Octo: An Open-Source Generalist Robot Policy",
+    "Teleoperation"
+   ]
+  },
+  {
+   "key": "data-02#9",
+   "name_en": "Cross-Embodiment Data",
+   "aliases": [
+    "Multi-Embodiment Data",
+    "X-Embodiment Data"
+   ],
+   "one_liner": "Data collected from many different kinds of robots and pooled together for training.",
+   "explanation": "Cross-embodiment data refers to a collection of data drawn from multiple robot embodiments (a robot's specific physical hardware form) whose shape, degrees of freedom, camera placement, and action space all differ — single arms, dual arms, mobile bases, and humanoids among them. A single lab's data is limited in volume, so pooling data from many labs is meant to help a model learn skills that don't depend on any one particular robot, benefiting every embodiment involved. The leading example is Open X-Embodiment, led by Google DeepMind in 2023: 60 datasets from 34 labs, 22 kinds of robots, and more than 1 million trajectories, unified into RLDS format. The difficulty is that different labs' actions and observations don't line up, requiring normalization, a unified action space, or an embodiment-specific output head for each robot; a poorly chosen mixture can even cause negative transfer.",
+   "example": "RT-1-X, trained on Open X-Embodiment, averaged about a 50% higher success rate than the original methods each lab trained using only its own data, on several tasks from labs with small datasets.",
+   "related": [
+    "Cross-Embodiment",
+    "Open X-Embodiment",
+    "Embodiment Gap",
+    "Unified Action Space",
+    "Embodiment-specific Head",
+    "Positive / Negative Transfer"
+   ]
+  },
+  {
+   "key": "data-02#10",
+   "name_en": "Data Annotation",
+   "aliases": [
+    "Data Labeling"
+   ],
+   "one_liner": "Adding text descriptions, segment boundaries, bounding boxes, and other labels to raw data to tell a model what it is.",
+   "explanation": "Data annotation means attaching labels to raw data that a human can understand and a model can use as a supervision signal — the classic example is labeling an image's category or drawing a bounding box. In robot data, actions are already recorded automatically during collection, so what mostly needs adding is: the language instruction for the whole task, where a task splits into subtasks and their start/end times, bounding boxes around target objects, and whether the attempt succeeded or failed and why. These labels determine whether a language-conditioned policy can actually understand instructions, and whether a long-horizon task can be learned as a sequence of steps. Annotation can be done entirely by hand, or generated automatically by a vision-language model and then checked by a human. Labeled data costs far more than raw data, and inconsistency between annotators can directly hurt model performance.",
+   "example": "The AgiBot World 2026 dataset provides three layers of annotation: task-frame segmentation with subtask instructions, 2D bounding boxes for object interactions, and step-level instruction segmentation with atomic skills; DROID's December 2024 update added 3 natural-language descriptions to each of about 75,000 successful trajectories.",
+   "related": [
+    "Language Annotation",
+    "Subtask Segmentation",
+    "Auto-labeling",
+    "Action Label",
+    "Data Quality Inspection",
+    "Hindsight Relabeling"
+   ]
+  },
+  {
+   "key": "data-02#11",
+   "name_en": "Data Cleaning",
+   "aliases": [
+    "Data Cleansing"
+   ],
+   "one_liner": "Finding and fixing or removing bad data before training, such as failed trajectories, empty actions, or misaligned frames.",
+   "explanation": "Data cleaning means identifying and fixing or removing corrupted, wrong, or irrelevant records in a dataset — a general step in data processing. Common problems in robot data include: trajectories that were never finished or where the operator made a mistake; idle frames with no motion at the start or end; all-zero actions; timestamps from multiple cameras and joint sensors that aren't aligned; dropped frames; sensor readings that jump unexpectedly; and language instructions that don't match what actually happened. This kind of noise teaches imitation learning to copy the pauses and jitter along with everything else. Cleaning methods include rule-based filtering, statistical anomaly detection, and manual spot-checking, or training a policy on a small cleaned batch first and seeing how it performs on the robot. Not all failure data should be deleted — failures and correction segments with the reason labeled are useful for learning to recover from mistakes.",
+   "example": "The OpenVLA paper attributes part of its improvement over RT-2-X to more careful data cleaning, such as removing all-zero actions from the Bridge data; AgiBot World's ablation study also shows that human-verified data raised the task-completion score by 0.18.",
+   "related": [
+    "Data Quality Inspection",
+    "Data Curation",
+    "No-op (Idle) Action Filtering",
+    "Valid (Usable) Data",
+    "Failure Data",
+    "Multi-sensor Time Synchronization / Timestamp Alignment"
+   ]
+  }
+ ]
+}

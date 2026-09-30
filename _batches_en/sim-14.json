@@ -1,0 +1,113 @@
+{
+  "batch": "sim-14",
+  "terms": [
+    {
+      "key": "sim-14#0",
+      "name_en": "Navigation Error / Oracle Success Rate / Trajectory Length",
+      "aliases": ["NE", "OSR", "OS", "TL", "Oracle Success"],
+      "one_liner": "The three standard Vision-and-Language Navigation metrics: how close the agent stops to the goal, whether it ever passed it, and total distance traveled.",
+      "explanation": "These three metrics are a standard fixture in Vision-and-Language Navigation (VLN — following a natural-language instruction to reach a goal inside a house) results tables, used since Anderson and colleagues introduced the R2R benchmark at CVPR 2018. Navigation Error (NE) is the shortest-path distance, in meters, from where the agent finally stops to the goal; lower is better, and R2R counts an episode successful if NE is under 3 meters. Oracle Success Rate (OSR, sometimes written OS) instead asks whether the episode would count as successful if the agent had stopped at the point on its own trajectory closest to the goal — this separates “walked past the goal but didn't stop there” from “never got close at all.” Trajectory Length (TL) is the total distance actually walked; an unusually long TL signals wandering or backtracking. The three are normally reported together with Success Rate, SPL, and nDTW.",
+      "example": "In the original R2R paper, on a test set of previously unseen buildings, human annotators reached an 86.4% success rate while the authors' sequence-to-sequence baseline achieved only 20.4%.",
+      "related": ["Vision-and-Language Navigation", "Room-to-Room / VLN in Continuous Environments", "Success Rate", "Success weighted by Path Length", "normalized Dynamic Time Warping"]
+    },
+    {
+      "key": "sim-14#1",
+      "name_en": "normalized Dynamic Time Warping",
+      "aliases": ["nDTW", "normalized DTW"],
+      "one_liner": "A 0-to-1 navigation metric for how closely an agent's path matches the shape and order of a reference path.",
+      "explanation": "nDTW was proposed by Ilharco, Baldridge, and colleagues in 2019 to evaluate agents that navigate by following language instructions. Success Rate only checks the endpoint, and SPL only checks whether the path avoided needless detours — neither cares whether the agent actually followed the route the instruction described. nDTW borrows Dynamic Time Warping (DTW) from time-series analysis, which aligns two sequences of different lengths in order and sums the distance between aligned points, to compute the minimum cumulative distance between the agent's path and the reference path. That distance is then passed through an exponential function to normalize it to a 0–1 score, where higher is better: it penalizes deviation smoothly and stays sensitive to the order in which places are visited. The authors' human evaluation found it tracks human rankings better than other metrics. The same paper also proposes SDTW, which scores 0 on failed episodes and nDTW on successful ones. It is commonly reported alongside NE, SR, and SPL on R2R, R4R, and VLN-CE.",
+      "example": "An instruction says to enter the kitchen before going to the bedroom, but the agent walks straight to the bedroom — it reaches the right endpoint, so Success Rate still counts it as a success, but because the route skipped the kitchen, nDTW would score it noticeably lower.",
+      "related": ["Navigation Error / Oracle Success Rate / Trajectory Length", "Success weighted by Path Length", "Vision-and-Language Navigation", "Room-to-Room / VLN in Continuous Environments", "Success Rate"]
+    },
+    {
+      "key": "sim-14#2",
+      "name_en": "Numerical Integrator (Semi-implicit Euler / RK4)",
+      "aliases": ["Semi-implicit Euler", "Symplectic Euler", "RK4", "Fourth-order Runge-Kutta", "Implicit Integration"],
+      "one_liner": "The numerical method a physics engine uses each step to advance velocity and position forward in time given the current forces.",
+      "explanation": "At every simulation step, a physics engine first computes acceleration from the forces acting on a body, then hands off to an integrator to advance velocity and position to the next instant. The most naive method, explicit Euler, updates position using the old velocity; in spring-like systems this steadily manufactures energy out of nowhere until the simulation diverges. Semi-implicit (or symplectic) Euler just swaps the order — update velocity first, then use the new velocity to update position — which is still only first-order accurate but far more stable, and is what most game physics engines use. RK4 (fourth-order Runge-Kutta) evaluates the derivative four times per step for higher accuracy, at roughly four times the cost. Implicit integration folds velocity-dependent forces like damping into the equations being solved, letting it tolerate much larger timesteps. MuJoCo defaults to semi-implicit Euler with implicit joint damping, though its documentation recommends switching most models to implicitfast. The integrator, together with the simulation timestep, determines whether a simulation stays stable or “blows up.”",
+      "example": "Setting integrator to implicitfast in a MuJoCo model's option element, while keeping the default 0.002-second timestep, is usually more stable than the default Euler integrator at a similar computational cost.",
+      "related": ["Physics Engine", "Simulation Timestep", "Substeps", "Simulation Instability (Blow-up)", "MuJoCo (Multi-Joint dynamics with Contact)", "Constraint Solver"]
+    },
+    {
+      "key": "sim-14#3",
+      "name_en": "NVIDIA Isaac Lab-Arena",
+      "aliases": ["Isaac Lab Arena", "IsaacLab-Arena"],
+      "one_liner": "An open-source NVIDIA extension to Isaac Lab for composing simulation benchmarks and evaluating robot policies in parallel.",
+      "explanation": "Isaac Lab-Arena is an open-source framework built on top of Isaac Lab, developed by NVIDIA together with the simulation-data company Lightwheel and formally introduced on NVIDIA's blog in January 2026; it is still in alpha. Large-scale evaluation used to mean hand-writing a scene and a script for every single task. Isaac Lab-Arena instead splits an environment into three freely combinable pieces: the scene (which objects are placed where), the embodiment (the robot along with its sensors and controllers), and the task (what needs to be accomplished). It supports perturbation testing of lighting, cameras, and object properties, tracks progress through subtasks such as grasping and placing, and can run thousands of environments simultaneously on a GPU. It plugs into LeRobot's EnvHub, so it can evaluate models such as GR00T and π0.5, and it already ships adapted versions of RoboCasa, LIBERO, and RoboTwin 2.0.",
+      "example": "In a comparison NVIDIA published on its blog, running the same batch of evaluations in parallel with Isaac Lab-Arena took 0.76 hours, versus 34.9 hours running them one at a time.",
+      "related": ["NVIDIA Isaac Lab", "Simulation-based Evaluation", "Benchmark", "LeRobot EnvHub", "RoboFinals (Lightwheel industrial-grade simulation evaluation platform)", "RoboCasa (RoboCasa365)"]
+    },
+    {
+      "key": "sim-14#4",
+      "name_en": "NVIDIA Omniverse Replicator",
+      "aliases": ["Replicator", "omni.replicator"],
+      "one_liner": "NVIDIA Omniverse's synthetic-data framework that randomizes simulated scenes and automatically outputs labeled training data.",
+      "explanation": "Replicator is the framework inside NVIDIA's Omniverse platform for building synthetic data generation (SDG) pipelines, integrated into Isaac Sim as the omni.replicator extension. Collecting and labeling real images is expensive, whereas in simulation the position, category, and depth of every object are already known exactly, so labels come for free and are perfectly accurate. It has three main pieces: randomizers, which sample assets, materials, lighting, and camera poses following the domain-randomization approach; annotators, which output ground truth such as 2D/3D bounding boxes, semantic and instance segmentation, and depth; and writers, which save the results in whatever format a given model needs. In robotics it is commonly used to train perception models such as object detectors and pose estimators, and the Isaac Sim documentation also gives examples for navigation and manipulation scenes.",
+      "example": "NVIDIA-AI-IOT's open-source pallet-detection model (sdg_pallet_model) was trained entirely on synthetic data generated with Replicator, and can be deployed to Jetson hardware with TensorRT.",
+      "related": ["Synthetic Data", "Domain Randomization", "NVIDIA Isaac Sim", "NVIDIA Omniverse", "Visual Randomization", "Photorealistic Rendering"]
+    },
+    {
+      "key": "sim-14#5",
+      "name_en": "Off-Policy Evaluation",
+      "aliases": ["OPE", "Off-Policy Policy Evaluation"],
+      "one_liner": "Estimating how much return a new policy would actually get once deployed, using only data collected by other policies.",
+      "explanation": "Off-policy evaluation is a class of problem in reinforcement learning: data was collected by some behavior policy, and the goal is to estimate the expected return of a different target policy without letting it interact with the environment. Testing a policy on a real robot requires a human minder and wears down hardware, so if bad policies can be screened out using existing logs first, it saves a great deal of evaluation cost, and it also helps offline reinforcement learning pick checkpoints and hyperparameters. Common methods include importance sampling (reweighting old data by the ratio of the probability that each policy would pick the same action), fitted Q evaluation (FQE, which fits the target policy's Q-function from data), doubly robust estimation, and model-based approaches. Fu and colleagues' 2021 DOPE benchmark judges methods not just by value-estimation error but also by rank correlation and regret@k, since in practice getting the ranking right usually matters more than getting the exact number right.",
+      "example": "Google's Irpan and colleagues (NeurIPS 2019) reframed OPE as a classification problem for image-based robotic grasping, and using only offline data were able to reliably predict the relative performance of several policies on a real robot, including in sim-to-real transfer settings.",
+      "related": ["Offline Reinforcement Learning", "Off-Policy", "Q-Function (Action-Value Function)", "Real-world Evaluation", "World-Model-based Policy Evaluation", "Importance Sampling"]
+    },
+    {
+      "key": "sim-14#6",
+      "name_en": "OGBench: Benchmarking Offline Goal-Conditioned RL",
+      "aliases": ["OGBench"],
+      "one_liner": "A benchmark built specifically to test offline goal-conditioned reinforcement learning algorithms, with 8 environment types and 85 datasets.",
+      "explanation": "OGBench was proposed by Seohong Park, Sergey Levine, and colleagues, and published at ICLR 2025. Goal-conditioned reinforcement learning trains a policy to reach any specified goal state; offline means training uses only a fixed dataset, with no further interaction with the environment. The authors argued that on older benchmarks, different algorithms scored too close together to tell apart, so they designed 8 categories of environments — including maze navigation, block manipulation, and puzzles — with 85 datasets that separately test trajectory stitching (combining pieces of incomplete trajectories into a new route), long-horizon reasoning, image observations, and environment stochasticity, plus another 410 standard offline-RL tasks. It is built on MuJoCo and the Gymnasium interface, installs with pip, and ships reference implementations of six algorithms including GCBC, GCIQL, and HIQL.",
+      "example": "In the antmaze-large-navigate-v0 dataset, a four-legged ant robot must walk from a starting point to a goal location specified at evaluation time inside a large maze; most environments provide 5 evaluation goals each.",
+      "related": ["Goal-Conditioned Reinforcement Learning", "Offline Reinforcement Learning", "D4RL: Datasets for Deep Data-Driven Reinforcement Learning", "Benchmark", "Implicit Q-Learning", "MuJoCo (Multi-Joint dynamics with Contact)"]
+    },
+    {
+      "key": "sim-14#7",
+      "name_en": "OpenEQA (Open-Vocabulary Embodied Question Answering Benchmark)",
+      "aliases": ["OpenEQA", "EM-EQA", "A-EQA"],
+      "one_liner": "A Meta benchmark testing whether an agent can answer natural-language questions using what it has observed of a real environment.",
+      "explanation": "OpenEQA was released by Meta FAIR in April 2024, with the paper appearing at CVPR 2024. Embodied Question Answering (EQA) requires an agent to understand an environment it currently occupies or has previously seen, and answer questions about it in natural language — for example, “where did I leave my keys?” It contains more than 1,600 question-answer pairs, hand-written rather than generated from templates, drawn from videos and scans of over 180 real environments sourced from HM3D and ScanNet. It defines two settings: episodic memory (EM-EQA), where the agent answers from a previously recorded history of observations, modeling something like smart glasses; and active exploration (A-EQA), where the robot has to move around itself to gather the information it needs. Because answers are open-vocabulary free text, the authors score them automatically with an LLM-based metric called LLM-Match, which they show correlates highly with human judgment.",
+      "example": "In results Meta published, GPT-4V scored 48.5% accuracy versus 85.9% for humans; on questions that required spatial understanding, models that could see images performed barely better than models that could only read text.",
+      "related": ["Embodied Question Answering", "Visual Question Answering", "Open-vocabulary", "Embodied Memory", "Habitat-Matterport 3D Dataset", "ScanNet"]
+    },
+    {
+      "key": "sim-14#8",
+      "name_en": "Orbit / IsaacGymEnvs / OmniIsaacGymEnvs (predecessors of Isaac Lab)",
+      "aliases": ["Isaac Orbit", "OmniIsaacGymEnvs", "OIGE"],
+      "one_liner": "Three now-discontinued NVIDIA robot-learning frameworks that were later unified into Isaac Lab.",
+      "explanation": "These are the three robot reinforcement-learning frameworks that existed in NVIDIA's ecosystem before Isaac Lab. IsaacGymEnvs (from 2021) was a library of example environments for the Isaac Gym preview release, including tasks like Ant, ShadowHand, and ANYmal, and it demonstrated training with thousands of parallel environments on a single GPU. OmniIsaacGymEnvs ported that style of task onto Isaac Sim; version 4.0.0 was its last release, and NVIDIA's documentation says it has been folded into Isaac Lab. Orbit was proposed by Mayank Mittal and colleagues (RA-L 2023), built on Isaac Sim, and supported 16 robot platforms with more than 20 benchmark tasks — it became the codebase Isaac Lab is built on. Today the first two repositories are archived, and Isaac Lab's documentation provides migration guides from all three; anyone reading older paper code will still run into them regularly.",
+      "example": "Old code that imports from omni.isaac.orbit needs to be changed to import from isaaclab when migrating to Isaac Lab — that's the first step in the official Orbit migration guide.",
+      "related": ["NVIDIA Isaac Lab", "NVIDIA Isaac Gym", "NVIDIA Isaac Sim", "legged_gym (Isaac Gym Environments for Legged Robots)", "GPU-Accelerated Parallel Simulation", "Massively Parallel Reinforcement Learning"]
+    },
+    {
+      "key": "sim-14#9",
+      "name_en": "Path Tracing",
+      "aliases": ["Path-Traced Rendering", "Monte Carlo Ray Tracing"],
+      "one_liner": "A rendering method that simulates light bouncing many times through a scene using randomly sampled rays, producing physically realistic images.",
+      "explanation": "Path tracing was introduced by Jim Kajiya in 1986, in the same paper that gave the rendering equation (the integral equation describing how light propagates through a scene) and approximated it with Monte Carlo integration (averaging over random samples). It works by casting a ray from the camera through each pixel, and whenever it hits a surface, randomly choosing a new direction to keep bouncing based on the material, accumulating lighting along the way — which naturally produces effects like indirect illumination, soft shadows, and caustics. The cost is that images are noisy when too few samples are used, requiring either very heavy sampling or a neural denoiser to clean up. It belongs to the ray-tracing family and is much slower than rasterization, traditionally reserved for offline rendering such as film. In robot simulation, the Omniverse RTX renderer used by Isaac Sim offers a path-tracing mode that produces more photorealistic synthetic images, at the cost of being slower than its real-time mode.",
+      "example": "Omniverse's RTX Interactive (Path Tracing) mode defaults to sampling 1 ray per pixel per frame, accumulating up to 512 samples, with the OptiX denoiser enabled by default.",
+      "related": ["Ray Tracing", "Rasterization", "Physically Based Rendering", "Photorealistic Rendering", "Rendering (Rendering Engine)", "NVIDIA Isaac Sim"]
+    },
+    {
+      "key": "sim-14#10",
+      "name_en": "Peak Signal-to-Noise Ratio / Structural Similarity Index / Learned Perceptual Image Patch Similarity",
+      "aliases": ["PSNR", "SSIM", "LPIPS", "Structural Similarity Index Measure"],
+      "one_liner": "Three widely used metrics for how similar a generated image is to a reference image, each closer to human perception than the last.",
+      "explanation": "All three compare a generated or reconstructed image against a reference image, one pair at a time. PSNR (Peak Signal-to-Noise Ratio) converts mean squared error into decibels; typical values for 8-bit images fall between 30 and 50 dB, with higher being better, but it only looks at per-pixel differences and correlates poorly with what humans actually perceive. SSIM (Structural Similarity Index), published by Wang, Bovik, and colleagues in 2004, compares local image patches along luminance, contrast, and structure, with a maximum score of 1, higher is better. LPIPS, proposed by Zhang and colleagues at CVPR 2018, feeds both images through a pretrained deep network and compares their intermediate-layer features; lower is better, and it aligns with human perceptual judgment more closely than the other two. In embodied AI, all three are commonly used to evaluate novel-view synthesis, Gaussian-splatting reconstructions, and world-model predictions, but a high score does not guarantee the result is physically plausible.",
+      "example": "The original 3D Gaussian Splatting paper reports PSNR 27.21, SSIM 0.815, and LPIPS 0.214 on the Mip-NeRF360 dataset, matching the image quality of the then-best Mip-NeRF360 method.",
+      "related": ["Novel View Synthesis", "3D Gaussian Splatting", "World Model", "Fréchet Video Distance", "Fréchet Inception Distance", "Neural Radiance Fields"]
+    },
+    {
+      "key": "sim-14#11",
+      "name_en": "Physically Based Rendering",
+      "aliases": ["PBR", "PBR Materials", "Metallic-Roughness Workflow"],
+      "one_liner": "A rendering approach that models light and materials according to real optics, so objects look believable under any lighting.",
+      "explanation": "PBR refers to rendering methods that describe light sources and surface materials according to real-world optical principles. The term emerged in the 1990s, spread through Pharr and colleagues' textbook of the same name, and was later pushed into real-time rendering by Disney and Epic Games; it is now the standard approach in Unreal, Unity, and Blender. It generally satisfies three conditions: surface roughness is described with a microfacet model; energy is conserved, so a surface never reflects more light than it received; and reflectance follows a physically valid BRDF (the function describing how a surface reflects light). Materials are typically described with maps for base color (albedo), normal, metallic, and roughness. When a simulator uses PBR materials, the reflections and highlights in camera views come much closer to reality, which is one precondition for narrowing the visual sim-to-real gap.",
+      "example": "For the same stainless-steel pot, setting metallic to 1 and lowering roughness renders sharp highlights and clear environment reflections; raising roughness instead gives it a brushed, matte look.",
+      "related": ["Path Tracing", "Ray Tracing", "Rendering (Rendering Engine)", "Photorealistic Rendering", "SimReady Assets", "Sim-to-Real Gap (Reality Gap)"]
+    }
+  ]
+}

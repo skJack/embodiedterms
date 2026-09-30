@@ -1,0 +1,113 @@
+{
+  "batch": "training-11",
+  "terms": [
+    {
+      "key": "training-11#0",
+      "name_en": "Direct Preference Optimization",
+      "aliases": ["DPO"],
+      "one_liner": "Aligning a model directly from paired “better/worse” samples, without training a reward model or running reinforcement learning.",
+      "explanation": "DPO was introduced by Stanford's Rafailov, Finn, and colleagues in 2023. Traditional RLHF (reinforcement learning from human feedback) first trains a reward model on preference data, then runs reinforcement learning with an algorithm like PPO — a long, often unstable pipeline. DPO proves that the optimal policy for a KL-constrained reward-maximization problem has a closed-form solution, which turns the problem into a classification-style loss: raise the probability of the preferred sample relative to a reference model, and lower the probability of the rejected one, with no need to sample from the model during training. It was first used to align large language models, and embodied AI has borrowed it for VLA post-training: pairing successful and failed trajectories into preferences and optimizing the policy directly.",
+      "example": "GRAPE (2024) extends DPO from single steps to whole trajectories (called TPO) on OpenVLA: it pairs successful and failed manipulation trajectories into preferences to fine-tune the model, using a step-wise DPO variant, OpenVLA-DPO, as a comparison baseline.",
+      "related": ["Reinforcement Learning from Human Feedback", "Reward Model", "KL Regularization", "GRAPE", "Post-training", "Group Relative Policy Optimization"]
+    },
+    {
+      "key": "training-11#1",
+      "name_en": "Distributional Value Function",
+      "aliases": ["Distributional Reinforcement Learning", "Distributional RL", "Value Distribution"],
+      "one_liner": "A value function that predicts the full probability distribution of future return, not just its average.",
+      "explanation": "An ordinary value function outputs only the expected value of future return (cumulative reward); a distributional value function outputs the entire distribution of possible return values instead. DeepMind's Bellemare, Dabney, and Munos systematically introduced this view in a 2017 ICML paper, giving a distributional Bellman equation and the C51 algorithm (which represents the return distribution with 51 discrete support points), reaching state-of-the-art results on Atari at the time. A common implementation splits the return into several bins, has the network output a probability for each bin, and trains with cross-entropy, which is more stable than regressing a single number directly and also captures uncertainty. Recent VLA reinforcement-learning methods commonly use this as the critic.",
+      "example": "Physical Intelligence's π*0.6 (RECAP) trains a multi-task distributional value function: it discretizes the “steps remaining until success” return into bins and trains with cross-entropy, then uses it to estimate advantages for filtering good actions; AgiBot's LWD (2026) similarly uses distributional implicit value learning (DIVL) to handle sparse-reward data collected by a robot fleet.",
+      "related": ["Value Function", "Bellman Equation", "Return", "RECAP", "π*0.6", "Cross-Entropy"]
+    },
+    {
+      "key": "training-11#2",
+      "name_en": "Domain Adaptation",
+      "aliases": ["Unsupervised Domain Adaptation"],
+      "one_liner": "Making a model trained on one data distribution (the source domain) work well on a different distribution (the target domain).",
+      "explanation": "Domain adaptation is a branch of transfer learning: the source domain has plenty of labeled data, while the target domain has a different distribution and little or no labeling, and the goal is to make the model work on the target domain too. Two classic approaches exist: at the feature level, such as Ganin and Lempitsky's 2014 gradient reversal layer, which trains a classifier that tries to tell which domain the data came from and reverses its gradient, forcing the model to learn features that are indistinguishable across domains; and at the pixel level, using a GAN (generative adversarial network) to translate source-domain images into the target domain's visual style. In embodied AI, the most typical case is simulation-to-real: simulation data is cheap but differs from reality, and domain adaptation and domain randomization are the two main ways to narrow that sim-to-real gap.",
+      "example": "Google's GraspGAN (2017) used pixel-level domain adaptation to make simulated grasping images look more like real camera images; the paper reports this cut the number of real samples needed to match the same grasping performance by up to 50-fold.",
+      "related": ["Transfer Learning", "Sim-to-Real Transfer", "Sim-to-Real Gap", "Domain Randomization", "Distribution Shift (Covariate Shift)", "Out-of-Distribution"]
+    },
+    {
+      "key": "training-11#3",
+      "name_en": "Early Termination",
+      "aliases": ["ET", "Termination Condition"],
+      "one_liner": "Ending an episode immediately and resetting the environment as soon as a failure state, like falling, occurs during training.",
+      "explanation": "Early termination is a common trick in reinforcement-learning training: an episode doesn't have to run for its full fixed length — as soon as a preset condition triggers, such as the torso touching the ground, the body tilting past some angle, or tracking error growing too large, the episode ends immediately and resets, with no more reward for the time that would have remained. Peng and colleagues' 2018 DeepMimic evaluated this specifically and found it, together with reference state initialization, to be key to letting a simulated character learn highly dynamic skills like backflips. It acts partly as an implicit penalty, since the policy learns to actively avoid failure, and partly as a way to avoid wasting samples on useless post-failure states. Implementations need to distinguish failure termination from timeout truncation — the latter isn't a failure, and value estimation typically still bootstraps through it.",
+      "example": "In legged_gym's legged-robot environments, an environment is judged to have fallen and reset as soon as the contact force on a designated body part exceeds a threshold; exceeding the maximum episode length is instead recorded separately as a time_out, with no termination penalty.",
+      "related": ["Termination and Truncation", "Reference State Initialization", "Reward Shaping", "Episode", "DeepMimic", "Massively Parallel Reinforcement Learning"]
+    },
+    {
+      "key": "training-11#4",
+      "name_en": "Entropy Collapse / Mode Collapse",
+      "aliases": ["Policy Entropy Collapse", "Helvetica Scenario"],
+      "one_liner": "A model's output diversity collapsing, so it only ever produces a handful of answers or actions.",
+      "explanation": "These two terms describe the same broad phenomenon. Mode collapse was first used for GANs (generative adversarial networks): Goodfellow's 2016 tutorial describes it as the generator mapping many different input noise vectors to the same output, covering only one or two “modes” of the data distribution. Entropy collapse is used more in reinforcement learning: a policy's entropy (how random it is) drops rapidly early in training, the model settles on almost one single behavior, stops exploring, and performance plateaus; Cui and colleagues (2025) analyzed this systematically in large-model reasoning reinforcement learning and proposed Clip-Cov and KL-Cov to maintain entropy. Robot actions are naturally multimodal, and when RL fine-tuning a VLA, common fixes for collapse include raising the sampling temperature, widening the upper clipping bound, and adding an entropy bonus.",
+      "example": "When running GRPO reinforcement learning on OpenVLA-OFT, SimpleVLA-RL strengthens exploration with three changes: dynamic sampling, raising the upper clipping bound of PPO-style clipping (following DAPO's Clip-Higher), and raising the rollout sampling temperature.",
+      "related": ["Entropy Regularization", "Exploration vs. Exploitation", "Generative Adversarial Network", "Action Multimodality", "Group Relative Policy Optimization", "SimpleVLA-RL"]
+    },
+    {
+      "key": "training-11#5",
+      "name_en": "Entropy Regularization",
+      "aliases": ["Entropy Bonus", "Maximum Entropy RL"],
+      "one_liner": "Adding a bonus for policy entropy to the training objective, to encourage the policy to stay random and keep exploring.",
+      "explanation": "Entropy measures how random a probability distribution is: a uniform distribution has high entropy, and a nearly certain one has low entropy. Entropy regularization adds α times the policy's entropy to the reinforcement-learning objective (α is a weighting coefficient), so the agent pursues return while retaining some randomness, avoiding collapsing onto a suboptimal behavior too early. There are two common forms: adding a small entropy bonus term to the loss in policy-gradient algorithms like PPO, or writing entropy directly into the optimization objective, giving maximum-entropy reinforcement learning — the leading example is Haarnoja and colleagues' 2018 SAC (Soft Actor-Critic), whose Q-value target also carries an entropy term. Too large an α and the policy stays erratic forever; too small and it risks entropy collapse, stopping exploration too soon.",
+      "example": "legged_gym's default PPO config sets the entropy coefficient entropy_coef to 0.01, adding 0.01 times the policy's entropy as a bonus in the loss.",
+      "related": ["Soft Actor-Critic", "Proximal Policy Optimization", "Exploration vs. Exploitation", "Entropy Collapse / Mode Collapse", "KL Regularization", "Deterministic vs. Stochastic Policy"]
+    },
+    {
+      "key": "training-11#6",
+      "name_en": "Evidence Lower Bound",
+      "aliases": ["ELBO", "Variational Lower Bound", "VLB"],
+      "one_liner": "A tractable lower bound on the log-likelihood of data; VAEs and diffusion models both train by maximizing it.",
+      "explanation": "A generative model wants to maximize the data's log-likelihood, log p(x) (also called the “evidence”), but this is usually intractable when the model has latent variables. The ELBO introduces an approximate posterior q(z|x), giving log p(x) ≥ E_q[log p(x|z)] − KL(q(z|x) ‖ p(z)): the first term measures reconstruction quality, and the second pulls the encoding distribution toward the prior, with the gap between the two sides equal to the KL divergence between q and the true posterior. Kingma and Welling's 2013 VAE paper used the reparameterization trick to let the ELBO be optimized directly with gradient descent; Ho and colleagues' 2020 DDPM also starts from a variational lower bound, simplifying and reweighting it into the familiar noise-prediction loss. In robotics, ACT is trained as a conditional VAE.",
+      "example": "ACT's training loss is the action-chunk reconstruction error plus β times the KL divergence between the encoding distribution and a standard normal distribution — exactly a β-weighted ELBO.",
+      "related": ["Variational Autoencoder", "Conditional Variational Autoencoder", "KL Divergence", "Denoising Diffusion Probabilistic Models", "Maximum Likelihood Estimation / Negative Log-Likelihood", "ACT"]
+    },
+    {
+      "key": "training-11#7",
+      "name_en": "Exponential Moving Average",
+      "aliases": ["EMA", "Polyak Averaging"],
+      "one_liner": "A weighted average of past values that decays exponentially, often used to get smoother, more stable model weights.",
+      "explanation": "EMA is a weighted average updated at every step as “average ← β × average + (1 − β) × current value,” where β is the decay rate — the closer to 1, the longer the effective averaging window. The most common use in deep learning is keeping an EMA copy of the model's weights: training keeps updating the original weights as usual, while evaluation and deployment switch to the smoother EMA weights, which are usually more stable; diffusion models depend on this especially heavily, with the DDPM paper using a decay rate of 0.9999. In reinforcement learning, the soft update of a target network (Polyak averaging) is also an EMA, keeping the Q-value target changing more smoothly. The Adam optimizer's running estimates of a gradient's first and second moments are EMAs too.",
+      "example": "Diffusion Policy's official code enables EMA by default, with the decay rate ramping up from 0 to a cap of 0.9999 over training, and evaluation rollouts use the EMA model rather than the raw weights.",
+      "related": ["Target Network", "Diffusion Policy", "Checkpoint", "Optimizer", "Denoising Diffusion Probabilistic Models", "Soft Actor-Critic"]
+    },
+    {
+      "key": "training-11#8",
+      "name_en": "Extrapolation Error (OOD Actions in Offline RL)",
+      "aliases": ["Out-of-Distribution Action Problem", "OOD Action Overestimation"],
+      "one_liner": "The error in offline reinforcement learning that comes from a Q-network guessing wildly at the value of actions absent from the data.",
+      "explanation": "This concept was systematically laid out by Fujimoto, Meger, and Precup in their 2019 ICML paper introducing the BCQ algorithm. Offline reinforcement learning can only train on a fixed dataset, with no further environment interaction. Q-learning's update needs max_a Q(s′, a) over the next state, but the network's estimate for actions absent from the data (out-of-distribution actions) is just an extrapolation, and can be badly inflated; the policy then gravitates toward exactly those actions, the error compounds through repeated Bellman backups, and the resulting policy ends up poor. Online training can correct this by actually trying the action; offline training cannot. The main countermeasures are constraining the policy to stay close to the data's behavior (BCQ, policy constraints), pushing down the Q-values of out-of-distribution actions (CQL), and avoiding querying out-of-distribution actions altogether (IQL).",
+      "example": "In the BCQ paper, an offline DDPG agent trained on exactly the same batch of data as an online DDPG agent falls clearly behind on every task, with value estimates that are unstable or even diverge — the authors attribute this to extrapolation error.",
+      "related": ["Offline Reinforcement Learning", "Q-value Overestimation", "Conservative Q-Learning", "Implicit Q-Learning", "Policy Constraint", "Out-of-Distribution"]
+    },
+    {
+      "key": "training-11#9",
+      "name_en": "Fleet Learning (Learning While Deploying)",
+      "aliases": ["Interactive Fleet Learning", "IFL", "LWD"],
+      "one_liner": "Having a whole fleet of already-deployed robots collect data while they work, continually improving one shared policy together.",
+      "explanation": "Fleet learning means multiple simultaneously deployed robots pool their autonomous execution logs, failures, and human takeover data to update a shared policy, then push the new policy back out — turning deployment itself into part of training, in a data flywheel. UC Berkeley's Goldberg group proposed the “interactive fleet learning” setting with Fleet-DAgger (CoRL 2022): when a robot in the fleet is unsure, it asks a small pool of remote human operators for help, and their corrections feed imitation learning. “Learning while deploying” leans more toward reinforcement learning: in 2026, AgiBot (AGIBOT Finch) and the Shanghai Innovation Institute proposed the LWD framework, which uses autonomous rollouts and human-intervention data collected across a robot fleet for offline-to-online reinforcement learning, continually post-training a VLA.",
+      "example": "LWD was validated on a fleet of 16 bimanual robots across 8 real manipulation tasks, including semantic shelf restocking and long-horizon tasks lasting 3–5 minutes; a single generalist policy reached 95% average success as it accumulated experience across the fleet.",
+      "related": ["Data Flywheel", "Data Flyback", "Human-in-the-Loop", "DAgger (Dataset Aggregation)", "Offline-to-Online Reinforcement Learning", "Real-World Reinforcement Learning"]
+    },
+    {
+      "key": "training-11#10",
+      "name_en": "Flow Matching Loss",
+      "aliases": ["Conditional Flow Matching Loss", "CFM Loss", "Velocity Field Regression Loss"],
+      "one_liner": "Training a network with mean squared error to predict the velocity that points from noise toward the real data.",
+      "explanation": "Flow matching was introduced by Lipman and colleagues in 2022, treating “noise gradually turning into data” as continuous flow along a path, with the network learning the velocity field at every point along that path. Training doesn't need to simulate the whole trajectory: pick a random time τ, linearly interpolate between a real sample and Gaussian noise to get an intermediate point, and use mean squared error to have the network's predicted velocity match the direction of that straight-line path (the real sample minus the noise) — that's the flow matching loss. It looks a lot like a diffusion model's denoising loss in form, but the path is straighter, so fewer sampling steps are needed. At inference, starting from pure noise, a few steps of Euler integration along the predicted velocity produce a sample. The π0 family of VLAs uses it to train their action expert, generating continuous action chunks directly.",
+      "example": "π0 samples τ during training from a Beta distribution skewed toward the high-noise end, forms the noisy action τ·A + (1 − τ)·ε, and has the action expert regress toward A − ε; at inference it starts from pure noise and generates an action chunk with 10 steps of Euler integration.",
+      "related": ["Flow Matching", "Velocity Field", "Rectified Flow", "Mean Squared Error", "Denoising Loss", "π0"]
+    },
+    {
+      "key": "training-11#11",
+      "name_en": "Generalized Advantage Estimation",
+      "aliases": ["GAE", "GAE(λ)"],
+      "one_liner": "Estimating the advantage function by summing multi-step temporal-difference errors with exponentially decaying λ weights.",
+      "explanation": "GAE was introduced by Schulman, Levine, Abbeel, and colleagues in 2015. Policy gradient methods need to know how much better than average a given action was — the advantage function. Estimating it from just a single-step temporal-difference (TD) error, δ = r + γV(s′) − V(s), gives low variance but high bias; using the full episode's Monte Carlo return gives low bias but high variance. GAE sums the TD errors of future steps, each weighted by (γλ)^k, with λ between 0 and 1 tuning the trade-off between the two: λ = 0 recovers single-step TD, and λ = 1 recovers Monte Carlo — the same idea as TD(λ). It's PPO's standard configuration, and it's the near-universal way PPO computes advantages when training locomotion control for legged and humanoid robots.",
+      "example": "legged_gym's default PPO configuration uses a discount factor γ = 0.99 and a GAE parameter λ = 0.95.",
+      "related": ["Advantage Function", "Proximal Policy Optimization", "Temporal-Difference Learning", "Discount Factor", "Value Function", "Policy Gradient"]
+    }
+  ]
+}

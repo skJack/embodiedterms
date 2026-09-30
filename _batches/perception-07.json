@@ -1,0 +1,432 @@
+{
+  "category": "perception",
+  "batch": 7,
+  "terms": [
+    {
+      "name_zh": "针孔相机模型",
+      "name_en": "Pinhole Camera Model",
+      "abbr": "",
+      "aliases": [
+        "小孔成像模型",
+        "针孔模型",
+        "透视投影模型"
+      ],
+      "tier": 2,
+      "one_liner": "把相机看成一个理想小孔，三维点沿直线穿过小孔投到成像平面上的数学模型。",
+      "explanation": "针孔相机模型是计算机视觉描述「三维点如何成像为像素」的标准模型：假设所有光线都经过一个理想小孔（光心），相机坐标系下的点 (X, Y, Z) 落在图像上的位置为 u = fx·X/Z + cx、v = fy·Y/Z + cy。fx、fy 是以像素计的焦距，(cx, cy) 是主点，这四个数合称相机内参；除以 Z 就是近大远小。它忽略镜头畸变和虚焦模糊，只是一阶近似，实际使用时先标定出畸变系数把图像校正，再套用针孔模型。机器人里把深度图变成点云、把像素位置换算成三维抓取点、做手眼标定，底层都是这套公式。",
+      "example": "设一台相机 fx = fy = 600 像素、主点 (320, 240)。相机正前方 1 米、向右偏 0.1 米的点落在第 600×0.1/1 + 320 = 380 列；同一点挪到 2 米远，就落在第 350 列，更靠近图像中心。",
+      "related": [
+        "相机内参",
+        "相机外参",
+        "镜头畸变",
+        "投影与反投影",
+        "相机标定",
+        "相机坐标系"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Pinhole camera model",
+          "url": "https://en.wikipedia.org/wiki/Pinhole_camera_model"
+        },
+        {
+          "title": "Intel RealSense Wiki: Projection in RealSense SDK 2.0",
+          "url": "https://github.com/IntelRealSense/librealsense/wiki/Projection-in-RealSense-SDK-2.0"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "点云滤波与降采样（体素降采样 / 离群点去除）",
+      "name_en": "Point Cloud Filtering & Voxel Downsampling",
+      "abbr": "",
+      "aliases": [
+        "体素降采样",
+        "体素滤波",
+        "离群点去除",
+        "Voxel Grid Filter",
+        "Outlier Removal"
+      ],
+      "tier": 2,
+      "one_liner": "给原始点云裁掉无关区域、去掉噪点、减少点数的预处理步骤。",
+      "explanation": "深度相机或激光雷达直接给出的点云往往有几十万个点，夹杂测量误差造成的零星离群点，还混着桌面、地面等无关区域，直接送进后续算法既慢又不稳，所以先做预处理。常见做法：按包围盒裁剪，只保留工作区域；体素降采样，把空间划分成固定边长的小立方体（体素），每个体素内的点合并为一个点（PCL 取质心，Open3D 同时平均颜色和法向），点数大降且密度更均匀；离群点去除，统计法删掉「到 k 个邻居的平均距离」偏离全局均值过多的点，半径法删掉给定半径内邻居太少的点。PCL、Open3D 都有现成函数。",
+      "example": "PCL 教程用 1 厘米体素对一帧扫描降采样，点数从 460,400 降到 41,049；3D 扩散策略（DP3）则先按包围盒裁掉桌面和背景点，再用最远点采样只保留 512 或 1024 个点。",
+      "related": [
+        "点云",
+        "体素",
+        "最远点采样",
+        "点云配准",
+        "飞点",
+        "3D 扩散策略"
+      ],
+      "sources": [
+        {
+          "title": "Open3D: Point cloud outlier removal",
+          "url": "https://www.open3d.org/docs/release/tutorial/geometry/pointcloud_outlier_removal.html"
+        },
+        {
+          "title": "PCL Tutorial: Downsampling a PointCloud using a VoxelGrid filter",
+          "url": "https://pcl.readthedocs.io/projects/tutorials/en/latest/voxel_grid.html"
+        },
+        {
+          "title": "3D Diffusion Policy (arXiv 2403.03954)",
+          "url": "https://arxiv.org/html/2403.03954"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "点云配准",
+      "name_en": "Point Cloud Registration",
+      "abbr": "",
+      "aliases": [
+        "点云对齐",
+        "扫描匹配",
+        "Scan Matching",
+        "Point Set Registration"
+      ],
+      "tier": 2,
+      "one_liner": "求一个旋转加平移，把两份点云对齐到同一个坐标系里。",
+      "explanation": "点云配准是求一个空间变换，把源点云对齐到目标点云上；刚性配准只含旋转和平移，非刚性配准还允许形变。从不同视角或不同时刻扫描同一场景，各帧坐标系不同，要拼出完整模型、在激光里程计中估计机器人移动了多少（此时常叫扫描匹配），或把物体模型对到观测点云上求位姿，都要做配准。常见流程分两步：先用 FPFH 等局部特征找对应点、配合 RANSAC 剔除错配做全局粗配准；再用迭代最近点（ICP）精配准，它反复「找最近点、解最优变换」，但依赖较好的初值，否则会陷入局部最优。Open3D 的 ICP 会同时给出重叠比例 fitness 和内点均方根误差，用来判断结果好坏。",
+      "example": "腕部相机从两个角度拍同一个杯子，先用 FPFH + RANSAC 把两帧点云粗对齐，再跑 ICP 精修，拼出更完整的杯子形状。",
+      "related": [
+        "迭代最近点",
+        "FPFH 点云特征",
+        "随机采样一致性",
+        "NDT 配准（正态分布变换）",
+        "6D位姿估计",
+        "同步定位与建图"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Point-set registration",
+          "url": "https://en.wikipedia.org/wiki/Point-set_registration"
+        },
+        {
+          "title": "Open3D: ICP registration",
+          "url": "https://www.open3d.org/docs/release/tutorial/pipelines/icp_registration.html"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "指向（点预测）",
+      "name_en": "Pointing (2D Point Prediction)",
+      "abbr": "",
+      "aliases": [
+        "点预测",
+        "指点",
+        "Point Prediction"
+      ],
+      "tier": 2,
+      "one_liner": "视觉语言模型按文字指令，直接输出图像上目标位置的像素坐标。",
+      "explanation": "指向是让视觉语言模型（VLM）用「在图上点一个点」来回答：输入图像和一句指令，输出一个或多个 2D 像素坐标。Ai2 的 Molmo（2024）专门采集了 PixMo-Points 指点数据，能指出并清点物体；RoboPoint（2024）用自动合成的数据微调 VLM，预测该在哪里抓、放到哪里的关键点；Google DeepMind 的 Gemini Robotics-ER 以 [y, x] 格式输出归一化到 0–1000 的坐标。点比框更精细，也比文字更便于下游使用：结合深度图反投影即得三维目标位置，可交给抓取、运动规划或 VLA 模型执行。",
+      "example": "对 Gemini Robotics-ER 说「指出图中所有香蕉」，它返回形如 point: [376, 508]、label: small banana 的列表，每个点对应一根香蕉的位置。",
+      "related": [
+        "Molmo",
+        "RoboPoint",
+        "Gemini Robotics-ER",
+        "视觉提示",
+        "可供性检测",
+        "投影与反投影"
+      ],
+      "sources": [
+        {
+          "title": "Molmo and PixMo (arXiv 2409.17146)",
+          "url": "https://arxiv.org/abs/2409.17146"
+        },
+        {
+          "title": "RoboPoint (arXiv 2406.10721)",
+          "url": "https://arxiv.org/abs/2406.10721"
+        },
+        {
+          "title": "Gemini API Docs: Gemini Robotics-ER overview",
+          "url": "https://ai.google.dev/gemini-api/docs/robotics-overview"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "PointNet",
+      "name_en": "PointNet / PointNet++",
+      "abbr": "",
+      "aliases": [
+        "PointNet++"
+      ],
+      "tier": 2,
+      "one_liner": "直接处理无序点云做分类和分割的开创性网络，PointNet++ 是其分层升级版。",
+      "explanation": "PointNet 由斯坦福大学 Charles R. Qi、Leonidas Guibas 等人提出，发表于 CVPR 2017。此前点云多先转成体素或多视角图片再处理，损失细节。PointNet 对每个点用共享的多层感知机提取特征，再用最大池化汇总成全局特征；最大池化与输入顺序无关，所以点的顺序打乱结果不变（置换不变性），可直接做物体分类、部件分割和场景语义分割。不足是没有建模局部邻域。PointNet++（NeurIPS 2017）先用最远点采样选出中心点，在其邻域内递归套用 PointNet，逐层提取多尺度局部特征，并能适应点密度不均。两者至今仍是点云编码器的常用基线。",
+      "example": "3D 扩散策略（DP3）的点云编码器沿用「逐点 MLP + 最大池化」思路，只用三层 MLP；论文对比发现 PointNet、PointNet++ 等更复杂的编码器在其操作任务上都不如这个小编码器。",
+      "related": [
+        "点云",
+        "点云编码器",
+        "最远点采样",
+        "点云分割",
+        "Point Transformer V3",
+        "3D 扩散策略"
+      ],
+      "sources": [
+        {
+          "title": "PointNet: Deep Learning on Point Sets for 3D Classification and Segmentation (arXiv 1612.00593)",
+          "url": "https://arxiv.org/abs/1612.00593"
+        },
+        {
+          "title": "PointNet++: Deep Hierarchical Feature Learning on Point Sets in a Metric Space (arXiv 1706.02413)",
+          "url": "https://arxiv.org/abs/1706.02413"
+        },
+        {
+          "title": "3D Diffusion Policy (arXiv 2403.03954)",
+          "url": "https://arxiv.org/html/2403.03954"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "精确率 / 召回率",
+      "name_en": "Precision / Recall (F1)",
+      "abbr": "",
+      "aliases": [
+        "查准率",
+        "查全率",
+        "F1 分数",
+        "F1 Score"
+      ],
+      "tier": 2,
+      "one_liner": "精确率看报出来的有多少是对的，召回率看该找的找回了多少。",
+      "explanation": "精确率和召回率是评价检测、分类、检索类任务的一对基本指标。把结果分为真正例 TP（报了且对）、假正例 FP（报了但错，即误检）、假负例 FN（该报没报，即漏检），则精确率 = TP/(TP+FP)，召回率 = TP/(TP+FN)。两者通常此消彼长：调低置信度阈值能找回更多目标，误检也会随之增多。F1 是二者的调和平均 2PR/(P+R)，用一个数兼顾两边。目标检测中先用交并比（IoU）判断预测框算不算命中，再计算二者；扫遍阈值画出 PR 曲线，曲线下面积就是 AP，多类别平均得 mAP。机器人里也用它们评估抓取检测、接触检测和成功检测器。",
+      "example": "杯子检测器在测试集上报了 100 个框，其中 80 个对上真实杯子，而测试集一共有 120 个杯子：精确率 80%，召回率约 67%，F1 约 0.73。",
+      "related": [
+        "交并比",
+        "平均精度均值",
+        "目标检测",
+        "非极大值抑制",
+        "成功检测器"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Precision and recall",
+          "url": "https://en.wikipedia.org/wiki/Precision_and_recall"
+        },
+        {
+          "title": "scikit-learn: Precision, recall and F-measures",
+          "url": "https://scikit-learn.org/stable/modules/model_evaluation.html"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "投影与反投影",
+      "name_en": "Projection / Back-Projection",
+      "abbr": "",
+      "aliases": [
+        "深度图转点云",
+        "反投影",
+        "Unprojection",
+        "Deprojection"
+      ],
+      "tier": 2,
+      "one_liner": "投影把三维点算到图像像素上，反投影用像素加深度算回三维点。",
+      "explanation": "投影与反投影是针孔相机模型的正反两个方向。投影：已知相机坐标系下的三维点 (X, Y, Z) 和内参，算出它落在哪个像素 (u, v)。反投影：单个像素只对应一条射线，再给出该像素的深度 Z 才能还原三维点：X = (u − cx)·Z/fx，Y = (v − cy)·Z/fy。对深度图每个像素都这样算就得到点云，Open3D 和 RealSense SDK 都有现成函数。实操注意三点：深度原始值多为整数（RealSense D400 默认 1 单位 = 1 毫米），要换算成米；彩色和深度来自不同传感器时要先对齐；再乘相机外参才能转到机器人基坐标系。",
+      "example": "VLM 在彩色图上指出杯把手在像素 (412, 305)，查对齐后的深度为 0.52 米，用内参反投影得到相机坐标系下的三维点，再用手眼标定得到的外参换到机械臂基坐标系，作为抓取目标。",
+      "related": [
+        "针孔相机模型",
+        "相机内参",
+        "深度图",
+        "点云",
+        "深度与彩色对齐",
+        "相机外参"
+      ],
+      "sources": [
+        {
+          "title": "Intel RealSense Wiki: Projection in RealSense SDK 2.0",
+          "url": "https://github.com/IntelRealSense/librealsense/wiki/Projection-in-RealSense-SDK-2.0"
+        },
+        {
+          "title": "Open3D API: open3d.geometry.PointCloud (create_from_depth_image)",
+          "url": "https://www.open3d.org/docs/release/python_api/open3d.geometry.PointCloud.html"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "重投影误差",
+      "name_en": "Reprojection Error",
+      "abbr": "",
+      "aliases": [
+        "重投影残差",
+        "Re-projection Error"
+      ],
+      "tier": 2,
+      "one_liner": "把估计的三维点按相机参数投回图像，与实际观测像素之间的距离。",
+      "explanation": "重投影误差衡量相机参数、相机位姿和三维点估计得准不准：把估计出的三维点按估计的内外参重新投影到图像上，与图像中实际观测到的对应像素相比，两者距离就是重投影误差，单位是像素。它是几何视觉里最常用的优化目标和质量指标：相机标定时，标定板角点的平均重投影误差越小越好，MATLAB 文档示例为 0.19 像素，偏大时可剔除误差最大的图片重新标定；光束法平差就是联合调整所有相机和三维点，使总重投影误差最小；PnP 求位姿、三角化、SLAM 后端也都围绕它优化。",
+      "example": "用棋盘格标定腕部相机，OpenCV 的 calibrateCamera 会返回整体 RMS 重投影误差；若发现某几张图的误差明显偏大（常是角点检测错位），删掉后重新标定。",
+      "related": [
+        "相机标定",
+        "光束法平差",
+        "PnP（透视n点）",
+        "三角化",
+        "针孔相机模型",
+        "手眼标定"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Reprojection error",
+          "url": "https://en.wikipedia.org/wiki/Reprojection_error"
+        },
+        {
+          "title": "MathWorks: Evaluating the Accuracy of Single Camera Calibration",
+          "url": "https://www.mathworks.com/help/vision/ug/evaluating-the-accuracy-of-single-camera-calibration.html"
+        },
+        {
+          "title": "Wikipedia: Bundle adjustment",
+          "url": "https://en.wikipedia.org/wiki/Bundle_adjustment"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "SAM 2（视频分割一切）",
+      "name_en": "SAM 2: Segment Anything in Images and Videos",
+      "abbr": "",
+      "aliases": [
+        "SAM 2",
+        "SAM 2.1",
+        "Segment Anything 2"
+      ],
+      "tier": 2,
+      "one_liner": "Meta 的图像与视频通用分割模型，点一下目标就能在整段视频里持续分割跟踪。",
+      "explanation": "SAM 2 是 Meta FAIR 于 2024 年 7 月发布的第二代「分割一切」模型，把 SAM 从单张图片扩展到视频：在某一帧用点、框或掩码指定目标，模型在后续各帧持续输出该目标的掩码。核心是流式记忆：逐帧处理时把之前帧的目标信息存入记忆库供当前帧参考，并用遮挡头判断目标当前是否可见。配套发布 SA-V 数据集（约 5.1 万段视频、60 万余个时空掩码）。论文称视频分割所需交互比以往少 3 倍，图像分割比 SAM 更准且快 6 倍。代码和权重以 Apache 2.0 开源。机器人里常与 Grounding DINO 组合，先按文字找到物体再全程跟踪其掩码。",
+      "example": "Grounded-SAM-2 流程：先用 Grounding DINO 按「红色杯子」在第一帧检出框，交给 SAM 2 在整段操作视频中跟踪杯子的掩码，用于数据标注或给策略提供目标掩码。",
+      "related": [
+        "分割一切模型",
+        "SAM 3（可提示概念分割）",
+        "视频目标分割",
+        "目标跟踪",
+        "Grounded-SAM",
+        "掩码"
+      ],
+      "sources": [
+        {
+          "title": "SAM 2: Segment Anything in Images and Videos (arXiv 2408.00714)",
+          "url": "https://arxiv.org/abs/2408.00714"
+        },
+        {
+          "title": "Meta AI Blog: Introducing SAM 2",
+          "url": "https://ai.meta.com/blog/segment-anything-2/"
+        },
+        {
+          "title": "GitHub: IDEA-Research/Grounded-SAM-2",
+          "url": "https://github.com/IDEA-Research/Grounded-SAM-2"
+        }
+      ],
+      "as_of": "2024-10"
+    },
+    {
+      "name_zh": "SAM 3（可提示概念分割）",
+      "name_en": "SAM 3: Segment Anything with Concepts (Promptable Concept Segmentation)",
+      "abbr": "",
+      "aliases": [
+        "SAM 3",
+        "SAM 3.1",
+        "可提示概念分割",
+        "Promptable Concept Segmentation"
+      ],
+      "tier": 2,
+      "one_liner": "Meta 第三代分割模型，给一个名词短语或示例图，就能分割出所有同类物体。",
+      "explanation": "SAM 3 是 Meta 于 2025 年 11 月发布的分割模型，提出「可提示概念分割」任务：给一个简短名词短语（如「黄色校车」）、一个示例图块或两者组合，模型在图像或视频中找出所有符合该概念的实例，输出各自的掩码和身份 ID 并持续跟踪。此前 SAM、SAM 2 一次只分割用户点选的单个目标，也不接受文字提示。SAM 3 约 8.48 亿参数，由 DETR 式检测器和记忆式视频跟踪器共享视觉编码器，另设「存在性头」把「有没有」和「在哪里」分开判断。配套开源 SA-Co 基准，覆盖约 27 万个概念。2026 年 3 月发布的 SAM 3.1 加快了多目标视频跟踪。",
+      "example": "给 SAM 3 输入一段厨房视频和文本「杯子」，它分割并持续跟踪画面里的每个杯子、各给一个 ID；取其中一个杯子的掩码配合深度图得到点云，再做抓取位姿估计。",
+      "related": [
+        "分割一切模型",
+        "SAM 2（视频分割一切）",
+        "开放词汇分割",
+        "SAM 3D",
+        "Grounding DINO",
+        "实例分割"
+      ],
+      "sources": [
+        {
+          "title": "SAM 3: Segment Anything with Concepts (arXiv 2511.16719)",
+          "url": "https://arxiv.org/abs/2511.16719"
+        },
+        {
+          "title": "Meta AI Blog: Segment Anything Model 3",
+          "url": "https://ai.meta.com/blog/segment-anything-model-3/"
+        },
+        {
+          "title": "GitHub: facebookresearch/sam3",
+          "url": "https://github.com/facebookresearch/sam3"
+        }
+      ],
+      "as_of": "2026-03"
+    },
+    {
+      "name_zh": "场景理解",
+      "name_en": "Scene Understanding",
+      "abbr": "",
+      "aliases": [
+        "3D 场景理解",
+        "3D Scene Understanding"
+      ],
+      "tier": 2,
+      "one_liner": "从图像、深度或点云中弄清环境里有什么、在哪里、彼此是什么关系。",
+      "explanation": "场景理解是计算机视觉和机器人感知的总目标，不是单一算法：从图像、深度或点云里弄清场景的几何（物体在哪、多大、哪里能走）、语义（是什么）和关系（杯子在桌上、抽屉能拉开）。它由目标检测、语义与实例分割、深度估计、三维重建、位姿估计、可供性检测等任务拼成。机器人要在三维空间里导航和操作，所以具身智能更关心 3D 场景理解：ScanNet（2017）提供 1513 个室内场景、约 250 万帧 RGB-D 数据及语义标注；ConceptGraphs（2023）把 2D 基础模型的结果多视角融合成开放词汇 3D 场景图，供大模型按语言指令做规划。",
+      "example": "家务机器人进厨房后先建一张 3D 场景图：冰箱、餐桌、桌上的两只碗、碗在桌面上；接到「把碗放进水槽」时，据此查出碗和水槽的三维位置再规划动作。",
+      "related": [
+        "3D场景图",
+        "语义地图",
+        "3D视觉",
+        "语义分割",
+        "ConceptGraphs",
+        "ScanNet 数据集"
+      ],
+      "sources": [
+        {
+          "title": "ScanNet: Richly-annotated 3D Reconstructions of Indoor Scenes (arXiv 1702.04405)",
+          "url": "https://arxiv.org/abs/1702.04405"
+        },
+        {
+          "title": "ConceptGraphs: Open-Vocabulary 3D Scene Graphs for Perception and Planning (arXiv 2309.16650)",
+          "url": "https://arxiv.org/abs/2309.16650"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "分割一切模型",
+      "name_en": "Segment Anything Model",
+      "abbr": "SAM",
+      "aliases": [
+        "分割一切",
+        "Segment Anything",
+        "SAM 2",
+        "SAM 3"
+      ],
+      "tier": 2,
+      "one_liner": "Meta 2023 年发布的可提示分割基础模型，给个点或框就能分割出对应物体。",
+      "explanation": "分割一切模型（SAM）是 Meta AI 于 2023 年 4 月发布的图像分割基础模型，提出「可提示分割」任务：用户给出点、框或粗掩码作为提示，模型输出对应物体的掩码，没见过的物体也能直接用，还能自动分割全图。大号 ViT 图像编码器每张图只算一次，轻量解码器可对多个提示快速出结果。训练数据 SA-1B 含 1100 万张图、超过 11 亿个掩码，代码和权重以 Apache 2.0 开源。原版 SAM 只给掩码、不识别类别，常与 Grounding DINO 组合成 Grounded-SAM 按文字分割。后续有面向视频的 SAM 2（2024）和支持名词短语提示的 SAM 3（2025）。",
+      "example": "在工作台图像上点一下螺丝刀，SAM 返回它的像素掩码；把掩码内的深度像素反投影，就得到只含螺丝刀的点云，供抓取检测使用。",
+      "related": [
+        "SAM 2（视频分割一切）",
+        "SAM 3（可提示概念分割）",
+        "Grounded-SAM",
+        "实例分割",
+        "掩码",
+        "基础模型"
+      ],
+      "sources": [
+        {
+          "title": "Segment Anything (arXiv 2304.02643)",
+          "url": "https://arxiv.org/abs/2304.02643"
+        },
+        {
+          "title": "GitHub: facebookresearch/segment-anything",
+          "url": "https://github.com/facebookresearch/segment-anything"
+        },
+        {
+          "title": "Meta AI Blog: Segment Anything Model 3",
+          "url": "https://ai.meta.com/blog/segment-anything-model-3/"
+        }
+      ],
+      "as_of": "2025-11"
+    }
+  ]
+}

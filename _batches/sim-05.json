@@ -1,0 +1,434 @@
+{
+  "category": "sim",
+  "batch": 5,
+  "terms": [
+    {
+      "name_zh": "legged_gym",
+      "name_en": "legged_gym (Isaac Gym Environments for Legged Robots)",
+      "abbr": "",
+      "aliases": [
+        "Legged Gym"
+      ],
+      "tier": 2,
+      "one_liner": "ETH 开源的足式机器人强化学习训练环境，基于 Isaac Gym。",
+      "explanation": "legged_gym 是苏黎世联邦理工机器人系统实验室（RSL，Nikita Rudin 等）开源的足式机器人强化学习代码库，配套 CoRL 2021 论文《Learning to Walk in Minutes…》。它在 Isaac Gym 上让一张显卡同时跑几千个机器人，用 PPO（近端策略优化）训练行走：论文里 ANYmal 在平地不到 4 分钟、崎岖地形约 20 分钟学会走。库里带着上真机要用的零件：执行器网络、摩擦和质量随机化、观测噪声、随机推搡，以及按表现自动加难度的地形课程；自带 ANYmal B/C、A1、Cassie。2024 年 1 月作者宣布迁往 Isaac Lab、原库只做有限维护，但宇树 unitree_rl_gym 等许多项目仍以它为骨架。",
+      "example": "宇树开源的 unitree_rl_gym 沿用 legged_gym 的结构，用 python legged_gym/scripts/train.py --task=g1 就能在 Isaac Gym 里训练 G1 人形机器人走路，再到 MuJoCo 里做 sim2sim 验证、部署真机。",
+      "related": [
+        "Isaac Gym",
+        "rsl_rl",
+        "地形课程",
+        "大规模并行强化学习",
+        "unitree_rl_gym",
+        "Isaac Lab"
+      ],
+      "sources": [
+        {
+          "title": "leggedrobotics/legged_gym (GitHub)",
+          "url": "https://github.com/leggedrobotics/legged_gym"
+        },
+        {
+          "title": "Learning to Walk in Minutes Using Massively Parallel Deep Reinforcement Learning (arXiv 2109.11978)",
+          "url": "https://arxiv.org/abs/2109.11978"
+        },
+        {
+          "title": "unitreerobotics/unitree_rl_gym (GitHub)",
+          "url": "https://github.com/unitreerobotics/unitree_rl_gym"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "ManiSkill",
+      "name_en": "ManiSkill (ManiSkill3)",
+      "abbr": "",
+      "aliases": [
+        "ManiSkill3",
+        "ManiSkill2",
+        "ManiSkill 1"
+      ],
+      "tier": 2,
+      "one_liner": "UCSD 团队开发的开源机器人操作仿真框架和基准，主打 GPU 并行。",
+      "explanation": "ManiSkill 是加州大学圣地亚哥分校苏昊（Hao Su）团队联合 Hillbot 等开发的机器人操作仿真框架与基准，底层是同团队的 SAPIEN 引擎，已出三代。第三代 ManiSkill3（RSS 2025）把物理仿真和相机渲染都放到 GPU 上并行，论文称比其他平台快 10–1000 倍、显存省 2–3 倍，一张 4090 每秒能生成 3 万帧以上带分割的 RGB-D 图像。任务覆盖桌面操作、移动操作、人形、灵巧手、软体等 12 类（软体不支持批量并行），还有对照真实场景搭的数字孪生环境，用来在仿真里快速评测真机策略。接口遵循 Gymnasium，2026 年 4 月结束 beta 发布 3.0.1。",
+      "example": "把 ManiSkill3 自带的 PickCube-v1（机械臂抓起方块）任务开成上千个并行环境，用 PPO 训练带相机输入的抓取策略。",
+      "related": [
+        "SAPIEN",
+        "GPU 并行仿真",
+        "仿真评测",
+        "SimplerEnv",
+        "数字孪生",
+        "基准测试"
+      ],
+      "sources": [
+        {
+          "title": "haosulab/ManiSkill (GitHub)",
+          "url": "https://github.com/haosulab/ManiSkill"
+        },
+        {
+          "title": "ManiSkill3: GPU Parallelized Robotics Simulation and Rendering for Generalizable Embodied AI (arXiv 2410.00425)",
+          "url": "https://arxiv.org/abs/2410.00425"
+        },
+        {
+          "title": "mani-skill (PyPI)",
+          "url": "https://pypi.org/project/mani-skill/"
+        }
+      ],
+      "as_of": "2026-04"
+    },
+    {
+      "name_zh": "Meta-World",
+      "name_en": "Meta-World",
+      "abbr": "",
+      "aliases": [
+        "MetaWorld",
+        "Meta-World+",
+        "MT10",
+        "MT50",
+        "ML10",
+        "ML45"
+      ],
+      "tier": 2,
+      "one_liner": "含 50 个机械臂操作任务的仿真基准，用来测多任务和元强化学习。",
+      "explanation": "Meta-World 是 Tianhe Yu、Chelsea Finn、Sergey Levine 等在 CoRL 2019 提出的开源仿真基准：在 MuJoCo 里用 Sawyer 机械臂做 50 个不同操作任务，如开抽屉、按按钮、推物块、开窗。它有两组测法：多任务 MT1/MT10/MT50（同时学 1、10、50 个任务），元学习 ML1/ML10/ML45（先在一批任务上训练，再测对新任务的快速适应，ML45 为 45 个训练任务加 5 个测试任务）。原论文发现现有算法同时学 10 个任务就很吃力。项目现由 Farama 基金会维护，改用 Gymnasium 接口，2025 年推出统一版本细节的 Meta-World+（NeurIPS 2025），至今仍是多任务、元强化学习和模仿学习的常用基准。",
+      "example": "ML45 设定：智能体先在 45 个任务上元训练，再面对 5 个从没练过的任务（如某种新的开门动作），看它用少量交互能多快学会，用成功率打分。",
+      "related": [
+        "元强化学习",
+        "多任务学习",
+        "MuJoCo",
+        "基准测试",
+        "成功率",
+        "Gymnasium"
+      ],
+      "sources": [
+        {
+          "title": "Meta-World: A Benchmark and Evaluation for Multi-Task and Meta Reinforcement Learning (arXiv 1910.10897)",
+          "url": "https://arxiv.org/abs/1910.10897"
+        },
+        {
+          "title": "Farama-Foundation/Metaworld (GitHub)",
+          "url": "https://github.com/Farama-Foundation/Metaworld"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "MuJoCo Playground",
+      "name_en": "MuJoCo Playground",
+      "abbr": "",
+      "aliases": [
+        "Playground"
+      ],
+      "tier": 2,
+      "one_liner": "DeepMind 牵头的 GPU 加速机器人学习环境集，单卡快训、零样本上真机。",
+      "explanation": "MuJoCo Playground 是 Google DeepMind 牵头、联合 UC Berkeley 等团队在 2025 年 2 月开源的机器人学习环境合集（Apache 2.0），物理跑在 MJX 上，现在也可切到 MuJoCo Warp 后端，并带批量渲染器用来训练看图像的策略。它把 DeepMind 控制套件的经典任务、腿足行走和操作任务打包在一起，机器人有宇树 Go1、G1、H1，Booster T1，Berkeley Humanoid，Spot，Franka，ALOHA 和 LEAP 灵巧手等。论文称可在单张 GPU 上几分钟内训出策略，并演示了从状态和像素输入零样本迁移到真机，省掉大量搭环境、调奖励的重复劳动。pip install playground 即可安装。",
+      "example": "安装后加载 G1 或 Go1 的行走环境，在一张 GPU 上用 PPO 并行训练几千个机器人，再把训好的策略直接部署到真机测试。",
+      "related": [
+        "MJX",
+        "MuJoCo Warp",
+        "MuJoCo",
+        "DeepMind 控制套件",
+        "仿真到现实迁移",
+        "mjlab"
+      ],
+      "sources": [
+        {
+          "title": "MuJoCo Playground (arXiv 2502.08844)",
+          "url": "https://arxiv.org/abs/2502.08844"
+        },
+        {
+          "title": "google-deepmind/mujoco_playground (GitHub)",
+          "url": "https://github.com/google-deepmind/mujoco_playground"
+        },
+        {
+          "title": "MuJoCo Playground 项目主页",
+          "url": "https://playground.mujoco.org/"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "MuJoCo Warp",
+      "name_en": "MuJoCo Warp",
+      "abbr": "MJWarp",
+      "aliases": [
+        "mujoco-warp",
+        "MJX-Warp"
+      ],
+      "tier": 2,
+      "one_liner": "DeepMind 与 NVIDIA 用 Warp 重写的 GPU 版 MuJoCo，面向大批量并行。",
+      "explanation": "MuJoCo Warp 是 Google DeepMind 和 NVIDIA 联合开发的 GPU 版 MuJoCo，用 NVIDIA Warp（在 Python 里写 GPU 核函数的框架）重新实现，也是 Newton 物理引擎的核心求解器。它追求吞吐量，一次推进成百上千个仿真「世界」；官方称在几何体多、自由度高、接触复杂的场景上比 MJX 扩展得更好，也更容易和 PyTorch 配合。代价是单步延迟可能比原版 MuJoCo 慢，实时控制仍用原版；它也不支持自动求导，要可微得用 MJX 的 JAX 实现。它还带光线追踪批量渲染。2026 年 1 月起以 mujoco-warp 发布到 PyPI，版本号与 MuJoCo 同步，mjlab、MJX、MuJoCo Playground 和 Newton 都能调用。",
+      "example": "用 mjw.put_model 把模型放上显卡，用 mjw.make_data(mjm, nworld=100) 建 100 个世界，一次 mjw.step 就把 100 个仿真同时往前推一步；再用 CUDA Graph 捕获循环进一步提速。",
+      "related": [
+        "MuJoCo",
+        "MJX",
+        "Newton 物理引擎",
+        "Warp",
+        "mjlab",
+        "GPU 并行仿真"
+      ],
+      "sources": [
+        {
+          "title": "google-deepmind/mujoco_warp (GitHub)",
+          "url": "https://github.com/google-deepmind/mujoco_warp"
+        },
+        {
+          "title": "MuJoCo Warp documentation",
+          "url": "https://mujoco.readthedocs.io/en/latest/mjwarp/index.html"
+        },
+        {
+          "title": "mujoco-warp (PyPI)",
+          "url": "https://pypi.org/project/mujoco-warp/"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "MJX",
+      "name_en": "MuJoCo XLA",
+      "abbr": "MJX",
+      "aliases": [
+        "MuJoCo MJX",
+        "mujoco-mjx",
+        "MJX-JAX"
+      ],
+      "tier": 2,
+      "one_liner": "用 JAX 实现的 MuJoCo，在 GPU/TPU 上批量并行仿真，可求导。",
+      "explanation": "MJX（MuJoCo XLA）是 Google DeepMind 随 MuJoCo 3.0 在 2023 年 10 月推出的 JAX 接口：用 JAX 重新实现 MuJoCo 物理，经 XLA 编译器编译后能跑在 NVIDIA 和 AMD 显卡、Apple 芯片和谷歌 TPU 上。配合 JAX 的 vmap 可以把几千上万个场景打包一起算，适合大规模强化学习；但只跑一个场景时可能比原版 MuJoCo 慢 10 倍左右。纯 JAX 版支持自动求导，可做可微仿真。现在 MJX 有两个后端：MJX-JAX 和调用 MuJoCo Warp 的 MJX-Warp，后者在 NVIDIA 显卡和接触多的场景上更快，但不能求导。Brax 训练库和 MuJoCo Playground 都建在它之上。",
+      "example": "典型三步：mjx.put_model 把模型放上加速器，mjx.make_data 建状态，再用 jax.vmap(mjx.step) 让几千个机器人同时前进一步，接 Brax 的 PPO 训练行走策略。",
+      "related": [
+        "MuJoCo",
+        "JAX",
+        "MuJoCo Warp",
+        "Brax",
+        "MuJoCo Playground",
+        "可微仿真"
+      ],
+      "sources": [
+        {
+          "title": "MuJoCo XLA (MJX) documentation",
+          "url": "https://mujoco.readthedocs.io/en/stable/mjx.html"
+        },
+        {
+          "title": "mujoco-mjx (PyPI)",
+          "url": "https://pypi.org/project/mujoco-mjx/"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "神经模拟器",
+      "name_en": "Neural Simulator (Learned Simulator)",
+      "abbr": "",
+      "aliases": [
+        "学习型模拟器",
+        "神经仿真器",
+        "世界模型仿真器",
+        "Learned Simulator"
+      ],
+      "tier": 2,
+      "one_liner": "用神经网络从数据里学出来的模拟器，代替手写物理方程预测下一步。",
+      "explanation": "神经模拟器指用神经网络从数据中学会「当前状态加一个动作，接下来会怎样」的模拟器，和靠手写物理方程的物理引擎相对。一条路线学物理量，如 DeepMind 在 ICML 2020 提出的图网络模拟器 GNS，把流体、刚体、可变形材料当作粒子来预测运动。另一条路线直接在画面上学，本质是动作条件的视频世界模型：UniSim（2023）从互联网和机器人数据学出交互式模拟器，在里面训练的策略可零样本上真机；1X 在 2024 年 9 月用数千小时 EVE 机器人数据训练世界模型来评测策略。它能吸收布料这类难建模的真实复杂性，但物体会变形消失、物理不守恒，长推演误差会累积。常用于策略评测、生成数据和想象中学习。",
+      "example": "1X 世界模型：输入机器人起始画面和一串动作，生成之后的视频，据此比较不同版本策略谁更可能完成叠衣服、开门等任务。",
+      "related": [
+        "世界模型",
+        "UniSim",
+        "1X 世界模型",
+        "世界模型评测",
+        "物理引擎",
+        "想象中学习"
+      ],
+      "sources": [
+        {
+          "title": "Learning to Simulate Complex Physics with Graph Networks (arXiv 2002.09405)",
+          "url": "https://arxiv.org/abs/2002.09405"
+        },
+        {
+          "title": "Learning Interactive Real-World Simulators (UniSim, arXiv 2310.06114)",
+          "url": "https://arxiv.org/abs/2310.06114"
+        },
+        {
+          "title": "1X World Model",
+          "url": "https://www.1x.tech/discover/1x-world-model"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "Newton 物理引擎",
+      "name_en": "Newton Physics Engine",
+      "abbr": "",
+      "aliases": [
+        "Newton",
+        "newton-physics"
+      ],
+      "tier": 2,
+      "one_liner": "NVIDIA、DeepMind、迪士尼联合发起的开源 GPU 机器人物理引擎。",
+      "explanation": "Newton 是 NVIDIA、Google DeepMind 和迪士尼研究院联合发起的开源物理引擎，基于 NVIDIA Warp 和 OpenUSD（通用场景描述格式），Apache-2.0 许可；2025 年 9 月 29 日 Linux 基金会宣布接管，保持厂商中立。它的思路是一个框架、多个求解器：MuJoCo Warp 是主力刚体求解器，另有 Featherstone、XPBD、VBD（布料和粒子）、隐式 MPM（沙土等颗粒）、Style3D 布料、处理闭环机构的 Kamino 等。它支持 GPU 大规模并行和可微分，兼容 Isaac Sim、Isaac Lab，NVIDIA 把它定位为 PhysX 之后的新一代机器人仿真引擎。2026 年发布 1.0 版，9 月已到 1.6。",
+      "example": "同一套 Newton 接口里，人形机器人行走用 SolverMuJoCo，毛巾布料用 SolverVBD 或 SolverStyle3D，沙地颗粒用 SolverImplicitMPM。",
+      "related": [
+        "MuJoCo Warp",
+        "Warp",
+        "Isaac Lab",
+        "PhysX",
+        "通用场景描述",
+        "可微仿真"
+      ],
+      "sources": [
+        {
+          "title": "newton-physics/newton (GitHub)",
+          "url": "https://github.com/newton-physics/newton"
+        },
+        {
+          "title": "Linux Foundation: Contribution of Newton by Disney Research, Google DeepMind, and NVIDIA",
+          "url": "https://www.linuxfoundation.org/press/linux-foundation-announces-contribution-of-newton-by-disney-research-google-deepmind-and-nvidia-to-accelerate-open-robot-learning"
+        },
+        {
+          "title": "Newton solvers API",
+          "url": "https://newton-physics.github.io/newton/latest/api/newton_solvers.html"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "Isaac Gym",
+      "name_en": "NVIDIA Isaac Gym",
+      "abbr": "",
+      "aliases": [
+        "IsaacGym",
+        "IsaacGymEnvs",
+        "Isaac Gym Preview 4"
+      ],
+      "tier": 2,
+      "one_liner": "NVIDIA 2021 年推出的 GPU 强化学习仿真器，已停止支持。",
+      "explanation": "Isaac Gym 是 NVIDIA 在 2021 年发布的机器人强化学习仿真平台（技术报告收录于 NeurIPS 2021 数据集与基准赛道），物理由 PhysX 在 GPU 上计算。关键是张量接口：物理结果直接以 PyTorch 张量交给神经网络，不经 CPU 中转，一张显卡能同时跑几千个环境，官方称比「CPU 仿真 + GPU 训练」快 2–3 个数量级。legged_gym 等一批腿足运控和灵巧手工作都基于它，配套仓库 IsaacGymEnvs 提供 Ant、ShadowHand 等示例环境。它只发过 Preview 版，最后一版是 Preview 4，现已停止支持，NVIDIA 建议迁到 Isaac Lab，但不少开源项目仍依赖它。",
+      "example": "宇树 unitree_rl_gym 和 ETH 的 legged_gym 至今仍要求先下载安装 Isaac Gym Preview 3/4，才能训练机器狗、人形机器人的行走策略。",
+      "related": [
+        "Isaac Lab",
+        "PhysX",
+        "legged_gym",
+        "大规模并行强化学习",
+        "Isaac Sim",
+        "Orbit / IsaacGymEnvs（Isaac Lab 前身）"
+      ],
+      "sources": [
+        {
+          "title": "Isaac Gym: High Performance GPU-Based Physics Simulation For Robot Learning (arXiv 2108.10470)",
+          "url": "https://arxiv.org/abs/2108.10470"
+        },
+        {
+          "title": "NVIDIA Isaac Gym",
+          "url": "https://developer.nvidia.com/isaac-gym"
+        },
+        {
+          "title": "isaac-sim/IsaacGymEnvs (GitHub)",
+          "url": "https://github.com/isaac-sim/IsaacGymEnvs"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "PhysX",
+      "name_en": "NVIDIA PhysX",
+      "abbr": "",
+      "aliases": [
+        "PhysX 5",
+        "PhysX SDK",
+        "NovodeX"
+      ],
+      "tier": 2,
+      "one_liner": "NVIDIA 的开源实时物理引擎，Isaac Sim 和 Isaac Lab 的物理内核。",
+      "explanation": "PhysX 是 NVIDIA 的实时物理引擎 SDK，源自 ETH 研究者创办的 NovodeX（2002 年商用），2004 年被 Ageia 收购改名，2008 年 NVIDIA 收购 Ageia 后改用 CUDA 显卡加速，长期是游戏行业主流物理中间件。2018 年 12 月以 BSD-3 许可开源，2022 年 11 月开源版升级到 PhysX 5。PhysX 5 支持 GPU 刚体、约化坐标关节体（用根部位姿加关节角描述机器人，关节不会「散架」，适合机械臂和腿足）、有限元软体、基于位置动力学的流体和布料、符号距离场碰撞。它是 Omniverse、Isaac Sim、Isaac Lab 和早年 Isaac Gym 的物理内核，调这些平台的求解器迭代次数、摩擦等参数，本质就是在调 PhysX。",
+      "example": "在 Isaac Lab 里训练机械臂插孔时，关节力矩、接触力和摩擦都由 PhysX 在 GPU 上算；出现穿模时常见做法是调大 PhysX 的求解器位置迭代次数。",
+      "related": [
+        "Isaac Sim",
+        "Isaac Lab",
+        "Isaac Gym",
+        "Omniverse",
+        "关节体仿真",
+        "Newton 物理引擎"
+      ],
+      "sources": [
+        {
+          "title": "NVIDIA-Omniverse/PhysX (GitHub)",
+          "url": "https://github.com/NVIDIA-Omniverse/PhysX"
+        },
+        {
+          "title": "NVIDIA PhysX SDK",
+          "url": "https://developer.nvidia.com/physx-sdk"
+        },
+        {
+          "title": "PhysX (Wikipedia)",
+          "url": "https://en.wikipedia.org/wiki/PhysX"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "OmniGibson",
+      "name_en": "OmniGibson",
+      "abbr": "",
+      "aliases": [
+        "BEHAVIOR-1K 仿真器"
+      ],
+      "tier": 2,
+      "one_liner": "斯坦福基于 Omniverse 的家庭场景仿真器，BEHAVIOR-1K 的底座。",
+      "explanation": "OmniGibson 是斯坦福视觉与学习实验室（SVL，李飞飞等）开发的家庭环境仿真平台，基于 NVIDIA Omniverse 和 PhysX 5，是家务基准 BEHAVIOR-1K 的底层模拟器，取代了前代 iGibson 2.0。它的物理类型很全：刚体、可变形物体、布料、流体和颗粒，外加火、蒸汽、烟等热效应，并跟踪温度、煮熟或烧焦、浸湿、开关、切开、脏污等扩展物体状态。论文指出超过一半的 BEHAVIOR-1K 活动离开流体、软体和布料就模拟不了。画面用光线追踪或路径追踪渲染。BEHAVIOR-1K 含 1000 项日常活动、50 个可交互场景和一万多个物体，并以它为平台举办 BEHAVIOR 挑战赛。",
+      "example": "做饭类任务里，机器人要把食材放进锅里加热，OmniGibson 会持续跟踪食材温度，达到阈值后把它的状态记为「已煮熟」，任务是否完成就按这些状态判定。",
+      "related": [
+        "BEHAVIOR-1K",
+        "iGibson",
+        "Isaac Sim",
+        "Omniverse",
+        "家务任务",
+        "长程任务"
+      ],
+      "sources": [
+        {
+          "title": "BEHAVIOR-1K: A Human-Centered, Embodied AI Benchmark with 1,000 Everyday Activities and Realistic Simulation (arXiv 2403.09227)",
+          "url": "https://arxiv.org/abs/2403.09227"
+        },
+        {
+          "title": "BEHAVIOR 项目主页",
+          "url": "https://behavior.stanford.edu/"
+        },
+        {
+          "title": "StanfordVL/BEHAVIOR-1K (GitHub)",
+          "url": "https://github.com/StanfordVL/BEHAVIOR-1K"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "开环评测",
+      "name_en": "Open-loop Evaluation",
+      "abbr": "",
+      "aliases": [
+        "离线指标评测",
+        "离线评测",
+        "Offline Evaluation"
+      ],
+      "tier": 2,
+      "one_liner": "不让策略真去控制，只在离线数据上比预测动作和演示动作差多少。",
+      "explanation": "开环评测指不让策略真正驱动机器人，而是在离线数据集上逐帧喂入录好的观测，比较模型预测动作和演示动作差多少，常用均方误差（MSE）或 L2 误差。它便宜、快、可复现，不需要机器人或仿真器。问题是策略输出不影响下一帧画面，测不到误差累积和出错后的纠正；同一场景本有多种正确做法（动作多峰性），偏离演示也会被扣分。SIMPLER 论文（2024）比较 6 个检查点，验证集 MSE 与真机成功率的皮尔逊相关只有 0.308，闭环仿真评测则达 0.924。自动驾驶也有类似反思：CVPR 2024 一篇论文发现，在 nuScenes 开环规划指标上只用自车速度等状态就能拿到相当成绩。所以开环指标多用于调试初筛。",
+      "example": "在 DROID 或自采数据的验证集上，把每一帧图像和指令输入 VLA，计算输出动作与演示动作的均方误差，用来粗看训练有没有跑偏。",
+      "related": [
+        "闭环评测",
+        "开环",
+        "仿真评测",
+        "真机评测",
+        "SimplerEnv",
+        "仿真-真机相关性"
+      ],
+      "sources": [
+        {
+          "title": "Evaluating Real-World Robot Manipulation Policies in Simulation (SIMPLER, arXiv 2405.05941)",
+          "url": "https://arxiv.org/abs/2405.05941"
+        },
+        {
+          "title": "Is Ego Status All You Need for Open-Loop End-to-End Autonomous Driving? (arXiv 2312.03031)",
+          "url": "https://arxiv.org/abs/2312.03031"
+        }
+      ],
+      "as_of": ""
+    }
+  ]
+}

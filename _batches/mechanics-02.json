@@ -1,0 +1,451 @@
+{
+  "category": "mechanics",
+  "batch": 2,
+  "terms": [
+    {
+      "name_zh": "连杆",
+      "name_en": "Link",
+      "abbr": "",
+      "aliases": [
+        "杆件",
+        "Robot Link"
+      ],
+      "tier": 1,
+      "one_liner": "机器人身上被关节连起来的一节节刚性部件。",
+      "explanation": "连杆是机器人机械结构的基本单元：机器人由若干连杆通过关节（允许相对运动的连接处）串起来，电机驱动关节，带动连杆运动。建模时连杆通常当成刚体，也就是受力不变形的物体。在机器人描述文件 URDF 里，每个 link 标签记录一节连杆的外观网格、碰撞检测用的简化形状，以及质量和转动惯量；关节标签则写明父连杆、子连杆和转轴。正运动学就是从基座开始，沿「连杆—关节—连杆」这条链逐节累乘坐标变换，算出末端在哪里。连杆长度直接决定机械臂能伸多远。",
+      "example": "串联机械臂有 n 个关节时就有 n+1 个连杆（含底座），6 轴机械臂即 7 个连杆；人的上臂和前臂相当于两节连杆，肘关节把它们连起来。",
+      "related": [
+        "转动关节",
+        "移动关节",
+        "运动链",
+        "刚体",
+        "统一机器人描述格式",
+        "自由度"
+      ],
+      "sources": [
+        {
+          "title": "Modern Robotics (Lynch & Park, 2017), Ch.2 Configuration Space",
+          "url": "https://hades.mech.northwestern.edu/index.php/Modern_Robotics"
+        },
+        {
+          "title": "Wikipedia: Robot kinematics",
+          "url": "https://en.wikipedia.org/wiki/Robot_kinematics"
+        },
+        {
+          "title": "ros/urdf_tutorial: 07-physics.urdf",
+          "url": "https://raw.githubusercontent.com/ros/urdf_tutorial/ros2/urdf/07-physics.urdf"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "负载",
+      "name_en": "Payload",
+      "abbr": "",
+      "aliases": [
+        "有效载荷",
+        "负载能力",
+        "负重",
+        "额定负载",
+        "Rated Payload"
+      ],
+      "tier": 1,
+      "one_liner": "机器人末端能稳定带着干活的最大质量，一般用千克标注。",
+      "explanation": "负载是机器人规格表上的核心参数，指机械臂末端在正常工作的速度和加速度下能可靠携带的最大质量，单位一般是 kg。有两个常被忽略的细节：一是装在末端的夹爪、相机、力传感器等工具本身的重量也算在负载里，留给被抓物体的余量会更少；二是厂家数值通常假定负载重心离末端法兰（机械臂末端安装工具的接口面）不远，重心偏得越远，产生的力矩越大，实际能带的质量越小。负载除以机器人自重得到负载自重比，常用来比较轻量化水平。人形机器人还常分别标单臂负载和整机搬运负载。",
+      "example": "Franka Research 3 官网标注负载 3 kg、臂展 855 mm；末端装上夹爪后，能抓起的物体质量要从这 3 kg 里扣掉夹爪自重。",
+      "related": [
+        "负载自重比",
+        "末端执行器",
+        "力矩",
+        "峰值扭矩",
+        "工作空间",
+        "机械臂"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Industrial robot（Technical description）",
+          "url": "https://en.wikipedia.org/wiki/Industrial_robot"
+        },
+        {
+          "title": "Franka Robotics: Franka Research 3",
+          "url": "https://franka.de/franka-research-3"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "位姿",
+      "name_en": "Pose",
+      "abbr": "",
+      "aliases": [
+        "6D位姿",
+        "6-DoF Pose",
+        "6D Pose",
+        "位置与姿态"
+      ],
+      "tier": 1,
+      "one_liner": "物体在空间里的位置加朝向，三维中共 6 个自由度。",
+      "explanation": "位姿是「位置 + 姿态」的合称。三维空间里，位置用 x、y、z 三个坐标，姿态（朝向）再占三个转动自由度，合起来就是常说的 6D 位姿或 6-DoF 位姿。位姿一定是相对某个坐标系说的，同一个杯子在相机坐标系和世界坐标系里的数值不同。朝向可以用旋转矩阵、四元数、欧拉角等方式存储，位置和旋转也常合写成 4×4 的齐次变换矩阵。机器人抓取前常要先估计物体位姿，机械臂控制常以末端位姿为目标，VLA 模型输出的动作也常是末端位姿或它的增量。",
+      "example": "ROS 的 geometry_msgs/Pose 消息由 position（x, y, z，单位米）和 orientation（四元数 x, y, z, w）两部分组成，正好对应一个位姿。",
+      "related": [
+        "末端位姿",
+        "坐标系",
+        "旋转矩阵",
+        "四元数",
+        "齐次变换矩阵",
+        "6D位姿估计"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Pose (computer vision)",
+          "url": "https://en.wikipedia.org/wiki/Pose_(computer_vision)"
+        },
+        {
+          "title": "ROS 2 common_interfaces: geometry_msgs/msg/Pose.msg",
+          "url": "https://raw.githubusercontent.com/ros2/common_interfaces/rolling/geometry_msgs/msg/Pose.msg"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "四元数",
+      "name_en": "Quaternion",
+      "abbr": "",
+      "aliases": [
+        "单位四元数",
+        "Unit Quaternion",
+        "姿态四元数"
+      ],
+      "tier": 1,
+      "one_liner": "用 4 个数表示三维旋转，机器人软件里最常用的朝向格式。",
+      "explanation": "四元数由哈密顿（William Rowan Hamilton）在 1843 年提出，形式为 w + xi + yj + zk。长度为 1 的单位四元数可表示三维旋转：绕单位轴 u 转 θ 角，对应 q = (cos(θ/2), u·sin(θ/2))，前一项是实部 w，后三项是虚部 x、y、z。它没有欧拉角的万向节死锁（某些角度下丢掉一个转动自由度），又比 9 个数的旋转矩阵紧凑、插值平滑，ROS、MuJoCo 都用它存朝向。注意：q 和 −q 是同一个旋转；分量顺序各家不同，MuJoCo 是 wxyz，ROS 消息是 xyzw，混用是常见 bug。",
+      "example": "绕 z 轴转 90°：θ/2 = 45°，按 wxyz 写是 (0.707, 0, 0, 0.707)，填进 ROS 的 Quaternion 消息则是 x=0, y=0, z=0.707, w=0.707。",
+      "related": [
+        "旋转矩阵",
+        "欧拉角",
+        "万向节死锁",
+        "四元数双倍覆盖",
+        "球面线性插值",
+        "四元数分量顺序约定（wxyz / xyzw）"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Quaternions and spatial rotation",
+          "url": "https://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation"
+        },
+        {
+          "title": "Wikipedia: Quaternion（History）",
+          "url": "https://en.wikipedia.org/wiki/Quaternion"
+        },
+        {
+          "title": "ROS 2 common_interfaces: geometry_msgs/msg/Quaternion.msg",
+          "url": "https://raw.githubusercontent.com/ros2/common_interfaces/rolling/geometry_msgs/msg/Quaternion.msg"
+        },
+        {
+          "title": "MuJoCo Documentation: Modeling（Frame orientations：quat 默认 1 0 0 0，实部在前）",
+          "url": "https://mujoco.readthedocs.io/en/stable/modeling.html"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "转动关节",
+      "name_en": "Revolute Joint",
+      "abbr": "",
+      "aliases": [
+        "旋转关节",
+        "回转关节",
+        "铰链关节",
+        "Hinge Joint",
+        "R 关节"
+      ],
+      "tier": 1,
+      "one_liner": "只允许两节连杆绕一根固定轴相对转动的关节，1 个自由度。",
+      "explanation": "转动关节（常记为 R）又叫铰链关节，连接两节连杆，只允许它们绕同一根轴相对转动、不能滑动，所以只有 1 个自由度。它是机械臂和人形机器人最常见的关节：电机经减速器带动输出端转动，编码器测出转角，这个转角就是关节角。与之对应的是移动关节（P），只允许沿轴线平移。URDF 里 revolute 类型的关节要写转轴方向和限位，即上下限角度（单位弧度）、最大力矩和最大速度；不限角度、能一直转的写成 continuous，比如轮子。常说的「6 轴机械臂」一般就是 6 个转动关节串联。",
+      "example": "门的合页就是一个转动关节；Franka Research 3 的 7 个关节都是转动关节，控制器读到的 q1 到 q7 就是它们各自的转角（弧度）。",
+      "related": [
+        "连杆",
+        "移动关节",
+        "球关节",
+        "关节限位",
+        "自由度",
+        "编码器"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Revolute joint",
+          "url": "https://en.wikipedia.org/wiki/Revolute_joint"
+        },
+        {
+          "title": "Modern Robotics (Lynch & Park, 2017), 2.2.1 Robot Joints",
+          "url": "https://hades.mech.northwestern.edu/index.php/Modern_Robotics"
+        },
+        {
+          "title": "ros/urdf_tutorial: 07-physics.urdf",
+          "url": "https://raw.githubusercontent.com/ros/urdf_tutorial/ros2/urdf/07-physics.urdf"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "横滚-俯仰-偏航角",
+      "name_en": "Roll-Pitch-Yaw",
+      "abbr": "RPY",
+      "aliases": [
+        "横滚角/俯仰角/偏航角",
+        "翻滚角",
+        "roll/pitch/yaw",
+        "RPY 角",
+        "Roll-Pitch-Yaw Angles"
+      ],
+      "tier": 1,
+      "one_liner": "用绕 x、y、z 轴的三个转角描述朝向：横滚、俯仰、偏航。",
+      "explanation": "这组叫法来自航空航海：横滚（roll）绕前后轴侧倾，俯仰（pitch）绕左右轴抬头低头，偏航（yaw）绕竖直轴转向。ROS 的 REP 103 约定机体 x 朝前、y 朝左、z 朝上；RPY 指依次绕固定坐标系的 x、y、z 轴转 γ、β、α 三个角，旋转矩阵 R = Rz(α)·Ry(β)·Rx(γ)（Rz(α) 即绕 z 轴转 α），与 ZYX 欧拉角结果相同。它直观好调，URDF 的 rpy 属性就是这种写法。缺点是俯仰到 ±90° 时横滚和偏航耦合（万向节死锁），角度在 ±180° 处还会跳变，所以程序内部多用四元数。",
+      "example": "人形机器人的 IMU（惯性测量单元）常直接给出 roll、pitch、yaw：roll 或 pitch 的绝对值突然变大，说明身体在侧倒或前后倾倒，yaw 表示身体朝向哪个方向。",
+      "related": [
+        "欧拉角",
+        "万向节死锁",
+        "内旋与外旋",
+        "旋转矩阵",
+        "四元数",
+        "惯性测量单元"
+      ],
+      "sources": [
+        {
+          "title": "Modern Robotics (Lynch & Park, 2017), Appendix B.2 Roll–Pitch–Yaw Angles",
+          "url": "https://hades.mech.northwestern.edu/index.php/Modern_Robotics"
+        },
+        {
+          "title": "ROS REP 103: Standard Units of Measure and Coordinate Conventions",
+          "url": "https://raw.githubusercontent.com/ros-infrastructure/rep/master/rep-0103.rst"
+        },
+        {
+          "title": "Wikipedia: Aircraft principal axes",
+          "url": "https://en.wikipedia.org/wiki/Aircraft_principal_axes"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "旋转矩阵",
+      "name_en": "Rotation Matrix",
+      "abbr": "",
+      "aliases": [
+        "方向余弦矩阵",
+        "Direction Cosine Matrix",
+        "DCM"
+      ],
+      "tier": 1,
+      "one_liner": "用行列式为 1 的 3×3 正交矩阵表示三维旋转，乘上向量就把它转过去。",
+      "explanation": "旋转矩阵是描述三维朝向最基础的方式。3×3 矩阵 R 的三列，分别是物体自身坐标系的 x、y、z 轴在参考坐标系里的方向（单位向量），每个元素等于两根轴夹角的余弦，所以也叫方向余弦矩阵。它必须满足 RᵀR = I（各列互相垂直、长度为 1）且 det R = 1，所有这样的矩阵构成特殊正交群 SO(3)。9 个数里只有 3 个自由度，有冗余，但没有欧拉角那样的奇异点，运算也简单：把一个向量转过去就是用 R 左乘它，连续两次旋转就是矩阵相乘（顺序不能换），求逆只需转置。旋转矩阵加上平移，就是 4×4 的齐次变换矩阵。",
+      "example": "绕 z 轴转 θ 的旋转矩阵是 [[cosθ, −sinθ, 0], [sinθ, cosθ, 0], [0, 0, 1]]；θ = 90° 时，原来指向 x 方向的向量 (1, 0, 0) 被转到 (0, 1, 0)。",
+      "related": [
+        "特殊正交群 SO(3)",
+        "齐次变换矩阵",
+        "四元数",
+        "轴角",
+        "6D 旋转表示",
+        "坐标变换"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Rotation matrix",
+          "url": "https://en.wikipedia.org/wiki/Rotation_matrix"
+        },
+        {
+          "title": "Modern Robotics (Lynch & Park, 2017), 3.2.1 Rotation Matrices",
+          "url": "https://hades.mech.northwestern.edu/index.php/Modern_Robotics"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "任务空间",
+      "name_en": "Task Space",
+      "abbr": "",
+      "aliases": [
+        "笛卡尔空间",
+        "操作空间",
+        "Cartesian Space",
+        "Operational Space"
+      ],
+      "tier": 1,
+      "one_liner": "直接描述任务关心的量的空间，通常指末端的位置和朝向。",
+      "explanation": "任务空间和关节空间相对。关节空间用各关节角描述机器人，任务空间直接描述任务关心的量，默认是末端执行器（夹爪等末端工具）的位置和朝向。按 Lynch 与 Park 的《Modern Robotics》，任务空间怎么定义由任务决定、与机器人无关：在纸上画图只需平面二维坐标，操作刚体则要 6 维位姿。因为常用笛卡尔坐标 xyz 表示，也叫笛卡尔空间；Khatib 1980 年提出操作空间控制（代表论文 1987 年发表）时称之为操作空间。关节角到任务空间用正运动学，反过来用逆运动学。VLA 的动作有的定义在任务空间，有的直接在关节空间。",
+      "example": "OpenVLA 输出 3 维末端平移 + 3 维旋转 + 1 维夹爪开合，是任务空间动作；ALOHA 上的 ACT 直接输出两条臂共 14 维的关节目标，是关节空间动作。",
+      "related": [
+        "关节空间",
+        "工作空间",
+        "末端位姿",
+        "逆运动学",
+        "操作空间控制",
+        "雅可比矩阵"
+      ],
+      "sources": [
+        {
+          "title": "Modern Robotics (Lynch & Park, 2017), 2.5 Task Space and Workspace",
+          "url": "https://hades.mech.northwestern.edu/index.php/Modern_Robotics"
+        },
+        {
+          "title": "Wikipedia: Robot kinematics",
+          "url": "https://en.wikipedia.org/wiki/Robot_kinematics"
+        },
+        {
+          "title": "Wikipedia: Oussama Khatib（operational space formulation, 1980）",
+          "url": "https://en.wikipedia.org/wiki/Oussama_Khatib"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "力矩",
+      "name_en": "Torque",
+      "abbr": "",
+      "aliases": [
+        "扭矩",
+        "转矩",
+        "Moment of Force"
+      ],
+      "tier": 1,
+      "one_liner": "力让物体绕轴转动的效果，大小等于力乘力臂，单位牛·米。",
+      "explanation": "力矩描述力让物体绕某点或某轴转动的效果。定义为 τ = r × F：r 是从转轴上一点指向受力点的位置向量，F 是力；大小 τ = rF·sinθ，θ 是 r 与 F 的夹角，r·sinθ 就是力臂，即转轴到力的作用线的垂直距离；单位牛·米（N·m）。力臂越长，同样的力产生的力矩越大。绕固定轴转动时 τ = Iα（I 是转动惯量，α 是角加速度），是转动版的牛顿第二定律。机器人每个转动关节的电机输出的就是绕自身转轴的力矩，工程上常叫扭矩或转矩，与力矩基本通用：关节要克服重力、惯性和接触力所需的力矩决定了电机和减速器选型，关节模组规格表会标额定扭矩和峰值扭矩，力矩控制则直接给每个关节下力矩指令。",
+      "example": "机械臂水平伸出，在离肩关节 0.5 m 处拿着 1 kg 的物体，仅这个物体就要求肩关节提供约 1 × 9.8 × 0.5 ≈ 4.9 N·m 的力矩（不算手臂自重）。",
+      "related": [
+        "力旋量",
+        "力矩控制",
+        "关节力矩传感器",
+        "峰值扭矩",
+        "重力补偿",
+        "转动惯量"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Torque",
+          "url": "https://en.wikipedia.org/wiki/Torque"
+        },
+        {
+          "title": "Modern Robotics (Lynch & Park, 2017)",
+          "url": "https://hades.mech.northwestern.edu/index.php/Modern_Robotics"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "工作空间",
+      "name_en": "Workspace",
+      "abbr": "",
+      "aliases": [
+        "可达空间",
+        "可达工作空间",
+        "Reachable Workspace",
+        "工作范围",
+        "Work Envelope"
+      ],
+      "tier": 1,
+      "one_liner": "机器人末端能到达的所有位置（和朝向）构成的区域。",
+      "explanation": "工作空间是机器人末端执行器能到达的位置（有时连同朝向）的集合，由连杆长度、关节类型和关节限位等结构决定，与具体任务无关；工业机器人规格书常把它画成侧视和俯视的包络图。按《Modern Robotics》的说法，工作空间里的每个点至少有一种关节构型能到达，而任务空间里的点不一定够得着。教材里还常细分：末端至少能以一种朝向到达的点构成可达工作空间，能以任意朝向到达的点构成灵巧工作空间（dexterous workspace），后者只是前者的一部分，两者不能混称。摆放机器人和桌子、选相机视野、生成仿真任务时，都要先确认目标落在工作空间内。",
+      "example": "两节连杆长度都为 L 的平面二连杆机械臂，关节不设限位、能转满一圈时，末端工作空间是半径 2L 的圆盘；Franka Research 3 臂展 855 mm，离基座明显超过这个距离的物体就抓不到。",
+      "related": [
+        "任务空间",
+        "构型空间",
+        "臂展（工作半径）",
+        "可达性地图 / 逆可达性地图",
+        "奇异位形",
+        "关节限位"
+      ],
+      "sources": [
+        {
+          "title": "Modern Robotics (Lynch & Park, 2017), 2.5 Task Space and Workspace",
+          "url": "https://hades.mech.northwestern.edu/index.php/Modern_Robotics"
+        },
+        {
+          "title": "Wikipedia: Work envelope",
+          "url": "https://en.wikipedia.org/wiki/Work_envelope"
+        },
+        {
+          "title": "UPenn MEAM 520 讲义: Manipulators（reachable / dexterous workspace）",
+          "url": "https://medesign.seas.upenn.edu/uploads/Courses/520-12A-T02.pdf"
+        },
+        {
+          "title": "Franka Robotics: Franka Research 3",
+          "url": "https://franka.de/franka-research-3"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "世界坐标系",
+      "name_en": "World Frame",
+      "abbr": "",
+      "aliases": [
+        "世界系",
+        "全局坐标系",
+        "固定坐标系",
+        "空间坐标系",
+        "Space Frame",
+        "Fixed Frame"
+      ],
+      "tier": 1,
+      "one_liner": "整个场景共用、固定不动的参考坐标系，所有位置都可换算到它下面。",
+      "explanation": "世界坐标系是固定在环境里、不随机器人运动的参考系，《Modern Robotics》称为固定系或空间系 {s}，可以设在房间一角或桌面上。机器人系统里还有基坐标系（固定在底座）、机体坐标系（跟着身体动）、相机坐标系等，各传感器的测量先落在各自坐标系下，要经坐标变换统一到同一个参考系（通常就是世界坐标系）才能放在一起规划。仿真器里通常有显式的世界根节点，如 MuJoCo 的 worldbody；ROS 的 REP 105 把 map 定为固定在世界的坐标系，z 轴朝上。固定底座的机械臂，代码里常直接把基坐标系当世界坐标系。",
+      "example": "桌面抓取时把世界坐标系原点设在桌面、z 轴朝上：相机看到杯子后，先用相机外参把杯子坐标从相机坐标系换算到世界坐标系，机械臂再据此规划抓取。",
+      "related": [
+        "坐标系",
+        "基坐标系",
+        "机体坐标系",
+        "相机外参",
+        "坐标变换",
+        "REP 105 坐标系约定（map / odom / base_link）"
+      ],
+      "sources": [
+        {
+          "title": "Modern Robotics (Lynch & Park, 2017), Ch.3 Rigid-Body Motions",
+          "url": "https://hades.mech.northwestern.edu/index.php/Modern_Robotics"
+        },
+        {
+          "title": "ROS REP 105: Coordinate Frames for Mobile Platforms",
+          "url": "https://raw.githubusercontent.com/ros-infrastructure/rep/master/rep-0105.rst"
+        },
+        {
+          "title": "MuJoCo Documentation: Modeling",
+          "url": "https://mujoco.readthedocs.io/en/stable/modeling.html"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "6D 旋转表示",
+      "name_en": "6D Rotation Representation",
+      "abbr": "6D",
+      "aliases": [
+        "6D rotation",
+        "连续旋转表示",
+        "rotation_6d",
+        "Continuous 6D Rotation Representation"
+      ],
+      "tier": 2,
+      "one_liner": "取旋转矩阵前两列共 6 个数表示旋转，适合神经网络学习。",
+      "explanation": "6D 旋转表示由 Zhou 等人在 CVPR 2019 论文《On the Continuity of Rotation Representations in Neural Networks》中提出。他们证明三维旋转在 4 维及以下欧氏空间里没有连续表示，欧拉角、四元数都有跳变（如 q 与 −q 是同一旋转），网络回归这类目标误差偏大；5 维、6 维中则存在连续表示。做法是只保留旋转矩阵前两列；还原时第一列归一化，第二列去掉沿第一列的分量再归一化，第三列取两者叉乘，类似 Gram-Schmidt 正交化。机器人学习里常用它表示末端朝向的动作或观测。",
+      "example": "Diffusion Policy 官方代码里的 RotationTransformer 默认把轴角转换成 rotation_6d，用来处理末端朝向。",
+      "related": [
+        "旋转矩阵",
+        "四元数",
+        "欧拉角",
+        "9D 旋转表示",
+        "动作表示",
+        "扩散策略"
+      ],
+      "sources": [
+        {
+          "title": "On the Continuity of Rotation Representations in Neural Networks (Zhou et al., CVPR 2019)",
+          "url": "https://arxiv.org/abs/1812.07035"
+        },
+        {
+          "title": "real-stanford/diffusion_policy: rotation_transformer.py",
+          "url": "https://raw.githubusercontent.com/real-stanford/diffusion_policy/main/diffusion_policy/model/common/rotation_transformer.py"
+        }
+      ],
+      "as_of": ""
+    }
+  ]
+}

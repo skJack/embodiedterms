@@ -1,0 +1,113 @@
+{
+  "batch": "robot-06",
+  "terms": [
+    {
+      "key": "robot-06#0",
+      "name_en": "ANYbotics ANYmal",
+      "aliases": ["ANYmal"],
+      "one_liner": "A Swiss industrial-inspection quadruped from ANYbotics, and a classic platform for legged reinforcement-learning research.",
+      "explanation": "ANYmal originated at ETH Zurich's Robotic Systems Lab, with its first version appearing in 2016, the same year the team founded ANYbotics to commercialize it. The current ANYmal D weighs about 50 kg unloaded and can carry roughly 10 kg of inspection payload; ANYmal X is an explosion-proof version for sites with explosion risk, such as petrochemical plants. It is sold mainly to power plants and the oil, gas, and chemical industries for autonomous inspection, reading gauges, checking temperatures, and listening for abnormal sounds in place of a person. In academia, ANYmal is a landmark platform for legged locomotion-control research: landmark work on actuator networks, which fit a neural network to motor characteristics, teacher-student distillation for blind locomotion, and perceptive locomotion combining terrain sensing was all done on it and published in Science Robotics.",
+      "example": "ETH's Miki and colleagues had ANYmal, in 2022, combine exteroception and proprioception to complete a hiking trail up Switzerland's Mount Etzel.",
+      "related": ["Quadruped Robot", "ANYbotics", "ETH Zurich Robotic Systems Lab", "ANYmal RL Locomotion Series", "Inspection Robot", "Perceptive Locomotion"]
+    },
+    {
+      "key": "robot-06#1",
+      "name_en": "ARX X5 / R5 Arm",
+      "aliases": ["ARX Arm", "ARX5"],
+      "one_liner": "A lightweight, force-controlled 6-axis arm from Beijing's ARX, popular for imitation-learning research.",
+      "explanation": "ARX was founded in Beijing in 2023; the X5, also called ARX5 early on, is its ultra-lightweight, force-controlled 6-DoF arm, weighing about 3.3 kg including the gripper, with a rated payload of about 2 kg and a reported launch price of about RMB 60,000 per unit. R5 is a later 6-DoF model, and there is also a cheaper L5 series, reportedly around RMB 29,800 per unit. Its selling points are being light, inexpensive, and force-controllable at every joint, making it easy to mount on a mobile base or a quadruped, and convenient for building leader-follower teleoperation rigs. Stanford's REAL lab open-sourced arx5-sdk, a C++/Python control interface, and studies such as UMI on Legs and UVA have used it in experiments, giving it heavy exposure in embodied-AI data collection and policy replication work.",
+      "example": "UMI on Legs mounts an ARX5 arm on the back of a Unitree quadruped, training a mobile-manipulation policy on data collected with a handheld gripper.",
+      "related": ["Robotic Arm (Manipulator)", "6-Axis Robot Arm", "AgileX PiPER", "UMI on Legs", "Leader-Follower Teleoperation", "Desktop Robot Arm"]
+    },
+    {
+      "key": "robot-06#2",
+      "name_en": "Astribot S1",
+      "aliases": [],
+      "one_liner": "Astribot's wheeled dual-arm humanoid, known for tendon-driven arms and fast, dexterous household demos.",
+      "explanation": "Astribot S1 was developed by Shenzhen-based Astribot, with a demo video released in April 2024 and a public unveiling that same year at the World Robot Conference in Beijing. Its form is an omnidirectional wheeled base topped by a humanoid upper body: two 7-DoF arms plus a torso and head, with about twenty-some degrees of freedom in total. Its distinguishing feature is tendon-driven transmission, giving the arms speed and lightness; reported figures put its end-effector top speed at about 10 m/s and its per-arm payload at roughly 5–10 kg, though sources vary. Official videos showed folding laundry, pouring wine, tossing a pan, and putting things away at natural human speed, with most of these motions coming from teleoperated data collected and then reproduced with imitation learning. It represents a “legless, upper-body-manipulation-first” take on the wheeled humanoid approach.",
+      "example": "In S1's release video, it folds laundry and pulls a tablecloth out from under a cup without spilling it, all at natural human speed.",
+      "related": ["Wheeled Humanoid Robot", "Astribot", "Tendon-Driven Actuation", "Bimanual Manipulation", "Imitation Learning", "Household Tasks"]
+    },
+    {
+      "key": "robot-06#3",
+      "name_en": "Automated Guided Vehicle",
+      "aliases": ["AGV", "AGV Cart"],
+      "one_liner": "A cart that automatically follows a fixed, pre-laid path, such as a magnetic strip or QR codes.",
+      "explanation": "AGVs were the first automated material-handling equipment to become common in factories and warehouses, following fixed or semi-fixed routes laid out in advance, with common guidance methods including floor-mounted magnetic strips, buried wires, QR codes, and laser reflectors. Their advantage is a defined, reliable, inexpensive route; the drawback is that changing the route means re-laying the guide path, and when an AGV meets an obstacle it typically just stops and waits rather than routing around it. A vehicle that can build its own map and plan routes in real time is usually called an AMR, meaning autonomous mobile robot, instead, though many AGVs now also use laser SLAM, meaning simultaneous localization and mapping, blurring the line between the two categories. AGVs are a good starting point for understanding mobile bases and warehouse-logistics automation.",
+      "example": "On an auto final-assembly line, tugger AGVs follow floor-mounted magnetic strips to deliver parts carts to each workstation.",
+      "related": ["Autonomous Mobile Robot", "Mobile Base / Chassis", "Wheeled Robot", "Tote Handling (Material Handling)", "Fleet Management System (e.g. Open-RMF)", "Simultaneous Localization and Mapping"]
+    },
+    {
+      "key": "robot-06#4",
+      "name_en": "Autonomous Mobile Robot",
+      "aliases": ["AMR"],
+      "one_liner": "A mobile robot that localizes and plans its own route with sensors, without following a fixed floor track.",
+      "explanation": "An AMR uses sensors such as lidar, cameras, and an IMU, meaning an inertial measurement unit, together with SLAM, meaning simultaneous localization and mapping, to know where it is and plan its own path, routing around people or obstacles in real time instead of stopping and waiting the way a traditional AGV does. Deploying one usually requires no changes to the floor, so switching sites or routes just means remapping and resetting waypoints, which is why AMRs have become increasingly common in e-commerce warehouses, hospital delivery, and factory material flow. Their downside is a typically higher unit price than a magnetic-strip AGV. An AMR does not necessarily carry a robot arm; adding one on top turns it into a mobile manipulator, which is also a common hardware form for mobile manipulation in embodied AI.",
+      "example": "In an e-commerce warehouse, laser-guided transport robots carry shelves or totes to picking stations.",
+      "related": ["Automated Guided Vehicle", "Mobile Base / Chassis", "Mobile Manipulator", "Navigation", "Simultaneous Localization and Mapping", "Fleet Management System (e.g. Open-RMF)"]
+    },
+    {
+      "key": "robot-06#5",
+      "name_en": "Berkeley Humanoid Lite",
+      "aliases": [],
+      "one_liner": "An open-source small humanoid from Berkeley, with most parts printable on a desktop 3D printer.",
+      "explanation": "Berkeley Humanoid Lite was released in April 2025 by UC Berkeley's Hybrid Robotics lab, paper arXiv 2504.17249, published at RSS 2025. It stands about 0.8 meters tall, weighs about 16 kg, and uses 3D-printed cycloidal reducers paired with motors at its joints; the hardware, code, and training environment are all fully open-sourced, with the paper estimating a parts cost of about $4,300 in the US and about $3,200 in China, both under $5,000 overall. It is meant to address the problem that humanoid robots are too expensive and the barrier to research too high: a student can print and assemble one themselves, then train a reinforcement-learning walking policy with Isaac Lab and deploy it to the real robot.",
+      "example": "The team deployed a reinforcement-learning policy trained in simulation onto their self-assembled Humanoid Lite to make it walk on the real robot.",
+      "related": ["Open-source Hardware", "Small-size Humanoid Robot", "Cycloidal Reducer", "3D Printing (FDM / Resin SLA)", "Berkeley Artificial Intelligence Research", "Sim-to-Real Transfer"]
+    },
+    {
+      "key": "robot-06#6",
+      "name_en": "Bio-inspired Robot",
+      "aliases": ["Bionic Robot"],
+      "one_liner": "A robot designed by borrowing an animal's body structure or way of moving.",
+      "explanation": "Bio-inspired robot isn't a single body form but a design approach: borrowing an animal's structure, movement, or sensing principles and turning them into something engineered to be simpler and more practical to build. Researchers commonly distinguish between straight biomimicry, copying the source closely, and bio-inspiration, learning the underlying principle and then simplifying it. Common sources include quadruped gaits, snake-like undulation, a gecko's adhesive footpads, an octopus's soft grasping tentacles, and the flapping flight of insects and bats. Classic examples include MIT's Cheetah quadruped, the gecko-inspired Stickybot, CMU's snake robots, and various bio-inspired prototypes from Festo. Humanoid and quadruped robots are, broadly speaking, also bio-inspired, while soft robots and artificial muscles extend the idea into materials and actuation.",
+      "example": "MIT's Sangbae Kim lab designed its Cheetah series of quadruped robots by studying the cheetah.",
+      "related": ["Quadruped Robot", "Soft Robot", "Artificial Muscle", "Legged Robot", "Morphological Computation", "Humanoid Robot"]
+    },
+    {
+      "key": "robot-06#7",
+      "name_en": "Booster Robotics K1",
+      "aliases": ["Booster K1"],
+      "one_liner": "A roughly 95 cm small humanoid from Beijing's Booster Robotics, for education and robot soccer.",
+      "explanation": "Booster K1 is the small humanoid robot Booster Robotics, founded in Beijing in 2023, formally released in October 2025. It stands about 95 cm tall, weighs about 19.5 kg, and has 22 degrees of freedom across the body, 6 per leg and 4 per arm; it reportedly starts at about $4,999, with several versions differing in compute and battery life, and supports Python and ROS 2 for custom development. Before its formal release, it already served as the platform for Germany's HTWK team, which won the RoboCup 2025 KidSize humanoid division. It targets universities, competition teams, and developers, positioned as an entry-level embodied-AI development platform for reinforcement-learning locomotion control and dynamic tasks such as soccer.",
+      "example": "The HTWK team used the K1 to compete in and win the RoboCup 2025 humanoid KidSize division.",
+      "related": ["Booster Robotics", "Booster Robotics T1", "Small-size Humanoid Robot", "RoboCup", "EDU Edition (Research & Education Version)", "RL-based Locomotion Control"]
+    },
+    {
+      "key": "robot-06#8",
+      "name_en": "Boston Dynamics Atlas (Hydraulic)",
+      "aliases": ["HD Atlas", "Atlas HD"],
+      "one_liner": "Boston Dynamics' 2013–2024 hydraulic humanoid robot, famous for parkour and backflip videos.",
+      "explanation": "The hydraulic Atlas was originally built by Boston Dynamics with funding from DARPA, the US Defense Advanced Research Projects Agency, for the DARPA Robotics Challenge, and was unveiled publicly in July 2013: about 1.88 meters tall and 150 kg at the time, and still tethered to an external power cable. After 2016 it was replaced by a smaller, battery-powered version, using hydraulic actuators to deliver high power for running, jumping, backflips, parkour, and carrying boxes. Its motion relied mainly on model-based control, such as model predictive control, and offline-designed maneuvers, demonstrating the upper limit of dynamic balance for humanoid robots at the time. It always remained a research platform and was never commercialized, and was retired in April 2024, replaced that same month by the newly released electric Atlas.",
+      "example": "In the 2021 “Parkour Atlas” video, two Atlas units vault over boxes in sequence, clear obstacles, and perform backflips.",
+      "related": ["Boston Dynamics Atlas (Electric)", "Boston Dynamics", "Hydraulic Actuation", "DARPA Robotics Challenge (DRC)", "Model Predictive Control", "Bipedal Locomotion"]
+    },
+    {
+      "key": "robot-06#9",
+      "name_en": "Boston Dynamics BigDog",
+      "aliases": ["BigDog"],
+      "one_liner": "Boston Dynamics' military hydraulic quadruped from 2005 onward, a landmark in dynamic-balance legged robots.",
+      "explanation": "BigDog was developed by Boston Dynamics together with Harvard's Concord Field Station and other partners, funded by DARPA starting in 2005, with the goal of carrying supplies for soldiers over rough terrain. It is about 1 meter long and weighs about 109 kg, with an internal combustion engine driving a hydraulic pump that powers its four legs, reportedly able to carry a load of about 150 kg. It is best known for a video where it stayed on its feet after being kicked from the side and slipping on ice, which was many people's first look at a legged robot with genuine dynamic balance. A later military version, the LS3, was never adopted, reportedly in part because it was too loud. Its technology lineage continued into the later electric quadruped, Spot.",
+      "example": "In BigDog's demonstration video, an engineer kicks the robot from the side and it slips on ice, but it adjusts its steps and recovers its balance both times.",
+      "related": ["Quadruped Robot", "Boston Dynamics", "Hydraulic Actuation", "Boston Dynamics Spot", "Dynamic Stability", "Push Recovery"]
+    },
+    {
+      "key": "robot-06#10",
+      "name_en": "Boston Dynamics Stretch",
+      "aliases": [],
+      "one_liner": "Boston Dynamics' warehouse unloading robot, using suction to pull boxes out of containers automatically.",
+      "explanation": "Stretch is the first robot Boston Dynamics built specifically for warehouses, released in 2021, meant to handle the heavy, repetitive work of unloading shipping containers and trucks. Its structure is a four-wheel omnidirectional mobile base topped with a custom 7-DoF robot arm ending in a multi-suction-cup smart gripper, with a sensing mast on the base handling box recognition. It can pull boxes out of a container and place them on a conveyor, with the company stating it can move up to about 800 boxes an hour, each up to about 23 kg (50 lbs), on roughly 8 hours of battery life. It illustrates that in a well-defined use case, a specialized non-humanoid form often reaches real deployment faster than a humanoid one.",
+      "example": "Inside a logistics warehouse, Stretch drives into a shipping container, suction-lifts cartons one by one, and places them onto an extendable conveyor to unload the container.",
+      "related": ["Boston Dynamics", "Palletizing / Depalletizing", "Vacuum Suction Cup", "Mobile Manipulator", "Tote Handling (Material Handling)", "Real-world Deployment"]
+    },
+    {
+      "key": "robot-06#11",
+      "name_en": "Cartesian Robot",
+      "aliases": ["Gantry Robot", "Cartesian Coordinate Robot"],
+      "one_liner": "A robot whose end effector moves along three mutually perpendicular straight-line axes: X, Y, and Z.",
+      "explanation": "A Cartesian robot has three main motion axes, all linear, meaning prismatic joints, moving along mutually perpendicular X, Y, and Z directions, so the end-effector position is simply given by the three axis readings, with almost no inverse-kinematics computation needed. A version with the crossbeam supported at both ends and spanning above the work area is called a gantry robot; it offers a large working range, good stiffness, and can handle heavy loads. It has a simple structure, high precision, and is easy to scale, common in machine-tool loading and unloading, palletizing, dispensing, and 3D printers and CNC machines. Its drawbacks are a large footprint, motion confined to a rectangular box, and limited orientation flexibility, requiring an added rotary axis whenever an angle needs to change. Together with the 6-axis arm and SCARA, it forms one of the basic configurations of industrial robots.",
+      "example": "A three-axis gantry manipulator above an injection-molding machine lifts a molded part out of the mold and places it on a conveyor.",
+      "related": ["Industrial Robot", "Prismatic Joint", "Selective Compliance Assembly Robot Arm", "6-Axis Robot Arm", "Machine Tending (Loading & Unloading)", "Palletizing / Depalletizing"]
+    }
+  ]
+}

@@ -1,0 +1,401 @@
+{
+  "category": "training",
+  "batch": 13,
+  "terms": [
+    {
+      "name_zh": "上下文学习",
+      "name_en": "In-Context Learning",
+      "abbr": "ICL",
+      "aliases": [
+        "情境学习",
+        "语境学习"
+      ],
+      "tier": 3,
+      "one_liner": "不改模型参数，只靠输入里给的几个示例就学会做新任务。",
+      "explanation": "上下文学习指模型在推理时，只根据提示里给出的任务说明或少量示例就完成新任务，全程不做梯度更新（不改参数）。2020 年 OpenAI 的 GPT-3 论文系统展示了这种能力：翻译、问答等任务都只靠文字描述加几个示范来指定，且能力随模型变大而增强。它的意义在于换任务不必重新训练，只需换提示。具身智能里，研究者把几条机器人演示轨迹当作「提示」喂给策略模型，让它当场模仿新任务；它与少样本学习、元学习、提示工程关系密切。",
+      "example": "ICRT（In-Context Robot Transformer，2024）在推理时把几条人类遥操作演示的图像、状态和动作序列作为提示输入，Franka 机械臂不更新参数就能照着演示执行新任务。",
+      "related": [
+        "少样本",
+        "元学习",
+        "提示词 / 提示工程",
+        "大语言模型",
+        "下一个 token 预测",
+        "元强化学习"
+      ],
+      "sources": [
+        {
+          "title": "Language Models are Few-Shot Learners (GPT-3, arXiv:2005.14165)",
+          "url": "https://arxiv.org/abs/2005.14165"
+        },
+        {
+          "title": "In-Context Imitation Learning via Next-Token Prediction (ICRT, arXiv:2408.15980)",
+          "url": "https://arxiv.org/abs/2408.15980"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "推理时计算",
+      "name_en": "Inference-Time Compute (Test-Time Scaling)",
+      "abbr": "",
+      "aliases": [
+        "测试时扩展",
+        "测试时计算",
+        "Test-Time Compute"
+      ],
+      "tier": 3,
+      "one_liner": "模型不变，推理时多花算力（多采样、多思考）来换更好的结果。",
+      "explanation": "推理时计算指模型训练完之后，在推理阶段投入更多算力来提升效果，例如生成更长的思维链、采样多个候选再用验证器（给候选打分的模型）挑最好的，或反复修改答案。2024 年 OpenAI o1 和 Snell 等人的论文让这一方向受到广泛关注，后者发现按题目难度合理分配推理算力，小模型在部分题目上可超过大 14 倍的模型。它提供了「把模型做大」之外的另一条提升路径。机器人领域也有对应做法，比如对 VLA 多次采样动作再用验证器挑选，代价是推理延迟增加。",
+      "example": "RoboMonkey（2025）让 VLA 对同一观测采样多个动作，加高斯扰动并多数投票后，用 VLM 验证器挑出最优动作，据论文报告在分布外任务上成功率绝对提升约 25%。",
+      "related": [
+        "最优 N 采样",
+        "价值引导采样",
+        "RoboMonkey",
+        "思维链",
+        "推理延迟",
+        "缩放定律"
+      ],
+      "sources": [
+        {
+          "title": "Scaling LLM Test-Time Compute Optimally can be More Effective than Scaling Model Parameters (arXiv:2408.03314)",
+          "url": "https://arxiv.org/abs/2408.03314"
+        },
+        {
+          "title": "RoboMonkey: Scaling Test-Time Sampling and Verification for Vision-Language-Action Models (arXiv:2506.17811)",
+          "url": "https://arxiv.org/abs/2506.17811"
+        }
+      ],
+      "as_of": "2025-07"
+    },
+    {
+      "name_zh": "InfoNCE 损失",
+      "name_en": "InfoNCE Loss",
+      "abbr": "",
+      "aliases": [
+        "对比损失",
+        "InfoNCE 目标"
+      ],
+      "tier": 3,
+      "one_liner": "让模型在一堆候选里认出唯一「正样本」的对比学习损失函数。",
+      "explanation": "InfoNCE 由 DeepMind 的 van den Oord 等人在 2018 年的对比预测编码（CPC）论文中提出。做法是给一个锚点样本配一个正样本（如同一张图的另一种增强、下一时刻的片段）和若干负样本，算出相似度后做 softmax 分类，要求正样本得分最高，本质是交叉熵。论文证明最小化它相当于最大化互信息（两个变量共享的信息量）的一个下界，负样本越多，下界越紧。它是 CLIP、SimCLR 等对比学习方法的核心训练目标，机器人视觉表征如 R3M 也用类似的时间对比目标。",
+      "example": "CLIP 训练时一批里有 N 对图文，每张图只把自己的配文当正样本、其余 N−1 条文字当负样本，图→文、文→图两个方向各算一次 InfoNCE。",
+      "related": [
+        "对比学习",
+        "CLIP",
+        "自监督学习",
+        "时间对比学习",
+        "交叉熵",
+        "表征学习"
+      ],
+      "sources": [
+        {
+          "title": "Representation Learning with Contrastive Predictive Coding (arXiv:1807.03748)",
+          "url": "https://arxiv.org/abs/1807.03748"
+        },
+        {
+          "title": "CPC 论文 HTML 版（第 2.3 节 InfoNCE Loss and Mutual Information Estimation）",
+          "url": "https://arxiv.org/html/1807.03748"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "指令微调",
+      "name_en": "Instruction Tuning",
+      "abbr": "",
+      "aliases": [
+        "指令调优",
+        "Instruction Fine-tuning"
+      ],
+      "tier": 3,
+      "one_liner": "用「指令—回答」格式的多任务数据微调模型，让它学会听指令办事。",
+      "explanation": "指令微调是在预训练模型上，用大量以自然语言指令描述的任务样本（指令 + 期望输出）做监督微调。2021 年 Google 的 FLAN 工作把一个 1370 亿参数模型在 60 多个 NLP 任务上做指令微调，零样本表现在 25 个评测任务中的 20 个超过 GPT-3。它让模型从「续写文本」变成「按要求办事」，是对话助手的基础步骤之一。多模态里，LLaVA 用 GPT-4 生成图文指令数据做「视觉指令微调」；很多 VLA 的骨干 VLM 经历过这一步，训练 VLA 时也常把这类数据混进来，减少遗忘。",
+      "example": "LLaVA（2023）用 GPT-4 把图片的文字描述改写成「看图回答问题」式的指令数据，再用它微调「视觉编码器 + 语言模型」的组合，得到能看图对话的助手。",
+      "related": [
+        "监督微调",
+        "大语言模型",
+        "视觉语言模型",
+        "LLaVA（视觉指令微调架构）",
+        "零样本",
+        "后训练"
+      ],
+      "sources": [
+        {
+          "title": "Finetuned Language Models Are Zero-Shot Learners (FLAN, arXiv:2109.01652)",
+          "url": "https://arxiv.org/abs/2109.01652"
+        },
+        {
+          "title": "Visual Instruction Tuning (LLaVA, arXiv:2304.08485)",
+          "url": "https://arxiv.org/abs/2304.08485"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "交互式模仿学习",
+      "name_en": "Interactive Imitation Learning",
+      "abbr": "IIL",
+      "aliases": [
+        "交互模仿学习"
+      ],
+      "tier": 3,
+      "one_liner": "机器人边执行、人边纠正，用这些反馈在线改进策略的模仿学习。",
+      "explanation": "交互式模仿学习是模仿学习的一个分支：人类在机器人执行过程中间歇性地给反馈，比如接管纠正、标注正确动作或评价好坏，策略据此在线改进。它主要针对行为克隆的复合误差问题——离线示范只覆盖专家走过的状态，机器人一旦偏离就没有数据可学，越错越远。代表算法是 Ross 等人 2011 年提出的 DAgger：让专家给学生策略实际遇到的状态标注动作，汇总进数据集再训练；HG-DAgger 等变体改为由人决定何时接管。Celemin 等人 2022 年的综述系统整理了这一方向。",
+      "example": "典型流程：先用示范数据训练初版插孔策略，让机械臂自己执行，偏离时由操作员接管并记录纠正动作，把这些纠正数据并入训练集再训练，如此循环几轮。",
+      "related": [
+        "DAgger（数据集聚合）",
+        "人工门控 DAgger",
+        "复合误差",
+        "行为克隆",
+        "人在回路",
+        "干预数据"
+      ],
+      "sources": [
+        {
+          "title": "Interactive Imitation Learning in Robotics: A Survey (arXiv:2211.00600)",
+          "url": "https://arxiv.org/abs/2211.00600"
+        },
+        {
+          "title": "A Reduction of Imitation Learning and Structured Prediction to No-Regret Online Learning (DAgger, arXiv:1011.0686)",
+          "url": "https://arxiv.org/abs/1011.0686"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "内在奖励",
+      "name_en": "Intrinsic Motivation (Curiosity-Driven Exploration)",
+      "abbr": "",
+      "aliases": [
+        "好奇心驱动探索",
+        "内在动机",
+        "内部奖励",
+        "Intrinsic Reward"
+      ],
+      "tier": 3,
+      "one_liner": "智能体自己给「新奇、预测不准」的状态发奖励，以此驱动探索。",
+      "explanation": "内在奖励指不来自任务本身、由智能体内部计算的奖励信号，常衡量状态有多新奇、或自己预测得有多不准，通常与环境给的外在奖励相加使用。它主要解决稀疏奖励下的探索难题：任务奖励很少出现时，靠随机尝试很难碰到。代表工作有 2017 年 Pathak 等人的 ICM，把「预测自身动作后果的误差」当作好奇心；2018 年 OpenAI 的 RND 用「预测一个固定随机网络输出的误差」作奖励，在 Atari 游戏《蒙特祖玛的复仇》上首次在不用示范的情况下超过人类平均分。机器人领域常把它用于探索和无监督技能发现。",
+      "example": "ICM 在《超级马里奥》里完全不给游戏得分，只奖励智能体「预测不准下一帧特征」的情况，智能体仍会主动往关卡深处探索。",
+      "related": [
+        "探索与利用",
+        "稀疏奖励",
+        "无监督技能发现",
+        "奖励塑形",
+        "强化学习",
+        "主动探索"
+      ],
+      "sources": [
+        {
+          "title": "Curiosity-driven Exploration by Self-supervised Prediction (ICM, arXiv:1705.05363)",
+          "url": "https://arxiv.org/abs/1705.05363"
+        },
+        {
+          "title": "Exploration by Random Network Distillation (RND, arXiv:1810.12894)",
+          "url": "https://arxiv.org/abs/1810.12894"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "KL 正则化",
+      "name_en": "KL Regularization (KL Penalty)",
+      "abbr": "",
+      "aliases": [
+        "KL 惩罚",
+        "KL 约束",
+        "KL Penalty"
+      ],
+      "tier": 3,
+      "one_liner": "在训练目标里加 KL 散度惩罚，不让新策略偏离参考策略太远。",
+      "explanation": "KL 正则化是在优化目标里加一项 KL 散度（衡量两个概率分布差多少）乘以系数，惩罚当前策略偏离某个参考策略。常见场景有三类：RLHF 中 InstructGPT 对每个 token 加相对监督微调模型的 KL 惩罚，防止模型钻奖励模型的空子；离线强化学习中，BRAC 等方法用 KL 等散度把策略拉在数据的行为策略附近，避免选到数据里没有的动作；TRPO、PPO 则用 KL 限制每次更新的幅度。VLA 的强化学习微调也常用它防止策略跑偏、丢掉预训练能力。系数太大学不动，太小约束失效。",
+      "example": "InstructGPT 的 PPO 目标是「奖励模型打分 − β·log(π_RL / π_SFT)」，β 越大，新模型越不敢偏离监督微调模型。",
+      "related": [
+        "KL 散度",
+        "策略约束",
+        "离线强化学习",
+        "基于人类反馈的强化学习",
+        "近端策略优化",
+        "奖励黑客"
+      ],
+      "sources": [
+        {
+          "title": "Training language models to follow instructions with human feedback (InstructGPT, arXiv:2203.02155)",
+          "url": "https://arxiv.org/abs/2203.02155"
+        },
+        {
+          "title": "Behavior Regularized Offline Reinforcement Learning (BRAC, arXiv:1911.11361)",
+          "url": "https://arxiv.org/abs/1911.11361"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "知识隔离",
+      "name_en": "Knowledge Insulation",
+      "abbr": "KI",
+      "aliases": [
+        "知识绝缘",
+        "Knowledge Insulating VLA"
+      ],
+      "tier": 3,
+      "one_liner": "训练 VLA 时切断动作专家回传给 VLM 骨干的梯度，保护预训练知识。",
+      "explanation": "知识隔离是 Physical Intelligence 在 2025 年 5 月的论文中提出的 VLA 训练方法（Driess、Levine 等）。π0 这类模型在 VLM 骨干上接一个新初始化的动作专家，用流匹配输出连续动作，但动作专家的梯度回传会扰乱骨干，既拖慢训练又损害语言理解。做法是：用梯度阻断切断动作专家到骨干的梯度；骨干改用 FAST 离散动作 token 做下一个 token 预测来学动作，同时混训图文问答等 VLM 数据；推理时仍由动作专家快速生成连续动作块。",
+      "example": "论文在收拾餐桌任务上报告，知识隔离版本的收敛速度约为纯流匹配训练的 π0 的 7.5 倍，同时保留了较好的语言指令跟随能力。",
+      "related": [
+        "梯度阻断",
+        "动作专家",
+        "π0.5",
+        "π0-FAST",
+        "灾难性遗忘",
+        "协同训练"
+      ],
+      "sources": [
+        {
+          "title": "Knowledge Insulating Vision-Language-Action Models: Train Fast, Run Fast, Generalize Better (arXiv:2505.23705)",
+          "url": "https://arxiv.org/abs/2505.23705"
+        },
+        {
+          "title": "论文 HTML 版（方法与实验细节）",
+          "url": "https://arxiv.org/html/2505.23705"
+        }
+      ],
+      "as_of": "2025-05"
+    },
+    {
+      "name_zh": "潜在动作预训练",
+      "name_en": "Latent Action Pretraining",
+      "abbr": "",
+      "aliases": [
+        "隐动作预训练"
+      ],
+      "tier": 3,
+      "one_liner": "从没有动作标签的视频里提取「潜在动作」，用它来预训练机器人模型。",
+      "explanation": "潜在动作预训练指先从无动作标签的视频中学出「潜在动作」——描述相邻两帧之间发生了什么变化的编码，再让 VLA 预测这些潜在动作来做预训练，最后用少量真机数据把潜在动作映射成真实的机器人动作。代表工作是 2024 年 10 月华盛顿大学、KAIST、微软研究院、英伟达等提出的 LAPA，用 VQ-VAE（向量量化自编码器）学离散潜在动作。它的价值在于能利用互联网视频、人类操作视频这类海量但没有机器人动作标签的数据。Genie 的潜在动作模型、UniVLA、智元 GO-1 也采用了类似思路。",
+      "example": "LAPA 论文报告：只用 Something-Something V2 人类操作视频预训练也有正迁移；在需要语言条件和泛化的真机任务上，它超过了用真实动作标签训练的 OpenVLA，预训练算力约为后者的 1/30。",
+      "related": [
+        "潜在动作",
+        "潜在动作模型",
+        "LAPA",
+        "无动作标签视频",
+        "人类视频预训练",
+        "向量量化变分自编码器"
+      ],
+      "sources": [
+        {
+          "title": "Latent Action Pretraining from Videos (LAPA, arXiv:2410.11758)",
+          "url": "https://arxiv.org/abs/2410.11758"
+        },
+        {
+          "title": "LAPA 论文 HTML 版",
+          "url": "https://arxiv.org/html/2410.11758"
+        }
+      ],
+      "as_of": "2024-10"
+    },
+    {
+      "name_zh": "想象中学习",
+      "name_en": "Learning in Imagination (World-Model-Based RL)",
+      "abbr": "",
+      "aliases": [
+        "在世界模型中训练",
+        "世界模型强化学习",
+        "梦境训练"
+      ],
+      "tier": 3,
+      "one_liner": "先学一个世界模型，再让策略在模型「想象」出的轨迹里训练。",
+      "explanation": "想象中学习是基于模型的强化学习的一种做法：先用真实交互数据学一个世界模型（根据当前状态和动作预测下一步和奖励的模型），再让策略在世界模型生成的虚拟轨迹里反复试错，少碰真实环境。Ha 与 Schmidhuber 2018 年的 World Models 论文较早演示了这一思路；Hafner 等人的 Dreamer 系列把它做成通用算法：在压缩的潜在空间里想象轨迹，并把价值估计的梯度沿轨迹回传来训练策略。好处是省真机交互、更安全；风险是世界模型不准时，策略会学到只在「梦里」有效的漏洞。",
+      "example": "DayDreamer（2022）在真机上运行 Dreamer，四足机器人约 1 小时真实交互就从零学会站立和行走；Dreamer 4（2025）只用离线数据在世界模型里训练，成为首个这样在《我的世界》中拿到钻石的智能体。",
+      "related": [
+        "世界模型",
+        "基于模型的强化学习",
+        "DreamerV3",
+        "Dreamer 4",
+        "DayDreamer",
+        "World Models 论文（Ha & Schmidhuber）"
+      ],
+      "sources": [
+        {
+          "title": "Dream to Control: Learning Behaviors by Latent Imagination (Dreamer, arXiv:1912.01603)",
+          "url": "https://arxiv.org/abs/1912.01603"
+        },
+        {
+          "title": "DayDreamer: World Models for Physical Robot Learning (arXiv:2206.14176)",
+          "url": "https://arxiv.org/abs/2206.14176"
+        },
+        {
+          "title": "Training Agents Inside of Scalable World Models (Dreamer 4, arXiv:2509.24527)",
+          "url": "https://arxiv.org/abs/2509.24527"
+        }
+      ],
+      "as_of": "2025-09"
+    },
+    {
+      "name_zh": "掩码自编码器",
+      "name_en": "Masked Autoencoder",
+      "abbr": "MAE",
+      "aliases": [
+        "掩码建模",
+        "掩码图像建模"
+      ],
+      "tier": 3,
+      "one_liner": "遮住图像的大部分小块再让模型补回来，以此自监督学习视觉特征。",
+      "explanation": "掩码自编码器是 Meta FAIR 的何恺明等人 2021 年提出的自监督视觉预训练方法。它把图像切成小块（patch），随机遮住约 75%，编码器只处理可见的块，再由一个轻量解码器根据编码结果重建被遮住的像素。因为编码器只看四分之一的块，训练可加速 3 倍以上；不需要人工标注就能学到好特征，ViT-Huge 在 ImageNet-1K 上达到 87.8% 准确率。机器人领域常用它预训练视觉编码器：MVP 用 MAE 预训练编码器后冻结，用于学习运动控制；VC-1 也采用了 MAE 目标。",
+      "example": "MVP（2022）用 MAE 在大量真实世界图像上预训练 ViT 编码器，冻结后接强化学习控制器，在一组机械臂操作任务上比监督预训练的编码器成功率最高高出 80 个百分点。",
+      "related": [
+        "自监督学习",
+        "视觉 Transformer",
+        "预训练视觉表征",
+        "MVP（掩码视觉预训练）",
+        "VC-1",
+        "表征学习"
+      ],
+      "sources": [
+        {
+          "title": "Masked Autoencoders Are Scalable Vision Learners (arXiv:2111.06377)",
+          "url": "https://arxiv.org/abs/2111.06377"
+        },
+        {
+          "title": "Masked Visual Pre-training for Motor Control (MVP, arXiv:2203.06173)",
+          "url": "https://arxiv.org/abs/2203.06173"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "元强化学习",
+      "name_en": "Meta Reinforcement Learning",
+      "abbr": "Meta-RL",
+      "aliases": [
+        "元RL",
+        "学会强化学习"
+      ],
+      "tier": 3,
+      "one_liner": "在大量相似任务上训练，让智能体遇到新任务时只需少量试错就能适应。",
+      "explanation": "元强化学习把「怎样更快地做强化学习」本身当成一个学习问题：在一个任务分布（如不同负载、不同目标位置）上训练，使智能体面对同分布的新任务时只用少量交互就能适应。常见路线有两类：一类如 RL²（2016），用循环神经网络跨回合保留记忆，靠隐藏状态在线「学会」新任务；另一类如 MAML，学一组便于微调的初始参数，几步梯度更新即可适配。它针对的是深度强化学习样本效率低、策略难泛化的问题。机器人上常用于应对负载、地形、机体损伤等变化，Meta-World 是常用的机械臂元强化学习基准。",
+      "example": "Nagabandi 等人（2018）用元学习训练动力学模型，一台真实的腿式微型机器人在少一条腿、爬坡或拖拽负载时，能用最近几步观测在线调整模型、继续完成移动。",
+      "related": [
+        "元学习",
+        "上下文学习",
+        "快速运动适应",
+        "Meta-World",
+        "少样本",
+        "多任务学习"
+      ],
+      "sources": [
+        {
+          "title": "A Tutorial on Meta-Reinforcement Learning (arXiv:2301.08028)",
+          "url": "https://arxiv.org/abs/2301.08028"
+        },
+        {
+          "title": "RL²: Fast Reinforcement Learning via Slow Reinforcement Learning (arXiv:1611.02779)",
+          "url": "https://arxiv.org/abs/1611.02779"
+        },
+        {
+          "title": "Learning to Adapt in Dynamic, Real-World Environments Through Meta-Reinforcement Learning (arXiv:1803.11347)",
+          "url": "https://arxiv.org/abs/1803.11347"
+        }
+      ],
+      "as_of": ""
+    }
+  ]
+}

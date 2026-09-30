@@ -1,0 +1,226 @@
+{
+ "batch": "model-08",
+ "terms": [
+  {
+   "key": "model-08#0",
+   "name_en": "Text-to-Video / Image-to-Video",
+   "aliases": [
+    "T2V",
+    "I2V",
+    "Text2Video",
+    "Image2Video"
+   ],
+   "one_liner": "Generating a video from a text description, or from an image plus text.",
+   "explanation": "Text-to-video (T2V) and image-to-video (I2V) are the two most common ways of using a video generation model. In T2V, the model generates video from scratch given only a text description; in I2V, it's given an image (usually treated as the first frame) plus text, and animates the scene forward from there. Stability AI's Stable Video Diffusion and Alibaba's Wan both offer versions of each; the dominant approach is to run diffusion or flow-matching denoising step by step inside a latent space produced by a VAE. I2V is more useful for robotics: treating the robot's current camera view as the first frame and the task instruction as the text turns the generated video into a preview of what should happen next. UniPi uses text-guided video generation for planning, while NVIDIA's DreamZero adds action output directly on top of Wan2.1's 14B image-to-video model.",
+   "example": "Given a photo of a robot arm and a cup on a table, plus the instruction 'put the cup in the sink,' an image-to-video model generates a few seconds of video starting from that photo, showing the arm carrying out the task.",
+   "related": [
+    "Video Generation Model",
+    "Diffusion Model",
+    "Latent Diffusion Model",
+    "Variational Autoencoder",
+    "World Action Model",
+    "UniPi"
+   ]
+  },
+  {
+   "key": "model-08#1",
+   "name_en": "Tokenizer",
+   "aliases": [],
+   "one_liner": "The preprocessing step that splits text, images, or actions into tokens and converts them into integer IDs.",
+   "explanation": "A tokenizer is the preprocessing module in front of a model: it splits the input into tokens (the smallest units a model works with), then converts them into integer IDs using a fixed vocabulary; it's also used in reverse, to turn the model's output IDs back into text. Large language models mostly use subword algorithms such as byte-pair encoding (BPE), which repeatedly merges the most frequent adjacent character pairs — common words stay as a single token, rare words get split into several — and GPT-2's vocabulary has 50,257 tokens. In embodied AI the term has been extended: a video tokenizer compresses video into tokens, and an action tokenizer turns continuous joint motion into discrete tokens, so a language model can output actions the same way it outputs words. How something is tokenized determines how long the sequence is and what the model can represent, making it a key design choice for a VLA.",
+   "example": "OpenVLA divides each action dimension into 256 bins and directly repurposes the 256 least-used tokens in the Llama tokenizer's vocabulary to represent them, so one step of a 7-dimensional action becomes 7 tokens.",
+   "related": [
+    "Token",
+    "Byte-Pair Encoding",
+    "Action Tokenizer",
+    "Video Tokenizer / Video VAE",
+    "Visual Token",
+    "Action Binning / Discretization"
+   ]
+  },
+  {
+   "key": "model-08#2",
+   "name_en": "U-Net",
+   "aliases": [
+    "UNet"
+   ],
+   "one_liner": "A U-shaped convolutional network that downsamples layer by layer, then upsamples back, with matching layers connected directly.",
+   "explanation": "U-Net is a convolutional network Ronneberger and colleagues proposed in 2015 for medical image segmentation. The left half is an encoder that downsamples layer by layer, shrinking resolution while extracting more abstract features; the right half is a decoder that upsamples layer by layer back to the original size; matching levels on the left and right are joined by skip connections, which pass the encoder's features directly to the decoder — drawn out, the shape looks like the letter U. This lets the network see global context without losing precise location, which suits tasks that take one image in and produce a same-sized result. It later became the standard backbone for the denoising network in diffusion models — Stable Diffusion and Stable Video Diffusion both use it — though the diffusion Transformer (DiT), introduced in 2022, has begun to replace it. Diffusion Policy in robotics also commonly uses a 1D temporal-convolution U-Net to denoise action sequences.",
+   "example": "When Stable Diffusion generates an image, at every step it feeds the noisy latent into the U-Net, which predicts the noise in it; that noise is subtracted before the next step, and repeating this dozens of times produces a clean image.",
+   "related": [
+    "Convolutional Neural Network",
+    "Diffusion Model",
+    "Diffusion Transformer",
+    "Latent Diffusion Model",
+    "Diffusion Policy",
+    "Residual Network"
+   ]
+  },
+  {
+   "key": "model-08#3",
+   "name_en": "Unified Action Space",
+   "aliases": [
+    "Universal Action Space"
+   ],
+   "one_liner": "A single fixed format that maps different robots' actions by physical meaning, so their data can be trained together.",
+   "explanation": "Different robots use different action formats: a single arm might be 7 dimensions, a bimanual robot 14; some give joint angles, others give end-effector pose (the gripper's position and orientation in space). To train one model on data from multiple robots, the actions first need to be aligned into a common format — this is a unified action space. The most direct approach is to define a vector long enough for everything, with each position fixed to a physical quantity and missing dimensions padded with zero: Tsinghua's RDT-1B uses 128 dimensions, with fixed slots for the left arm, right arm, and base; π0 zero-pads every robot's action to 18 dimensions. A different approach learns an abstract latent action space instead, as in UniAct, then adds a small per-robot decoder to turn it back into a concrete command. This is a foundational piece of cross-embodiment training.",
+   "example": "Fitting data from a 6-DOF single-arm robot into RDT-1B's 128-dimensional vector, the arm is treated as the right arm: its joint angles fill only the first 6 slots of the right-arm block, while the left-arm and base slots are all set to zero.",
+   "related": [
+    "Cross-Embodiment",
+    "Action Space",
+    "Embodiment-specific Head",
+    "Latent Action",
+    "Cross-Embodiment Data",
+    "RDT-1B"
+   ]
+  },
+  {
+   "key": "model-08#4",
+   "name_en": "Variational Autoencoder",
+   "aliases": [
+    "VAE"
+   ],
+   "one_liner": "A model that compresses data into a distribution over latent variables, and can sample from it to reconstruct or generate data.",
+   "explanation": "The variational autoencoder was proposed by Kingma and Welling in 2013 and is a type of generative model. Its encoder compresses the input (such as an image) into a low-dimensional latent variable, but outputs a distribution (a mean and variance) rather than a single fixed point; its decoder samples from that distribution and reconstructs data from it. Training optimizes two things at once: reconstructions should look right, and the latent distribution should stay close to a standard normal distribution, which keeps the latent space continuous and smooth, so decoding a randomly sampled point still gives a plausible result. Thanks to the reparameterization trick, a model with this kind of random sampling can still be trained with gradient descent. Its most common use today is as a compressor in front of a diffusion model: Stable Diffusion and Wan both use a VAE to compress pixels into latent space before denoising; in robotics, ACT uses its conditional variant, the CVAE, to capture the variety in demonstration actions.",
+   "example": "Stable Diffusion's VAE compresses a 512×512 color image into a 64×64×4 latent variable; the diffusion model does all its denoising in that much smaller space, and only the decoder turns the result back into an image at the end.",
+   "related": [
+    "Autoencoder",
+    "Latent Space",
+    "Conditional Variational Autoencoder",
+    "Vector-Quantized Variational Autoencoder",
+    "Latent Diffusion Model",
+    "Video Tokenizer / Video VAE"
+   ]
+  },
+  {
+   "key": "model-08#5",
+   "name_en": "Video Generation Model",
+   "aliases": [
+    "Video Diffusion Model"
+   ],
+   "one_liner": "A generative model that produces a new, coherent video from text, an image, or an existing clip.",
+   "explanation": "A video generation model can produce new video from text, an image, or an existing clip. Google's 2022 paper Video Diffusion Models extended image diffusion models to video; since then, the dominant approach has been to compress video into latent space with a video VAE first, then denoise multiple frames together step by step with a diffusion Transformer or U-Net, so consecutive frames stay coherent. Notable examples include OpenAI's Sora, Google's Veo, and Alibaba's open-source Wan. Because these models learn how objects move and get pushed around from huge amounts of video, they're often treated as a starting point for world models: NVIDIA's Cosmos and other world foundation models, 'generate video then infer actions' policies like UniPi, and world action models like DreamZero are all built on top of video generation models.",
+   "example": "Wan is released open-source in two sizes, 1.3B and 14B; the 1.3B version needs only about 8 GB of GPU memory, so text-to-video runs on a consumer graphics card.",
+   "related": [
+    "Text-to-Video / Image-to-Video",
+    "Diffusion Model",
+    "Diffusion Transformer",
+    "Video Prediction Model",
+    "World Model",
+    "Wan"
+   ]
+  },
+  {
+   "key": "model-08#6",
+   "name_en": "Video Prediction Model",
+   "aliases": [
+    "Action-conditioned Video Prediction"
+   ],
+   "one_liner": "A model that predicts upcoming frames from recent ones, often given the action that's about to be taken.",
+   "explanation": "A video prediction model takes in the past several frames and outputs future frames; in robotics it's usually also given the action the robot is about to take, answering 'what will the camera see if I do this?' — this variant is called action-conditioned video prediction. In 2016, Finn and Levine proposed Visual Foresight: a robot pushes objects around on its own with no human labeling to collect data, trains a prediction model on that data, and then combines it with model predictive control — trying many candidate actions inside the model at each step and executing whichever one's predicted outcome comes closest to the goal — to complete pushing tasks. The difference from a video generation model is that it focuses on continuing forward from an existing view rather than generating from scratch given text. Recent work has shifted to large-scale video diffusion models instead; for example, Video Prediction Policy (VPP) uses a video model's predictive features to drive an inverse dynamics model that outputs actions.",
+   "example": "To push a block on a table to a target position, the robot first tries many candidate action sequences inside a video prediction model, compares which one's predicted frames come closest to the goal image, executes just the first step of that sequence, and repeats.",
+   "related": [
+    "Video Generation Model",
+    "World Model",
+    "Model Predictive Control",
+    "Forward Dynamics Model",
+    "Video Prediction Policy",
+    "World Action Model"
+   ]
+  },
+  {
+   "key": "model-08#7",
+   "name_en": "Vision Foundation Model",
+   "aliases": [
+    "VFM",
+    "Visual Foundation Model"
+   ],
+   "one_liner": "A general-purpose model pretrained on huge amounts of images, usable for many vision tasks with little or no adaptation.",
+   "explanation": "Foundation model refers to a model trained on large-scale data that can adapt to a wide range of downstream tasks, a term a Stanford team coined in 2021; a vision foundation model is the image-focused kind. Three approaches are common. OpenAI's CLIP uses contrastive learning on 400 million image-text pairs from the web to learn visual features aligned with language; Meta's DINOv2 uses self-supervised training on 142 million curated images, producing features especially good at spatial and geometric detail; and Meta's SAM (Segment Anything Model) can segment any object given a point or box prompt. Most of these are built on ViT. Embodied AI rarely trains its vision component from scratch — instead, it typically attaches an off-the-shelf VFM as the vision encoder and feeds its features into a language model or policy network.",
+   "example": "OpenVLA feeds the same camera image into two vision foundation models, SigLIP and DINOv2, concatenates the two sets of features, and projects them into Llama 2's input space with a two-layer MLP.",
+   "related": [
+    "Foundation Model",
+    "Vision Encoder",
+    "Vision Transformer",
+    "CLIP",
+    "DINOv2",
+    "Segment Anything Model"
+   ]
+  },
+  {
+   "key": "model-08#8",
+   "name_en": "Vision Transformer",
+   "aliases": [
+    "ViT"
+   ],
+   "one_liner": "A network that cuts an image into small patches, treats them like a sequence of words, and processes them with a Transformer.",
+   "explanation": "The Vision Transformer was introduced by a Google team in the 2020 paper 'An Image is Worth 16x16 Words.' It cuts an image into fixed-size patches (commonly 16×16 pixels), flattens and linearly maps each patch into a vector, adds a positional encoding (telling the model where each patch was), and feeds the whole set as a sequence of tokens into a standard Transformer encoder; self-attention lets every patch look directly at every other patch in the image. Before this, image tasks relied mainly on convolutional neural networks; ViT showed that, given enough pretraining data, a pure Transformer could match that performance on benchmarks like ImageNet while using less training compute. Today, vision foundation models such as CLIP, SigLIP, and DINOv2 are almost all built on ViT, and VLA vision encoders mostly use it too.",
+   "example": "A 224×224 image cut into 16×16-pixel patches yields 14×14 = 196 patches — 196 visual tokens.",
+   "related": [
+    "Transformer",
+    "Visual Token",
+    "Self-Attention",
+    "Positional Encoding",
+    "Convolutional Neural Network",
+    "Vision Encoder"
+   ]
+  },
+  {
+   "key": "model-08#9",
+   "name_en": "Visual Token",
+   "aliases": [
+    "Image Token",
+    "Patch Token"
+   ],
+   "one_liner": "One of the vectors produced by cutting an image into patches and encoding them — the basic unit a model uses for images.",
+   "explanation": "A visual token is the basic unit an image is broken into before entering a Transformer. The common approach traces back to ViT: the image is cut into fixed-size patches, and each patch is turned into a vector by a vision encoder — that vector is one visual token; a vision-language model then uses a projector to map these into the same space as text tokens, concatenating them with the instruction into a single sequence for joint processing. The token count grows with the square of resolution: PaliGemma produces 256 tokens for a 224-pixel image, 1,024 for 448 pixels, and 4,096 for 896 pixels. Robots typically have multiple cameras and need to run inference many times per second, so visual tokens often make up the bulk of the sequence and directly drive up inference latency — which is why compression methods like visual token pruning and resampling exist. The equivalent unit in video models is the spacetime patch.",
+   "example": "π0 is built on PaliGemma: each camera's image is first encoded into visual tokens, which are then concatenated with the language instruction's tokens into the same sequence fed into the model.",
+   "related": [
+    "Vision Transformer",
+    "Token",
+    "Projector / Connector",
+    "Visual Token Pruning",
+    "Spacetime Patches",
+    "Vision Encoder"
+   ]
+  },
+  {
+   "key": "model-08#10",
+   "name_en": "World Action Model",
+   "aliases": [
+    "WAM",
+    "Video-Action Model",
+    "VAM"
+   ],
+   "one_liner": "A model that predicts future frames and robot actions together, using its prediction about the world to guide the action.",
+   "explanation": "The term World Action Model was formally introduced in NVIDIA's February 2026 DreamZero paper: any model that uses world-modeling ability (predicting future state) to predict actions counts as a WAM, a category that retroactively covers earlier video-and-action joint models like GR-1, UWM, and Cosmos Policy. The typical design starts from a pretrained video generation model as backbone, adds action input and output, and trains it to predict future video and actions together. Compared with a VLA built from a vision-language model, a WAM learns physical dynamics from video; DreamZero reported more than double the generalization to new tasks and environments versus the best VLA at the time. It isn't called a 'video-action model' because the predicted target could someday be touch or force instead of video. One open question is whether inference actually needs to generate future frames: Fast-WAM does the joint video-and-action prediction only during training and skips it at inference, reaching similar performance more than 4x faster.",
+   "example": "DreamZero uses Wan2.1's 14B image-to-video model as its backbone; given a camera view and a language instruction, it generates future video and actions at the same time, controlling a real robot in real time at 7Hz.",
+   "related": [
+    "Vision-Language-Action Model",
+    "World Model",
+    "Video Generation Model",
+    "DreamZero",
+    "Fast-WAM",
+    "Video Prediction Policy"
+   ]
+  },
+  {
+   "key": "model-08#11",
+   "name_en": "World Foundation Model",
+   "aliases": [
+    "WFM"
+   ],
+   "one_liner": "A general-purpose world model pretrained on huge amounts of real video that can be fine-tuned into specialized world models.",
+   "explanation": "The term World Foundation Model was introduced in NVIDIA's January 2025 paper announcing the Cosmos platform, describing a general-purpose world model that can be post-trained into customized world models for specific applications. A world model's job is to predict what the world will look like next, given the current view plus an action or instruction. WFM borrows the large language model playbook — pretrain at massive scale first, then fine-tune per task: Cosmos filtered about 100 million clips out of roughly 20 million hours of raw video and used them to train both diffusion and autoregressive model variants. Its uses include generating synthetic training data for robots and self-driving cars, training and evaluating policies inside the model, and turning simulated footage into photorealistic footage. NVIDIA has since released the Cosmos Predict, Transfer, and Reason series, as well as Cosmos 3, which puts reasoning, video, and action generation into a single model.",
+   "example": "The Cosmos paper post-trains a pretrained WFM into a robot-manipulation version: given the current view and a sequence of robot actions, it predicts the video of what happens after executing them.",
+   "related": [
+    "World Model",
+    "Foundation Model",
+    "NVIDIA Cosmos",
+    "Video Generation Model",
+    "Synthetic Data",
+    "Physical AI"
+   ]
+  }
+ ]
+}

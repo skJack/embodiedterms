@@ -1,0 +1,113 @@
+{
+  "batch": "data-11",
+  "terms": [
+    {
+      "key": "data-11#0",
+      "name_en": "Instruction Augmentation",
+      "aliases": ["Language Augmentation"],
+      "one_liner": "Automatically writing or rewriting language instructions for robot trajectories, so the same motion gets many phrasings.",
+      "explanation": "Instruction augmentation is a family of data-processing methods for language-conditioned policies (policies that act based on text instructions): rather than collecting new robot motion, it adds or rewrites the language label on trajectories that already exist. Writing an instruction by hand for every demonstration is expensive, and the wording tends to be narrow, so a model can fail to understand the same task described a different way. A representative example is DIAL from the Google robotics team, proposed in 2022 and published at RSS 2023: it first fine-tunes CLIP (an image-text matching model) on a small amount of human-labeled data, then has a large language model propose candidate instructions, uses CLIP to score and pick the ones that match what the trajectory's footage actually shows, and relabels 80,000 demonstrations this way (96.5% of which had no human language label at all), before running behavioral cloning. A simpler version just has a large model rewrite the original instruction into several synonymous phrasings. It follows the same underlying idea as hindsight relabeling and automatic annotation.",
+      "example": "The policy trained with DIAL was tested on new instructions that never appeared in the original 60-instruction dataset, spanning three categories: spatial-relationship descriptions, differently worded descriptions, and entirely new semantic skills.",
+      "related": ["Language Annotation", "Hindsight Relabeling", "Automatic Annotation", "Data Augmentation", "Language-Conditioned Policy", "CLIP"]
+    },
+    {
+      "key": "data-11#1",
+      "name_en": "InternData-A1",
+      "aliases": ["InternData A1"],
+      "one_liner": "A large-scale simulated synthetic dataset from Shanghai AI Lab, built for pretraining general-purpose robot policies.",
+      "explanation": "InternData-A1 is a synthetic robot-manipulation dataset released in November 2025 by the Shanghai Artificial Intelligence Laboratory (the InternRobotics team, with participation from Peking University), generated entirely in simulation: over 630,000 trajectories totaling 7,433 hours, covering 4 robot embodiments (ARX Lift-2, AgileX Split ALOHA, A2D, and Franka), 70 tasks, and 227 scenes, including manipulation of rigid, articulated, and deformable objects as well as fluids. The pipeline decouples skills, tasks, and embodiments so they can be freely recombined, uses cuRobo for motion planning, and applies domain randomization (randomly varying things like camera viewpoint, lighting, and object placement so the model doesn't depend on any one fixed appearance). The paper's conclusion: pretraining π0 on this synthetic data alone matches the performance of the official π0, which was pretrained on π's real-robot data, across 49 simulated tasks, 5 real-robot tasks, and 4 long-horizon dexterous tasks. The data is released on Hugging Face under CC BY-NC-SA 4.0.",
+      "example": "The paper reports that for some tasks, fewer than 1,600 simulated samples match the effect of 200 real-robot samples; for 10 of the 70 tasks, the policy achieves strong real-robot success without using any real-robot data at all.",
+      "related": ["Synthetic Data", "Simulation Data", "π0 (pi-zero)", "Shanghai AI Lab InternVLA Series", "cuRobo", "Domain Randomization"]
+    },
+    {
+      "key": "data-11#2",
+      "name_en": "LAFAN1",
+      "aliases": ["Ubisoft La Forge Animation Dataset", "LaFAN1"],
+      "one_liner": "Ubisoft La Forge's public human motion-capture dataset, commonly used as a source of motion for humanoid robots to imitate.",
+      "explanation": "LAFAN1 is an optical motion-capture dataset (optical motion capture: reflective markers on the body tracked by multiple cameras) released by Ubisoft's research division, La Forge, alongside its SIGGRAPH 2020 paper Robust Motion In-betweening. It contains 77 sequences from 5 actors, about 497,000 frames at 30 frames per second, totaling roughly 4.6 hours, with motions including walking, running, jumping, fighting, crawling, getting up after a fall, dancing, and climbing over obstacles; it's released as BVH skeletal animation files under the CC BY-NC-ND 4.0 license (attribution, non-commercial, no derivatives). It was originally meant for filling in in-between frames in game animation, but has been widely used in humanoid robotics in recent years: human motion is first mapped onto robot joints through motion retargeting, and a motion-tracking policy is then trained with reinforcement learning in simulation. Unitree has released a version of LAFAN1 retargeted onto its own humanoid robots, and the GMR retargeting tool directly supports its BVH files.",
+      "example": "UC Berkeley's open-source BeyondMimic code trains its tracking policy directly on Unitree's retargeted LAFAN1 motions; the authors say any motion in the dataset suitable for a real robot can be trained directly with no parameter tuning.",
+      "related": ["AMASS", "Optical Motion Capture", "Motion Retargeting", "GMR (General Motion Retargeting)", "BeyondMimic", "Motion Tracking"]
+    },
+    {
+      "key": "data-11#3",
+      "name_en": "Language-Table",
+      "aliases": ["Language Table", "language_table"],
+      "one_liner": "Google's tabletop block-pushing dataset, with nearly 600,000 trajectories paired with natural-language instructions.",
+      "explanation": "Language-Table is a dataset, simulation environment, and benchmark that the Google robotics team open-sourced alongside its 2022 paper Interactive Language: Talking to Robots in Real Time. The setup is simple: a UFACTORY xArm6 arm fitted with a cylindrical end effector pushes colored blocks around on a tabletop; the action space is just 2D planar displacement, at 5Hz. The data was collected using 4 robots and 10 teleoperators, and crowdworkers then reviewed the videos afterward, marking the start and end of each behavior and writing an instruction for it — that is, hindsight relabeling. In total there are nearly 600,000 language-labeled trajectories: 442,000 from the real robot and 181,000 from human-operated simulation, plus several script-generated simulation subsets. The resulting policy can execute roughly 87,000 different instruction phrasings, with an estimated success rate of 93.5%. It's mainly used to study real-time language interaction and instruction following, and was later folded into Open X-Embodiment.",
+      "example": "An operator can talk to the robot as they watch: first asking it to push one block next to another, seeing the result, then giving the next instruction, gradually building up a more complex long-horizon goal, with the robot responding to each instruction in real time.",
+      "related": ["Tabletop Manipulation", "Language-Conditioned Policy", "Instruction Following", "Hindsight Relabeling", "Open X-Embodiment", "PaLM-E"]
+    },
+    {
+      "key": "data-11#4",
+      "name_en": "Markerless (Video-Based) Motion Capture",
+      "aliases": ["Markerless Mocap", "Monocular Motion Capture", "Vision-Based Motion Capture"],
+      "one_liner": "Estimating a person's 3D motion directly from ordinary video, with no markers or motion-capture suit needed.",
+      "explanation": "Video-based (markerless) motion capture doesn't rely on reflective markers or inertial sensors; it uses just one or a few ordinary cameras, with a computer-vision algorithm estimating the 3D pose and motion trajectory of the human body, including the hands. Compared with optical motion capture, it needs no dedicated studio or special clothing, and can work with footage shot on a phone or pulled from the internet, so it can gather human motion data at scale; the tradeoff is lower accuracy and more noise, and monocular video adds depth and scale ambiguity plus occlusion problems, usually requiring post-processing or physical constraints to clean up. Commonly used models include WHAM and GVHMR (from Zhejiang University, which recovers human motion in world coordinates from monocular video), with HaMeR commonly used for hands. In embodied AI, this is an entry point for humanoid robots learning motion from human video and for real-time teleoperation: the estimated human motion is mapped onto the robot through motion retargeting, then used to train a motion-tracking policy.",
+      "example": "HumanPlus uses a single RGB camera to estimate a person's body (with WHAM) and hand (with HaMeR) pose in real time, letting a humanoid robot follow the operator's movements; UC Berkeley's VideoMimic reconstructs both human motion and scene geometry from casually shot monocular video, training a humanoid robot to climb stairs, sit down, and stand up.",
+      "related": ["Motion Capture (MoCap)", "Optical Motion Capture", "Human Mesh Recovery", "GVHMR", "HumanPlus", "VideoMimic"]
+    },
+    {
+      "key": "data-11#5",
+      "name_en": "Matterport3D",
+      "aliases": ["MP3D"],
+      "one_liner": "A dataset of RGB-D indoor scans from 90 real buildings, a standard scene library for indoor navigation research.",
+      "explanation": "Matterport3D (abbreviated MP3D) was published at the 3DV conference in 2017 by researchers from Princeton University, Stanford University, and other institutions, built from data captured with Matterport's 3D scanning cameras. It covers 90 building-scale real indoor scenes, with 194,400 RGB-D images (color plus depth) stitched into 10,800 panoramas, along with surface reconstruction meshes, camera poses, and 2D/3D semantic segmentation labels. Its significance is letting researchers train and evaluate agents inside digital copies of real houses, without physically moving a robot into a real home every time: the vision-and-language navigation benchmark R2R is built on top of it, and simulation platforms such as Habitat use it as a standard set of scenes for tasks like point-goal and object-goal navigation. The later HM3D dataset expanded the scene count to 1,000. Access requires signing a terms-of-use agreement.",
+      "example": "The R2R benchmark annotates about 22,000 navigation instructions (averaging 29 words) across Matterport3D's 90 buildings; an agent must understand a description like “go through the kitchen and stop at the doorway by the stairs” and walk to the destination.",
+      "related": ["HM3D", "Habitat", "R2R / VLN-CE (Vision-and-Language Navigation Benchmarks)", "Vision-and-Language Navigation (VLN)", "Object-Goal Navigation", "ScanNet"]
+    },
+    {
+      "key": "data-11#6",
+      "name_en": "MCAP",
+      "aliases": [".mcap"],
+      "one_liner": "An open-source multimodal logging file format from Foxglove, the default recording format for ROS 2 bags.",
+      "explanation": "MCAP is an open-source container file format designed by the robotics software company Foxglove, used to store multiple timestamped data streams — camera images, point clouds, joint states, control commands, and so on — into a single file, organized by publish/subscribe channels. It's agnostic to serialization method, so ROS messages, Protobuf, JSON, and other formats can all be stored, and it writes each message's schema (structure definition) into the file itself, so the file stays readable even years after the code that wrote it has changed. It uses append-only writes, so data already written survives if a program crashes unexpectedly; it also supports chunked LZ4/Zstd compression and indexing for fast reads over a specific time range. Starting with ROS 2 Iron in May 2023, MCAP replaced SQLite as rosbag2's default storage format. Official read/write libraries exist for C++, Python, Go, Rust, Swift, and TypeScript. In embodied-AI data collection, it's commonly used as the raw recording format, later converted into training formats such as LeRobot or RLDS.",
+      "example": "NVIDIA's Isaac Teleop framework uses MCAP to record and replay collected data, and can interoperate with the LeRobot dataset format; a recorded .mcap file can also be opened and played back directly in the Foxglove visualization tool.",
+      "related": ["rosbag", "ROS 2", "Foxglove", "HDF5", "LeRobot Dataset Format", "NVIDIA Isaac Teleop"]
+    },
+    {
+      "key": "data-11#7",
+      "name_en": "MolmoAct2-BimanualYAM",
+      "aliases": ["MolmoAct2-BimanualYAM Dataset", "MolmoAct2-Bimanual YAM"],
+      "one_liner": "Ai2's open-source bimanual teleoperation dataset for MolmoAct2, totaling more than 720 hours.",
+      "explanation": "MolmoAct2-BimanualYAM is a bimanual-manipulation dataset the Allen Institute for AI (Ai2) open-sourced in May 2026 alongside its MolmoAct2 model, collected and curated with support from Cortex AI. The data consists of teleoperated demonstrations using two I2RT YAM robot arms (6 joints plus 1 gripper per arm, giving a 14-dimensional joint-position action space), totaling more than 720 hours; the merged version on Hugging Face contains 32,246 trajectories and about 76 million frames (at 30 frames per second), mostly tabletop bimanual tasks such as folding a towel, scanning items, and charging a phone, with each trajectory carrying an annotated language instruction. Ai2 describes it as the largest open bimanual dataset to date, more than 30 times the amount of robot data used for the original MolmoAct. The data uses the LeRobot v3.0 format under the Apache 2.0 license, and can be used directly to pretrain or fine-tune a bimanual VLA (vision-language-action model).",
+      "example": "MolmoAct2 used this dataset as one of its main training sources, mixed with other robot datasets; Ai2 says the resulting model can perform bimanual manipulation without needing separate fine-tuning for each task.",
+      "related": ["MolmoAct", "I2RT YAM Arm", "Bimanual Manipulation", "Teleoperation", "LeRobot Dataset Format", "Allen Institute for AI (Ai2)"]
+    },
+    {
+      "key": "data-11#8",
+      "name_en": "Neural Trajectories",
+      "aliases": [],
+      "one_liner": "Synthetic robot training data generated by a video world model, with pseudo action labels added afterward.",
+      "explanation": "Neural trajectories is a term used by NVIDIA's GEAR lab in GR00T N1 (March 2025) and DreamGen (May 2025) for synthetic robot data generated by a video world model. The pipeline has four steps: first, fine-tune a video generation model on the target robot's real data, so it learns that robot's appearance and how it moves; then, given a starting frame and a language instruction, generate video of the robot performing a task — which can involve entirely new motions or new environments never actually collected; next, use a latent-action model or an inverse-dynamics model (a model that infers the action from a pair of before-and-after frames) to add pseudo action labels to the generated video; finally, train a visuomotor policy on these pseudo-labeled videos together with real data. Compared with synthetic data from a physics simulator, this approach needs no simulated scenes or assets to be built, but the physical plausibility of the generated footage isn't guaranteed and needs dedicated evaluation — which is what DreamGen Bench was built for.",
+      "example": "GR00T N1 generated about 827 hours of neural trajectories (roughly 10x) from about 88 hours of real-robot data, using 3,600 L40 GPUs over about 1.5 days; co-training with the real data raised the GR-1 humanoid's average success rate across 8 real-robot tasks by 5.8 percentage points.",
+      "related": ["DreamGen (GR00T Dreams)", "GR00T N1 Series", "Synthetic Data", "Pseudo Action Labels", "Inverse Dynamics Model", "Latent Action Model"]
+    },
+    {
+      "key": "data-11#9",
+      "name_en": "No-op (Idle) Action Filtering",
+      "aliases": ["No-op Filtering", "no_noops"],
+      "one_liner": "Removing timesteps where the robot doesn't move from demonstrations before training, so the model doesn't learn to freeze in place.",
+      "explanation": "A no-op (idle action) is a timestep in a demonstration trajectory where the action is essentially zero and the robot's state doesn't change — common at the start of teleoperation while waiting, during a pause by the operator, or because a recording script fills in a zero action for the first step. No-op filtering removes these timesteps before training. The reason this matters is that imitation learning takes everything it's given at face value: an expressive single-step policy that learns from these samples may, at deployment, end up outputting a zero action repeatedly in some state, leaving the robot stuck in place. The OpenVLA (2024) paper documented this issue: in the original BridgeData V2, the first step of every demonstration was an all-zero action, and training on it unmodified caused the policy to frequently output zero actions and freeze; on LIBERO, the authors removed actions whose translation and rotation components were near zero and that didn't change the gripper state, and describe this step as critical for models like OpenVLA. The gripper must be checked separately during filtering, or valid actions where the arm holds still but the gripper opens or closes get mistakenly deleted too.",
+      "example": "OpenVLA's open-source script uses this rule: an action counts as a no-op if the norm of every dimension except the gripper is below 1e-4 and the gripper command matches the previous step. The processed LIBERO data is saved with a no_noops suffix, and π0's official codebase, openpi, uses this same processed data directly when fine-tuning on LIBERO.",
+      "related": ["Data Cleaning", "OpenVLA", "LIBERO", "BridgeData V2", "Behavioral Cloning", "Data Quality Control"]
+    },
+    {
+      "key": "data-11#10",
+      "name_en": "NVIDIA Isaac Teleop",
+      "aliases": ["Isaac Teleop", "IsaacCapture"],
+      "one_liner": "NVIDIA's open-source teleoperation and data-collection framework, with unified support for XR headsets, gloves, and other input devices.",
+      "explanation": "Isaac Teleop is NVIDIA's open-source (Apache 2.0) teleoperation and demonstration-data-collection framework; its first version was released in November 2025, bundled with Isaac Lab starting at Isaac Lab 3.0 Beta, and it also supports Isaac Sim, ROS 2, and real robots. It addresses the problem that every headset, glove, and robot combination otherwise needs its own integration code and produces data in its own format: it provides unified access to XR headsets such as Apple Vision Pro, PICO, and Quest, plus data gloves, foot pedals, and body trackers, all with synchronized timestamps; it uses composable retargeting modules to map human motion onto different robots; and it records and replays using MCAP, which interoperates with the LeRobot format. It already supports XR-controlled grippers or dexterous hands, seated whole-body teleoperation (HOMIE), SONIC-based whole-body teleoperation, and embodiment-free first-person data collection. According to GitHub, the repository was renamed NVIDIA/IsaacCapture in 2026, though the documentation still refers to it as Isaac Teleop.",
+      "example": "Wearing an XR headset such as Apple Vision Pro inside Isaac Lab, an operator teleoperates a simulated robot arm through a demonstration using hand motion; the recorded MCAP data is then converted into the LeRobot format for training a policy.",
+      "related": ["Teleoperation", "VR Teleoperation", "Motion Retargeting", "Isaac Lab", "MCAP", "HOMIE"]
+    },
+    {
+      "key": "data-11#11",
+      "name_en": "NVIDIA Physical AI Dataset",
+      "aliases": ["PhysicalAI Dataset"],
+      "one_liner": "NVIDIA's open collection of robotics and autonomous-driving datasets hosted on Hugging Face.",
+      "explanation": "The NVIDIA Physical AI Dataset is an open collection of datasets that NVIDIA announced at its GTC conference on March 18, 2025, hosted on Hugging Face, aimed at developing physical AI for robotics, autonomous driving, and related fields, combining both real and synthetic data. The initial release totaled about 15TB, including more than 320,000 robot training trajectories and up to 1,000 OpenUSD assets. It isn't a single file but a series of datasets under NVIDIA's Hugging Face account, all prefixed PhysicalAI-, such as the simulated trajectories used for GR00T N1 post-training, GR00T teleoperation data, SimReady asset repositories, about 1,700 hours of multi-sensor autonomous-driving data, and, added in 2026, synthetic world-model scene data. As of September 2026, more than 40 datasets exist under this prefix, each with its own license, so licenses need to be checked individually before use.",
+      "example": "The GR00T-X-Embodiment-Sim subset provides the simulated trajectories used for GR00T N1 post-training; the GR-1 humanoid's tabletop manipulation portion alone has 240,000 trajectories, downloadable directly for fine-tuning GR00T.",
+      "related": ["NVIDIA", "GR00T N1 Series", "Synthetic Data", "SimReady Assets", "Autonomous Driving", "Physical AI"]
+    }
+  ]
+}

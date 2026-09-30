@@ -1,0 +1,113 @@
+{
+  "batch": "robot-11",
+  "terms": [
+    {
+      "key": "robot-11#0",
+      "name_en": "LimX Dynamics CL-1",
+      "aliases": ["CL-1"],
+      "one_liner": "LimX Dynamics' full-size humanoid prototype, unveiled in late 2023, known for climbing stairs by sensing terrain in real time.",
+      "explanation": "CL-1 is a full-size humanoid robot from Shenzhen-based LimX Dynamics, which first released video of it in dynamic testing on December 28, 2023. The company says CL-1 closes the loop from real-time terrain perception through gait planning to whole-body control, letting it climb stairs step by step based on what its cameras see, descend slopes of about 15 degrees, and walk both indoors and outdoors — reportedly China's first humanoid robot to climb stairs dynamically using real-time terrain perception. At the 2024 World Robot Conference, CL-1 also demonstrated mobile-manipulation tasks such as weighted squats between shelves and carrying goods, alongside the reveal of the next-generation CL-2. LimX Dynamics has not published CL-1's full height or degrees-of-freedom specs. CL-1 was an early prototype in the company's humanoid line, which later evolved into the research-oriented full-size humanoid Oli, and stands as an early example of “perceptive locomotion” — adjusting footholds while reading the terrain — being deployed on a humanoid platform.",
+      "example": "In the video LimX Dynamics released in late 2023, CL-1 senses each step in real time and climbs a staircase one step at a time, then walks down a roughly 15-degree slope.",
+      "related": ["LimX Dynamics", "Humanoid Robot", "Perceptive Locomotion", "LimX Dynamics Oli", "Full-size Humanoid Robot", "Loco-manipulation"]
+    },
+    {
+      "key": "robot-11#1",
+      "name_en": "LimX Dynamics Oli",
+      "aliases": ["LimX Oli"],
+      "one_liner": "LimX Dynamics' 165 cm full-size humanoid, released in 2025 as a research platform for embodied AI.",
+      "explanation": "LimX Oli is a full-size general-purpose humanoid robot that LimX Dynamics released on July 30, 2025. It stands 165 cm tall with 31 actively driven degrees of freedom excluding end effectors (7 per arm, 6 per leg, 3 in the waist, 2 in the neck), comes in Lite, EDU, and Super editions starting at RMB 158,000, and had its public debut at the 2025 World Robot Conference. It's built around hardware and software modularity: the end effector can be swapped between a two-finger gripper and a five-finger dexterous hand, third-party sensors such as microphones, cameras, tactile sensors, IMUs, and lidar can be added, and it ships with an open SDK for both joint-level and task-level control, plus over-the-air updates for its motion library and controller. It's aimed at universities, labs, and systems integrators doing embodied-AI research, for validating algorithms such as whole-body control, loco-manipulation, and VLA models.",
+      "example": "A lab buys the EDU edition of Oli, fits it with the five-finger dexterous hand, and uses the open SDK to deploy its own trained whole-body control policy for a carrying task.",
+      "related": ["LimX Dynamics", "Full-size Humanoid Robot", "LimX Dynamics CL-1", "Research & Education Market", "Whole-Body Control", "Dexterous Hand"]
+    },
+    {
+      "key": "robot-11#2",
+      "name_en": "LimX Dynamics TRON 1",
+      "aliases": ["TRON1"],
+      "one_liner": "LimX Dynamics' 2024 bipedal robot with swappable feet, positioned as a research platform for locomotion control.",
+      "explanation": "TRON 1 is a multi-form bipedal robot that LimX Dynamics released on October 17, 2024, built on top of P1, its earlier point-foot bipedal prototype, and aimed at research customers. Its defining feature is a swappable foot: point-foot mode (the simplest leg form and the easiest to control), flat-foot mode (standing and walking like a human), and wheeled-foot mode (a wheel mounted at the end of the leg, letting it roll or step over obstacles) — LimX Dynamics says the hardware auto-detects the foot type and the software adapts automatically. Early-bird pricing started at $15,000, through an offer that ran through the end of 2024. It has no arms, only legs, and is positioned as an entry-level platform for humanoid locomotion control and a testbed for embodied-AI research, suited to university work on reinforcement-learning locomotion control and sim-to-real transfer. Its successor, TRON 2, can switch between dual-arm, bipedal, and wheeled-leg configurations.",
+      "example": "A research group trains a point-foot walking policy for TRON 1 with reinforcement learning in simulation, then deploys it to the real robot to test sim-to-real transfer.",
+      "related": ["LimX Dynamics", "Bipedal Robot", "Wheel-legged Robot", "Point Foot vs. Flat Foot", "RL-based Locomotion Control", "LimX Dynamics TRON 2"]
+    },
+    {
+      "key": "robot-11#3",
+      "name_en": "LimX Dynamics TRON 2",
+      "aliases": ["TRON2"],
+      "one_liner": "LimX Dynamics' late-2025 modular robot that switches between dual-arm, bipedal, and wheeled-leg configurations.",
+      "explanation": "TRON 2 is a multi-form embodied robot that LimX Dynamics released on December 18, 2025, priced from RMB 49,800. It uses a fully modular whole-body architecture: the same base unit can quickly switch among three core configurations — dual-arm, bipedal, and dual wheeled-leg — and the company says it also supports reconfiguring into humanoid and quadruped forms. Published specs include a 7-DOF humanlike single arm with 70 cm of reach, a 10 kg combined payload for the arms, and a 60 kg maximum load on the body; the bipedal form can sense obstacles and climb stairs, with about 4 hours of runtime and a 30 kg maximum payload; and the dual wheeled-leg form carries 30 kg and supports automatic return-to-charge. It ships with a fully open API and standardized hardware interfaces, positioned as a research platform for work on VLA models, mobile manipulation, and whole-body control — an upgrade over TRON 1.",
+      "example": "The same TRON 2 unit is first assembled in the dual-arm configuration to collect tabletop grasping data for training a VLA model, then reconfigured into the dual wheeled-leg form for mobile-manipulation experiments.",
+      "related": ["LimX Dynamics", "LimX Dynamics TRON 1", "Wheel-legged Robot", "Mobile Manipulation", "Vision-Language-Action Model", "Research & Education Market"]
+    },
+    {
+      "key": "robot-11#4",
+      "name_en": "LoCoBot",
+      "aliases": [],
+      "one_liner": "A low-cost mobile-manipulation research platform designed at CMU, built to pair with Facebook AI's PyRobot.",
+      "explanation": "LoCoBot is a low-cost mobile-manipulation robot designed at Carnegie Mellon University (CMU), meant to be used with PyRobot, the open-source framework Facebook AI (now Meta) released in 2019, and sold commercially by Trossen Robotics. Its default configuration is a Kobuki differential-drive base, an Intel NUC mini PC, an Intel RealSense D435 depth camera, and a small WidowX robot arm (5 degrees of freedom, about 0.2 kg payload, and roughly 0.55 m of reach, per the PyRobot paper). PyRobot sits on top of ROS (Robot Operating System) and provides a hardware-agnostic Python interface for navigation and manipulation, letting deep-learning researchers who don't know ROS well control the real robot directly. Because it's inexpensive and can handle both navigation and grasping, it's a popular choice for budget-limited labs running experiments in embodied navigation, grasping, and sim-to-real transfer.",
+      "example": "A point-goal navigation policy trained in the Habitat simulator is deployed on a real LoCoBot to measure its success rate and compare simulated versus real-world performance.",
+      "related": ["Mobile Manipulation", "Mobile Manipulator", "Robot Operating System", "Habitat (Habitat-Sim / Habitat-Lab)", "Point-Goal Navigation", "TurtleBot"]
+    },
+    {
+      "key": "robot-11#5",
+      "name_en": "MagicLab MagicBot",
+      "aliases": ["MagicBot", "MagicBot Gen1"],
+      "one_liner": "A humanoid robot line from MagicLab, a Dreame-incubated startup, aimed at factory and commercial deployment.",
+      "explanation": "MagicBot is the humanoid robot line from MagicLab (魔法原子), a company founded in January 2024 and incubated by the appliance maker Dreame Technology (追觅). The first full-size MagicBot (Gen1) stands about 174 cm tall with 42 degrees of freedom and a proprietary dexterous hand; its arms can each lift about 20 kg, the whole robot can carry about 40 kg, and it runs for about 5 hours per charge. In December 2024, MagicLab released videos of multiple MagicBot units doing supervised, small-scale collaborative work on a factory line — quality inspection, material handling, parts placement, and barcode scanning. In 2025, the company released a small bipedal version, MagicBot Z1, about 140 cm tall and 40 kg, with a base of 24 degrees of freedom expandable to about 50. It reportedly unveiled a flagship full-size humanoid, MagicBot X1, at the 2026 World Artificial Intelligence Conference. MagicBot represents a domestic approach to humanoids that leans on a parent company's manufacturing base and starts with factory deployment.",
+      "example": "In videos MagicLab released, several MagicBot units divide up work on a factory line, handling incoming-parts inspection, material transport, and barcode scanning.",
+      "related": ["MagicLab", "Humanoid Robot", "Full-size Humanoid Robot", "In-Factory Training / Pilot Deployment", "Dexterous Hand", "Small-size Humanoid Robot"]
+    },
+    {
+      "key": "robot-11#6",
+      "name_en": "Mentee Robotics MenteeBot",
+      "aliases": ["MenteeBot V3", "Menteebot 3.0"],
+      "one_liner": "An Israeli general-purpose humanoid robot whose maker, Mentee Robotics, was acquired by Mobileye in 2026.",
+      "explanation": "MenteeBot is a general-purpose humanoid robot developed by the Israeli startup Mentee Robotics, founded around 2022 by Mobileye founder Amnon Shashua along with Lior Wolf, who serves as CEO. The reported third-generation MenteeBot stands about 175 cm tall, weighs about 70 kg, carries about 25 kg, and has around 40 degrees of freedom. It relies on cameras alone for perception, including side- and rear-facing fisheye cameras for 360-degree coverage, and uses in-house motors and actuators, tactile-sensing hands, and hot-swappable batteries; its training leans heavily on sim-to-real transfer. Mentee Robotics emphasizes scene understanding, following natural-language instructions, and end-to-end autonomous execution without teleoperation. On January 6, 2026, Mobileye announced it would acquire Mentee for about $900 million, with plans for initial customer proof-of-concept deployments in 2026 and mass production by 2028.",
+      "example": "Under the plan laid out in the acquisition announcement, MenteeBot is set to go on-site with customers in 2026 to prove out autonomous work that doesn't rely on teleoperation.",
+      "related": ["Mentee Robotics", "Mobileye", "Humanoid Robot", "Vision-Only Approach", "Sim-to-Real Transfer", "Hot-Swappable Battery"]
+    },
+    {
+      "key": "robot-11#7",
+      "name_en": "NASA Valkyrie (R5)",
+      "aliases": ["Valkyrie", "R5"],
+      "one_liner": "A fully electric humanoid robot built by NASA's Johnson Space Center, officially designated R5.",
+      "explanation": "Valkyrie (officially designated R5) is a fully electric bipedal humanoid robot that NASA's Johnson Space Center began developing in October 2012. It was originally built to compete in DARPA's Robotics Challenge (DRC), which tested robots on disaster-response tasks like driving a car, opening doors, and climbing ladders, with a working prototype finished by July 2013. It stands about 1.87 m tall, weighs about 129 kg, has 44 degrees of freedom, and its battery lasts about an hour. At the DRC trials in December 2013, a network failure left it scoring zero points. NASA subsequently redirected the project toward space applications, with the idea of having humanoids do preparatory work on other planets before astronauts arrive: it has both run a simulated-robot competition based on Valkyrie's model and, in 2015, sent two physical R5 units to research teams at MIT and Northeastern University. Valkyrie is considered a classic research platform for humanoid whole-body control, balance, and teleoperation.",
+      "example": "",
+      "related": ["Humanoid Robot", "DARPA Robotics Challenge (DRC)", "Whole-Body Control", "Boston Dynamics Atlas (Hydraulic)", "Bipedal Robot", "Florida Institute for Human and Machine Cognition"]
+    },
+    {
+      "key": "robot-11#8",
+      "name_en": "NEURA Robotics 4NE1",
+      "aliases": ["4NE-1"],
+      "one_liner": "A general-purpose humanoid robot from Germany's NEURA Robotics, built around full-body sensing and human collaboration.",
+      "explanation": "4NE1 is a humanoid robot developed by Germany's NEURA Robotics; its third generation debuted at the Automatica trade show in Munich in June 2025. Per NEURA's own specs, it stands 180 cm tall, weighs 80 kg, walks at up to 5 km/h, and has a rated payload of 10–100 kg. It's covered in a sensor skin with 360-degree perception, letting it sense its surroundings and nearby people so it can work safely alongside them; on the software side it combines language models, computer vision, and reinforcement learning, supports teleoperation, and has a swappable forearm, with wheeled and other variants also available. It reportedly has about 55 degrees of freedom across its body (12 in each hand), and a dual-battery design lets it swap packs to run close to around the clock. NEURA also offers a smaller version for research and education, the 4NE1 Mini, which the company's website says is scheduled to ship in spring 2026. 4NE1 is one of the flagship products of the European humanoid-robot field.",
+      "example": "A university preorders a 4NE1 Mini for embodied-AI teaching and algorithm validation.",
+      "related": ["NEURA Robotics", "Humanoid Robot", "Electronic Skin", "Human-Robot Collaboration", "Full-size Humanoid Robot", "Exteroception"]
+    },
+    {
+      "key": "robot-11#9",
+      "name_en": "Noetix Bumi",
+      "aliases": ["Bumi"],
+      "one_liner": "Noetix's RMB 9,998 small humanoid robot from 2025, aimed at homes and education.",
+      "explanation": "Bumi (小布米) is a small bipedal humanoid robot from Beijing-based Noetix Robotics, released in October 2025 with preorders opening on October 23 at a price of RMB 9,998; the company calls it the world's first high-performance humanoid robot priced under RMB 10,000. It stands about 94 cm tall, weighs about 12 kg, and has at least 21 degrees of freedom, letting it walk, run, and dance — and it's small enough for a person to pick up and carry. It supports block-based visual programming, where a child can drag and drop modules to choreograph movements, plus voice interaction, and it's aimed mainly at home companionship, children's coding education, and as an entry point into robotics research. It reportedly received 1,000 orders shortly after launch. By bringing a humanoid robot's price under RMB 10,000, Bumi has become a landmark product in discussions of “consumer-grade humanoid robots.”",
+      "example": "A child drags motion blocks together on a tablet to choreograph a dance routine, then sends it to Bumi to perform.",
+      "related": ["Noetix Robotics", "Small-size Humanoid Robot", "10,000-Yuan-Class Humanoid Robot", "Consumer-Grade Robot", "Noetix N2", "Research & Education Market"]
+    },
+    {
+      "key": "robot-11#10",
+      "name_en": "Noetix N2",
+      "aliases": ["N2"],
+      "one_liner": "Noetix's 1.2-meter humanoid robot, released in 2025, capable of consecutive backflips and priced from RMB 39,900.",
+      "explanation": "N2 is a small humanoid robot that Noetix released on March 14, 2025, priced from RMB 39,900 and sold through the e-commerce platform JD.com. It stands 1.2 m tall and weighs 30 kg, with only 18 degrees of freedom across its body (5 per leg, 4 per arm) — a deliberately simplified joint count traded for a lighter build and better fall resistance. It can take long strides, run (tested at up to about 3.5 m/s), jump on one or two feet, and dance, and Noetix marketed it at launch as the world's first humanoid robot capable of consecutive backflips. At the Beijing E-Town Humanoid Robot Half Marathon in April 2025, an N2 placed second; that particular unit was later auctioned off for RMB 57,000. N2 is positioned on low price and athletic performance, and is often used to showcase locomotion-control capability.",
+      "example": "At the 2025 Beijing E-Town humanoid half-marathon, an N2 finishes the full course and takes second place.",
+      "related": ["Noetix Robotics", "Small-size Humanoid Robot", "Humanoid Robot Half Marathon (Beijing E-Town)", "Noetix Bumi", "RL-based Locomotion Control", "Degrees of Freedom"]
+    },
+    {
+      "key": "robot-11#11",
+      "name_en": "Open Duck Mini",
+      "aliases": ["Open Duck"],
+      "one_liner": "An open-source small bipedal robot modeled on Disney's BDX droid, with a target parts cost under $400.",
+      "explanation": "Open Duck Mini is an open-source project started by GitHub developer apirrone, aiming to recreate a miniature version of the Disney BDX droid — the small, expressive walking character robot seen at Disney theme parks. The v2 version stands about 42 cm tall with its legs extended, targets a parts cost under $400, runs on a Raspberry Pi Zero 2W as its onboard computer, and has its code released under the Apache 2.0 license, with sponsorship from Hugging Face and Pollen Robotics. Its walking policy is trained with reinforcement learning in the MuJoCo simulator, then exported as an ONNX model for deployment on the real robot; the project also open-sources a reference-motion generator and a training environment built on MuJoCo Playground. It's a popular low-cost entry point for individuals and students to try “train bipedal walking in simulation, then transfer it to a real robot.”",
+      "example": "A hobbyist 3D-prints the shell from the open-source design to assemble an Open Duck Mini, exports a walking policy trained in MuJoCo Playground as an ONNX model, and deploys it to run on the onboard Raspberry Pi.",
+      "related": ["Disney Research BDX Droid", "Open-source Hardware", "MuJoCo Playground", "Sim-to-Real Transfer", "Bipedal Robot", "Pollen Robotics"]
+    }
+  ]
+}

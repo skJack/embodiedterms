@@ -1,0 +1,113 @@
+{
+  "batch": "perception-04",
+  "terms": [
+    {
+      "key": "perception-04#0",
+      "name_en": "Eye-to-Hand",
+      "aliases": ["Fixed Camera Calibration", "Eye-on-Base", "Eye-to-Hand Calibration"],
+      "one_liner": "A camera-mounting scheme where the camera is fixed outside the robot and doesn't move with the arm, plus its matching calibration.",
+      "explanation": "Eye-to-hand is one of the two hand-eye calibration configurations: the camera is fixed — on a tripod, table edge, or stand — and doesn't move with the arm, as opposed to ‘eye-in-hand,’ where the camera is mounted on the end-effector. Eye-to-hand requires the fixed transform from the camera to the robot's base (the camera extrinsics); once known, it lets objects seen by the camera be mapped into coordinates the arm can act on. Calibration works by fixing a calibration board or an ArUco marker to the end-effector, moving the arm through several poses while the camera photographs each one, and solving an equation of the form AX = XB, commonly with the Tsai-Lenz algorithm; MoveIt and easy_handeye both offer ready-made tools for this. Its advantage is a stable view that can see the whole worktable; its drawback is that it's easily blocked by the arm itself, and bumping the camera means recalibrating.",
+      "example": "A fixed depth camera on a tripod at the table's edge looks down at the workspace. A ChArUco board is clamped to the arm's end-effector and moved through a dozen or more poses, each photographed once, to solve for the camera's pose relative to the base. Afterward, cup coordinates the camera detects can be sent directly to the arm to grasp.",
+      "related": ["Hand-Eye Calibration", "Eye-in-Hand", "Camera Extrinsics", "Calibration Board (Checkerboard / ChArUco)", "Third-Person Camera", "ArUco Marker"]
+    },
+    {
+      "key": "perception-04#1",
+      "name_en": "FAST-LIO2",
+      "aliases": ["FAST-LIO", "Fast LiDAR-Inertial Odometry"],
+      "one_liner": "An open-source lidar-plus-IMU odometry system from HKU that's fast and works with many lidar types.",
+      "explanation": "FAST-LIO is an open-source lidar-inertial odometry system from the MARS Lab at the University of Hong Kong (Fu Zhang's group): it fuses lidar point clouds with an IMU (which measures acceleration and angular velocity) to estimate the robot's own pose in real time while simultaneously building a point-cloud map. The first version used a tightly coupled iterated extended Kalman filter. FAST-LIO2, released in July 2021, made two key changes: it no longer hand-extracts edge and plane features but registers raw points directly against the map, so it works with both spinning lidars (Velodyne, Ouster) and solid-state ones (Livox); and it maintains its map with a custom incremental k-d tree called ikd-Tree, with the paper reporting rates up to 100 Hz in large scenes. It's a common open-source baseline for localization and mapping on quadrupeds, drones, and humanoids, is licensed under GPL-2.0, and runs on ARM boards.",
+      "example": "Mounting a Livox solid-state lidar on a quadruped's back and running FAST-LIO2 gives its self-pose and a point-cloud map in real time, which is then handed to a navigation module for path planning.",
+      "related": ["LiDAR-Inertial Odometry (LIO)", "LiDAR", "Inertial Measurement Unit", "LiDAR SLAM", "LIO-SAM", "Solid-State LiDAR"]
+    },
+    {
+      "key": "perception-04#2",
+      "name_en": "Field of View",
+      "aliases": ["FoV", "Angle of View"],
+      "one_liner": "The angular range a camera or sensor can see at once, usually given as horizontal, vertical, and diagonal figures.",
+      "explanation": "Field of view is the angular range a camera or sensor covers at any given instant, usually reported separately as horizontal, vertical, and diagonal, in degrees. For an ordinary pinhole camera, it's set by the sensor size s and the focal length f: FoV = 2·arctan(s/2f) — a shorter focal length gives a wider field. Lidar and depth-camera spec sheets likewise list horizontal and vertical FoV separately. In embodied AI, field of view determines how much a camera can actually see: a wrist camera sits close to the object, so too narrow a FoV loses the surrounding context, which is why UMI added a 155° fisheye lens to its wrist-mounted GoPro. Conversely, a wider FoV means more distortion at the edges and fewer pixels devoted to each degree of view. Swapping a camera or lens changes the distribution of the images a policy sees, so an already-trained vision policy often needs extra data to adapt.",
+      "example": "A camera with a 36 mm-wide sensor and an 18 mm focal length has a horizontal field of view of 2·arctan(36/36) = 90°; switching to a 36 mm focal length shrinks that to about 53°.",
+      "related": ["Pinhole Camera Model", "Camera Intrinsics", "Fisheye Camera", "Lens Distortion", "Wrist Camera", "Depth Camera (RGB-D Camera)"]
+    },
+    {
+      "key": "perception-04#3",
+      "name_en": "Fisheye Camera",
+      "aliases": ["Wide-Angle Camera", "Fisheye Lens"],
+      "one_liner": "A camera with an ultra-wide fisheye lens, often around 180° field of view, whose images bow visibly at the edges.",
+      "explanation": "A fisheye camera uses an ultra-wide-angle fisheye lens, typically with a field of view of 100° to 180°, sometimes more. Unlike an ordinary lens, which keeps straight lines straight, it maps the scene through a specific projection (equidistant, equisolid-angle, and others) to compress a very wide view into one image, giving the image a convex, barrel-like distortion; the term ‘fisheye’ was coined by the physicist Robert W. Wood in 1906. The ordinary pinhole model can't describe distortion this severe, so calibration needs specialized models, such as the equidistant, double-sphere, and omnidirectional models supported by the Kalibr toolbox. Two uses are common in robotics: visual SLAM and panoramic sensing use fisheye lenses to widen the field of view and reduce tracking loss, while wrist cameras use them to add close-range environmental context — the UMI paper notes that a fisheye lens preserves resolution at the center of the image while compressing peripheral information into the frame.",
+      "example": "UMI's handheld gripper adds a 155° fisheye lens to its wrist-mounted GoPro, so that even when the gripper gets close to an object, enough of the surrounding tabletop is still visible in frame.",
+      "related": ["Field of View", "Lens Distortion", "Camera Calibration", "Universal Manipulation Interface (UMI)", "Wrist Camera", "Visual SLAM"]
+    },
+    {
+      "key": "perception-04#4",
+      "name_en": "FoundationPose",
+      "aliases": ["NVIDIA FoundationPose"],
+      "one_liner": "NVIDIA's general-purpose 6D pose model that estimates and tracks the pose of new objects without retraining.",
+      "explanation": "FoundationPose is a 6D object pose (3D position plus 3D orientation) estimation and tracking model from Bowen Wen and colleagues at NVIDIA, published at CVPR 2024 as a Highlight paper. It targets objects the model has never seen during training, and needs no fine-tuning at test time: given either a CAD model or about 16 reference photos of the object, along with an RGB-D image and a detected region for the object, it outputs the pose. Its method scatters a large number of initial pose hypotheses uniformly around the object, compares a rendered image against the real one to refine each hypothesis, and then uses a ranking network to pick the best one; subsequent frames only need refinement, letting it track at roughly 32 Hz. Its training data is large-scale synthetic data generated with the help of large language models. As of March 2024, it ranked first on the BOP leaderboard for model-based pose estimation of novel objects, and an Isaac ROS version is also available.",
+      "example": "An arm needs to insert a workpiece it has never seen in training into a fixture: the workpiece's CAD model is scanned first, a segmentation model boxes the workpiece in the first frame, FoundationPose estimates its 6D pose and tracks it continuously, and the planner computes the grasp and insertion trajectory from that.",
+      "related": ["6D Object Pose Estimation", "Pose Tracking", "BOP Benchmark", "MegaPose", "SAM-6D", "NVIDIA"]
+    },
+    {
+      "key": "perception-04#5",
+      "name_en": "GelSight",
+      "aliases": ["GelSight Sensor", "GelSight Inc."],
+      "one_liner": "A vision-based tactile sensor that reads touch from a camera watching an elastic gel deform, also the name of the company that makes it.",
+      "explanation": "GelSight is a family of vision-based tactile sensors: a piece of elastic gel with a reflective coating on its surface is lit from different directions by internal LEDs, and a camera on the back photographs how the gel deforms under pressure, using photometric stereo — inferring surface orientation from how shading changes under different lighting directions — to reconstruct the 3D shape of the contact surface. The approach originated in Edward Adelson's group at MIT, first appearing in a 2009 CVPR paper by Micah Johnson and Adelson; later versions added marker dots to the gel's surface, tracking their movement to measure shear force and slip. GelSight is also the name of the company that spun out of this research (GelSight Inc., based in Waltham, Massachusetts), whose products include the robotics-focused GelSight Mini (which supports ROS/ROS 2 and PyTouch) and industrial measurement products such as Mobile and Modulus. DIGIT, GelSlim, and 9DTact all follow the same ‘camera watching a gel’ approach.",
+      "example": "Mounting a GelSight Mini on a gripper's fingertip to pick up a screw, the tactile image clearly shows the imprint of the screw's threads, letting you judge which way the screw is oriented in the hand, and whether it's slipping.",
+      "related": ["Vision-Based Tactile Sensor", "GelSight Mini", "DIGIT", "Photometric Stereo", "Marker Tracking", "Tactile Image"]
+    },
+    {
+      "key": "perception-04#6",
+      "name_en": "MediaPipe",
+      "aliases": ["Google MediaPipe", "MediaPipe Hands", "MediaPipe Pose", "Hand Landmarker", "Pose Landmarker", "BlazePose"],
+      "one_liner": "Google's open-source on-device toolkit that extracts hand and body keypoints in real time from an ordinary camera feed.",
+      "explanation": "MediaPipe is Google's open-source (Apache 2.0), cross-platform, on-device machine learning framework, and MediaPipe Tasks provides ready-made vision tasks within it. Two are most relevant to embodied AI: Hand Landmarker first detects the palm, then regresses 21 hand keypoints within the cropped region, outputting image coordinates, metric world coordinates in meters, and left/right handedness; Pose Landmarker, built on BlazePose, outputs 33 body keypoints. Both run in real time on a phone's CPU and support mobile, web, and Python. Because it needs nothing more than an ordinary RGB webcam, MediaPipe is commonly used for low-cost gesture-based teleoperation, retargeting human hand motion onto a dexterous hand, or labeling keypoints on human videos; its 3D accuracy is limited under occlusion and complex gestures, so 3D hand-reconstruction models like HaMeR are used instead when higher accuracy is needed. The older Solutions interface stopped being supported in March 2023.",
+      "example": "An example program from dex-retargeting uses MediaPipe to detect human hand keypoints in real time from a laptop webcam, then retargets them into joint angles for an Allegro dexterous hand, making the simulated robotic hand mimic the person's hand movements.",
+      "related": ["Hand Pose Estimation", "Human Pose Estimation", "Keypoint Detection", "Motion Retargeting", "HaMeR", "dex-retargeting"]
+    },
+    {
+      "key": "perception-04#7",
+      "name_en": "Grasp Pose Detection",
+      "aliases": ["Grasp Detection", "6-DoF Grasp Detection"],
+      "one_liner": "Computing directly from an image or point cloud where and in what orientation a gripper should grasp an object.",
+      "explanation": "Grasp pose detection is the perception step of robotic grasping: given an RGB-D image or point cloud, it outputs a batch of feasible grasp poses along with scores. A planar grasp is commonly represented as an oriented rectangle in the image, giving the gripper's position, angle, and opening width; a 6-DOF grasp instead gives the gripper's 3D position, approach direction, rotation, and opening width, letting it grasp from the side or at an angle from above. Unlike 6D pose estimation, it needs no object model and doesn't need to recognize what the object even is, which suits grasping unfamiliar objects in clutter. In 2017, Andreas ten Pas and colleagues' GPD treated the problem in a detection-like way: sample candidates first, then classify each one. GraspNet-1Billion provides a benchmark with 88 objects, 190 scenes, and over 1.1 billion grasp annotations; AnyGrasp, Contact-GraspNet, and GraspGen are commonly used models, with the detected grasp then handed to motion planning to execute.",
+      "example": "A bin holds various parts piled together. A depth camera shoots a single frame as a point cloud, AnyGrasp outputs dozens of scored two-finger gripper poses, and the system picks the highest-scoring one that won't hit the bin wall, handing it to motion planning to execute.",
+      "related": ["Grasping", "6D Object Pose Estimation", "AnyGrasp", "Contact-GraspNet", "GraspNet-1Billion Dataset", "Bin Picking"]
+    },
+    {
+      "key": "perception-04#8",
+      "name_en": "Grounding DINO",
+      "aliases": ["GroundingDINO"],
+      "one_liner": "An open-vocabulary detector that finds and boxes whatever object a text description names, given an image and text.",
+      "explanation": "Grounding DINO is an open-set object detection model released in March 2023 by IDEA Research together with Tsinghua University and other collaborators, with the paper later accepted at ECCV 2024. Traditional detectors only recognize the few dozen fixed classes they were trained on; Grounding DINO instead combines the transformer-based detector DINO with a text encoder, performing multi-layer fusion between image and text features, so a user can input a class name or a short description (such as ‘red cup’) and get back matching detection boxes along with the matched words. The paper reports 52.5 AP in zero-shot detection on COCO without using any COCO training data. The code is open-sourced under Apache 2.0 and has been integrated into Hugging Face Transformers. It's often chained with the segmentation model SAM into a pipeline called Grounded-SAM — box by text first, then cut a mask — a common front end for robots that need to ‘find things by instruction.’ Later versions, Grounding DINO 1.5 and 1.6, are only available through an API.",
+      "example": "A user says ‘put the banana in the bowl.’ The system runs Grounding DINO with the prompt ‘banana. bowl.’ to box both objects, uses SAM to get their masks, and combines that with the depth map to compute the grasp point and the placement point.",
+      "related": ["Open-Vocabulary Object Detection", "Grounded-SAM", "Segment Anything Model", "OWL-ViT / OWLv2", "YOLO-World", "DINO-X (Open-World Detection)"]
+    },
+    {
+      "key": "perception-04#9",
+      "name_en": "Hand Pose Estimation",
+      "aliases": ["Hand Tracking", "Hand Mesh Recovery"],
+      "one_liner": "Estimating the positions of a human hand's joints and how the fingers are bent, from an image or sensor data.",
+      "explanation": "Hand pose estimation infers the positions of a human hand's joints and its finger configuration from an image, depth data, or headset sensor data. Two outputs are common: 21 2D or 3D keypoints (the wrist plus 4 points per finger), which is what MediaPipe outputs; or a parametric hand mesh, most commonly the MANO model (proposed in 2017, with 778 vertices controlled by pose and shape parameters), with HaMeR using a large vision transformer to regress a MANO mesh directly from a single image. The difficulty is that fingers are thin and prone to self-occlusion, and are further blocked by whatever object is being held. For embodied AI, this is the first step in turning human hand motion into robot motion: teleoperation gets real-time keypoints from a headset's hand tracking, which motion retargeting then converts to drive a dexterous hand; learning from human video likewise requires the hand's trajectory to be estimated first, as a pseudo-action label.",
+      "example": "Open-TeleVision uses an Apple Vision Pro to get the operator's hand keypoints in real time, which dex-retargeting then optimizes into dexterous-hand joint angles; when the operator makes a fist, the Unitree H1's hand follows suit.",
+      "related": ["MANO Hand Model", "HaMeR", "MediaPipe (Hand / Body Landmarks)", "Motion Retargeting", "Hand-Object Interaction", "Human Pose Estimation"]
+    },
+    {
+      "key": "perception-04#10",
+      "name_en": "Hand-Object Interaction",
+      "aliases": ["HOI (Hand-Object)"],
+      "one_liner": "The study of how human hands contact, grasp, and manipulate objects, including estimating their joint 3D pose and contact.",
+      "explanation": "Hand-object interaction is a research direction in vision and robotics focused specifically on how human hands contact, grasp, and manipulate objects — narrower than general human-object interaction, which covers the whole body. Typical tasks include jointly estimating hand pose (usually a MANO mesh) and the object's 6D pose, inferring the contact region and grasp type, recognizing what action the hand is performing, and generating plausible grasps. Representative datasets include DexYCB (CVPR 2021, which annotates MANO hand pose and object 6D pose while a hand grasps YCB objects), HOI4D (CVPR 2022, with 2.4 million frames of egocentric RGB-D video across 16 object categories and 800 instances), ARCTIC, and OakInk. For robots, human hands are a ready-made source of dexterous manipulation demonstrations: extracting hand and object trajectories from human video can be converted into dexterous-hand actions or grasp targets, and DexYCB specifically targets scenarios where an object is handed from a human to a robot.",
+      "example": "From a first-person cooking video, HaMeR reconstructs the hand's 3D pose while FoundationPose tracks the spatula's pose, giving the position of the hand gripping the handle and the stir-fry trajectory — which is then retargeted into demonstration data for a dexterous hand.",
+      "related": ["Hand Pose Estimation", "6D Object Pose Estimation", "DexYCB Dataset", "HOI4D Dataset", "ARCTIC Dataset", "Human Video Data"]
+    },
+    {
+      "key": "perception-04#11",
+      "name_en": "Head Camera",
+      "aliases": ["Head-Mounted Camera", "Top Camera"],
+      "one_liner": "A camera mounted on a robot's head or upper body that gives a near-first-person view of the scene.",
+      "explanation": "A head camera is mounted on a humanoid's head, or above a mobile manipulation platform, giving a near-first-person view similar to looking out through one's own eyes. It's usually paired with a wrist camera and a fixed third-person camera: the head camera sees the overall scene and both hands, while the wrist camera sees close-up detail near the gripper. Mobile ALOHA, for instance, uses two wrist cameras plus one forward-facing camera mounted up top; Unitree's G1 carries a depth camera and a 3D lidar on its head. When the head can rotate, the camera's extrinsics change with the neck joint and must be recomputed in real time through kinematics. Teleoperation setups also use an ‘active head camera’: Open-TeleVision mounts a ZED Mini stereo camera on a 2-DOF gimbal that follows the operator's head rotation inside an Apple Vision Pro headset and streams back a stereo view. When collecting human data, a camera worn on a person's head or on glasses is likewise called head-mounted, capturing first-person video.",
+      "example": "Training a policy for dual-arm clothes-folding feeds in three camera streams: the head camera sees the whole garment laid out flat, while the two wrist cameras check whether the gripper has hold of the garment's corner.",
+      "related": ["Wrist Camera", "Third-Person Camera", "Egocentric / First-Person Video", "Open-TeleVision", "Multi-View", "Camera Extrinsics"]
+    }
+  ]
+}

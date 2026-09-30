@@ -1,0 +1,115 @@
+{
+  "batch": "named_model-20",
+  "terms": [
+    {
+      "key": "named_model-20#0",
+      "name_en": "OmniManip",
+      "aliases": ["OmniManip: Towards General Robotic Manipulation via Object-Centric Interaction Primitives as Spatial Constraints"],
+      "one_liner": "A zero-shot manipulation framework that turns a vision-language model's reasoning into point-and-direction constraints defined in each object's own coordinate frame.",
+      "explanation": "OmniManip comes from Hao Dong's lab at Peking University working with AgiBot (the PKU-AgiBot joint lab), released in January 2025 and selected as a CVPR 2025 Highlight paper. Vision-language models (VLMs) have broad commonsense knowledge but cannot reliably output precise 3D positions and orientations. OmniManip first places each object into its own canonical space — a coordinate frame aligned to the object's function rather than just its shape — and defines 'interaction primitives' inside it, such as an interaction point and an interaction direction. These primitives become spatial constraints that the VLM selects and checks. During execution, the system tracks each object's 6D pose (3D position plus 3D orientation) in real time and updates the trajectory accordingly, so both planning and execution run as closed loops. None of this requires fine-tuning the VLM, yet the method generalizes to many manipulation tasks in a zero-shot setting. It belongs to the same 'VLM plus intermediate representation' family as ReKep, VoxPoser, and CoPa; the authors also note it can be used to auto-generate simulation data.",
+      "example": "Take 'pour tea into a cup': the VLM first recognizes the teapot and cup, picks the spout point and pouring direction in the teapot's canonical space and the rim point on the cup, and uses these to compute the end-effector pose; during execution it keeps tracking both objects' 6D poses and corrects the trajectory.",
+      "related": ["ReKep", "VoxPoser", "CoPa", "Affordance", "Intermediate Representation", "6D Object Pose Estimation"]
+    },
+    {
+      "key": "named_model-20#1",
+      "name_en": "Dactyl",
+      "aliases": ["OpenAI Dactyl", "Learning Dexterous In-Hand Manipulation", "Solving Rubik's Cube with a Robot Hand"],
+      "one_liner": "OpenAI's project that trained a five-fingered robot hand entirely in simulation with reinforcement learning, then transferred it directly to the real hand.",
+      "explanation": "Dactyl is OpenAI's dexterous manipulation project, built on the Shadow Dexterous Hand, a five-fingered robotic hand. The 2018 paper 'Learning Dexterous In-Hand Manipulation' had the hand reorient a block to a target pose in its palm: the policy was trained entirely in simulation with reinforcement learning and transferred straight to the real hand using domain randomization (randomizing physical parameters such as friction and object appearance during training), with no human demonstrations at all; human-like behaviors such as finger gaiting emerged on their own. The 2019 follow-up, 'Solving Rubik's Cube with a Robot Hand,' introduced automatic domain randomization (ADR), which automatically widens the randomization ranges as training progresses. A Kociemba solver computes the cube-solving move sequence; the neural network only handles the physical manipulation. The paper reports about 60% success at 15 face rotations and about 20% at the hardest 26-rotation sequences. Dactyl is a landmark result for both sim-to-real transfer and dexterous manipulation.",
+      "example": "In the Rubik's Cube experiments, the cube's pose was estimated from three camera views with a CNN, individual face angles were read from a sensor-equipped 'Giiker' smart cube, and fingertip positions came from a motion-capture system — all fed into a recurrent neural network policy that controlled the fingers.",
+      "related": ["Automatic Domain Randomization", "Domain Randomization", "Sim-to-Real Transfer", "In-hand Manipulation", "Shadow Dexterous Hand", "Proximal Policy Optimization"]
+    },
+    {
+      "key": "named_model-20#2",
+      "name_en": "PaLI-X",
+      "aliases": ["PaLI-X: On Scaling up a Multilingual Vision and Language Model"],
+      "one_liner": "A roughly 55-billion-parameter multilingual vision-language model from Google, one of the two backbones behind RT-2.",
+      "explanation": "PaLI-X is a multilingual vision-language model (VLM) that Google Research released in May 2023, a scaled-up version of the earlier PaLI. Its vision encoder is ViT-22B, a 22-billion-parameter Vision Transformer; its language component is a 32-billion-parameter UL2 encoder-decoder; together they total roughly 55 billion parameters. The paper's main finding is that scaling up both the vision and language sides together keeps paying off, and training mixed prefix-completion and masked-token-completion objectives. After fine-tuning, PaLI-X set new state-of-the-art results on more than 15 benchmarks and showed emergent abilities it was never specifically trained for, such as complex object counting and object detection using non-English category names. In embodied AI, PaLI-X is best known as one of the two backbones behind RT-2: RT-2 fine-tuned PaLI-X (55B) and PaLM-E (12B) separately, training each on robot actions represented as text tokens, producing some of the earliest vision-language-action (VLA) models.",
+      "example": "RT-2-PaLI-X-55B: PaLI-X was co-fine-tuned on web-scale image-text data together with robot trajectory data, so it could look at an image, read an instruction, and directly output discretized action tokens.",
+      "related": ["RT-2", "Vision-Language Model", "PaLM-E", "Vision Transformer", "Vision-Language-Action Model", "Encoder-Decoder"]
+    },
+    {
+      "key": "named_model-20#3",
+      "name_en": "Pelican-VL",
+      "aliases": ["Pelican-VL 1.0", "Pelican1.0-VL", "Pelican-VL: A Foundation Brain Model for Embodied Intelligence"],
+      "one_liner": "An open-source vision-language 'brain' model for embodied robots, released by China's X-Humanoid center.",
+      "explanation": "Pelican-VL is an embodied 'brain' model from the Beijing Humanoid Robot Innovation Center (X-Humanoid). The technical report came out in late October 2025, with weights open-sourced in November 2025; it is built on Qwen2.5-VL, and the first release shipped 7B and 72B parameter versions under the Apache 2.0 license. Rather than outputting joint-level actions directly, Pelican-VL handles spatial understanding, affordance reasoning, task planning, and function calling, and issues instructions to a lower-level controller or a vision-language-action (VLA) model. Its training method, DPPO (Deliberate Practice Policy Optimization), first uses GRPO (Group Relative Policy Optimization) reinforcement learning to find cases the model handles poorly, turns those hard cases into supervised fine-tuning data, and alternates between RL and SFT in a loop. The report claims a 20.3% average improvement over the base model, and leads open-source models of similar size on embodied benchmarks such as Where2Place and RefSpatialBench. Its Hugging Face page later added 3B and 235B-A22B versions as well.",
+      "example": "In one real-robot experiment from the report, the model predicts and continuously corrects grip force from the camera feed to complete a contact-rich grasp; in another, it acts as a unified 'brain' coordinating several different robots on a long-horizon task.",
+      "related": ["Embodied Reasoning Model", "Vision-Language Model", "Qwen-VL series (Qwen-VL / Qwen2-VL / Qwen2.5-VL / Qwen3-VL)", "Group Relative Policy Optimization", "Brain–Cerebellum Architecture (Robot Brain & Cerebellum)", "Beijing Humanoid Robot Innovation Center"]
+    },
+    {
+      "key": "named_model-20#4",
+      "name_en": "PerAct",
+      "abbr": "PerAct",
+      "aliases": ["Perceiver-Actor", "Perceiver-Actor: A Multi-Task Transformer for Robotic Manipulation"],
+      "one_liner": "A multi-task manipulation policy that voxelizes the scene and uses a Perceiver Transformer to predict the next key pose.",
+      "explanation": "PerAct was introduced by Mohit Shridhar, Lucas Manuelli, and Dieter Fox at the University of Washington and NVIDIA, presented at CoRL 2022. It converts RGB-D observations into a 100×100×100 voxel grid (a 3D grid of cube-shaped cells) and feeds it into a PerceiverIO Transformer together with the language instruction. Rather than outputting a continuous trajectory, PerAct predicts the 'next best voxel': which cell the end effector should move to, a discretized rotation, whether the gripper should open or close, and whether collision avoidance is needed; a motion planner then carries the arm to this key pose. A single model trains jointly on 18 RLBench tasks (249 variations) and 7 real-world tasks, each with only a handful of demonstrations. PerAct established the 'combine a 3D scene representation with keyframe action prediction' recipe, and later work such as RVT, 3D Diffuser Actor, and BridgeVLA all use it as a baseline.",
+      "example": "For the instruction 'open the middle drawer,' PerAct first predicts which voxel cell holds the handle and what orientation to grasp it at; once the gripper closes on the handle, it then predicts the end-effector position that pulls the drawer open.",
+      "related": ["RVT-2", "3D Diffuser Actor", "RLBench", "Voxel", "Keyframe Action / Next-Best-Pose Prediction", "CLIPort"]
+    },
+    {
+      "key": "named_model-20#5",
+      "name_en": "Perpetual Humanoid Control",
+      "abbr": "PHC",
+      "aliases": ["PHC", "Perpetual Humanoid Control for Real-time Simulated Avatars"],
+      "one_liner": "A physics-based humanoid controller that tracks huge libraries of human motion in simulation and gets back up on its own after falling.",
+      "explanation": "PHC (Perpetual Humanoid Control) is a physics-based motion-imitation controller from Zhengyi Luo and colleagues at Carnegie Mellon University and Meta Reality Labs, presented at ICCV 2023 and trained with reinforcement learning in Isaac Gym. The goal is for a simulated humanoid to track noisy reference motions in real time — motions coming from video-based pose estimation or text-to-motion generation — without any external stabilizing forces. The key idea is Progressive Multiplicative Control Policy (PMCP): whenever the controller hits a motion it cannot learn, a new sub-network is added to handle it, which lets it learn nearly 10,000 motion clips from the AMASS motion-capture library without catastrophic forgetting (losing previously learned skills while acquiring new ones). The paper reports a 98.9% success rate on the training set and 96.4% on the held-out test set. PHC also learned to recover naturally after falling and resume tracking. Its open-source code was later extended to Unitree's H1 and G1 humanoid models, and follow-up work such as PHC+ and PULSE builds on it.",
+      "example": "A simulated character is driven in real time by poses estimated from a monocular video; if it gets tripped partway through, PHC lets it stand back up on its own and keep tracking the reference motion from where it left off.",
+      "related": ["Motion Tracking", "DeepMimic", "MaskedMimic", "AMASS (Archive of Motion Capture as Surface Shapes)", "H2O (Human-to-Humanoid)", "Catastrophic Forgetting"]
+    },
+    {
+      "key": "named_model-20#6",
+      "name_en": "Phantom",
+      "aliases": ["Phantom: Training Robots Without Robots Using Only Human Videos"],
+      "one_liner": "A method that trains robot policies purely from human demonstration videos by digitally replacing the human hand with a rendered robot arm.",
+      "explanation": "Phantom comes from Jeannette Bohg's lab at Stanford University (Marion Lepert and colleagues), released in March 2025 and presented at CoRL 2025. Teleoperated data collection is expensive, while human videos are cheap — but a human hand looks nothing like a robot gripper, and the videos carry no robot action labels. Phantom's solution: estimate hand pose in every frame and convert it into robot end-effector actions, then use image inpainting to erase the human hand from each frame and render a virtual robotic arm in its place, so the training images look like a robot performing the task. This lets a policy be trained with zero robot data and deployed zero-shot on a Franka or a Kinova Gen3 arm, completing tasks such as pick-and-place, cup stacking, tying rope, sweeping, and insertion, with a reported success rate as high as 92%. It belongs to the 'human-video-to-robot' family of methods.",
+      "example": "A researcher demonstrates 'stack the cups' with their own hand on a tabletop; Phantom automatically replaces the hand in the video with a rendered gripper and generates action labels, and the resulting policy runs directly on a Franka arm.",
+      "related": ["Robotizing Human Videos / Human-to-Robot Video Translation", "Human Video Data", "Robot-free (Embodiment-free) Data Collection", "Hand Pose Estimation", "EgoMimic", "Embodiment Gap"]
+    },
+    {
+      "key": "named_model-20#7",
+      "name_en": "PIVOT",
+      "aliases": ["Iterative Visual Prompting", "PIVOT: Iterative Visual Prompting Elicits Actionable Knowledge for VLMs"],
+      "one_liner": "A method that controls robots zero-shot by drawing candidate actions on an image and having a VLM repeatedly pick and narrow them down.",
+      "explanation": "PIVOT was led by Google DeepMind (Soroush Nasiriany, Fei Xia, and 21 other co-authors), released in February 2024 and published at ICML 2024. Vision-language models (VLMs) can only output text, but robots need continuous coordinates and actions. PIVOT reframes the problem as iterative visual question answering: it samples a batch of candidates — target points, movement directions, or trajectories — and draws them on the image as numbered arrows or dots; the VLM picks the best few; a new distribution is fit around the selected candidates and resampled, narrowing the range each round, until a final action emerges after a few iterations. The whole process needs no robot training data, and works for real-robot navigation, tabletop manipulation, following instructions in simulation, and image grounding — though the authors acknowledge the success rate is still far from practical. PIVOT represents the visual-prompting line of work, alongside similar approaches like MOKA and Set-of-Mark prompting.",
+      "example": "To send a mobile robot to grab a soda can on a table: in round one, several numbered arrows for possible directions are drawn on the image and the VLM picks arrows 3 and 5; the next round redraws arrows only near those two directions and picks again, until the direction is precise enough.",
+      "related": ["Visual Prompting (Set-of-Mark / Mark-based Visual Prompting)", "MOKA (Mark-Based Visual Prompting)", "Vision-Language Model", "Zero-shot", "Cross-Entropy Method", "RoboPoint"]
+    },
+    {
+      "key": "named_model-20#8",
+      "name_en": "PlaNet",
+      "aliases": ["Deep Planning Network", "PlaNet: Learning Latent Dynamics for Planning from Pixels"],
+      "one_liner": "A model-based reinforcement learning agent that learns a latent-space world model from pixels and plans actions by imagining outcomes.",
+      "explanation": "PlaNet was released by Danijar Hafner and colleagues at Google (a Google Brain and DeepMind collaboration) in November 2018 and published at ICML 2019. It works from images alone: it first learns a world model that compresses each frame into a latent state and predicts how that latent state changes under different actions, and how much reward it would earn. The model's core is the Recurrent State-Space Model (RSSM), which combines a deterministic path and a stochastic path so multi-step predictions stay stable; the paper also introduces a multi-step training objective called latent overshooting. At decision time, PlaNet does not train a separate policy network — instead, it imagines many candidate action sequences inside the latent space and picks the one with the highest predicted return, executing only its first step before replanning (online planning). On the DeepMind Control continuous-control benchmark, it needs far fewer interaction episodes than model-free methods; Google's blog reported roughly 50 times better data efficiency on average. The later Dreamer series reuses the RSSM but learns a policy inside imagination instead.",
+      "example": "On the 'cheetah run' task, PlaNet works from camera images alone, comparing tens of thousands of imagined action sequences in latent space at every step and executing just the first action of the sequence with the highest predicted reward.",
+      "related": ["Recurrent State-Space Model", "DreamerV3", "World Model", "Model-Based Reinforcement Learning", "Model Predictive Control", "Cross-Entropy Method"]
+    },
+    {
+      "key": "named_model-20#9",
+      "name_en": "PoliFormer",
+      "aliases": ["PoliFormer: Scaling On-Policy RL with Transformers Results in Masterful Navigators"],
+      "one_liner": "A Transformer navigation policy trained purely with large-scale on-policy reinforcement learning in simulation, then deployed straight to real robots.",
+      "explanation": "PoliFormer was released by the Allen Institute for AI (Ai2) in June 2024 and published at CoRL 2024. It uses RGB images only: a Vision Transformer encoder (DINOv2 in the code) encodes each frame, followed by a causal Transformer decoder that aggregates a fairly long history and outputs navigation actions. Training happens entirely in simulation: on-policy reinforcement learning across a huge number of procedurally generated houses from ProcTHOR, run in parallel across many machines for hundreds of millions of interactions. It reaches 85.5% success on the CHORES-S object-goal navigation benchmark, a 28.5-percentage-point absolute improvement over the previous best method, and deploys without any additional tuning to two different real robots, the LoCoBot and the Stretch RE-1; it also transfers directly to downstream tasks like object tracking and open-vocabulary navigation. PoliFormer shows that reinforcement learning combined with Transformers and large-scale simulation also benefits from scale.",
+      "example": "Told to 'find the apple in the kitchen,' a Stretch robot running PoliFormer decides whether to move forward or turn based only on its head-camera feed, step by step, and stops next to the apple once it spots it.",
+      "related": ["Object-Goal Navigation", "On-Policy", "ProcTHOR", "AI2-THOR", "Allen Institute for AI", "Sim-to-Real Transfer"]
+    },
+    {
+      "key": "named_model-20#10",
+      "name_en": "ProgPrompt",
+      "aliases": ["ProgPrompt: Generating Situated Robot Task Plans using Large Language Models"],
+      "one_liner": "A method that prompts a large language model with Python-like code to generate robot task plans the robot can actually execute.",
+      "explanation": "ProgPrompt was released by Ishika Singh, Animesh Garg, and colleagues at the University of Southern California and NVIDIA in September 2022, published at ICRA 2023 with an extended version in Autonomous Robots. Asking a large language model (LLM) to write a plan directly in natural language often produces actions the robot cannot perform or references to objects that are not actually in the scene. ProgPrompt instead writes the prompt as code: it opens with import statements listing the available actions, gives the list of objects present in the scene, and provides a few example tasks written as Python functions (the function name is the task, the body is the steps), then has the LLM continue by writing the function for a new task. Steps in the generated plan are grouped with comments, similar to chain-of-thought reasoning, and assert statements check preconditions and trigger recovery actions when they fail. ProgPrompt achieved the best results of its time in the VirtualHome household simulator and was also validated on tabletop tasks with a real robot arm; it belongs to the same early wave of 'LLM as task planner' work as SayCan and Code as Policies.",
+      "example": "The prompt begins with 'from actions import walk, grab, putin, open, close', lists the scene's objects such as salmon and microwave, and gives one example function, 'throw_away_lime()'; the LLM then continues by writing out 'microwave_salmon()' step by step.",
+      "related": ["LLM-based Task Planning", "SayCan", "Code as Policies", "Inner Monologue", "VirtualHome", "Prompt / Prompt Engineering"]
+    },
+    {
+      "key": "named_model-20#11",
+      "name_en": "Psi-R2",
+      "aliases": ["Psi R2", "PsiR2", "PsiBot Psi-R2"],
+      "one_liner": "A world-action model from the Chinese startup PsiBot, pretrained on roughly 100,000 hours of human manipulation data.",
+      "explanation": "Psi-R2 is an embodied model released on April 10, 2026, by the Chinese startup PsiBot (灵初智能). The company describes it as the first 'world-action model' pretrained at the scale of 100,000-plus hours of human manipulation data: a model that takes an image and a language instruction and jointly predicts future video frames and the robot's actions. The data comes from human demonstrations captured with the company's own exoskeleton gloves, covering scenes such as industrial assembly, everyday chores, and object grasping; PsiBot also open-sourced an initial batch of 1,000 hours of human hand-operation data, including vision, language, joint angles, and touch. The company states that fine-tuning on fewer than 100 real-robot trajectories is enough for the model to perform long-horizon, fine-grained tasks such as assembling a phone, industrial packaging, or folding paper boxes. Alongside Psi-R2, PsiBot released an action-conditioned world model called Psi-W0, used to convert human data into robot-usable data and to run reinforcement learning on the policy inside the model. A follow-up, Psi-R2.5, released on September 28, 2026, switched to a two-level structure with a high-level VLM breaking tasks down and a lower-level video model producing the actions.",
+      "example": "In an official demo, after fine-tuning on fewer than 100 real-robot trajectories, the robot completes a multi-step, fine-grained task such as assembling a phone.",
+      "related": ["World Action Model", "PsiBot", "Human Video Data", "Data Glove", "World Model", "DreamZero"]
+    }
+  ]
+}

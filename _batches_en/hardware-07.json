@@ -1,0 +1,113 @@
+{
+  "batch": "hardware-07",
+  "terms": [
+    {
+      "key": "hardware-07#0",
+      "name_en": "System on Chip (SoC)",
+      "aliases": ["SoC"],
+      "one_liner": "A complete computing system on one chip, integrating a CPU, GPU, and AI accelerator.",
+      "explanation": "A system on chip integrates a CPU, a GPU, a neural processing unit (NPU, a compute block specialized for neural networks), memory controllers, video encode/decode, and various interfaces all on the same die; a phone's chip is a typical SoC. Most robot onboard compute platforms are also SoCs: small and low-power, which suits a battery-powered robot body. Choosing one mainly comes down to AI compute (often expressed in TOPS), memory bandwidth, and power draw. NVIDIA's Jetson Orin/Thor, Rockchip's RK3588, and D-Robotics' RDK S100 all fall into this category, usually delivered as a compute module plus a carrier board.",
+      "example": "The core of an NVIDIA Jetson AGX Orin module is an SoC integrating an Arm CPU with an Ampere-architecture GPU, and it's commonly used as the onboard compute platform in humanoid and quadruped robots.",
+      "related": ["Onboard Compute Platform", "NVIDIA Jetson", "Rockchip RK3588", "Neural Processing Unit (NPU)", "TOPS (Trillion Operations Per Second)", "Compute Module and Carrier Board (SoM / Carrier Board / Dev Kit)"]
+    },
+    {
+      "key": "hardware-07#1",
+      "name_en": "Tendon-Driven Actuation",
+      "aliases": ["Tendon Drive", "Cable-Driven Actuation"],
+      "one_liner": "Placing the motor far from a joint and pulling it with a cable, like a tendon.",
+      "explanation": "Tendon-driven actuation imitates the tendons in a human hand: the motor sits in the forearm or palm, and a thin, high-strength cable (commonly ultra-high-molecular-weight polyethylene, UHMWPE, fiber) runs through pulleys or a sheath to pull a finger joint. The upside is that the fingers themselves stay light and slim, letting the hand approach human size with many degrees of freedom; the downside is that the cable stretches over time and has friction and changing pre-tension, making modeling and control harder and requiring regular calibration and maintenance. Because a cable can only pull, not push, a joint typically needs two cables, or one cable plus a return spring, giving rise to wiring schemes described as N-type, N+1-type, or 2N-type. The Shadow Dexterous Hand is a classic tendon-driven hand, and Tesla's Optimus hand is reported to use a similar approach.",
+      "example": "The Shadow Dexterous Hand keeps its motors in the forearm and pulls more than 20 finger joints via tendons, giving it a shape and size close to a human hand.",
+      "related": ["Dexterous Hand", "Shadow Dexterous Hand", "Bowden Cable", "Tendon Routing Schemes (N-Type / N+1-Type / 2N-Type)", "Tendon Material (UHMWPE Fiber)", "Linkage Transmission"]
+    },
+    {
+      "key": "hardware-07#2",
+      "name_en": "TOPS (Tera Operations Per Second)",
+      "aliases": ["Trillion Operations Per Second"],
+      "one_liner": "The standard unit for AI chip compute: how many trillion operations it can do per second.",
+      "explanation": "TOPS is the most commonly advertised spec for AI chips; 1 TOPS means one trillion operations per second, usually measured at INT8 (8-bit integer) precision, though some vendors quote it at lower precisions like INT4 or FP4, which inflates the number. It's not the same as TFLOPS (trillion floating-point operations per second), so it's important to check which precision a number refers to before comparing chips. TOPS is a theoretical peak; how fast a model actually runs also depends on memory bandwidth, the software stack, and operator support, so it should only be used as a rough guide. When choosing a robot's onboard compute platform, TOPS gives a first-pass sense of whether it can run a vision model or a VLA on the robot itself.",
+      "example": "NVIDIA's Jetson AGX Orin 64GB is rated at 275 TOPS (INT8, sparse), and it's a common choice as the onboard compute platform for humanoid robots.",
+      "related": ["Onboard Compute Platform", "System on Chip (SoC)", "Floating-Point Compute (FLOPS / TFLOPS)", "Numeric Precision Formats (FP32 / BF16 / FP16 / FP8 / INT8)", "Jetson Orin", "On-Device Deployment"]
+    },
+    {
+      "key": "hardware-07#3",
+      "name_en": "Torque Density",
+      "aliases": ["Torque-to-Weight Ratio"],
+      "one_liner": "How much torque a motor or joint produces per unit of weight (or volume).",
+      "explanation": "Torque density is usually expressed in N·m/kg (newton-meters per kilogram), sometimes measured by volume instead. It's a core metric for evaluating motors and joint modules: every joint in a robot has to move all the joints downstream of it, so a heavier joint makes limbs harder to move quickly and nimbly, and drains the battery faster. Ways to raise torque density include using large-diameter outrunner motors, axial-flux motors, better cooling, and adding a reducer to amplify torque — but a larger gear ratio also worsens backdrivability and increases reflected inertia, so legged robots often use a low-ratio, quasi-direct-drive approach to balance the two.",
+      "example": "MIT's Mini Cheetah uses a large-diameter, flat motor with roughly a 6:1 planetary reducer, achieving enough torque in a very light joint — a landmark design for quasi-direct-drive joints.",
+      "related": ["Joint Module", "Peak Torque", "Quasi-Direct Drive", "Gear Ratio", "Power Density", "MIT Cheetah Actuator"]
+    },
+    {
+      "key": "hardware-07#4",
+      "name_en": "Unitree Dex3-1",
+      "aliases": ["Unitree Dex3", "Dex3"],
+      "one_liner": "Unitree's three-fingered, force-controlled dexterous hand for the G1 humanoid, with 7 degrees of freedom.",
+      "explanation": "The Dex3-1 is a three-fingered dexterous hand from Unitree Robotics, designed mainly to pair with Unitree's G1 humanoid robot. It has 7 actuated degrees of freedom: 3 in the thumb, and 2 each in the index and middle fingers. Six of the joints are direct-driven by miniature brushless motors, and one uses gear transmission, with force control supported throughout. The tactile version has 33 pressure sensors per hand, spread across the palm, fingertips, and finger pads. Rather than mimicking all five human fingers, it trades finger count for a simpler, more reliable structure, and can still perform common operations like grasping and pinching; it's often paired with the G1 in research settings for teleoperated data collection and training manipulation policies.",
+      "example": "Many teleoperation and VLA experiments built on the Unitree G1 use an Apple Vision Pro to capture human hand motion, then retarget it onto the Dex3-1 to perform grasps.",
+      "related": ["Unitree G1", "Unitree Robotics", "Dexterous Hand", "Unitree Dex5-1 Dexterous Hand", "Tactile Sensor", "Motion Retargeting"]
+    },
+    {
+      "key": "hardware-07#5",
+      "name_en": "Vacuum Suction Cup",
+      "aliases": ["Suction Cup", "Vacuum Gripper"],
+      "one_liner": "An end effector that holds an object using negative pressure from air pulled out of the cup.",
+      "explanation": "The vacuum suction cup is one of the most common end effectors in industry: once the cup presses against an object's surface, a vacuum pump or vacuum generator draws the air out from inside it, and the pressure difference between inside and outside holds the object against the cup. It's mechanically simple, cheap, and needs little positioning precision — as long as it can reach a reasonably flat, airtight surface, it can pick the object up — so it's widely used in logistics sorting, e-commerce order picking, and unstructured (bin) picking. Its weaknesses are that it doesn't work well on porous, rough, soft, or very small objects, and it can't perform operations that need fingers working together. Many picking robots combine a suction cup with a gripper.",
+      "example": "Picking arms in Amazon warehouses commonly use suction cups to lift boxes and plastic-bag-wrapped items out of bins.",
+      "related": ["End Effector", "Gripper", "Bin Picking", "Sorting", "Order Picking", "Palletizing / Depalletizing"]
+    },
+    {
+      "key": "hardware-07#6",
+      "name_en": "VR Headset",
+      "aliases": ["XR Headset", "MR Headset"],
+      "one_liner": "A head-worn virtual/mixed-reality device, commonly used to teleoperate robots in embodied AI.",
+      "explanation": "A VR headset is a head-worn device that displays imagery to both eyes and tracks head motion; most newer models also support see-through views of the real world (mixed reality, hence also called an XR or MR headset). In embodied AI, its main use is teleoperated data collection: the headset tracks the operator's head, wrist, and finger poses and maps them onto the robot's motion, while the video feed from cameras on the robot's head is streamed back to the headset in real time, letting the operator work as if standing in the robot's place. Compared with a leader-follower arm rig, a headset is cheaper, quicker to learn, and can also control a dexterous hand; common models include the Apple Vision Pro, Meta Quest 3, and PICO 4 Ultra.",
+      "example": "Open-TeleVision uses an Apple Vision Pro to track the operator's hands and streams the robot's stereo camera feed back to the headset in real time, teleoperating a humanoid robot through manipulation tasks.",
+      "related": ["VR Teleoperation", "Teleoperation", "Apple Vision Pro", "Meta Quest 3 / PICO 4 Ultra Headset", "Open-TeleVision", "Motion Retargeting"]
+    },
+    {
+      "key": "hardware-07#7",
+      "name_en": "Absolute Encoder",
+      "aliases": ["Absolute-Type Encoder"],
+      "one_liner": "An encoder that gives a unique reading for every angle, so it knows its position even after a power cycle.",
+      "explanation": "An encoder is a sensor that measures how far a motor or joint has rotated. An absolute encoder assigns a unique code to every position, so it can report the current angle the instant it's powered on; an incremental encoder only counts pulses, so after losing power it has to be re-homed before it knows where it is. For robots, an absolute encoder means the joints don't need to be driven to a hard limit to find zero at startup, and it's now standard in humanoid and robot-arm joint modules. Common implementations include magnetic encoders and optical encoders; multi-turn absolute encoders can also remember how many full rotations have occurred. Many joints place one encoder at the motor and another at the output, a setup called a dual encoder.",
+      "example": "When a humanoid robot powers on, the absolute encoders in its joints report each joint's angle directly, with no need to first move to a fixed pose to home.",
+      "related": ["Encoder", "Incremental Encoder", "Magnetic Encoder", "Optical Encoder", "Dual Encoder", "Joint Module"]
+    },
+    {
+      "key": "hardware-07#8",
+      "name_en": "Ackermann Steering Chassis",
+      "aliases": ["Ackermann Chassis"],
+      "one_liner": "A mobile base that turns by angling its front wheels, like a car.",
+      "explanation": "An Ackermann chassis uses the same steering geometry as a car: when turning, the inner front wheel angles more sharply than the outer one, so all the wheels roll around a common center point, reducing tire scrub. It suits higher speeds and outdoor surfaces, and its structure matches a car's, so it's common in self-driving test vehicles, campus delivery robots, and teaching robot cars. Its downside is that it can't turn in place and has a minimum turning radius — it's a nonholonomic system (it can't move directly sideways) — so path planning has to account for this, often using algorithms like hybrid A* or pure pursuit. Indoor mobile-manipulation robots more often use a differential-drive or omnidirectional-wheel base instead.",
+      "example": "Many self-driving teaching cars and ROS robot-car kits use an Ackermann chassis, tracking a planned path with a pure-pursuit algorithm.",
+      "related": ["Mobile Base / Chassis", "Differential-Drive Base", "Nonholonomic Constraint", "Hybrid A*", "Pure Pursuit Algorithm", "Autonomous Driving"]
+    },
+    {
+      "key": "hardware-07#9",
+      "name_en": "Adaptive (Underactuated) Gripper",
+      "aliases": ["Underactuated Gripper"],
+      "one_liner": "A gripper with fewer motors than joints, whose fingers automatically conform to an object's shape.",
+      "explanation": "An adaptive gripper is an underactuated design: it has fewer actuators than joints, and uses linkages, springs, or tendons to split one motor's force across multiple finger segments. Once a finger touches an object, any segment that isn't blocked keeps curling, automatically wrapping around the object without needing each joint controlled individually. This lets it both pinch in parallel like an ordinary two-finger gripper and perform enveloping grasps on cylindrical or irregular objects, all with simple control, low cost, and high tolerance for error. The trade-off is that finger-segment poses can't be controlled precisely, so it can't do in-hand manipulation. The Robotiq 2F-85 is one of the most common adaptive grippers in both research and industry.",
+      "example": "The Robotiq 2F-85 uses just one motor, yet can both pinch up a thin, flat part in parallel and let its segments curl to envelop a cup.",
+      "related": ["Gripper", "Underactuation", "Robotiq 2F-85 Gripper", "Two-Finger Gripper", "Fin Ray Gripper", "Soft Gripper"]
+    },
+    {
+      "key": "hardware-07#10",
+      "name_en": "AgiBot OmniHand (OmniHand 2025 / OmniHand Pro 2025)",
+      "aliases": ["OmniHand 2025", "OmniHand Lite", "OmniHand Pro"],
+      "one_liner": "A five-fingered dexterous-hand line launched by AgiBot in 2025, in Lite and Pro versions.",
+      "explanation": "OmniHand is AgiBot's dexterous-hand product line, with the OmniHand 2025 series launched on August 17, 2025. The Lite version targets interactive service tasks: 16 degrees of freedom, about 500 g in weight, with an optional 400-plus tactile sensing points covering the palm, back of the hand, and all five fingers, launched at a limited-time price of RMB 9,800 (list price RMB 14,800). The Pro version targets industrial work: 19 degrees of freedom, about 750 g in weight, up to 20 N of force per finger, and multimodal tactile sensing. It can be mounted on AgiBot's own humanoid robots or sold separately to other robot makers and researchers, and is a representative example of Chinese-made dexterous hands competing on price to gain volume.",
+      "example": "",
+      "related": ["AgiBot", "Dexterous Hand", "Tactile Sensor", "Inspire RH56 Dexterous Hand", "Unitree Dex3-1", "AgiBot Lingxi X2"]
+    },
+    {
+      "key": "hardware-07#11",
+      "name_en": "Arduino / ESP32 Microcontroller Boards",
+      "aliases": ["Arduino", "ESP32"],
+      "one_liner": "Cheap, beginner-friendly microcontroller boards commonly used to drive servos and read sensors.",
+      "explanation": "Arduino is an open-source microcontroller platform started by an Italian team, with a simplified programming environment and a large library of ready-made code; ESP32 is a low-cost microcontroller chip from Espressif, with built-in Wi-Fi and Bluetooth, that can also be programmed in the Arduino environment. Both are microcontrollers (MCUs) with modest compute power — not enough to run large neural networks — but they offer good real-time response and low power draw, making them well-suited as a lower-level controller: driving servos and motors, reading encoders and IMUs, and communicating with a host computer over a serial link or wirelessly. They're commonly used when getting started with desktop robot arms, robot cars, and small bipeds, with a Raspberry Pi or a computer running vision and the policy above them.",
+      "example": "In a low-cost desktop robot arm, an ESP32 can receive joint-angle commands from a computer and drive each servo with a PWM signal.",
+      "related": ["Microcontroller (MCU)", "Lower-Level Controller", "STM32", "Servo (Smart Serial Bus Servo)", "Raspberry Pi", "Open-Source Hardware"]
+    }
+  ]
+}

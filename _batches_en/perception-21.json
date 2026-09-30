@@ -1,0 +1,113 @@
+{
+  "batch": "perception-21",
+  "terms": [
+    {
+      "key": "perception-21#0",
+      "name_en": "Point Cloud Completion / Shape Completion",
+      "aliases": ["Point Cloud Completion", "Shape Completion", "3D Shape Completion"],
+      "one_liner": "Given a partial point cloud, inferring and filling in the parts of an object that were occluded or never scanned.",
+      "explanation": "A camera or lidar only sees the side of an object facing it, so the resulting point cloud — a set of points with 3D coordinates — is always incomplete. Point cloud completion takes such a partial point cloud as input and produces the full shape; when the output is a point cloud this is usually called point cloud completion, and when the output is a mesh or voxel grid it is often called shape completion. PCN, from Carnegie Mellon in 2018, was an early deep network that completed shapes by operating directly on point sets, first generating a coarse shape and then progressively densifying and refining it. For robots, completion lets a system estimate the geometry of an object’s hidden back side, making grasp planning more reliable: Varley et al. used a 3D convolutional network in 2016 to complete a single-view point cloud and plan grasps from it, verified on a real robot. Evaluation commonly uses Chamfer distance, the average nearest-point distance between two point sets.",
+      "example": "A wrist camera sees only the front of a mug; a completion network infers the shape of its back side and handle, and the grasp planner uses that to choose where to grip.",
+      "related": ["Point Cloud", "Occlusion", "Single-Image-to-3D", "Chamfer Distance", "Grasp Planning", "Point Cloud Encoder"]
+    },
+    {
+      "key": "perception-21#1",
+      "name_en": "Point Cloud Segmentation",
+      "aliases": ["3D Semantic Segmentation", "3D Instance Segmentation", "Point Cloud Semantic Segmentation"],
+      "one_liner": "Labeling every point in a point cloud with which object category, or which individual object, it belongs to.",
+      "explanation": "Point cloud segmentation is the 3D counterpart of 2D image segmentation: semantic segmentation assigns each point a category (table, cup, floor); instance segmentation further distinguishes separate individuals within the same category (cup 1, cup 2); and part segmentation breaks a single object down into parts such as a handle or a lid. PointNet, from Stanford in 2017, was the first network to operate directly on unordered point sets for classification and segmentation, and it was followed by backbones such as PointNet++ and the Point Transformer series. Common benchmarks include the indoor datasets ScanNet and S3DIS, and the outdoor dataset SemanticKITTI. A robot arm typically segments out the target object’s points before estimating its pose or detecting a grasp; a mobile robot uses it to separate the ground, obstacles, and traversable area.",
+      "example": "In a point cloud of a tabletop scene, the points belonging to “cup” are segmented out on their own and fed into a grasp-detection network.",
+      "related": ["Point Cloud", "Semantic Segmentation", "Instance Segmentation", "PointNet", "Point Transformer V3", "Grasp Pose Detection"]
+    },
+    {
+      "key": "perception-21#2",
+      "name_en": "Point Transformer V3",
+      "aliases": ["PTv3", "Point Transformer V3: Simpler, Faster, Stronger"],
+      "one_liner": "A transformer backbone for point clouds that swaps costly neighbor search for a fast serialization trick, letting it see farther and run faster.",
+      "explanation": "Point Transformer V3 (PTv3) was proposed by Xiaoyang Wu, Hengshuang Zhao, and colleagues from institutions including the University of Hong Kong and the Shanghai AI Laboratory; it was an oral paper at CVPR 2024, with code integrated into the open-source point cloud framework Pointcept. Earlier point cloud transformers had to search for each point’s neighbors and compute complex relative position encodings, which was slow and memory-hungry. PTv3 instead first arranges the unordered points into a 1D sequence using a space-filling curve (“serialization”), then computes attention within chunks of that sequence. According to the paper, it is about 3x faster and uses about 10x less memory than PTv2, expands the receptive field from 16 points to 1024 points, and achieved state-of-the-art results on more than 20 indoor and outdoor tasks at the time. It is commonly used as a point cloud encoder, and the self-supervised pretraining model Sonata also uses it as a backbone.",
+      "example": "An indoor point cloud from an RGB-D camera is fed into PTv3, which outputs a semantic category for every point — wall, floor, chair, and so on.",
+      "related": ["Point Cloud Encoder", "Point Cloud Segmentation", "PointNet", "Transformer", "Backbone Network", "Self-Attention"]
+    },
+    {
+      "key": "perception-21#3",
+      "name_en": "Pointmap",
+      "aliases": ["Point Map", "Per-Pixel 3D Point Map"],
+      "one_liner": "An array the same size as an image, where each pixel stores a 3D coordinate instead of a color.",
+      "explanation": "A pointmap arranges the 3D coordinate (x, y, z) corresponding to every pixel of an image into an H×W×3 array, giving a one-to-one correspondence between pixels and 3D points. DUSt3R, proposed in 2023 by Naver Labs Europe and others, made this its core output: given two images, the network directly regresses two pointmaps, both expressed in the camera coordinate frame of the first image, so it needs no prior knowledge of camera intrinsics (such as focal length) or camera poses. Compared with a depth map, a pointmap implicitly encodes depth, camera parameters, and pixel correspondence between the two images all at once, and the focal length, relative pose, and matching points can all be recovered from it. Later feed-forward 3D reconstruction models such as MASt3R, VGGT, and π³ adopted or remained compatible with this representation, letting robots quickly recover a scene’s 3D structure from ordinary RGB images.",
+      "example": "Two phone photos of a tabletop are fed into DUSt3R, producing two pointmaps that, combined, form a dense point cloud of the tabletop scene.",
+      "related": ["Feed-Forward 3D Reconstruction", "DUSt3R", "VGGT", "Depth Map", "Point Cloud", "Camera Intrinsics"]
+    },
+    {
+      "key": "perception-21#4",
+      "name_en": "Pose Tracking",
+      "aliases": ["6D Pose Tracking", "Object Pose Tracking"],
+      "one_liner": "Continuously estimating an object’s 3D position and orientation across a video’s successive frames.",
+      "explanation": "Pose means an object’s 3D position plus 3D orientation, 6 degrees of freedom in total, which is why it is also called 6D pose. 6D pose estimation usually computes the pose from scratch in a single frame; pose tracking instead uses the previous frame’s result and makes only a small correction in the new frame, which makes it faster and smoother, and suitable for real-time closed-loop control. NVIDIA’s FoundationPose (a CVPR 2024 Highlight paper) unifies estimation and tracking in one framework: given an RGB-D image, it needs only a CAD model or a handful of reference images for objects it has never seen, and refines the pose iteratively using a “render-and-compare” approach. Robots rely on it when grasping moving objects, adjusting an object in-hand, or doing visual servoing; if the object is occluded or moves too fast, tracking can be lost and a fresh global estimate is needed. Estimating a camera’s own pose in SLAM is also sometimes called tracking, but that is a different target.",
+      "example": "While a robot unscrews a bottle cap, FoundationPose tracks the bottle’s 6D pose every frame, and the controller adjusts the gripper position accordingly.",
+      "related": ["6D Pose Estimation", "FoundationPose", "Visual Servoing", "In-Hand Manipulation", "Occlusion", "Pose"]
+    },
+    {
+      "key": "perception-21#5",
+      "name_en": "Prompt Depth Anything",
+      "aliases": ["PromptDA", "Prompting Depth Anything for 4K Resolution Accurate Metric Depth Estimation"],
+      "one_liner": "Using a cheap lidar’s sparse depth readings as a “prompt” so a large depth model outputs accurate 4K metric depth.",
+      "explanation": "Prompt Depth Anything was proposed by teams from Zhejiang University and ByteDance Seed, among others, published at CVPR 2025, with code and models released under the Apache-2.0 license. Monocular depth models such as Depth Anything capture fine edges well but don’t know the real-world scale; the low-cost lidar sensors built into devices like the iPhone give true distances but at very low resolution — 24×24 in the paper’s example. Prompt Depth Anything treats the lidar depth as a prompt and fuses it into Depth Anything at multiple scales inside the decoder, producing metric (real-world-scale) depth at up to 4K resolution. The paper includes grasping experiments on a Unitree H1: a policy trained only on diffuse (non-reflective, non-transparent) objects was able to grasp transparent and reflective objects once given this depth, outperforming versions that used only RGB or only lidar.",
+      "example": "An iPhone records RGB and lidar data at the same time; Prompt Depth Anything turns them into high-resolution depth, which is then converted into a point cloud for a grasping policy to use.",
+      "related": ["Depth Anything", "Monocular Depth Estimation", "Metric Depth vs. Relative Depth", "Depth Completion", "LiDAR", "Perceiving Transparent / Reflective Objects"]
+    },
+    {
+      "key": "perception-21#6",
+      "name_en": "Proximity Sensor",
+      "aliases": ["Proximity Sensing", "Near-Field Sensing"],
+      "one_liner": "A sensor that detects whether something is nearby, and how close, without needing to touch it.",
+      "explanation": "A proximity sensor detects the presence or distance of a nearby object without contact, using principles that include capacitive sensing (a nearby object changes an electric field), inductive sensing (sensitive only to metal), infrared and other optical methods, time-of-flight (measuring how long light takes to travel out and back), and ultrasonic sensing. The sensor that turns off a phone’s screen when it’s held to your ear works this way. In robotics, proximity sensing fills the gap between vision and touch: a camera is often blocked at close range by the arm or the object itself, while touch sensing needs actual contact to produce a signal. There are two common uses: mounting sensors on a robot arm’s housing as a “sensing skin” that slows or steers the arm away when a person gets close, supporting safety in human-robot collaboration; and mounting them on gripper fingertips to fine-tune finger position in the last small gap before contact. A 2021 survey by Navarro and colleagues systematically reviews these systems.",
+      "example": "A collaborative robot arm’s housing is ringed with capacitive proximity sensors; when a worker’s hand gets within a set distance, the arm automatically slows down and stops.",
+      "related": ["Tactile Sensor", "Electronic Skin", "Time-of-Flight", "Ultrasonic Sensor", "Human-Robot Collaboration", "Speed and Separation Monitoring"]
+    },
+    {
+      "key": "perception-21#7",
+      "name_en": "Random Sample Consensus",
+      "aliases": ["RANSAC", "RANSAC Algorithm"],
+      "one_liner": "Repeatedly fitting a model to small random subsets of data and keeping the one most data points agree with, to reject outliers.",
+      "explanation": "Random Sample Consensus (RANSAC) was proposed by Fischler and Bolles at SRI in 1981. Real-world data is often mixed with a large number of wrong points (outliers), and fitting directly with least squares gets skewed by them. RANSAC instead randomly draws the minimum number of samples needed to fit the model (for example, 3 points to fit a plane) and computes a candidate model; counts how many data points fall within an error threshold of it (inliers); repeats this many times and keeps the model with the most inliers; and finally refines that model once more using all of its inliers. It is a foundational tool in computer vision, commonly used to estimate a homography or fundamental matrix after feature matching, to solve for camera pose together with PnP, and to do coarse alignment before point cloud registration. In a robot tabletop scene, it is often used first to fit and remove the tabletop plane, leaving only the points belonging to objects on the table.",
+      "example": "Running RANSAC plane-fitting on an RGB-D point cloud finds and removes the tabletop; clustering what remains then yields the individual objects sitting on it.",
+      "related": ["Feature Matching", "Homography Matrix", "Perspective-n-Point (PnP)", "Point Cloud Registration", "Epipolar Geometry", "Point Cloud Segmentation"]
+    },
+    {
+      "key": "perception-21#8",
+      "name_en": "RAFT",
+      "aliases": ["Recurrent All-Pairs Field Transforms", "RAFT Optical Flow"],
+      "one_liner": "A classic optical-flow network that computes correlation between every pair of pixels, then refines the flow through repeated recurrent updates.",
+      "explanation": "RAFT was proposed by Zachary Teed and Jia Deng at Princeton in 2020, published at ECCV 2020, where it reportedly won the Best Paper Award. Optical flow describes how far every pixel moves between two adjacent frames. RAFT first computes feature correlation between every pair of pixels across the two frames, producing a 4D correlation volume, and then uses a module based on a GRU (a type of recurrent neural network unit) to repeatedly refine the flow at a single high resolution, replacing the traditional coarse-to-fine pyramid approach. According to the paper, it reduced error by 16% on KITTI and 30% on Sintel compared with prior work, and it remains a widely used baseline today. The same team’s RAFT-Stereo and DROID-SLAM both reuse this iterative-update idea. In robotics research, optical flow is often used to estimate object motion, or to infer motion from video that has no action labels.",
+      "example": "Given two frames of a robot arm before and after pushing a block, RAFT outputs each pixel’s displacement, revealing which way the block and the arm each moved.",
+      "related": ["Optical Flow", "Scene Flow", "Tracking Any Point", "Stereo Matching", "DROID-SLAM", "Recurrent Neural Network"]
+    },
+    {
+      "key": "perception-21#9",
+      "name_en": "Referring Expression Segmentation",
+      "aliases": ["RES", "Referring Image Segmentation"],
+      "one_liner": "Given a sentence describing one specific object, precisely segmenting out exactly that object in the image.",
+      "explanation": "Referring expression segmentation takes an image plus a natural-language description (such as “the two people sitting on the bench on the right”) and outputs a pixel-level mask of the object the sentence refers to. It is more fine-grained than open-vocabulary segmentation: the latter segments every object of a named category, while referring segmentation must pick out one specific instance based on color, position, relationships, and other descriptive cues. Hu et al. proposed an early end-to-end method in 2016, encoding the sentence with an LSTM and fusing it with a convolutional network’s feature map to predict a mask pixel by pixel. Common benchmarks include RefCOCO, RefCOCO+, and G-Ref. Today the task is often handled by multimodal large models or grounding models paired with a SAM-style segmentation model. When a robot hears “hand me that red cup on the left,” it must first use this to find the pixel region of the target, then combine that with depth to get a 3D position for grasping.",
+      "example": "Given the instruction “pick up the blue block on the far left of the table,” the model outputs a mask for exactly that block in the wrist camera’s image.",
+      "related": ["Visual Grounding", "Open-Vocabulary Segmentation", "Instance Segmentation", "Mask", "Grounded-SAM", "Language Grounding"]
+    },
+    {
+      "key": "perception-21#10",
+      "name_en": "Relocalization",
+      "aliases": ["Camera Relocalization", "Re-Localization"],
+      "one_liner": "Figuring out where a robot is and which way it’s facing on an existing map, after tracking is lost or it restarts.",
+      "explanation": "Relocalization is a step within SLAM (Simultaneous Localization and Mapping) and visual localization: when tracking is lost due to fast motion, occlusion, or a lighting change, or when a robot restarts or is picked up and moved elsewhere (the so-called “kidnapped robot” problem), the system must recover its pose on an already-built map using only its current observation. A classic approach, used in ORB-SLAM, retrieves the keyframe most similar to the current image with a bag-of-words model (DBoW2), performs feature matching, and then solves for the camera pose using PnP combined with RANSAC. Among learned approaches, PoseNet, from Cambridge in 2015, was the first to regress a 6-degree-of-freedom camera pose directly from a single image using a convolutional network. Relocalization uses techniques similar to loop closure detection, but with a different purpose: loop closure corrects accumulated drift, while relocalization recovers a lost position.",
+      "example": "A robot vacuum is picked up and set down in a different room; it compares the current view against its stored map, relocalizes, and resumes cleaning.",
+      "related": ["Simultaneous Localization and Mapping (SLAM)", "Loop Closure Detection", "Visual Place Recognition", "Perspective-n-Point (PnP)", "Random Sample Consensus (RANSAC)", "Adaptive Monte Carlo Localization (AMCL)"]
+    },
+    {
+      "key": "perception-21#11",
+      "name_en": "ReSkin / AnySkin",
+      "aliases": ["ReSkin", "AnySkin"],
+      "one_liner": "A magnetic tactile skin: a soft pad embedded with magnetic particles sits over a magnetometer that reads contact from field changes.",
+      "explanation": "ReSkin was proposed by Bhirangi, Hellebrekers, Majidi, and Gupta at Carnegie Mellon and Meta AI (FAIR), published at CoRL 2021. It mixes magnetized particles into an elastomer; when the elastomer is deformed by pressure, the magnetic field it produces changes, which a magnetometer circuit underneath measures to estimate contact location and force. The soft skin wears out but is separate from the electronics, so it can simply be swapped for a new one, with self-supervised learning used to adapt to the replacement skin. In 2024, Lerrel Pinto’s group at NYU and collaborators introduced AnySkin, which simplifies fabrication and installation — it snaps onto a gripper or dexterous hand like a phone case — and makes the signal more consistent across different individual skins: the same manipulation policy loses only about 13% performance after a skin swap with AnySkin, versus about 43% with ReSkin. AnySkin’s design files are open-sourced, and it is also available through commercial channels.",
+      "example": "An AnySkin pad is mounted on the fingertip of a Franka gripper; a policy trained on the tactile signal to plug in a USB cable still mostly works after the pad is swapped for a fresh one.",
+      "related": ["Tactile Sensor", "Magnetic Tactile Sensing", "Electronic Skin", "Slip Detection", "Tactile Representation Learning", "Vision-Based Tactile Sensor"]
+    }
+  ]
+}

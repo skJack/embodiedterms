@@ -1,0 +1,210 @@
+{
+  "batch": "concept-07",
+  "terms": [
+    {
+      "key": "concept-07#0",
+      "name_en": "Object Generalization",
+      "aliases": [],
+      "one_liner": "A policy's ability to still complete the same task when the object is swapped for one it never saw in training.",
+      "explanation": "Object generalization is the most common type of generalization tested for robot policies: whether a task can still be completed once the object is swapped for one absent from the training data — a new category, a new size or shape, a new color or material. OpenVLA's evaluation breaks this down further: changes in color and appearance count as visual generalization, changes in size and shape count as physical generalization, and entirely unseen target objects count as semantic generalization. It matters because the variety of objects in real homes and factories is nearly endless — collecting data for every single one is impossible. A 2024 study on scaling imitation-learning data found that a policy's generalization to new objects grows as a power law with the number of distinct object categories in training, and that object diversity matters more than simply piling up more demonstrations of the same objects.",
+      "example": "Demonstrations of 'put the cup on the plate' are collected using only 3 kinds of cups; at test time the policy is tried with an unseen mug, a paper cup, and a glass to see how much the success rate drops.",
+      "related": [
+        "Generalization",
+        "Scene Generalization",
+        "Position / Spatial Generalization",
+        "Semantic Generalization",
+        "Visual Generalization",
+        "Zero-shot"
+      ]
+    },
+    {
+      "key": "concept-07#1",
+      "name_en": "Object-Goal Navigation",
+      "aliases": [
+        "ObjectNav"
+      ],
+      "one_liner": "Telling a robot only an object category, such as 'chair,' and having it find one on its own in an unfamiliar house.",
+      "explanation": "Object-goal navigation is one of the standard tasks in embodied navigation. The 2018 navigation-evaluation working-group paper split navigation goals into point goals, object goals, and area goals, and the 2020 paper “ObjectNav Revisited” unified the detailed evaluation protocol. In this setting, the agent is placed at a random position in a previously unseen indoor environment and given only an object category name, then has to find an instance of it using a first-person RGB-D camera as it moves. The Habitat 2020 Challenge specifies that the episode counts as successful if the agent actively issues a “stop” action within 1 meter of any instance of that category and the object is visible from the stopping point; common metrics are success rate and success weighted by path length (SPL). It is harder than point-goal navigation because the agent must recognize the object, infer where it is typically located, and explore efficiently.",
+      "example": "In the Habitat simulator, an agent given the instruction “find the toilet” starts in the living room, infers the toilet is most likely in the bathroom, explores toward it, and stops within 1 meter once it finds one.",
+      "related": [
+        "Navigation",
+        "Point-Goal Navigation",
+        "Image-Goal Navigation",
+        "Vision-and-Language Navigation",
+        "Success weighted by Path Length (SPL)",
+        "Habitat"
+      ]
+    },
+    {
+      "key": "concept-07#2",
+      "name_en": "Open-vocabulary",
+      "aliases": [],
+      "one_liner": "A model that can recognize or handle objects and concepts described in arbitrary words, beyond its training categories.",
+      "explanation": "Traditional detection and segmentation models only recognize a fixed set of categories seen during training, such as COCO's 80 classes — this is called closed-vocabulary. Open-vocabulary means a model can accept any text as a category, including words that never appeared in its training annotations. Alireza Zareian and colleagues proposed open-vocabulary object detection with OVR-CNN in 2020: first learn a shared visual-semantic space from large amounts of image-text pairs, then train a detector with only a small number of bounding-box annotations. Contrastive image-text models like CLIP later popularized this approach, leading to systems such as OWL-ViT, Grounding DINO, and YOLO-World. In embodied AI, open-vocabulary capability lets a robot understand object names that were never defined in advance, and it is commonly used for open-vocabulary grasping, navigation, and mobile manipulation.",
+      "example": "OK-Robot, in a real home, accepts instructions naming arbitrary objects, such as 'put the stuffed rabbit in the basket,' first using an open-vocabulary model to locate the object before grasping and placing it.",
+      "related": [
+        "Open-vocabulary Detection",
+        "Open-vocabulary Segmentation",
+        "Zero-shot",
+        "CLIP",
+        "OK-Robot",
+        "Open-world"
+      ]
+    },
+    {
+      "key": "concept-07#3",
+      "name_en": "Open-world",
+      "aliases": [
+        "In-the-wild"
+      ],
+      "one_liner": "A setting where the environment is uncontrolled and things absent from training keep appearing, and the system must still work.",
+      "explanation": "“Open-world” contrasts with the “closed-world” assumption, under which the categories and scenes encountered at test time are assumed to all fall within the training range. In 2014, Abhijit Bendale and Terrance Boult formally defined open-world recognition in visual recognition, requiring a system to detect unknown categories, label them as unknown, and gradually learn them over time. In embodied AI, the term is used more broadly, referring generally to leaving the lab and entering real, uncontrolled settings such as homes, shops, and the outdoors, where objects, layout, lighting, and human behavior cannot all be enumerated in advance. Physical Intelligence's π0.5, released in 2025, specifically targets open-world generalization, demonstrating long-horizon tasks such as tidying a kitchen or bedroom in entirely new homes. This usually depends on diverse training data and knowledge transferred from the internet.",
+      "example": "π0.5 is placed in a home that never appeared in its training data and, given an instruction such as “tidy up the kitchen,” completes the multi-step cleanup on its own.",
+      "related": [
+        "Open-vocabulary",
+        "Out-of-Distribution",
+        "Scene Generalization",
+        "Long-tail Problem",
+        "π0.5",
+        "In-the-wild Data"
+      ]
+    },
+    {
+      "key": "concept-07#4",
+      "name_en": "Parkour",
+      "aliases": [
+        "Robot Parkour"
+      ],
+      "one_liner": "A legged robot's high-dynamic skill of continuously climbing, jumping, and squeezing through obstacles using vision.",
+      "explanation": "Parkour was originally a human street sport; in robotics it refers to a quadruped or humanoid robot rapidly crossing platforms, gaps, low barriers, and narrow openings, and serves as a flagship task for testing the limits of motion control. Boston Dynamics' hydraulic Atlas parkour demos used motion templates built offline through trajectory optimization, fine-tuned in real time with model predictive control and perception. Since 2023, learning-based methods have become the mainstream: Robot Parkour Learning (CoRL 2023) and Extreme Parkour first train with reinforcement learning in simulation, then distill the result into an end-to-end policy that uses only a depth camera, deployed directly on low-cost quadrupeds; Humanoid Parkour Learning (2024) applied a similar approach to humanoid robots.",
+      "example": "In Extreme Parkour, a low-cost quadruped, relying only on a front-facing depth camera, jumps onto a platform about twice its body height and clears a gap about twice its body length.",
+      "related": [
+        "Legged Locomotion",
+        "Perceptive Locomotion",
+        "Robot Parkour Learning",
+        "Extreme Parkour",
+        "Sim-to-Real Transfer",
+        "Teacher-Student Distillation"
+      ]
+    },
+    {
+      "key": "concept-07#5",
+      "name_en": "Perception-Action Loop",
+      "aliases": [],
+      "one_liner": "Perception drives action, and action changes what is perceived next, in a continuous back-and-forth cycle.",
+      "explanation": "The perception-action loop describes the ongoing back-and-forth between an agent and its environment: sensors produce an observation, the policy produces an action, the action changes the environment and the agent's own position, and so what is seen the next moment changes too. The idea comes from cognitive science and ecological psychology; James Gibson, Francisco Varela, and others all emphasized that perception is not passive reception but is coupled to bodily movement, and roboticist Rodney Brooks likewise argued that intelligence must connect to the world through a body. This loop is a key distinction between embodied AI and disembodied AI: an image classifier looks at one picture, gives one answer, and is done, while a robot policy must repeatedly observe, act, and observe again, often tens of times per second, to correct errors and respond to change.",
+      "example": "As a robot arm grasps a cup, its wrist camera sees the relative position of the cup and gripper in every frame, and the policy corrects its next move accordingly — if the cup gets bumped out of place, it can realign and follow it.",
+      "related": [
+        "Embodied AI",
+        "Closed-loop",
+        "Open-loop",
+        "Embodied Cognition",
+        "Sense-Plan-Act Paradigm",
+        "Active Perception"
+      ]
+    },
+    {
+      "key": "concept-07#6",
+      "name_en": "Physical Turing Test",
+      "aliases": [],
+      "one_liner": "A robot passes if people cannot tell whether a piece of real-world physical work was done by a human or a machine.",
+      "explanation": "The physical Turing test is a phrase coined by NVIDIA's senior director of AI, Jim Fan, in a talk at Sequoia Capital's AI Ascent conference in May 2025, moving the Turing test from “can't tell human from machine in conversation” into the physical world: have a robot do real physical work, such as housework, and if a person looking at the result cannot tell whether a human or a robot did it, the test is passed. In the talk, he argued for using large-scale simulation to make up for the shortage of robot training data, and described ideas such as digital twins and “digital cousins.” Similar ideas existed earlier: cognitive scientist Stevan Harnad's “total Turing test” likewise required testing both perception and the ability to manipulate objects. The phrase is now commonly used to describe the ultimate goal of a general-purpose household robot.",
+      "example": "Jim Fan's example scenario: your house is a mess after a party on Sunday night; you come home Monday to find it fully cleaned up, with a candlelit dinner set on the table, and you cannot tell whether a person or a robot did it.",
+      "related": [
+        "Embodied AI",
+        "Physical AI",
+        "General-purpose Robot",
+        "Household Tasks",
+        "Moravec's Paradox",
+        "Digital Cousins"
+      ]
+    },
+    {
+      "key": "concept-07#7",
+      "name_en": "Point-Goal Navigation",
+      "aliases": [
+        "PointNav"
+      ],
+      "one_liner": "Giving a robot a goal coordinate relative to its start point and having it navigate there on its own in an unfamiliar environment.",
+      "explanation": "Point-goal navigation is the most basic embodied navigation task, defined in the 2018 navigation-evaluation working-group paper: the agent starts in a previously unseen environment, and the goal is given as a coordinate relative to the starting point, such as “5 meters north, 3 meters west” — no object recognition is needed, only obstacle avoidance, planning, and reaching the point. The Habitat 2020 Challenge specifies that issuing the stop action within 0.36 meters of the goal, twice the agent's body radius, counts as success, measured by success weighted by path length (SPL) to capture how efficiently the agent got there. Erik Wijmans and colleagues' DD-PPO (2019), trained on 2.5 billion steps of simulated experience, essentially “solved” this task when given an RGB-D camera plus GPS and compass; the 2020 challenge then removed GPS and compass and added sensor noise to bring the task closer to a real robot.",
+      "example": "Given the goal “5 meters north, 3 meters west” in Habitat, the agent, relying only on a first-person RGB-D camera, navigates around a sofa and a wall and stops within 0.36 meters of the goal to succeed.",
+      "related": [
+        "Navigation",
+        "Object-Goal Navigation",
+        "Success weighted by Path Length (SPL)",
+        "Habitat",
+        "Image-Goal Navigation",
+        "Visual Odometry"
+      ]
+    },
+    {
+      "key": "concept-07#8",
+      "name_en": "Spatial Generalization",
+      "aliases": [
+        "Position Generalization",
+        "Motion Generalization"
+      ],
+      "one_liner": "A policy's ability to still succeed when an object is placed at a position or orientation absent from training.",
+      "explanation": "Spatial (or position) generalization means the task and the object stay the same, but the object's, or the robot's own, initial position or orientation shifts to somewhere the training data never covered, and the question is whether the policy can still succeed. OpenVLA's evaluation calls this “motion generalization,” defining it as unseen object positions and orientations. It is a common weak point for visuomotor policies: a policy learned through imitation learning is often only reliable near the region the demonstrations covered, and success rates drop noticeably once an object is moved further away — which is why data collection involves repeatedly placing objects at different spots on the table. DemoGen addresses this by synthesizing large numbers of demonstrations at different positions from a single real human demonstration; LIBERO-Plus found that success rates for some VLA models fall from 95% to under 30% with only a slight perturbation to the robot's initial state or camera viewpoint.",
+      "example": "During training, the block is only ever placed on the left half of the table; at test time it is placed on the right half or rotated 90 degrees, to see whether the arm can still pick it up the same way.",
+      "related": [
+        "Generalization",
+        "Object Generalization",
+        "Scene Generalization",
+        "Out-of-Distribution",
+        "DemoGen",
+        "LIBERO-Plus"
+      ]
+    },
+    {
+      "key": "concept-07#9",
+      "name_en": "Reasoning",
+      "aliases": [],
+      "one_liner": "A model's ability to analyze, break down, and plan before producing an answer or action — distinct from inference.",
+      "explanation": "The Chinese word 推理 corresponds to two different English terms: inference means running a model forward once to produce an output, while reasoning means analyzing conditions, breaking a problem into steps, and working toward a conclusion — this entry is about the latter. Large language models improved their reasoning performance through chain of thought, writing out intermediate steps before answering, and embodied AI later brought this to robots: Embodied Chain-of-Thought (ECoT, 2024) has a VLA model write out sub-tasks, object bounding boxes, and gripper position before producing an action, improving OpenVLA's success rate by 28 percentage points. Google DeepMind's Gemini Robotics 1.5, released in September 2025, generates a natural-language thought before acting, with planning handled by the higher-level Gemini Robotics-ER 1.5. Reasoning helps with long-horizon, multi-step tasks that require commonsense, at the cost of added latency.",
+      "example": "Told to “sort the clothes by color,” a robot first reasons through the plan, “white clothes go in the white bin, everything else in the black bin,” then plans the next step, “pick up the red sweater and put it in the black bin,” before finally executing the action.",
+      "related": [
+        "Inference",
+        "Chain of Thought",
+        "Embodied Chain-of-Thought",
+        "Embodied Reasoning",
+        "Gemini Robotics 1.5",
+        "Fast-Slow Dual System"
+      ]
+    },
+    {
+      "key": "concept-07#10",
+      "name_en": "Robotic Assembly",
+      "aliases": [
+        "Assembly"
+      ],
+      "one_liner": "Getting a robot to insert, screw, snap, or clip parts together into a component or finished product.",
+      "explanation": "Assembly is one of the most traditional tasks for industrial robots, and also one of the hardest to fully automate — it includes peg-in-hole insertion, meshing gears, plugging in connectors, tightening nuts, routing belts, and wiring harnesses. The difficulty is that the clearance between mating parts is often tighter than the error in visual localization, so the robot must feel its way to alignment through force sensing or compliant control during contact, making this a classic case of contact-rich manipulation. The U.S. National Institute of Standards and Technology (NIST) designed a set of assembly task boards specifically as a benchmark for this. Traditional solutions rely on precision fixtures and taught, programmed motions, which need to be redone whenever the product changes; learning-based methods are starting to fill this gap — NVIDIA's IndustReal, for example, trains an insertion policy with reinforcement learning in simulation and transfers it directly to a real robot arm.",
+      "example": "A robot arm inserts a cylindrical pin into a tightly fitting hole: it moves above the hole, then, using force feedback after contact, fine-tunes its position until aligned before pressing the pin in.",
+      "related": [
+        "Peg-in-Hole Assembly",
+        "Contact-rich Manipulation",
+        "Force Control",
+        "Compliant Control",
+        "Factory / IndustReal (Contact-rich Assembly Simulation)",
+        "Industrial Robot"
+      ]
+    },
+    {
+      "key": "concept-07#11",
+      "name_en": "Robustness",
+      "aliases": [],
+      "one_liner": "A system's ability to keep performing without much degradation when inputs or the environment carry noise or small changes.",
+      "explanation": "Robustness means a system's ability to keep working properly when inputs contain errors, the environment is perturbed, or conditions change. It overlaps with generalization but emphasizes something different: generalization asks “does it still work with a new object or a new scene,” while robustness is more concerned with whether the same task falls apart under disturbances such as lighting changes, a shifted camera, sensor noise, or being bumped by a person. Real-world disturbances are everywhere, so robots are held to a high standard here. LIBERO-Plus (2025) systematically adds seven categories of perturbation to the LIBERO simulation benchmark and finds that some VLA models' success rates drop from 95% to under 30% with only a slight change in camera viewpoint or initial state, and that the models often ignore the language instruction as well. Common ways to improve robustness include domain randomization, data augmentation, and training with deliberate perturbations.",
+      "example": "A quadruped robot gets kicked from the side while walking but adjusts its steps and stays standing; a robot-arm policy still manages to grasp an object even after its camera has been knocked a few centimeters out of place.",
+      "related": [
+        "Generalization",
+        "Domain Randomization",
+        "Data Augmentation",
+        "Out-of-Distribution",
+        "Generalization and Robustness Evaluation",
+        "Push Recovery"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,433 @@
+{
+ "category": "mechanics",
+ "batch": 5,
+ "terms": [
+  {
+   "name_zh": "抓取分类（强力抓取 / 精确抓取 / 捏取）",
+   "name_en": "Grasp Taxonomy (Power Grasp vs. Precision Grasp / Pinch)",
+   "abbr": "",
+   "aliases": [
+    "抓握分类",
+    "强力抓握",
+    "精确抓握",
+    "精细捏取",
+    "Power Grasp",
+    "Precision Grasp",
+    "Pinch Grasp",
+    "Cutkosky 抓取分类",
+    "GRASP 分类法"
+   ],
+   "tier": 2,
+   "one_liner": "按手和物体怎么接触来给抓法分类，最粗一层分强力抓取和精确抓取。",
+   "explanation": "抓取分类是把人手或机械手抓东西的方式整理成类别体系。1956 年 Napier 把人手抓握分成两大类：强力抓取靠手掌和四指把物体包住，求稳、出力大；精确抓取主要靠拇指和其他手指的指腹相对，便于微调位置。捏取属于精确抓取，只用指尖或指侧夹住小物体。1989 年 Cutkosky 观察制造业工人用工具，提出面向机器人手设计的抓取分类树；Feix 等人汇总十几种文献，整理出 33 种抓取类型，再按对掌方式（手掌、指腹、指侧）和拇指姿态细分，2016 年正式发表为 GRASP 分类法。它常用来决定灵巧手要保留哪些自由度，也用作抓取数据集的类别标签。",
+   "example": "握锤柄敲钉子是强力抓取；用拇指和食指指尖捏起一颗螺丝是捏取，属于精确抓取。评测一只新灵巧手时，常逐一检查它能否做出这些典型抓法。",
+   "related": [
+    "抓取",
+    "灵巧手",
+    "灵巧操作",
+    "手部协同",
+    "拇指对掌",
+    "抓取规划"
+   ],
+   "sources": [
+    {
+     "title": "A comprehensive grasp taxonomy (Feix et al., RSS 2009 Workshop)",
+     "url": "https://www.csc.kth.se/grasp/taxonomyGRASP.pdf"
+    },
+    {
+     "title": "The GRASP Taxonomy of Human Grasp Types (Feix et al., IEEE THMS 2016)",
+     "url": "https://doi.org/10.1109/THMS.2015.2470657"
+    },
+    {
+     "title": "On grasp choice, grasp models, and the design of hands for manufacturing tasks (Cutkosky, 1989)",
+     "url": "https://doi.org/10.1109/70.34763"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "地面反作用力",
+   "name_en": "Ground Reaction Force",
+   "abbr": "GRF",
+   "aliases": [
+    "地面反力",
+    "足底力",
+    "地面支反力"
+   ],
+   "tier": 2,
+   "one_liner": "地面反推在脚或足端上的力，腿足机器人站立、行走、跳跃都靠它。",
+   "explanation": "地面反作用力是地面作用在与它接触的物体上的力。按牛顿第三定律，脚踩地面多大力，地面就反推回多大力。它分两部分：垂直分量是支撑力（法向力），水平分量是摩擦力，走路向前蹬、转弯侧推都靠水平分量。生物力学用测力台测它，再结合动捕数据反推人体关节力矩。对腿足机器人来说，除重力外，能让身体质心加速的外力主要就是 GRF，而机器人只能通过关节力矩间接调节它。所以很多四足、人形控制器（如 MPC、全身控制）直接把每只脚的 GRF 当优化变量，并要求它落在摩擦锥内，即水平力不超过摩擦系数乘以垂直力，否则脚会打滑。",
+   "example": "体重 60 kg 的人双脚静止站立时，两脚所受垂直地面反作用力之和约等于体重，即 60×9.8≈588 N；跑步蹬地的瞬间，这个力会超过体重。",
+   "related": [
+    "接触力",
+    "摩擦锥",
+    "零力矩点",
+    "压力中心",
+    "足底力传感器",
+    "质心动力学"
+   ],
+   "sources": [
+    {
+     "title": "Ground reaction force - Wikipedia",
+     "url": "https://en.wikipedia.org/wiki/Ground_reaction_force"
+    },
+    {
+     "title": "Inverse dynamics - Wikipedia",
+     "url": "https://en.wikipedia.org/wiki/Inverse_dynamics"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "齐次变换矩阵",
+   "name_en": "Homogeneous Transformation Matrix",
+   "abbr": "",
+   "aliases": [
+    "齐次变换",
+    "4×4 变换矩阵",
+    "刚体变换",
+    "Rigid Transformation",
+    "SE(3) 矩阵"
+   ],
+   "tier": 2,
+   "one_liner": "把旋转和平移合成一个 4×4 矩阵，描述一个坐标系相对另一个的位姿。",
+   "explanation": "齐次变换矩阵 T 是机器人学描述位姿的标准写法：左上 3×3 是旋转矩阵 R（朝向），右上 3×1 是平移向量 p（位置），最后一行固定为 [0 0 0 1]。所有这样的矩阵构成特殊欧氏群 SE(3)。补上最后一行，把点写成 [x, y, z, 1]，旋转加平移就能用一次矩阵乘法完成。它有三种用法：表示坐标系 {b} 在 {s} 下的位姿 T_sb；换参考系，按下标相消 T_sc = T_sb·T_bc 串起来；对坐标系或物体做平移旋转。正运动学就是把各关节的变换依次相乘，得到末端相对基座的位姿；ROS 的 TF 坐标树存的也是它。注意矩阵乘法不可交换，左乘和右乘含义不同。",
+   "example": "相机装在机械臂手腕上：已知基座到末端的 T_base_ee 和末端到相机的 T_ee_cam（手眼标定得到），相乘得到 T_base_cam，就能把相机看到的点换算到基座坐标系下去抓。",
+   "related": [
+    "旋转矩阵",
+    "坐标变换",
+    "位姿",
+    "正运动学",
+    "手眼标定",
+    "TF 坐标树"
+   ],
+   "sources": [
+    {
+     "title": "Modern Robotics 3.3.1: Homogeneous Transformation Matrices (Northwestern)",
+     "url": "https://modernrobotics.northwestern.edu/nu-gm-book-resource/3-3-1-homogeneous-transformation-matrices/"
+    },
+    {
+     "title": "Modern Robotics (Lynch & Park) preprint PDF",
+     "url": "http://hades.mech.northwestern.edu/images/7/7f/MR.pdf"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "惯性参数",
+   "name_en": "Inertial Parameters",
+   "abbr": "",
+   "aliases": [
+    "质量属性",
+    "Mass Properties",
+    "连杆惯性参数",
+    "Inertia Parameters"
+   ],
+   "tier": 2,
+   "one_liner": "描述一个刚体有多重、重心在哪、绕各轴有多难转动的一组参数。",
+   "explanation": "惯性参数是每根刚体连杆的质量分布信息，常见写法共 10 个数：质量 m（1 个），质心位置 c 或一阶质量矩 m·c（3 个），惯性张量 I（3×3 对称矩阵，6 个独立元素，描述绕各轴转动的难易）。URDF、MJCF 等机器人描述文件里每个连杆的 inertial 字段写的就是它们。运动学只管几何，一涉及动力学，比如重力补偿、逆动力学、力矩控制、物理仿真，就离不开惯性参数。CAD 导出的值常和实物有偏差（线缆、螺丝等没算进去），所以要做动力学参数辨识，并保证物理一致性，如质量为正、惯性张量正定。惯性参数不准是虚实差距的来源之一，域随机化常随机扰动连杆质量。",
+   "example": "URDF 里一个连杆的 inertial 标签包含 mass、origin（质心位置）和 inertia 的 ixx、ixy、ixz、iyy、iyz、izz 六个值；legged_gym 提供 added_mass_range 参数，训练时给机身随机加减质量。",
+   "related": [
+    "质量矩阵",
+    "惯性张量",
+    "质心",
+    "动力学参数辨识",
+    "统一机器人描述格式",
+    "动力学随机化"
+   ],
+   "sources": [
+    {
+     "title": "Modern Robotics (Lynch & Park) preprint PDF, Ch. 4 URDF 与 Ch. 8 动力学",
+     "url": "http://hades.mech.northwestern.edu/images/7/7f/MR.pdf"
+    },
+    {
+     "title": "Linear Matrix Inequalities for Physically-Consistent Inertial Parameter Identification (Wensing, Kim, Slotine)",
+     "url": "https://arxiv.org/abs/1701.04395"
+    },
+    {
+     "title": "legged_gym: legged_robot_config.py",
+     "url": "https://raw.githubusercontent.com/leggedrobotics/legged_gym/master/legged_gym/envs/base/legged_robot_config.py"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "逆动力学",
+   "name_en": "Inverse Dynamics",
+   "abbr": "",
+   "aliases": [
+    "动力学逆问题",
+    "逆向动力学",
+    "Inverse Dynamics Problem"
+   ],
+   "tier": 2,
+   "one_liner": "已知想要的运动（角度、速度、加速度），反算各关节需要出多大力矩。",
+   "explanation": "机器人动力学方程可写成 τ = M(θ)θ̈ + h(θ, θ̇)：θ 是关节角，θ̇、θ̈ 是关节速度和加速度，M 是质量矩阵，h 汇总重力、科里奥利力和离心力等项，τ 是关节力矩。给定 θ、θ̇、θ̈ 求 τ 叫逆动力学；反过来给定 τ 求 θ̈ 叫正动力学，仿真器每一步做的就是后者。逆动力学常用递归牛顿-欧拉算法：先从基座往末端传递速度和加速度，再从末端往基座回推各连杆受力。它是计算力矩控制、重力补偿、全身控制的核心，生物力学也用它由动捕数据和地面反作用力反推关节力矩。它不同于只求关节角的逆运动学，也不同于具身学习里由前后两帧推动作的「逆动力学模型」。",
+   "example": "机械臂要按规划好的加速度举起 2 kg 的物体，控制器先用逆动力学算出此刻各关节所需力矩作为前馈，再叠加 PD 反馈修正误差，这就是计算力矩控制。",
+   "related": [
+    "正动力学",
+    "递归牛顿-欧拉算法",
+    "质量矩阵",
+    "计算力矩控制",
+    "重力补偿",
+    "逆动力学模型"
+   ],
+   "sources": [
+    {
+     "title": "Modern Robotics (Lynch & Park) preprint PDF, Ch. 8 Dynamics of Open Chains",
+     "url": "http://hades.mech.northwestern.edu/images/7/7f/MR.pdf"
+    },
+    {
+     "title": "Inverse dynamics - Wikipedia",
+     "url": "https://en.wikipedia.org/wiki/Inverse_dynamics"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "倒立摆模型",
+   "name_en": "Inverted Pendulum Model",
+   "abbr": "IPM",
+   "aliases": [
+    "倒立摆",
+    "Inverted Pendulum",
+    "小车倒立摆",
+    "Cart-Pole"
+   ],
+   "tier": 2,
+   "one_liner": "把机器人简化成支在地上的一根杆顶着一个质点，用来分析和控制平衡。",
+   "explanation": "倒立摆是质心在支点上方的摆，处于不稳定平衡，稍受扰动就会倒，必须主动控制，把支点挪回质心下方才能保持直立。人站立时近似一个以脚为支点的倒立摆，Segway 平衡车也是同一原理。双足和人形机器人研究中，常把全身质量集中到质心处的一个点，把腿看成无质量的杆，就得到倒立摆模型，用很少的方程描述身体往哪倒、脚该落在哪。2001 年 Kajita 等人再假设质心高度 z_c 不变，得到线性倒立摆模型（LIPM）：水平方向满足 ẍ = (g/z_c)·x，x 是质心相对支点的水平位移，g 是重力加速度。方程变成线性后便于实时规划步态，ZMP 预观控制、捕获点等方法都建立在它之上。",
+   "example": "强化学习入门常用的 CartPole 环境就是小车倒立摆：智能体只能向左或向右推小车，目标是让杆一直竖着不倒。",
+   "related": [
+    "线性倒立摆模型",
+    "零力矩点",
+    "捕获点",
+    "质心",
+    "弹簧负载倒立摆",
+    "平衡控制"
+   ],
+   "sources": [
+    {
+     "title": "Inverted pendulum - Wikipedia",
+     "url": "https://en.wikipedia.org/wiki/Inverted_pendulum"
+    },
+    {
+     "title": "The 3D linear inverted pendulum mode: a simple modeling for a biped walking pattern generation (Kajita et al., IROS 2001)",
+     "url": "https://doi.org/10.1109/IROS.2001.973365"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "雅可比矩阵",
+   "name_en": "Jacobian Matrix",
+   "abbr": "J",
+   "aliases": [
+    "雅可比",
+    "Jacobian",
+    "速度雅可比",
+    "空间雅可比",
+    "物体雅可比"
+   ],
+   "tier": 2,
+   "one_liner": "把各关节转速换算成末端执行器速度的矩阵，随机器人姿态变化。",
+   "explanation": "数学上，雅可比矩阵是多元函数一阶偏导数排成的矩阵。在机器人学里，它描述关节速度和末端速度的线性关系：V = J(θ)·θ̇。θ̇ 是 n 个关节的速度；V 是末端的 6 维速度（3 维角速度加 3 维线速度，又叫运动旋量）；J 是 6×n 矩阵，第 i 列表示只让第 i 个关节以单位速度转动时末端怎么动。J 依赖当前关节角 θ，姿态一变就要重算。它有三个主要用途：用 J 的逆或伪逆由期望末端速度反推关节速度，这是数值逆运动学的基础；判断奇异位形，J 掉秩时末端在某些方向上动不了；静力映射 τ = Jᵀ·F，把末端要施加的力 F 换算成关节力矩 τ，力控和阻抗控制都靠它。",
+   "example": "平面两连杆机械臂完全伸直时，两个关节无论怎么转，末端都无法沿手臂方向继续往外走，此时 J 掉秩，机械臂处于奇异位形。",
+   "related": [
+    "微分运动学",
+    "雅可比伪逆",
+    "奇异位形",
+    "逆运动学",
+    "可操作度",
+    "几何雅可比与解析雅可比"
+   ],
+   "sources": [
+    {
+     "title": "Modern Robotics 5.1.1: Space Jacobian (Northwestern)",
+     "url": "https://modernrobotics.northwestern.edu/nu-gm-book-resource/5-1-1-space-jacobian/"
+    },
+    {
+     "title": "Modern Robotics (Lynch & Park) preprint PDF, Ch. 5 Velocity Kinematics and Statics",
+     "url": "http://hades.mech.northwestern.edu/images/7/7f/MR.pdf"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "加加速度",
+   "name_en": "Jerk",
+   "abbr": "",
+   "aliases": [
+    "急动度",
+    "跃度",
+    "加速度变化率",
+    "Jolt"
+   ],
+   "tier": 2,
+   "one_liner": "加速度随时间的变化率，也就是位置对时间的三阶导数，单位 m/s³。",
+   "explanation": "加加速度 j 是加速度 a 对时间的导数：j = da/dt = d³x/dt³（x 是位置），单位 m/s³，衡量加速度变化得有多突然。加速度突变意味着 jerk 很大，会让人感到顿挫，也会激起机械振动、加速磨损。所以机器人轨迹规划常限制 jerk：三次多项式时间缩放在起点和终点加速度会突变，相当于 jerk 无穷大；S 型速度曲线分七段把 jerk 限制在有限值内；最小加加速度轨迹则让整段运动的 jerk 平方积分最小。Flash 与 Hogan 1985 年发现人手臂的自然运动近似满足最小 jerk 原则。强化学习运控也有类似做法，奖励函数常惩罚相邻两步动作之差，让动作更平滑。",
+   "example": "电梯启动时若加速度从 0 瞬间跳到设定值，人会感到猛地一顿；实际电梯让加速度在一段时间内逐渐升高，就是在限制 jerk。",
+   "related": [
+    "最小加加速度轨迹",
+    "S 型速度曲线",
+    "五次多项式插值",
+    "轨迹规划",
+    "动作平滑",
+    "梯形速度曲线"
+   ],
+   "sources": [
+    {
+     "title": "Jerk (physics) - Wikipedia",
+     "url": "https://en.wikipedia.org/wiki/Jerk_(physics)"
+    },
+    {
+     "title": "Modern Robotics (Lynch & Park) preprint PDF, Ch. 9 Trajectory Generation",
+     "url": "http://hades.mech.northwestern.edu/images/7/7f/MR.pdf"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "关节限位",
+   "name_en": "Joint Limits",
+   "abbr": "",
+   "aliases": [
+    "关节极限",
+    "关节范围",
+    "关节行程",
+    "Joint Range",
+    "Joint Position Limits"
+   ],
+   "tier": 2,
+   "one_liner": "每个关节允许转动或移动的范围，广义上还包括速度和力矩上限。",
+   "explanation": "关节限位指关节变量允许的取值范围，比如某转动关节只能在 −90° 到 90° 之间转，多由机械结构决定；广义上还包括速度和力矩上限。URDF 里转动关节（revolute）和移动关节（prismatic）用 limit 标签写 lower、upper、velocity、effort 四个值，不限转角的转动关节单独标为 continuous。限位影响很多环节：逆运动学的解要检查是否越限；运动规划时构型空间会被限位截掉一部分；实机控制器常设比机械硬限位更小的软限位留余量。强化学习训练常惩罚接近限位的状态，如 legged_gym 的 soft_dof_pos_limit 按 URDF 限位的百分比设惩罚阈值。",
+   "example": "《Modern Robotics》里的 2R 机械臂限定 0°≤θ1≤180°、0°≤θ2≤150°：关节空间里走直线没问题，但让末端在任务空间走直线的那条路径会超出关节限位。",
+   "related": [
+    "软限位",
+    "构型空间",
+    "逆运动学",
+    "力矩限幅",
+    "统一机器人描述格式",
+    "工作空间"
+   ],
+   "sources": [
+    {
+     "title": "Modern Robotics (Lynch & Park) preprint PDF, Ch. 4 URDF 与 Ch. 9 Fig. 9.1",
+     "url": "http://hades.mech.northwestern.edu/images/7/7f/MR.pdf"
+    },
+    {
+     "title": "legged_gym: legged_robot_config.py (soft_dof_pos_limit)",
+     "url": "https://raw.githubusercontent.com/leggedrobotics/legged_gym/master/legged_gym/envs/base/legged_robot_config.py"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "零位标定（零点标定）",
+   "name_en": "Joint Zero-Position Calibration (Homing / Offset Calibration)",
+   "abbr": "",
+   "aliases": [
+    "零点标定",
+    "回零",
+    "关节零位标定",
+    "Homing",
+    "Zero Offset Calibration",
+    "Homing Offset"
+   ],
+   "tier": 2,
+   "one_liner": "测出每个关节读数为零时实际在哪个角度，让软件模型和实物对上号。",
+   "explanation": "机器人的正运动学和 URDF 模型都约定，所有关节角为 0 时对应一个确定姿态（零位）。但编码器装上去时读数原点是随意的，装配误差、更换电机都会让读数和模型角度差一个固定偏移。零位标定就是测出这个偏移并存下来，之后每次读数都据此修正。用增量式编码器（只记录相对变化）的关节每次上电都要回零：把关节转到机械限位、限位开关或编码器索引信号处，重新设定计数；绝对值编码器通常只需标定一次。舵机也有类似参数，如 Dynamixel 的 Homing Offset。零位不准会让末端位置出现系统误差，也会让同一个策略换一台机器人就不好用。",
+   "example": "组装好 LeRobot 的 SO-101 机械臂后要运行 lerobot-calibrate：先把所有关节摆到各自行程中间，再逐个转满全行程。官方文档说明，这一步是为了让主臂和从臂在相同物理姿态下读数一致，训练出的模型才能换到另一台机器上用。",
+   "related": [
+    "编码器",
+    "增量式编码器",
+    "绝对值编码器",
+    "运动学标定",
+    "关节限位",
+    "主从臂遥操作"
+   ],
+   "sources": [
+    {
+     "title": "Incremental encoder - Wikipedia",
+     "url": "https://en.wikipedia.org/wiki/Incremental_encoder"
+    },
+    {
+     "title": "ROBOTIS e-Manual: XM430-W350 (Homing Offset)",
+     "url": "https://emanual.robotis.com/docs/en/dxl/x/xm430-w350/"
+    },
+    {
+     "title": "LeRobot Docs: SO-101 (Calibrate)",
+     "url": "https://huggingface.co/docs/lerobot/so101"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "运动链",
+   "name_en": "Kinematic Chain",
+   "abbr": "",
+   "aliases": [
+    "开链",
+    "闭链",
+    "Open Chain",
+    "Closed Chain",
+    "运动学链"
+   ],
+   "tier": 2,
+   "one_liner": "用关节把刚体连杆一节节连起来形成的机构模型，分开链和闭链。",
+   "explanation": "运动链是由关节连接的一组刚体（连杆），用来描述机构能怎样运动，Reuleaux 在 1876 年的《机构运动学》中把它系统化。连杆依次相连、不形成回路的叫开链（串联链），典型是普通机械臂，每个关节都装电机驱动；连杆围成一个或多个封闭回路的叫闭链，如 Stewart 平台、Delta 并联机器人、人形机器人的并联踝关节，闭链里通常只有部分关节被驱动。机构自由度可用 Grübler 公式估算：M = d(N−1−j) + Σf_i，d 在平面取 3、空间取 6，N 是连杆数（含地面），j 是关节数，f_i 是第 i 个关节的自由度。开链正运动学简单、逆解难；闭链常常反过来。",
+   "example": "桌面上的 6 轴机械臂从底座到夹爪是一条开链；Delta 并联机器人的三条支链在动平台处汇合，形成闭链。",
+   "related": [
+    "串联机构",
+    "并联机构",
+    "运动学树",
+    "Grübler 公式",
+    "自由度",
+    "并联踝关节"
+   ],
+   "sources": [
+    {
+     "title": "Kinematic chain - Wikipedia",
+     "url": "https://en.wikipedia.org/wiki/Kinematic_chain"
+    },
+    {
+     "title": "Modern Robotics (Lynch & Park) preprint PDF, Ch. 1–2 与 Ch. 7 Closed Chains",
+     "url": "http://hades.mech.northwestern.edu/images/7/7f/MR.pdf"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "运动学冗余",
+   "name_en": "Kinematic Redundancy",
+   "abbr": "",
+   "aliases": [
+    "冗余自由度",
+    "冗余度",
+    "冗余分辨",
+    "Redundancy Resolution",
+    "冗余机械臂",
+    "Redundant Manipulator"
+   ],
+   "tier": 2,
+   "one_liner": "关节数多于任务所需自由度，同一个末端位姿对应无数种关节构型。",
+   "explanation": "如果机器人的关节数 n 大于任务空间维度 m，就说它对这个任务运动学冗余，多出的 n−m 个自由度叫冗余度。末端完整位姿是 6 维，所以 7 轴机械臂有 1 个冗余自由度：末端固定时，肘部仍能在一定范围内移动。这种不影响末端的内部运动叫自运动，对应雅可比矩阵的零空间。冗余意味着同一目标有无穷多组关节解，冗余分辨就是按某个准则从中挑一个：最常用的雅可比伪逆给出关节速度平方和最小的解，还可在零空间里叠加避障、远离关节限位或奇异位形等次要任务。代价是逆运动学没有唯一解，需要额外优化。冗余是相对任务而言的：只关心末端位置（3 维）时，6 轴臂也算冗余。",
+   "example": "把手掌平放在桌上不动，你仍能抬高或放低肘部，这就是人手臂的冗余自由度；7 轴机械臂也能在末端不动时调整肘部位置，绕开旁边的障碍物。",
+   "related": [
+    "零空间",
+    "雅可比伪逆",
+    "七自由度机械臂",
+    "臂型角（肘部自运动角）",
+    "零空间控制",
+    "逆运动学"
+   ],
+   "sources": [
+    {
+     "title": "Modern Robotics (Lynch & Park) preprint PDF, Example 4.7 与 Ch. 5–6",
+     "url": "http://hades.mech.northwestern.edu/images/7/7f/MR.pdf"
+    }
+   ],
+   "as_of": ""
+  }
+ ]
+}

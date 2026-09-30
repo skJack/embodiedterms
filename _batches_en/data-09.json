@@ -1,0 +1,113 @@
+{
+  "batch": "data-09",
+  "terms": [
+    {
+      "key": "data-09#0",
+      "name_en": "Ego-Exo4D",
+      "aliases": [],
+      "one_liner": "A large-scale video dataset led by Meta, capturing skilled human activities simultaneously from first-person and third-person viewpoints.",
+      "explanation": "Ego-Exo4D is a multi-view video dataset released in 2023, led by Meta FAIR together with more than a dozen universities worldwide: about 1,286 hours of footage from 740 participants across 13 cities. During recording, participants wore Aria smart glasses to capture first-person (egocentric) video while 4–5 surrounding GoPro cameras captured third-person (exocentric) footage at the same time, covering 8 categories of skilled activity such as cooking, bike repair, dancing, and rock climbing, along with gaze data, IMU (inertial measurement unit) readings, 3D point clouds, camera poses, and expert narration transcripts. It's used to study what the same action looks like from the performer's own eyes versus from a bystander's viewpoint. For embodied AI, a robot's head- and wrist-mounted cameras see something close to a first-person view, while most instructional video on the internet is shot in third person, so this dataset can be used to learn the correspondence between the two viewpoints, as well as for hand and 3D human pose estimation.",
+      "example": "The same “bike repair” session is filmed simultaneously by Aria glasses and 4 GoPro cameras, letting researchers train a model to translate third-person footage into a first-person view — one of the cross-view translation benchmarks in the paper.",
+      "related": ["First-Person Video (Egocentric Video)", "Exocentric Video (Third-Person Video)", "Ego4D", "Project Aria", "Human Video Data", "Hand Pose Estimation"]
+    },
+    {
+      "key": "data-09#1",
+      "name_en": "Egocentric-10K",
+      "aliases": [],
+      "one_liner": "Build AI's open-source dataset of roughly ten thousand hours of first-person video recorded by factory workers.",
+      "explanation": "Egocentric-10K is a first-person video dataset released on Hugging Face in 2025 by the U.S. startup Build AI, under the Apache 2.0 license. It was recorded by workers wearing monocular head-mounted cameras while working in 85 real factories, totaling about 10,000 hours across 192,900 video clips and 1.08 billion frames, at 1080p and 30 frames per second, with fisheye camera intrinsics included. It emphasizes footage where the hands stay visible and are actively manipulating things, and is positioned specifically as data for robot learning rather than for general video understanding. The dataset carries no action labels, so it's typically used for human-video pretraining or latent-action pretraining: a model first learns visual representations and action priors from large amounts of human hand manipulation, then gets fine-tuned on a small amount of robot data. According to its website, Build AI has since released larger follow-up versions, Egocentric-100K and Egocentric-1M.",
+      "example": "A typical clip in the dataset shows a worker wearing a head-mounted camera at their station, fitting a part into a jig with both hands visible throughout — well suited to learning hand manipulation.",
+      "related": ["First-Person Video (Egocentric Video)", "Human Video Data", "Action-Label-Free Video", "Human Video Pretraining", "Latent Action Pretraining", "In-the-Wild Data"]
+    },
+    {
+      "key": "data-09#2",
+      "name_en": "EgoMimic",
+      "aliases": ["EgoMimic: Scaling Imitation Learning via Egocentric Video"],
+      "one_liner": "A framework that co-trains a single policy on Project Aria human-hand data and robot data together.",
+      "explanation": "EgoMimic is an imitation-learning framework proposed in 2024 by Danfei Xu's group at Georgia Tech. A human performs tasks while wearing Project Aria smart glasses, which record first-person video and 3D hand trajectories; this is paired with a low-cost bimanual robot deliberately designed to have kinematics close to human arms. During training, the human hand trajectories and robot actions are normalized into a shared representation, masks are applied over the human hands and the robot arms in the video to reduce visual appearance differences, and a single policy network is co-trained on both. In experiments, it outperforms imitation-learning methods trained on robot data alone on long-horizon, single-arm, and bimanual tasks, and generalizes to new scenes; the authors also found that adding 1 more hour of human hand data helps more than adding 1 more hour of robot data. It's a representative example of using cheap human first-person data to replace part of the teleoperation data needed; the same group later led the EgoVerse data platform.",
+      "example": "On a place-object-in-bowl task, EgoMimic trained on 2 hours of robot data plus 1 hour of human hand data clearly outperforms ACT trained on 3 hours of robot data alone.",
+      "related": ["First-Person Video (Egocentric Video)", "Project Aria", "Co-Training", "Human Video Data", "Embodiment Gap", "EgoVerse"]
+    },
+    {
+      "key": "data-09#3",
+      "name_en": "EgoVerse",
+      "aliases": ["EgoVerse: An Egocentric Human Dataset for Robot Learning from Around the World"],
+      "one_liner": "A continually growing platform of first-person human demonstration data for robot learning, built jointly by universities and companies.",
+      "explanation": "EgoVerse is an open dataset and platform led by Danfei Xu's group at Georgia Tech, together with Stanford, UC San Diego, ETH Zurich, and other universities, plus companies including Meta, Scale AI, and LightWheel AI (光轮智能); its paper was released in April 2026. The version described in the paper contains 1,362 hours and about 80,000 human demonstrations, covering 1,965 tasks, 240 scenes, and 2,087 demonstrators; the project's website describes it as a continually growing dataset, with the current version at roughly 4,000 hours. The data uses a unified format, with camera pose, 3D head tracking, and dense language annotations included. The paper runs human-to-robot transfer experiments with a shared pipeline across multiple labs and robot types, and concludes that more human data generally improves the resulting policy — but only when the human data actually matches the task the robot needs to learn.",
+      "example": "In the paper's “place cup on saucer” bimanual task, multiple labs each running their own robot use the same pipeline to compare success rates as different amounts of human data are added.",
+      "related": ["EgoMimic", "First-Person Video (Egocentric Video)", "Human Video Data", "Cross-Embodiment Data", "Data Scaling Laws (Imitation Learning)", "Crowdsourced Data Collection"]
+    },
+    {
+      "key": "data-09#4",
+      "name_en": "EPIC-KITCHENS",
+      "aliases": ["EPIC-KITCHENS-100", "EPIC-KITCHENS-55"],
+      "one_liner": "A classic first-person video dataset of unscripted everyday cooking and kitchen tasks, filmed with head-mounted cameras.",
+      "explanation": "EPIC-KITCHENS is a first-person video dataset led by the University of Bristol in the UK. The first version, EPIC-KITCHENS-55, was released in 2018 with 55 hours from 32 participants. It was expanded in 2020 into EPIC-KITCHENS-100: participants wore head-mounted cameras while cooking and washing dishes in their own kitchens, unscripted, across 45 kitchens, totaling 100 hours, 20 million frames, and about 90,000 action segments. Annotations come from participants narrating afterward what they were doing, which is then organized into “verb + noun” action labels. Companion benchmarks cover action recognition, detection, anticipation, cross-modal retrieval, and unsupervised domain adaptation. Later additions layered on hand-object segmentation (VISOR), sound events (EPIC-Sounds), and 3D camera information (EPIC-Fields). In robotics, it's commonly used to study hand-object interaction, affordances, and pretraining visual representations.",
+      "example": "One action segment is labeled “take plate”: the video shows the participant lifting a plate off a shelf, and the label is built from the verb take and the noun plate.",
+      "related": ["First-Person Video (Egocentric Video)", "Ego4D", "Human Video Data", "Hand-Object Interaction", "Affordance Detection", "Data Annotation"]
+    },
+    {
+      "key": "data-09#5",
+      "name_en": "Exocentric Video",
+      "aliases": ["Third-Person Video", "Exo"],
+      "one_liner": "Video shot from a camera outside the performer's own body, looking at a person or robot from a bystander's vantage point.",
+      "explanation": "Exocentric video is the counterpart to first-person (egocentric) video, where the camera is worn on the performer's head or chest. In exocentric video, the camera sits outside the performer's body — a tripod-mounted camera, a security camera, or handheld footage shot by someone nearby. Most instructional videos and sports broadcasts on the internet fall into this category, and there's far more exocentric footage available online than egocentric footage. It shows full-body posture and the overall relationship between a person and their environment clearly, but hand detail is often blocked by the body or by objects, and the viewpoint doesn't match what a robot's own onboard camera sees. In embodied AI, it's commonly used to estimate human body motion, which is then retargeted for a humanoid robot to imitate, or mined for task procedures; the third-person cameras fixed beside a table during robot data collection also produce this kind of footage. Datasets like Ego-Exo4D record both viewpoints at once specifically to study the correspondence between them.",
+      "example": "GVHMR is used to estimate human body motion from a monocular exocentric video, and GMR then retargets that motion into joint trajectories for a humanoid robot.",
+      "related": ["First-Person Video (Egocentric Video)", "Third-Person Camera", "Ego-Exo4D", "Internet Video Data", "Human Pose Estimation", "Motion Retargeting"]
+    },
+    {
+      "key": "data-09#6",
+      "name_en": "FastUMI",
+      "aliases": ["FastUMI: A Scalable and Hardware-Independent Universal Manipulation Interface", "FastUMI-100K"],
+      "one_liner": "A hardware-independent handheld-gripper data-collection system and dataset from Shanghai AI Lab, improving on UMI.",
+      "explanation": "FastUMI was proposed in September 2024, led by the Shanghai Artificial Intelligence Laboratory together with Shanghai Jiao Tong University, Fudan University, the University of Hong Kong, and others, as an improvement on UMI (Universal Manipulation Interface: a person holds a camera-equipped gripper to perform demonstrations, and the data is then transferred to a robot). The original UMI computes the gripper's pose by running visual-inertial odometry on GoPro footage, which is a fairly complex pipeline; FastUMI instead uses an off-the-shelf RealSense T265 tracking module to output pose directly at 200Hz, leaving the GoPro fisheye camera to handle only video capture, and adds standardized, swappable fingertips and camera mounts so the same device works across different robot arms and grippers. The team also open-sourced a dataset of 22 everyday tasks with over 10,000 trajectories; in October 2025 they released FastUMI-100K, covering 54 household tasks with more than 100,000 trajectories.",
+      "example": "A collector holds FastUMI and performs a single pick-and-place demonstration in a real home; the T265 records the gripper's trajectory, the GoPro records the video, and the resulting demonstration can be used to train any robot arm fitted with the matching fingertip.",
+      "related": ["Universal Manipulation Interface (UMI)", "Handheld Gripper Data Collection", "Embodiment-Free Data Collection", "AgileX Pika Data Collection Kit", "Demonstration Data", "Visual-Inertial Odometry"]
+    },
+    {
+      "key": "data-09#7",
+      "name_en": "Foot Skating / Floating / Penetration",
+      "aliases": ["Motion Retargeting Artifacts", "Foot Sliding", "Ground Penetration"],
+      "one_liner": "Three common physically-impossible foot errors that appear when human motion is retargeted onto a robot.",
+      "explanation": "These are the three most common physically implausible artifacts that show up when human motion — from motion capture or video pose estimation — is retargeted (converted into robot joint trajectories). Foot skating is when a foot that should be planted firmly on the ground instead slides horizontally; floating is when a foot that should be touching the ground instead hovers above it; penetration is when a foot sinks below the ground surface. These mostly come from scaling errors caused by differences in height and leg-length proportions between the human and the robot, plus errors in the video pose estimation itself. They're not always obvious to the eye, but when a motion-tracking policy is trained in physics simulation, the robot simply can't reproduce these motions, which hurts balance learning and increases tracking error. The usual fix is to add constraints during retargeting — forcing foot height to match the ground closely on contact frames, damping horizontal foot velocity during contact, or filtering out problematic segments by threshold. Works such as GMR and PHUMA specifically handle these artifacts.",
+      "example": "PHUMA measures this with three metrics: a foot within 1cm of the ground on a contact frame counts as not floating, sinking less than 1cm counts as not penetrating, and horizontal velocity below 10cm/s counts as not skating.",
+      "related": ["Motion Retargeting", "GMR (General Motion Retargeting)", "PHUMA", "Motion Tracking", "Motion Capture (MoCap)", "Mesh Interpenetration (Clipping)"]
+    },
+    {
+      "key": "data-09#8",
+      "name_en": "Fourier ActionNet",
+      "aliases": ["ActionNet"],
+      "one_liner": "Fourier's open-source teleoperated dataset of about 30,000 humanoid-plus-dexterous-hand manipulation trajectories.",
+      "explanation": "Fourier ActionNet is a real-robot dataset open-sourced in 2025 by the humanoid robot company Fourier Intelligence. The data was collected by operators performing VR teleoperation while wearing an Apple Vision Pro headset, driving Fourier's GR1-T1, GR1-T2, and GR2 humanoid robots, fitted with either 6-DoF or 12-DoF dexterous hands. It totals over 30,000 trajectories and about 140 hours, mostly tabletop bimanual manipulation such as pick-and-place, pouring water, opening and closing cabinet doors, and precise placement. Each trajectory's language instruction was first auto-generated by Qwen2.5-VL-7B and then manually checked in full. The data uses the LeRobot dataset format and can be used directly to train methods like ACT, Diffusion Policy, and iDP3; the dataset itself is released under a non-commercial license, while the training code is Apache 2.0.",
+      "example": "One water-pouring trajectory: a GR2 robot picks up a container with its dexterous hand and pours water into a cup, while first-person camera footage, joint states, and a language instruction are all recorded together.",
+      "related": ["Fourier Intelligence", "Fourier GR-2", "VR Teleoperation", "Dexterous Hand", "LeRobot Dataset Format", "Real-Robot Data"]
+    },
+    {
+      "key": "data-09#9",
+      "name_en": "Galaxea Open-World Dataset",
+      "aliases": [],
+      "one_liner": "A roughly 500-hour dataset Galaxea collected at real-world locations using a single model of mobile bimanual robot.",
+      "explanation": "The Galaxea Open-World Dataset is a real-robot dataset the embodied-AI company Galaxea (星海图) open-sourced in August 2025 alongside its G0 model paper. All the data was collected using the company's own R1 Lite mobile bimanual robot (23 degrees of freedom) at 11 real-world locations — homes, restaurants, retail stores, and offices — totaling about 100,000 trajectories, 150 task categories, 50 scenes, more than 1,600 object types, and 58 manipulation skills, adding up to roughly 500 hours. Each trajectory is split into atomic subtasks, with annotators choosing wording from standardized descriptions, and every subtask is labeled in both Chinese and English. The data is in LeRobot format, includes 4 camera streams (head plus both wrists), joint states, and IMU data, and can be downloaded from Hugging Face and the ModelScope community. Its distinguishing feature is using a single robot embodiment in real environments; the paper found that pretraining on this single-embodiment data was critical to the G0 model's performance.",
+      "example": "In the “tidy up fruit” task, the R1 Lite arranges fruit in a real environment; the whole trajectory is split into several subtasks, each labeled with a description in both Chinese and English.",
+      "related": ["Galaxea", "Galaxea R1", "Galaxea G0", "Real-Robot Data", "Subtask Segmentation", "LeRobot Dataset Format"]
+    },
+    {
+      "key": "data-09#10",
+      "name_en": "GELLO",
+      "aliases": ["GELLO: A General, Low-Cost, and Intuitive Teleoperation Framework for Robot Manipulators", "GELLO Teleoperation Arm"],
+      "one_liner": "Berkeley's open-source low-cost leader-follower teleoperation device, using a scaled-down replica arm to control the real robot.",
+      "explanation": "GELLO is a teleoperation framework proposed in 2023 by Pieter Abbeel's group at UC Berkeley. The approach is to 3D-print a scaled-down replica arm with the same joint structure as the target robot arm, fitting each joint with an off-the-shelf servo that reads its angle; the operator moves the replica arm, and the real robot follows along joint angle by joint angle — a form of leader-follower teleoperation. Because the two arms share the same kinematics, joint angles map directly across, unlike a VR controller, which has to convert a hand's pose into a robot-arm pose. Parts cost under $300, and all the hardware and software designs are open-sourced. The paper builds versions for the Franka, UR5, and xArm arms; user studies show it collects demonstrations more stably and faster than a VR controller or a 3D mouse, and it also supports bimanual and contact-rich tasks. The community has since contributed designs for other arms, including the FR3 and YAM, and it's commonly used to collect imitation-learning data.",
+      "example": "An operator holds the GELLO replica arm on the desk and performs a pick-and-place motion; the real Franka arm follows along in sync, and the camera footage and joint angles are recorded as one training demonstration.",
+      "related": ["Leader-Follower Arm Teleoperation", "Teleoperation", "ALOHA", "Demonstration Data", "3D Mouse Teleoperation", "VR Teleoperation"]
+    },
+    {
+      "key": "data-09#11",
+      "name_en": "General Motion Retargeting",
+      "aliases": ["GMR", "Retargeting Matters: General Motion Retargeting for Humanoid Motion Tracking"],
+      "one_liner": "Stanford's open-source tool that retargets human motion onto many different humanoid robots in real time.",
+      "explanation": "GMR is a motion-retargeting method and codebase open-sourced in 2025 by Jiajun Wu and C. Karen Liu's group at Stanford (with Araújo, Yanjie Ze, and others). Motion retargeting converts human motion into robot joint angles, and the hard part is that humans and robots differ in body proportions and joint structure. GMR first specifies which body parts on the human correspond to which parts on the robot, aligns the two bodies' rest poses, scales each body part separately, and then solves joint angles with a two-stage inverse-kinematics optimization, which reduces foot skating, self-penetration, and sudden jumps in joint angle. Supported inputs include SMPL-X-format data such as AMASS, BVH files such as LAFAN1, OptiTrack FBX exports, live Xsens streams, and motion extracted from monocular video via GVHMR. The README lists support for 18 humanoid robots, running at 60–70 frames per second on an ordinary CPU. The paper shows it produces better results for training tracking policies than open-source alternatives like PHC and ProtoMotions, and it also serves as the retargeting module in the TWIST teleoperation system.",
+      "example": "A clip of a human running and jumping from the LAFAN1 motion-capture dataset is retargeted with GMR onto the Unitree G1 humanoid, and the result is used to train a motion-tracking policy in simulation to imitate it.",
+      "related": ["Motion Retargeting", "Foot Skating / Floating / Penetration", "TWIST", "LAFAN1", "AMASS", "Motion Tracking"]
+    }
+  ]
+}

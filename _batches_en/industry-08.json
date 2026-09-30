@@ -1,0 +1,113 @@
+{
+  "batch": "industry-08",
+  "terms": [
+    {
+      "key": "industry-08#0",
+      "name_en": "China Embodied AI Conference",
+      "aliases": ["CEAI"],
+      "one_liner": "China's domestic annual academic conference focused specifically on embodied AI.",
+      "explanation": "The China Embodied AI Conference (CEAI) is a domestic academic conference dedicated to embodied AI, reportedly organized by the Chinese Association for Artificial Intelligence and other bodies, held annually starting in 2024. It typically includes invited talks, themed forums, paper presentations, and robot demonstrations, covering embodied foundation models, robot manipulation and locomotion control, data collection, simulation, and evaluation. Its role is to bring together Chinese researchers and companies working on vision, machine learning, and robot control, letting newcomers use its talks and forum agendas to learn which domestic teams exist and what each is working on. It differs from international venues like ICRA or CoRL in emphasizing exchange over rigorous, formal paper publication.",
+      "example": "",
+      "related": ["World Robot Conference", "World Artificial Intelligence Conference", "CoRL", "ICRA", "Embodied AI"]
+    },
+    {
+      "key": "industry-08#1",
+      "name_en": "CMG World Robot Competition — Mecha Fighting Series",
+      "aliases": ["CMG Robot Combat Competition", "Mecha Fighting Arena"],
+      "one_liner": "A CCTV-organized humanoid-robot combat competition where Unitree G1 units are remotely operated to fight.",
+      "explanation": "CMG stands for China Media Group, the English name of China's central broadcaster. The Mecha Fighting Arena is one event within CMG's “World Robot Competition” series, held in Hangzhou in 2025 and broadcast on television; competitors used Unitree G1 humanoid robots, remotely controlling them to throw punches and kicks against each other. What the match mainly showcases is the robot's balance, impact resistance, and ability to autonomously get back up after falling — not autonomous decision-making, since every move is directed by a human controller. It brought humanoid robots into mainstream public view and turned “robot combat” into its own genre of paid performance and competition, later followed by leagues such as URKL. When watching this kind of event, it's important to separate what's teleoperated from what's autonomous.",
+      "example": "When a robot is knocked down in a match, it gets back up on its own using a fall-recovery policy — an ability trained with reinforcement learning in simulation.",
+      "related": ["Unitree G1", "Unitree", "Ultimate Robot Knock-out Legend (URKL)", "Teleoperation", "Fall Recovery", "Commercial Performance (Paid Appearance)"]
+    },
+    {
+      "key": "industry-08#2",
+      "name_en": "Consensus / Non-Consensus",
+      "aliases": [],
+      "one_liner": "A judgment most people already agree with is “consensus”; one only a few hold is “non-consensus.”",
+      "explanation": "This is common language in investing and startup circles. Consensus refers to a judgment most people in an industry already accept, such as “data is the bottleneck for embodied AI”; non-consensus refers to a judgment only a minority believes, not yet widely accepted. Investors often say that only a “non-consensus and correct” view can produce outsized returns, because consensus views are already reflected in prices and valuations. Many debates in embodied AI can be described with this pair of terms: humanoid versus non-humanoid, real-robot data versus simulation data, end-to-end versus layered architectures. A given judgment tends to shift from non-consensus to consensus as evidence accumulates, at which point anyone entering later generally can't capture the early-mover returns anymore. When reading financing news and interviews, this term is often used to explain why a founder chose a particular technical route.",
+      "example": "A few years ago, “control multiple types of robots with one large model” was non-consensus; after models such as π0 and GR00T were released, it gradually became industry consensus.",
+      "related": ["Technical Route Debate", "Embodiment Form Debate", "Real-Robot-Data Camp vs. Sim-Data Camp", "Embodied-AI Bubble", "Funding Rounds & Valuation (Angel / Series A… / Pre-IPO / Unicorn)"]
+    },
+    {
+      "key": "industry-08#3",
+      "name_en": "Consumer Electronics Show",
+      "aliases": ["CES"],
+      "one_liner": "The world's largest consumer-electronics trade show, held every January in Las Vegas.",
+      "explanation": "CES is organized by the US Consumer Technology Association (CTA), first held in 1967, and now takes place every January in Las Vegas, Nevada — a major venue where TV, phone, and automotive-electronics makers, among others, unveil new products. In recent years it has also become an important launch platform for physical AI and humanoid robots: at CES in January 2025, NVIDIA unveiled its Cosmos world foundation model platform, with CEO Jensen Huang saying robotics' “ChatGPT moment” was approaching; at CES in January 2026, Boston Dynamics unveiled the production version of its electric Atlas, LG showed off its home robot CLOiD, and several Chinese humanoid-robot companies demonstrated their products on the show floor. For tracking industry news, January's CES and March's NVIDIA GTC are the two months when announcements cluster most heavily.",
+      "example": "At CES in January 2026, Hyundai Motor Group and Boston Dynamics showed off the production version of Atlas and announced plans to deploy it in car factories.",
+      "related": ["NVIDIA GTC", "Cosmos", "Boston Dynamics Atlas (Electric)", "LG CLOiD", "Physical AI", "World Robot Conference"]
+    },
+    {
+      "key": "industry-08#4",
+      "name_en": "Cycle Time / Units Per Hour",
+      "aliases": ["UPH"],
+      "one_liner": "Cycle time is how many seconds one unit of work takes; UPH is how many units get done per hour.",
+      "explanation": "Cycle time is how long it takes a station on a production line to complete one operation, or for an entire line to output one finished unit; UPH (Units Per Hour) is the number of units produced per hour, roughly equal to 3,600 divided by the cycle time in seconds. Manufacturing also uses “takt time,” the target cycle time derived by working backward from customer demand. This pair of metrics is the most direct test a robot faces entering a factory: what the factory cares about isn't whether a robot can do the job at all, but whether it can do it reliably within the required cycle time. Many current humanoid robots and VLA policies move relatively slowly and don't reach 100% success, so their cycle time often lags a skilled worker's — a main reason they're still hard to substitute for humans on the line, and a real-world driver behind work on inference acceleration and action chunking.",
+      "example": "If a sorting station has a 6-second cycle time, UPH is 600; if a robot needs 12 seconds per item, it would take two robots to match one worker's output.",
+      "related": ["Return on Investment / Payback Period", "Mean Time Between Failures", "Factory Pilot Deployment", "Machines Replacing Humans", "Inference Latency", "Sorting"]
+    },
+    {
+      "key": "industry-08#5",
+      "name_en": "DARPA Robotics Challenge",
+      "aliases": ["DRC"],
+      "one_liner": "A 2012–2015 US DARPA competition for disaster-response humanoid robots.",
+      "explanation": "The DARPA Robotics Challenge was launched by the US Defense Advanced Research Projects Agency after the 2011 Fukushima nuclear accident, starting in 2012, requiring robots to complete eight tasks simulating a disaster site: driving and exiting a vehicle, opening a door, turning a valve, cutting a hole in a wall with a drill, and crossing rubble and climbing stairs, among others. DARPA funded Boston Dynamics to build several hydraulic Atlas units, which some teams were given to compete with. The final, held in June 2015 in Pomona, California, saw 25 teams compete for a $3.5 million prize; South Korea's KAIST won with DRC-HUBO, followed by IHMC in second place and Carnegie Mellon University's Tartan Rescue in third. The robots moved slowly and fell frequently during the finals, exposing that era's limits in perception, balance, and autonomy, and the event trained a generation of researchers who went on to shape later humanoid robotics.",
+      "example": "Footage of multiple robots falling while exiting vehicles or opening doors during the finals was widely circulated as compilation clips.",
+      "related": ["DARPA (Defense Advanced Research Projects Agency)", "Hydraulic Atlas", "IHMC (Institute for Human and Machine Cognition)", "Humanoid Robot", "Specialized Robot"]
+    },
+    {
+      "key": "industry-08#6",
+      "name_en": "Dirty, Dull, and Dangerous (3D) Jobs",
+      "aliases": ["3D Jobs"],
+      "one_liner": "Jobs that are dirty, tedious, or dangerous — often seen as where robots will be deployed first.",
+      "explanation": "The term traces back to Japan's “3K” (kitanai/dirty, kiken/dangerous, kitsui/grueling), and in English was first framed as dirty, dangerous, and demeaning (or demanding) — describing jobs that are hard to staff and often fall to migrant workers. The robotics industry commonly restates it as dirty, dull, and dangerous, folding in “tedious and repetitive” as well. It's frequently used to argue where robots should go first: these jobs are hard to hire for and have high turnover, replacing them with machines faces less social resistance, and customers are more willing to pay for safety and consistency. In news coverage, “replacing 3D jobs” generally refers to scenarios like foundry grinding and polishing, spray painting, heavy-load transport, chemical- and power-plant inspection, and hazardous-material handling.",
+      "example": "Substation inspection, nuclear-plant maintenance, and mining work are commonly listed as 3D scenarios well suited to robot replacement.",
+      "related": ["Machines Replacing Humans", "Labor Shortage", "Specialized Robot", "Inspection Robot", "Scenario Deployment"]
+    },
+    {
+      "key": "industry-08#7",
+      "name_en": "Embodied-AI Robot Insurance",
+      "aliases": ["Humanoid Robot Insurance"],
+      "one_liner": "Insurance designed for humanoid or embodied robots, covering damage to the robot and harm it causes others.",
+      "explanation": "Embodied-AI robot insurance refers to insurance products that insurers design specifically for humanoid robots, quadruped robots, and other embodied products. As reported, Chinese property insurers began offering such products starting in 2025, typically covering two things: property insurance for damage to or loss of the robot itself, and liability insurance for injuries or property damage the robot causes to others while working, performing, or being rented out. It addresses the question of who pays after something goes wrong: once robots start appearing in paid performances, showroom tours, factories, and homes, a single fall or loss of control could cause real damage, and it's often unclear whether the manufacturer, the operator, or the user bears responsibility. Insurance shifts this risk elsewhere, lowering the barrier to rental and deployment, and also pushes manufacturers to provide fault logs and safety data.",
+      "example": "",
+      "related": ["Robot Rental", "Commercial Performance (Paid Appearance)", "Embodied Safety", "Functional Safety", "Scaled Deployment"]
+    },
+    {
+      "key": "industry-08#8",
+      "name_en": "Engineering / Design / Production Validation Test",
+      "aliases": ["EVT / DVT / PVT"],
+      "one_liner": "The three hardware-validation gates from prototype to mass production: engineering, design, and production.",
+      "explanation": "EVT, DVT, and PVT are hardware development stages standard in the consumer-electronics industry, and robotics companies have adopted them too. EVT (engineering validation test) uses hand-built or small-batch prototypes to confirm that a function or performance target can actually be achieved; DVT (design validation test) runs reliability, environmental, drop, lifespan, and certification testing, and once it passes, the design is essentially frozen; PVT (production validation test) uses the actual production line and tooling to run a small trial batch, checking yield, cycle time, and consistency. Only after this does mass production (MP, also called SOP) begin. Any stage can send the design back for rework if problems turn up. When a humanoid-robot company says it has “entered DVT” or “completed PVT,” that's a more informative signal of how close it is to real mass production than a “launch” or “unveiling” announcement.",
+      "example": "A humanoid-robot company doing joint-lifespan testing during DVT discovers its reducer wears out too quickly, and has to switch to a different model before re-testing.",
+      "related": ["Mass Production", "Start of Production (SOP)", "Yield Rate / Manufacturing Consistency", "Sampling / Supplier Nomination (Design-In)", "BOM Cost", "Engineering (Productization)"]
+    },
+    {
+      "key": "industry-08#9",
+      "name_en": "First Listed Humanoid Robot Stock",
+      "aliases": ["“Humanoid Robot's First Stock”"],
+      "one_liner": "A media label for the first humanoid-robot company to list on a given stock market.",
+      "explanation": "“First stock” is a habitual label used by the media and securities analysts for the first company to list in a given sector — it's not an official designation. In Hong Kong, the “first humanoid-robot stock” usually refers to UBTECH, which listed on the Hong Kong Stock Exchange's Main Board (ticker 9880) in December 2023. On the A-share side, Unitree Robotics began listing guidance in July 2025 and listed on the Shanghai Stock Exchange's STAR Market (688836) in August 2026, an event media treated as a landmark for A-share humanoid-robot listings. Because sub-sector definitions vary, there are also labels like “first collaborative-robot stock” and “first robot-brain stock.” When you see this kind of title, it's worth going back to the company's actual revenue breakdown to check whether it truly sells humanoid robots, education products, or something else.",
+      "example": "At the time of its listing, UBTECH's humanoid-robot revenue share was small; most of its revenue came from education robots and consumer products.",
+      "related": ["UBTECH", "Unitree", "STAR Market", "HKEX Chapter 18C", "Pre-IPO Tutoring (Listing Guidance)", "Humanoid Robot Concept Stocks"]
+    },
+    {
+      "key": "industry-08#10",
+      "name_en": "Flexible Manufacturing",
+      "aliases": ["FMS", "Flexible Manufacturing System"],
+      "one_liner": "A production line's ability to switch quickly between products, suited to small batches of many varieties.",
+      "explanation": "Flexible manufacturing means a production line can switch quickly between different product models without major equipment changes, suiting it to small-batch, many-variety orders. Flexible manufacturing systems (FMS), which emerged in the 1960s–70s, achieved this with CNC machine tools, automated material handling, and computer scheduling. Traditional industrial robots rely on taught, fixed programs and dedicated fixtures at fixed stations, so switching products means reprogramming and re-tooling, which only pays off at large production volumes. One of embodied AI's core selling points is flexibility: the hope is that robots can adapt to new parts and new procedures using vision and learned policies, with little or no reprogramming, making it possible to enter fast-changing lines such as consumer-electronics assembly and automotive final assembly.",
+      "example": "A phone contract manufacturer switches between several models each year; if a robot could learn a new model's assembly motions from just a few demonstrations, changeover time could shrink dramatically.",
+      "related": ["Non-Standard (Custom) Automation", "Industrial Robot", "Teach-and-Playback", "Lights-Out Factory", "General-Purpose Robot", "Machines Replacing Humans"]
+    },
+    {
+      "key": "industry-08#11",
+      "name_en": "Framework Order / Letter-of-Intent Order",
+      "aliases": ["Framework Agreement", "Letter of Intent (LOI) Order"],
+      "one_liner": "An order laying out a partnership framework or purchase intent, not the same as actual delivery and revenue.",
+      "explanation": "A framework order is when buyer and seller first sign a framework agreement setting out price, specifications, the partnership period, and an expected total volume, with actual quantities and delivery timing determined by formal orders placed later in batches; a letter-of-intent order comes from a letter of intent (LOI), expressing a wish to buy, usually with little or no legal binding force. Humanoid-robot companies often announce, at launch events or fundraising rounds, that they've “won a framework order worth several hundred million RMB” or “thousands of units in intent orders” — these numbers show customers are interested, but don't mean the robots have actually been delivered, accepted, or booked as revenue. When reading this kind of news, it's worth distinguishing between the framework or intent amount, a formal purchase contract, actual units delivered, and revenue confirmed in financial statements — only the latter reflect real commercial progress.",
+      "example": "Suppose a company announces an RMB 100 million framework agreement, but the first formal purchase order covers only a few dozen units, with the rest contingent on how the trial goes.",
+      "related": ["Shipment Volume", "Mass Production", "Public Tender / Winning-Bid Orders (Centralized Procurement)", "Closed-Loop Business Model", "Pilot / Small-Batch Delivery", "Embodied-AI Bubble"]
+    }
+  ]
+}

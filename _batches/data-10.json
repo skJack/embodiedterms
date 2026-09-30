@@ -1,0 +1,194 @@
+{"category": "data", "batch": 10, "terms": [
+{
+ "name_zh": "Google Scanned Objects（GSO）",
+ "name_en": "Google Scanned Objects: A High-Quality Dataset of 3D Scanned Household Items",
+ "abbr": "GSO",
+ "aliases": ["Scanned Objects by Google Research", "谷歌扫描物体数据集"],
+ "tier": 3,
+ "one_liner": "谷歌开源的 1030 个真实家居物品高精度 3D 扫描模型库。",
+ "explanation": "GSO 是 Google Research 在 2022 年公开的 3D 物体资产库，共 1030 件真实家居用品（鞋子、玩具、餐具、包装盒等）。谷歌自建了扫描台，用结构光（向物体投射图案、再从相机图像反推形状）加单反拍摄高动态范围颜色，得到带真实纹理的网格模型。模型已预处理成 Gazebo 和 PyBullet 能直接加载的格式，托管在 Gazebo Fuel 上，采用 CC-BY 4.0 协议。它解决的是仿真里物体太少、太假的问题：做抓取、摆放或合成感知数据时，需要大量形状和外观都像真东西的物体，GSO 是常用的现成来源之一，常与 YCB、Objaverse 等资产库一起用。",
+ "example": "从 Gazebo Fuel 下载 GSO 里的鞋子和玩具模型，随机撒在 PyBullet 桌面场景里，批量生成抓取训练数据。",
+ "related": ["仿真资产", "YCB 物体集", "Objaverse 3D 资产库", "ShapeNet 3D 模型库", "合成数据", "Gazebo"],
+ "sources": [
+  {"title": "Google Scanned Objects: A High-Quality Dataset of 3D Scanned Household Items (arXiv)", "url": "https://arxiv.org/abs/2204.11918"},
+  {"title": "Scanned Objects by Google Research: A Dataset of 3D-Scanned Common Household Items (Google Research Blog)", "url": "https://research.google/blog/scanned-objects-by-google-research-a-dataset-of-3d-scanned-common-household-items/"}
+ ],
+ "as_of": "2022-06"
+},
+{
+ "name_zh": "GraspNet-1Billion 数据集",
+ "name_en": "GraspNet-1Billion",
+ "abbr": "",
+ "aliases": ["GraspNet", "GraspNet-1B"],
+ "tier": 3,
+ "one_liner": "上海交大发布的真实杂乱场景抓取数据集，含超 11 亿个抓取位姿标注。",
+ "explanation": "GraspNet-1Billion 是上海交通大学 MVIG 实验室（卢策吾组）发表在 CVPR 2020 的通用物体抓取基准，扩展版 2023 年刊于机器人期刊 IJRR。它包含 190 个杂乱摆放的真实场景、88 种物体，用 RealSense D435 和 Azure Kinect 两台 RGB-D 相机共拍了 97280 张图；每张图都标了物体 6D 位姿（三维位置加三维朝向）、实例掩码和稠密的 6 自由度抓取位姿，总数超过 11 亿个。此前的抓取数据多是单物体或仿真合成，这个数据集给出了真实杂乱桌面上的大规模标注，并配套开源了评测 API 和基线网络，让不同抓取检测算法能在同一标准下比较。同组后来的 AnyGrasp 也建立在这条工作线上。",
+ "example": "训练一个抓取检测网络：输入一帧深度点云，输出若干夹爪位姿和得分，再用 graspnetAPI 在测试场景上算平均精度。",
+ "related": ["抓取位姿检测", "AnyGrasp", "对跖抓取", "6D位姿估计", "无序抓取", "上海交通大学 MVIG 实验室（卢策吾组）"],
+ "sources": [
+  {"title": "GraspNet-1Billion 官网", "url": "https://graspnet.net/"}
+ ],
+ "as_of": "2023"
+},
+{
+ "name_zh": "HM3D 数据集",
+ "name_en": "Habitat-Matterport 3D Dataset",
+ "abbr": "HM3D",
+ "aliases": ["HM3D", "Habitat-Matterport 3D", "HM3D-Semantics", "HM3DSem"],
+ "tier": 3,
+ "one_liner": "Meta 与 Matterport 发布的 1000 栋真实建筑室内三维重建，用于导航训练。",
+ "explanation": "HM3D 是 Meta AI（FAIR）和房产扫描公司 Matterport 在 2021 年合作发布的室内场景数据集，包含 1000 个建筑级的带纹理三维网格，覆盖住宅、商店、公共建筑等，可通行面积合计 11.25 万平方米，是此前 Matterport3D、Gibson 的 1.4–3.7 倍，重建缺陷也更少。它主要配合 Habitat 仿真器使用：智能体在这些真实房屋的数字副本里练习点目标导航、物体目标导航等任务。论文显示在 HM3D 上训练的点目标导航智能体，拿到其他数据集上测试也表现最好。后续的 HM3D-Semantics v0.2 给其中 216 个空间补了 142646 个物体实例标注，v0.1 曾是 Habitat 2022 物体目标导航挑战赛的基础。数据仅限学术非商用。",
+ "example": "在 Habitat 里加载一栋 HM3D 房子，让机器人智能体从门口出发，只凭相机画面找到「沙发」所在的位置。",
+ "related": ["Habitat", "Matterport3D 数据集", "物体目标导航", "点目标导航", "导航", "ScanNet 数据集"],
+ "sources": [
+  {"title": "Habitat-Matterport 3D Dataset (HM3D): 1000 Large-scale 3D Environments for Embodied AI (arXiv)", "url": "https://arxiv.org/abs/2109.08238"},
+  {"title": "HM3D - AI Habitat", "url": "https://aihabitat.org/datasets/hm3d/"},
+  {"title": "HM3D-Semantics - AI Habitat", "url": "https://aihabitat.org/datasets/hm3d-semantics/"}
+ ],
+ "as_of": ""
+},
+{
+ "name_zh": "力反馈手套",
+ "name_en": "Haptic Glove (Force-Feedback Glove)",
+ "abbr": "",
+ "aliases": ["触觉反馈手套", "Force-Feedback Glove", "Haptic Feedback Glove"],
+ "tier": 3,
+ "one_liner": "既采集手部动作、又把受力「推回」操作员手指的遥操作手套。",
+ "explanation": "普通数据手套只负责采集，测手指弯曲和手的位置；力反馈手套多了一条反向通道，能把虚拟物体或远端机器人手受到的力传回操作员手上。常见做法是在手背和手指上装外骨骼式机构，用电机、制动器或气/液压执行器阻挡手指继续弯曲，让人感到物体的大小和软硬；有的还加振动或微流控触点模拟接触感，如 HaptX 手套用微流控织物里的上百个执行器压迫皮肤。早期产品有 Immersion 公司的 CyberGrasp。在具身智能里，它主要用于灵巧手遥操作：没有力反馈时操作员看不出捏得多紧，容易捏碎或滑落；有了反馈，采到的演示数据更自然。代价是设备贵、重，佩戴和标定麻烦。",
+ "example": "SenseGlove 推出面向人形机器人的外骨骼手套 R1，官网称其带主动力反馈和振动反馈，用于灵巧手遥操作和模仿学习数据采集。",
+ "related": ["数据手套", "触觉手套", "遥操作", "双边遥操作", "外骨骼遥操作", "灵巧手"],
+ "sources": [
+  {"title": "Wired glove - Wikipedia", "url": "https://en.wikipedia.org/wiki/Wired_glove"},
+  {"title": "HaptX 官网", "url": "https://haptx.com/"},
+  {"title": "SenseGlove 官网", "url": "https://www.senseglove.com/"}
+ ],
+ "as_of": "2026-09"
+},
+{
+ "name_zh": "异构数据",
+ "name_en": "Heterogeneous Data",
+ "abbr": "",
+ "aliases": ["多源异构数据"],
+ "tier": 3,
+ "one_liner": "来自不同机器人、传感器、采集方式，格式和含义都不统一的数据。",
+ "explanation": "机器人数据的「异构」体现在好几层：本体不同（单臂、双臂、人形，关节数和动作空间各不相同）、传感器不同（相机数量和视角、有无深度或触觉）、控制方式不同（关节角还是末端位姿、控制频率高低），来源也不同（真机遥操作、仿真、人类视频）。单个实验室的数据太少，想训练通用策略就得把这些数据混在一起用，但直接拼接会让模型分不清同一个数字在不同机器人上代表什么。常见做法是给每种本体配专属的输入编码和输出头、中间共享一个大主干，比如何恺明团队的 HPT 用这种结构汇集了 52 个数据集；也有工作把动作统一到一个公共空间，或按来源调数据配比。Open X-Embodiment 汇集了 22 种机器人的数据，是典型的异构数据集。",
+ "example": "HPT 把真机、多种仿真器、人类视频共 52 个数据集放进同一个预训练，每种本体用各自的「stem」把视觉和本体感知压成少量 token，再送入共享的 Transformer 主干。",
+ "related": ["跨本体数据", "跨本体", "异构预训练 Transformer", "统一动作空间", "本体专属头", "数据配比"],
+ "sources": [
+  {"title": "Scaling Proprioceptive-Visual Learning with Heterogeneous Pre-trained Transformers (arXiv)", "url": "https://arxiv.org/abs/2409.20537"},
+  {"title": "Open X-Embodiment: Robotic Learning Datasets and RT-X Models (arXiv)", "url": "https://arxiv.org/abs/2310.08864"}
+ ],
+ "as_of": ""
+},
+{
+ "name_zh": "事后重标注",
+ "name_en": "Hindsight Relabeling",
+ "abbr": "",
+ "aliases": ["后见之明重标注", "事后目标重标注", "Hindsight Goal Relabeling"],
+ "tier": 3,
+ "one_liner": "数据采完后，按轨迹实际做成了什么，重新给它贴目标或指令标签。",
+ "explanation": "事后重标注的思路是：一条轨迹没完成原定目标，但它总归到达了某个状态，那就把这个实际结果当成目标重新标一遍，失败样本就变成了「完成了另一个目标」的成功样本。这一做法因 OpenAI 2017 年的后见之明经验回放（HER）而流行，用来解决稀疏奖励（只有成功才给奖励）下几乎学不到东西的问题，在推、滑、抓放等机械臂任务上验证过。后来被推广到模仿学习和语言条件策略：先大量采集没有任务标签的操作数据，事后再根据画面给它配上图像目标或语言指令。谷歌的 DIAL 就用 CLIP 这类视觉语言模型给 8 万条演示自动补语言指令，其中 96.5% 原本没有人工标注。它的前提是策略以目标或指令为条件，否则重标注无从谈起。",
+ "example": "机械臂本想把方块推到 A 点却推到了 B 点；重标注后，这条轨迹被存成「目标 = B 点」的成功示范，再拿去训练目标条件策略。",
+ "related": ["后见之明经验回放", "目标条件强化学习", "稀疏奖励", "语言标注", "自动标注", "指令增强"],
+ "sources": [
+  {"title": "Hindsight Experience Replay (arXiv)", "url": "https://arxiv.org/abs/1707.01495"},
+  {"title": "Robotic Skill Acquisition via Instruction Augmentation with Vision-Language Models (DIAL, arXiv)", "url": "https://arxiv.org/abs/2211.11736"}
+ ],
+ "as_of": ""
+},
+{
+ "name_zh": "HOI4D 数据集",
+ "name_en": "HOI4D: A 4D Egocentric Dataset for Category-Level Human-Object Interaction",
+ "abbr": "",
+ "aliases": ["HOI4D"],
+ "tier": 3,
+ "one_liner": "清华等发布的第一人称 4D 手物交互数据集，含 240 万帧 RGB-D。",
+ "explanation": "HOI4D 由清华大学、北京大学和上海期智研究院合作发布，发表在 CVPR 2022。采集者头戴装有 Kinect v2 和 RealSense D455 两台 RGB-D 相机的头盔，从第一人称视角记录自己操作物体的过程，共 4000 段序列、240 万帧，涉及 16 类共 800 个物体实例（7 类刚体、9 类带活动部件的铰接物体，如笔记本电脑、柜子、剪刀），场景覆盖 610 个室内房间。逐帧标注包括全景分割、运动分割、3D 手部姿态、类别级物体位姿（只知道类别、没见过具体实例时估计位姿）和动作标签，还提供物体网格和场景点云。它的用处是让模型从人类视角学习「手怎么和一类物体打交道」，可用于手物交互理解、位姿跟踪，也可作为机器人从人类数据学操作的素材。",
+ "example": "用 HOI4D 里「打开笔记本电脑」的序列训练类别级位姿跟踪，让模型对没见过的笔记本电脑也能在手部遮挡下持续估计它的位姿。",
+ "related": ["手物交互", "第一人称视频", "类别级位姿估计", "手部姿态估计", "铰接物体", "HOT3D 数据集"],
+ "sources": [
+  {"title": "HOI4D: A 4D Egocentric Dataset for Category-Level Human-Object Interaction (arXiv)", "url": "https://arxiv.org/abs/2203.01577"},
+  {"title": "HOI4D 项目主页", "url": "https://hoi4d.github.io/"}
+ ],
+ "as_of": ""
+},
+{
+ "name_zh": "HOT3D 数据集",
+ "name_en": "HOT3D: Hand and Object Tracking in 3D from Egocentric Multi-View Videos",
+ "abbr": "",
+ "aliases": ["HOT3D"],
+ "tier": 3,
+ "one_liner": "Meta 用 Aria 眼镜和 Quest 3 录制、带动捕真值的第一人称手物交互数据集。",
+ "explanation": "HOT3D 是 Meta 发布的第一人称手物交互数据集，论文收录于 CVPR 2025。19 名参与者在厨房、办公室、客厅等布景中操作 33 件刚性物体，用 Project Aria 研究眼镜和 Quest 3 头显两种设备录制，共 833 分钟以上、370 万张图。数据包括多视角 RGB 与单色图像、眼动注视、场景点云，以及相机、双手和物体的 3D 位姿；位姿真值来自贴光学标记点的动作捕捉系统，比靠算法估出来的准。手部标注同时给出 UmeTrack 和 MANO（常用参数化手模型）两种格式，物体附带带 PBR 材质的 3D 网格。它主要服务于手部与物体的 3D 跟踪、位姿估计研究，也被当作从人类第一人称视频学习灵巧操作的数据来源。使用需同意 HOT3D 许可协议。",
+ "example": "",
+ "related": ["手物交互", "第一人称视频", "Project Aria 眼镜", "MANO 手部模型", "光学动捕", "手部姿态估计"],
+ "sources": [
+  {"title": "HOT3D: Hand and Object Tracking in 3D from Egocentric Multi-View Videos (arXiv)", "url": "https://arxiv.org/abs/2411.19167"},
+  {"title": "HOT3D 项目主页", "url": "https://facebookresearch.github.io/hot3d/"}
+ ],
+ "as_of": "2025-06"
+},
+{
+ "name_zh": "HumanML3D 数据集",
+ "name_en": "HumanML3D (Text-annotated 3D Human Motion Dataset)",
+ "abbr": "",
+ "aliases": ["HumanML3D"],
+ "tier": 3,
+ "one_liner": "给 1.4 万段 3D 人体动作配上 4.5 万句文字描述的文本-动作数据集。",
+ "explanation": "HumanML3D 出自 Guo 等人 CVPR 2022 论文 Generating Diverse and Natural 3D Human Motions From Text。作者从 AMASS 和 HumanAct12 两个人体动捕数据集里取出 14616 段动作，每段请人写 3–4 句英文描述，共 44970 句、约 28.59 小时，内容从日常动作到运动、舞蹈都有；动作统一为 20 帧每秒、22 个关节的骨架，并通过左右镜像把数据量翻倍。它是文本生成人体动作（输入一句话、输出一段 3D 动作）最常用的训练和评测基准，MDM 等动作扩散模型都在上面报告结果。对人形机器人来说，先用文本生成人体动作、再重定向到机器人上，是让机器人按指令做动作的一条路线。",
+ "example": "输入「a person walks forward and then sits down」，在 HumanML3D 上训练的模型生成一段先走后坐的 3D 骨架动作，再重定向给人形机器人跟踪执行。",
+ "related": ["文本驱动动作生成", "AMASS 人体动捕数据集", "MDM（人体动作扩散模型）", "动作重定向", "SMPL 人体模型", "运动跟踪"],
+ "sources": [
+  {"title": "HumanML3D GitHub", "url": "https://github.com/EricGuo5513/HumanML3D"}
+ ],
+ "as_of": ""
+},
+{
+ "name_zh": "Humanoid Everyday 数据集",
+ "name_en": "Humanoid Everyday: A Comprehensive Robotic Dataset for Open-World Humanoid Manipulation",
+ "abbr": "",
+ "aliases": ["Humanoid Everyday"],
+ "tier": 3,
+ "one_liner": "南加大与丰田研究院发布的人形机器人真机操作数据集，覆盖 260 个任务。",
+ "explanation": "Humanoid Everyday 由南加州大学和丰田研究院在 2025 年 10 月发布。现有机器人数据集大多来自固定机械臂，人形机器人的数据少且任务单一，这个数据集就是为补这块空缺。数据用宇树 G1（29 自由度，配 Dex3-1 三指灵巧手）和 H1（27 自由度，配因时灵巧手）采集，操作员戴 Apple Vision Pro 遥操作，共 1.03 万条轨迹、300 多万帧、260 个任务，分为基础操作、柔性物体、铰接物体、工具使用、高精度操作、人机交互、移动操作 7 大类。每条数据以 30 Hz 同步记录 RGB、深度、激光雷达、触觉、IMU 和语言描述。作者还搭了云端评测平台，研究者提交策略即可在其受控真机环境里跑测试拿结果。数据以 CC BY 4.0 协议公开。",
+ "example": "",
+ "related": ["人形机器人", "宇树 G1", "宇树 H1", "VR 遥操作", "Apple Vision Pro", "真机评测"],
+ "sources": [
+  {"title": "Humanoid Everyday: A Comprehensive Robotic Dataset for Open-World Humanoid Manipulation (arXiv)", "url": "https://arxiv.org/abs/2510.08807"},
+  {"title": "Humanoid Everyday 项目主页", "url": "https://humanoideveryday.github.io/"}
+ ],
+ "as_of": "2025-10"
+},
+{
+ "name_zh": "Humanoid-X 数据集",
+ "name_en": "Humanoid-X (Learning from Massive Human Videos for Universal Humanoid Pose Control, UH-1)",
+ "abbr": "",
+ "aliases": ["Humanoid-X", "UH-1 数据集"],
+ "tier": 3,
+ "one_liner": "从海量网络人类视频提取、配文字描述的人形机器人动作数据集。",
+ "explanation": "Humanoid-X 是南加州大学、加州大学伯克利分校和丰田研究院在论文 Learning from Massive Human Videos for Universal Humanoid Pose Control 中构建的数据集，2024 年 12 月公开，论文为 Humanoids 2025 口头报告。流程是：从互联网挖掘人类动作视频，自动生成文字描述，估计视频里人的 3D 姿态，再重定向成人形机器人的关节目标，并训练控制策略把它变成机器人能实际执行的动作。最终得到 16.38 万组样本、超过 2000 万个人形机器人姿态，每组都有视频、文本、人体姿态、机器人关键点和动作。基于它训练的 UH-1 模型输入一句文字指令，输出人形机器人的动作。它的意义在于绕开昂贵的遥操作和动捕，直接用网上现成的人类视频扩充人形动作数据。",
+ "example": "给 UH-1 输入「挥手打招呼」，模型输出一串人形机器人关节动作，在仿真或真机上执行挥手。",
+ "related": ["人类视频数据", "互联网视频数据", "动作重定向", "文本驱动动作生成", "人形机器人", "UH-1 / Humanoid-X"],
+ "sources": [
+  {"title": "Learning from Massive Human Videos for Universal Humanoid Pose Control (arXiv)", "url": "https://arxiv.org/abs/2412.14172"},
+  {"title": "UH-1 项目主页（PSI Lab）", "url": "https://psi-lab.ai/UH-1/"}
+ ],
+ "as_of": "2025-10"
+},
+{
+ "name_zh": "惯性动捕",
+ "name_en": "Inertial Motion Capture",
+ "abbr": "",
+ "aliases": ["惯性动作捕捉", "IMU 动捕", "动捕服"],
+ "tier": 3,
+ "one_liner": "在身上绑一组 IMU 测各部位转动，算出全身姿态的动作捕捉方式。",
+ "explanation": "惯性动捕把十几个惯性测量单元（IMU，内含陀螺仪、加速度计和磁力计）固定在身体各段，测出每段的朝向和加速度，再由软件拼到人体骨架上还原全身姿态。Xsens 的方案用 17 个无线传感器，国内诺亦腾也做这类产品。和靠多台相机拍反光标记点的光学动捕相比，它不需要布置摄像机，不怕遮挡，可以在户外、工厂等任意场地使用，价格也更低；缺点是只能直接算出相对姿态，全局位置会随时间漂移，精度不如光学动捕。在具身智能里，它常用于人形机器人全身遥操作和人体动作数据采集：采到的人体动作经动作重定向（把人的关节角换算到机器人关节上）后，给机器人实时跟随或拿去训练策略。",
+ "example": "操作员穿 Xsens 动捕服，把全身动作实时流进 ROS 或 MuJoCo，重定向后驱动人形机器人同步做出相同动作。",
+ "related": ["动作捕捉", "光学动捕", "惯性测量单元", "动作重定向", "全身遥操作", "Xsens"],
+ "sources": [
+  {"title": "Motion capture - Wikipedia", "url": "https://en.wikipedia.org/wiki/Motion_capture"},
+  {"title": "Xsens Motion Capture", "url": "https://www.xsens.com/products/motion-capture"}
+ ],
+ "as_of": ""
+}
+]}

@@ -1,0 +1,95 @@
+{
+  "batch": "data-15",
+  "terms": [
+    {
+      "key": "data-15#0",
+      "name_en": "UMI on Legs",
+      "aliases": ["UMI on Legs: Making Manipulation Policies Mobile with Manipulation-Centric Whole-body Controllers"],
+      "one_liner": "Training a manipulation policy on handheld-gripper human demonstrations, then deploying it on a quadruped fitted with a robot arm.",
+      "explanation": "UMI on Legs is a CoRL 2024 paper from July 2024 by Shuran Song's group at Stanford and Columbia University (Huy Ha, Yihuai Gao, and others). The hardware is a Unitree Go2 quadruped carrying a 6-axis ARX5 robot arm on its back. The approach splits into two halves: the manipulation skill is trained on demonstrations collected in the real world with a UMI handheld gripper (a gripper fitted with a GoPro, which needs no robot to collect data), producing a diffusion policy; coordinating the legs and arm is handled by a whole-body controller (a low-level controller driving both legs and arm together) trained with reinforcement learning in simulation. Only the “end-effector trajectory in task coordinates” is passed between the two halves, so a policy trained for a fixed-base robot arm can be mounted directly onto the quadruped and used as-is. The paper reports over 70% success across three task categories: throwing a ball, pushing a kettlebell, and arranging cups.",
+      "example": "For the quadruped to throw a ball into a bucket: the upper-level policy, trained on UMI data, outputs the gripper's target trajectory, while the whole-body controller adjusts the legs' posture, keeps balance, and carries out the throwing motion.",
+      "related": ["Universal Manipulation Interface (UMI)", "Handheld Gripper Data Collection", "Whole-Body Control", "Diffusion Policy", "Mobile Manipulation", "Quadruped Robot"]
+    },
+    {
+      "key": "data-15#1",
+      "name_en": "UniHand",
+      "aliases": ["UniHand-1.0", "UniHand_Preview"],
+      "one_liner": "BeingBeyond's dataset that unifies many kinds of human hand video into hand-motion annotations, for pretraining dexterous-hand VLA models.",
+      "explanation": "UniHand was released in July 2025 by BeingBeyond (智在无界), together with Peking University and Renmin University of China, alongside the Being-H0 model. It unifies human hand data from 11 sources: motion-capture data (such as ARCTIC, HOI4D, and DexYCB), VR-recorded data (such as EgoDex), and RGB-only video (with hand pose estimated using the HaMeR model) — all converted into MANO parameters (a parametric hand model that represents hand shape and pose with a few dozen numbers), totaling over 1,100 hours of video and more than 150 million instruction samples. It addresses the scarcity of real dexterous-hand robot data: a model first learns “how a hand should move” from human hands, then transfers that to a robot. The January 2026 Being-H0.5 expanded it into UniHand-2.0; UniHand_Preview on Hugging Face is a subset of this pretraining data, packaged in WebDataset format.",
+      "example": "After pretraining on UniHand, Being-H0 can be given an image and the instruction “unplug the AirPods charging cable” and generate a sequence of hand motions for the next few seconds for both hands.",
+      "related": ["BeingBeyond Being-H0", "MANO Hand Model", "Human Video Data", "Human Video Pretraining", "Dexterous Manipulation", "EgoDex"]
+    },
+    {
+      "key": "data-15#2",
+      "name_en": "Unitree xr_teleoperate",
+      "aliases": ["avp_teleoperate"],
+      "one_liner": "Unitree's open-source XR headset teleoperation program, used to control its humanoid robots and record training data.",
+      "explanation": "This is Unitree Robotics's open-source teleoperation codebase on GitHub, adapted from Open-TeleVision. The operator wears an Apple Vision Pro, PICO 4 Ultra Enterprise, or Meta Quest 3; the headset captures head and hand pose through a browser page (the Vuer interface, streaming video over WebRTC), and the program then uses inverse kinematics (computing joint angles from a target hand position) to drive the arms of humanoid robots such as the G1 and H1, mapping finger motion onto dexterous hands or grippers like the Dex3-1 or BrainCo, while streaming the robot's head-camera view back to the headset. It's mainly used to collect imitation-learning data, recording timestamped joint states, end-effector poses, and images for every episode. According to the repository, version 1.6 from July 2026 added support for the H2, R1, and BrainCo dexterous hands.",
+      "example": "A researcher wears an Apple Vision Pro to remotely control a Unitree G1 folding a towel, recording several dozen demonstrations along the way, then uses them to train ACT or a diffusion policy.",
+      "related": ["Teleoperation", "VR Teleoperation", "Open-TeleVision", "Unitree G1", "Motion Retargeting", "Vuer"]
+    },
+    {
+      "key": "data-15#3",
+      "name_en": "Valid (Usable) Data",
+      "aliases": ["Valid Data Rate", "Data Pass Rate"],
+      "one_liner": "The portion of raw collected data that passes quality control and can actually be used to train a model.",
+      "explanation": "This is a common term in the embodied-AI data-collection industry, without a single standardized definition. Some fraction of raw recorded data is always unusable: the task failed, the arm touched a prop it shouldn't have, the multiple sensor streams weren't time-synchronized, calibration was off, or there was occlusion or dropped frames. What remains after quality control filters these out is called valid (usable) data, and the fraction of raw data it represents is called the valid data rate (also called the pass rate). The head of the Beijing Humanoid Robot Innovation Center's data facility told media in April 2026 that the facility's pass rate had once been only about 50%, but stabilized above 95% after operator training and improvements to quality-control standards. The industry is also increasingly wary of judging data purely by hour count: frame rate and calibration have to meet a bar, scenes/objects/tasks need enough diversity, and ultimately the data has to pass client acceptance and prove itself in actual model performance.",
+      "example": "A data collection worker records 100 demonstrations of “put the cup in the cabinet”; 8 have the cup fall, and 5 have the wrist camera drop frames. After quality control removes these, 87 remain as valid data — a valid data rate of 87%.",
+      "related": ["Data Quality Control", "Data Collection Worker", "Data Collection SOP", "Data Cleaning", "Data Filtering (Data Curation)", "Embodied-AI Training Facility"]
+    },
+    {
+      "key": "data-15#4",
+      "name_en": "Wearable Data Collection",
+      "aliases": [],
+      "one_liner": "Having a person wear cameras, gloves, and similar devices while doing their normal job, recording their motion as robot training data.",
+      "explanation": "Wearable data collection is one of the main forms of embodiment-free data collection (collecting data without needing an actual robot). A collector wears a head- or chest-mounted camera and a wrist-mounted camera, often paired with a data glove, an IMU (inertial measurement unit, measuring acceleration and angular velocity), or tactile sensors, and does their normal job in real settings like factories, supermarkets, or homes, while the devices synchronously record first-person video, depth, and hand and body pose. Compared with teleoperation, it doesn't require moving a robot to the site, is cheaper, produces more natural motion, and scales up easily; the tradeoff is that a human hand's structure differs from a robot hand's, so the motion needs retargeting or additional modeling before a robot can use it. Compared with a handheld gripper like UMI, it captures richer hand motion, but the correspondence to a robot's end effector is weaker. The engineering challenges are multi-sensor time synchronization, calibration, recovering from occlusion, and unifying coordinate frames.",
+      "example": "TARS Robotics has collectors wear its own capture kit while working in factories, supermarkets, hotels, and other settings, recording over 1,000 hours of human manipulation data, organized into the WIYH dataset.",
+      "related": ["Embodiment-Free Data Collection", "Handheld Gripper Data Collection", "First-Person Video (Egocentric Video)", "Data Glove", "Motion Retargeting", "Human Video Data"]
+    },
+    {
+      "key": "data-15#5",
+      "name_en": "WebDataset",
+      "aliases": ["wds"],
+      "one_liner": "A format that packages training samples into same-named files inside a series of tar shards, for fast large-scale sequential reads.",
+      "explanation": "WebDataset is an open-source deep-learning data format and Python library of the same name, developed by Thomas Breuel; the official PyTorch blog has featured it, and it pairs naturally with NVIDIA's AIStore storage service. It doesn't invent a new file format — it uses standard tar archives directly: the multiple files belonging to one sample (say, 000042.jpg and 000042.json) share the same base name minus extension and sit next to each other, and the whole dataset is split into consecutively numbered shards. During training, shards are read in order with no need to decompress the whole archive, and can be streamed directly from local disk, a web server, or cloud storage, which suits huge numbers of small files and multi-GPU training while avoiding the filesystem overhead of random access. It implements PyTorch's IterableDataset interface, so it plugs straight into a DataLoader. In embodied AI, it's commonly used to package large-scale video and image data — for instance, BeingBeyond's UniHand_Preview, released on Hugging Face, uses this format.",
+      "example": "One million first-person videos are split into 1,000 tar shards, each containing pairs like number.mp4 plus number.json; during training, multiple machines each read a different subset of shards in parallel.",
+      "related": ["Parquet", "HDF5", "Zarr", "TFRecord", "LeRobot Dataset Format", "RLDS Format"]
+    },
+    {
+      "key": "data-15#6",
+      "name_en": "World In Your Hands (WIYH)",
+      "aliases": [],
+      "one_liner": "TARS Robotics's open-source dataset of over a thousand hours of real-world human manipulation, with vision, language, touch, and action.",
+      "explanation": "World In Your Hands (WIYH) was released by TARS Robotics (它石智航) in October 2025, formally open-sourced on December 26, with the paper posted to arXiv in December 2025. Its focus is “human-centered”: rather than using a robot to collect data, people wear the company's own capture kit (called the Oracle Suite in the paper; the commercial version is called SenseHub) while working in real settings like factories, supermarkets, hotels, and restaurants, paired with an automatic annotation pipeline that produces millimeter-accurate ground-truth motion. The total is over 1,000 hours, covering hundreds of skills. The data includes multi-view images, camera calibration parameters, depth maps, 3D hand pose, 6D wrist trajectories, and task annotations; the company describes it as the first large-scale real-world vision-language-tactile-action (VLTA) dataset. The paper reports that adding WIYH's human data to training raised robot manipulation success in cluttered scenes from 8% to 60%.",
+      "example": "TARS trained its own AWE model on WIYH data, and demonstrated a robot capable of embroidery at its technology debut event.",
+      "related": ["Wearable Data Collection", "Embodiment-Free Data Collection", "Human Video Data", "Tactile Data", "TARS Robotics", "Multimodal Data"]
+    },
+    {
+      "key": "data-15#7",
+      "name_en": "Xperience-10M",
+      "aliases": ["Ropedia Xperience-10M"],
+      "one_liner": "Ropedia's open dataset of 10,000 hours of first-person, multimodal human experience, aimed at embodied AI.",
+      "explanation": "Xperience-10M is an open dataset from the physical-AI data company Ropedia, published on Hugging Face according to the company's blog in March 2026. The data was recorded by people wearing a multi-camera capture device in real daily life; the “10M” in the name refers to 10 million “experiences” (one complete interaction), totaling 10,000 hours. Every experience synchronously records 6 video streams (4 fisheye, 2 stereo), audio, stereo depth, camera pose and SLAM trajectory, hand motion capture, full-body motion capture, and IMU data, along with multi-level language annotations for task, subtask, action, interaction, and object — about 2.88 billion RGB frames in total, roughly 1PB of data, which the company describes as the largest first-person dataset with structured 3D/4D annotation. It can be used for pretraining world models, robot learning, and first-person perception. It's restricted to research and non-commercial use, requiring an application, review, and signed agreement to download; a separate enterprise version exists for commercial use.",
+      "example": "A researcher pretrains a hand-motion prediction model on the dataset's hand motion-capture and first-person video, then fine-tunes it on a small amount of robot data.",
+      "related": ["First-Person Video (Egocentric Video)", "Human Video Data", "Wearable Data Collection", "Ego4D", "World Model", "Motion Capture (MoCap)"]
+    },
+    {
+      "key": "data-15#8",
+      "name_en": "XRoboToolkit",
+      "aliases": ["XRoboToolkit: A Cross-Platform Framework for Robot Teleoperation"],
+      "one_liner": "PICO's open-source cross-platform XR teleoperation framework, controlling many kinds of robots with a headset and controllers to collect data.",
+      "explanation": "XRoboToolkit was developed by a team at PICO, the XR company owned by ByteDance (Zhigen Zhao, Liuchuan Yu, Ke Jing, and Ning Yang), with the paper posted to arXiv in July 2025, and won the Best Paper award at SII 2026. It targets the large amount of demonstration data VLA models need: on the headset side, it follows the OpenXR standard (a cross-vendor interface specification for XR devices), supporting head, controller, and hand tracking plus additional motion trackers (such as one strapped to the elbow to control elbow position); on the robot side, it provides Python and C++ interfaces, uses optimization-based inverse kinematics to convert the operator's hand pose into joint commands, and streams the robot's stereo camera view back to the headset with low latency. The framework is modular and has already been integrated with MuJoCo simulation, dual UR5 arms, mobile robots, and dexterous hands. The paper used data collected with it to train a VLA, validating its effectiveness on fine manipulation tasks.",
+      "example": "An operator wears a PICO 4 Ultra headset and uses two controllers to simultaneously control dual UR5 arms performing a precise connector-insertion task, seeing stereo video streamed back from the robot's cameras inside the headset.",
+      "related": ["Teleoperation", "VR Teleoperation", "Unitree xr_teleoperate", "Meta Quest 3 / PICO 4 Ultra", "Inverse Kinematics", "Demonstration Data"]
+    },
+    {
+      "key": "data-15#9",
+      "name_en": "Zarr",
+      "aliases": [".zarr.zip"],
+      "one_liner": "An open-source format for storing large multidimensional arrays in compressed chunks; Diffusion Policy and UMI use it for training data.",
+      "explanation": "Zarr is an open-source, chunked, compressed N-dimensional array storage format, community-maintained with financial support from NumFOCUS, with both v2 and v3 specifications; implementations exist in about ten languages including Python, Rust, C++, and JavaScript, and it was first popular in scientific data fields like climate science and bioimaging. It splits a large array into many small chunks, compressing each one separately, so reading one section only needs to decompress the relevant chunks; the data can live in a local directory, a zip file, or cloud object storage, and supports parallel reads and writes. Conceptually it can be thought of as a “nested dictionary of NumPy arrays,” playing a role close to HDF5, but with a more flexible choice of storage backend, chunking, and compression. In robot learning, the Diffusion Policy codebase uses Zarr to store training data, and UMI follows this same approach, packaging one collection session into a single dataset.zarr.zip file for fast random access during training.",
+      "example": "UMI's example dataset.zarr.zip contains arrays such as camera0_rgb (images sized 2315×224×224×3), robot0_eef_pos (end-effector position), and robot0_gripper_width (gripper opening width), plus an episode_ends array recording which frame each demonstration ends on.",
+      "related": ["HDF5", "WebDataset", "Parquet", "LeRobot Dataset Format", "Diffusion Policy", "Universal Manipulation Interface (UMI)"]
+    }
+  ]
+}

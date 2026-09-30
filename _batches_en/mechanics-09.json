@@ -1,0 +1,113 @@
+{
+  "batch": "mechanics-09",
+  "terms": [
+    {
+      "key": "mechanics-09#0",
+      "name_en": "Adjoint Representation",
+      "aliases": ["Ad", "Adjoint Map", "Adjoint Transformation"],
+      "one_liner": "The 6×6 matrix that transforms a twist or a wrench from one coordinate frame into another.",
+      "explanation": "The adjoint representation is a basic tool in screw theory, and Lynch and Park's textbook Modern Robotics builds it into the core of its chapter on rigid-body motion. Given a pose T = (R, p) (R is the rotation matrix, p is the translation vector), the adjoint representation [Ad_T] is a 6×6 matrix: the upper-left and lower-right blocks are both R, the lower-left block is [p]R (where [p] is the skew-symmetric matrix of p), and the upper-right block is zero. Its job is to change coordinate frames: the same twist (angular velocity plus linear velocity), expressed in two frames {a} and {b}, satisfies V_a = [Ad_Tab]·V_b; a wrench (torque plus force) transforms using its transpose instead. It shows up constantly in the product of exponentials formula, in deriving Jacobians, and in recursive dynamics algorithms.",
+      "example": "A wrist-mounted six-axis force-torque sensor reads a wrench F_s expressed in the sensor's own frame; to get the force in the tool center point frame instead, convert it in one step with F_tcp = [Ad_T]ᵀ·F_s, where T is the pose of the TCP frame relative to the sensor frame.",
+      "related": ["Screw Theory", "Twist", "Wrench", "Homogeneous Transformation Matrix", "Lie Group", "Product of Exponentials Formula"]
+    },
+    {
+      "key": "mechanics-09#1",
+      "name_en": "Swivel Angle",
+      "aliases": ["Arm Angle", "Elbow Swivel Angle", "Arm Plane Angle"],
+      "one_liner": "For a 7-DoF arm holding a fixed hand pose, the angle the elbow can still rotate through around the shoulder-wrist line.",
+      "explanation": "The swivel angle is a scalar parameter describing the redundancy of a 7-DoF arm. Kreutz-Delgado and colleagues parameterized this redundancy in a 1992 IJRR paper using the angle between the 'arm plane' — defined by the shoulder, elbow, and wrist — and a reference plane. Reaching a given end-effector pose only requires 6 degrees of freedom, so the extra one shows up as self-motion: with the hand held fixed, the elbow can still trace out a circle around the shoulder-wrist line, a joint motion that leaves the end effector unmoved. Fixing the swivel angle turns inverse kinematics into a problem with a unique closed-form solution; building on this, Shimizu and colleagues gave an analytical 7-DoF inverse-kinematics solution that accounts for joint limits in 2008. The human arm has the same redundancy, and exoskeleton and teleoperation research commonly calls this the swivel angle.",
+      "example": "When teleoperating a 7-DoF arm, motion capture first measures the human operator's own swivel angle, which is then fed into the arm's inverse kinematics together with the target hand pose, so the robot's elbow matches the human's posture; this has been demonstrated on a teleoperated KUKA LWR4+ using the human arm's swivel angle.",
+      "related": ["7-DoF Robot Arm", "Kinematic Redundancy", "Null Space", "Analytical Inverse Kinematics", "Inverse Kinematics", "Motion Retargeting"]
+    },
+    {
+      "key": "mechanics-09#2",
+      "name_en": "Articulated Body Algorithm",
+      "aliases": ["ABA", "Featherstone's Algorithm", "Featherstone Algorithm"],
+      "one_liner": "An O(n) recursive algorithm that computes joint accelerations from joint torques — the classic solution to forward dynamics.",
+      "explanation": "The Articulated Body Algorithm (ABA) was introduced by Roy Featherstone in a 1983 IJRR paper, and is also known simply as Featherstone's algorithm. It solves the forward dynamics problem: given the joint angles, joint velocities, and joint torques, find the joint accelerations. ABA introduces the idea of 'articulated-body inertia' — the effective inertia that a link, together with every link outboard of it, exhibits as a single jointed unit. The algorithm sweeps the kinematic chain three times: outward from the root to compute velocities, inward to accumulate articulated-body inertias, and outward again to compute accelerations, so the total cost grows only linearly with the number of joints n. Rigid-body dynamics libraries such as Pinocchio all implement it.",
+      "example": "Simulating each timestep of a 7-axis robot arm: given the current joint angles, velocities, and motor torques, call ABA (for example, Pinocchio's aba function) to get the joint accelerations, then numerically integrate to obtain the state at the next timestep.",
+      "related": ["Forward Dynamics", "Composite Rigid Body Algorithm", "Recursive Newton-Euler Algorithm", "Spatial Vector Algebra", "Mass Matrix", "Physics Engine"]
+    },
+    {
+      "key": "mechanics-09#3",
+      "name_en": "Bound Gait",
+      "aliases": ["Bounding", "Bounding Gait"],
+      "one_liner": "A running gait where a quadruped's two front legs land together, then the two rear legs land together, alternating front and back.",
+      "explanation": "Bounding is a symmetric gait seen in quadruped animals and quadruped robots. The four legs are grouped into a front pair and a rear pair: both front legs touch down and lift off together, and likewise for the rear pair, with the two pairs alternating support and usually a flight phase — where the whole body leaves the ground — in between. A full cycle runs: front-leg stance, flight, rear-leg stance, flight. It's often compared alongside the diagonal trot (paired diagonal legs), the pace (paired same-side legs), and the pronk (all four legs synchronized); the body noticeably pitches up and down under this gait. Bounding suits high-speed running — MIT Cheetah 2 used it in high-speed experiments — and reinforcement-learning locomotion controllers often include it as one of several gaits selectable by command.",
+      "example": "MIT Cheetah 2, in a 2017 IJRR paper, reached a top speed of 6.4 m/s using the bound gait in untethered 3D experiments; the Walk These Ways policy can switch among the trot, pronk, pace, and bound gaits on command.",
+      "related": ["Gait", "Diagonal Trot Gait", "Pace Gait", "Gallop Gait", "Flight Phase", "Quadruped Robot"]
+    },
+    {
+      "key": "mechanics-09#4",
+      "name_en": "Capture Point",
+      "aliases": ["CP", "Instantaneous Capture Point", "ICP"],
+      "one_liner": "The point on the ground where, if the robot steps right now, it would come to a complete stop.",
+      "explanation": "The capture point was introduced by Pratt, Carff, Drakunov, and Goswami in a 2006 Humanoids conference paper to answer the question of where to step, after being pushed, in order to stop. In the linear inverted pendulum model — which treats the robot as a point mass at constant height, balanced on a single support point — the capture point is ξ = x + ẋ/ω: x is the center of mass's horizontal position, ẋ is its horizontal velocity, and ω = √(g/h), with g the gravitational acceleration and h the center-of-mass height. It is precisely the part of the motion that diverges in this model: placing the zero moment point at the capture point brings the center of mass gradually to rest, while a capture point that falls outside the foot means the robot must take a step. Later work developed it into biped walking controllers and into the broader framework of 'capturability' analysis.",
+      "example": "Suppose the center-of-mass height is 0.9 m, so ω ≈ 3.3 /s; if the robot is pushed and its center of mass moves forward at 0.5 m/s, the capture point lands roughly 0.15 m ahead of the center of mass's ground projection. If that point already lies beyond the supporting foot, the robot has to step forward and place its foot near the capture point.",
+      "related": ["Linear Inverted Pendulum Model", "Divergent Component of Motion", "Zero Moment Point", "Push Recovery", "Support Polygon", "Centroidal Moment Pivot"]
+    },
+    {
+      "key": "mechanics-09#5",
+      "name_en": "Cart-Table Model",
+      "aliases": ["Cart-on-a-Table Model", "Table-Cart Model"],
+      "one_liner": "Models a biped as a cart rolling on a tabletop, used to connect center-of-mass motion to the zero moment point.",
+      "explanation": "The cart-table model was introduced by Shuuji Kajita and colleagues in a 2003 ICRA paper for generating walking patterns via ZMP preview control. It concentrates the robot's mass into a cart running along a massless, horizontal tabletop supported by a single thin leg, with the bottom of that leg standing in for the sole of the foot. The zero moment point — where the horizontal moment from the ground-reaction force vanishes — satisfies p = x − (z_c/g)·ẍ: x is the cart's (i.e. the center of mass's) horizontal position, z_c is the center-of-mass height, g is gravitational acceleration, and ẍ is horizontal acceleration. Accelerate the cart too hard and the zero moment point runs off the bottom of the table leg, tipping the table over. It is mathematically the same set of equations as the linear inverted pendulum, but written the other way around — 'given a reference ZMP, find the center-of-mass trajectory' — which makes it convenient for preview control that looks ahead at future reference values.",
+      "example": "In their paper, Kajita and colleagues generated walking trajectories using the cart-table model combined with preview control, then used a full multi-body model to compensate for the ZMP error introduced by the simplification, enabling a simulated biped robot to climb a spiral staircase.",
+      "related": ["Zero Moment Point", "Linear Inverted Pendulum Model", "ZMP Preview Control", "Bipedal Walking", "Support Polygon", "Center of Mass"]
+    },
+    {
+      "key": "mechanics-09#6",
+      "name_en": "Centroidal Dynamics",
+      "aliases": ["Centroidal Momentum Dynamics"],
+      "one_liner": "Dynamics that track only how a robot's center of mass and overall momentum change under external forces.",
+      "explanation": "Orin, Goswami, and Lee gave a systematic treatment of this concept in a 2013 Autonomous Robots paper: convert every link's momentum to the whole robot's center of mass and sum them, yielding a 6-dimensional centroidal momentum — 3D linear momentum plus 3D angular momentum about the center of mass. Its rate of change depends only on external forces: the change in linear momentum equals the sum of all contact forces plus gravity, and the change in angular momentum equals the sum of the moments those contact forces produce about the center of mass. These equations are exact for the whole robot, not an approximation — they simply don't encode limits like maximum joint torque or how far a leg can reach. Because the representation is low-dimensional, planning and model-predictive control for humanoids and quadrupeds often first solve for contact forces and the center-of-mass trajectory in this model, then hand the result to a whole-body controller to realize at each joint.",
+      "example": "Planning a vertical jump: first use the centroidal dynamics model to compute how much ground-reaction force each foot must push off with and how the center of mass and angular momentum should evolve, then have the whole-body controller convert those targets into torques for each joint.",
+      "related": ["Centroidal Momentum Matrix", "Single Rigid Body Dynamics Model", "Angular Momentum", "Whole-Body Control", "Model Predictive Control", "Contact Force"]
+    },
+    {
+      "key": "mechanics-09#7",
+      "name_en": "Centroidal Moment Pivot",
+      "aliases": ["CMP"],
+      "one_liner": "The point where a line through the center of mass, parallel to the ground-reaction force, meets the ground.",
+      "explanation": "The centroidal moment pivot was introduced by Herr, Hofmann, and Popovic around 2003–2004 (Goswami and colleagues independently proposed the same point), and a 2005 IJRR paper unified the definition: draw a line through the center of mass parallel to the ground-reaction force, and its intersection with the ground is the CMP. If the ground-reaction force happens to pass exactly through the center of mass — producing zero moment about it — the CMP coincides with the zero moment point; whenever the two separate, it means the body is experiencing a moment about its center of mass and its overall angular momentum is changing, with the separation distance equal to the moment's horizontal component divided by the vertical component of the ground-reaction force. Unlike the zero moment point, the CMP is not restricted to stay inside the support region, which makes it useful for describing balance strategies — like swinging an arm or twisting the torso — that rely on angular momentum.",
+      "example": "Popovic and colleagues measured normal human walking on level ground and found the CMP never left the support region, staying only about 14% of a foot length away from the zero moment point on average — evidence that humans keep the angular momentum about their center of mass tightly controlled while walking.",
+      "related": ["Zero Moment Point", "Center of Pressure", "Angular Momentum", "Capture Point", "Centroidal Dynamics", "Push Recovery"]
+    },
+    {
+      "key": "mechanics-09#8",
+      "name_en": "Centroidal Momentum Matrix",
+      "aliases": ["CMM", "A_G Matrix"],
+      "one_liner": "The matrix that maps a robot's full-body joint velocities into its center-of-mass linear and angular momentum.",
+      "explanation": "Orin and Goswami analyzed its structure in detail in a 2008 IROS paper: a robot's centroidal momentum h_G (linear momentum plus angular momentum about the center of mass, 6 dimensions in total) is a linear function of the generalized velocity q̇, written h_G = A_G(q)·q̇, where A_G is the centroidal momentum matrix and q is the full set of generalized coordinates, including the floating base. It had previously been called both a Jacobian and an inertia matrix in different contexts; the paper points out that it is in fact the product of the two. Differentiating h_G gives ḣ_G = A_G·q̈ + Ȧ_G·q̇, which lets whole-body control express a desired change in momentum as a linear constraint on joint accelerations, ready to drop into a quadratic program. Pinocchio computes it with the ccrba function.",
+      "example": "A humanoid robot with 30 joints plus the 6 degrees of freedom of the floating base has a 36-dimensional q̇, making A_G a 6×36 matrix; a balance controller requires A_G·q̈ + Ȧ_G·q̇ to equal the desired rate of change of momentum, solved together with other tasks in a quadratic program.",
+      "related": ["Centroidal Dynamics", "Angular Momentum", "Jacobian Matrix", "Mass Matrix", "Whole-Body Control", "Floating Base"]
+    },
+    {
+      "key": "mechanics-09#9",
+      "name_en": "Coefficient of Restitution",
+      "aliases": ["COR", "Restitution"],
+      "one_liner": "The ratio of separation speed after a collision to approach speed before it — a measure of how bouncy the impact is.",
+      "explanation": "The coefficient of restitution is an empirical parameter describing how elastic a collision is, usually written e, and it traces back to Newton's laws of impact: e equals the relative separation speed of the two bodies after the collision divided by their relative approach speed before it. e = 1 is a perfectly elastic collision with no kinetic-energy loss; e = 0 is perfectly inelastic, with no bounce at all; real collisions fall somewhere in between. In robotics it shows up mainly in two places: modeling the impact when a legged robot's foot lands or a gripper grasps an object, and as a material parameter in physics engines — Isaac Lab's rigid-body materials include a restitution value alongside static and dynamic friction coefficients, and training runs commonly randomize all three together so the policy doesn't overfit to one particular bounciness of ground or object.",
+      "example": "A ball dropped from 1 m and bouncing back up to 0.64 m has e = √(0.64/1) = 0.8. Isaac Lab's randomize_rigid_body_material function samples static friction, dynamic friction, and restitution randomly within given ranges.",
+      "related": ["Impact", "Physics Engine", "Contact Model", "Domain Randomization", "Dynamics Randomization", "Friction Coefficient"]
+    },
+    {
+      "key": "mechanics-09#10",
+      "name_en": "Composite Rigid Body Algorithm",
+      "aliases": ["CRBA", "Composite-Rigid-Body Algorithm"],
+      "one_liner": "An algorithm that efficiently computes the mass matrix by merging each joint's outboard links into one composite rigid body.",
+      "explanation": "The composite rigid body algorithm is a recursive method for computing the joint-space mass matrix M(q), which describes the inertial relationship between joint accelerations and the joint torques needed to produce them; it's generally traced back to a 1982 paper by Walker and Orin. The core idea: for joint i, treat every link outboard of it as if locked together into a single composite rigid body — the inertia of that composite body directly gives the entries of M associated with that joint, and the composite inertias can be accumulated stage by stage from the tip back to the root. Once M is known, the recursive Newton-Euler algorithm supplies the Coriolis, centrifugal, and gravity terms c, and solving M·q̈ = τ − c completes the forward-dynamics calculation. CRBA and the articulated body algorithm are the two common routes to forward dynamics.",
+      "example": "MuJoCo uses the CRB algorithm at every simulation step to get the joint-space mass matrix M, uses the RNE algorithm (with acceleration set to zero) to get the bias force made up of Coriolis, centrifugal, and gravity terms, and then solves for acceleration together with the constraints; Pinocchio's corresponding function is crba.",
+      "related": ["Mass Matrix", "Articulated Body Algorithm", "Recursive Newton-Euler Algorithm", "Forward Dynamics", "Kinematic Tree", "MuJoCo"]
+    },
+    {
+      "key": "mechanics-09#11",
+      "name_en": "Contact Jacobian",
+      "aliases": ["Constraint Jacobian"],
+      "one_liner": "The matrix that maps joint velocities to contact-point velocities, and contact forces back into joint torques.",
+      "explanation": "The contact Jacobian is the Jacobian matrix specialized to a contact point, usually written J_c(q). It's used in two directions. First, v_c = J_c(q)·q̇ gives the contact-point velocity from the joint (including floating-base) velocity q̇; a foot that isn't slipping means J_c·q̇ = 0. Second, its transpose converts a contact force λ into the corresponding generalized forces at each joint, appearing in the dynamics equation M(q)·q̈ + C(q,q̇)·q̇ = τ_g(q) + B·u + J_cᵀ·λ (M is the mass matrix, C the Coriolis and centrifugal terms, τ_g the gravity term, and B·u the motor input). Physics engines use a more general version of the same idea, the constraint Jacobian — the MuJoCo documentation describes it as mapping joint-space motion into constraint space. Both whole-body control and simulated contact solving depend on it.",
+      "example": "During a quadruped's stance phase, the controller first plans the ground-reaction force each supporting foot should provide, then multiplies it by the transpose of that leg's contact Jacobian to get the torques the hip and knee joints should output — a common approximation that ignores the leg's own mass.",
+      "related": ["Jacobian Matrix", "Contact Force", "Ground Reaction Force", "Whole-Body Control", "Contact Force Optimization", "Floating Base"]
+    }
+  ]
+}

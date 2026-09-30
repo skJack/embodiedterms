@@ -1,0 +1,224 @@
+{
+ "batch": "mechanics-01",
+ "terms": [
+  {
+   "key": "mechanics-01#0",
+   "name_en": "Base Frame",
+   "aliases": [
+    "base_link",
+    "Robot Base Frame"
+   ],
+   "one_liner": "The coordinate frame rigidly fixed to a robot's base, used as the reference for the arm's position and orientation.",
+   "explanation": "The base frame is a reference frame rigidly fixed to the robot's base; its origin and axis directions are set by the manufacturer, and the ROS convention points x forward, y left, and z up. Unless stated otherwise, an arm controller reports the end-effector's position and orientation relative to this frame — Franka's interface, for instance, stores the end-effector pose as O_T_EE, meaning “the end-effector's pose in base frame O.” In ROS, the corresponding frame is called base_link. The base frame differs from the world frame in one key way: when an arm is mounted on a mobile base or a humanoid body, the base frame moves along with the robot, while the world frame stays fixed in the environment. When recording demonstration data, it's essential to record which frame the actions are expressed in — otherwise the data won't transfer cleanly to a different robot.",
+   "example": "For a stationary tabletop arm, the command “move the end-effector to (0.5, 0, 0.3) meters in the base frame” means, under the x-forward, z-up convention, 0.5 meters directly in front of the base and 0.3 meters up.",
+   "related": [
+    "World Frame",
+    "Coordinate Frame",
+    "End-Effector Pose",
+    "Coordinate Transformation",
+    "TF Tree",
+    "Body Frame"
+   ]
+  },
+  {
+   "key": "mechanics-01#1",
+   "name_en": "Center of Mass (CoM)",
+   "aliases": [
+    "CoM",
+    "Center of Gravity (CoG)"
+   ],
+   "one_liner": "The mass-weighted average position of an object, which behaves as if all its mass were concentrated there.",
+   "explanation": "The center of mass is a mass-weighted average of position: r_c = Σmᵢrᵢ / Σmᵢ, where mᵢ is the mass of the i-th part and rᵢ is its position. In a uniform gravity field, the center of mass coincides with the center of gravity, so engineers often use the two terms interchangeably. For a robot, the center of mass governs balance: while standing still, its projection onto the ground has to land inside the support polygon — the region enclosed by the robot's ground-contact points — or the robot falls over. Gait control and zero-moment-point analysis for humanoids and quadrupeds are built around the center-of-mass trajectory. When an arm picks up a heavy object, the farther the payload's center of mass sits from the flange, the more torque the joints have to resist. Model files such as URDF require a mass and center-of-mass position for every link; getting these wrong makes simulation behave differently from the real robot.",
+   "example": "Two balls, 1 kg and 3 kg, sit at x = 0 and x = 4 meters. The center of mass is at (1×0 + 3×4) / (1+3) = 3 meters — closer to the heavier ball.",
+   "related": [
+    "Support Polygon",
+    "Zero Moment Point (ZMP)",
+    "Centroidal Dynamics",
+    "Static Stability",
+    "Inertial Parameters",
+    "Payload"
+   ]
+  },
+  {
+   "key": "mechanics-01#2",
+   "name_en": "Coordinate Frame",
+   "aliases": [
+    "Reference Frame",
+    "Frame"
+   ],
+   "one_liner": "A defined origin and set of axis directions used to describe positions and orientations.",
+   "explanation": "A coordinate frame — often just called a “frame” in robotics — consists of an origin and three mutually perpendicular axes; position is given as three numbers (x, y, z) and orientation as a rotation relative to those axes. The same physical point has different numeric coordinates in different frames, so any position, velocity, or force is meaningless without saying which frame it's expressed in. A single robot has many frames at once: a world frame fixed in the environment, a base frame fixed to the robot's base, and one for each link, camera, and gripper. In physics, “reference frame” also implies something about the observer's own motion, but in robotics engineering the two terms are mostly used interchangeably. ROS mandates right-handed coordinate frames throughout, and uses the TF tree to track the relationships between them.",
+   "example": "A camera measures a cup at 0.6 meters directly in front of the lens, in the camera frame — but the arm needs the cup's position in the base frame, so the two must be related through a coordinate transformation.",
+   "related": [
+    "World Frame",
+    "Base Frame",
+    "Camera Frame",
+    "Coordinate Transformation",
+    "TF Tree",
+    "Pose"
+   ]
+  },
+  {
+   "key": "mechanics-01#3",
+   "name_en": "Coordinate Transformation",
+   "aliases": [
+    "Frame Transformation",
+    "Rigid Transformation",
+    "Pose Transformation"
+   ],
+   "one_liner": "Converting a point's or pose's numeric value from one coordinate frame into another.",
+   "explanation": "A coordinate transformation answers the question: given this point's coordinates in frame A, what are its coordinates in frame B? Two frames differ by a rotation plus a translation: p_B = R·p_A + t, where R is a 3×3 rotation matrix (the difference in orientation) and t is a translation vector (the offset between origins). In practice, R and t are usually packed into a single 4×4 homogeneous transformation matrix T, so translation also becomes a matrix multiplication, and chaining several transforms together is just multiplying matrices, as in T_base_obj = T_base_cam · T_cam_obj. This comes up everywhere in robotics: an object a camera sees has to be converted into the base frame before the arm can reach for it, and forward kinematics is nothing more than chaining transformation matrices link by link along the arm. ROS maintains and looks up these transforms through its TF library.",
+   "example": "Hand-eye calibration gives the camera's pose in the base frame, T_base_cam; a vision model gives the cup's position in the camera frame. Multiplying the two together gives the cup's position in the base frame, which the arm uses to plan its grasp.",
+   "related": [
+    "Homogeneous Transformation Matrix",
+    "Rotation Matrix",
+    "TF Tree",
+    "Hand-Eye Calibration",
+    "Camera Extrinsics",
+    "Forward Kinematics"
+   ]
+  },
+  {
+   "key": "mechanics-01#4",
+   "name_en": "Degrees of Freedom (DoF)",
+   "aliases": [
+    "DOF"
+   ],
+   "one_liner": "The number of independent variables needed to fully describe a system's configuration — often a robot's independently movable joints.",
+   "explanation": "Degrees of freedom (DoF) is the number of independent parameters needed to fully pin down a mechanical system's configuration. A free rigid body in space has 6 degrees of freedom: translation along x, y, and z, plus rotation about each of those three axes. Each rotary or linear joint on a robot typically contributes 1 degree of freedom, which is why people talk about a “six-axis arm” or a “7-DoF arm.” Six degrees of freedom is the minimum needed to place an end effector at any position and orientation in space; any joints beyond that are called redundant degrees of freedom, since the same end-effector pose can then be reached by infinitely many joint configurations — useful for avoiding obstacles. A human arm — 3 in the shoulder, 1 in the elbow, 3 in the wrist — has 7 degrees of freedom. When manufacturers quote a robot's total DoF, they often fold in the dexterous hand's fingers, so it's worth checking exactly what's being counted before comparing numbers.",
+   "example": "According to Unitree's website, the base G1 has 23 degrees of freedom in total (6 per leg, 5 per arm, 1 in the waist); the EDU version, fitted with a dexterous hand and other add-ons, ranges from 23 to 43.",
+   "related": [
+    "Active vs. Passive DoF",
+    "Kinematic Redundancy",
+    "Revolute Joint",
+    "Configuration Space",
+    "Joint Space",
+    "Underactuation"
+   ]
+  },
+  {
+   "key": "mechanics-01#5",
+   "name_en": "Dynamics",
+   "aliases": [
+    "Robot Dynamics"
+   ],
+   "one_liner": "The study of how forces and torques produce motion — how much acceleration a given torque causes.",
+   "explanation": "Dynamics is the branch of classical mechanics that studies the relationship between force and motion, grounded in Newton's second law, F = ma. Robot dynamics extends this to multi-joint systems, commonly written as M(q)q̈ + C(q,q̇)q̇ + g(q) = τ, where q is the vector of joint angles, q̇ and q̈ are joint velocity and acceleration, M is the mass matrix (each link's inertia reflected back to the joints), the C term captures Coriolis and centrifugal forces, g is the gravity term, and τ is joint torque. Computing acceleration from known torques is called forward dynamics, which a physics engine solves at every simulation step; computing the torques needed to produce a desired motion is called inverse dynamics, used for gravity compensation and torque control. Kinematics only deals with geometry; picking up a heavy object, moving quickly, and balancing on legs all require dynamics.",
+   "example": "When an arm holds an object perfectly still, q̇ and q̈ are both zero, so the equation reduces to g(q) = τ — inverse dynamics then just gives the torque each joint needs to counteract gravity, including the object's weight.",
+   "related": [
+    "Forward Dynamics",
+    "Inverse Dynamics",
+    "Mass Matrix",
+    "Rigid-Body Dynamics",
+    "Kinematics",
+    "Physics Engine"
+   ]
+  },
+  {
+   "key": "mechanics-01#6",
+   "name_en": "End-Effector Pose",
+   "aliases": [
+    "EEF Pose",
+    "EE Pose",
+    "TCP Pose"
+   ],
+   "one_liner": "The position and orientation of an arm's gripper or tool in space, usually given relative to the base frame.",
+   "explanation": "The end effector is the part at the very tip of a robot arm that actually interacts with the world — a gripper, a suction cup, a welding torch. The end-effector pose is its position (x, y, z) plus its orientation, 6 degrees of freedom altogether, generally expressed relative to the base frame. Orientation can be written as a rotation matrix, a quaternion, Euler angles, or axis-angle, so the end-effector pose's dimensionality can be 6, 7, or more depending on the dataset. It's the bridge between “task” and “motors”: a person or a vision model cares where the gripper is and which way it's pointing, while the motors only understand joint angles, and forward and inverse kinematics convert between the two. Many VLA (vision-language-action) and imitation-learning policies directly output an end-effector pose, or a delta to it, which a controller then converts into joint commands.",
+   "example": "robosuite's OSC_POSE controller takes a 6-dimensional action: the first 3 values are a delta to end-effector position, the last 3 are a delta to orientation in axis-angle form. In Franka's libfranka interface, O_T_EE is the 4×4 matrix giving the end-effector's pose in the base frame.",
+   "related": [
+    "End Effector",
+    "Pose",
+    "Tool Center Point (TCP)",
+    "Task Space",
+    "Inverse Kinematics",
+    "Delta Actions vs. Absolute Actions"
+   ]
+  },
+  {
+   "key": "mechanics-01#7",
+   "name_en": "Euler Angles",
+   "aliases": [],
+   "one_liner": "A way of describing an object's orientation using three angles of rotation applied one after another about coordinate axes.",
+   "explanation": "Euler angles, introduced by the Swiss mathematician Leonhard Euler, describe a rigid body's orientation through three successive rotations about coordinate axes, commonly written α, β, γ or φ, θ, ψ. There are 12 possible rotation-order sequences: ones where the first and last axis are the same (like Z-X-Z) are the classical Euler angles, and ones where all three axes differ (like Z-Y-X) are called Tait-Bryan angles — the familiar roll, pitch, and yaw fall into this second category. Rotating about axes that move with the object is called intrinsic rotation; rotating about fixed axes is called extrinsic. Euler angles are intuitive and easy to read, but the same three numbers describe a different orientation depending on the rotation order and the intrinsic/extrinsic convention used, and at certain angles two of the rotation axes line up and a degree of freedom is lost — a problem called gimbal lock. For this reason, code typically represents rotation internally with quaternions or rotation matrices, and neural networks predicting rotation often use a 6D representation instead.",
+   "example": "An aircraft that turns 30° to the right, then pitches its nose up 10°, with no roll, can be written as a Z-Y-X sequence of Euler angles: yaw 30°, pitch 10°, roll 0°.",
+   "related": [
+    "Roll-Pitch-Yaw",
+    "Gimbal Lock",
+    "Quaternion",
+    "Rotation Matrix",
+    "Intrinsic vs. Extrinsic Rotation",
+    "6D Rotation Representation"
+   ]
+  },
+  {
+   "key": "mechanics-01#8",
+   "name_en": "Forward Kinematics (FK)",
+   "aliases": [
+    "FK"
+   ],
+   "one_liner": "Computing the position and orientation of an arm's end effector in space, given all the joint angles.",
+   "explanation": "Forward kinematics uses a robot's geometry — link lengths, joint axis directions — to compute the end-effector pose from the joint angles. The standard method starts at the base and multiplies a 4×4 transformation matrix for each joint and link in turn, all the way out to the tip; the result is the end-effector's pose in the base frame. The classical way to describe each of these per-joint transforms is the set of DH (Denavit-Hartenberg) parameters, introduced by Jacques Denavit and Richard Hartenberg in 1955, which uses 4 parameters per joint; the product-of-exponentials formula is another common approach. For a serial-chain arm, forward kinematics has a unique solution and takes only a handful of matrix multiplications to compute. It's used to display the end-effector's position from encoder readings, to render a robot in simulation, to convert recorded joint data into end-effector pose labels, and it's also the foundation that inverse kinematics builds on.",
+   "example": "For a planar two-link arm with link lengths l₁ and l₂ and joint angles θ₁ and θ₂, the end-effector coordinates are x = l₁cosθ₁ + l₂cos(θ₁+θ₂), y = l₁sinθ₁ + l₂sin(θ₁+θ₂).",
+   "related": [
+    "Inverse Kinematics",
+    "DH Parameters",
+    "Homogeneous Transformation Matrix",
+    "Kinematic Chain",
+    "Product of Exponentials",
+    "Joint Space"
+   ]
+  },
+  {
+   "key": "mechanics-01#9",
+   "name_en": "Inverse Kinematics (IK)",
+   "aliases": [
+    "IK"
+   ],
+   "one_liner": "Working backward from a target end-effector position and orientation to find the joint angles that reach it.",
+   "explanation": "Inverse kinematics is the reverse of forward kinematics: given a target end-effector pose, find the joint angles that achieve it. It's considerably harder. The equations are nonlinear and can have multiple solutions — an elbow-up or elbow-down configuration might reach the same point — a redundant arm with 7 degrees of freedom has infinitely many solutions, a target outside the workspace has no solution at all, and the numerics get unstable near singular configurations (joint poses where the end effector can't move in certain directions). Solving methods fall into two camps: analytical (closed-form) solutions compute the answer directly from a formula, which is fast but only works for specific arm geometries; numerical solutions iterate using the Jacobian matrix (the mapping from joint velocities to end-effector velocity), which is general-purpose but depends on a good starting guess and may fail to converge. Whenever a VLA policy outputs an end-effector pose, IK is what turns it into joint commands; dragging a character's hand in animation software, with the shoulder and elbow following automatically, is also IK.",
+   "example": "To move the gripper to 10 centimeters directly above a cup, jaws facing down, IK solves for the joint angles that achieve it. In MATLAB's Robotics System Toolbox, the inverseKinematics function solves numerically using BFGS gradient projection by default, and can return only an approximate answer if the initial guess is poor.",
+   "related": [
+    "Forward Kinematics",
+    "Analytical IK",
+    "Numerical IK",
+    "Jacobian Matrix",
+    "Singular Configuration",
+    "Kinematic Redundancy"
+   ]
+  },
+  {
+   "key": "mechanics-01#10",
+   "name_en": "Joint Space",
+   "aliases": [],
+   "one_liner": "The space described by a vector of all a robot's joint values — angles or displacements — used to describe its configuration.",
+   "explanation": "Joint space arranges every one of a robot's joint variables into a single vector q = (q₁, …, qₙ), where n is the number of joints; a rotary joint contributes an angle and a linear joint contributes a displacement, and the set of every value q can take forms the joint space. The counterpart is task space (also called Cartesian space), which describes the robot by its end-effector pose instead; forward and inverse kinematics convert between the two. Planning and control are most direct in joint space, since motors are commanded in joint angles anyway and there's no issue of multiple inverse-kinematics solutions — but the path the end effector actually traces through physical space isn't obvious just by looking at joint-space values. Demonstration data recorded as joint angles reproduces the exact same motion on the same robot, but doesn't transfer directly to a robot with a different kinematic structure, which is why a lot of cross-embodiment work records actions as end-effector poses instead.",
+   "example": "The vector q that libfranka reads out — 7 joint angles, in radians — is a single point in the Franka arm's joint space; the O_T_EE reported at the same instant is its representation in task space.",
+   "related": [
+    "Task Space",
+    "Configuration Space",
+    "Forward Kinematics",
+    "Inverse Kinematics",
+    "Degrees of Freedom (DoF)",
+    "Action Space"
+   ]
+  },
+  {
+   "key": "mechanics-01#11",
+   "name_en": "Kinematics",
+   "aliases": [
+    "Robot Kinematics"
+   ],
+   "one_liner": "The study of motion's pure geometry — position, velocity, acceleration — without regard to the forces that cause it.",
+   "explanation": "Kinematics is the branch of classical mechanics that studies how points and bodies move — position, velocity, acceleration — without considering the forces that cause the motion, which is why it's sometimes called “the geometry of motion”; the word traces back to a French term coined by André-Marie Ampère. Robot kinematics studies the geometric relationship between joint variables and the poses of the links and end effector, and covers mainly forward kinematics (joint angles to end-effector pose), inverse kinematics (end-effector pose to joint angles), and differential kinematics (joint velocities to end-effector velocity, described by the Jacobian matrix). It only needs geometric parameters like link lengths and joint axis directions — no mass or inertia — which is what separates it from dynamics, which does account for forces and torques. Trajectory planning, teleoperation mapping, and motion retargeting are all built on top of kinematics.",
+   "example": "Knowing how far each joint of an arm has rotated is enough to compute where the gripper currently is; that calculation only uses link dimensions and has nothing to do with how heavy whatever is inside the gripper happens to be — which is exactly why it belongs to kinematics, not dynamics.",
+   "related": [
+    "Forward Kinematics",
+    "Inverse Kinematics",
+    "Differential Kinematics",
+    "Jacobian Matrix",
+    "Dynamics",
+    "Kinematic Chain"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,437 @@
+{
+  "category": "model",
+  "batch": 11,
+  "terms": [
+    {
+      "name_zh": "能量模型",
+      "name_en": "Energy-Based Model",
+      "abbr": "EBM",
+      "aliases": [
+        "基于能量的模型",
+        "隐式行为克隆",
+        "Implicit Behavioral Cloning",
+        "IBC"
+      ],
+      "tier": 3,
+      "one_liner": "不直接输出答案，而是给「输入-输出」配对打分，分最低的就是答案。",
+      "explanation": "能量模型不直接预测输出，而是学一个打分函数 E(x, y)：输入和输出越匹配，「能量」越低，推理时去找能量最低的 y。机器人领域最有名的应用是谷歌 2021 年的隐式行为克隆（IBC）：网络给「观测-候选动作」打能量分，再用无导数优化或朗之万采样（带噪声的梯度下降）找出最低分动作。这样一个观测可以对应多个合理动作，不连续的策略也能表示，论文在接触丰富的真机任务上做到约 1 毫米的精度。代价是训练要采负样本来近似归一化常数，扩散策略论文指出 IBC 训练不稳定、难调参。之后建模多峰动作更多改用扩散策略和流匹配。",
+      "example": "同一张桌面图像下，把积木从左边推和从右边推都能完成任务。能量模型会在这两种动作上都给出低能量，推理时落到其中一个；均方误差回归则会输出两者的平均，结果哪边都不对。",
+      "related": [
+        "行为克隆",
+        "动作多峰性",
+        "扩散策略",
+        "混合密度网络",
+        "InfoNCE 损失",
+        "生成模型"
+      ],
+      "sources": [
+        {
+          "title": "Implicit Behavioral Cloning (Florence et al., arXiv 2109.00137)",
+          "url": "https://arxiv.org/abs/2109.00137"
+        },
+        {
+          "title": "Diffusion Policy: Visuomotor Policy Learning via Action Diffusion (arXiv 2303.04137)",
+          "url": "https://arxiv.org/abs/2303.04137"
+        },
+        {
+          "title": "Energy-based model - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Energy-based_model"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "等变策略 / 等变网络",
+      "name_en": "Equivariant Policy / Equivariant Neural Network",
+      "abbr": "",
+      "aliases": [
+        "等变扩散策略",
+        "Equivariant Diffusion Policy",
+        "EquiDiff",
+        "群等变卷积网络",
+        "G-CNN"
+      ],
+      "tier": 3,
+      "one_liner": "输入旋转或平移时，输出按同样方式变化的网络，把对称性写进结构里。",
+      "explanation": "等变（equivariance）指输入做某种变换（旋转、平移、镜像）时，输出也按对应方式变换。Cohen 和 Welling 2016 年提出群等变卷积网络（G-CNN），把对称性直接做进网络层，不必靠数据增强慢慢学。机器人操作天然有这种对称性：桌上的杯子转 90 度，抓取动作也该跟着转 90 度。Wang 等人的等变扩散策略（EquiDiff，CoRL 2024）把绕竖直轴的平面旋转对称（SO(2)）加进扩散策略，在 MimicGen 的 12 个仿真任务上平均成功率比原版扩散策略高约 21.9%，真机上用 20–60 条演示就能学会任务。代价是网络实现更复杂，而且只对设计时指定的那类对称有效。",
+      "example": "EquiDiff 在真机「烤贝果」任务上用 58 条演示达到 80% 成功率，同样数据下原版扩散策略只有 10%。",
+      "related": [
+        "扩散策略",
+        "归纳偏置",
+        "数据增强",
+        "样本效率",
+        "神经描述子场",
+        "卷积神经网络"
+      ],
+      "sources": [
+        {
+          "title": "Equivariant Diffusion Policy (Wang et al., CoRL 2024, arXiv 2407.01812)",
+          "url": "https://arxiv.org/abs/2407.01812"
+        },
+        {
+          "title": "Group Equivariant Convolutional Networks (Cohen & Welling, ICML 2016)",
+          "url": "https://arxiv.org/abs/1602.07576"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "曝光偏差（自回归误差累积）",
+      "name_en": "Exposure Bias",
+      "abbr": "",
+      "aliases": [
+        "暴露偏差",
+        "自回归误差累积",
+        "训练-推理不一致"
+      ],
+      "tier": 3,
+      "one_liner": "训练时看真值、推理时看自己的输出，导致误差一步步累积的问题。",
+      "explanation": "曝光偏差是序列生成模型的经典问题。自回归模型（逐步预测下一个元素的模型）训练时通常用教师强制，每一步都喂真实的历史；推理时却只能拿自己上一步的输出当输入。模型训练中没见过自己犯的错，一旦偏离训练分布，误差就越滚越大。2015–2016 年 Bengio 等人的计划采样（训练中逐步改用模型自己的预测当输入）和 Ranzato 等人的序列级训练是早期的代表性解法。具身智能里它有两种常见形态：行为克隆策略偏离演示轨迹后越走越偏（常称复合误差、协变量偏移）；自回归视频世界模型连续生成几十帧后画面崩坏，Self Forcing 等方法让模型在训练时就接着自己生成的帧往下生成来缓解。",
+      "example": "给视频世界模型一帧当前画面，让它自回归地预测后面 100 帧。训练时每一步都看真实的上一帧，推理时看的是自己生成的、略带瑕疵的帧，越往后物体越容易变形、画面越容易糊掉。",
+      "related": [
+        "教师强制",
+        "自回归解码",
+        "复合误差",
+        "分布偏移（协变量偏移）",
+        "Self Forcing（自强制训练）",
+        "扩散强制"
+      ],
+      "sources": [
+        {
+          "title": "Sequence Level Training with Recurrent Neural Networks (Ranzato et al., ICLR 2016)",
+          "url": "https://arxiv.org/abs/1511.06732"
+        },
+        {
+          "title": "Scheduled Sampling for Sequence Prediction with Recurrent Neural Networks (Bengio et al., 2015)",
+          "url": "https://arxiv.org/abs/1506.03099"
+        },
+        {
+          "title": "Self Forcing: Bridging the Train-Test Gap in Autoregressive Video Diffusion (arXiv 2506.08009)",
+          "url": "https://arxiv.org/abs/2506.08009"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "FiLM 特征调制",
+      "name_en": "Feature-wise Linear Modulation",
+      "abbr": "FiLM",
+      "aliases": [
+        "特征级线性调制",
+        "FiLM 层",
+        "FiLM 条件化"
+      ],
+      "tier": 3,
+      "one_liner": "用条件信息给每个特征通道算一组缩放和偏移，去调制网络的中间特征。",
+      "explanation": "FiLM 由 Ethan Perez、Aaron Courville 等人提出（AAAI 2018），是一种把条件信息注入神经网络的通用层。做法很简单：用一个小网络从条件（比如语言指令的向量）算出每个特征通道的缩放系数 γ 和偏移 β，再把中间特征变成 γ·x + β。原论文在视觉推理问答基准 CLEVR 上把当时最好的错误率减半。机器人里它很常见：RT-1 用 FiLM 把语言指令注入预训练的 EfficientNet 图像编码器，并把生成 γ、β 的层零初始化，让 FiLM 一开始相当于恒等变换，不破坏预训练权重；CNN 版扩散策略也在每个卷积层用 FiLM 注入观测特征。",
+      "example": "RT-1 里，「拿起可乐罐」这句指令先经 Universal Sentence Encoder 变成向量，再通过 FiLM 调制 EfficientNet 各层特征，同一张图像在不同指令下就得到不同的视觉特征。",
+      "related": [
+        "自适应层归一化",
+        "语言条件策略",
+        "RT-1",
+        "扩散策略",
+        "EfficientNet",
+        "交叉注意力"
+      ],
+      "sources": [
+        {
+          "title": "FiLM: Visual Reasoning with a General Conditioning Layer (Perez et al., AAAI 2018)",
+          "url": "https://arxiv.org/abs/1709.07871"
+        },
+        {
+          "title": "RT-1: Robotics Transformer for Real-World Control at Scale (arXiv 2212.06817)",
+          "url": "https://arxiv.org/abs/2212.06817"
+        },
+        {
+          "title": "Diffusion Policy: Visuomotor Policy Learning via Action Diffusion (arXiv 2303.04137)",
+          "url": "https://arxiv.org/abs/2303.04137"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "有限标量量化",
+      "name_en": "Finite Scalar Quantization",
+      "abbr": "FSQ",
+      "aliases": [
+        "FSQ 量化"
+      ],
+      "tier": 3,
+      "one_liner": "把连续向量的每一维直接取整到几个固定档位，代替 VQ 码本的离散化方法。",
+      "explanation": "有限标量量化由 Google 研究团队的 Mentzer 等人 2023 年提出，论文副标题就叫「VQ-VAE Made Simple」。传统向量量化（VQ）要维护一本可学习的码本，训练中常出现大量码字从没被用到的「码本坍缩」，需要承诺损失、熵惩罚等额外技巧。FSQ 改为先把特征投影到很少几维（通常不到 10 维），每一维限制范围后直接四舍五入到几个固定档位，各维档位的组合就构成隐式码本。不用学码本，也不会坍缩，在图像生成、深度估计等任务上效果与 VQ 相当。它常用来把图像、视频或动作序列变成离散 token，交给自回归 Transformer 处理。",
+      "example": "英伟达 Cosmos Tokenizer 的离散版本用 FSQ 把视频压成离散 token，索引取值范围约 6.4 万（64K）。",
+      "related": [
+        "向量量化",
+        "向量量化变分自编码器",
+        "动作分词器",
+        "视频分词器",
+        "token（词元）",
+        "Cosmos"
+      ],
+      "sources": [
+        {
+          "title": "Finite Scalar Quantization: VQ-VAE Made Simple (Mentzer et al., arXiv 2309.15505)",
+          "url": "https://arxiv.org/abs/2309.15505"
+        },
+        {
+          "title": "NVIDIA Cosmos Tokenizer (GitHub)",
+          "url": "https://github.com/NVIDIA/Cosmos-Tokenizer"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "Florence-2",
+      "name_en": "Florence-2: Advancing a Unified Representation for a Variety of Vision Tasks (Microsoft)",
+      "abbr": "",
+      "aliases": [
+        "Florence 2",
+        "微软 Florence-2",
+        "Florence-2-base",
+        "Florence-2-large"
+      ],
+      "tier": 3,
+      "one_liner": "微软开源的小型视觉基础模型，用文字提示切换描述、检测、分割等任务。",
+      "explanation": "Florence-2 是微软 2023 年 11 月发布的视觉基础模型，有 0.23B（base）和 0.77B（large）两个尺寸，MIT 协议开源。它采用序列到序列结构（图像编码器加文本解码器）：输入一张图和一个任务提示，比如 <OD> 表示目标检测、<CAPTION> 表示图像描述，模型把结果连同框的坐标都当成文本输出，一个模型就能做描述、检测、短语定位、分割、OCR 等任务。训练数据 FLD-5B 含 1.26 亿张图、54 亿条迭代自动生成的标注。因为体量小、空间定位能力强，它常被拿来当轻量 VLA 的视觉语言骨干。",
+      "example": "FLOWER（CoRL 2025）只取 Florence-2-L 的一半层作为骨干；X-VLA-0.9B 也用 Florence-Large 编码主视角图像和语言指令。",
+      "related": [
+        "视觉基础模型",
+        "视觉语言模型",
+        "开放词汇检测",
+        "视觉定位（Grounding）",
+        "X-VLA",
+        "骨干网络"
+      ],
+      "sources": [
+        {
+          "title": "Florence-2: Advancing a Unified Representation for a Variety of Vision Tasks (arXiv 2311.06242)",
+          "url": "https://arxiv.org/abs/2311.06242"
+        },
+        {
+          "title": "microsoft/Florence-2-large (Hugging Face model card)",
+          "url": "https://huggingface.co/microsoft/Florence-2-large"
+        },
+        {
+          "title": "X-VLA: Soft-Prompted Transformer as Scalable Cross-Embodiment VLA (arXiv 2510.10274)",
+          "url": "https://arxiv.org/html/2510.10274"
+        }
+      ],
+      "as_of": "2025-10"
+    },
+    {
+      "name_zh": "力觉 VLA",
+      "name_en": "Force-aware Vision-Language-Action Model",
+      "abbr": "",
+      "aliases": [
+        "力感知 VLA",
+        "Force-aware VLA",
+        "力反馈 VLA"
+      ],
+      "tier": 3,
+      "one_liner": "在视觉和语言之外，把力/力矩信号也当作输入的 VLA 模型。",
+      "explanation": "力觉 VLA 指把六维力/力矩传感器（测三个方向的力和三个方向的力矩）等力信号，作为与图像、语言并列的输入模态的视觉-语言-动作模型。普通 VLA 只靠相机，而插插头、擦桌子、装配这类接触丰富任务里，是否接触到位、用了多大力往往看不出来，容易卡住或用力过猛。代表工作 ForceVLA（Yu 等，NeurIPS 2025）以 π0 为基础，用力感知混合专家模块（FVLMoE）在动作解码阶段融合力 token，五个接触任务上比 π0 基线平均高 23.2%，而把力直接拼到输入上只带来很小提升。2026 年 3 月的 ForceVLA2 又加入力位混合控制，据论文报告比 π0、π0.5 分别高 48% 和 35%。",
+      "example": "插插头时，插头顶到插座边缘，图像上几乎看不出区别，力传感器读数却会突变；ForceVLA 用这个信号修正位姿，插插头这类任务最高达到 80% 成功率。",
+      "related": [
+        "视觉-语言-动作模型",
+        "六维力传感器",
+        "接触丰富操作",
+        "力位混合控制",
+        "视觉-触觉-语言-动作模型",
+        "混合专家模型"
+      ],
+      "sources": [
+        {
+          "title": "ForceVLA: Enhancing VLA Models with a Force-aware MoE for Contact-rich Manipulation (arXiv 2505.22159)",
+          "url": "https://arxiv.org/abs/2505.22159"
+        },
+        {
+          "title": "ForceVLA2: Unleashing Hybrid Force-Position Control with Force Awareness (arXiv 2603.15169)",
+          "url": "https://arxiv.org/abs/2603.15169"
+        },
+        {
+          "title": "Learning Physical Interaction: A Survey of Tactile- and Force-aware Robot Learning (arXiv 2608.07558)",
+          "url": "https://arxiv.org/abs/2608.07558"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "高斯混合模型",
+      "name_en": "Gaussian Mixture Model",
+      "abbr": "GMM",
+      "aliases": [
+        "混合高斯模型",
+        "GMM 策略",
+        "GMM 动作头"
+      ],
+      "tier": 3,
+      "one_liner": "用几个高斯分布加权叠加来描述数据的概率模型，可以有多个峰。",
+      "explanation": "高斯混合模型假设数据来自 K 个高斯分布（正态分布）中的某一个，每个分量有自己的均值、方差（协方差）和权重，权重加起来等于 1。参数通常用期望最大化（EM）算法迭代估计：先算每个点属于各分量的概率，再按这些概率更新参数。它是经典的聚类和密度估计工具。机器人学习里有两种常见用法：一是传统示教学习用 GMM 配合高斯混合回归（GMR）从少量示教中编码轨迹；二是当策略的动作头，网络直接输出几组均值、方差和权重（即混合密度网络），表示同一画面下有几种合理动作。robomimic 的 BC-RNN-GMM 就是这种做法，也是扩散策略论文的主要对比基线之一。分量数要事先设定，高维动作下表达力有限。",
+      "example": "绕开桌上的障碍物时，从左绕和从右绕都对。单个高斯的策略会把两者平均成直直撞上去；GMM 策略可以给左、右各分配一个分量，采样时选中其中一个。",
+      "related": [
+        "混合密度网络",
+        "动作多峰性",
+        "高斯策略",
+        "高斯混合回归 / 任务参数化 GMM",
+        "RoboMimic",
+        "扩散策略"
+      ],
+      "sources": [
+        {
+          "title": "Mixture model - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Mixture_model"
+        },
+        {
+          "title": "robomimic documentation: Algorithms (BC_GMM / BC_RNN_GMM)",
+          "url": "https://robomimic.github.io/docs/modules/algorithms.html"
+        },
+        {
+          "title": "Diffusion Policy: Visuomotor Policy Learning via Action Diffusion (arXiv 2303.04137)",
+          "url": "https://arxiv.org/abs/2303.04137"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "高斯策略",
+      "name_en": "Gaussian Policy",
+      "abbr": "",
+      "aliases": [
+        "高斯动作头",
+        "对角高斯策略",
+        "Diagonal Gaussian Policy"
+      ],
+      "tier": 3,
+      "one_liner": "网络输出动作的均值和标准差，再从正态分布里采样动作的随机策略。",
+      "explanation": "高斯策略是连续动作强化学习里最常用的随机策略形式。神经网络根据观测输出每个动作维度的均值；标准差或者也由网络输出，或者作为不依赖观测的独立可学习参数，常以对数形式存储以保证为正。动作按「均值 + 标准差 × 标准正态噪声」采样，各维一般假设相互独立，所以也叫对角高斯策略。它的对数概率有解析式，方便算策略梯度，标准差大小直接决定探索幅度。PPO、SAC 等主流算法都用它，足式机器人运控的强化学习几乎都是这种策略。部署时通常直接取均值当动作。它只有一个峰，表示不了几种截然不同的合理动作，所以模仿学习里常被 GMM、扩散策略取代。",
+      "example": "在 Isaac Lab 里用 rsl_rl 的 PPO 训练四足行走：策略输出 12 个关节目标角的均值，再配一组可学习的标准差来采样探索；上真机时只用均值。",
+      "related": [
+        "策略",
+        "确定性策略 / 随机策略",
+        "近端策略优化",
+        "软演员-评论家",
+        "熵正则化",
+        "连续动作回归"
+      ],
+      "sources": [
+        {
+          "title": "OpenAI Spinning Up: Key Concepts in RL (Diagonal Gaussian Policies)",
+          "url": "https://spinningup.openai.com/en/latest/spinningup/rl_intro.html"
+        },
+        {
+          "title": "leggedrobotics/rsl_rl (GitHub)",
+          "url": "https://github.com/leggedrobotics/rsl_rl"
+        },
+        {
+          "title": "Soft Actor-Critic (Haarnoja et al., ICML 2018)",
+          "url": "https://arxiv.org/abs/1801.01290"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "高斯过程",
+      "name_en": "Gaussian Process",
+      "abbr": "GP",
+      "aliases": [
+        "高斯过程回归",
+        "Gaussian Process Regression",
+        "GPR",
+        "克里金法"
+      ],
+      "tier": 3,
+      "one_liner": "直接在「函数」上建概率分布的方法，预测时同时给出不确定度。",
+      "explanation": "高斯过程是一种随机过程：任取有限个输入点，对应的函数值都服从多元正态分布。它由均值函数和协方差函数完全决定，后者也叫核函数，描述两个输入点的函数值有多相关。用来做回归时，给定少量观测，就能算出任意新输入处的预测均值和方差，天然带不确定度。经典教材是 Rasmussen 和 Williams 2006 年的《Gaussian Processes for Machine Learning》。缺点是计算量随数据量 n 按 n³ 增长，数据多时要用稀疏近似。机器人里它多用在数据很少的场合：学动力学模型（如 Deisenroth 与 Rasmussen 2011 年的 PILCO，几次试验就能从零学会控制），或用贝叶斯优化调控制参数。",
+      "example": "PILCO 用高斯过程学习小车倒立摆的动力学，并把模型的不确定度计入长期预测，只用少量真实试验就学会了控制，而常规强化学习往往需要成百上千次尝试。",
+      "related": [
+        "系统辨识",
+        "基于模型的强化学习",
+        "不确定性估计",
+        "样本效率",
+        "安全强化学习",
+        "卡尔曼滤波"
+      ],
+      "sources": [
+        {
+          "title": "Gaussian process - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Gaussian_process"
+        },
+        {
+          "title": "PILCO: A Model-Based and Data-Efficient Approach to Policy Search (Deisenroth & Rasmussen, ICML 2011)",
+          "url": "https://icml.cc/2011/papers/323_icmlpaper.pdf"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "图神经网络",
+      "name_en": "Graph Neural Network",
+      "abbr": "GNN",
+      "aliases": [
+        "图网络",
+        "Graph Network",
+        "消息传递神经网络"
+      ],
+      "tier": 3,
+      "one_liner": "专门处理图结构数据的神经网络，每个节点通过边和邻居反复交换信息。",
+      "explanation": "图神经网络处理由节点和边组成的数据，核心是消息传递：每一层里，每个节点汇总邻居传来的信息来更新自己的特征，堆叠多层后信息能传到更远的节点，而且结果不依赖节点的编号顺序。Scarselli 等人 2009 年提出「图神经网络模型」，之后有图卷积网络（GCN）、图注意力网络（GAT）等变体。具身智能里常见三种用法：把机器人身体建成图（关节、肢体作节点），如 NerveNet 让策略迁移到不同体型的智能体；把粒子或物体建成图来学物理，如 DeepMind 2020 年的图网络模拟器（GNS）；以及在 3D 场景图上表示物体关系，做推理和规划。",
+      "example": "GNS 把流体、沙子等材料的每个粒子当作节点，相邻粒子连边，用多轮消息传递预测下一步位置；测试时的粒子数可以比训练时多一个数量级。",
+      "related": [
+        "3D场景图",
+        "神经模拟器",
+        "点云编码器",
+        "Transformer",
+        "形态-控制协同设计（形态进化）",
+        "归纳偏置"
+      ],
+      "sources": [
+        {
+          "title": "Graph neural network - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Graph_neural_network"
+        },
+        {
+          "title": "Learning to Simulate Complex Physics with Graph Networks (Sanchez-Gonzalez et al., ICML 2020)",
+          "url": "https://arxiv.org/abs/2002.09405"
+        },
+        {
+          "title": "NerveNet: Learning Structured Policy with Graph Neural Networks (project page)",
+          "url": "http://www.cs.toronto.edu/~tingwuwang/nervenet.html"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "历史编码器",
+      "name_en": "History Encoder",
+      "abbr": "",
+      "aliases": [
+        "适应模块",
+        "Adaptation Module",
+        "历史观测编码器"
+      ],
+      "tier": 3,
+      "one_liner": "把最近一段观测和动作压成一个向量，让策略推断当下的环境状况。",
+      "explanation": "历史编码器是策略网络里专门处理「过去若干步」信息的模块，常用一维卷积、RNN 或 Transformer 实现。最典型的用法来自足式机器人强化学习：真实世界里地面摩擦、负载、电机状态等参数测不到，但会在最近的状态-动作序列里留下痕迹。RMA（Kumar 等，RSS 2021）分两阶段训练：先在仿真里让基础策略使用由特权信息（只有仿真里才拿得到的真值参数）压缩成的 8 维外参向量；再训练一个「适应模块」，只看最近 50 步（0.5 秒）的状态和动作历史去回归这个向量。部署时适应模块以 10 Hz、基础策略以 100 Hz 运行。这种先教师、后学生的思路被后来大量足式和人形运控工作沿用。",
+      "example": "给宇树 A1 背上突然加一个重物，RMA 的适应模块从最近半秒的关节响应里估计出新的外参，基础策略随之调整步态，不到一秒就适应，不需要重新训练。",
+      "related": [
+        "快速运动适应",
+        "特权信息",
+        "教师-学生蒸馏",
+        "本体感知",
+        "系统辨识",
+        "域随机化"
+      ],
+      "sources": [
+        {
+          "title": "RMA: Rapid Motor Adaptation for Legged Robots (Kumar et al., RSS 2021)",
+          "url": "https://arxiv.org/abs/2107.04034"
+        },
+        {
+          "title": "RMA paper full text (ar5iv)",
+          "url": "https://ar5iv.labs.arxiv.org/html/2107.04034"
+        }
+      ],
+      "as_of": ""
+    }
+  ]
+}

@@ -1,0 +1,405 @@
+{
+  "category": "sim",
+  "batch": 1,
+  "terms": [
+    {
+      "name_zh": "基线方法",
+      "name_en": "Baseline",
+      "abbr": "",
+      "aliases": [
+        "基线",
+        "对比基线"
+      ],
+      "tier": 1,
+      "one_liner": "论文里拿来做对照的已有方法或简单方法，用来衡量新方法到底好多少。",
+      "explanation": "基线是评估新方法时的参照物。谷歌机器学习术语表把它定义为：用来比较另一个（通常更复杂的）模型表现如何的参考模型。基线可以是简单做法，如直接行为克隆、随机策略，也可以是公认的强方法，如 OpenVLA。只报「成功率 80%」说明不了什么，要在同一基准、同一评测协议下和基线比，才能看出提升来自方法本身。读论文时要留意基线够不够强、是否按原作设定复现：基线选弱了，提升就会被夸大。消融实验也可看作拿「去掉某个模块的自己」当基线。",
+      "example": "OpenVLA-OFT 论文以原版 OpenVLA 为基线，在 LIBERO 四个任务套件上把平均成功率从 76.5% 提到 97.1%。",
+      "related": [
+        "消融实验",
+        "基准测试",
+        "最先进水平",
+        "成功率",
+        "评测协议"
+      ],
+      "sources": [
+        {
+          "title": "Google Machine Learning Glossary: baseline",
+          "url": "https://developers.google.com/machine-learning/glossary#baseline"
+        },
+        {
+          "title": "Fine-Tuning Vision-Language-Action Models: Optimizing Speed and Success (OpenVLA-OFT, arXiv 2502.19645)",
+          "url": "https://arxiv.org/abs/2502.19645"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "基准测试",
+      "name_en": "Benchmark",
+      "abbr": "",
+      "aliases": [
+        "评测基准",
+        "榜单",
+        "基准"
+      ],
+      "tier": 1,
+      "one_liner": "一套固定的任务、数据和评分规则，让不同方法在同样条件下比高低。",
+      "explanation": "基准测试指用一组标准测试衡量对象的相对性能，比如电脑硬件的跑分。在具身智能里，一个基准通常包括固定的任务集合、仿真环境或真实场景、演示数据（如有）、评测协议和指标，指标多为成功率。常见的仿真基准有 LIBERO、CALVIN、SimplerEnv、RoboTwin 等，也有 RoboArena 这类真机评测网络。它的价值是可复现、能横向对比；风险是方法可能专门对着榜单调优（刷榜），分数高不等于真机好用，而且头部方法接近满分后基准就失去区分度，即基准饱和。",
+      "example": "VLA 论文常在 LIBERO 的四个任务套件上报告平均成功率，并和 OpenVLA 等基线放在同一张表里比较。",
+      "related": [
+        "基线方法",
+        "评测协议",
+        "成功率",
+        "LIBERO",
+        "基准饱和",
+        "刷榜"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Benchmark (computing)",
+          "url": "https://en.wikipedia.org/wiki/Benchmark_(computing)"
+        },
+        {
+          "title": "LIBERO (NeurIPS 2023 Datasets and Benchmarks Track)",
+          "url": "https://proceedings.neurips.cc/paper_files/paper/2023/hash/8c3c666820ea055a77726d66fc7d447f-Abstract-Datasets_and_Benchmarks.html"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "数字孪生",
+      "name_en": "Digital Twin",
+      "abbr": "",
+      "aliases": [
+        "数字双胞胎"
+      ],
+      "tier": 1,
+      "one_liner": "与真实物体、机器人或工厂一一对应，并用真实数据保持同步的虚拟副本。",
+      "explanation": "数字孪生指物理产品、系统或流程在计算机里的对应模型。它和普通仿真的区别是会持续接收真实对象的数据来同步自身状态，严格意义上还能反过来影响真实系统。NASA 在 Apollo 时代就用地面模拟器配合飞船排障，2010 年正式给出定义；英伟达把它作为 Omniverse 的主要应用，用于工厂规划和机器人测试。在具身智能里，这个词常被宽泛地用来指按真实场景精细复刻的仿真环境，用来先在仿真里训练、评测再上真机。复刻越准，虚实差距越小，但建模成本也越高；只求相似、不求一模一样的做法叫数字表亲。",
+      "example": "据英伟达介绍，富士康用数字孪生在虚拟工厂里先优化产线布局和设备摆放，再落地到实体工厂。",
+      "related": [
+        "现实到仿真",
+        "数字表亲",
+        "虚实差距",
+        "Isaac Sim",
+        "Omniverse",
+        "仿真保真度"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Digital twin",
+          "url": "https://en.wikipedia.org/wiki/Digital_twin"
+        },
+        {
+          "title": "NVIDIA Glossary: What Is a Digital Twin?",
+          "url": "https://www.nvidia.com/en-us/glossary/digital-twin/"
+        },
+        {
+          "title": "Automated Creation of Digital Cousins for Robust Policy Learning (ACDC, CoRL 2024, arXiv 2410.07408)",
+          "url": "https://arxiv.org/abs/2410.07408"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "域随机化",
+      "name_en": "Domain Randomization",
+      "abbr": "DR",
+      "aliases": [
+        "领域随机化"
+      ],
+      "tier": 1,
+      "one_liner": "在仿真里随机改变外观和物理参数，让策略把真实世界当成又一种变化。",
+      "explanation": "域随机化由 OpenAI 的 Josh Tobin 等人 2017 年提出（IROS 2017）。它不追求把仿真做得和现实一模一样，而是在训练时大量随机化纹理、光照、相机等渲染参数，以及质量、摩擦、阻尼等动力学参数（后者常叫动力学随机化），让模型见过足够多的变化，真实世界在它看来只是其中一种。原论文只用仿真 RGB 图训练目标定位网络，迁移到真机后定位精度约 1.5 厘米。它是仿真到现实迁移最常用的手段之一，Isaac Lab 等框架都内置。难点是随机范围靠经验调，范围太大策略会变保守；自动域随机化让范围随训练自动扩大。",
+      "example": "训练四足行走策略时，给每个并行环境随机设置地面摩擦系数、机身质量和电机延迟，训出的策略上真机更不容易摔倒。",
+      "related": [
+        "虚实差距",
+        "仿真到现实迁移",
+        "动力学随机化",
+        "视觉随机化",
+        "自动域随机化",
+        "系统辨识"
+      ],
+      "sources": [
+        {
+          "title": "Domain Randomization for Transferring Deep Neural Networks from Simulation to the Real World (arXiv 1703.06907)",
+          "url": "https://arxiv.org/abs/1703.06907"
+        },
+        {
+          "title": "Lilian Weng: Domain Randomization for Sim2Real Transfer",
+          "url": "https://lilianweng.github.io/posts/2019-05-05-domain-randomization/"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "环境（Env）与 reset / step 接口",
+      "name_en": "Environment (Env; reset/step interface)",
+      "abbr": "Env",
+      "aliases": [
+        "Gym 接口",
+        "Gymnasium API",
+        "环境接口"
+      ],
+      "tier": 1,
+      "one_liner": "强化学习和机器人仿真的标准交互接口：reset 开一局，step 执行一步动作。",
+      "explanation": "在强化学习里，环境就是智能体与之交互的世界。OpenAI Gym 把和环境打交道的方式做成了通用编程接口，现由 Farama 基金会维护的后继项目 Gymnasium 规定：reset() 开始新回合，返回初始观测和附加信息 info；step(action) 执行一个动作，返回新观测、奖励、terminated（任务意义上结束，如成功或摔倒）、truncated（被外部截断，如超时）和 info。环境还用 action_space、observation_space 规定动作和观测的格式。Isaac Lab 等框架沿用类似写法，同一套训练算法因此能换着环境用。旧版 Gym 只有一个 done 标志；拆成两个，是因为超时截断时任务其实没结束，估算后续还能拿多少奖励时仍要把没走完的部分算进去，混在一起会算错。",
+      "example": "典型循环：obs, info = env.reset()，然后反复执行 obs, reward, terminated, truncated, info = env.step(policy(obs))，任一结束标志为真就重新 reset。",
+      "related": [
+        "智能体与环境",
+        "回合",
+        "观测",
+        "动作空间",
+        "终止与截断",
+        "Gymnasium"
+      ],
+      "sources": [
+        {
+          "title": "Gymnasium Documentation: Env API",
+          "url": "https://gymnasium.farama.org/api/env/"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "LIBERO",
+      "name_en": "LIBERO Benchmark (Benchmarking Knowledge Transfer for Lifelong Robot Learning)",
+      "abbr": "",
+      "aliases": [
+        "LIBERO-Spatial",
+        "LIBERO-Object",
+        "LIBERO-Goal",
+        "LIBERO-Long (LIBERO-10)",
+        "LIBERO-90",
+        "LIBERO-100"
+      ],
+      "tier": 1,
+      "one_liner": "含 130 个桌面操作任务的仿真基准，VLA 论文最常报的榜单之一。",
+      "explanation": "LIBERO 由 Bo Liu、Yuke Zhu、Peter Stone 等人提出，发表于 NeurIPS 2023 数据集与基准赛道，原本用来研究终身学习（机器人一个接一个地学新任务）中的知识迁移。它建在 robosuite（底层是 MuJoCo）上，程序化生成了 130 个带语言指令的任务，分四个套件：Spatial（换摆放位置）、Object（换物体）、Goal（换目标）各 10 个任务；LIBERO-100 分为预训练用的 LIBERO-90 和 10 个长程任务的 LIBERO-Long（即 LIBERO-10）。每个任务配 50 条人工遥操作演示。它后来成了 VLA 微调最常用的榜单之一，头部方法平均成功率已超 97%，因此又出现了加扰动的 LIBERO-Plus、LIBERO-PRO。",
+      "example": "OpenVLA-OFT 在 LIBERO 四个套件上的平均成功率为 97.1%，原版 OpenVLA 为 76.5%。",
+      "related": [
+        "基准测试",
+        "基准饱和",
+        "LIBERO-Plus",
+        "LIBERO-PRO",
+        "robosuite",
+        "OpenVLA-OFT"
+      ],
+      "sources": [
+        {
+          "title": "LIBERO: Benchmarking Knowledge Transfer for Lifelong Robot Learning (arXiv 2306.03310)",
+          "url": "https://arxiv.org/abs/2306.03310"
+        },
+        {
+          "title": "LIBERO GitHub repository",
+          "url": "https://github.com/Lifelong-Robot-Learning/LIBERO"
+        },
+        {
+          "title": "OpenVLA-OFT (arXiv 2502.19645)",
+          "url": "https://arxiv.org/abs/2502.19645"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "MuJoCo",
+      "name_en": "MuJoCo (Multi-Joint dynamics with Contact)",
+      "abbr": "",
+      "aliases": [
+        "Mujoco"
+      ],
+      "tier": 1,
+      "one_liner": "擅长接触模拟的开源物理引擎，由谷歌 DeepMind 维护，机器人研究常用。",
+      "explanation": "MuJoCo 全称 Multi-Joint dynamics with Contact（多关节接触动力学），由 Todorov 等人 2012 年在 IROS 发表，早年需付费授权。DeepMind 2021 年 10 月收购后免费开放，2022 年起以 Apache 2.0 许可开源，现由谷歌 DeepMind 维护。它把接触力的计算写成凸优化问题，解唯一，逆动力学（由想要的运动反推所需的力）也有明确定义，适合做控制和强化学习。机器人模型用 XML 格式的 MJCF 描述。周边有可在 GPU/TPU 上并行的 JAX 版 MJX、MuJoCo Menagerie 机器人模型库等；robosuite、LIBERO、DeepMind 控制套件都跑在它上面。",
+      "example": "LIBERO 基准建在 robosuite 上，机械臂和物体的物理计算由 MuJoCo 完成。",
+      "related": [
+        "物理引擎",
+        "MJX",
+        "MJCF",
+        "MuJoCo Menagerie",
+        "robosuite",
+        "DeepMind 控制套件"
+      ],
+      "sources": [
+        {
+          "title": "google-deepmind/mujoco (GitHub)",
+          "url": "https://github.com/google-deepmind/mujoco"
+        },
+        {
+          "title": "Google DeepMind: Opening up a physics simulator for robotics (2021-10)",
+          "url": "https://deepmind.google/blog/opening-up-a-physics-simulator-for-robotics/"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "Isaac Lab",
+      "name_en": "NVIDIA Isaac Lab",
+      "abbr": "",
+      "aliases": [
+        "Orbit",
+        "IsaacLab"
+      ],
+      "tier": 1,
+      "one_liner": "英伟达开源的 GPU 并行机器人学习框架，用来在仿真里大规模训练策略。",
+      "explanation": "Isaac Lab 是英伟达主导的开源机器人学习框架（BSD-3 许可），由 2023 年发表的 Orbit 框架演变而来，也是英伟达官方推荐的 Isaac Gym 替代品（Isaac Gym 已停止支持）。它建在 Isaac Sim 之上，用 PhysX 算物理、RTX 做渲染，能在 GPU 上同时跑大量并行环境，自带执行器模型（模拟真实电机的响应）、多种传感器、域随机化和数据采集工具，支持强化学习、模仿学习和运动规划。不少人形和四足的强化学习运控策略在这里训练。截至 2026 年 9 月，3.0 版处于早期访问阶段，改为多物理后端架构，可接入 Newton 物理引擎，部分流程不必再装 Isaac Sim。",
+      "example": "训练宇树 G1 的行走策略时，可在 Isaac Lab 里开几千个并行环境并加域随机化，训完再部署到真机。",
+      "related": [
+        "Isaac Sim",
+        "Isaac Gym",
+        "Orbit / IsaacGymEnvs（Isaac Lab 前身）",
+        "GPU 并行仿真",
+        "Newton 物理引擎",
+        "强化学习运控"
+      ],
+      "sources": [
+        {
+          "title": "Isaac Lab Documentation",
+          "url": "https://isaac-sim.github.io/IsaacLab/main/index.html"
+        },
+        {
+          "title": "Isaac Lab: A GPU-Accelerated Simulation Framework for Multi-Modal Robot Learning (arXiv 2511.04831)",
+          "url": "https://arxiv.org/abs/2511.04831"
+        },
+        {
+          "title": "isaac-sim/IsaacLab releases (GitHub)",
+          "url": "https://github.com/isaac-sim/IsaacLab/releases"
+        },
+        {
+          "title": "NVIDIA Developer: Isaac Gym - Preview Release (now deprecated, no longer supported)",
+          "url": "https://developer.nvidia.com/isaac-gym"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "Isaac Sim",
+      "name_en": "NVIDIA Isaac Sim",
+      "abbr": "",
+      "aliases": [
+        "英伟达 Isaac Sim"
+      ],
+      "tier": 1,
+      "one_liner": "英伟达基于 Omniverse 的开源机器人仿真器，物理和画面都追求高保真。",
+      "explanation": "Isaac Sim 是英伟达的机器人仿真参考应用，建在 Omniverse 库之上：场景用 OpenUSD 描述，物理用 PhysX，渲染用 RTX。它能导入 CAD、URDF、MJCF 格式的机器人和场景，模拟相机、激光雷达等传感器，通过随机化光照、颜色、位置批量生成合成数据，并支持软件在环/硬件在环测试（把真实的控制软件或硬件接进仿真里一起测）和 ROS 2 桥接。2025 年起以 Apache 2.0 许可在 GitHub 开源。它的定位是高保真仿真器，大规模训练策略通常交给建在它上面的 Isaac Lab。截至 2026 年 9 月，最新稳定版为 6.1，7.0 已发布 alpha 预览版。",
+      "example": "用 Isaac Sim 搭一个仓库场景，随机改变货箱纹理和灯光，批量渲染带标注的图片来训练检测模型。",
+      "related": [
+        "Isaac Lab",
+        "Omniverse",
+        "PhysX",
+        "通用场景描述",
+        "合成数据",
+        "数字孪生"
+      ],
+      "sources": [
+        {
+          "title": "NVIDIA Isaac Sim",
+          "url": "https://developer.nvidia.com/isaac/sim"
+        },
+        {
+          "title": "isaac-sim/IsaacSim releases (GitHub)",
+          "url": "https://github.com/isaac-sim/IsaacSim/releases"
+        }
+      ],
+      "as_of": "2026-09"
+    },
+    {
+      "name_zh": "物理引擎",
+      "name_en": "Physics Engine",
+      "abbr": "",
+      "aliases": [
+        "物理仿真引擎"
+      ],
+      "tier": 1,
+      "one_liner": "按物理规律一步步计算物体受力、碰撞和运动的软件核心。",
+      "explanation": "物理引擎是对物理系统做近似模拟的软件，广泛用于游戏、影视特效、科学计算和机器人仿真。每个仿真步里，它先做碰撞检测找出哪些物体接触，再用约束求解器算接触力、摩擦力和关节力，最后用积分器更新位置和速度。按目标可分为追求速度的实时引擎和追求精度的高精度引擎。机器人领域常用的有 MuJoCo、PhysX、Bullet（PyBullet）、ODE，以及新兴的 Newton。要区分：物理引擎只管「怎么动」，仿真器（如 Isaac Sim、Gazebo）在它外面再加渲染、传感器、场景编辑和编程接口。接触模型和步长设置直接决定仿真准不准、稳不稳，也是虚实差距的主要来源之一。",
+      "example": "同一个机械臂抓取任务，放在 MuJoCo 和 PhysX 里跑，接触力和成功率可能不一样，所以论文通常会注明用的是哪个引擎。",
+      "related": [
+        "仿真器",
+        "MuJoCo",
+        "PhysX",
+        "接触模型",
+        "约束求解器",
+        "仿真步长"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Physics engine",
+          "url": "https://en.wikipedia.org/wiki/Physics_engine"
+        },
+        {
+          "title": "google-deepmind/mujoco (GitHub)",
+          "url": "https://github.com/google-deepmind/mujoco"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "真机评测",
+      "name_en": "Real-world Evaluation",
+      "abbr": "",
+      "aliases": [
+        "实机测试",
+        "真机测试",
+        "真实世界评测"
+      ],
+      "tier": 1,
+      "one_liner": "把策略部署到真实机器人上反复试跑，统计成功率等指标。",
+      "explanation": "真机评测指在真实机器人和真实场景里运行策略，记录每次尝试是否成功、完成到哪一步、要不要人工干预。仿真再像也有虚实差距，所以它是检验具身模型的最终标准。难点是成本高、难复现：每次都要人摆放物体、复位场景、判定结果，灯光、摆放位置、机器人状态稍有不同分数就会变，不同实验室之间很难横向比较。因此论文要写清评测协议，包括任务、试验次数、初始条件和判定标准。为了更可信、更可扩展，出现了 RoboArena 这类分布式双盲成对比较，以及用仿真评测（如 SimplerEnv）或世界模型来预测真机表现的做法。",
+      "example": "RoboArena 在 7 所高校的 DROID 机器人平台上，对 7 个通用策略做了 600 多次双盲成对真机对比，再汇总成排名。",
+      "related": [
+        "仿真评测",
+        "评测协议",
+        "成功率",
+        "双盲成对比较",
+        "RoboArena",
+        "虚实差距"
+      ],
+      "sources": [
+        {
+          "title": "RoboArena: Distributed Real-World Evaluation of Generalist Robot Policies (arXiv 2506.18123)",
+          "url": "https://arxiv.org/abs/2506.18123"
+        },
+        {
+          "title": "Evaluating Real-World Robot Manipulation Policies in Simulation (SIMPLER, arXiv 2405.05941)",
+          "url": "https://arxiv.org/abs/2405.05941"
+        }
+      ],
+      "as_of": "2025-06"
+    },
+    {
+      "name_zh": "虚实差距",
+      "name_en": "Sim-to-Real Gap (Reality Gap)",
+      "abbr": "",
+      "aliases": [
+        "现实差距",
+        "Reality Gap",
+        "Sim2Real Gap",
+        "虚实鸿沟"
+      ],
+      "tier": 1,
+      "one_liner": "仿真和真实世界之间的差异，导致仿真里练好的策略上真机后变差。",
+      "explanation": "虚实差距指仿真环境与真实世界不一致，使仿真中训练好的策略迁移到真机后性能下降甚至失效。来源大致有几类：物理参数不准（摩擦、质量、阻尼、电机特性）、物理建模本身的简化（如软接触、柔性物体）、画面差异（渲染的光照纹理和真实相机不同），以及传感器噪声、控制延迟等仿真里没建模的因素。仿真训练便宜、安全、可大规模并行，所以缩小这道差距是仿真到现实迁移的核心问题。常见对策有系统辨识（把仿真参数校准准）、域随机化（让策略适应一大片参数范围）、领域自适应（让仿真数据分布向真实靠拢），以及用少量真机数据微调。",
+      "example": "仿真里训好的四足行走策略，上真机后因为电机响应比仿真慢而原地抖动甚至摔倒，就是典型的虚实差距。",
+      "related": [
+        "仿真到现实迁移",
+        "域随机化",
+        "系统辨识",
+        "领域自适应",
+        "执行器建模",
+        "现实到仿真"
+      ],
+      "sources": [
+        {
+          "title": "Sim-to-Real Transfer in Deep Reinforcement Learning for Robotics: a Survey (arXiv 2009.13303)",
+          "url": "https://arxiv.org/abs/2009.13303"
+        },
+        {
+          "title": "Lilian Weng: Domain Randomization for Sim2Real Transfer",
+          "url": "https://lilianweng.github.io/posts/2019-05-05-domain-randomization/"
+        }
+      ],
+      "as_of": ""
+    }
+  ]
+}

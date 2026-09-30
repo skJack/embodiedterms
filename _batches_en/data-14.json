@@ -1,0 +1,113 @@
+{
+  "batch": "data-14",
+  "terms": [
+    {
+      "key": "data-14#0",
+      "name_en": "RT-1 Robot Action Dataset",
+      "aliases": ["Fractal", "fractal20220817_data", "Google Robot Dataset"],
+      "one_liner": "Google's real-robot manipulation dataset, collected over 17 months using 13 robots.",
+      "explanation": "The RT-1 dataset is the real-robot data Google collected to train its RT-1 model: 13 Everyday Robots single-arm mobile robots, operating in office-kitchen-like settings, recorded via human teleoperation over 17 months, producing more than 130,000 episodes (one complete task execution) covering over 700 language instructions. Inside Open X-Embodiment it's named fractal20220817_data; the TFDS version contains 87,212 episodes, stored in RLDS format, with each step carrying an image, a language instruction, and an action (end-effector displacement, gripper open/close, base movement, and a termination signal). It was among the largest public real-robot datasets of its time, and it's also the training data that SimplerEnv's “Google Robot” evaluation tasks are built to match.",
+      "example": "Loading fractal20220817_data from Open X-Embodiment gives frame-by-frame images and actions for the robot picking up a soda can from a table under an instruction like “pick coke can”; SimplerEnv's Google Robot “pick up the coke can” task was recreated directly from this setup.",
+      "related": ["RT-1", "Open X-Embodiment", "SimplerEnv", "Everyday Robots Mobile Manipulator", "RLDS Format", "Real-Robot Data"]
+    },
+    {
+      "key": "data-14#1",
+      "name_en": "ScanNet",
+      "aliases": ["ScanNet++", "ScanNet v2"],
+      "one_liner": "A large-scale indoor RGB-D scan dataset with 3D reconstruction and semantic annotations.",
+      "explanation": "ScanNet is an indoor-scene dataset released by Angela Dai, Matthias Nießner, and colleagues at CVPR 2017: 1,513 indoor scenes were scanned with consumer RGB-D cameras (capturing color and depth simultaneously), totaling 2.5 million frames, along with camera poses, 3D surface reconstructions, and crowdsourced semantic segmentation labels, providing a unified training and evaluation set for 3D semantic segmentation and 3D detection. In embodied AI, many 3D-language tasks are built on top of it, such as 3D visual grounding (locating an object in a 3D scene from a sentence) and 3D question answering. A later version, ScanNet++, switched to a laser scanner, a DSLR, and an iPhone for capture, achieving higher precision, and v2, released in December 2024, expanded coverage to more than 1,000 scenes.",
+      "example": "ScanRefer writes 51,583 natural-language descriptions for 11,046 objects across 800 ScanNet scenes; a model must use the description to locate the target object within the 3D scan.",
+      "related": ["3D Visual Grounding", "Depth Camera", "Point Cloud", "3D Scene Graph", "HM3D", "Matterport3D"]
+    },
+    {
+      "key": "data-14#2",
+      "name_en": "Scripted Demonstrations",
+      "aliases": ["Scripted Policy Demonstrations", "Programmatic Demonstrations"],
+      "one_liner": "Demonstration data generated automatically by a hand-written rule-based program controlling the robot, instead of a human.",
+      "explanation": "Scripted demonstrations are produced by a hand-written rule-based program (a scripted policy) that controls the robot through a task automatically, with the process recorded as demonstration data. The script typically reads privileged information directly in simulation, such as an object's exact pose (precise state that isn't available in real deployment), and computes a trajectory using preset waypoints or a motion planner. The advantage is low cost, unlimited generation, and clean, consistent motion; the disadvantage is a narrow range of motion patterns, very different from the diverse, hesitant style of real human demonstrations — complex tasks are hard to script at all, and precise state is hard to obtain on a real robot. It's commonly used for simulation benchmarks, algorithm debugging, and large-scale synthetic data. For the same number of demonstrations, a policy trained on scripted data often reaches a higher success rate than one trained on human teleoperation data, simply because scripted data lacks the multimodality and noise of human motion — so methods validated only on scripted data should be viewed cautiously.",
+      "example": "The ACT paper recorded 50 scripted demonstrations and 50 human-teleoperated demonstrations for the same block-transfer task in ALOHA simulation; ACT reached 97% success on the scripted data, dropping to 82% on the human data.",
+      "related": ["Demonstration Data", "Simulation Data", "Privileged Information", "Action Multimodality", "MimicGen", "ALOHA Simulation Tasks"]
+    },
+    {
+      "key": "data-14#3",
+      "name_en": "Skill Capture Glove",
+      "aliases": ["Sunday Robotics Capture Glove"],
+      "one_liner": "Sunday Robotics's glove that lets a person do housework wearing it and directly produce robot training data.",
+      "explanation": "The Skill Capture Glove is a data-collection device from the U.S. home-robotics company Sunday Robotics, made public in November 2025 alongside its household robot, Memo; the company was founded by Tony Zhao (an author of ACT/ALOHA) and Cheng Chi (an author of Diffusion Policy/UMI). The glove shares the same geometry and sensor layout as Memo's robotic hand, so when a person wears it to do housework, the recorded motion and force data can be used almost directly as robot data; the remaining embodiment gap is handled by a process called Skill Transform, which the company says succeeds about 90% of the time. Each glove reportedly costs about $200, with a full teleoperation setup costing around $20,000. It's a representative example of embodiment-free, capture-execution-isomorphic data collection.",
+      "example": "Sunday says it has sent thousands of gloves to “Memory Developers” — people who wear them at home to record household chores — with data reportedly coming from about 500 households, used to train its foundation model, ACT-1, so that Memo learns chores like washing dishes, making coffee, and folding laundry.",
+      "related": ["Sunday Robotics", "Sunday Memo", "Sunday ACT-1", "Embodiment-Free Data Collection", "Capture-Execution Isomorphism", "Universal Manipulation Interface (UMI)"]
+    },
+    {
+      "key": "data-14#4",
+      "name_en": "Something-Something V2",
+      "aliases": ["20BN-Something-Something V2", "Sth-Sth V2", "SSv2"],
+      "one_liner": "About 220,000 short videos of hands manipulating everyday objects, labeled with 174 action templates.",
+      "explanation": "Something-Something V2 is an action-recognition video dataset released by the company TwentyBN (20BN), now distributed for download by Qualcomm. It contains 220,847 short videos, each filmed by a crowdworker following a given action template such as “putting something into something” or “turning something upside down,” across 174 categories in total. The object in each template is abstracted as “something,” so a model can't guess the answer just by recognizing the object — it has to actually understand the motion and sequencing between the hand and the object — which is why it's commonly used to test a video model's understanding of temporal order. In embodied AI, it's treated as a source of human manipulation video: the videos carry no robot action labels, but they contain large amounts of hand-object interaction, useful for pretraining visual representations and for latent-action pretraining.",
+      "example": "LAPA does latent-action pretraining using only the roughly 220,000 human videos in SSv2, then fine-tunes on robot data; the project page reports it outperforms OpenVLA, which was trained on Bridge data, on average.",
+      "related": ["Human Video Data", "Action-Label-Free Video", "Latent Action Pretraining", "LAPA", "Ego4D", "EPIC-KITCHENS"]
+    },
+    {
+      "key": "data-14#5",
+      "name_en": "SpaceMouse Teleoperation",
+      "aliases": ["SpaceMouse", "3D Mouse"],
+      "one_liner": "Controlling a robot arm's end effector in six degrees of freedom by pushing, pulling, twisting, and tilting a 3D mouse.",
+      "explanation": "The SpaceMouse is a 6-DoF input device from 3Dconnexion, originally built for panning, zooming, and rotating 3D models in CAD software; its knob can be pushed sideways, pressed up and down, twisted, and tilted. When used for teleoperation, these 6 quantities are mapped onto incremental translation and rotation of the robot arm's end effector, with a button controlling the gripper's open/close. It's cheap and plug-and-play, needing no leader-follower arm or VR headset, which makes it well suited to single-arm tabletop tasks; simulation frameworks like robosuite support it natively. The downside is that it only controls end-effector pose, so it doesn't suit bimanual or dexterous-hand setups, feels less intuitive, and produces slower, less natural motion than a leader-follower arm. In human-in-the-loop reinforcement learning, it's commonly used as the tool a human uses to take over and correct the robot at any moment.",
+      "example": "During HIL-SERL training, a person holds a SpaceMouse while supervising the robot; whenever the policy makes a mistake, the person takes over directly through the SpaceMouse and provides a corrective action, and these intervention episodes are stored in the replay buffer to continue training.",
+      "related": ["Teleoperation", "Human-in-the-Loop", "HIL-SERL", "Intervention Data", "robosuite", "Leader-Follower Arm Teleoperation"]
+    },
+    {
+      "key": "data-14#6",
+      "name_en": "Suboptimal (Noisy) Demonstrations",
+      "aliases": ["Imperfect Demonstrations", "Mixed-Quality Demonstrations"],
+      "one_liner": "Human demonstration data that includes wasted motion, hesitation, mistakes, or inconsistent quality across operators.",
+      "explanation": "Suboptimal demonstrations are demonstrations that fall short of ideal: slow motion, pauses, back-and-forth trial and error, mistakes followed by recovery, or inconsistency because different operators have different skill levels and habits. Almost all real-world collected data has some of these issues. Behavioral cloning (directly imitating the demonstrated actions) learns from the good and bad actions alike, so the more mixed the data, the more hesitant and unstable the resulting policy tends to be. Common countermeasures include: filtering and quality-checking the data after collection; weighting samples by reward or advantage (how much better an action is than average), as in advantage-weighted regression; using offline reinforcement learning to extract better behavior from mixed-quality data; or feeding quality information in as a conditioning signal, so that only the “good” behavior is requested at inference time, as in RECAP's advantage conditioning.",
+      "example": "robomimic's Multi-Human dataset was collected by 6 operators of varying skill (2 each rated “worse,” “okay,” and “better”), each recording 50 successful trajectories for 300 total, specifically to study how mixed-quality data affects imitation learning.",
+      "related": ["Behavioral Cloning", "Data Filtering (Data Curation)", "Data Quality Control", "Advantage-Weighted Regression", "Offline Reinforcement Learning", "RECAP"]
+    },
+    {
+      "key": "data-14#7",
+      "name_en": "Subtask Segmentation",
+      "aliases": ["Trajectory Segmentation", "Skill Segmentation"],
+      "one_liner": "Splitting one long demonstration into steps, marking each segment's start and end frame with a description.",
+      "explanation": "Subtask segmentation is a data-annotation step: a complete long-horizon demonstration (such as “clear the table”) is split by meaning into subtask segments (“pick up the plate,” “put it in the sink”), with the start and end frame of each recorded, usually along with a language description and a skill type. It lets long-horizon task data be used step by step: when training a hierarchical policy, the high-level model learns to predict which subtask comes next, while the low-level model learns to execute a single subtask; segmentation can also be used to compute per-skill success rates, build a progress-based reward, or discard failed segments. Segmentation methods include manual annotation, rule-based automatic segmentation (for example, at points where the gripper opens or closes, or velocity drops near zero), and automatically finding boundaries using visual representations or a VLM — UVD, for instance, discovers subgoals by detecting sudden shifts in a pretrained visual representation.",
+      "example": "The AgiBot World 2026 dataset provides step-level instruction_segments annotations for every trajectory, with each segment recording a skill type (such as Pick), one instruction sentence, and its start/end frames — for example, “left arm picks up the red-capped drink from the shopping cart” corresponds to frames 284–493.",
+      "related": ["Long-Horizon Task", "Language Annotation", "Automatic Annotation", "Atomic Skill", "Hierarchical Architecture", "AgiBot World"]
+    },
+    {
+      "key": "data-14#8",
+      "name_en": "SynGrasp-1B",
+      "aliases": ["SynGrasp"],
+      "one_liner": "A billion-frame simulated synthetic grasping dataset built by Galbot and others, used to pretrain GraspVLA.",
+      "explanation": "SynGrasp-1B is a synthetic grasping dataset built by Galbot (银河通用) together with Peking University, the University of Hong Kong, and the Beijing Academy of Artificial Intelligence, totaling about 1 billion frames, all generated in simulation: 240 categories and more than 10,000 object models were selected from Objaverse and randomly placed on tables, BoDex generated stable grasp poses, cuRobo planned the grasping trajectories, and the results were rendered after domain randomization of materials, lighting, camera viewpoint, background, and initial pose. It's used to pretrain the grasping VLA model GraspVLA (CoRL 2025), testing whether synthetic action data alone can transfer zero-shot to real-world grasping. The dataset was made public on Hugging Face in August 2026.",
+      "example": "GraspVLA, pretrained on SynGrasp-1B with no real-robot fine-tuning at all, can grasp objects it never saw during training on a real tabletop, following a language instruction.",
+      "related": ["Galbot GraspVLA", "Synthetic Data", "Domain Randomization", "Objaverse", "cuRobo", "Sim-to-Real Transfer"]
+    },
+    {
+      "key": "data-14#9",
+      "name_en": "Tactile Glove",
+      "aliases": ["Pressure-Sensing Glove", "Tactile Sensing Glove"],
+      "one_liner": "A glove covered in pressure or tactile sensors on the fingers and palm, recording the contact forces of a human hand.",
+      "explanation": "A tactile glove is a device with pressure or tactile sensors arranged across the glove, recording the distribution of contact force at each point on the hand while grasping or manipulating objects. It differs in focus from a data glove (which mainly measures finger joint angles) and a haptic glove (which pushes force back onto the wearer), though the three are often combined. It's hard to tell how tightly something is being pinched, or whether it's slipping, from vision alone, and this information is critical for contact-rich tasks like wiping, plugging in connectors, or handling fragile items — so tactile gloves are used to collect force-annotated human demonstrations, study patterns of human grasping, or record touch data synchronously during teleoperation. The challenges are sensor durability and calibration, and the difference in tactile sensing between a human hand and a robot hand.",
+      "example": "MIT's STAG glove, published in Nature in 2019, has about 550 sensors and costs roughly $10 to make, and recorded about 135,000 frames of human interaction with 26 object types; the OSMO glove, open-sourced in December 2025, places 12 three-axis tactile sensors on the fingertips and palm, with humans and the robot wearing matching gloves — a wiping policy trained only on human demonstrations reached 72% success.",
+      "related": ["Tactile Data", "Data Glove", "Haptic Glove", "Tactile Sensor", "Tactile Representation Learning", "Contact-Rich Manipulation"]
+    },
+    {
+      "key": "data-14#10",
+      "name_en": "TensorFlow Datasets (TFDS)",
+      "aliases": ["tensorflow_datasets"],
+      "one_liner": "Google's open-source dataset library that downloads and loads a dataset into a trainable pipeline in one line of code.",
+      "explanation": "TFDS is an open-source dataset library maintained by Google, cataloging thousands of ready-to-use datasets spanning images, text, audio, robotics, and more. Every dataset has a builder, responsible for downloading the raw data, converting it through a fixed pipeline, and storing it as sharded TFRecord or ArrayRecord files; calling tfds.load returns a tf.data.Dataset, which can also be converted to NumPy for use with JAX or PyTorch, along with a version number and metadata. It's a layer built on top of tf.data, not tf.data itself. In embodied AI, the RLDS format and the Open X-Embodiment dataset are both released following the TFDS convention, and the training code for Octo and OpenVLA reads data through it as well.",
+      "example": "Pointing tfds.builder_from_directory at Open X-Embodiment's fractal20220817_data directory on Google Cloud Storage lets you iterate through the RT-1 dataset episode by episode, getting images, language instructions, and actions.",
+      "related": ["RLDS Format", "TFRecord", "Open X-Embodiment", "TensorFlow", "LeRobot Dataset Format"]
+    },
+    {
+      "key": "data-14#11",
+      "name_en": "TFRecord",
+      "aliases": [".tfrecord", "tf.train.Example"],
+      "one_liner": "TensorFlow's binary file format, storing a sequence of serialized records back to back.",
+      "explanation": "TFRecord is TensorFlow's data storage format: a file consists of binary records placed one after another, each with a length field and a CRC checksum, and the content is usually a tf.train.Example encoded with protobuf (Google's serialization protocol) — essentially a dictionary mapping field names to lists of values. It's well suited to reading large amounts of data sequentially, and the official guidance recommends splitting data into multiple shards, ideally over 100MB each, to support parallel reads. The downside is that it can only be scanned sequentially — it's awkward to randomly fetch one record by index — and parsing depends on TensorFlow. TFDS uses it as the default storage format, so datasets like RLDS and Open X-Embodiment download as a set of TFRecord shards; newer datasets in the PyTorch ecosystem have largely shifted to Parquet plus video, HDF5, or Zarr instead.",
+      "example": "An RLDS dataset directory typically contains dataset_info.json and features.json, plus shard files named something like xxx-train.tfrecord-00000-of-01024, where each record stores one complete episode.",
+      "related": ["TFDS (TensorFlow Datasets)", "RLDS Format", "Protobuf", "Parquet", "HDF5", "WebDataset"]
+    }
+  ]
+}

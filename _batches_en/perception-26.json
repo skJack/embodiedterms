@@ -1,0 +1,104 @@
+{
+  "batch": "perception-26",
+  "terms": [
+    {
+      "key": "perception-26#0",
+      "name_en": "VINS-Mono / VINS-Fusion",
+      "aliases": ["VINS", "Visual-Inertial Navigation System"],
+      "one_liner": "An open-source visual-inertial localization system from HKUST that fuses a camera and an IMU to estimate pose in real time.",
+      "explanation": "VINS-Mono is a monocular visual-inertial state estimator open-sourced by Shaojie Shen’s team (the Aerial Robotics Group) at the Hong Kong University of Science and Technology, published in IEEE T-RO. Using just one camera plus one IMU (inertial measurement unit, which measures acceleration and angular velocity), it computes a device’s position and orientation in real time. It works by tightly coupling pre-integrated IMU data with image feature points inside a nonlinear optimization, and includes automatic initialization, online calibration of the camera-IMU extrinsics, loop closure detection, and 4-degree-of-freedom pose graph optimization. VINS-Fusion, released in 2019, is an extended version supporting monocular+IMU, stereo, and stereo+IMU configurations, and also demonstrates fusion with GPS. Both are built on ROS and open-sourced under GPLv3, and are commonly used as a baseline localization solution for drones and mobile robots.",
+      "example": "A quadruped robot dog is fitted with a stereo camera that has a built-in IMU; running VINS-Fusion lets it output its body trajectory in real time indoors, with no GPS available.",
+      "related": ["Visual-Inertial Odometry", "Visual SLAM", "Inertial Measurement Unit (IMU)", "IMU Pre-Integration", "Loop Closure Detection", "Camera-IMU Extrinsic Calibration"]
+    },
+    {
+      "key": "perception-26#1",
+      "name_en": "VGGT",
+      "aliases": ["Visual Geometry Grounded Transformer", "VGGT-1B"],
+      "one_liner": "A 3D vision model that computes camera parameters, depth, and a point cloud from multiple images in a single forward pass.",
+      "explanation": "VGGT is a feed-forward 3D reconstruction model from Oxford’s Visual Geometry Group (VGG) and Meta AI, with about 1 billion parameters, and won the CVPR 2025 Best Paper Award. Given anywhere from one image to a few hundred, it runs a single forward pass to output every image’s camera parameters, depth map, pointmap (the 3D coordinate corresponding to each pixel), and 3D point tracks — usually in under a second, with no need for bundle adjustment (the repeated optimization of cameras and 3D points that traditional reconstruction relies on). Work that previously required a multi-stage pipeline such as COLMAP is compressed into a single network. In embodied AI, it is commonly used to quickly get scene geometry from multi-view images. The original weights are non-commercial only; in July 2025, a separate set of commercially usable weights and open training code were released.",
+      "example": "Twenty phone photos taken circling a tabletop are fed into VGGT, producing each photo’s camera pose and a dense point cloud of the whole table in about a second.",
+      "related": ["Feed-Forward 3D Reconstruction", "DUSt3R", "π³ (Pi3)", "Structure from Motion", "Pointmap", "Bundle Adjustment"]
+    },
+    {
+      "key": "perception-26#2",
+      "name_en": "Visual Place Recognition",
+      "aliases": ["VPR", "Place Recognition"],
+      "one_liner": "Looking at an image and determining which place it is, and whether the system has been there before.",
+      "explanation": "Visual place recognition (VPR) takes a newly captured image and finds which place it was taken, by searching a pre-built database of images tagged with location — fundamentally an image retrieval problem. The difficulty is that the same place can look very different depending on lighting, season, time of day, and viewing angle. A common approach aggregates an image’s local features into a single global descriptor vector for similarity comparison; NetVLAD (CVPR 2016) uses a trainable aggregation layer, weakly supervised with Google Street View images from different years, and is a widely used baseline. In robotics, VPR mainly serves loop closure detection in SLAM and relocalization after tracking is lost (re-determining where the robot is on the map), and is also used in navigation based on topological maps.",
+      "example": "A robot vacuum is picked up and set down in a different room; it compares the current view against the keyframes stored during mapping one by one, finds the closest match, and figures out which room it’s in.",
+      "related": ["Loop Closure Detection", "Relocalization", "Visual SLAM", "Topological Map", "Feature Matching", "Navigation"]
+    },
+    {
+      "key": "perception-26#3",
+      "name_en": "Visual Prompting",
+      "aliases": ["Set-of-Mark", "SoM", "Marker-Based Visual Prompting"],
+      "one_liner": "Drawing boxes or numbers directly on an image so a multimodal large model can answer by referring to those marks.",
+      "explanation": "Visual prompting means overlaying boxes, points, arrows, or numbers directly on an input image, without changing any model weights, to guide a multimodal large model to attend to and refer to specific regions. The representative method is Set-of-Mark (SoM), proposed by a Microsoft team in 2023: a segmentation model such as SAM or SEEM first cuts the image into regions, each region is labeled with a number, mask, or box, and GPT-4V is then asked to answer using those numbers; the paper reports that this beats fully fine-tuned specialist models zero-shot on the RefCOCOg referring task. It addresses the fact that large models can describe a scene in words but struggle to state a precise pixel location in text. In robotics, work such as MOKA and PIVOT uses this kind of marking to let a vision-language model pick out a grasp point or a direction to move, which is then handed to low-level control to execute.",
+      "example": "Objects in a tabletop photo are labeled 1 through 8; asked “which object could be used to scoop soup,” the model answers “number 5,” and the program converts region 5 into 3D coordinates for the robot arm.",
+      "related": ["Visual Prompting (Set-of-Mark Marking)", "MOKA (Mark-Based Visual Prompting for Manipulation)", "PIVOT (Iterative Visual Prompting)", "Visual Grounding", "Segment Anything Model", "Vision-Language Model"]
+    },
+    {
+      "key": "perception-26#4",
+      "name_en": "Visual-Inertial Odometry",
+      "aliases": ["VIO", "Visual-Inertial Navigation"],
+      "one_liner": "Fusing a camera and an IMU to continuously estimate a device’s own motion trajectory.",
+      "explanation": "Visual-inertial odometry (VIO) fuses camera images with IMU (inertial measurement unit) readings to continuously estimate a device’s own position and orientation; using only a camera is called visual odometry (VO). The two sensors complement each other: the IMU samples fast and keeps working even during violent motion, but drifts quickly once its readings are integrated; the camera constrains that drift, but is thrown off by motion blur and texture-less surfaces, and a monocular camera alone doesn’t know the true scale — the gravity and acceleration the IMU measures can restore that scale. Implementations split into filtering-based and optimization-based approaches (such as VINS-Mono), and separately into loosely-coupled and tightly-coupled fusion. VIO only performs local estimation, so error still accumulates over a long run; adding loop closure detection and global optimization turns it into visual-inertial SLAM. It is commonly used to localize drones, AR devices, and legged robots in environments without GPS.",
+      "example": "A drone flying inside an indoor warehouse has no GPS signal, so it relies on its onboard camera and IMU running VIO to know where it has flown in real time.",
+      "related": ["Visual Odometry", "Inertial Measurement Unit (IMU)", "VINS-Mono / VINS-Fusion", "IMU Pre-Integration", "Tightly-Coupled vs. Loosely-Coupled Fusion", "Visual SLAM"]
+    },
+    {
+      "key": "perception-26#5",
+      "name_en": "Visuo-Tactile Fusion",
+      "aliases": ["Visual-Tactile Fusion"],
+      "one_liner": "Combining what a camera sees with what a tactile sensor feels into a single, unified signal.",
+      "explanation": "Visuo-tactile fusion means using both vision and touch signals together in perception or a policy, and combining them into a unified representation. Vision is good at seeing the big picture and finding a target, but a finger is often occluded the moment it touches an object, and vision can’t tell how much force is being applied or whether something is slipping; tactile sensing fills in exactly that: contact location, pressure distribution, and slip. Common approaches include encoding the two modalities separately and concatenating their features, using attention for cross-modal fusion, or projecting tactile readings into a 3D point cloud and merging it with the visual point cloud. A Stanford team used self-supervised learning to fuse vision and force for peg-in-hole insertion at ICRA 2019; 3D-ViTac (CoRL 2024) merges a flexible tactile array into a point cloud alongside a diffusion policy to handle fragile objects, clearly outperforming vision alone. Note this is distinct from a “vision-based tactile sensor,” which is a type of tactile sensor that uses a camera to photograph an elastic membrane.",
+      "example": "While a robotic hand grasps an egg, the camera finds the egg and guides the hand toward it; once contact is made, the tactile array reports the pressure distribution, and the policy keeps its grip force just below the point of crushing it.",
+      "related": ["Multimodal Fusion", "Tactile Sensor", "Vision-Based Tactile Sensor", "3D-ViTac", "Contact-Rich Manipulation", "Vision-Tactile-Language-Action Model"]
+    },
+    {
+      "key": "perception-26#6",
+      "name_en": "VSI-Bench",
+      "aliases": ["Thinking in Space: Visual-Spatial Intelligence Benchmark", "Thinking in Space"],
+      "one_liner": "A benchmark that uses indoor videos to test how well multimodal large models understand space.",
+      "explanation": "VSI-Bench comes from the paper Thinking in Space, released in December 2024 by Saining Xie’s group at NYU together with Yale and Stanford (including Fei-Fei Li), and selected as an oral presentation at CVPR 2025. It draws 288 first-person videos from three indoor scanning datasets — ScanNet, ScanNet++, and ARKitScenes — and builds more than 5,000 question-answer pairs covering 8 task types: object counting, relative distance, relative direction, object size, absolute distance, room size, order of appearance, and route planning. The authors tested 15 multimodal large models that support video input, and all scored well below human performance (humans average about 79%), mostly struggling with spatial reasoning; language-prompting techniques such as chain-of-thought actually hurt scores, while having the model first draw a “cognitive map” improved distance judgments.",
+      "example": "Shown a video panning around a living room, the model is asked “how many meters apart are the sofa and the TV” or “standing in front of the fridge facing the sink, is the stove on your left or your right,” and is scored by numeric error or multiple-choice accuracy.",
+      "related": ["Spatial Intelligence", "Spatial Reasoning", "Multimodal Large Language Model", "Benchmark", "ERQA (Embodied Reasoning Question Answering Benchmark)", "3D Vision"]
+    },
+    {
+      "key": "perception-26#7",
+      "name_en": "WiLoR",
+      "aliases": ["End-to-End 3D Hand Localization and Reconstruction in-the-wild"],
+      "one_liner": "Quickly finding every hand in an image and reconstructing each one as a 3D hand mesh.",
+      "explanation": "WiLoR is a 3D hand reconstruction method from a team at Imperial College London and Shanghai Jiao Tong University, published at CVPR 2025. It works in two steps: a real-time, fully convolutional network first detects every hand in the image, and then a Vision Transformer-based reconstruction network regresses, coarse to fine, the MANO parameters (a parametric hand model that describes hand shape and pose with a small number of parameters) and camera parameters for each hand, producing a 3D hand mesh. The authors also curated WHIM, a dataset of more than 2 million in-the-wild hand images. With no temporal module at all, it produces reasonably smooth hand tracking frame by frame from monocular video; code, models, and data are all open-sourced. In embodied AI, it can be used to extract 3D hand poses from human video and then retarget them onto a dexterous hand as imitation-learning data.",
+      "example": "A first-person video of a person folding laundry is fed into WiLoR frame by frame, producing MANO poses and 3D fingertip positions for both hands, which are then retargeted into joint targets for a dexterous hand.",
+      "related": ["MANO Hand Model", "Hand Pose Estimation", "HaMeR", "Motion Retargeting", "Human Video Data", "First-Person Video"]
+    },
+    {
+      "key": "perception-26#8",
+      "name_en": "YOLO-World",
+      "aliases": ["Real-Time Open-Vocabulary Object Detection"],
+      "one_liner": "An open-vocabulary detector that detects objects in real time just from a typed category name.",
+      "explanation": "YOLO-World is an open-vocabulary object detector proposed in 2024 by Tencent AI Lab, ARC Lab, and Huazhong University of Science and Technology, published at CVPR 2024. Traditional YOLO can only detect the fixed set of categories it was trained on; YOLO-World attaches a text encoder to YOLO, uses a network called RepVL-PAN to let image features and text features interact with each other, and pretrains at large scale with a region-text contrastive loss, so a user can detect any category just by typing its name. It uses a “prompt-then-detect” strategy: the user’s vocabulary is pre-encoded and re-parameterized into the network, so the text encoder doesn’t need to run again at inference time, keeping speed close to ordinary YOLO. The paper reports 35.4 AP zero-shot on LVIS and 52 FPS on a V100. In robotics it is commonly used to find a target in real time from a language instruction, handing the result off to a grasping or navigation module.",
+      "example": "Given the instruction “bring me the red mug,” a program sets “red mug” as YOLO-World’s vocabulary, draws a box around the mug in real time from the wrist camera feed, and hands it to a grasp-pose detection module.",
+      "related": ["Open-Vocabulary Detection", "YOLO", "Grounding DINO", "OWL-ViT / OWLv2", "Object Detection", "CLIP"]
+    },
+    {
+      "key": "perception-26#9",
+      "name_en": "π³ (Pi3)",
+      "aliases": ["Pi3", "Pi3X", "Permutation-Equivariant Visual Geometry Learning"],
+      "one_liner": "A feed-forward 3D reconstruction model with no reference viewpoint, giving the same result no matter what order the images come in.",
+      "explanation": "π³ is a feed-forward 3D reconstruction model released in July 2025 by the Shanghai AI Laboratory, Zhejiang University, and other institutions, with its repository marked ICLR 2026. Earlier methods such as DUSt3R and VGGT need one image designated as a reference viewpoint, with every result expressed in that image’s coordinate frame, so a poorly chosen reference image degrades the reconstruction. π³ instead uses a fully permutation-equivariant architecture (shuffle the input order and the output just follows the same reordering, unchanged in content), so it needs no reference frame at all, directly predicting an affine-invariant camera pose and a scale-invariant local pointmap for every image. The paper reports state-of-the-art results at the time on camera pose estimation, monocular and video depth estimation, and dense pointmap reconstruction. An upgraded version, Pi3X, released in December 2025, can take known poses, intrinsics, or depth as input and produce output at approximately true scale. The code is BSD-licensed; the weights are non-commercial only.",
+      "example": "The same set of 10 indoor photos is fed into π³ in different orders; the resulting point cloud and relative camera poses stay essentially the same, whereas a reference-frame-based method’s result changes depending on which image is chosen first.",
+      "related": ["VGGT", "DUSt3R", "Feed-Forward 3D Reconstruction", "Pointmap", "Camera Extrinsics", "Shanghai AI Laboratory"]
+    },
+    {
+      "key": "perception-26#10",
+      "name_en": "Transparent & Reflective Object Perception Datasets and Benchmarks",
+      "aliases": ["Transparent Object Depth Completion Datasets", "ClearGrasp", "TransCG"],
+      "one_liner": "Depth and segmentation datasets collected specifically for glass, metal, and other objects that depth cameras struggle to measure.",
+      "explanation": "This category of dataset targets transparent or highly reflective objects such as drinking glasses, plastic bottles, and stainless-steel tableware. Ordinary depth cameras depend on light reflecting back normally, and fail on these materials with depth holes, or by mistaking the surface behind the object (such as a tabletop seen through a glass) for the object’s own surface, causing grasp failures. Representative work includes ClearGrasp, released in 2019, which provides more than 50,000 synthetic RGB-D images plus 286 real images with ground truth, and repairs depth by predicting surface normals, a transparent-region mask, and occlusion boundaries; and TransCG (RA-L 2022), from Cewu Lu’s group at Shanghai Jiao Tong University, which used two RealSense cameras to capture 57,715 real RGB-D images across 130 scenes covering 60 transparent objects, with ground-truth depth, normals, and masks included. These datasets are mainly used to train and evaluate depth-completion networks, whose repaired depth is then handed to a grasping algorithm.",
+      "example": "In a kitchen scene captured by a wrist-mounted RealSense, the region covering a drinking glass is almost entirely depth holes; only after a depth-completion network trained on TransCG fills it in can the grasp-detection module produce a usable grasp pose.",
+      "related": ["Transparent & Reflective Object Perception", "Depth Completion", "Depth Hole", "Depth Camera", "Grasp Pose Detection", "RealSense Depth Camera (D435i / D405)"]
+    }
+  ]
+}

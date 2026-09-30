@@ -1,0 +1,224 @@
+{
+ "batch": "software-01",
+ "terms": [
+  {
+   "key": "software-01#0",
+   "name_en": "CUDA",
+   "aliases": [
+    "Compute Unified Device Architecture",
+    "CUDA Toolkit"
+   ],
+   "one_liner": "NVIDIA's general-purpose computing platform for GPUs, which is what lets deep learning run on a graphics card.",
+   "explanation": "CUDA is NVIDIA's parallel computing platform and programming model, including a compiler, runtime libraries, and math libraries, that lets developers call an NVIDIA GPU directly for general-purpose computation from languages such as C/C++. Deep learning's huge number of matrix operations get their speed from GPU parallelism, and frameworks such as PyTorch call into CUDA and its companion libraries (such as cuDNN, which implements neural-network operators) whenever they run on an NVIDIA card. Newcomers usually meet it first while setting up their environment: the GPU build of PyTorch installed via pip bundles its own matching CUDA runtime libraries, so it works as long as the graphics driver is new enough to support that CUDA version — too old a driver either errors out or falls back to CPU only. Only when compiling a custom CUDA extension yourself does the locally installed CUDA Toolkit version need to match PyTorch's. GPU parallelism in simulation (such as Isaac Lab) and deployment acceleration (such as TensorRT) are both built on top of CUDA too.",
+   "example": "Running torch.cuda.is_available() in Python returns True only when PyTorch can actually use the GPU.",
+   "related": [
+    "cuDNN",
+    "PyTorch",
+    "TensorRT",
+    "GPU Memory (VRAM)",
+    "NVIDIA"
+   ]
+  },
+  {
+   "key": "software-01#1",
+   "name_en": "GitHub",
+   "aliases": [
+    "GitHub Repository"
+   ],
+   "one_liner": "The world's largest code-hosting platform, where nearly all paper code and open-source robotics projects live.",
+   "explanation": "GitHub is a code-hosting platform, acquired by Microsoft in 2018. It isn't the same thing as Git: Git is a version-control tool that records every change to code locally, while GitHub puts Git repositories in the cloud and adds collaboration features on top. Each project is a “repository,” containing code, documentation (a README), an open-source license, and issue discussions (Issues). Most paper code, model-training frameworks, simulation environments, and robot SDKs in embodied AI are open-sourced on GitHub, so after reading a paper, checking its official repository is the first step toward reproducing it. The typical workflow is to run git clone to pull a repository locally, install dependencies and download weights as the README describes, and run the example scripts; when something breaks, searching the Issues tab first often turns up someone who has already hit the same problem.",
+   "example": "Hugging Face's LeRobot code lives at github.com/huggingface/lerobot; after git clone, installing it is just a matter of following the README.",
+   "related": [
+    "Open-Source License",
+    "LeRobot",
+    "arXiv Preprint",
+    "Open Weights",
+    "Hugging Face"
+   ]
+  },
+  {
+   "key": "software-01#2",
+   "name_en": "Inference Deployment",
+   "aliases": [
+    "Model Deployment",
+    "Deployment"
+   ],
+   "one_liner": "Getting a trained model running on real hardware or a server so it outputs actions in real time.",
+   "explanation": "Inference deployment means moving a trained model from its training environment onto the hardware where it will actually be used; “inference” here means the model’s forward computation, not logical reasoning. In embodied AI, this means the model has to be wired up to real-time inputs — camera feeds, joint sensors — and output actions to the controller at a fixed rate. The hard parts are latency and compute: a robot’s onboard computer (such as a Jetson) has limited compute, so a large model often needs to be quantized, pruned, or accelerated with an engine such as TensorRT, or else run on a remote GPU server that sends actions back to the robot over the network (a policy server). How well the deployment is engineered directly affects whether the robot’s motion is smooth and whether it can correct itself in a closed loop.",
+   "example": "A fine-tuned π0 model runs as a policy server on a GPU workstation; the robot periodically sends images and joint states over the network and receives back a chunk of actions.",
+   "related": [
+    "Inference Latency",
+    "On-Device Deployment",
+    "Policy Server",
+    "TensorRT",
+    "Post-Training Quantization",
+    "Inference (Forward Pass)"
+   ]
+  },
+  {
+   "key": "software-01#3",
+   "name_en": "LeRobot",
+   "aliases": [
+    "Hugging Face LeRobot",
+    "lerobot"
+   ],
+   "one_liner": "An open-source robot learning toolkit from Hugging Face, covering the whole pipeline from data collection to training to deployment.",
+   "explanation": "LeRobot is a PyTorch robot-learning library open-sourced by Hugging Face in 2024, aimed at lowering the barrier to learning on real robots. It provides a unified dataset format (LeRobotDataset, hosted on the Hugging Face Hub), ships built-in implementations of policies such as ACT, Diffusion Policy, π0, and SmolVLA, and includes scripts for teleoperated data collection, training, evaluation, and running on a real robot. It pairs with low-cost open-source arms such as the SO-100/SO-101, letting a student complete the whole pipeline — collect demonstration data, train with imitation learning, deploy on the real robot — with only a few hundred to a couple thousand dollars of hardware, which has made it one of the most common starting points for getting into embodied AI.",
+   "example": "Two SO-101 arms are used in a leader-follower teleoperation setup to record a few dozen grasping demonstrations, which are then used to train an ACT policy in LeRobot and run it on the real arm.",
+   "related": [
+    "Hugging Face",
+    "LeRobot Dataset Format",
+    "SO-100 / SO-101 Arm",
+    "SmolVLA",
+    "ACT",
+    "Imitation Learning"
+   ]
+  },
+  {
+   "key": "software-01#4",
+   "name_en": "Node (ROS)",
+   "aliases": [
+    "ROS Node"
+   ],
+   "one_liner": "A single-purpose program unit in ROS; a whole system is made of many nodes talking to each other.",
+   "explanation": "A node is the most basic unit of execution in ROS (Robot Operating System); typically, one node is responsible for one job — reading a camera, running object detection, planning a path, driving a motor. Nodes don’t call each other’s functions directly; instead they exchange messages through topics (a continuous publish/subscribe stream), services (a single request and response), and actions (a longer-running task with progress feedback). Splitting the system up this way means modules can be developed, swapped, and debugged independently; one node crashing doesn’t necessarily bring the whole system down, and different nodes can easily be spread across multiple computers. In ROS 2, nodes are written using rclpy (Python) or rclcpp (C++), and ros2 node list is the usual command to see which nodes are currently running.",
+   "example": "A camera-driver node publishes images; a detection node subscribes to the images and publishes an object’s position; a control node uses that to send the arm to grasp it.",
+   "related": [
+    "Topic",
+    "Service",
+    "Action",
+    "ROS 2",
+    "Robot Operating System (ROS)",
+    "ROS Client Library"
+   ]
+  },
+  {
+   "key": "software-01#5",
+   "name_en": "Python and C++",
+   "aliases": [
+    "Python",
+    "C++"
+   ],
+   "one_liner": "The two languages embodied AI relies on most: Python for models and experiments, C++ for real-time control.",
+   "explanation": "Embodied AI development runs on these two languages almost everywhere, with a fairly clear division of labor. Python is quick to write and has a rich ecosystem: deep-learning frameworks (PyTorch, JAX), simulation training (Isaac Lab, MuJoCo's Python bindings), data processing, and VLA model training are nearly all done in it. C++ runs efficiently with predictable latency, which suits the parts that need hard real-time guarantees: low-level motor control, whole-body control, motion planning, sensor drivers, high-performance ROS nodes, and most robot manufacturers' SDKs. A common pattern is to train a policy in Python, then export the model to be loaded and run in C++, or to have a Python layer on top call down into a C++ library. Newcomers usually get comfortable with Python first, then pick up C++ as their direction demands it.",
+   "example": "A quadruped walking policy is trained in Python inside Isaac Lab, exported to ONNX (a general-purpose format for exchanging neural network models), and then run at a fixed rate inside a C++ control program that sends out motor commands.",
+   "related": [
+    "PyTorch",
+    "ROS 2",
+    "Software Development Kit (SDK)",
+    "TorchScript / LibTorch (Policy Export and C++ Deployment)",
+    "Real-Time Control"
+   ]
+  },
+  {
+   "key": "software-01#6",
+   "name_en": "PyTorch",
+   "aliases": [
+    "torch"
+   ],
+   "one_liner": "Today’s dominant deep-learning framework, used to train most embodied AI models.",
+   "explanation": "PyTorch is an open-source deep-learning framework originally developed by Meta’s (then Facebook’s) AI research team, now hosted by the PyTorch Foundation under the Linux Foundation. It’s built around tensor (multi-dimensional array) operations and automatic differentiation, with code that reads close to ordinary Python and is easy to debug, which is why it dominates in academia. Most embodied AI models — Diffusion Policy, ACT, OpenVLA, the PyTorch version of π0, LeRobot, and more — are built on PyTorch, which calls into an NVIDIA GPU through CUDA for acceleration. The core things a newcomer needs to learn are tensor operations, building a network with nn.Module, loading data with DataLoader, writing an optimizer training loop, and saving and loading checkpoints.",
+   "example": "After import torch, model.to('cuda') moves the network onto the GPU for training, and torch.save writes out a checkpoint once training finishes.",
+   "related": [
+    "CUDA",
+    "JAX",
+    "LeRobot",
+    "Checkpoint",
+    "Python and C++",
+    "Transformers Library"
+   ]
+  },
+  {
+   "key": "software-01#7",
+   "name_en": "Robot Operating System",
+   "aliases": [
+    "ROS",
+    "ROS 1"
+   ],
+   "one_liner": "The most widely used open-source middleware framework for robot development — not actually an operating system.",
+   "explanation": "Despite its name, ROS isn’t really an operating system; it’s a set of open-source middleware and tools that runs on top of Linux (usually Ubuntu). It originated at Stanford and was later driven forward by Willow Garage. ROS breaks robot software into nodes that communicate through mechanisms like topics and services, and it ships with a large collection of ready-made packages: sensor drivers, coordinate transforms (TF), visualization (RViz), data recording (rosbag), navigation, motion planning, and more. Its value is that people don’t have to reinvent these pieces — a great many robots in both academia and industry expose a ROS interface. Noetic, the final release of ROS 1, reached end of maintenance in 2025; new projects should use ROS 2, though a large amount of existing code and many tutorials are still ROS 1.",
+   "example": "roslaunch starts the camera driver, the arm driver, and the MoveIt planning node all at once, and dragging a target pose around in RViz then makes the arm move to it.",
+   "related": [
+    "ROS 2",
+    "Node",
+    "Topic",
+    "ROS Distribution",
+    "RViz",
+    "MoveIt"
+   ]
+  },
+  {
+   "key": "software-01#8",
+   "name_en": "Robot Operating System 2",
+   "aliases": [
+    "ROS 2",
+    "ROS2"
+   ],
+   "one_liner": "The ground-up rewrite of ROS that defaults to DDS for its underlying communication; the standard choice for new projects.",
+   "explanation": "ROS 2 is a redesign of ROS 1, led by Open Robotics. Its biggest change is switching the default communication layer to DDS (Data Distribution Service), an industrial middleware standard, which removes the need for a central master node (roscore) and lets nodes discover each other automatically; it also adds Quality of Service (QoS) settings and better real-time and security support. Ubuntu and Windows are officially first-tier supported; macOS has to be built from source. It keeps the same core concepts — nodes, topics, services, actions — but its interfaces and build tools (colcon, ament) differ from ROS 1, so code isn't directly portable between them. The long-term support (LTS) releases still maintained are Humble, Jazzy, and Lyrical, released in May 2026 and supported through 2031. Nav2 navigation, MoveIt 2, ros2_control, and many humanoid and quadruped robot SDKs have all migrated to ROS 2.",
+   "example": "After installing ROS 2 on Ubuntu, running ros2 topic list lists every topic currently active in the system.",
+   "related": [
+    "Robot Operating System (ROS)",
+    "Data Distribution Service (DDS)",
+    "Quality of Service (QoS)",
+    "Node",
+    "Topic",
+    "colcon"
+   ]
+  },
+  {
+   "key": "software-01#9",
+   "name_en": "Software Development Kit",
+   "aliases": [
+    "SDK"
+   ],
+   "one_liner": "The libraries, interfaces, and examples a manufacturer provides so developers can control a device from code.",
+   "explanation": "An SDK is the full package of development materials a software or hardware maker gives to developers, typically including libraries, API documentation, sample code, drivers, and debugging tools. In robotics, once you’ve bought a robot arm, quadruped, or humanoid, reading its joint states, sending position or torque commands, and pulling images from its camera is usually all done through the manufacturer’s SDK — what’s commonly called building on top of the platform. Most SDKs offer C++ and Python interfaces, and many also ship a ROS / ROS 2 wrapper. How open an SDK is directly determines what you can actually do with the robot — for instance, whether it exposes low-level joint torque control, or only lets you call high-level walking and gesture commands.",
+   "example": "The Unitree G1 reads out every joint angle and sends motor commands through unitree_sdk2, which is how researchers deploy their own trained locomotion policies on it.",
+   "related": [
+    "Secondary Development (二次开发)",
+    "Unitree SDK",
+    "libfranka",
+    "Driver",
+    "ROS 2"
+   ]
+  },
+  {
+   "key": "software-01#10",
+   "name_en": "Topic (ROS)",
+   "aliases": [
+    "ROS Topic"
+   ],
+   "one_liner": "A named channel for continuously streaming data between ROS nodes, working on a publish/subscribe model.",
+   "explanation": "A topic is the most commonly used communication mechanism in ROS. Every topic has a name and a fixed message type; publisher nodes continuously send messages to the topic, and subscriber nodes receive them, with neither side needing to know who the other is — a single topic can have multiple publishers and multiple subscribers. This suits a continuous stream of data, such as images, lidar point clouds, joint states, or velocity commands. By contrast, a service is a one-shot request-response call (a client sends a request, the server processes it and replies with a result), suited to a query or a single triggered action; an action is for a longer-running task that needs progress feedback partway through, or the ability to be cancelled, such as navigating to a point. Together these three form the basis of ROS communication, and a newcomer should get comfortable with topics first.",
+   "example": "A base-driver node subscribes to the /cmd_vel topic (a Twist-type velocity command); a keyboard teleop node publishes velocities to that same topic, and the base moves accordingly.",
+   "related": [
+    "Node",
+    "Service",
+    "Action",
+    "Message",
+    "Publish/Subscribe",
+    "cmd_vel Velocity Command Topic (Twist Message)"
+   ]
+  },
+  {
+   "key": "software-01#11",
+   "name_en": "Unified Robot Description Format",
+   "aliases": [
+    "URDF",
+    "URDF File"
+   ],
+   "one_liner": "An XML file format that describes a robot's links, joints, geometry, and mass, used as a standard across ROS.",
+   "explanation": "URDF is the XML format used across the ROS ecosystem to describe a robot model. In the file, each link element describes one rigid body's visual mesh, collision shape, and mass/inertia, and each joint element describes how two links connect — including the joint type (revolute, prismatic, fixed, and so on), its axis, and its range of motion — together forming a kinematic tree. With a URDF, RViz can display the robot, kinematics and dynamics libraries can compute forward and inverse kinematics from it, and simulators such as Isaac Sim, MuJoCo, and PyBullet can import it directly. Its limitations are that it can only describe a single robot, can only express a tree structure, and handles closed kinematic chains poorly; writing it by hand is also long and repetitive, which is why the Xacro macro system is commonly used to simplify it. MuJoCo has its own separate format, MJCF, which can encode more simulation parameters.",
+   "example": "Robot manufacturers typically ship a URDF and mesh files with the robot; importing that URDF into Isaac Lab is enough to start training a policy for that robot in simulation.",
+   "related": [
+    "Xacro",
+    "MJCF",
+    "Link",
+    "Revolute Joint",
+    "Kinematic Tree",
+    "Mesh File"
+   ]
+  }
+ ]
+}

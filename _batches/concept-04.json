@@ -1,0 +1,192 @@
+{"category": "concept", "batch": 4, "terms": [
+{
+"name_zh": "双足行走",
+"name_en": "Bipedal Locomotion",
+"abbr": "",
+"aliases": ["双足步行", "人形行走", "Humanoid Locomotion"],
+"tier": 2,
+"one_liner": "机器人只用两条腿走、跑并保持平衡的运动能力，是人形机器人的基本功。",
+"explanation": "双足行走指机器人只靠两条腿完成行走、奔跑、上下台阶、被推后站稳等动作。两足支撑面小、重心高，天生不稳，是足式运动里最难的一类。早期主流方法围绕零力矩点（ZMP，地面反力产生的水平力矩为零的点）：规划重心和落脚点，让 ZMP 始终落在脚掌支撑区内，本田 ASIMO 就是这一路线。近几年主流转向强化学习：在仿真里用大量随机化环境训练，再零样本迁移到真机，例如伯克利团队 2023 年用因果 Transformer 让 Agility Digit 在广场、草地等多种户外地面上行走。它是人形机器人做移动操作的前提。",
+"example": "伯克利 Radosavovic 等人的行走控制器完全在仿真中训练，不做微调直接部署到 Agility Digit 人形机器人上，在人行道、跑道、草地上稳定行走，还能承受外力推搡。",
+"related": ["腿足运动", "人形机器人", "零力矩点", "强化学习运控", "仿真到现实迁移", "平衡控制"],
+"sources": [
+{"title": "Real-World Humanoid Locomotion with Reinforcement Learning (arXiv 2303.03381)", "url": "https://arxiv.org/abs/2303.03381"},
+{"title": "Zero moment point - Wikipedia", "url": "https://en.wikipedia.org/wiki/Zero_moment_point"}
+],
+"as_of": ""
+},
+{
+"name_zh": "接触丰富操作",
+"name_en": "Contact-rich Manipulation",
+"abbr": "",
+"aliases": ["富接触操作", "强接触操作", "Manipulation in Contact"],
+"tier": 2,
+"one_liner": "需要与物体或环境持续接触、并控制好接触力才能完成的操作任务。",
+"explanation": "接触丰富操作指机器人在任务中与物体、环境保持持续或反复接触，必须显式或隐式地控制接触力才能成功的一类操作，典型如轴孔装配、拧螺母、插插头、擦桌子、按摩。Suomalainen 等人 2022 年发表在 Robotics and Autonomous Systems 的综述把它分成两种：任务本身要求接触的，以及主动借助接触来消除位置不确定性的（比如让零件贴着表面滑进孔里）。难点在于容差小、接触状态靠视觉很难看清，仿真也不容易算准摩擦和碰撞。常见做法是阻抗控制或力控（让机械臂像弹簧一样顺从外力），配合力/力矩传感器或触觉传感器；学习方法则把力或触觉信号加入策略输入。",
+"example": "用机械臂把螺母拧到螺栓上：对准后要一边施加轴向压力一边旋转，力太大会卡死，太小会打滑。英伟达 2022 年的 Factory 仿真框架就以螺母螺栓装配为主要场景。",
+"related": ["轴孔装配", "力控", "阻抗控制", "触觉传感器", "灵巧操作", "装配"],
+"sources": [
+{"title": "A Survey of Robot Manipulation in Contact (arXiv 2112.01942)", "url": "https://arxiv.org/abs/2112.01942"},
+{"title": "Factory: Fast Contact for Robotic Assembly (arXiv 2205.03532)", "url": "https://arxiv.org/abs/2205.03532"}
+],
+"as_of": ""
+},
+{
+"name_zh": "柔性物体操作",
+"name_en": "Deformable Object Manipulation",
+"abbr": "DOM",
+"aliases": ["可变形物体操作", "柔性体操作"],
+"tier": 2,
+"one_liner": "抓取和操控受力会弯折、拉伸、变形的物体，如衣服、线缆、食材。",
+"explanation": "柔性物体操作指操控受力后形状会明显改变的物体，包括布料衣物、绳索线缆、袋子、面团、食材乃至人体组织。传统抓取研究默认物体是刚体，只需估计位置和朝向共 6 个自由度；柔性物体的形状自由度极高，还会折叠、自遮挡，受力后的形变是非线性的，难以建模和仿真。Zhu 等人 2021 年的综述归纳出三大技术难点：形变难感知、自由度高、形变建模非线性，并通过同行问卷认为感知是最值得投入的方向。应用包括叠衣服、工业线束装配、果蔬采摘、手术缝合、助老穿衣等。",
+"example": "叠衣服：机器人要先把一团皱巴巴的 T 恤铺平，再按折线对折，每一步之后衣服形状都会变，没有能提前标好的固定抓取点。",
+"related": ["衣物操作", "软体仿真", "布料仿真", "接触丰富操作", "触觉传感器", "SoftGym"],
+"sources": [
+{"title": "Challenges and Outlook in Robotic Manipulation of Deformable Objects (arXiv 2105.01767)", "url": "https://arxiv.org/abs/2105.01767"}
+],
+"as_of": ""
+},
+{
+"name_zh": "离身智能",
+"name_en": "Disembodied AI",
+"abbr": "",
+"aliases": ["非具身智能", "离身AI", "Non-embodied AI"],
+"tier": 2,
+"one_liner": "没有身体、只在数字世界里处理信息的 AI，如聊天机器人、图像识别模型。",
+"explanation": "离身智能是与具身智能相对的说法，指不依附物理身体、只在网络空间中感知和决策的 AI：输入是文本、图片、视频等数据，输出是文字、标签或图像，不需要亲自动手改变物理环境。ChatGPT 这类大语言模型、人脸识别、推荐系统都属于此类。中山大学 Liu 等人 2024 年的具身智能综述用一张表对比两者：离身智能的认知与物理实体是分开的，具身智能的认知融入机器人、汽车等实体。这个区分的意义在于：离身模型从互联网数据学到的知识很强，但缺少与真实世界交互的反馈，放进机器人还要解决语言接地（把词和真实物体、动作对应起来）、动作输出和实时性问题。",
+"example": "ChatGPT 能写出叠衣服的详细步骤，但它没有手，不能真的把衣服叠好；让机器人照着这些步骤叠出来，就是具身智能要解决的事。",
+"related": ["具身智能", "具身认知", "大语言模型", "莫拉维克悖论", "语言接地"],
+"sources": [
+{"title": "Aligning Cyber Space with Physical World: A Comprehensive Survey on Embodied AI (arXiv 2407.06886)", "url": "https://arxiv.org/abs/2407.06886"}
+],
+"as_of": ""
+},
+{
+"name_zh": "干扰物",
+"name_en": "Distractor Objects",
+"abbr": "",
+"aliases": ["干扰物体", "Distractors"],
+"tier": 2,
+"one_liner": "场景里与当前任务无关、却可能把策略带偏的多余物体。",
+"explanation": "干扰物指操作或导航场景中与当前指令无关的物体，例如让机器人拿起红色杯子时，桌上另外摆着的碗、玩具和其他杯子。评测时常故意增减干扰物，看策略会不会抓错目标、被遮挡或画面变化带偏，是衡量视觉泛化和鲁棒性的常用维度。RSS 2024 的 The Colosseum 基准沿 14 种扰动方向测试操作策略，发现单项扰动就会让成功率下降 30%–50%，其中干扰物数量、目标物颜色和光照的影响最大。训练时加入杂乱场景、做数据增强，或先用开放词汇检测把目标框出来，是常见的应对办法。",
+"example": "训练数据里桌上只有一个苹果，测试时旁边多放一个橙子和一个红色小球，模仿学习策略可能伸手去抓红球。",
+"related": ["视觉泛化", "鲁棒性", "分布外", "The Colosseum", "泛化与鲁棒性评测", "开放词汇检测"],
+"sources": [
+{"title": "THE COLOSSEUM: A Benchmark for Evaluating Generalization for Robotic Manipulation (arXiv 2402.08191)", "url": "https://arxiv.org/abs/2402.08191"}
+],
+"as_of": ""
+},
+{
+"name_zh": "分布偏移（协变量偏移）",
+"name_en": "Distribution Shift / Covariate Shift",
+"abbr": "",
+"aliases": ["数据分布偏移", "协变量漂移", "Dataset Shift"],
+"tier": 2,
+"one_liner": "部署时遇到的数据分布和训练数据不一致，导致模型表现变差。",
+"explanation": "分布偏移泛指训练数据和实际使用数据的分布不同。协变量偏移是其中一种：输入的分布变了，但输入到正确输出的对应关系没变；另外两种常见的是标签偏移和概念偏移。在机器人模仿学习中它格外突出：策略只在专家走过的状态上学过，执行时一旦出一点小错，就会进入示范里没见过的状态，错误再引发更大偏离，这就是复合误差。Ross 等人在 AISTATS 2011 指出，这种自己的动作决定下一步输入的设定违背了独立同分布假设，并提出 DAgger：让策略自己去跑，请专家给新遇到的状态标注正确动作，逐步让训练分布贴近策略实际遇到的分布。",
+"example": "行为克隆训练的抓杯策略在示范里总是从正上方接近杯子；部署时手臂偏了 2 厘米，这个位置训练集里没有，策略给出的动作越来越离谱，最后把杯子碰倒。",
+"related": ["复合误差", "DAgger（数据集聚合）", "行为克隆", "分布外", "纠偏数据", "领域自适应"],
+"sources": [
+{"title": "A Reduction of Imitation Learning and Structured Prediction to No-Regret Online Learning (arXiv 1011.0686)", "url": "https://arxiv.org/abs/1011.0686"},
+{"title": "Domain adaptation - Wikipedia", "url": "https://en.wikipedia.org/wiki/Domain_adaptation"}
+],
+"as_of": ""
+},
+{
+"name_zh": "具身智能体",
+"name_en": "Embodied Agent",
+"abbr": "",
+"aliases": ["具身代理"],
+"tier": 2,
+"one_liner": "拥有物理或虚拟身体、通过感知和动作与环境交互的智能体。",
+"explanation": "智能体（agent）指能感知环境、并采取行动去达成目标的系统；具身智能体强调它有一个身体，并通过这个身体在环境中感知和行动。维基百科的定义是：通过身处环境中的物理身体与环境交互的智能体；广义上也包括仿真器或游戏里的虚拟身体。它和只输出文字的对话式智能体不同，需要把理解指令、主动探索、多模态感知和执行动作串成闭环。Liu 等人 2024 年的综述把具身智能体列为具身智能四大研究目标之一，并认为多模态大模型是它目前主流的大脑。真实机器人、自动驾驶汽车、Habitat 等仿真器里的导航智能体都属于此类。",
+"example": "在家庭仿真器 Habitat 中，一个带相机的虚拟机器人收到去厨房找杯子的指令，自己移动、观察，最终停在杯子前面，它就是一个具身智能体。",
+"related": ["具身智能", "智能体与环境", "感知-行动闭环", "离身智能", "策略"],
+"sources": [
+{"title": "Embodied agent - Wikipedia", "url": "https://en.wikipedia.org/wiki/Embodied_agent"},
+{"title": "Aligning Cyber Space with Physical World: A Comprehensive Survey on Embodied AI (arXiv 2407.06886)", "url": "https://arxiv.org/abs/2407.06886"}
+],
+"as_of": ""
+},
+{
+"name_zh": "具身通用智能",
+"name_en": "Embodied AGI",
+"abbr": "",
+"aliases": ["具身AGI", "通用具身智能"],
+"tier": 2,
+"one_liner": "能像人一样在真实世界完成各种开放任务的具身智能，是该领域的远期目标。",
+"explanation": "具身通用智能是把通用人工智能（AGI）和具身智能结合起来的目标概念，目前没有统一标准。Wang 与 Sun 2025 年的综述给出一个实用定义：展现类人交互能力、能以人类水平完成多样开放式真实世界任务的具身智能。文中仿照自动驾驶分级提出 L1–L5：L1 完成单一任务，L2 完成组合任务，L3 有条件地完成通用任务，L4、L5 逐步走向开放任务、类人行为和无需人工干预；并从全模态、类人认知、实时响应、泛化四个维度评估，认为当前具身智能大致处在 L1 与 L2 之间。这类分级主要用来描述方向和衡量进度。",
+"example": "按该分级，只会在产线上抓一种零件的机械臂属于 L1；能把一句「做杯咖啡」拆成取杯、接水、按按钮等预设技能并依次完成的机器人接近 L2。",
+"related": ["具身智能", "通用机器人", "物理图灵测试", "自主等级", "人形机器人智能化分级"],
+"sources": [
+{"title": "Toward Embodied AGI: A Review of Embodied AI and the Road Ahead (arXiv 2505.14235)", "url": "https://arxiv.org/abs/2505.14235"}
+],
+"as_of": "2025-05"
+},
+{
+"name_zh": "具身推理",
+"name_en": "Embodied Reasoning",
+"abbr": "ER",
+"aliases": ["具身推理能力"],
+"tier": 2,
+"one_liner": "让模型懂物理世界：知道东西在哪、怎么抓、接下来该做什么。",
+"explanation": "具身推理指模型对物理世界做空间、时间和因果层面的理解与推断，并服务于机器人行动，比如在图上指出可抓的位置、预测物体的 3D 框和运动轨迹、判断任务是否完成、把长指令拆成步骤。谷歌 DeepMind 2025 年 3 月发布 Gemini Robotics 时把这部分单独做成 Gemini Robotics-ER 模型，能力包括目标检测、指向、轨迹预测、抓取预测、多视角对应和 3D 框预测，同时开源了 400 道题的 ERQA 评测集；截至 2026 年该系列已更新到 Gemini Robotics-ER 2，可通过 Gemini API 调用。它常充当快慢双系统里的慢系统，先想清楚，再把动作交给 VLA 或底层控制器执行。",
+"example": "给模型一张厨房照片和指令「把杯子放进水槽」，具身推理模型先在图上标出杯柄位置和通往水槽的路径点，再交给动作模型执行。",
+"related": ["具身推理模型", "Gemini Robotics-ER", "空间推理", "ERQA 具身推理问答基准", "Cosmos Reason", "快慢双系统"],
+"sources": [
+{"title": "Gemini Robotics: Bringing AI into the Physical World (arXiv 2503.20020)", "url": "https://arxiv.org/abs/2503.20020"},
+{"title": "ERQA benchmark (GitHub, Google DeepMind)", "url": "https://github.com/embodiedreasoning/ERQA"},
+{"title": "Gemini Robotics ER - Google DeepMind", "url": "https://deepmind.google/models/gemini-robotics/gemini-robotics-er/"}
+],
+"as_of": "2026-09"
+},
+{
+"name_zh": "具身安全",
+"name_en": "Embodied Safety",
+"abbr": "",
+"aliases": ["机器人安全", "具身AI安全", "Embodied AI Safety"],
+"tier": 2,
+"one_liner": "确保机器人在真实世界行动时不伤人、不毁物，也不被恶意指令操纵。",
+"explanation": "具身安全关注具身智能体在物理世界执行任务带来的风险，大致分两层。一层是传统的物理安全：碰撞检测、力和速度限制、急停等，对应 ISO/TS 15066 这类协作机器人标准。另一层是大模型进入机器人后出现的新问题，谷歌 DeepMind 称为语义安全：模型可能因幻觉、提示注入或常识错误做出危险动作。ICLR 2025 的 BadRobot 论文展示了通过语音越狱，让基于大模型的机器人执行有害动作；DeepMind 2025 年提出 ASIMOV 基准和自动生成的机器人宪法，用来评估和约束模型行为。",
+"example": "用户对家用机器人说「把这瓶清洁剂倒进杯子端给客人」，具身安全要求上层模型识别出这是危险请求并拒绝；底层控制则保证手臂即使出错，也不会用过大的力撞到人。",
+"related": ["功能安全", "物理人机交互", "安全强化学习", "控制障碍函数", "机器人三定律 / 机器人宪法", "ISO/TS 15066 协作机器人安全标准"],
+"sources": [
+{"title": "Generating Robot Constitutions & Benchmarks for Semantic Safety (arXiv 2503.08663)", "url": "https://arxiv.org/abs/2503.08663"},
+{"title": "BadRobot: Jailbreaking Embodied LLM Agents in the Physical World (arXiv 2407.20242)", "url": "https://arxiv.org/abs/2407.20242"}
+],
+"as_of": "2025-03"
+},
+{
+"name_zh": "本体差异",
+"name_en": "Embodiment Gap",
+"abbr": "",
+"aliases": ["具身鸿沟", "本体鸿沟", "形态差异", "Cross-embodiment Gap"],
+"tier": 2,
+"one_liner": "不同机器人之间、人与机器人之间在外形、结构和动作方式上的差别。",
+"explanation": "本体指智能体的身体，包括外观、自由度、运动学结构、手或夹爪的形态、传感器位置和控制接口。本体差异就是两种身体之间的这些不同：换一台机械臂，关节数和动作空间都可能变；人手有五指，很多机器人只有二指夹爪。它是跨本体学习和利用人类视频的核心障碍：在 A 身体上采的数据或训练的策略，往往不能直接用在 B 身体上。常见对策有：统一动作空间或给每种本体加专属输出头；用动作重定向把人手动作映射到机器人关节；在画面上做替换，如 Mirage 把目标机器人抹掉换成源机器人，Phantom（CoRL 2025）把人类视频中的手臂抹掉再叠上渲染的机器人。",
+"example": "用人拿杯子的第一人称视频训练机器人：训练画面里是人手，部署时相机看到的是金属夹爪；人手能捏住的细杯柄，二指夹爪也未必能用同样方式夹住。",
+"related": ["跨本体", "本体", "统一动作空间", "动作重定向", "人类视频数据", "跨本体图像替换"],
+"sources": [
+{"title": "Phantom: Training Robots Without Robots Using Only Human Videos (arXiv 2503.00779)", "url": "https://arxiv.org/abs/2503.00779"},
+{"title": "Mirage: Cross-Embodiment Zero-Shot Policy Transfer with Cross-Painting (arXiv 2402.19249)", "url": "https://arxiv.org/abs/2402.19249"}
+],
+"as_of": ""
+},
+{
+"name_zh": "涌现能力",
+"name_en": "Emergent Abilities",
+"abbr": "",
+"aliases": ["涌现", "Emergence", "Emergent Capabilities"],
+"tier": 2,
+"one_liner": "小模型没有、模型或数据规模变大后才出现的能力。",
+"explanation": "这一说法由 Wei 等人 2022 年的论文《Emergent Abilities of Large Language Models》系统提出，定义是：一种能力在较小模型中不存在、在较大模型中出现，无法靠外推小模型的表现来预测，例如多步算术、思维链推理。2023 年 Schaeffer 等人提出反驳：很多「突然出现」来自评价指标，用全对才得分的指标会显得跳变，换成连续指标后提升其实是平滑的。在具身智能里，涌现常指训练数据中没有、测试时却表现出来的能力，比如 RT-2 能执行机器人数据里没有的指令（把物体放到某个数字或图标上），或挑出石头当临时锤子。看到宣传里的涌现，要结合具体评测来判断。",
+"example": "RT-2 的机器人示范数据里没有「把物体放到数字卡片上」这类任务，但它的视觉语言模型底座从网络图文里认识数字，于是能照做。",
+"related": ["缩放定律", "大语言模型", "思维链", "RT-2", "零样本", "泛化"],
+"sources": [
+{"title": "Emergent Abilities of Large Language Models (arXiv 2206.07682)", "url": "https://arxiv.org/abs/2206.07682"},
+{"title": "Are Emergent Abilities of Large Language Models a Mirage? (arXiv 2304.15004)", "url": "https://arxiv.org/abs/2304.15004"},
+{"title": "RT-2: Vision-Language-Action Models Transfer Web Knowledge to Robotic Control (arXiv 2307.15818)", "url": "https://arxiv.org/abs/2307.15818"}
+],
+"as_of": ""
+}
+]}

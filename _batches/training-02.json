@@ -1,0 +1,413 @@
+{
+  "category": "training",
+  "batch": 2,
+  "terms": [
+    {
+      "name_zh": "奖励函数",
+      "name_en": "Reward Function",
+      "abbr": "",
+      "aliases": [
+        "奖励",
+        "奖赏函数"
+      ],
+      "tier": 1,
+      "one_liner": "强化学习里给智能体每一步行为打分的规则，告诉它什么算做得好。",
+      "explanation": "奖励函数是强化学习的核心组成部分：智能体每做一个动作，环境根据当前状态、所做动作和到达的下一状态给出一个标量分数，常写作 r = R(s, a, s')。智能体的目标是让累计奖励（回报）最大，所以奖励函数实际上定义了「任务是什么」。机器人任务的奖励往往要人手写：只在成功时给分（稀疏奖励）很难学起来，写得不周全又容易被策略钻空子，分数刷高了任务却没完成（奖励黑客）。因此出现了奖励塑形（额外加中间奖励来引导）、学习型奖励模型、让大模型自动写奖励代码等做法。",
+      "example": "训练四足机器人行走时，奖励通常由「跟上目标速度加分」「关节力矩过大扣分」「摔倒扣分」等多项加权组成。英伟达等提出的 Eureka 让 GPT-4 直接写奖励函数代码，在 29 个环境中有 83% 的任务超过了人类专家写的奖励。",
+      "related": [
+        "强化学习",
+        "回报",
+        "奖励塑形",
+        "稀疏奖励",
+        "奖励黑客",
+        "Eureka"
+      ],
+      "sources": [
+        {
+          "title": "OpenAI Spinning Up: Key Concepts in RL",
+          "url": "https://spinningup.openai.com/en/latest/spinningup/rl_intro.html"
+        },
+        {
+          "title": "Eureka: Human-Level Reward Design via Coding Large Language Models (arXiv 2310.12931)",
+          "url": "https://arxiv.org/abs/2310.12931"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "缩放定律",
+      "name_en": "Scaling Law",
+      "abbr": "",
+      "aliases": [
+        "规模定律",
+        "尺度定律",
+        "具身 Scaling Law",
+        "Robot Scaling Law",
+        "数据缩放定律",
+        "Data Scaling Law",
+        "Scaling 实验"
+      ],
+      "tier": 1,
+      "one_liner": "模型效果随参数量、数据量、算力增加而按幂律稳定提升的经验规律。",
+      "explanation": "缩放定律是对「模型越大、数据越多、算力越足，效果越好」的定量描述。2020 年 OpenAI 的 Kaplan 等人发现，语言模型的测试损失与参数量、数据量、训练算力之间都呈幂律关系，其中一些趋势跨越七个以上数量级依然成立；2022 年 DeepMind 的 Chinchilla 研究进一步指出，算力固定时，模型规模和训练 token 数应按相同比例扩大。它的价值在于能用小规模实验预测大规模训练的收益，决定资源投向哪里。具身智能领域正在验证机器人数据是否也有类似规律，这也是各家大规模采集数据的依据之一。",
+      "example": "2024 年清华大学高阳团队的《Data Scaling Laws in Imitation Learning for Robotic Manipulation》采集了 4 万多条演示、做了 1.5 万多次真机测试，发现策略在新环境、新物体上的泛化能力与训练环境数、物体数大致呈幂律关系，而单个环境内的演示条数加到一定程度后收益很小。",
+      "related": [
+        "数据缩放律（模仿学习）",
+        "参数量",
+        "大语言模型",
+        "数据多样性",
+        "苦涩的教训",
+        "涌现能力"
+      ],
+      "sources": [
+        {
+          "title": "Scaling Laws for Neural Language Models (arXiv 2001.08361)",
+          "url": "https://arxiv.org/abs/2001.08361"
+        },
+        {
+          "title": "Training Compute-Optimal Large Language Models (arXiv 2203.15556)",
+          "url": "https://arxiv.org/abs/2203.15556"
+        },
+        {
+          "title": "Data Scaling Laws in Imitation Learning for Robotic Manipulation (arXiv 2410.18647)",
+          "url": "https://arxiv.org/abs/2410.18647"
+        }
+      ],
+      "as_of": "2024-10"
+    },
+    {
+      "name_zh": "监督学习",
+      "name_en": "Supervised Learning",
+      "abbr": "",
+      "aliases": [
+        "有监督学习"
+      ],
+      "tier": 1,
+      "one_liner": "用「输入 + 标准答案」成对的数据训练模型，让它学会从输入预测答案。",
+      "explanation": "监督学习是最常见的机器学习范式：训练数据里每个输入都配有正确输出（标签，也叫真值），模型不断缩小自己的预测与标签之间的差距（用损失函数衡量），最终目标是在没见过的新数据上也能预测对，也就是泛化。输出是类别时叫分类，输出是连续数值时叫回归。与之相对的是没有标签的无监督学习，以及靠奖励信号学习的强化学习。在具身智能里，行为克隆本质上就是监督学习：把人类示范中的观测当输入、动作当标签，训练策略去模仿。",
+      "example": "用遥操作采集 1000 条「相机画面 → 机械臂关节角」数据，训练一个网络输入画面、输出关节角，损失取预测关节角与示范关节角的均方误差——这就是以监督学习形式做的行为克隆。",
+      "related": [
+        "行为克隆",
+        "无监督学习",
+        "强化学习",
+        "损失函数",
+        "真值",
+        "监督微调"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Supervised learning",
+          "url": "https://en.wikipedia.org/wiki/Supervised_learning"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "训练集 / 验证集 / 测试集",
+      "name_en": "Training / Validation / Test Set",
+      "abbr": "",
+      "aliases": [
+        "训练集",
+        "验证集",
+        "测试集",
+        "数据集划分",
+        "train/val/test split"
+      ],
+      "tier": 1,
+      "one_liner": "把数据分成三份：一份用来学，一份用来调参挑模型，一份留到最后检验。",
+      "explanation": "这是机器学习划分数据的标准做法。训练集用来更新模型参数；验证集在训练过程中评估模型，据此挑选超参数和检查点（训练中途保存的模型权重）；测试集只在最后使用，给出模型在没见过的数据上的表现。谷歌机器学习速成课程举的例子是 70% / 15% / 15%，但比例并不固定，关键是验证集和测试集要足够大、结论才可靠。三者之间不能有重复样本，否则等于偷看答案，成绩会虚高；验证集被反复拿来做决策后也会逐渐失去代表性。机器人领域常用真机或仿真评测充当测试集，同样要保证测试场景和物体没有出现在训练数据里。",
+      "example": "训练一个抓取策略：用 8 个厨房采的数据训练，另 1 个厨房的数据做验证、决定训练多少步，最后在从没出现过的第 10 个厨房里做真机测试并报告成功率。",
+      "related": [
+        "过拟合",
+        "超参数",
+        "检查点",
+        "泛化",
+        "分布外",
+        "数据泄漏 / 测试集污染"
+      ],
+      "sources": [
+        {
+          "title": "Google Machine Learning Crash Course: Dividing the original dataset",
+          "url": "https://developers.google.com/machine-learning/crash-course/overfitting/dividing-datasets"
+        },
+        {
+          "title": "Google Machine Learning Glossary: validation set",
+          "url": "https://developers.google.com/machine-learning/glossary#validation-set"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "炼丹 / 调参（黑话）",
+      "name_en": "\"Alchemy\" (Slang for Model Training / Hyperparameter Tuning)",
+      "abbr": "",
+      "aliases": [
+        "炼丹",
+        "调参",
+        "调参侠",
+        "炼丹师",
+        "炼丹炉"
+      ],
+      "tier": 2,
+      "one_liner": "中文圈对训练模型、反复试超参数的戏称，指主要靠经验和试错出结果。",
+      "explanation": "「炼丹」是国内深度学习圈的黑话，把训练模型比作炼丹：数据和模型放进 GPU 服务器（「丹炉」），定好学习率、批大小等超参数（训练前人为设定的配置，俗称「火候」），等几小时到几天看结果，好坏常常说不清原因，只能反复尝试。「调参」就是调整这些超参数，做这件事的人自嘲为「调参侠」「炼丹师」。英文圈也有类似批评：2017 年 NIPS 时间检验奖演讲中，Ali Rahimi 直言「机器学习已经变成了炼金术」，指领域依赖大量不理解原理的技巧。更系统的调参方法有网格搜索、随机搜索、贝叶斯优化和基于群体的训练。",
+      "example": "某个 VLA 微调效果不好，同学把学习率从 1e-4 改成 2e-5、批大小从 32 改成 128、再多训 2 万步看看——这样一轮轮试错就是「炼丹」。",
+      "related": [
+        "超参数",
+        "学习率",
+        "批大小",
+        "基于群体的训练",
+        "消融实验",
+        "随机种子与可复现性"
+      ],
+      "sources": [
+        {
+          "title": "Reflections on Random Kitchen Sinks (Ali Rahimi & Ben Recht, NIPS 2017 Test-of-Time talk)",
+          "url": "https://archives.argmin.net/2017/12/05/kitchen-sinks/"
+        },
+        {
+          "title": "Wikipedia: Hyperparameter optimization",
+          "url": "https://en.wikipedia.org/wiki/Hyperparameter_optimization"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "AdamW 优化器",
+      "name_en": "AdamW (Adam with Decoupled Weight Decay)",
+      "abbr": "",
+      "aliases": [
+        "AdamW",
+        "解耦权重衰减的 Adam"
+      ],
+      "tier": 2,
+      "one_liner": "把权重衰减从梯度更新里拆出来单独做的 Adam，训练大模型最常用的优化器之一。",
+      "explanation": "AdamW 由 Ilya Loshchilov 和 Frank Hutter 在论文《Decoupled Weight Decay Regularization》中提出（ICLR 2019）。优化器负责按梯度更新参数，Adam 会给每个参数自适应调整步长。以往给 Adam 加正则是把 L2 惩罚并进梯度，但它会被自适应步长一起缩放，效果打折。作者指出这对 SGD 等价于权重衰减（每步把参数按比例缩小一点），对 Adam 却不等价，于是把衰减从梯度计算中拆出来单独执行。这样泛化更好，最优衰减系数也不再和学习率绑定。如今它是训练 Transformer 类模型最常用的优化器之一。",
+      "example": "在 PyTorch 里写 torch.optim.AdamW(model.parameters(), lr=1e-4, weight_decay=0.01) 即可使用；PyTorch 中它的默认参数为学习率 1e-3、betas (0.9, 0.999)、weight_decay 0.01。",
+      "related": [
+        "优化器",
+        "梯度下降",
+        "学习率",
+        "正则化",
+        "学习率调度（预热与余弦退火）"
+      ],
+      "sources": [
+        {
+          "title": "Decoupled Weight Decay Regularization (arXiv 1711.05101)",
+          "url": "https://arxiv.org/abs/1711.05101"
+        },
+        {
+          "title": "PyTorch docs: torch.optim.AdamW",
+          "url": "https://docs.pytorch.org/docs/2.14/generated/torch.optim.AdamW.html"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "优势函数",
+      "name_en": "Advantage Function",
+      "abbr": "",
+      "aliases": [
+        "优势值",
+        "Advantage",
+        "A(s,a)"
+      ],
+      "tier": 2,
+      "one_liner": "衡量某个动作比按当前策略的平均水平好多少，等于 Q 值减 V 值。",
+      "explanation": "优势函数定义为 A(s,a) = Q(s,a) − V(s)：Q 是在状态 s 先做动作 a、之后按策略行动的期望回报，V 是在状态 s 直接按策略行动的期望回报。两者相减就是这个动作「比平均好多少」，为正说明该多做，为负说明该少做。策略梯度方法用优势代替原始回报，能明显降低梯度估计的方差（波动），训练更稳。PPO 等算法常用 Schulman 等人 2015 年提出的广义优势估计（GAE）来算它；Physical Intelligence 的 RECAP 则把优势作为条件输入 VLA，让模型区分好经验和差经验。",
+      "example": "机械臂抓杯子时，在状态 s 下按当前策略平均能拿到 0.6 的回报；如果先执行「垂直下探」再继续，期望回报是 0.8，那么这个动作的优势就是 +0.2，训练会提高它被选中的概率。",
+      "related": [
+        "价值函数",
+        "Q 函数",
+        "广义优势估计",
+        "策略梯度",
+        "近端策略优化",
+        "RECAP"
+      ],
+      "sources": [
+        {
+          "title": "OpenAI Spinning Up: Key Concepts in RL",
+          "url": "https://spinningup.openai.com/en/latest/spinningup/rl_intro.html"
+        },
+        {
+          "title": "High-Dimensional Continuous Control Using Generalized Advantage Estimation (arXiv 1506.02438)",
+          "url": "https://arxiv.org/abs/1506.02438"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "冻结骨干网络",
+      "name_en": "Backbone Freezing",
+      "abbr": "",
+      "aliases": [
+        "冻结主干",
+        "freeze backbone",
+        "冻结预训练层"
+      ],
+      "tier": 2,
+      "one_liner": "训练时固定预训练骨干网络的参数不更新，只训练新加上去的部分。",
+      "explanation": "骨干网络指模型中负责提取特征的主体，通常来自预训练，如 ResNet、ViT 或整个 VLM。冻结就是训练时不更新这些参数（PyTorch 里把 requires_grad 设为 False），只训练新加的输出头或动作专家。好处是省显存、训练快、数据少时不易过拟合，也能减少灾难性遗忘；代价是骨干学不到新任务需要的特征。VLA 里的取舍很具体：OpenVLA 发现冻结视觉编码器会丢失精细空间信息、控制变差；英伟达 GR00T N1 则在预训练和后训练中都冻结了 VLM 的语言部分，只训练其余模块。",
+      "example": "PyTorch 官方迁移学习教程中，用 ImageNet 预训练的 ResNet-18 做蚂蚁/蜜蜂分类：冻结除最后一层外的所有层，只训练新换上的全连接层。",
+      "related": [
+        "骨干网络",
+        "微调",
+        "参数高效微调",
+        "灾难性遗忘",
+        "知识隔离",
+        "梯度阻断"
+      ],
+      "sources": [
+        {
+          "title": "PyTorch Tutorial: Transfer Learning for Computer Vision",
+          "url": "https://docs.pytorch.org/tutorials/beginner/transfer_learning_tutorial.html"
+        },
+        {
+          "title": "OpenVLA: An Open-Source Vision-Language-Action Model (arXiv 2406.09246)",
+          "url": "https://arxiv.org/html/2406.09246"
+        },
+        {
+          "title": "GR00T N1: An Open Foundation Model for Generalist Humanoid Robots (arXiv 2503.14734)",
+          "url": "https://arxiv.org/html/2503.14734"
+        }
+      ],
+      "as_of": "2025-03"
+    },
+    {
+      "name_zh": "反向传播",
+      "name_en": "Backpropagation",
+      "abbr": "BP",
+      "aliases": [
+        "BP 算法",
+        "误差反向传播",
+        "Backprop"
+      ],
+      "tier": 2,
+      "one_liner": "用链式法则从输出往回逐层算梯度，是训练神经网络的核心算法。",
+      "explanation": "反向传播是计算神经网络梯度的方法。训练时先前向计算得到输出和损失，再从损失出发，按链式法则从最后一层往前逐层传递误差，一次算出损失对所有参数的梯度，交给梯度下降、AdamW 等优化器更新参数，避免了对每个参数单独求导的大量重复计算。它可追溯到 Seppo Linnainmaa 1970 年的自动微分工作，Paul Werbos 1974 年将其用于神经网络，1986 年 Rumelhart、Hinton 和 Williams 在《Nature》上的论文让它广为人知。PyTorch 里的 loss.backward() 就是在做反向传播。",
+      "example": "训练行为克隆策略时，每一步先前向算出预测动作与示范动作的均方误差，再调用 loss.backward() 得到所有权重的梯度，最后 optimizer.step() 更新参数。",
+      "related": [
+        "梯度下降",
+        "优化器",
+        "损失函数",
+        "梯度消失 / 梯度爆炸",
+        "梯度阻断",
+        "神经网络"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Backpropagation",
+          "url": "https://en.wikipedia.org/wiki/Backpropagation"
+        },
+        {
+          "title": "Google Machine Learning Glossary",
+          "url": "https://developers.google.com/machine-learning/glossary"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "批大小",
+      "name_en": "Batch Size",
+      "abbr": "",
+      "aliases": [
+        "批量大小",
+        "batch",
+        "批次大小"
+      ],
+      "tier": 2,
+      "one_liner": "每更新一次参数时，一起送进模型计算的样本数量。",
+      "explanation": "训练时不会一次用上全部数据，而是把数据切成一小批一小批（mini-batch），每批算一次平均损失和梯度、更新一次参数，一批里的样本数就是批大小。批大小越大，梯度估计越稳定、GPU 利用率越高，但显存占用也越大；太小则梯度噪声大、训练慢。它和学习率关系紧密，改批大小时通常要一起调学习率。显存不够又想用大批量时，可以用梯度累积（攒几批梯度再更新一次）或多卡数据并行。注意区分：一个训练轮次（epoch）是把全部数据过一遍，其中包含许多个批次。",
+      "example": "OpenVLA 在 64 张 A100 上训练了 14 天，全局批大小为 2048、学习率固定为 2e-5，总共把训练集过了 27 遍。",
+      "related": [
+        "学习率",
+        "训练轮次",
+        "梯度累积",
+        "分布式训练（数据并行 / 模型并行）",
+        "超参数",
+        "梯度下降"
+      ],
+      "sources": [
+        {
+          "title": "Google Machine Learning Glossary",
+          "url": "https://developers.google.com/machine-learning/glossary"
+        },
+        {
+          "title": "OpenVLA: An Open-Source Vision-Language-Action Model (arXiv 2406.09246)",
+          "url": "https://arxiv.org/html/2406.09246"
+        }
+      ],
+      "as_of": "2024-06"
+    },
+    {
+      "name_zh": "贝尔曼方程",
+      "name_en": "Bellman Equation",
+      "abbr": "",
+      "aliases": [
+        "Bellman 方程",
+        "贝尔曼最优方程",
+        "贝尔曼期望方程"
+      ],
+      "tier": 2,
+      "one_liner": "把一个状态的价值拆成「眼前奖励 + 下一状态打折后的价值」的递推式。",
+      "explanation": "贝尔曼方程以美国数学家 Richard Bellman 命名，出自他提出的动态规划方法。它说的是：某个状态的价值 = 在这里拿到的即时奖励 + 折扣因子 × 下一个状态的期望价值。这样就把「长远看有多好」这个难算的问题拆成一步步的递推。按固定策略写出的叫贝尔曼期望方程，对动作取最大值的叫贝尔曼最优方程。几乎所有基于价值的强化学习都建立在它之上：Q 学习、深度 Q 网络（DQN）、时序差分学习都用它构造训练目标，让网络的预测满足这种前后自洽的关系。",
+      "example": "Q 学习的训练目标是 r + γ·max Q(s', a')：机器人在状态 s 执行动作 a、拿到奖励 r 并到达 s'，就用这个目标去更新 Q(s, a)，这就是在用贝尔曼最优方程。",
+      "related": [
+        "价值函数",
+        "Q 函数",
+        "折扣因子",
+        "时序差分学习",
+        "Q 学习",
+        "马尔可夫决策过程"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Bellman equation",
+          "url": "https://en.wikipedia.org/wiki/Bellman_equation"
+        },
+        {
+          "title": "OpenAI Spinning Up: Key Concepts in RL",
+          "url": "https://spinningup.openai.com/en/latest/spinningup/rl_intro.html"
+        }
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "灾难性遗忘",
+      "name_en": "Catastrophic Forgetting",
+      "abbr": "",
+      "aliases": [
+        "遗忘",
+        "灾难性干扰",
+        "Catastrophic Interference"
+      ],
+      "tier": 2,
+      "one_liner": "神经网络学了新任务后，旧任务上的能力大幅下降甚至丢失的现象。",
+      "explanation": "灾难性遗忘又叫灾难性干扰，1989 年 McCloskey 和 Cohen 让反向传播网络先后学两组加法题时首次系统报告：学新内容会改动表示旧知识的权重，旧任务成绩骤降。缓解方法有回放旧数据、弹性权重巩固（EWC，保护对旧任务重要的权重）、冻结部分网络、参数高效微调等。具身智能里，把预训练 VLM 改造成 VLA、只用机器人数据微调，常会丢掉原有的语言理解和常识。所以 π0.5 等模型混合网页图文数据和机器人数据协同训练，Physical Intelligence 还提出知识隔离，阻断动作专家的梯度流回 VLM。",
+      "example": "Physical Intelligence 在知识隔离论文中指出，直接给 VLM 接上连续动作专家一起训练，会让模型明显损失预训练知识，削弱理解语言指令的能力；他们用梯度阻断加上图文问答数据协同训练来缓解。",
+      "related": [
+        "持续学习",
+        "冻结骨干网络",
+        "协同训练",
+        "知识隔离",
+        "梯度阻断",
+        "参数高效微调"
+      ],
+      "sources": [
+        {
+          "title": "Wikipedia: Catastrophic interference",
+          "url": "https://en.wikipedia.org/wiki/Catastrophic_interference"
+        },
+        {
+          "title": "Knowledge Insulating Vision-Language-Action Models (arXiv 2505.23705)",
+          "url": "https://arxiv.org/html/2505.23705"
+        },
+        {
+          "title": "π0.5: a Vision-Language-Action Model with Open-World Generalization (arXiv 2504.16054)",
+          "url": "https://arxiv.org/abs/2504.16054"
+        }
+      ],
+      "as_of": "2025-05"
+    }
+  ]
+}

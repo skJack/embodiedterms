@@ -1,0 +1,113 @@
+{
+  "batch": "hardware-11",
+  "terms": [
+    {
+      "key": "hardware-11#0",
+      "name_en": "Lifting Column",
+      "aliases": ["Lift Column", "Linear Lift Module"],
+      "one_liner": "A vertical linear-motion axis on a mobile base that raises or lowers a robot's torso or arms.",
+      "explanation": "A lifting column is a common vertical linear-motion component on mobile-manipulation robots and wheeled humanoids, usually driven by a motor turning a lead screw or timing belt to move a column or carriage up and down, raising or lowering the arms and head camera as a unit. It solves the working-height problem: an arm mounted at a fixed height struggles to reach both the floor and a high shelf, while adding one lifting axis covers a low-to-high workspace with a single degree of freedom — far cheaper and more stable than building a pair of long legs. Selecting one mainly comes down to travel range, payload, speed, and whether it self-locks when power is cut, so the arms don't drop. It's a common part of a composite robot's design, alongside a mobile base and a robot arm.",
+      "example": "Hello Robot's Stretch mounts a vertical lifting column on its base, with a telescoping arm hanging off it, letting it pick things up off the floor and also reach tabletops and counters.",
+      "related": ["Composite Robot", "Mobile Base / Chassis", "Wheeled Humanoid", "Workspace", "Prismatic Joint", "Ball Screw"]
+    },
+    {
+      "key": "hardware-11#1",
+      "name_en": "Lightweighting (Magnesium Alloy / Carbon Fiber)",
+      "aliases": ["Lightweight Design"],
+      "one_liner": "Using light materials like magnesium alloy, carbon fiber, and engineering plastics to cut a robot's weight.",
+      "explanation": "Lightweighting means reducing the weight of a robot's structural parts while still meeting strength and stiffness requirements, using materials such as magnesium alloy (about two-thirds the density of aluminum alloy), carbon-fiber composites (high strength per unit weight, good for rods and shells), and engineering plastics such as PEEK. For legged and humanoid robots, the benefits of cutting weight compound: lighter limbs mean lower rotational inertia, which means the joint motors need less torque, which extends battery life and reduces impact force in a fall or a collision with a person. The trade-off is higher material and manufacturing cost — magnesium alloy needs corrosion treatment, and carbon-fiber parts are hard to repair. It's commonly discussed alongside plastic-for-steel substitution, payload-to-weight ratio, and battery life.",
+      "example": "Replacing an aluminum-alloy lower leg with a carbon-fiber tube reduces mass at the far end of the leg, making the hip and knee joints work less hard when swinging the leg quickly.",
+      "related": ["Plastic-for-Steel Substitution", "Payload-to-Weight Ratio", "Rotational Inertia", "Battery Life", "PEEK", "Torque Density"]
+    },
+    {
+      "key": "hardware-11#2",
+      "name_en": "Linear Motor",
+      "aliases": ["Linear Electric Motor"],
+      "one_liner": "A motor that outputs straight-line force and motion directly, with no screw or other transmission.",
+      "explanation": "A linear motor lays its stator (coils or magnetic track) and its mover out along a straight line; once powered, the mover translates directly along the track, with no lead screw, gear, or other mechanism in between to turn rotation into linear motion. The benefits are high speed, high positioning accuracy, and no backlash (transmission play), so it's widely used in semiconductor equipment, precision stages, and high-speed sorting; the downsides are low force per unit volume, high cost, and no self-locking when power is cut. A common point of confusion for newcomers: what's usually called a “linear actuator” or “electric cylinder” on a humanoid robot is almost always a rotary motor paired with a planetary roller screw, not a true linear motor.",
+      "example": "The precision motion stages in wafer inspection equipment are commonly driven by linear motors, paired with a linear encoder scale for micron-level positioning.",
+      "related": ["Linear Actuator (Electric Cylinder)", "Planetary Roller Screw", "Ball Screw", "Direct Drive", "Permanent-Magnet Synchronous Motor", "Backlash"]
+    },
+    {
+      "key": "hardware-11#3",
+      "name_en": "Linker Hand",
+      "aliases": ["Linkerbot Dexterous Hand"],
+      "one_liner": "A dexterous-hand product line from Beijing's Linkerbot, spanning tendon-driven, linkage, and direct-drive designs.",
+      "explanation": "Linker Hand is the dexterous-hand product line from Linkerbot (灵心巧手), a Beijing-based company. According to the company, the line spans anywhere from 6 to 42 degrees of freedom and covers three technical approaches: tendon drive, linkage transmission, and direct drive. The L20 model, for instance, is linkage-based with 21 degrees of freedom, driven by brushless motors paired with precision ball screws; the L30 is tendon-driven, with 22 degrees of freedom. A dexterous hand is the end effector a humanoid robot uses for fine manipulation — more degrees of freedom bring it closer to a human hand, but also make control and data collection harder. Products like this are commonly bought by universities and robotics companies to mount on a robot arm or humanoid, paired with a data glove or VR teleoperation to collect dexterous-manipulation data.",
+      "example": "Researchers mount a Linker Hand at the end of a robot arm and use a data glove to teleoperate it, collecting demonstrations of dexterous tasks like grasping or twisting a bottle cap, then use that data to train a VLA policy.",
+      "related": ["Linkerbot", "Dexterous Hand", "Tendon-Driven Actuation", "Linkage Transmission", "Dexterous Manipulation", "Data Glove"]
+    },
+    {
+      "key": "hardware-11#4",
+      "name_en": "Liquid-Cooled Joint Actuators (Active Thermal Management)",
+      "aliases": ["Liquid-Cooled Joint", "Active Joint Cooling"],
+      "one_liner": "Circulating coolant through a joint motor to carry away winding heat, so it can sustain high torque longer.",
+      "explanation": "Liquid-cooled joints add cooling channels around a joint module's motor housing or stator, with a pump circulating coolant that carries heat generated by the windings and driver away to a radiator. A motor's heat generation is roughly proportional to the square of its current, and the torque it can sustain continuously is mainly limited by winding temperature, not by how much force the motor can deliver instantaneously; when air cooling or passive heat dissipation can't keep up, the joint has to derate itself or trigger overheat protection. Liquid cooling can meaningfully raise sustained torque, letting a humanoid robot carry heavy loads or sustain highly dynamic motion for longer. The trade-off is the added pump, tubing, and coolant, which increase weight, complexity, and the risk of a leak. Electric-vehicle drive motors are almost universally liquid-cooled, and humanoid robot joints are starting to borrow the same approach.",
+      "example": "",
+      "related": ["Motor Thermal Rise and Overheat Protection", "Rated Torque", "Peak Torque", "Joint Module", "Power Density", "Torque Density"]
+    },
+    {
+      "key": "hardware-11#5",
+      "name_en": "Magnetic Encoder",
+      "aliases": ["Mag Encoder"],
+      "one_liner": "An angle sensor that uses a magnet plus a Hall or magnetoresistive chip to measure a motor shaft's rotation.",
+      "explanation": "A magnetic encoder is a type of encoder (a sensor that measures rotation angle): a small radially magnetized magnet is mounted on the end of the motor shaft, facing a Hall-effect or magnetoresistive chip, and the chip reads the direction of the magnetic field to determine the angle. It's small, cheap, and unbothered by dust or oil, so it's extremely common in robot joint modules, often supplying the rotor angle needed for field-oriented control (FOC, a motor-control technique). Compared with an optical encoder, its accuracy and resolution are usually lower, and it's more sensitive to external magnetic fields and mounting eccentricity, so it needs calibration. High-end joints often place one encoder at the motor and another at the output, forming a dual-encoder setup.",
+      "example": "Many open-source joint driver boards glue a small magnet to the end of the motor shaft, with an ams AS5047P magnetic-encoder chip soldered directly opposite it to read the rotor's angle.",
+      "related": ["Encoder", "Optical Encoder", "Absolute Encoder", "Dual Encoder", "Field-Oriented Control (FOC)", "Hall-Effect Sensor"]
+    },
+    {
+      "key": "hardware-11#6",
+      "name_en": "Magnetic Gripper",
+      "aliases": ["Electromagnetic Chuck", "Electro-Permanent Magnetic Gripper"],
+      "one_liner": "An end effector that holds steel workpieces using an electromagnet or a switchable permanent magnet.",
+      "explanation": "A magnetic gripper is a type of end effector (the part mounted at a robot arm's tip that does the work) that holds ferrous workpieces using an electromagnet, or an electro-permanent magnet, which switches its magnetism with a brief pulse of current, then holds its grip with no power draw at all. It only needs to touch one face of the workpiece, with no fingers to close, making it fast to use and mechanically simple — well suited to moving steel sheets, stamped parts, and other iron-based parts; the electro-permanent version keeps holding even if power is lost, which is safer. Its limits are just as clear: it only works on ferromagnetic materials, thin sheets can get picked up several at a time by accident, and residual magnetism can be left behind after release. Like the vacuum suction cup and the two-finger gripper, it's a common non-dexterous grasping solution in industrial settings.",
+      "example": "On a stamping line, a magnetic chuck at the end of a robot arm lifts one steel sheet at a time and feeds it into the next press.",
+      "related": ["End Effector", "Vacuum Suction Cup", "Gripper", "Electroadhesion Gripper", "Industrial Robot", "Palletizing / Depalletizing"]
+    },
+    {
+      "key": "hardware-11#7",
+      "name_en": "Meta Quest 3 / PICO 4 Ultra XR Headsets",
+      "aliases": ["Quest 3", "PICO 4 Ultra"],
+      "one_liner": "Two consumer mixed-reality headsets commonly repurposed for robot teleoperation.",
+      "explanation": "The Meta Quest 3 is a mixed-reality headset released by Meta in 2023, and the PICO 4 Ultra is a similar product released in 2024 by PICO, a ByteDance subsidiary. Both include built-in head tracking, hand tracking, controller tracking, and color pass-through cameras, at a price far below the Apple Vision Pro. In embodied AI, they're mainly used as low-cost VR teleoperation devices: the headset streams the operator's head pose, hand keypoints, or controller pose to the robot in real time, which is converted into joint commands through motion retargeting; the video feed from the robot's head cameras is streamed back to the headset, letting the operator work as if physically present, while the session is recorded as demonstration data.",
+      "example": "Unitree's open-source xr_teleoperate supports using XR devices such as the Quest 3 or PICO 4 Ultra to teleoperate the Unitree G1 humanoid and its dexterous hands.",
+      "related": ["VR Teleoperation", "VR Headset", "Apple Vision Pro", "Unitree xr_teleoperate", "XRoboToolkit", "Motion Retargeting"]
+    },
+    {
+      "key": "hardware-11#8",
+      "name_en": "Metacarpophalangeal / Proximal & Distal Interphalangeal Joints (MCP / PIP / DIP)",
+      "aliases": ["MCP Joint", "PIP Joint", "DIP Joint"],
+      "one_liner": "The three joints from the base of a finger to its tip, standard vocabulary for describing dexterous-hand structure.",
+      "explanation": "These three abbreviations come from human hand anatomy. MCP is the metacarpophalangeal joint, where the finger meets the palm; it can both flex/extend and move side to side, giving it 2 degrees of freedom. PIP is the middle joint, the proximal interphalangeal joint, and DIP is the joint nearest the fingertip, the distal interphalangeal joint; each of these can only flex and extend. When a person curls a finger, the DIP joint mostly follows the PIP joint's motion automatically, so many dexterous hands couple the two together with a linkage or tendon, letting one motor drive both joints — which means the hand ends up with more joints than actuated degrees of freedom (motors). The thumb's structure is different and has no separate PIP/DIP. When reading a dexterous hand's specs, distinguishing joint count from actuated degrees of freedom is necessary to compare products fairly.",
+      "example": "Each finger on the Inspire RH56 dexterous hand has only one motor, which drives both the MCP and PIP joints to flex together through a linkage — so the whole hand has 12 joints but only 6 actuated degrees of freedom.",
+      "related": ["Dexterous Hand", "Active DOF / Passive DOF", "Thumb Opposition", "Flexion/Extension and Abduction/Adduction", "Underactuation", "MANO Hand Model"]
+    },
+    {
+      "key": "hardware-11#9",
+      "name_en": "Micro Lead Screw",
+      "aliases": ["Micro Ball Screw", "Micro Planetary Roller Screw"],
+      "one_liner": "A screw only a few millimeters in diameter that turns a small motor's rotation into linear push-pull motion.",
+      "explanation": "A micro lead screw is a screw, typically only a few millimeters in diameter, that comes in trapezoidal, ball, or planetary-roller variants, all serving to convert a motor's rotation into the nut's linear travel. In dexterous hands, a common approach pairs a coreless motor with a micro lead screw to make a small linear actuator, hidden inside the palm or a finger, pushing and pulling a linkage to curl the finger. A smaller lead (how far the nut travels per revolution) gives more push force but lower speed; a trapezoidal screw has more friction and can self-lock, so a finger can hold its grip even after power is cut. Humanoid robots need these in large volumes, and precision and lifespan remain a challenge for domestic manufacturing in China.",
+      "example": "The Linker Hand L20 from Linkerbot uses a brushless motor paired with a precision ball screw to drive a linkage that moves the finger joints.",
+      "related": ["Coreless Motor", "Ball Screw", "Planetary Roller Screw", "Trapezoidal (Acme) Screw and Self-Locking", "Lead", "Linkage Transmission"]
+    },
+    {
+      "key": "hardware-11#10",
+      "name_en": "Microcontroller Unit (MCU)",
+      "aliases": ["Microcontroller"],
+      "one_liner": "A small control chip integrating a processor, memory, and peripheral interfaces on a single die.",
+      "explanation": "A microcontroller unit, commonly called an MCU, integrates a CPU core, flash memory, RAM, timers, analog-to-digital conversion, PWM (pulse-width modulation) outputs, and communication interfaces like CAN and serial ports, all on a single chip; common examples include STMicroelectronics' STM32 and Espressif's ESP32. It has modest compute power and low power draw, but predictable response times, making it well suited to running bare-metal code or a real-time operating system. In robots, MCUs are spread across joint drivers, sensor boards, dexterous hands, and the battery management system, handling low-level, real-time control like the tens-of-kilohertz current loop; the onboard compute platform that runs Linux and neural networks (such as a Jetson) is a different class of chip entirely, and the two work together over a bus.",
+      "example": "The STM32 on a joint driver board runs the FOC current loop at a very high frequency, while also receiving position and torque commands from the host computer over a CAN bus.",
+      "related": ["STMicroelectronics STM32 MCU Family", "Lower-Level Controller", "Embedded System", "Real-Time Operating System (RTOS)", "Field-Oriented Control (FOC)", "System on Chip (SoC)"]
+    },
+    {
+      "key": "hardware-11#11",
+      "name_en": "MIT Mini Cheetah Actuator",
+      "aliases": ["Mini Cheetah Motor", "Mini Cheetah Joint Module"],
+      "one_liner": "A quasi-direct-drive joint module MIT designed for the Mini Cheetah quadruped, later widely copied across the industry.",
+      "explanation": "The MIT Cheetah actuator is a joint module designed by Ben Katz at MIT's Biomimetic Robotics Lab (Sangbae Kim's group) for the Mini Cheetah quadruped robot: a large-diameter outrunner brushless motor paired with a single-stage 6:1 planetary reducer, with an integrated driver board and magnetic encoder, communicating over CAN. The low gear ratio means low reflected inertia and the ability to be backdriven by external force, so the joint can estimate torque directly from motor current without needing a separate torque sensor — this is the core idea behind quasi-direct drive and proprioceptive actuators. Because the design files and firmware were published openly, a large number of low-cost joint motors in China and elsewhere have since copied its structure and its “MIT mode” control command format.",
+      "example": "Joint motors such as those from DAMIAO, Xiaomi's CyberGear, and the CubeMars AK series all support MIT mode, where a single command frame carries target position, velocity, Kp, Kd, and feedforward torque together.",
+      "related": ["MIT Mini Cheetah", "Quasi-Direct Drive", "Proprioceptive Actuator", "MIT Mode", "Planetary Gearbox", "Backdrivability"]
+    }
+  ]
+}

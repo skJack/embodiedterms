@@ -1,0 +1,203 @@
+{
+  "category": "model",
+  "batch": 4,
+  "terms": [
+    {
+      "name_zh": "连续动作回归",
+      "name_en": "Continuous Action Regression",
+      "abbr": "",
+      "aliases": ["回归头", "Regression Head", "L1 回归", "MSE 回归"],
+      "tier": 2,
+      "one_liner": "让网络直接输出连续的动作数值，用 L1 或均方误差去对齐示范动作。",
+      "explanation": "连续动作回归是机器人策略最直接的出动作方式：网络末端接一个回归头（通常是几层全连接），直接输出关节角、末端位移等实数，训练时用均方误差或 L1 损失（预测值与示范值之差的平方或绝对值）去逼近人类示范。它实现简单，推理只需一次前向计算，速度快。短板在于示范里同一场景有多种合理做法时（动作多峰性），回归会学成几种做法的平均，结果可能哪种都不是；Octo 论文就观察到 MSE 回归头学出的策略动作迟缓、犹豫。常见的替代方案是把动作离散成 token，或用扩散、流匹配生成。不过 2025 年的 OpenVLA-OFT 用 L1 回归配合动作分块和并行解码，把 LIBERO 四个任务集的平均成功率从 76.5% 提到 97.1%，说明回归在很多任务上仍然够用。",
+      "example": "ACT（Action Chunking with Transformers）训练时用 L1 损失直接回归未来一段关节角序列；OpenVLA-OFT 把 OpenVLA 的离散 token 输出换成 L1 回归头，一次前向就算出整段动作，动作生成吞吐提升约 26 倍。",
+      "related": ["动作头", "动作多峰性", "L1 损失", "均方误差", "扩散动作头", "分箱离散化"],
+      "sources": [
+        {"title": "Fine-Tuning Vision-Language-Action Models: Optimizing Speed and Success (OpenVLA-OFT, arXiv 2502.19645)", "url": "https://arxiv.org/abs/2502.19645"},
+        {"title": "Octo: An Open-Source Generalist Robot Policy (arXiv 2405.12213)", "url": "https://arxiv.org/html/2405.12213"}
+      ],
+      "as_of": "2025-02"
+    },
+    {
+      "name_zh": "CLIP",
+      "name_en": "Contrastive Language-Image Pre-training",
+      "abbr": "CLIP",
+      "aliases": ["对比语言-图像预训练"],
+      "tier": 2,
+      "one_liner": "OpenAI 用 4 亿对图文训练的模型，把图片和文字映射进同一个向量空间。",
+      "explanation": "CLIP 是 OpenAI 在 2021 年发布的图文模型，由一个图像编码器和一个文本编码器组成，在从互联网收集的 4 亿对「图片-配文」上用对比学习训练：让配对的图文向量互相靠近、不配对的互相远离。训练完后，图片和文字落在同一个嵌入空间里，可以直接算相似度，所以不用再训练就能做零样本分类——把类别名写成一句话，看图片和哪句话最接近。论文报告，这样在 ImageNet 上的零样本精度追平了用 128 万张标注图训练的 ResNet-50。在具身智能里，CLIP 常被当作开放词汇的视觉或语言编码器：早期的 CLIPort 用它理解指令里物体的语义；后来不少 VLM 和 VLA 的视觉编码器沿用 CLIP 或其改进版 SigLIP。",
+      "example": "把桌面照片里裁出的几块物体小图和「红色杯子」这句话都送进 CLIP 编码成向量，相似度最高的那块小图就是指令要找的目标。",
+      "related": ["对比学习", "SigLIP", "视觉编码器", "开放词汇", "嵌入向量", "CLIPort"],
+      "sources": [
+        {"title": "Learning Transferable Visual Models From Natural Language Supervision (CLIP, arXiv 2103.00020)", "url": "https://arxiv.org/abs/2103.00020"},
+        {"title": "CLIPort: What and Where Pathways for Robotic Manipulation (arXiv 2109.12098)", "url": "https://arxiv.org/abs/2109.12098"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "卷积神经网络",
+      "name_en": "Convolutional Neural Network",
+      "abbr": "CNN",
+      "aliases": ["卷积网络", "ConvNet"],
+      "tier": 2,
+      "one_liner": "用小卷积核在图像上滑动提取局部特征的神经网络，长期是视觉任务的主力。",
+      "explanation": "卷积神经网络是专门处理图像这类网格数据的神经网络。核心是卷积层：一组很小的可学习滤波器（如 3×3）在图上逐位置滑动，计算局部加权和；同一个滤波器在所有位置共用参数，所以参数量远少于全连接网络，也天然适合识别出现在任何位置的边缘、纹理和部件。再配合池化层逐步缩小分辨率，就能从局部细节一路抽象到整体语义。发展上，LeCun 在 1990 年代用 LeNet 识别手写数字，2012 年 AlexNet 在 ImageNet 上大幅领先，2015 年 ResNet 用残差连接把网络做深。视觉 Transformer 出现后，大模型的视觉编码器多换成了 Transformer，但机器人小模型里 CNN 依然常见，例如 RT-1 用 EfficientNet、Diffusion Policy 用 ResNet-18 处理相机图像。",
+      "example": "Diffusion Policy 把标准 ResNet-18 的全局平均池化换成空间 softmax 以保留位置信息，把 BatchNorm 换成 GroupNorm 以稳定训练，用它把每个相机画面编码成特征。",
+      "related": ["残差网络", "EfficientNet", "视觉编码器", "视觉 Transformer", "骨干网络", "空间 Softmax"],
+      "sources": [
+        {"title": "CS231n: Convolutional Neural Networks for Visual Recognition (Stanford)", "url": "https://cs231n.github.io/convolutional-networks/"},
+        {"title": "Diffusion Policy: Visuomotor Policy Learning via Action Diffusion (arXiv 2303.04137)", "url": "https://arxiv.org/abs/2303.04137"},
+        {"title": "RT-1: Robotics Transformer (project page)", "url": "https://robotics-transformer1.github.io/"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "交叉注意力",
+      "name_en": "Cross-Attention",
+      "abbr": "",
+      "aliases": ["Cross Attention", "编码器-解码器注意力"],
+      "tier": 2,
+      "one_liner": "让一组 token 去查询另一组 token 里信息的注意力，是跨模态融合的常用接口。",
+      "explanation": "交叉注意力是注意力机制的一种。自注意力里，查询（Query）、键（Key）、值（Value）都来自同一个序列；交叉注意力则由序列 A 提供查询、序列 B 提供键和值，于是 A 的每个 token 可以按相关程度从 B 里取信息，而 B 本身不被改动。它最早出现在 2017 年 Transformer 论文的编码器-解码器结构中，解码器靠它读取编码器对原句的表示来完成翻译。后来它成了向模型注入条件信息的标准做法：文生图模型用它读取文字编码，机器人策略用它把视觉和语言特征送进动作生成部分。另一种做法是把两段 token 直接拼接后做自注意力，两者各有取舍，VLA 里都很常见。",
+      "example": "英伟达 GR00T N1 的动作模块（一个 DiT 变体）交替堆叠两种块：自注意力块处理带噪动作 token 和机器人状态，交叉注意力块去读取 VLM 输出的视觉-语言 token。",
+      "related": ["注意力机制", "自注意力", "Transformer", "多模态融合", "编码器-解码器", "扩散 Transformer"],
+      "sources": [
+        {"title": "Attention Is All You Need (arXiv 1706.03762)", "url": "https://arxiv.org/abs/1706.03762"},
+        {"title": "GR00T N1: An Open Foundation Model for Generalist Humanoid Robots (arXiv 2503.14734)", "url": "https://arxiv.org/html/2503.14734"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "增量动作 / 绝对动作",
+      "name_en": "Delta (Relative) Action vs. Absolute Action",
+      "abbr": "",
+      "aliases": ["相对动作", "增量动作", "Delta Action", "绝对动作", "Absolute Action", "相对轨迹"],
+      "tier": 2,
+      "one_liner": "动作写成「再挪多少」（增量），还是写成「移动到哪个坐标」（绝对）。",
+      "explanation": "这是动作表示的一个基本选择。绝对动作直接给目标值，比如末端执行器（机械臂最末端的夹爪或工具）要到达的位姿、各关节的目标角度；增量动作只给相对当前状态的变化量，比如「沿 x 轴再走 1 厘米」。增量动作不依赖底座与世界坐标系的精确标定，不同场景下数值分布更统一，但逐步累加会积累误差；绝对动作不积累误差，却要求坐标系对得准。两者之间还有折中：UMI 用「相对轨迹」，把一整段动作都写成相对这段起点末端位姿的变换。Diffusion Policy 论文则发现，在其测试任务上输出目标位置的位置控制优于输出速度的速度控制。用哪种要看数据集的定义，训练和部署必须一致，否则机器人会走偏。",
+      "example": "机械臂末端当前在 x=0.40 米处，要移到 x=0.42 米：绝对动作写 0.42，增量动作写 +0.02。UMI 论文的一项实验里，绝对动作基线因 SLAM 坐标和机器人底座坐标难以对准，成功率只有 25%，相对轨迹为 100%。",
+      "related": ["动作空间", "动作表示", "末端位姿", "坐标系", "通用操作接口", "动作分块"],
+      "sources": [
+        {"title": "Universal Manipulation Interface (UMI, arXiv 2402.10329)", "url": "https://arxiv.org/html/2402.10329"},
+        {"title": "Diffusion Policy: Visuomotor Policy Learning via Action Diffusion (arXiv 2303.04137)", "url": "https://arxiv.org/abs/2303.04137"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "去噪扩散概率模型",
+      "name_en": "Denoising Diffusion Probabilistic Model",
+      "abbr": "DDPM",
+      "aliases": ["DDPM 扩散模型"],
+      "tier": 2,
+      "one_liner": "2020 年提出的扩散模型经典形式：逐步加噪，再学会逐步去噪来生成数据。",
+      "explanation": "去噪扩散概率模型由 Jonathan Ho、Ajay Jain 和 Pieter Abbeel 在 2020 年提出，是今天各类扩散模型的基础版本。它定义两个过程：前向过程按固定的噪声调度（每一步加多少噪声的时间表）往真实图片里一点点加高斯噪声，直到变成纯噪声；反向过程训练一个神经网络，在每一步预测加进去的噪声并把它减掉。训练目标很简单，就是预测噪声与真实噪声的均方误差。生成时从纯噪声出发，一步步去噪得到新样本。论文取 T=1000 步、用 U-Net 作网络，在 CIFAR-10 上 FID 达到 3.17。缺点是采样要跑很多步，后来的 DDIM 等方法把步数大幅压缩。机器人领域的 Diffusion Policy 就是把这套方法用在动作序列上。",
+      "example": "Diffusion Policy 训练时用 100 步扩散过程给示范动作序列加噪，让网络学会把噪声逐步还原成动作；实机部署时改用 DDIM 只采样 10 步，在 RTX 3080 上推理约 0.1 秒。",
+      "related": ["扩散模型", "去噪扩散隐式模型", "噪声调度", "去噪步数", "U-Net", "扩散策略"],
+      "sources": [
+        {"title": "Denoising Diffusion Probabilistic Models (arXiv 2006.11239)", "url": "https://arxiv.org/abs/2006.11239"},
+        {"title": "Diffusion Policy: Visuomotor Policy Learning via Action Diffusion (arXiv 2303.04137)", "url": "https://arxiv.org/abs/2303.04137"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "去噪步数",
+      "name_en": "Denoising Steps / Number of Function Evaluations",
+      "abbr": "NFE",
+      "aliases": ["采样步数", "推理步数", "积分步数", "Sampling Steps"],
+      "tier": 2,
+      "one_liner": "扩散或流匹配模型生成一次结果要调用几次网络，直接决定推理速度。",
+      "explanation": "扩散模型和流匹配模型生成样本不是一步到位，而是从噪声出发反复调用网络，每次修正一点。调用网络的次数就是去噪步数，文献里常用 NFE（网络函数评估次数）精确计数。步数越多，结果通常越精细，但耗时近似成正比增加。对机器人这一点很要紧，因为策略要在闭环控制里实时给出动作。各方法取值差别很大：DDPM 原论文用 1000 步；Diffusion Policy 训练用 100 步，推理借 DDIM 降到 10 步；π0 用流匹配积分 10 步；GR00T N1 只用 4 步。一致性模型、平均流等方法则追求 1 到 2 步生成。注意训练时的扩散步数和推理时的采样步数可以不同，推理步数一般能在部署时调整。",
+      "example": "π0 预测一段 50 步长的动作块时，从高斯噪声出发积分 10 步（每步 δ=0.1），也就是每出一段动作要调用 10 次动作专家。",
+      "related": ["去噪扩散概率模型", "去噪扩散隐式模型", "流匹配", "一致性模型", "推理延迟", "单步生成"],
+      "sources": [
+        {"title": "π0: A Vision-Language-Action Flow Model for General Robot Control (arXiv 2410.24164)", "url": "https://arxiv.org/html/2410.24164"},
+        {"title": "GR00T N1: An Open Foundation Model for Generalist Humanoid Robots (arXiv 2503.14734)", "url": "https://arxiv.org/html/2503.14734"},
+        {"title": "Diffusion Policy: Visuomotor Policy Learning via Action Diffusion (arXiv 2303.04137)", "url": "https://arxiv.org/abs/2303.04137"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "扩散动作头",
+      "name_en": "Diffusion Action Head",
+      "abbr": "",
+      "aliases": ["扩散头", "Diffusion Head"],
+      "tier": 2,
+      "one_liner": "接在策略主干后面、用扩散去噪的方式生成连续动作的输出模块。",
+      "explanation": "扩散动作头是动作头（策略网络里最后负责输出动作的部分）的一种。主干网络，比如 Transformer 或 VLM，先把图像、语言和机器人状态编码成特征；扩散头以这些特征为条件，从随机噪声出发多步去噪，生成一段连续动作。和直接回归相比，它能表达多峰的动作分布，示范里「从左绕」和「从右绕」都合理时，不会平均成一条撞上去的中间路线；和把动作离散成 token 相比，它保留了连续数值的精度。代价是推理要多次调用网络。它可大可小：Octo 用一个 3 层 MLP，GR00T N1、CogACT 则用独立的扩散 Transformer 作动作模块；π0 这类用流匹配的动作专家原理相近，也常被放在一起讨论。",
+      "example": "Octo 的 Transformer 主干输出读出（readout）token 的嵌入，交给 3 层 MLP 构成的扩散头，用 20 步去噪生成一段动作。论文对比发现，换成 MSE 回归头时机器人动作迟缓犹豫，换成离散动作头时精度不够、常常抓空。",
+      "related": ["动作头", "动作专家", "扩散策略", "扩散 Transformer", "动作多峰性", "连续动作回归"],
+      "sources": [
+        {"title": "Octo: An Open-Source Generalist Robot Policy (arXiv 2405.12213)", "url": "https://arxiv.org/html/2405.12213"},
+        {"title": "GR00T N1: An Open Foundation Model for Generalist Humanoid Robots (arXiv 2503.14734)", "url": "https://arxiv.org/html/2503.14734"},
+        {"title": "CogACT: A Foundational Vision-Language-Action Model for Synergizing Cognition and Action (arXiv 2411.19650)", "url": "https://arxiv.org/abs/2411.19650"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "扩散 Transformer",
+      "name_en": "Diffusion Transformer",
+      "abbr": "DiT",
+      "aliases": ["Diffusion Transformers"],
+      "tier": 2,
+      "one_liner": "用 Transformer 取代 U-Net 作为扩散模型去噪网络的架构。",
+      "explanation": "扩散 Transformer 由 William Peebles 和谢赛宁在 2022 年提出（ICCV 2023 发表）。此前扩散模型的去噪网络大多是 U-Net（一种卷积编码-解码网络），DiT 换成了标准 Transformer：先把 VAE 压缩后的潜在图像切成小块（patch）当作 token，再用自适应层归一化（adaLN）把去噪时间步、类别等条件注入每一层。论文发现计算量越大，生成质量越好，缩放规律清晰；最大的 DiT-XL/2 在 ImageNet 256×256 上 FID 达到 2.27。此后视频生成模型大量采用这类结构。机器人领域也用它生成动作：RDT-1B（Robotics Diffusion Transformer）用它做双臂操作，GR00T N1 的动作模块同样是 DiT 的变体。",
+      "example": "RDT-1B 是一个约 12 亿参数的扩散 Transformer，以语言指令和相机图像为条件，去噪生成双臂机器人接下来一段动作。",
+      "related": ["扩散模型", "Transformer", "U-Net", "自适应层归一化", "潜在扩散模型", "RDT-1B"],
+      "sources": [
+        {"title": "Scalable Diffusion Models with Transformers (arXiv 2212.09748)", "url": "https://arxiv.org/abs/2212.09748"},
+        {"title": "DiT project page (William Peebles)", "url": "https://www.wpeebles.com/DiT"},
+        {"title": "RDT-1B: a Diffusion Foundation Model for Bimanual Manipulation (arXiv 2410.07864)", "url": "https://arxiv.org/abs/2410.07864"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "DINOv2",
+      "name_en": "DINOv2 (self-DIstillation with NO labels, v2)",
+      "abbr": "",
+      "aliases": ["DINO v2", "DINO 特征"],
+      "tier": 2,
+      "one_liner": "Meta 2023 年发布的自监督视觉模型，不用标注就能学出通用图像特征。",
+      "explanation": "DINOv2 是 Meta AI 在 2023 年 4 月发布的视觉基础模型，是 2021 年 DINO 的第二代，名字意为「无标签自蒸馏」。它不用人工标注：让学生网络在同一张图的不同裁剪上去匹配教师网络的输出（自监督学习），团队还用自动筛选流程整理出 1.42 亿张图片的 LVD-142M 数据集。最大的 ViT-g/14 约 11 亿参数，并蒸馏出 2100 万到 3 亿参数的小版本。它的特征不用微调，接一个线性层就能做分类、分割、深度估计，而且保留了较细的空间和几何信息，这正是机器人需要的。OpenVLA 把 DINOv2 和 SigLIP 的特征融合后作为视觉编码器，DINO-WM 则直接在 DINOv2 的图块特征上训练世界模型。",
+      "example": "OpenVLA 把同一张相机图像分别送进 DINOv2 和 SigLIP，两者的特征融合后再投影进 Llama 2 语言模型：DINOv2 补充空间几何细节，SigLIP 提供和语言对齐的语义。",
+      "related": ["视觉基础模型", "自监督学习", "视觉 Transformer", "DINOv3", "预训练视觉表征", "OpenVLA"],
+      "sources": [
+        {"title": "DINOv2: Learning Robust Visual Features without Supervision (arXiv 2304.07193)", "url": "https://arxiv.org/abs/2304.07193"},
+        {"title": "facebookresearch/dinov2 (GitHub)", "url": "https://github.com/facebookresearch/dinov2"},
+        {"title": "OpenVLA: An Open-Source Vision-Language-Action Model (arXiv 2406.09246)", "url": "https://arxiv.org/abs/2406.09246"}
+      ],
+      "as_of": ""
+    },
+    {
+      "name_zh": "DINOv3",
+      "name_en": "DINOv3 (Meta self-supervised vision foundation model)",
+      "abbr": "",
+      "aliases": ["DINO v3"],
+      "tier": 2,
+      "one_liner": "Meta 2025 年 8 月发布的第三代 DINO，70 亿参数、17 亿张图自监督训练。",
+      "explanation": "DINOv3 是 Meta 在 2025 年 8 月发布的自监督视觉基础模型，是 DINOv2 的后继。最大模型 70 亿参数，在 17 亿张图片上训练，模型规模约为上一代的 7 倍，数据约为 12 倍。大模型长时间训练时，逐图块的稠密特征会逐渐变差，DINOv3 为此提出 Gram anchoring（格拉姆锚定）来稳住这类特征。Meta 称它在不微调、只接轻量任务头的情况下，在检测、语义分割等任务上超过了专门训练的模型。除 70 亿参数的大模型外，还蒸馏出多个尺寸的 ViT 和 ConvNeXt 小模型，以及一个用卫星图像训练的版本。对机器人来说，它可以当作比 DINOv2 更强的冻结视觉编码器，提供高分辨率的稠密特征。",
+      "example": "把机械臂腕部相机的画面送进冻结的 DINOv3，取出每个图块的特征向量，再在上面训练一个轻量头来做物体分割或抓取点预测，不必从头训练视觉网络。",
+      "related": ["DINOv2", "视觉基础模型", "自监督学习", "视觉编码器", "预训练视觉表征", "语义分割"],
+      "sources": [
+        {"title": "DINOv3: Self-supervised learning for vision at unprecedented scale (Meta AI Blog)", "url": "https://ai.meta.com/blog/dinov3-self-supervised-vision-model/"},
+        {"title": "DINOv3 (arXiv 2508.10104)", "url": "https://arxiv.org/abs/2508.10104"}
+      ],
+      "as_of": "2025-08"
+    },
+    {
+      "name_zh": "嵌入向量",
+      "name_en": "Embedding",
+      "abbr": "",
+      "aliases": ["嵌入", "embedding", "向量表示"],
+      "tier": 2,
+      "one_liner": "把词、图块、动作等对象表示成一串实数，意思相近的东西向量也相近。",
+      "explanation": "嵌入向量是神经网络内部表示信息的基本单位：把一个词、一个图像块、一帧机器人状态等对象，映射成固定长度的一串实数（比如 1024 维）。它是训练中学出来的，不是人工指定的；训练好后，意思相近的对象在向量空间里距离也近。和 one-hot 编码（每个类别占一维、只有该位为 1）相比，嵌入维度低，还能表达相似关系，word2vec 是早期的著名例子。在具身智能模型里嵌入几乎无处不在：分词器把文字切成 token 后查表得到词嵌入，视觉编码器把每个图块变成视觉 token 的嵌入，投影层再把它们映射到语言模型的维度；机器人状态和带噪动作也要先经过线性层变成嵌入，才能和其他 token 一起送进 Transformer。",
+      "example": "CLIP 把一张猫的照片和「a photo of a cat」这句话分别编码成嵌入向量，两者的余弦相似度会明显高于这张照片和「a photo of a dog」的相似度。",
+      "related": ["token（词元）", "分词器", "视觉 token", "潜在空间", "投影层", "表征学习"],
+      "sources": [
+        {"title": "Embeddings | Machine Learning Crash Course (Google for Developers)", "url": "https://developers.google.com/machine-learning/crash-course/embeddings"},
+        {"title": "Learning Transferable Visual Models From Natural Language Supervision (CLIP, arXiv 2103.00020)", "url": "https://arxiv.org/abs/2103.00020"}
+      ],
+      "as_of": ""
+    }
+  ]
+}

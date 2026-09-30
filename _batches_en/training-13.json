@@ -1,0 +1,113 @@
+{
+  "batch": "training-13",
+  "terms": [
+    {
+      "key": "training-13#0",
+      "name_en": "In-Context Learning",
+      "aliases": ["ICL"],
+      "one_liner": "Learning a new task from a few examples given in the prompt, without updating the model's weights.",
+      "explanation": "In-context learning means a model performs a new task at inference time using only the task description or a few examples given in the prompt, with no gradient updates (no parameter changes) at all. OpenAI's 2020 GPT-3 paper systematically demonstrated this ability: tasks like translation and question answering could be specified just with a text description plus a few examples, and the ability grew stronger as the model scaled up. Its significance is that switching tasks no longer requires retraining, only a different prompt. In embodied AI, researchers feed a policy model a few robot demonstration trajectories as a “prompt,” letting it imitate a new task on the spot; the idea is closely related to few-shot learning, meta-learning, and prompt engineering.",
+      "example": "ICRT (In-Context Robot Transformer, 2024) feeds a few human-teleoperated demonstration trajectories — images, states, and actions — into the model as a prompt at inference time, letting a Franka arm carry out a new task without updating any parameters.",
+      "related": ["Few-shot", "Meta-Learning", "Prompt Engineering", "Large Language Model", "Next-Token Prediction", "Meta Reinforcement Learning"]
+    },
+    {
+      "key": "training-13#1",
+      "name_en": "Inference-Time Compute",
+      "aliases": ["Test-Time Scaling", "Test-Time Compute"],
+      "one_liner": "Improving results by spending more compute at inference time, instead of changing the trained model.",
+      "explanation": "Inference-time compute means spending more computation at inference time, after training is already finished, to improve results: generating a longer chain of thought, sampling many candidate answers and using a verifier (a model that scores candidates) to pick the best one, or repeatedly revising an answer. OpenAI's o1 (2024) and a paper by Snell and colleagues brought wide attention to this direction; the latter found that allocating inference compute according to a problem's difficulty let a small model outperform one 14 times larger on some problems. It offers a path to better performance besides simply making the model bigger. Robotics has an analogous technique: sampling a VLA's actions multiple times and using a verifier to select among them, at the cost of higher inference latency.",
+      "example": "RoboMonkey (2025) has a VLA sample multiple actions for the same observation, adds Gaussian perturbations, takes a majority vote, and then uses a VLM verifier to pick the best action; the paper reports about a 25-percentage-point absolute improvement in success rate on out-of-distribution tasks.",
+      "related": ["Best-of-N Sampling", "Value-Guided Sampling", "RoboMonkey", "Chain-of-Thought", "Inference Latency", "Scaling Law"]
+    },
+    {
+      "key": "training-13#2",
+      "name_en": "InfoNCE Loss",
+      "aliases": ["Contrastive Loss", "InfoNCE Objective"],
+      "one_liner": "A contrastive-learning loss that trains a model to pick out the one true positive among many candidates.",
+      "explanation": "InfoNCE was introduced by Aaron van den Oord and colleagues at DeepMind in their 2018 Contrastive Predictive Coding (CPC) paper. It pairs an anchor sample with one positive (say, a different augmentation of the same image, or the next moment in a sequence) and several negatives, computes similarity scores, and applies softmax classification so the positive scores highest — which is really cross-entropy underneath. The paper shows that minimizing it is equivalent to maximizing a lower bound on mutual information (how much two variables share), and the bound gets tighter as the number of negatives grows. It is the core training objective behind contrastive methods such as CLIP and SimCLR, and robot visual representations like R3M use a similar time-contrastive version of it.",
+      "example": "When CLIP trains on a batch of N image-text pairs, each image treats only its own caption as the positive and the other N−1 captions as negatives, computing InfoNCE in both the image-to-text and text-to-image directions.",
+      "related": ["Contrastive Learning", "CLIP", "Self-Supervised Learning", "Time-Contrastive Networks", "Cross-Entropy", "Representation Learning"]
+    },
+    {
+      "key": "training-13#3",
+      "name_en": "Instruction Tuning",
+      "aliases": ["Instruction Fine-tuning"],
+      "one_liner": "Fine-tuning a model on many tasks written as instruction-and-answer pairs so it learns to follow instructions.",
+      "explanation": "Instruction tuning is supervised fine-tuning of a pretrained model on a large set of tasks phrased as natural-language instructions paired with the expected output. Google's 2021 FLAN work instruction-tuned a 137-billion-parameter model across more than 60 NLP tasks, and its zero-shot performance beat GPT-3 on 20 of 25 evaluation tasks. It turns a model from one that merely continues text into one that follows requests, making it a basic building block of chat assistants. In multimodal models, LLaVA (2023) used GPT-4 to generate image-text instruction data for “visual instruction tuning”; many VLA backbones go through a comparable step, and this kind of data is often mixed into VLA training to reduce forgetting.",
+      "example": "LLaVA (2023) used GPT-4 to rewrite image captions into “look at the image and answer the question”-style instruction data, then fine-tuned a vision-encoder-plus-language-model combination on it to produce an assistant that can converse about images.",
+      "related": ["Supervised Fine-Tuning", "Large Language Model", "Vision-Language Model", "LLaVA", "Zero-shot", "Post-training"]
+    },
+    {
+      "key": "training-13#4",
+      "name_en": "Interactive Imitation Learning",
+      "aliases": ["IIL"],
+      "one_liner": "Imitation learning where a human gives feedback while the robot acts, and the policy improves from it online.",
+      "explanation": "Interactive imitation learning is a branch of imitation learning in which a human gives intermittent feedback while the robot is executing — taking over to correct it, labeling the right action, or rating how well it did — and the policy improves online from that feedback. It mainly targets the compounding-error problem in behavior cloning: offline demonstrations only cover the states an expert visited, so once the robot drifts off that path there is no data to learn from, and small errors snowball. The flagship algorithm is DAgger, proposed by Stéphane Ross and colleagues in 2011: the expert labels the correct action for states the student policy actually runs into, those get folded into the dataset, and the policy is retrained; variants such as HG-DAgger let the human decide when to take over. A 2022 survey by Celemin and colleagues organizes this whole line of work.",
+      "example": "A typical pipeline: train an initial peg-insertion policy on demonstrations, let the arm run on its own, have an operator take over and record corrective actions whenever it drifts, fold those corrections into the training set, and retrain — repeating this for a few rounds.",
+      "related": ["DAgger", "HG-DAgger", "Compounding Error", "Behavior Cloning", "Human-in-the-Loop", "Intervention Data"]
+    },
+    {
+      "key": "training-13#5",
+      "name_en": "Intrinsic Motivation",
+      "aliases": ["Curiosity-Driven Exploration", "Intrinsic Reward"],
+      "one_liner": "A reward the agent generates for itself from novel or hard-to-predict states, used to drive exploration.",
+      "explanation": "Intrinsic reward is a reward signal computed internally by the agent rather than coming from the task itself, usually measuring how novel a state is or how poorly the agent can predict it; it is typically added on top of the environment's extrinsic reward. It mainly addresses exploration under sparse rewards, when task reward shows up so rarely that random trial and error almost never stumbles onto it. Representative work includes Pathak and colleagues' 2017 ICM, which treats the error in predicting the consequences of one's own actions as curiosity, and OpenAI's 2018 RND, which uses the error in predicting a fixed random network's output as the reward — becoming the first method to beat average human performance on the Atari game Montezuma's Revenge without demonstrations. In robotics it is commonly used for exploration and for unsupervised skill discovery.",
+      "example": "In Super Mario Bros., ICM gives the agent no game score at all, only a reward for failing to predict the next frame's features, and the agent still actively explores deeper into the level.",
+      "related": ["Exploration vs. Exploitation", "Sparse Reward", "Unsupervised Skill Discovery", "Reward Shaping", "Reinforcement Learning", "Active Exploration"]
+    },
+    {
+      "key": "training-13#6",
+      "name_en": "KL Regularization",
+      "aliases": ["KL Penalty", "KL Constraint"],
+      "one_liner": "Adding a KL-divergence penalty to a training objective so the new policy doesn't drift too far from a reference.",
+      "explanation": "KL regularization adds a term to the optimization objective — a coefficient times the KL divergence, a measure of how different two probability distributions are — that penalizes the current policy for drifting away from some reference policy. Three settings are common. In RLHF, InstructGPT adds a per-token KL penalty against the supervised fine-tuned model to stop the model from gaming the reward model. In offline reinforcement learning, methods such as BRAC use KL or similar divergences to keep the policy close to the behavior policy that generated the data, avoiding actions the data never covers. TRPO and PPO use KL to bound how much each update can change the policy. VLA reinforcement-learning fine-tuning commonly uses it too, to stop the policy from drifting and losing pretrained capabilities. Too large a coefficient stalls learning; too small and the constraint does nothing.",
+      "example": "InstructGPT's PPO objective is “reward-model score minus β times log(π_RL / π_SFT)”: the larger β is, the less the new model dares to drift from the supervised fine-tuned model.",
+      "related": ["KL Divergence", "Policy Constraint", "Offline Reinforcement Learning", "Reinforcement Learning from Human Feedback", "Proximal Policy Optimization", "Reward Hacking"]
+    },
+    {
+      "key": "training-13#7",
+      "name_en": "Knowledge Insulation",
+      "aliases": ["KI", "Knowledge Insulating VLA"],
+      "one_liner": "A VLA training trick that blocks gradients from the action expert back into the VLM backbone, protecting its pretrained knowledge.",
+      "explanation": "Knowledge insulation is a VLA training method from a May 2025 Physical Intelligence paper by Danny Driess, Sergey Levine, and colleagues. Models such as π0 attach a newly initialized action expert to a VLM backbone and use flow matching to output continuous actions, but gradients flowing back from the action expert into the backbone disrupt it, which slows training and hurts language understanding. The fix has three parts: a stop-gradient cuts off gradients from the action expert to the backbone; the backbone instead learns actions through next-token prediction on discretized FAST action tokens, while co-training on ordinary VLM data such as visual question answering; and at inference time, the action expert still generates continuous action chunks quickly from the backbone's features.",
+      "example": "On a table-bussing task, the paper reports that the knowledge-insulated model converges about 7.5 times faster than a π0 trained purely with flow matching, while keeping better language-instruction-following ability.",
+      "related": ["Stop-Gradient", "Action Expert", "π0.5", "π0-FAST", "Catastrophic Forgetting", "Co-training"]
+    },
+    {
+      "key": "training-13#8",
+      "name_en": "Latent Action Pretraining",
+      "aliases": [],
+      "one_liner": "Extracting unlabeled “latent actions” from video, then pretraining a robot model to predict them.",
+      "explanation": "Latent action pretraining first learns “latent actions” — an encoding of what changed between two adjacent frames — from video that has no action labels, then pretrains a VLA to predict these latent actions; a small amount of real-robot data is used at the end to map the latent actions onto real robot actions. The representative work is LAPA (October 2024), from researchers at the University of Washington, KAIST, Microsoft Research, NVIDIA, and others, which learns discrete latent actions with a VQ-VAE (a vector-quantized autoencoder). Its value is that it can exploit huge amounts of internet and human-manipulation video that carries no robot action labels at all. Genie's latent action model, UniVLA, and AgiBot's GO-1 all take a similar approach.",
+      "example": "The LAPA paper reports positive transfer even when pretraining only on Something-Something V2 human-manipulation videos; on real-robot tasks that require language conditioning and generalization, it beats OpenVLA, which was trained with real action labels, while using roughly one-thirtieth the pretraining compute.",
+      "related": ["Latent Action", "Latent Action Model", "LAPA", "Action-free Video", "Pretraining on Human Videos", "Vector-Quantized Variational Autoencoder"]
+    },
+    {
+      "key": "training-13#9",
+      "name_en": "Learning in Imagination",
+      "aliases": ["World-Model-Based RL", "Training Inside a World Model", "Dream Training"],
+      "one_liner": "Learning a world model first, then training the policy inside trajectories the model “imagines”.",
+      "explanation": "Learning in imagination is a form of model-based reinforcement learning: first learn a world model from real interaction data — a model that predicts the next state and reward given the current state and action — then let the policy learn by trial and error inside trajectories the world model generates, touching the real environment as little as possible. David Ha and Jürgen Schmidhuber's 2018 paper “World Models” was an early demonstration of this idea. Danijar Hafner and colleagues' Dreamer series turned it into a general-purpose algorithm, imagining trajectories in a compressed latent space and backpropagating value-estimate gradients along the trajectory to train the policy. The upside is fewer real-world interactions and greater safety; the risk is that if the world model is inaccurate, the policy can learn tricks that only work “in the dream.”",
+      "example": "DayDreamer (2022) ran Dreamer on a real robot: a quadruped learned to stand and walk from about an hour of real interaction. Dreamer 4 (2025), trained purely on offline data inside a world model, became the first such agent to obtain a diamond in Minecraft.",
+      "related": ["World Model", "Model-Based Reinforcement Learning", "DreamerV3", "Dreamer 4", "DayDreamer", "World Models (Ha and Schmidhuber)"]
+    },
+    {
+      "key": "training-13#10",
+      "name_en": "Masked Autoencoder",
+      "aliases": ["MAE", "Masked Image Modeling"],
+      "one_liner": "Hiding most patches of an image and training a model to reconstruct them, as self-supervised visual pretraining.",
+      "explanation": "The masked autoencoder is a self-supervised visual-pretraining method proposed by Kaiming He and colleagues at Meta FAIR in 2021. An image is split into patches, about 75% of them are randomly masked, the encoder processes only the visible patches, and a lightweight decoder reconstructs the masked-out pixels from that encoding. Because the encoder only ever sees a quarter of the patches, training runs more than 3 times faster; the method needs no human labels and still learns strong features, reaching 87.8% accuracy on ImageNet-1K with a ViT-Huge. In robotics it is commonly used to pretrain visual encoders: MVP pretrains an encoder with MAE and then freezes it for learning motor control, and VC-1 also uses an MAE objective.",
+      "example": "MVP (2022) pretrains a ViT encoder with MAE on a large collection of real-world images, then freezes it and attaches a reinforcement-learning controller; on a set of arm-manipulation tasks it beats a supervised-pretrained encoder by up to 80 percentage points in success rate.",
+      "related": ["Self-Supervised Learning", "Vision Transformer", "Pre-trained Visual Representation", "MVP", "VC-1", "Representation Learning"]
+    },
+    {
+      "key": "training-13#11",
+      "name_en": "Meta Reinforcement Learning",
+      "aliases": ["Meta-RL", "Learning to Reinforcement-Learn"],
+      "one_liner": "Training across many similar tasks so an agent can adapt to a new one with only a little trial and error.",
+      "explanation": "Meta reinforcement learning treats “how to do reinforcement learning faster” itself as something to learn: train on a distribution of tasks — say, different payloads or different target positions — so the agent can adapt to a new task from that same distribution using only a handful of interactions. Two approaches are common. Methods like RL² (2016) use a recurrent network that carries memory across episodes, “learning” the new task online through its hidden state. Methods like MAML instead learn a set of initial parameters that can be fine-tuned to a new task in just a few gradient steps. This targets deep RL's poor sample efficiency and weak generalization. In robotics it is commonly used to handle changes in payload, terrain, or body damage, and Meta-World is a common manipulation benchmark built for it.",
+      "example": "Nagabandi and colleagues (2018) used meta-learning to train a dynamics model; a real legged mini-robot could use just its last few steps of observation to adapt the model online and keep moving when missing a leg, climbing a slope, or dragging a load.",
+      "related": ["Meta-Learning", "In-Context Learning", "Rapid Motor Adaptation", "Meta-World", "Few-shot", "Multi-Task Learning"]
+    }
+  ]
+}

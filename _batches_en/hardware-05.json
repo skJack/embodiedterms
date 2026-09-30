@@ -1,0 +1,113 @@
+{
+  "batch": "hardware-05",
+  "terms": [
+    {
+      "key": "hardware-05#0",
+      "name_en": "Lower-Level Controller",
+      "aliases": ["Slave Computer", "Low-Level Controller"],
+      "one_liner": "The embedded control board wired directly to sensors and motors, running real-time low-level control.",
+      "explanation": "“Lower-level controller” (下位机) is the counterpart to “host computer” in Chinese engineering usage, referring to the compute layer wired directly to motor drivers, encoders, IMUs, and other hardware — typically an MCU (microcontroller), a DSP, or a PLC. It doesn't run large models; it only handles tasks with strict timing requirements: reading sensors and running the current loop and position loop at a high, fixed frequency, outputting PWM (pulse-width modulation) signals, and exchanging data with the host computer over CAN, EtherCAT, or a serial port, receiving targets and reporting status back. The host computer (an industrial PC, a Jetson, etc.) handles perception, planning, and policy inference. This division of labor means that if the high-level software stalls briefly, low-level control keeps running smoothly. English sources usually call this a low-level or embedded controller; “slave computer” is an older term for the same role.",
+      "example": "On a humanoid robot, a policy running on a Jetson might output target joint angles every 20 ms, while an STM32 lower-level controller on each joint's driver board tracks those targets in a much faster closed loop.",
+      "related": ["Host Computer", "Microcontroller (MCU)", "STM32", "Motor Driver", "Real-Time Control", "CAN Bus"]
+    },
+    {
+      "key": "hardware-05#1",
+      "name_en": "Mecanum Wheel",
+      "aliases": ["Mecanum Drive"],
+      "one_liner": "An omnidirectional wheel ringed with angled rollers that lets a base drive sideways.",
+      "explanation": "The Mecanum wheel was invented in the early 1970s by Bengt Ilon, an engineer at the Swedish company Mecanum AB. Its rim carries a ring of small rollers mounted at 45° to the wheel's axle, so when the wheel turns, the ground pushes back on it at an angle. Mount one independently driven Mecanum wheel at each corner of a base, and by combining each wheel's direction and speed, those angled forces combine into forward/backward motion, sideways translation, or rotation in place — full omnidirectional movement without needing to turn like a car. The trade-off is that the rollers carry limited load, are sensitive to uneven floors and gaps, slip easily, and give worse efficiency and positioning accuracy than ordinary wheels, so they're mostly used on smooth indoor floors: AGVs, mobile manipulation platforms, and robotics-competition vehicles.",
+      "example": "DJI's RoboMaster S1 education robot uses four Mecanum wheels, letting it strafe sideways while rotating its turret independently.",
+      "related": ["Omnidirectional Wheel", "Mobile Base / Chassis", "Swerve Drive Wheel", "Differential-Drive Base", "Automated Guided Vehicle (AGV)", "Composite Robot"]
+    },
+    {
+      "key": "hardware-05#2",
+      "name_en": "Mobile Base (Chassis)",
+      "aliases": ["AGV Base", "Mobile Platform"],
+      "one_liner": "The wheeled lower half of a robot that carries the upper body around.",
+      "explanation": "A mobile base is the part of a robot responsible for locomotion; it typically integrates drive wheels and motors, a battery, a lidar or camera, an IMU (inertial measurement unit), and a motion controller, exposing a simple “give it a velocity and it moves” interface (in ROS, usually a cmd_vel velocity command). Bases are commonly classified by wheel layout: differential-drive bases (two wheels turning at different speeds to steer, mechanically simple), Mecanum-wheel or omnidirectional bases (can move sideways), swerve-drive bases (each wheel steers independently, good for heavy loads), and Ackermann bases (front-wheel steering, like a car). Mounting a robot arm or a humanoid upper body onto a mobile base turns it into a composite robot or a wheeled humanoid; the base's navigation accuracy and battery life directly affect how well mobile manipulation works.",
+      "example": "Mobile ALOHA mounts the ALOHA dual-arm teleoperation system on a mobile base, letting the robot move around a home while doing two-handed tasks like stir-frying or opening cabinets.",
+      "related": ["Differential-Drive Base", "Mecanum Wheel", "Swerve Drive Wheel", "Composite Robot", "Wheeled Humanoid", "Mobile Manipulation"]
+    },
+    {
+      "key": "hardware-05#3",
+      "name_en": "Neural Processing Unit (NPU)",
+      "aliases": ["BPU (Brain Processing Unit)", "AI Accelerator", "Neural Network Accelerator"],
+      "one_liner": "A low-power chip block specialized for the matrix math inside neural networks.",
+      "explanation": "An NPU is an accelerator designed specifically for neural-network inference. Its core is a large array of multiply-accumulate units, well-suited to convolution and matrix multiplication, and it usually runs at low numerical precision such as INT8, giving lower power draw than a GPU at the same compute throughput — which is why it's commonly integrated as one block inside an SoC (system-on-chip) used in phones, cars, and robots. Different vendors use different names: Horizon Robotics calls its NPU architecture the BPU (Brain Processing Unit), and D-Robotics' RDK line of dev boards keeps that same name. Using an NPU usually means first converting and quantizing a model with the vendor's own toolchain (such as RKNN-Toolkit or Horizon's Tiangong Kaiwu), and falling back to the CPU or GPU for any operator the NPU doesn't support — this step is often where deploying large models onto real hardware gets stuck.",
+      "example": "On a Rockchip RK3588 dev board, a YOLO detection model is quantized to INT8 with RKNN-Toolkit and run on the NPU, freeing the CPU for other work.",
+      "related": ["System-on-Chip (SoC)", "TOPS (Trillion Operations Per Second)", "Onboard Compute Platform", "RKNN-Toolkit", "Horizon Tiangong Kaiwu", "Post-Training Quantization"]
+    },
+    {
+      "key": "hardware-05#4",
+      "name_en": "Numeric Precision Formats (FP32 / FP16 / BF16 / FP8 / FP4 / INT8)",
+      "aliases": ["Numerical Formats", "Low Precision"],
+      "one_liner": "How many bits and what format a number is stored in, which sets a model's memory use and speed.",
+      "explanation": "A neural network's weights and activations are stored as binary numbers. FP32 is 32-bit single-precision floating point, once the default training format. FP16 uses only 16 bits but has few exponent bits and a narrow range, so it overflows easily. BF16, proposed by Google, is also 16 bits but keeps the same 8-bit exponent as FP32, giving a wide range with coarser precision, and is now the mainstream format for training large models. FP8 comes in two variants, E4M3 and E5M2, jointly proposed by NVIDIA, Arm, and Intel in 2022. FP4 uses only 4 bits and relies on shared block scaling factors to preserve accuracy; it's supported by NVIDIA's Blackwell-generation chips, including Jetson Thor. INT8 is an 8-bit integer format paired with a scaling factor for quantization, and is the most common format on on-device NPUs. Halving the bit width roughly halves memory and bandwidth use and usually speeds things up, but can cost accuracy — hence mixed-precision training and quantization.",
+      "example": "For a 3-billion-parameter model, weights take about 12 GB in FP32, about 6 GB in BF16, about 3 GB in INT8, and about 1.5 GB in FP4 — which is why VLA training is usually done in BF16, with quantization applied later for on-device deployment.",
+      "related": ["Mixed-Precision Training", "Post-Training Quantization", "Quantization-Aware Training", "GPU Memory (VRAM)", "TOPS (Trillion Operations Per Second)", "Jetson Thor"]
+    },
+    {
+      "key": "hardware-05#5",
+      "name_en": "Onboard Compute Platform",
+      "aliases": ["Compute Platform", "Edge Compute Platform", "Main Controller"],
+      "one_liner": "The main computer mounted on a robot that runs perception and model inference.",
+      "explanation": "The onboard compute platform (主控, sometimes just “main control” in Chinese industry usage) is the compute hardware carried on a robot's body that does the “thinking” — running perception, localization and navigation, task planning, and inference for models such as a VLA — and then sends commands down to the motion controller and each joint's driver. Common choices include NVIDIA's Jetson line (Orin, Thor), Rockchip's RK3588, NPU-equipped SoCs like D-Robotics' RDK S100, and x86 industrial PCs. Selection mainly comes down to compute throughput (measured in TOPS or TFLOPS), memory, power draw, available interfaces, and software ecosystem. Because a robot runs on battery and has to manage heat, onboard compute is far weaker than a training server's, so models are often compressed, quantized, or partly offloaded to the cloud. In Chinese, 主控 can also loosely mean “the main chip on a control board,” so the meaning depends on context.",
+      "example": "NVIDIA's Jetson Thor module is rated at up to 2,070 FP4 TFLOPS with 128 GB of memory and a 40–130 W power range, positioned as the onboard compute platform for humanoids and other robots.",
+      "related": ["NVIDIA Jetson", "Jetson Thor", "D-Robotics RDK S100", "Rockchip RK3588", "Lower-Level Controller", "On-Device Deployment"]
+    },
+    {
+      "key": "hardware-05#6",
+      "name_en": "Open-Source Hardware (OSHW)",
+      "aliases": ["Open-Source Robot Hardware"],
+      "one_liner": "Hardware whose blueprints, parts list, and firmware are public for anyone to copy or modify.",
+      "explanation": "Open-source hardware is hardware whose design files are made public under a license that lets others study, modify, manufacture, or even sell it. What's published usually includes CAD models, circuit schematics and PCB layouts, a bill of materials (BOM), assembly instructions, and firmware. The commonly used definition comes from the Open Source Hardware Association (OSHWA), and licenses include the CERN Open Hardware Licence. In embodied AI, open-source hardware has sharply lowered the barrier to entry: projects like ALOHA, the SO-100/SO-101 arm, LEAP Hand, Berkeley Humanoid Lite, and ToddlerBot all publish their blueprints and code, letting labs and individuals assemble their own using 3D-printed parts plus off-the-shelf motors, and letting other teams reproduce papers or share data collected on the same hardware platform.",
+      "example": "The SO-101 arm was open-sourced by TheRobotStudio and is built from 3D-printed structural parts and Feetech STS3215 servos; paired with Hugging Face's LeRobot, it can be teleoperated to collect data and train policies.",
+      "related": ["SO-100 / SO-101 Arm", "ALOHA Dual-Arm Platform", "LEAP Hand", "Berkeley Humanoid Lite", "LeRobot", "3D Printing (FDM / Resin)"]
+    },
+    {
+      "key": "hardware-05#7",
+      "name_en": "Peak Torque",
+      "aliases": ["Maximum Torque"],
+      "one_liner": "The most torque a motor or joint can output briefly, but can't sustain.",
+      "explanation": "Peak torque is the maximum torque a motor, reducer, or full joint module can produce for a short time, measured in newton-meters (N·m). It's mainly limited by the driver's maximum current, saturation in the motor's magnetic circuit, and heat: more current means more torque, but the windings also heat up faster, so peak torque can only be held briefly before thermal protection kicks in and cuts it back. It's listed alongside rated torque (the torque a joint can sustain continuously) on a joint's spec sheet. For legged and humanoid robots, dynamic moves like jumping, standing up from a fall, or recovering from a push rely on peak torque, while everyday standing and walking depend on rated torque — so choosing a joint by peak torque alone is a mistake.",
+      "example": "When a humanoid jumps up from a squat, its knee joints must output far more torque than standing requires, for a fraction of a second — that's peak torque at work; if a joint had to sustain that torque for long, the motor would overheat and its output would be throttled.",
+      "related": ["Rated Torque", "Torque Density", "Torque-Speed Curve (T-N Curve)", "Motor Thermal Rise and Overheat Protection", "Joint Module", "Stall Torque / No-Load Speed"]
+    },
+    {
+      "key": "hardware-05#8",
+      "name_en": "Planetary Roller Screw",
+      "aliases": ["Roller Screw"],
+      "one_liner": "A screw drive that uses threaded rollers to turn motor rotation into high-force linear motion.",
+      "explanation": "A planetary roller screw is a mechanism that converts rotary motion into linear motion; it's structurally similar to a ball screw, but instead of balls, a ring of threaded rollers sits between the screw shaft and the nut, each roller spinning on its own axis while also orbiting the shaft, like planets. Swedish engineer Carl Bruno Strandgren produced an early practical design in the 1940s. Because it has many more contact lines than a ball screw of the same size, it carries a much larger load, is stiffer, and lasts longer, but the threads are harder to machine, and it can cost roughly ten times as much as a comparable ball screw — historically it was mainly used in aerospace and machine tools. With the rise of humanoid robots, it has been built into linear actuators to drive high-force joints like the knee, elbow, and ankle, making it a sought-after core component and a target for domestic-substitution efforts in China (replacing imported parts with locally made ones).",
+      "example": "The linear actuator Tesla showed for Optimus at AI Day 2022 pairs a motor with a planetary roller screw, converting rotation into the push-rod motion that drives the joint.",
+      "related": ["Ball Screw", "Inverted Planetary Roller Screw", "Linear Actuator (Electric Cylinder)", "Lead", "Optimus", "Domestic Substitution"]
+    },
+    {
+      "key": "hardware-05#9",
+      "name_en": "Pose Repeatability",
+      "aliases": ["Repeatability", "Repeat Positioning Accuracy"],
+      "one_liner": "How closely a robot returns to the same point each time it's commanded there.",
+      "explanation": "Pose repeatability measures how consistent a robot's actual stopping point is across repeated executions of the same command to reach the same target pose, usually written as something like “±0.05 mm.” The international standard ISO 9283 defines the measurement method: the robot approaches the same position repeatedly from the same direction, and the spread of the resulting points is measured statistically. It differs from absolute positioning accuracy, which measures how far off the robot lands from the true target when commanded to a point by coordinates — this is usually much worse than repeatability, and is improved through kinematic calibration. Traditional industrial robots are mostly programmed by teaching (moving the arm to a point and recording it) and returning to that same point, so repeatability matters most for them; when picking up an object at coordinates computed from vision, absolute accuracy and hand-eye calibration error matter more.",
+      "example": "An arm spec'd at ±0.1 mm repeatability will reliably return to within 0.1 mm of a taught point; but when it moves to a new position computed from a camera, the error can be much larger — that's a question of absolute positioning accuracy instead.",
+      "related": ["Absolute Positioning Accuracy", "Industrial Robot", "Teach-and-Playback", "Kinematic Calibration", "Hand-Eye Calibration", "Collaborative Robot"]
+    },
+    {
+      "key": "hardware-05#10",
+      "name_en": "Rated Torque",
+      "aliases": ["Continuous Torque"],
+      "one_liner": "The torque a motor can output continuously for a long time without overheating.",
+      "explanation": "Rated torque is the torque a motor or joint module can output continuously under specified conditions (rated speed, ambient temperature, cooling method) without the windings exceeding their allowed temperature. It's fundamentally a thermal limit: more torque means more current and more heat, and the rated value is the point where heat generation and heat dissipation balance. It's listed alongside peak torque on spec sheets — peak is often several times the rated value, but can only be sustained briefly. When selecting a motor, engineers convert the torque profile over a full motion cycle into an equivalent value using root-mean-square (RMS), then compare that to rated torque: sustained loads, like an arm holding a payload for a long time or a humanoid standing for a long time, all need to fall within the rated range. Adding active cooling, such as liquid cooling, to a joint can raise the torque it can sustain.",
+      "example": "An arm holding a 1 kg object at 0.5 m from the shoulder generates about 4.9 N·m of gravitational torque at the shoulder from that alone; holding the pose for a long time requires the shoulder's rated torque to exceed the total gravitational torque, including the arm's own weight.",
+      "related": ["Peak Torque", "Torque-Speed Curve (T-N Curve)", "Motor Thermal Rise and Overheat Protection", "Joint Liquid Cooling (Active Cooling)", "Torque Constant (Kt)", "Payload"]
+    },
+    {
+      "key": "hardware-05#11",
+      "name_en": "Robot Controller",
+      "aliases": ["Control Cabinet", "Control Box"],
+      "one_liner": "The control box paired with a robot arm, housing its motion-control computer, servo drives, and safety circuits.",
+      "explanation": "In industrial robotics, the robot controller is usually a standalone control cabinet or box containing a motion-control computer, servo drivers for each joint, a power supply, safety circuits, and I/O ports, with an external teach pendant. It parses the robot's program, computes forward and inverse kinematics and trajectory interpolation, and hands each joint's target to its servo drive for closed-loop execution, while also handling safety functions like emergency stop, collision detection, and joint limits. Each of the “big four” industrial robot makers has its own controller; collaborative-robot makers build smaller control boxes, and some newer products integrate the drive directly into the joint (drive-integrated joints). In embodied AI research, a policy usually doesn't drive motors directly — it sends target poses or joint commands at high frequency through the controller's interface (such as UR's RTDE or Franka's libfranka), and the controller handles low-level tracking and safety.",
+      "example": "Running a VLA experiment on a UR collaborative arm, the policy on a workstation sends joint targets to the UR control box over the RTDE interface; the control box then drives the six joint motors and handles emergency stop and safety limits.",
+      "related": ["Teach Pendant", "Industrial Robot", "Servo Motor", "Drive-Integrated Joint", "RTDE", "libfranka"]
+    }
+  ]
+}

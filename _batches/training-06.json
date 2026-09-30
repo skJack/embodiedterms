@@ -1,0 +1,203 @@
+{"category": "training", "batch": 6, "terms": [
+{
+  "name_zh": "基于模型的强化学习",
+  "name_en": "Model-Based Reinforcement Learning",
+  "abbr": "MBRL",
+  "aliases": ["Model-Based RL", "有模型强化学习"],
+  "tier": 2,
+  "one_liner": "先学一个能预测环境反应的模型，再靠它规划或「想象」来训练策略。",
+  "explanation": "强化学习的一大分支。智能体除了学策略，还专门学一个环境模型（也叫动力学模型或世界模型）：输入当前状态和动作，预测下一个状态和奖励。有了模型，可以先在模型里推演再行动（如模型预测控制），也可以在模型里生成大量「想象」轨迹来训练策略，Sutton 提出的 Dyna 架构就是早期代表。好处是省真实交互、样本效率高，这对试错成本很高的真机尤其重要；风险是模型不准时，策略会钻模型的漏洞（模型偏差）。Dreamer 系列、TD-MPC2 都属于这一类，它也是世界模型研究和机器人强化学习的交汇点。",
+  "example": "DayDreamer（2022）把 Dreamer 算法直接用在真机上：四足机器人不借助仿真器，只用 1 小时就从零学会翻身、站起和行走。",
+  "related": ["无模型强化学习", "世界模型", "想象中学习", "样本效率", "DreamerV3", "模型预测控制"],
+  "sources": [
+    {"title": "OpenAI Spinning Up: Kinds of RL Algorithms", "url": "https://spinningup.openai.com/en/latest/spinningup/rl_intro2.html"},
+    {"title": "Model-based Reinforcement Learning: A Survey (Moerland et al.)", "url": "https://arxiv.org/abs/2006.16712"},
+    {"title": "DayDreamer: World Models for Physical Robot Learning", "url": "https://arxiv.org/abs/2206.14176"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "无模型强化学习",
+  "name_en": "Model-Free Reinforcement Learning",
+  "abbr": "",
+  "aliases": ["Model-Free RL", "免模型强化学习"],
+  "tier": 2,
+  "one_liner": "不学环境模型，直接从试错数据里学策略或价值函数的强化学习。",
+  "explanation": "与基于模型的强化学习相对：算法不去估计环境的状态转移和奖励规律，只拿交互得到的（状态、动作、奖励）样本直接学策略或价值函数，相当于纯粹的试错学习。主要分两类：一类直接优化策略，如策略梯度、PPO；另一类学 Q 函数（估计「在某状态做某动作最终能拿多少回报」），如 Q 学习、DQN；DDPG、SAC 介于两者之间。优点是实现简单、不受模型误差影响；缺点是需要大量交互，样本效率低。机器人领域常用 GPU 并行仿真来弥补：在 Isaac Gym 或 Isaac Lab 里同时跑上千个环境收集数据，训好后再迁移到真机。",
+  "example": "腿足机器人运控的主流做法：用 rsl_rl 库里的 PPO 在 Isaac Lab 中并行训练行走策略，全程不建环境模型，训好后部署到真机。",
+  "related": ["基于模型的强化学习", "策略梯度", "近端策略优化", "深度 Q 网络", "样本效率", "大规模并行强化学习"],
+  "sources": [
+    {"title": "Wikipedia: Model-free (reinforcement learning)", "url": "https://en.wikipedia.org/wiki/Model-free_(reinforcement_learning)"},
+    {"title": "OpenAI Spinning Up: Kinds of RL Algorithms", "url": "https://spinningup.openai.com/en/latest/spinningup/rl_intro2.html"},
+    {"title": "RSL-RL (GitHub, leggedrobotics)", "url": "https://github.com/leggedrobotics/rsl_rl"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "多任务学习",
+  "name_en": "Multi-Task Learning",
+  "abbr": "MTL",
+  "aliases": ["Multitask Learning", "多任务训练"],
+  "tier": 2,
+  "one_liner": "让一个模型同时学多个相关任务，共享知识、互相帮忙。",
+  "explanation": "Rich Caruana 在 1997 年的论文《Multitask Learning》中系统阐述了这一思路：并行训练多个相关任务、共用一套表示，一个任务学到的东西能帮其他任务学得更好，其他任务的训练信号相当于额外的归纳偏置（模型对「什么样的解更合理」的先验倾向）。深度学习里最常见的是硬参数共享：多个任务共用一个骨干网络，各自接一个输出头。机器人里，多任务策略用语言指令或目标图像告诉模型当前要做什么，一个网络覆盖开抽屉、抓取、摆放等多种技能，今天的 VLA 基本都是多任务模型。难点是任务之间可能互相干扰（负迁移），需要调数据配比和网络结构。",
+  "example": "Google 的 RT-1 用 13 台机器人花 17 个月采集了 13 万多条演示，覆盖 700 多条语言指令，由一个 Transformer 策略学会全部任务，在见过的指令上成功率 97%。",
+  "related": ["正迁移 / 负迁移", "迁移学习", "语言条件策略", "通用策略（通才策略）", "数据配比", "RT-1"],
+  "sources": [
+    {"title": "Caruana (1997), Multitask Learning, Machine Learning 28", "url": "https://www.cs.cornell.edu/~caruana/mlj97.pdf"},
+    {"title": "An Overview of Multi-Task Learning in Deep Neural Networks (Ruder, 2017)", "url": "https://arxiv.org/abs/1706.05098"},
+    {"title": "RT-1: Robotics Transformer for Real-World Control at Scale (project page)", "url": "https://robotics-transformer1.github.io/"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "下一个 token 预测",
+  "name_en": "Next-Token Prediction",
+  "abbr": "NTP",
+  "aliases": ["自回归预训练", "自回归语言建模", "Causal Language Modeling"],
+  "tier": 2,
+  "one_liner": "根据前面所有 token，预测序列里下一个 token 的训练目标。",
+  "explanation": "GPT 系列大语言模型的核心训练目标：把文本切成 token（词元），模型读入前面的 token，输出下一个 token 的概率分布，用交叉熵损失把真实下一个 token 的概率往上推。它只需要原始文本、不需要人工标注，所以能在海量数据上预训练，OpenAI 2018 年的 GPT-1 就用它做生成式预训练。推理时模型一个接一个生成 token，叫自回归解码。具身智能里，RT-2、OpenVLA 把连续动作离散成 token，和文字放进同一序列，沿用这个目标训练 VLA；伯克利团队 2024 年还把人形机器人行走建模成下一个 token 预测。代价是离散化有精度损失、逐个生成较慢，所以也有模型改用扩散或流匹配动作头。",
+  "example": "OpenVLA 把每个动作维度按训练数据分布切成 256 个区间，用 Llama 词表里最少用的 256 个 token 表示，再用标准的下一个 token 预测训练，只在动作 token 上算交叉熵。",
+  "related": ["自回归解码", "动作分词器", "分箱离散化", "教师强制", "交叉熵", "视觉-语言-动作模型"],
+  "sources": [
+    {"title": "Improving Language Understanding by Generative Pre-Training (GPT-1, OpenAI 2018)", "url": "https://cdn.openai.com/research-covers/language-unsupervised/language_understanding_paper.pdf"},
+    {"title": "OpenVLA: An Open-Source Vision-Language-Action Model", "url": "https://arxiv.org/html/2406.09246"},
+    {"title": "Humanoid Locomotion as Next Token Prediction", "url": "https://arxiv.org/abs/2402.19469"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "异策略",
+  "name_en": "Off-Policy",
+  "abbr": "",
+  "aliases": ["离策略", "离轨策略", "离线策略", "Off-Policy Learning"],
+  "tier": 2,
+  "one_liner": "用来学习的数据可以来自别的策略，不必由当前策略亲自采集。",
+  "explanation": "强化学习里区分两种策略：行为策略负责与环境交互、产生数据，目标策略是正在学习和优化的那个。两者可以不同，就叫异策略学习。这样，旧版本策略的经验、人类演示、其他算法的数据都能存进经验回放缓冲区反复使用，样本效率高，Q 学习、DQN、DDPG、TD3、SAC 都属于这一类。代价是数据分布和当前策略不一致，训练更容易不稳定。真机强化学习因为交互昂贵，多选异策略算法。注意：中文「离线策略」常指异策略，但它和「离线强化学习」不是一回事，异策略算法通常仍在一边训练一边采集新数据。",
+  "example": "SERL 用基于 SAC 的异策略算法 RLPD，每个训练批次一半来自人类演示、一半来自机器人在线采集的回放数据，在 PCB 插装、理线等任务上平均 25 到 50 分钟训出策略。",
+  "related": ["同策略", "经验回放", "软演员-评论家", "Q 学习", "离线强化学习", "SERL"],
+  "sources": [
+    {"title": "OpenAI Spinning Up: Kinds of RL Algorithms", "url": "https://spinningup.openai.com/en/latest/spinningup/rl_intro2.html"},
+    {"title": "Wikipedia: State–action–reward–state–action (SARSA vs Q-learning)", "url": "https://en.wikipedia.org/wiki/State%E2%80%93action%E2%80%93reward%E2%80%93state%E2%80%93action"},
+    {"title": "SERL: A Software Suite for Sample-Efficient Robotic Reinforcement Learning", "url": "https://arxiv.org/html/2401.16013"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "离线强化学习",
+  "name_en": "Offline Reinforcement Learning",
+  "abbr": "Offline RL",
+  "aliases": ["批量强化学习", "Batch RL", "Batch Reinforcement Learning"],
+  "tier": 2,
+  "one_liner": "只用事先收集好的固定数据集训练策略，训练中不再与环境交互。",
+  "explanation": "早期也叫批量强化学习。Sergey Levine 等人 2020 年的综述将其定义为：只利用预先收集的数据、不做额外在线采集的强化学习。数据可以来自人类遥操作、旧策略或部署日志，训练全程不碰真实环境，适合试错昂贵或危险的机器人、医疗等场景。和模仿学习不同，它利用奖励信号，有机会从好坏混杂的次优数据里学出比数据本身更好的策略。核心难点是分布偏移：策略一旦选了数据里没出现过的动作，Q 函数对它的估值往往虚高（外推误差），错误还会逐步累积。保守 Q 学习（CQL）、隐式 Q 学习（IQL）和各类策略约束方法都是为此设计的。",
+  "example": "保守 Q 学习（CQL）在普通 Q 学习上加一个正则项，故意压低数据集外动作的 Q 值，让学到的价值成为真实价值的下界，避免策略被虚高的估值带偏。",
+  "related": ["在线强化学习", "异策略", "保守 Q 学习", "隐式 Q 学习", "离线到在线强化学习", "D4RL"],
+  "sources": [
+    {"title": "Offline Reinforcement Learning: Tutorial, Review, and Perspectives on Open Problems (Levine et al., 2020)", "url": "https://arxiv.org/abs/2005.01643"},
+    {"title": "Conservative Q-Learning for Offline Reinforcement Learning", "url": "https://arxiv.org/abs/2006.04779"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "同策略",
+  "name_en": "On-Policy",
+  "abbr": "",
+  "aliases": ["在策略", "同轨策略", "在线策略", "On-Policy Learning"],
+  "tier": 2,
+  "one_liner": "只用当前策略自己刚采集的数据来更新，旧数据用完即弃。",
+  "explanation": "与异策略相对：产生数据的行为策略和正在优化的目标策略是同一个。每次更新参数后，旧策略收集的数据就不再符合当前策略的分布，只能丢掉重新采。SARSA、REINFORCE、A2C/A3C、TRPO、PPO 都是同策略算法；PPO 会在同一批数据上做几轮小批量更新，但仍算同策略。优点是训练稳定、实现简单；缺点是数据利用率低，需要海量交互。GPU 大规模并行仿真把采样变便宜之后，PPO 成了腿足和人形机器人运控训练的主流算法。中文「在线策略」多指同策略，注意和「在线强化学习」区分。",
+  "example": "Rudin 等人 2021 年在单张 GPU 上并行仿真上千台 ANYmal 四足机器人，平地行走策略不到 4 分钟、崎岖地形约 20 分钟就训好，并迁移到真机；其开源代码 legged_gym 配套的 rsl_rl 就是 PPO 实现。",
+  "related": ["异策略", "近端策略优化", "策略梯度", "大规模并行强化学习", "样本效率", "rsl_rl"],
+  "sources": [
+    {"title": "OpenAI Spinning Up: Kinds of RL Algorithms", "url": "https://spinningup.openai.com/en/latest/spinningup/rl_intro2.html"},
+    {"title": "Proximal Policy Optimization Algorithms", "url": "https://arxiv.org/abs/1707.06347"},
+    {"title": "Learning to Walk in Minutes Using Massively Parallel Deep Reinforcement Learning", "url": "https://arxiv.org/abs/2109.11978"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "在线强化学习",
+  "name_en": "Online Reinforcement Learning",
+  "abbr": "Online RL",
+  "aliases": [],
+  "tier": 2,
+  "one_liner": "边与环境交互边学习，训练中不断用最新策略采集新数据。",
+  "explanation": "强化学习最经典的设定：智能体用当前策略与环境交互，拿到新数据就更新策略，再用更新后的策略继续采集，循环往复。它既包括只用最新数据的同策略方法（如 PPO），也包括把历史数据存进回放缓冲区的异策略方法（如 SAC）；关键在于训练过程中能持续拿到新数据，这是它和离线强化学习的分界线。在线学习能主动探索、在自己犯的错误上改进，但需要大量交互：仿真里靠并行加速，真机上则受安全、时间和场景复位的限制。近年常见做法是先用演示或离线数据打底，再做在线强化学习微调，例如用 RL 继续提升 VLA。",
+  "example": "HIL-SERL 在真机上做在线强化学习，人在旁边随时纠正，1 到 2.5 小时内让机械臂在精密装配、双臂协作等任务上达到接近满分的成功率。",
+  "related": ["离线强化学习", "离线到在线强化学习", "真机强化学习", "强化学习微调", "同策略", "异策略"],
+  "sources": [
+    {"title": "Offline Reinforcement Learning: Tutorial, Review, and Perspectives on Open Problems (Fig. 1)", "url": "https://arxiv.org/html/2005.01643"},
+    {"title": "Precise and Dexterous Robotic Manipulation via Human-in-the-Loop Reinforcement Learning (HIL-SERL)", "url": "https://arxiv.org/abs/2410.21845"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "优化器",
+  "name_en": "Optimizer",
+  "abbr": "",
+  "aliases": ["优化算法", "Optimization Algorithm"],
+  "tier": 2,
+  "one_liner": "根据梯度决定每一步如何更新模型参数的算法，如 SGD、Adam、AdamW。",
+  "explanation": "训练神经网络时，反向传播算出损失对每个参数的梯度，优化器负责把梯度变成具体的参数更新：往哪个方向走、走多大一步。最基础的是随机梯度下降（SGD），加动量后更平稳；Adam（Kingma 与 Ba，2014）同时跟踪梯度的均值和平方均值，给每个参数自适应步长，调参少、收敛快；AdamW（Loshchilov 与 Hutter，ICLR 2019）把权重衰减从梯度更新里拆出来，泛化更好，在 Transformer、扩散策略等模型的训练中很常用。优化器通常和学习率调度（预热、余弦退火）、梯度裁剪一起配置。注意：人形机器人公司 PNDbotics 的 Adam 是一款机器人，与 Adam 优化器无关。",
+  "example": "Diffusion Policy 官方训练配置用 torch.optim.AdamW，学习率 1e-4、权重衰减 1e-6，配 500 步预热加余弦退火；在 PyTorch 里每步训练依次调用 zero_grad()、loss.backward()、optimizer.step()。",
+  "related": ["梯度下降", "反向传播", "学习率", "AdamW 优化器", "学习率调度（预热与余弦退火）", "梯度裁剪"],
+  "sources": [
+    {"title": "Adam: A Method for Stochastic Optimization", "url": "https://arxiv.org/abs/1412.6980"},
+    {"title": "Decoupled Weight Decay Regularization (AdamW)", "url": "https://arxiv.org/abs/1711.05101"},
+    {"title": "PyTorch Documentation: torch.optim", "url": "https://docs.pytorch.org/docs/main/optim.html"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "策略梯度",
+  "name_en": "Policy Gradient",
+  "abbr": "PG",
+  "aliases": ["策略梯度方法", "Policy Gradient Methods"],
+  "tier": 2,
+  "one_liner": "直接求期望回报对策略参数的梯度，沿梯度方向改进策略的方法。",
+  "explanation": "强化学习里直接优化策略的一大类方法。策略用带参数的网络表示，目标是最大化期望回报；策略梯度给出这个目标对参数的梯度：把每一步动作的对数概率梯度乘上它带来的回报，于是回报高的动作概率被调高、回报低的被调低，用采样轨迹就能估计。Williams 1992 年的 REINFORCE 是早期代表，Sutton 等人 1999 年给出了配合函数逼近使用的策略梯度定理。实际中常减去一个基线，用优势函数（这个动作比平均水平好多少）代替原始回报来降低方差，由此发展出演员-评论家、TRPO、PPO。它天然支持连续动作，适合机器人控制，但通常是同策略的，样本效率不高。",
+  "example": "训练机械臂推箱子：先用当前策略采样一批轨迹，把箱子推到目标的轨迹里做过的动作概率调高，失败轨迹里的调低，反复迭代，策略逐渐变好。",
+  "related": ["REINFORCE 算法", "优势函数", "近端策略优化", "信赖域策略优化", "同策略", "广义优势估计"],
+  "sources": [
+    {"title": "OpenAI Spinning Up: Intro to Policy Optimization", "url": "https://spinningup.openai.com/en/latest/spinningup/rl_intro3.html"},
+    {"title": "Policy Gradient Methods for Reinforcement Learning with Function Approximation (Sutton et al., NIPS 1999)", "url": "https://papers.nips.cc/paper_files/paper/1999/hash/464d828b85b0bed98e80ade0a5c43b0f-Abstract.html"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "正迁移 / 负迁移",
+  "name_en": "Positive / Negative Transfer",
+  "abbr": "",
+  "aliases": ["正向迁移", "负向迁移", "Positive Transfer", "Negative Transfer"],
+  "tier": 2,
+  "one_liner": "引入其他任务或数据后，目标任务变好叫正迁移，变差叫负迁移。",
+  "explanation": "迁移学习和多任务学习里的一对概念：把在源任务、源数据上学到的知识用到目标任务上，目标任务表现提升就是正迁移，反而下降就是负迁移。Wang 等人在 CVPR 2019 的论文中给负迁移下了形式化定义，指出源数据和目标任务相关性太低时容易发生。具身智能里，混合多种机器人、多种任务或互联网图文数据一起训练时，都要回答「加进来的数据是帮忙还是添乱」。常见的负迁移原因有：任务不相关、不同本体的动作空间和坐标系不一致、数据配比失衡、模型容量不够。应对手段包括调数据配比、给每种本体单独的输出头、冻结或隔离部分参数等。",
+  "example": "Open X-Embodiment 实验中，用 22 种机器人数据训练的 RT-1-X 在数据少的机器人上比单独训练平均高 50%，是正迁移；但在数据充足的机器人上 RT-1-X 欠拟合，不如只用本机数据的 RT-1，参数大得多的 RT-2-X 才重新占优。",
+  "related": ["迁移学习", "多任务学习", "跨本体", "协同训练", "数据配比", "RT-X"],
+  "sources": [
+    {"title": "Characterizing and Avoiding Negative Transfer (CVPR 2019)", "url": "https://arxiv.org/abs/1811.09751"},
+    {"title": "Open X-Embodiment: Robotic Learning Datasets and RT-X Models (project page)", "url": "https://robotics-transformer-x.github.io/"},
+    {"title": "Open X-Embodiment paper (arXiv HTML)", "url": "https://arxiv.org/html/2310.08864"}
+  ],
+  "as_of": ""
+},
+{
+  "name_zh": "人类视频预训练",
+  "name_en": "Pretraining on Human Videos",
+  "abbr": "",
+  "aliases": ["从人类视频学习", "Human Video Pretraining", "Learning from Human Videos"],
+  "tier": 2,
+  "one_liner": "先用大量人类做事的视频预训练机器人模型，再用少量机器人数据微调。",
+  "explanation": "真机数据采集贵、规模小，而人类日常操作的视频（如第一人称数据集 Ego4D、互联网视频）量大、场景多，于是先在人类视频上预训练，再用少量机器人数据微调。难点有两个：视频里没有机器人动作标签；人手和机械手结构不同（本体差异）。主要路线有三类：一是只学视觉表征，如 R3M（CoRL 2022）在 Ego4D 上用时间对比学习和视频-语言对齐训练视觉编码器；二是从前后帧变化里提取潜在动作当伪标签，如 LAPA 用 VQ-VAE 得到离散潜在动作来预训练 VLA；三是估计人手的三维运动当作动作，如 Being-H0 把人手当通用操作器来预训练 VLA。",
+  "example": "R3M 在 Ego4D 人类视频上预训练视觉表征后冻结，接上小策略网络，让 Franka 机械臂在真实杂乱的公寓里仅凭 20 条演示学会多种操作任务。",
+  "related": ["人类视频数据", "第一人称视频", "潜在动作预训练", "本体差异", "R3M", "LAPA"],
+  "sources": [
+    {"title": "R3M: A Universal Visual Representation for Robot Manipulation", "url": "https://arxiv.org/abs/2203.12601"},
+    {"title": "Latent Action Pretraining from Videos (LAPA)", "url": "https://arxiv.org/abs/2410.11758"},
+    {"title": "Being-H0: Vision-Language-Action Pretraining from Large-Scale Human Videos", "url": "https://arxiv.org/abs/2507.15597"}
+  ],
+  "as_of": "2025-07"
+}
+]}

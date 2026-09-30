@@ -1,0 +1,427 @@
+{
+ "category": "concept",
+ "batch": 11,
+ "terms": [
+  {
+   "name_zh": "抓握分类（强力抓握 / 精细捏取）",
+   "name_en": "Grasp Taxonomy (Power vs. Precision Grasp)",
+   "abbr": "",
+   "aliases": [
+    "抓取分类",
+    "抓取类型分类",
+    "GRASP 分类法",
+    "Power Grip / Precision Grip"
+   ],
+   "tier": 3,
+   "one_liner": "按手和物体怎么接触，把各种抓握方式分门别类的体系",
+   "explanation": "抓握分类是把人手抓东西的方式系统归类的方法。1956 年 Napier 把抓握分成两大类：强力抓握（手掌和手指一起包住物体，如握锤柄）和精细捏取（主要靠指尖，如捏针）。1989 年 Cutkosky 针对制造业任务提出层级式抓取分类；2016 年 Feix 等人整合前人工作发表 GRASP 分类法，共 33 种抓型。机器人领域用它检验灵巧手能做出多少种抓型、给抓取数据打类型标签、按任务选抓法。北大王鹤组的 Dexonomy（RSS 2025）就按它合成了覆盖 31 种抓型的灵巧手抓取数据集。",
+   "example": "握锤子钉钉子用强力抓握，捏起一粒药片用精细捏取；RBO Hand 3 等灵巧手论文会以能做出 GRASP 分类法全部 33 种抓型来证明手的通用性。",
+   "related": [
+    "抓取",
+    "灵巧手",
+    "灵巧操作",
+    "手部协同",
+    "任务导向抓取（功能性抓取）",
+    "力封闭"
+   ],
+   "sources": [
+    {
+     "title": "The GRASP Taxonomy of Human Grasp Types (Feix et al., IEEE THMS 2016)",
+     "url": "https://doi.org/10.1109/THMS.2015.2470657"
+    },
+    {
+     "title": "Dexonomy: Synthesizing All Dexterous Grasp Types in a Grasp Taxonomy",
+     "url": "https://arxiv.org/abs/2504.18829"
+    },
+    {
+     "title": "RBO Hand 3 -- A Platform for Soft Dexterous Manipulation",
+     "url": "https://arxiv.org/abs/2201.10883"
+    }
+   ],
+   "as_of": "2025-06"
+  },
+  {
+   "name_zh": "人机物体交接",
+   "name_en": "Human-Robot Handover",
+   "abbr": "",
+   "aliases": [
+    "物体传递",
+    "人机交接",
+    "Object Handover",
+    "Robot-to-Human / Human-to-Robot Handover"
+   ],
+   "tier": 3,
+   "one_liner": "机器人和人之间把物体递过去、接过来的交互任务",
+   "explanation": "人机物体交接指机器人把物体递给人（机器人是给予方），或从人手里接过物体（机器人是接收方）。Ortenzi 等人 2020 年的综述把它分成两个阶段：交接前，双方要就在哪儿交、什么时候交形成默契；物理交换阶段从接收方碰到物体开始，到给予方完全松手结束。难点是要同时预测人的动作、规划手臂轨迹、选一个让对方好接的抓取位置，并根据受力判断何时松手：松早了会掉，松晚了会拽手。它是家庭服务、护理和工厂人机协作中最常见的物理交互之一。",
+   "example": "护理机器人给坐在床边的老人递水杯：把杯子送到对方手前、杯柄朝向对方，感到对方握住并往回拉的力后再松开夹爪。",
+   "related": [
+    "人机协作",
+    "物理人机交互",
+    "人机交互",
+    "抓取",
+    "任务导向抓取（功能性抓取）",
+    "力控"
+   ],
+   "sources": [
+    {
+     "title": "Object Handovers: a Review for Robotics (Ortenzi et al.)",
+     "url": "https://arxiv.org/abs/2007.12952"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "图像目标导航",
+   "name_en": "Image-Goal Navigation",
+   "abbr": "ImageNav",
+   "aliases": [
+    "图像导航",
+    "ImageGoal Navigation"
+   ],
+   "tier": 3,
+   "one_liner": "给机器人一张目标位置的照片，让它在陌生环境里自己找过去",
+   "explanation": "图像目标导航是具身导航的一类基准任务：智能体被放进没见过的室内环境，目标是一张在目标位置拍的照片，它只靠自身相机观测走到那里。早期代表工作是 Zhu 等人 2016 年的目标驱动视觉导航，同时发布了 AI2-THOR 仿真器；后来 Habitat 等平台把它做成标准任务。原始设定有两个问题：随机拍的目标图可能只是一面墙，难以分辨；目标图还得和机器人相机参数一致。Krantz 等人 2022 年提出实例图像目标导航（InstanceImageNav），目标图对准某个具体物体、可用任意相机拍摄，更贴近实际使用。",
+   "example": "用户用手机拍下书房里的那把椅子发给家用机器人，机器人在全屋探索，找到这把椅子并停在旁边。",
+   "related": [
+    "导航",
+    "物体目标导航",
+    "点目标导航",
+    "视觉语言导航",
+    "Habitat",
+    "AI2-THOR"
+   ],
+   "sources": [
+    {
+     "title": "Target-driven Visual Navigation in Indoor Scenes using Deep Reinforcement Learning (Zhu et al.)",
+     "url": "https://arxiv.org/abs/1609.05143"
+    },
+    {
+     "title": "Instance-Specific Image Goal Navigation: Training Embodied Agents to Find Object Instances",
+     "url": "https://arxiv.org/abs/2211.15876"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "意图理解（隐式指令）",
+   "name_en": "Intent Understanding / Implicit Instruction Following",
+   "abbr": "",
+   "aliases": [
+    "隐式指令理解",
+    "意图推理",
+    "Implicit Instruction Understanding",
+    "Intention Reasoning"
+   ],
+   "tier": 3,
+   "one_liner": "听懂人没直说的需求，从一句暗示推断出该做什么",
+   "explanation": "意图理解指机器人面对没有直接说出目标物体或动作的指令时，能推断出人真正想要什么。显式指令像「把海绵拿给我」，隐式指令像「我饮料洒了，能帮忙吗」，后者需要常识推理：洒了要擦，擦要用海绵。谷歌 2022 年的 SayCan 用大语言模型把这类话拆成可执行步骤；CoRL 2024 的 Reasoning Grasping 把间接指令直接落到抓取位姿上，推断该抓哪个物体、哪个部位。2025 年的 RoboBench 评测发现，多模态大模型当机器人「大脑」时，隐式指令理解仍是明显短板。",
+   "example": "对 SayCan 说「我饮料洒了，能帮忙吗」，它规划出：1. 找到海绵 2. 拿起海绵 3. 拿给你 4. 结束。",
+   "related": [
+    "指令跟随",
+    "具身推理",
+    "SayCan",
+    "视觉语言模型",
+    "大模型任务规划",
+    "人机交互"
+   ],
+   "sources": [
+    {
+     "title": "SayCan: Do As I Can, Not As I Say (project page)",
+     "url": "https://say-can.github.io/"
+    },
+    {
+     "title": "Reasoning Grasping via Multimodal Large Language Model",
+     "url": "https://arxiv.org/abs/2402.06798"
+    },
+    {
+     "title": "RoboBench: A Comprehensive Evaluation Benchmark for Multimodal Large Language Models as Embodied Brain",
+     "url": "https://arxiv.org/abs/2510.17801"
+    }
+   ],
+   "as_of": "2025-10"
+  },
+  {
+   "name_zh": "语言纠正（实时语言反馈）",
+   "name_en": "Language Corrections (Verbal Feedback)",
+   "abbr": "",
+   "aliases": [
+    "语言反馈",
+    "口头纠正",
+    "Verbal Corrections",
+    "Real-time Language Feedback"
+   ],
+   "tier": 3,
+   "one_liner": "机器人干活时，人用一句话实时指出问题，机器人马上改动作",
+   "explanation": "语言纠正指人在机器人执行任务时，用自然语言实时插话调整它的行为，比如「往左一点」「先别拿杯子」。和重新遥操作示教相比，说一句话成本低得多，非专家也能用。谷歌 2022 年的 Interactive Language 训练出能执行约 8.7 万条不同语言指令的实时策略，人可以边看边说，引导机械臂用积木摆出笑脸。Shi 等人 2024 年的 YAY Robot 采用分层结构：高层策略输出语言指令，低层策略执行；人的口头纠正既能当场改变行为，又被收集起来继续训练高层策略，无需额外遥操作数据。",
+   "example": "机器人往袋子里装东西时总是对不准袋口，人说「往左一点」，机器人当场调整；这条纠正被记录下来，下次高层策略会自己发出类似指令。",
+   "related": [
+    "语言条件策略",
+    "人在回路",
+    "分层架构",
+    "Hi Robot",
+    "RT-H",
+    "失败恢复"
+   ],
+   "sources": [
+    {
+     "title": "Interactive Language: Talking to Robots in Real Time",
+     "url": "https://arxiv.org/abs/2210.06407"
+    },
+    {
+     "title": "Yell At Your Robot: Improving On-the-Fly from Language Corrections",
+     "url": "https://arxiv.org/abs/2403.12910"
+    }
+   ],
+   "as_of": "2024-03"
+  },
+  {
+   "name_zh": "形态计算",
+   "name_en": "Morphological Computation",
+   "abbr": "",
+   "aliases": [
+    "形态学计算"
+   ],
+   "tier": 3,
+   "one_liner": "把一部分控制工作交给身体的形状和材料本身去完成",
+   "explanation": "形态计算是具身智能和仿生机器人里的一个观点：身体的形状、材料弹性、质量分布本身就能承担一部分原本要由控制器计算的工作，相当于把计算「卸载」给身体。这一思路主要由 Rolf Pfeifer 等具身认知研究者推广。经典例子是 Tad McGeer 在 20 世纪 80 年代末做的被动动力学行走器：没有电机和控制器，只靠重力和腿的自然摆动就能走下斜坡。软体夹爪靠材料变形自动贴合物体，也常被当作例子。Hoffmann 和 Müller 提醒，身体越软越复杂不一定越好控制，需要在形态设计和控制方法之间权衡。",
+   "example": "被动动力学行走器没有任何电机，只靠腿长、质量分布和重力就能走下缓坡；据维基百科，康奈尔基于这一原理的双足机器人单位运输成本约 0.20，与人接近，本田 ASIMO 约为 3.23。",
+   "related": [
+    "具身认知",
+    "被动动力学行走",
+    "软体机器人",
+    "柔顺性",
+    "形态-控制协同设计（形态进化）",
+    "运输成本"
+   ],
+   "sources": [
+    {
+     "title": "Trade-Offs in Exploiting Body Morphology for Control (Hoffmann & Müller)",
+     "url": "https://arxiv.org/abs/1411.2276"
+    },
+    {
+     "title": "Passive dynamics - Wikipedia",
+     "url": "https://en.wikipedia.org/wiki/Passive_dynamics"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "形态-控制协同设计（形态进化）",
+   "name_en": "Morphology-Control Co-design / Morphological Evolution",
+   "abbr": "",
+   "aliases": [
+    "形态与控制联合优化",
+    "形态进化",
+    "Brain-Body Co-design",
+    "Co-design of Morphology and Control"
+   ],
+   "tier": 3,
+   "one_liner": "把机器人的身体结构和控制策略放在一起优化，而非先定身体再学控制",
+   "explanation": "形态-控制协同设计指同时搜索机器人的身体（肢体数量、长度、关节布置等）和控制它的策略。传统做法是先定本体，再为它编写或训练控制器；协同设计认为最优控制取决于身体，最优身体也取决于控制，应放在一个循环里优化。1994 年 Karl Sims 在 SIGGRAPH 发表的「Evolving Virtual Creatures」用模拟进化同时演化虚拟生物的形态和神经控制器。2021 年斯坦福 Gupta 等人的 DERL 用进化改身体、用强化学习训控制；ICLR 2022 的 Transform2Act 则把「改身体」也当成策略动作一起学。",
+   "example": "在 DERL 中，由不同肢体拼成的虚拟智能体在仿真里学走路和操作，表现好的个体被保留并变异身体结构，多代之后出现了更稳定、更节能、学得更快的形态。",
+   "related": [
+    "形态计算",
+    "强化学习",
+    "本体",
+    "仿真器",
+    "软体机器人",
+    "具身智能"
+   ],
+   "sources": [
+    {
+     "title": "Evolved Virtual Creatures (Karl Sims, 1994)",
+     "url": "https://www.karlsims.com/evolved-virtual-creatures.html"
+    },
+    {
+     "title": "Embodied Intelligence via Learning and Evolution (DERL)",
+     "url": "https://arxiv.org/abs/2102.02202"
+    },
+    {
+     "title": "Transform2Act: Learning a Transform-and-Control Policy for Efficient Agent Design",
+     "url": "https://arxiv.org/abs/2110.03659"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "多机器人协作",
+   "name_en": "Multi-robot Collaboration",
+   "abbr": "",
+   "aliases": [
+    "多机协同",
+    "多机器人系统",
+    "Multi-Robot Systems (MRS)",
+    "Multi-robot Coordination"
+   ],
+   "tier": 3,
+   "one_liner": "多台机器人分工配合，完成一台做不了或做得慢的任务",
+   "explanation": "多机器人协作研究如何让多台机器人（同型或异构）分配任务、协调路径、避免相互碰撞，共同完成任务。核心问题包括任务分配、多智能体路径规划、通信与信息共享；控制方式分集中式（一个调度系统统一指挥）和分布式（每台机器人按局部信息决策，群体机器人是其极端形式）。最成熟的落地在仓储物流：亚马逊称已部署约 100 万台机器人，并用名为 DeepFleet 的基础模型统一调度车队，预计让机器人行驶时间缩短 10%。大模型出现后，也有工作让多台机械臂用语言对话商量分工，例如 2023 年的 RoCo。",
+   "example": "RoCo 里两台机械臂协作完成桌面任务：各自的大模型代理用自然语言讨论谁负责哪一步，再生成路径点交给运动规划器执行，发生碰撞时根据环境反馈重新商量。",
+   "related": [
+    "群体智能",
+    "多智能体路径规划",
+    "多智能体强化学习",
+    "多机调度系统",
+    "人机协作",
+    "任务规划"
+   ],
+   "sources": [
+    {
+     "title": "Large Language Models for Multi-Robot Systems: A Survey",
+     "url": "https://arxiv.org/abs/2502.03814"
+    },
+    {
+     "title": "RoCo: Dialectic Multi-Robot Collaboration with Large Language Models",
+     "url": "https://arxiv.org/abs/2307.04738"
+    },
+    {
+     "title": "Amazon: 1 million robots and the DeepFleet foundation model",
+     "url": "https://www.aboutamazon.com/news/operations/amazon-million-robots-ai-foundation-model"
+    }
+   ],
+   "as_of": "2025"
+  },
+  {
+   "name_zh": "非抓取操作",
+   "name_en": "Non-prehensile Manipulation",
+   "abbr": "",
+   "aliases": [
+    "非抓握操作",
+    "推拨操作",
+    "Nonprehensile Manipulation"
+   ],
+   "tier": 3,
+   "one_liner": "不把物体抓牢，而是靠推、拨、翻、抛等动作来移动它",
+   "explanation": "非抓取操作指机器人不用夹爪或手把物体完全握住，而是通过推、滑、拨、翻转、抛接、托举等方式改变物体的位置和姿态。它有用的原因是：物体太大、太扁、贴着墙或被挡住时根本抓不起来；有时推一下也比抓起再放下更快。难点在于物体怎么动取决于摩擦和接触，很难精确预测和控制。Mason、Lynch 等人较早研究了推动操作的力学，Ruggiero 等人 2018 年在 RA-L 发表了动态非抓取操作综述。常用基准 Push-T 就是把 T 形块推到目标位置。它常与外在灵巧性一起出现，即借助桌面、墙壁等环境完成操作。",
+   "example": "扁平的卡片平躺在桌上夹不起来，机器人先把它推到桌边让一截悬空，再从侧面夹住；Zhou 和 Held（CoRL 2022）用强化学习让简单夹爪把物体顶到墙上翻起再抓，真机成功率 78%。",
+   "related": [
+    "外在灵巧性",
+    "接触丰富操作",
+    "动态操作",
+    "抓取",
+    "Push-T",
+    "准静态假设"
+   ],
+   "sources": [
+    {
+     "title": "Learning to Grasp the Ungraspable with Emergent Extrinsic Dexterity (Zhou & Held, CoRL 2022)",
+     "url": "https://arxiv.org/abs/2211.01500"
+    },
+    {
+     "title": "Nonprehensile Dynamic Manipulation: A Survey (Ruggiero et al., RA-L 2018)",
+     "url": "https://doi.org/10.1109/LRA.2018.2801939"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "以物体为中心的表示",
+   "name_en": "Object-centric Representation",
+   "abbr": "",
+   "aliases": [
+    "物体中心表示",
+    "对象中心表征",
+    "Object-centric Learning"
+   ],
+   "tier": 3,
+   "one_liner": "把场景拆成一个个物体分别编码，而不是整张图压成一个向量",
+   "explanation": "以物体为中心的表示指把图像或场景分解成若干物体，每个物体用自己的一组特征（位置、形状、类别等）表示，而不是把整幅画面压成一个特征向量。代表方法是 Locatello 等人 2020 年（NeurIPS）的 Slot Attention：若干个「槽」通过注意力相互竞争，无监督地各自绑定到一个物体。在机器人操作中，这种表示让策略只关注和任务有关的物体，换背景、加干扰物时更稳。2022 年的 VIOLA 用预训练视觉模型给出的物体候选构建物体级表示，再用 Transformer 策略挑出相关物体，论文报告成功率比最好的基线提升 45.8%。",
+   "example": "桌上有杯子、碗和勺子，策略先把画面分成三个物体表示；执行「把勺子放进碗里」时只看勺子和碗，桌布换了颜色也不受影响。",
+   "related": [
+    "表征学习",
+    "组合泛化",
+    "3D场景图",
+    "干扰物",
+    "视觉编码器",
+    "关键点检测"
+   ],
+   "sources": [
+    {
+     "title": "Object-Centric Learning with Slot Attention",
+     "url": "https://arxiv.org/abs/2006.15055"
+    },
+    {
+     "title": "VIOLA: Imitation Learning for Vision-Based Manipulation with Object Proposal Priors",
+     "url": "https://arxiv.org/abs/2210.11339"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "拣选（订单拣货）",
+   "name_en": "Order Picking / Piece Picking",
+   "abbr": "",
+   "aliases": [
+    "拣货",
+    "订单拣选",
+    "单件拣选",
+    "Piece Picking"
+   ],
+   "tier": 3,
+   "one_liner": "按订单从货架或料箱里把指定商品一件件取出来的仓储作业",
+   "explanation": "拣选是仓储物流的核心环节：按客户订单从库存中取出指定数量的商品，汇总后发货，分为整托、整箱和单件拣选。单件拣选（piece picking）要面对成千上万种 SKU，商品形状、材质、包装千差万别，还常有软袋和透明件，是最难自动化的一种。机器人方案通常用 3D 视觉识别商品、规划抓取点，再用吸盘或夹爪取出放进订单箱。亚马逊办过拣选挑战赛推动研究（首届有 26 支队伍参加），并先后推出 Sparrow 和带触觉的 Vulcan 拣货机器人，据称 Vulcan 能处理其仓库约 75% 的商品种类。",
+   "example": "电商仓库里，货架被搬运机器人送到工作站，机械臂用视觉认出料箱里的一支牙膏和一包纸巾，分别吸取后放进同一个订单的包装箱。",
+   "related": [
+    "无序抓取",
+    "抓取放置",
+    "分拣",
+    "料箱搬运",
+    "Amazon Vulcan 触觉拣货机器人",
+    "亚马逊拣选挑战赛"
+   ],
+   "sources": [
+    {
+     "title": "Order picking - Wikipedia",
+     "url": "https://en.wikipedia.org/wiki/Order_picking"
+    },
+    {
+     "title": "Analysis and Observations from the First Amazon Picking Challenge",
+     "url": "https://arxiv.org/abs/1601.05484"
+    },
+    {
+     "title": "Amazon Vulcan: robot with a sense of touch for picking and stowing",
+     "url": "https://www.aboutamazon.com/news/operations/amazon-vulcan-robot-pick-stow-touch"
+    }
+   ],
+   "as_of": "2025"
+  },
+  {
+   "name_zh": "码垛 / 拆垛",
+   "name_en": "Palletizing / Depalletizing",
+   "abbr": "",
+   "aliases": [
+    "堆垛",
+    "卸垛",
+    "Palletization / Depalletization",
+    "混箱码垛"
+   ],
+   "tier": 3,
+   "one_liner": "把箱子、袋子按规则堆上托盘，或从托盘上一件件拆下来",
+   "explanation": "码垛是把纸箱、袋装货、桶等按一定垛型堆到托盘上，方便叉车整托运输；拆垛（卸垛）则反过来，把托盘上的货物逐个取下送上输送线。据维基百科，第一台机械码垛机出现在 1948 年，机器人码垛机在 20 世纪 80 年代初出现。单一品规的码垛已很成熟，难的是混箱：尺寸不同的箱子要现场规划出稳定的垛型，类似三维装箱问题；拆垛时箱子紧挨着、贴有胶带或反光膜，需要 3D 视觉认出每个箱子的位置和边界。梅卡曼德等厂商提供视觉引导的拆码垛方案，波士顿动力的 Stretch 也能把卸下的箱子码到托盘上。",
+   "example": "物流中心入库时，3D 相机拍下一托混装纸箱，机器人逐个识别并用真空吸盘卸到输送线上；梅卡曼德称其拆码垛方案最快约每小时 900 件。",
+   "related": [
+    "工业机器人",
+    "料箱搬运",
+    "真空吸盘",
+    "3D 视觉引导",
+    "波士顿动力 Stretch",
+    "黑灯工厂"
+   ],
+   "sources": [
+    {
+     "title": "Palletizer - Wikipedia",
+     "url": "https://en.wikipedia.org/wiki/Palletizer"
+    },
+    {
+     "title": "Mech-Mind: Depalletizing and Palletizing solution",
+     "url": "https://www.mech-mind.com/solution/depalletizing-and-palletizing.html"
+    },
+    {
+     "title": "Boston Dynamics Stretch",
+     "url": "https://bostondynamics.com/products/stretch/"
+    }
+   ],
+   "as_of": ""
+  }
+ ]
+}

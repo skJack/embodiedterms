@@ -1,0 +1,113 @@
+{
+  "batch": "software-12",
+  "terms": [
+    {
+      "key": "software-12#0",
+      "name_en": "Hydra (Meta configuration framework)",
+      "aliases": ["facebookresearch/hydra"],
+      "one_liner": "Meta's open-source Python configuration framework for composing YAML configs and overriding parameters from the command line.",
+      "explanation": "Hydra is an open-source Python configuration framework from Meta (originally Facebook AI Research), built on OmegaConf for reading and writing YAML underneath. It splits an experiment's configuration into several small, composable files — one each for the model, the dataset, the task — assembled as needed at runtime, and lets any field be overridden directly from the command line; its multirun feature can also sweep a whole set of hyperparameters (hyperparameters being values set by hand before training, such as the learning rate) in one go. Robot-learning code tends to have a lot of parameters and a lot of experiments, and Hydra means “change one parameter and rerun” doesn't require touching code — it also automatically creates an output directory for each run and saves the full configuration used at the time, which makes results reproducible. Codebases such as Diffusion Policy and Isaac Lab both use it to manage training configuration.",
+      "example": "Running python train.py --config-name=train_diffusion_unet_image_workspace task=pusht_image training.seed=42 in the Diffusion Policy repository swaps the task and random seed without touching any code.",
+      "related": ["Hyperparameter", "Random Seed & Reproducibility", "Diffusion Policy", "Isaac Lab", "Weights & Biases (W&B)"]
+    },
+    {
+      "key": "software-12#1",
+      "name_en": "IKFast",
+      "aliases": ["OpenRAVE IKFast"],
+      "one_liner": "OpenRAVE's analytical IK generator, auto-producing extremely fast C++ inverse-kinematics code for a specific arm.",
+      "explanation": "IKFast is an inverse-kinematics compiler Rosen Diankov developed within the OpenRAVE robot-planning framework. Inverse kinematics means working backward from a desired end-effector pose to the joint angles that achieve it. Numerical methods rely on iterative approximation, which is slow and can fail to converge; IKFast instead performs a symbolic derivation specific to one arm's kinematic structure and generates an analytical-solution C++ file offline, which at runtime computes every solution directly, usually in microseconds. It works best for 6-degree-of-freedom arms; a 7-DOF redundant arm needs one “free joint” designated and swept over a discrete set of values. MoveIt provides a workflow for wrapping IKFast-generated code as a kinematics plugin, commonly used to replace the default numerical solver.",
+      "example": "Generate an analytical inverse-kinematics solution for a UR5 arm with IKFast and package it as a MoveIt plugin — each IK solve drops from milliseconds to microseconds, and returns all 8 solutions at once.",
+      "related": ["Inverse Kinematics (IK)", "Analytical Inverse Kinematics", "Numerical Inverse Kinematics", "TRAC-IK", "MoveIt Motion Planning Framework", "Kinematic Redundancy"]
+    },
+    {
+      "key": "software-12#2",
+      "name_en": "Intel OpenVINO",
+      "aliases": ["OpenVINO Toolkit"],
+      "one_liner": "Intel's open-source inference-optimization and deployment toolkit for speeding up models on Intel CPUs, integrated graphics, and NPUs.",
+      "explanation": "OpenVINO (Open Visual Inference and Neural network Optimization) is Intel's open-source deep-learning inference toolkit. It converts a model from PyTorch, ONNX, TensorFlow, or another format into its own intermediate representation, then applies operator fusion and low-precision quantization (such as INT8) tuned specifically for Intel CPUs, integrated graphics, and NPUs (neural processing units) before running it. It occupies a similar niche to NVIDIA's TensorRT, just aimed at Intel hardware instead. Many robots run on an industrial PC or mini PC with no discrete GPU, and deploying vision detection or segmentation models with OpenVINO in that situation can raise frame rate and cut latency without adding a GPU.",
+      "example": "Export a YOLO detection model to OpenVINO format and run real-time tabletop object detection on the CPU of an Intel Core mini PC mounted on the robot.",
+      "related": ["Inference Deployment", "On-Device / Edge Deployment", "NVIDIA TensorRT", "Open Neural Network Exchange (ONNX)", "Post-Training Quantization (PTQ)", "Industrial PC"]
+    },
+    {
+      "key": "software-12#3",
+      "name_en": "Intel RealSense SDK 2.0 (librealsense)",
+      "aliases": ["librealsense", "realsense-ros", "pyrealsense2"],
+      "one_liner": "The official open-source driver and development library for RealSense depth cameras, handling capture, alignment, and point clouds.",
+      "explanation": "RealSense SDK 2.0 is the open-source library librealsense, the official software development kit for RealSense depth cameras (such as the D435i and D405), originally released by Intel, supporting Linux, Windows, and macOS. It connects to the camera and reads its color, depth, infrared, and IMU (inertial measurement unit) data streams, and provides post-processing filters for aligning depth to color, generating point clouds, and hole filling, along with the realsense-viewer visualization and debugging tool. It's mainly written in C++, with a Python interface, pyrealsense2, and a ROS wrapper, realsense-ros. Embodied-AI labs use RealSense heavily as both wrist cameras and third-person cameras, so this library shows up constantly in both data collection and policy deployment.",
+      "example": "Open a D435i with pyrealsense2, align the depth image to the color image, back-project it into a point cloud, and feed that to a 3D diffusion policy as input.",
+      "related": ["RealSense Depth Camera (D435i / D405)", "Depth Camera (RGB-D Camera)", "Depth-to-Color Alignment (Depth Registration)", "Point Cloud", "Camera Intrinsics", "Driver (device driver)"]
+    },
+    {
+      "key": "software-12#4",
+      "name_en": "Interior Point OPTimizer (Ipopt)",
+      "aliases": ["IPOPT"],
+      "one_liner": "COIN-OR's open-source large-scale nonlinear solver, based on the interior-point method, commonly used for trajectory optimization.",
+      "explanation": "Ipopt is a nonlinear programming solver maintained by the COIN-OR open-source community, with its core algorithm proposed by Andreas Wächter and Lorenz Biegler, using the interior-point method (stepping toward the optimum from inside the feasible region, guided by a “barrier function”) to solve large-scale problems with both equality and inequality constraints. Trajectory optimization and nonlinear model predictive control in robotics repeatedly need to solve exactly this type of problem: the variables are the states and controls over a time horizon, and the constraints are the dynamics equations, joint limits, friction cones, and so on. Ipopt usually isn't called directly on its own but rather through a modeling tool such as CasADi, Drake, or Pyomo, and it needs to be paired with a linear-system solver such as MUMPS or HSL.",
+      "example": "Write out a direct-collocation formulation of a quadruped's jump in CasADi, then call nlpsol('solver', 'ipopt', nlp) to solve for a takeoff trajectory that satisfies the dynamics and friction constraints.",
+      "related": ["Trajectory Optimization", "Nonlinear Model Predictive Control", "CasADi", "Direct Collocation", "Sequential Quadratic Programming", "acados (fast embedded optimal control solver)"]
+    },
+    {
+      "key": "software-12#5",
+      "name_en": "Kalibr",
+      "aliases": ["ethz-asl/kalibr"],
+      "one_liner": "ETH Zurich's open-source calibration toolbox specializing in multi-camera and camera-IMU intrinsic, extrinsic, and time calibration.",
+      "explanation": "Kalibr is an open-source sensor-calibration toolbox from ETH Zurich's Autonomous Systems Lab (ASL), running on ROS. It can calibrate intrinsics and extrinsics across multiple cameras, the spatial extrinsics and time offset between a camera and an IMU, multiple IMUs together, and rolling-shutter cameras, commonly using an AprilGrid (a grid made of AprilTag markers) as the calibration target. Algorithms like visual-inertial odometry and SLAM need to know the relative pose and timing offset between the camera and IMU precisely — get those parameters wrong and drift follows directly — which makes Kalibr one of the most commonly used tools for this job.",
+      "example": "Hold a RealSense D435i with an IMU in front of an AprilGrid and wave it around while recording a rosbag, then run kalibr_calibrate_imu_camera to get the camera-to-IMU transform and their time offset, which then get plugged into VINS-Fusion's configuration.",
+      "related": ["Camera-IMU Calibration", "Camera Calibration", "AprilTag", "Visual-Inertial Odometry", "Camera Extrinsics", "VINS-Fusion"]
+    },
+    {
+      "key": "software-12#6",
+      "name_en": "legged_control (NMPC + WBC framework for legged robots)",
+      "aliases": ["qiayuanl/legged_control"],
+      "one_liner": "An open-source legged-robot control framework combining nonlinear MPC planning with whole-body control tracking, built on OCS2 and ROS.",
+      "explanation": "legged_control is an open-source, model-based control framework for quadruped robots by Qiayuan Liao, built on ROS and ros_control. The upper level uses the OCS2 library to run nonlinear model predictive control (NMPC — solving online for an optimal trajectory over a short future horizon at every control step); the lower level uses whole-body control (WBC) based on hierarchical quadratic programming to convert that plan into individual joint torques, together with a state estimator that fuses leg odometry and IMU data. It provides Gazebo simulation and real-robot examples on platforms such as the Unitree A1, making it a common reference implementation to get running and modify when learning model-based legged locomotion control, and it's also frequently used as a baseline to compare against reinforcement-learning-based locomotion control.",
+      "example": "Launch a Unitree A1 model in Gazebo and use legged_control's NMPC+WBC controller to have the robot switch into a diagonal trot and follow velocity commands from a game controller.",
+      "related": ["Nonlinear Model Predictive Control", "Whole-Body Control", "OCS2 (Optimal Control for Switched Systems)", "Hierarchical Quadratic Programming", "Legged Locomotion", "Model-Based Control"]
+    },
+    {
+      "key": "software-12#7",
+      "name_en": "LeRobot EnvHub",
+      "aliases": [],
+      "one_liner": "LeRobot's mechanism for sharing simulation environments, publishing environment code to the Hugging Face Hub for one-line loading.",
+      "explanation": "EnvHub is a simulation-environment-sharing feature Hugging Face built into its LeRobot framework. Previously, using someone else's simulated task meant cloning their repository, installing its dependencies, and rewriting code to match their interface; EnvHub lets an author publish environment code as a Hub repository, and a user in LeRobot then loads it by repository name and gets back an environment conforming to the Gymnasium interface (reset/step), ready to use for training or evaluating a policy. Because loading it executes code from that repository, it requires explicitly allowing remote code execution, so it should only be loaded from a trusted source. It lives on the same Hub as LeRobot's datasets and models, making it convenient to publish data, a policy, and an evaluation environment together in one place.",
+      "example": "",
+      "related": ["LeRobot (Hugging Face)", "Hugging Face", "Gymnasium (formerly OpenAI Gym)", "Simulation-based Evaluation", "LeRobotDataset (LeRobot dataset format)"]
+    },
+    {
+      "key": "software-12#8",
+      "name_en": "libfranka / Franka Control Interface (FCI)",
+      "aliases": ["franka_ros", "franka_ros2", "Franka Control Interface"],
+      "one_liner": "Franka's official low-level C++ control library, exchanging commands with the robot in real time at 1 kHz through the FCI.",
+      "explanation": "libfranka is the official open-source C++ control library for Franka arms (Panda / FR3), connecting over Ethernet to the robot's Franka Control Interface (FCI). In a callback function, the user reads the robot's state once every millisecond — joint angles, velocities, estimated external forces — and returns a command each time; available control modes include joint torque, joint position/velocity, and Cartesian pose/velocity, which means the computer running it needs a real-time kernel (such as PREEMPT_RT) to guarantee it never misses a cycle. franka_ros and franka_ros2 are its ROS wrappers. Many robot-learning frameworks — Polymetis and Deoxys among them — call into it under the hood to implement impedance control and policy execution.",
+      "example": "On a machine running a PREEMPT_RT kernel, write a 1 kHz torque callback with libfranka to implement Cartesian impedance control, so a VLA policy's output end-effector target pose gets tracked compliantly.",
+      "related": ["Franka Emika Panda / Franka Research 3", "Torque Control", "Cartesian Impedance Control", "PREEMPT_RT Real-Time Linux Patch", "RTDE (Real-Time Data Exchange, Universal Robots)", "Software Development Kit (SDK)"]
+    },
+    {
+      "key": "software-12#9",
+      "name_en": "Lifecycle Node (Managed Node)",
+      "aliases": ["managed node", "LifecycleNode"],
+      "one_liner": "A ROS 2 node type with a standard state machine, letting an external manager configure, start, pause, and shut it down in order.",
+      "explanation": "A lifecycle node is a node type ROS 2 introduced. An ordinary node starts working the moment it launches, and there's no guarantee about which of several nodes becomes ready first; a lifecycle node instead has a built-in standard state machine, with main states unconfigured, inactive, active, and finalized, moving between them through transitions such as configure, activate, deactivate, cleanup, and shutdown — each transition calling a callback the developer has written (for example, reading parameters and allocating resources during “configure,” or starting to publish messages during “activate”). An external manager can then bring up a group of nodes in a defined order, and shut them all down uniformly if something goes wrong, making system startup and fault handling controllable. Nav2's navigation stack uses a lifecycle manager to start up its various server nodes this way.",
+      "example": "Nav2's lifecycle_manager configures and activates the map server and localization node in sequence, then, once they're confirmed ready, activates the planner and controller — so the controller never starts outputting velocity commands before a map exists.",
+      "related": ["ROS 2", "Node (ROS)", "ROS 2 Navigation Stack (Nav2)", "Finite State Machine", "Launch File", "ros2_control"]
+    },
+    {
+      "key": "software-12#10",
+      "name_en": "Lightweight Communications and Marshalling (LCM)",
+      "aliases": ["lcm-proj"],
+      "one_liner": "A lightweight publish-subscribe messaging library over UDP multicast, low-latency and common in real-time robot control.",
+      "explanation": "LCM is a messaging library developed and open-sourced by an MIT team during their participation in the DARPA Urban Challenge (a self-driving-car competition). Developers define message structures in .lcm files, and the tool automatically generates the send/receive code for C, C++, Python, Java, and other languages; messages travel over UDP multicast in a publish-subscribe pattern, need no central node, and have few dependencies and low latency. It also comes with tools like lcm-spy (for viewing messages live) and lcm-logger (for recording and replay). Compared with ROS, LCM handles communication only and nothing else, which is why it's often chosen for control loops with tight real-time requirements — the MIT Cheetah series of quadrupeds, the Drake toolbox, and some robot vendors' early SDKs among them.",
+      "example": "In a Drake simulation, the controller and a visualizer exchange robot state over an LCM channel, and a developer uses lcm-spy to watch each channel's message rate and content live.",
+      "related": ["Publish-Subscribe", "Middleware", "Robot Operating System", "Drake", "ZeroMQ", "MIT Mini Cheetah"]
+    },
+    {
+      "key": "software-12#11",
+      "name_en": "Link-U OS (AgiBot Lingqu OS)",
+      "aliases": ["AgiBot Lingqu OS", "Lingqu OS"],
+      "one_liner": "AgiBot's operating system for embodied robots, with plans to open-source it in stages.",
+      "explanation": "Link-U OS (灵渠 OS) is an operating system for embodied robots from AgiBot (智元机器人), reportedly unveiled along with an open-source roadmap at the 2025 World Artificial Intelligence Conference. According to public descriptions, it follows a layered design: the lower layer handles hardware abstraction and real-time communication (related to AimRT, AgiBot's previously open-sourced robot runtime framework), while the upper layer connects to embodied large models, skills, and applications, aiming to let different robot bodies and different models run on one shared software foundation, cutting down the cost of custom development and porting between robot bodies. It occupies a similar space to ROS 2 and RoboOS; the exact scope and timeline of what gets open-sourced is best confirmed against AgiBot's official announcements.",
+      "example": "",
+      "related": ["AgiBot", "AimRT (AgiBot robot runtime framework)", "Robot Operating System", "ROS 2", "RoboOS (BAAI embodied OS)", "Hardware Abstraction Layer (HAL)"]
+    }
+  ]
+}

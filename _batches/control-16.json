@@ -1,0 +1,415 @@
+{
+ "category": "control",
+ "batch": 16,
+ "terms": [
+  {
+   "name_zh": "S 型速度曲线",
+   "name_en": "S-Curve Velocity Profile",
+   "abbr": "",
+   "aliases": [
+    "S型加减速",
+    "七段式速度曲线",
+    "S 曲线加减速",
+    "限加加速度速度曲线",
+    "Jerk-limited velocity profile"
+   ],
+   "tier": 3,
+   "one_liner": "限制加加速度、让加速度连续变化的速度规划，速度随时间的曲线呈 S 形。",
+   "explanation": "点到点运动最简单的是梯形速度曲线：匀加速、匀速、匀减速。但加速度在段与段交界处突变，加加速度（jerk，加速度的变化率）理论上无穷大，容易激起机械臂振动和冲击。S 型曲线再给 jerk 设上限：加速段拆成加加速、匀加速、减加速三段，减速段同理，加上中间匀速段共七段，所以又叫七段式；每段 jerk 只取 +J、0 或 −J，速度曲线在起止处变成平滑的 S 形。代价是比梯形曲线稍慢、计算更复杂，行程短时有的段长度为零。工业机器人控制器和数控机床普遍使用；KIT 的 Berscheid 与 Kröger 在 RSS 2021 发表的开源库 Ruckig，能在每个控制周期实时算出时间最优的限 jerk 轨迹。",
+   "example": "Ruckig 把单个关节的最快轨迹写成最多 7 段恒定 jerk 的组合，并让多个关节同时到达目标；MoveIt 2、CoppeliaSim、LinuxCNC 和 Franka 机械臂的 Frankx 库都用它生成限加加速度轨迹。",
+   "related": [
+    "梯形速度曲线",
+    "加加速度",
+    "时间参数化",
+    "轨迹规划",
+    "Ruckig",
+    "最小加加速度轨迹"
+   ],
+   "sources": [
+    {
+     "title": "Jerk-limited Real-time Trajectory Generation with Arbitrary Target States (Berscheid & Kröger, RSS 2021, arXiv 2105.04830)",
+     "url": "https://arxiv.org/abs/2105.04830"
+    },
+    {
+     "title": "Ruckig GitHub（Motion Generation for Robots and Machines）",
+     "url": "https://github.com/pantor/ruckig"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "安全滤波器",
+   "name_en": "Safety Filter",
+   "abbr": "",
+   "aliases": [
+    "安全过滤器",
+    "安全屏蔽",
+    "Safety shield"
+   ],
+   "tier": 3,
+   "one_liner": "夹在策略和执行器之间，只在动作会导致危险时才最小限度地改动它。",
+   "explanation": "安全滤波器把「完成任务」和「保证安全」拆成两层：任务策略（手写控制器、强化学习或 VLA 模型）先给出名义动作，滤波器判断执行后系统还能否留在安全集合内，安全就原样放行，不安全才换成最接近的安全动作。常见实现有三类：控制障碍函数（CBF）每步解一个小二次规划，找离名义动作最近、又不让安全函数 h(x) 降到 0 以下的动作；HJ 可达性分析预先算出哪些状态无论怎么控制都会出事；MPC 屏蔽则在线预测未来轨迹能否退回安全区。Hsu、Hu、Fisac 2023 年的综述把它们统一成「监控 + 干预」框架。学习型策略本身没有安全保证，外面加这一层就能提供可证明的约束。",
+   "example": "移动机器人避人：定义 h(x)=‖p−p_人‖²−d²（p 为机器人位置，d 为允许的最小距离，h≥0 即安全），每个周期求解 min‖u−u_nom‖²，约束 ḣ ≥ −α·h；u_nom 是导航策略给的速度，α>0 决定靠近时减速多早。离人远时约束不起作用，u 就等于 u_nom。",
+   "related": [
+    "控制障碍函数",
+    "HJ 可达性分析",
+    "模型预测控制",
+    "安全强化学习",
+    "具身安全",
+    "二次规划"
+   ],
+   "sources": [
+    {
+     "title": "The Safety Filter: A Unified View of Safety-Critical Control in Autonomous Systems (Hsu, Hu, Fisac, arXiv 2309.05837)",
+     "url": "https://arxiv.org/abs/2309.05837"
+    },
+    {
+     "title": "Control Barrier Functions: Theory and Applications (Ames et al., arXiv 1903.11199)",
+     "url": "https://arxiv.org/abs/1903.11199"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "采样式 MPC",
+   "name_en": "Sampling-based MPC",
+   "abbr": "",
+   "aliases": [
+    "基于采样的MPC",
+    "采样MPC",
+    "Sampling-based Model Predictive Control"
+   ],
+   "tier": 3,
+   "one_liner": "每个周期随机采样一批动作序列，在模型里推演打分，挑最好的执行第一步。",
+   "explanation": "模型预测控制（MPC）每个周期都优化未来一小段的动作序列，只执行第一步再重算。传统求解靠梯度或二次规划，要求模型可导、代价光滑。采样式 MPC 改为：在上一轮最优序列附近加噪声采出几十到上千条候选，用动力学模型（常是物理仿真器）并行推演并算代价，再挑最好的一条或按代价加权平均出新序列。代表方法有 MPPI（权重正比于 exp(−代价/λ)，λ 为温度系数）、交叉熵方法 CEM（保留代价最低的一批重新拟合采样分布），以及 DeepMind 2022 年随 MuJoCo MPC 发布的最简版 Predictive Sampling。它不需要导数、能处理接触这类不光滑动力学、易于 GPU 并行，缺点是动作维度高时采样效率下降。",
+   "example": "CMU 等 2024 年提出的 DIAL-MPC 借鉴扩散模型逐步降噪的退火思路，不经训练直接在四足全阶动力学上做力矩级采样优化，论文报告跟踪误差比标准 MPPI 低 13.4 倍，并在真机上完成带负载的精准跳跃。",
+   "related": [
+    "模型预测控制",
+    "模型预测路径积分控制",
+    "交叉熵方法",
+    "DIAL-MPC",
+    "MuJoCo MPC",
+    "轨迹优化"
+   ],
+   "sources": [
+    {
+     "title": "Predictive Sampling: Real-time Behaviour Synthesis with MuJoCo (Howell et al., arXiv 2212.00541)",
+     "url": "https://arxiv.org/abs/2212.00541"
+    },
+    {
+     "title": "Information Theoretic Model Predictive Control: Theory and Applications to Autonomous Driving (Williams et al., arXiv 1707.02342)",
+     "url": "https://arxiv.org/abs/1707.02342"
+    },
+    {
+     "title": "Full-Order Sampling-Based MPC for Torque-Level Locomotion Control via Diffusion-Style Annealing (DIAL-MPC, arXiv 2409.15610)",
+     "url": "https://arxiv.org/abs/2409.15610"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "序列二次规划",
+   "name_en": "Sequential Quadratic Programming",
+   "abbr": "SQP",
+   "aliases": [
+    "拉格朗日-牛顿法",
+    "Lagrange-Newton method"
+   ],
+   "tier": 3,
+   "one_liner": "把非线性约束优化问题反复近似成二次规划来求解的迭代算法。",
+   "explanation": "SQP 用来解目标和约束都是光滑非线性函数的优化问题。每轮迭代在当前解附近，把拉格朗日函数（目标加上乘子乘约束）近似成二次函数、把约束线性化，得到一个二次规划（QP）子问题；解出搜索方向后更新，再重复，直到满足最优性条件（KKT 条件）。它相当于把牛顿法推广到有约束的情形，收敛快，但只保证局部最优，依赖好的初值，还要配合线搜索或信赖域防止走偏。机器人的轨迹优化和非线性 MPC 大量用它：把动力学、关节限位、避障写成约束；在线 MPC 可以用上一周期的解热启动，实时迭代（RTI）方案甚至每周期只做一轮 SQP。与之并列的另一大类是内点法（如 Ipopt）。",
+   "example": "ETH 开源的最优控制库 OCS2 提供基于 HPIPM 的多重打靶 SQP 求解器，用于四足和移动操作臂的非线性 MPC；SciPy 的 minimize(method='SLSQP') 也是一种 SQP，可以直接拿来解小规模的逆运动学或参数拟合问题。",
+   "related": [
+    "二次规划",
+    "轨迹优化",
+    "非线性模型预测控制",
+    "多重打靶法",
+    "OCS2",
+    "acados"
+   ],
+   "sources": [
+    {
+     "title": "Sequential quadratic programming - Wikipedia",
+     "url": "https://en.wikipedia.org/wiki/Sequential_quadratic_programming"
+    },
+    {
+     "title": "OCS2 Toolbox 文档（SLQ / iLQR / SQP / IPM 求解器）",
+     "url": "https://leggedrobotics.github.io/ocs2/"
+    },
+    {
+     "title": "SciPy minimize(method='SLSQP') 文档",
+     "url": "https://docs.scipy.org/doc/scipy/reference/optimize.minimize-slsqp.html"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "共享自主",
+   "name_en": "Shared Autonomy",
+   "abbr": "",
+   "aliases": [
+    "共享控制",
+    "Shared control"
+   ],
+   "tier": 3,
+   "one_liner": "人和机器人同时出力：机器人推断人的意图，把人的指令和自主动作融合后执行。",
+   "explanation": "共享自主介于纯遥操作和全自主之间：人通过摇杆、脑机接口等给出粗略、带噪声的指令，机器人一边执行一边推断人想达成的目标，再把人的输入和自己的自主动作融合，常见做法是按意图置信度加权混合（称为仲裁或策略混合）。它最早用于助残机械臂、智能轮椅和遥操作，目的是减轻操作负担又不剥夺人的控制权。CMU 的 Javdani 等人 2015 年把它建模成目标未知的部分可观测马尔可夫决策过程（POMDP），用逆最优控制从人的历史输入推断目标分布；用户完成更快、输入更少，但也有人反映失去了控制感。Reddy、Dragan、Levine 2018 年用深度强化学习做到不必预先知道目标集合。它与遥操作、人在回路纠偏关系密切。",
+   "example": "Reddy 等人的实验中，人玩登月舱着陆游戏（Lunar Lander），辅助智能体先剔除 Q 值低于阈值的动作，再从剩下的动作里挑最接近人输入的那个执行，在不知道目标着陆点的情况下帮人更稳地着陆。",
+   "related": [
+    "遥操作",
+    "人在回路",
+    "人机协作",
+    "人机交互",
+    "意图理解（隐式指令）",
+    "部分可观测马尔可夫决策过程"
+   ],
+   "sources": [
+    {
+     "title": "Shared Autonomy via Hindsight Optimization (Javdani, Srinivasa, Bagnell, arXiv 1503.07619)",
+     "url": "https://arxiv.org/abs/1503.07619"
+    },
+    {
+     "title": "Shared Autonomy via Deep Reinforcement Learning (Reddy, Dragan, Levine, RSS 2018, arXiv 1802.01744)",
+     "url": "https://arxiv.org/abs/1802.01744"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "滑模控制",
+   "name_en": "Sliding Mode Control",
+   "abbr": "SMC",
+   "aliases": [
+    "滑模变结构控制",
+    "滑动模态控制"
+   ],
+   "tier": 3,
+   "one_liner": "用切换控制把状态强行压到预设的「滑模面」上并沿它滑向目标，抗扰能力强。",
+   "explanation": "滑模控制属于变结构控制，20 世纪 50 年代初由苏联学者 Emelyanov 等开始研究，后经 Utkin 等人系统化。先设计滑模面，如用跟踪误差 e 构造 s = ė + λe（λ>0）：一旦 s=0，误差就按 e(0)·exp(−λt) 衰减到零。控制律由等效控制（按名义模型维持在面上）和切换项 −k·sign(s)（偏离时强行推回）组成，先到达滑模面，再沿面滑动。只要 k 大于扰动上界，从控制通道进入的扰动和模型误差都不改变滑动阶段的行为，所以比 PID、计算力矩控制更鲁棒。代价是抖振：执行器延迟和离散采样让 sign 来回切换，产生高频抖动，常用边界层（把 sign 换成饱和函数）或超螺旋等高阶滑模缓解。",
+   "example": "负载未知的机械臂关节做位置跟踪：取 s = ė + λe，力矩 τ = τ_eq − k·sat(s/φ)。τ_eq 是按名义模型算出的力矩，k 取得足以覆盖摩擦和负载误差的上界，sat 是饱和函数，φ 是边界层厚度，用来抑制抖振。",
+   "related": [
+    "鲁棒控制",
+    "自适应控制",
+    "李雅普诺夫稳定性",
+    "反馈线性化",
+    "自抗扰控制",
+    "扰动观测器"
+   ],
+   "sources": [
+    {
+     "title": "Sliding mode control - Wikipedia",
+     "url": "https://en.wikipedia.org/wiki/Sliding_mode_control"
+    },
+    {
+     "title": "Variable structure control - Wikipedia",
+     "url": "https://en.wikipedia.org/wiki/Variable_structure_control"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "速度与分离监控",
+   "name_en": "Speed and Separation Monitoring",
+   "abbr": "SSM",
+   "aliases": [
+    "速度和间距监控",
+    "速度和分离监控"
+   ],
+   "tier": 3,
+   "one_liner": "协作机器人实时监测人机距离，一旦小于安全距离就减速或停机的防护方式。",
+   "explanation": "速度与分离监控是 ISO 10218 与 ISO/TS 15066 规定的人机协作方式之一（其余为安全级监控停止、手动引导、功率与力限制）。外部传感器（安全激光扫描仪、3D 相机等）持续跟踪人和机器人，系统实时计算保护距离 S = S_h + S_r + S_s + C + Z_S + Z_R：S_h 是机器人反应和制动期间人走过的距离（人朝机器人的速度通常取 1.6 m/s），S_r、S_s 是机器人在反应时间内和制动过程中移动的距离，C 是人手可能伸入的余量，Z_S、Z_R 是人和机器人位置的测量不确定度。实际距离小于 S 就触发安全级受控停止，机器人越慢，S 越小，人就能靠得越近。它与功率与力限制的区别是：后者允许有限接触，SSM 则力求不接触。",
+   "example": "假设机器人反应 0.1 s、制动 0.3 s，人以 1.6 m/s 走近，仅 S_h 一项就是 1.6×(0.1+0.3)=0.64 m，再加上机器人自身走过的距离、伸入余量和测量误差，才是必须保持的最小距离；机器人降速后制动更快、移动更少，人就可以站得更近。",
+   "related": [
+    "ISO/TS 15066 协作机器人安全标准",
+    "功率与力限制",
+    "协作机器人",
+    "保护性停止",
+    "安全激光扫描仪 / 安全光幕",
+    "人机协作"
+   ],
+   "sources": [
+    {
+     "title": "Implementing Speed and Separation Monitoring in Collaborative Robot Workcells (Marvel & Norcross, NIST, Robot Comput Integr Manuf 2017)",
+     "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5117641/"
+    },
+    {
+     "title": "NIST 出版物页面：Implementing Speed and Separation Monitoring in Collaborative Robot Workcells",
+     "url": "https://www.nist.gov/publications/implementing-speed-and-separation-monitoring-collaborative-robot-workcells"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "状态观测器",
+   "name_en": "State Observer",
+   "abbr": "",
+   "aliases": [
+    "观测器",
+    "状态估计器",
+    "Luenberger observer",
+    "龙伯格观测器"
+   ],
+   "tier": 3,
+   "one_liner": "用系统模型加上可测的输入和输出，实时推算测不到的内部状态。",
+   "explanation": "很多控制器需要完整状态（如关节速度、机身速度），但传感器只测到一部分。状态观测器按系统模型同步推演一份估计 x̂，再用实测输出 y 与预测输出 Cx̂ 的差来纠正：dx̂/dt = A x̂ + B u + L (y − C x̂)，其中 A、B、C 是线性模型矩阵，u 是控制输入，L 是观测器增益，L 越大纠正越快，也越放大噪声。这就是 David Luenberger 提出的 Luenberger 观测器，前提是系统可观，即能从输出唯一推断状态；按分离原理，状态反馈和观测器可分开设计。卡尔曼滤波可看作按噪声统计最优选取 L 的观测器；机器人里的扰动观测器、动量观测器则是专门估计外力的变体。",
+   "example": "电机只有编码器测位置 θ：把状态设为 [θ, ω]（ω 为角速度），把电流对应的力矩当作输入 u，观测器在修正位置估计的同时给出 ω 的估计，比直接对位置做差分得到的速度噪声更小。",
+   "related": [
+    "卡尔曼滤波",
+    "扰动观测器",
+    "动量观测器",
+    "状态估计",
+    "扩展卡尔曼滤波",
+    "线性二次高斯控制"
+   ],
+   "sources": [
+    {
+     "title": "State observer - Wikipedia",
+     "url": "https://en.wikipedia.org/wiki/State_observer"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "STOMP",
+   "name_en": "Stochastic Trajectory Optimization for Motion Planning",
+   "abbr": "STOMP",
+   "aliases": [
+    "随机轨迹优化运动规划",
+    "STOMP 规划器"
+   ],
+   "tier": 3,
+   "one_liner": "在初始轨迹附近撒一批带噪声的轨迹、按代价加权更新的无梯度轨迹优化器。",
+   "explanation": "STOMP 是 Kalakrishnan、Chitta、Theodorou、Pastor、Schaal 在 ICRA 2011 提出的运动规划方法，属于轨迹优化。它从一条初始轨迹（可以直接穿过障碍物）出发，每轮在周围加噪声生成若干条候选轨迹，逐个路点计算碰撞、约束违反、平滑度等代价，再按代价越低权重越大的方式把噪声加权合成更新量，迭代出平滑、无碰撞的轨迹。它源自强化学习里的路径积分方法 PI²，不需要代价函数的梯度，所以能加入力矩、能耗、末端姿态这类难求导的代价。和依赖代价梯度的 CHOMP 相比，STOMP 借助随机性更不易卡在局部最优，调参也更少；和 OMPL 里的采样式规划器相比，它通常更慢，但轨迹更平滑，往往不需要再做平滑后处理。",
+   "example": "MoveIt 把 STOMP 做成规划器插件，配置里的 num_rollouts（每轮生成多少条噪声轨迹）、stddev（各关节噪声幅度）以及 CollisionCheck、ObstacleDistanceGradient 等代价函数决定它的行为。",
+   "related": [
+    "CHOMP",
+    "TrajOpt",
+    "轨迹优化",
+    "运动规划",
+    "MoveIt",
+    "模型预测路径积分控制"
+   ],
+   "sources": [
+    {
+     "title": "MoveIt 2 文档：STOMP Planner",
+     "url": "https://moveit.picknik.ai/main/doc/how_to_guides/stomp_planner/stomp_planner.html"
+    },
+    {
+     "title": "MoveIt 1 教程：STOMP Planner（引用 Kalakrishnan et al. ICRA 2011）",
+     "url": "https://moveit.github.io/moveit_tutorials/doc/stomp_planner/stomp_planner_tutorial.html"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "透传控制",
+   "name_en": "Streaming Servo Control (Pass-through Mode, e.g. UR servoj)",
+   "abbr": "",
+   "aliases": [
+    "角度透传",
+    "位姿透传",
+    "伺服模式",
+    "servoJ",
+    "流式伺服控制"
+   ],
+   "tier": 3,
+   "one_liner": "上位机按固定周期逐点下发目标关节角或位姿，控制器不再规划、直接跟随。",
+   "explanation": "机械臂常见两种指令方式：MoveJ/MoveL 只给终点，由控制器自己规划整段轨迹；透传（也叫伺服模式、流式控制）由上位机按固定周期连续发送密集的目标点，控制器基本不做轨迹规划，收到就跟随。国内厂商常分为角度透传（发关节角）和位姿透传（发末端位姿，控制器先做逆解）。它适合目标在线变化的场景：视觉伺服、遥操作，以及 VLA 或强化学习策略实时输出动作。由于控制器不再帮你平滑，轨迹连续性和发送周期的稳定性都要由上位机负责，周期抖动或相邻点跳变过大会引起振动甚至触发保护，所以通常先把策略输出插值成高频平滑轨迹再下发。UR 的 servoj 是最常被引用的接口。",
+   "example": "UR 的 servoj(q, a, v, t, lookahead_time, gain) 要在每个时间步调用一次：e-Series 取 t=0.002 s（500 Hz），CB3 取 0.008 s；lookahead_time 取 0.03–0.2 s，用于平滑、减少超调；gain 取 100–2000，越大响应越快也越容易振动。睿尔曼机械臂的 rm_movej_canfd 在高跟随模式下要求透传周期不超过 10 ms。",
+   "related": [
+    "关节运动与直线运动（MoveJ / MoveL）",
+    "RTDE",
+    "控制频率",
+    "轨迹插值",
+    "实时控制",
+    "视觉伺服"
+   ],
+   "sources": [
+    {
+     "title": "Universal Robots 支持文章：servoj command",
+     "url": "https://www.universal-robots.com/articles/ur/programming/servoj-command/"
+    },
+    {
+     "title": "睿尔曼 RM_API2 Python 接口（rm_movej_canfd / rm_movep_canfd 角度、位姿透传说明）",
+     "url": "https://github.com/RealManRobot/RM_API2/blob/main/Python/Robotic_Arm/rm_robot_interface.py"
+    }
+   ],
+   "as_of": "2026-09"
+  },
+  {
+   "name_zh": "足端轨迹规划",
+   "name_en": "Swing Foot Trajectory Planning",
+   "abbr": "",
+   "aliases": [
+    "摆动腿轨迹规划",
+    "摆动相足端轨迹规划",
+    "Swing leg trajectory"
+   ],
+   "tier": 3,
+   "one_liner": "为腿足机器人的摆动腿规划从抬脚到落地的足端空间曲线。",
+   "explanation": "腿足机器人行走时，每条腿交替处于支撑相（脚着地承重）和摆动相（脚在空中迈向下一个落点）。足端轨迹规划负责摆动相：已知抬脚位置、落足点（通常由落足点规划或 Raibert 启发式按机身速度算出）和摆动时长，生成中间每一时刻的足端位置、速度和加速度。要求是抬得够高、不蹭地，能跨过台阶；起止平滑，落地前速度接近零以减小冲击；摆动途中还能按新的速度指令更新落点。常用摆线、样条或贝塞尔曲线，水平和竖直方向常分开设计。生成的足端轨迹再经逆运动学、足端笛卡尔 PD 或全身控制转成关节指令。基于强化学习的运控一般不显式规划这条曲线，而是用抬脚高度、腾空时间等奖励项间接塑造。",
+   "example": "MIT Cheetah 开源控制代码中，水平方向用一段三次贝塞尔曲线把抬脚点连到落足点，竖直方向分上升、下降两段贝塞尔曲线，凸 MPC 步态里的抬脚高度设为 6 cm；落足点按髋关节位置加上与速度相关的修正项计算，再由足端笛卡尔 PD 跟踪。",
+   "related": [
+    "落足点规划",
+    "Raibert 启发式",
+    "支撑相 / 摆动相",
+    "步态规划",
+    "贝塞尔曲线轨迹",
+    "全身控制"
+   ],
+   "sources": [
+    {
+     "title": "MIT Cheetah-Software：FootSwingTrajectory.cpp（Bezier 摆动轨迹）",
+     "url": "https://github.com/mit-biomimetics/Cheetah-Software/blob/master/common/src/Controllers/FootSwingTrajectory.cpp"
+    },
+    {
+     "title": "MIT Cheetah-Software：ConvexMPCLocomotion.cpp（落足点与抬脚高度）",
+     "url": "https://github.com/mit-biomimetics/Cheetah-Software/blob/master/user/MIT_Controller/Controllers/convexMPC/ConvexMPCLocomotion.cpp"
+    },
+    {
+     "title": "Humanoid-Gym humanoid_env.py（_reward_feet_clearance 抬脚高度奖励）",
+     "url": "https://github.com/roboterax/humanoid-gym/blob/main/humanoid/envs/custom/humanoid_env.py"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "符号规划",
+   "name_en": "Symbolic Planning",
+   "abbr": "",
+   "aliases": [
+    "经典规划",
+    "STRIPS",
+    "Classical planning",
+    "自动规划"
+   ],
+   "tier": 3,
+   "one_liner": "用逻辑符号描述状态和动作的前提与效果，搜索出达成目标的动作序列。",
+   "explanation": "符号规划把世界抽象成一组逻辑命题，如 (on cup table)、(handempty)，把每个动作写成「前提条件 + 效果（新增、删除哪些事实）」，再从初始状态搜索一串动作，使目标命题全部成立。源头是 SRI 的 Fikes 与 Nilsson 1971 年为 Shakey 机器人开发的 STRIPS，今天通用的描述语言 PDDL 建立在它之上，求解常用带启发式的状态空间搜索。经典规划假设初始状态已知、动作结果确定，所以结果可验证、可解释；但感知到的物体如何变成符号、符号动作如何落到连续运动上，要靠任务与运动规划另行处理。大模型时代出现了让 LLM 把自然语言译成 PDDL、再交给经典规划器求解的做法，如 LLM+P（2023）。",
+   "example": "PDDL 里的「拿起」动作可写成：参数 ?o（物体）、?l（位置）；前提 (at robot ?l)、(on ?o ?l)、(handempty)；效果新增 (holding ?o)，删除 (on ?o ?l) 和 (handempty)。规划器据此自动排出「走到桌边→拿起杯子→走到水槽→放下」这样的顺序。",
+   "related": [
+    "规划领域定义语言",
+    "任务规划",
+    "任务与运动规划",
+    "分层任务网络",
+    "大模型任务规划",
+    "PDDLStream"
+   ],
+   "sources": [
+    {
+     "title": "Stanford Research Institute Problem Solver (STRIPS) - Wikipedia",
+     "url": "https://en.wikipedia.org/wiki/Stanford_Research_Institute_Problem_Solver"
+    },
+    {
+     "title": "Automated planning and scheduling - Wikipedia（经典规划的假设与求解方法）",
+     "url": "https://en.wikipedia.org/wiki/Automated_planning_and_scheduling"
+    },
+    {
+     "title": "LLM+P: Empowering Large Language Models with Optimal Planning Proficiency (arXiv 2304.11477)",
+     "url": "https://arxiv.org/abs/2304.11477"
+    }
+   ],
+   "as_of": ""
+  }
+ ]
+}

@@ -1,0 +1,420 @@
+{
+ "category": "control",
+ "batch": 2,
+ "terms": [
+  {
+   "name_zh": "PID 控制",
+   "name_en": "Proportional-Integral-Derivative Control",
+   "abbr": "PID",
+   "aliases": [
+    "PID控制器",
+    "比例-积分-微分控制",
+    "PID controller"
+   ],
+   "tier": 1,
+   "one_liner": "按误差的当前值、累积值和变化快慢三部分算控制量的经典反馈控制器。",
+   "explanation": "PID 控制是最常用的反馈控制方法，1922 年 Minorsky 研究美国海军船舶自动舵时给出了它的形式化控制律。控制量 u = Kp·e + Ki·∫e dt + Kd·de/dt，e 是目标值减测量值（误差），Kp、Ki、Kd 是三个待调增益。比例项按当前误差出力；积分项累加过去的误差，消除只用比例项时残留的稳态误差；微分项看误差变化多快，起阻尼作用、减少超调（冲过目标），但会放大测量噪声。去掉积分项就是 PD 控制，去掉微分项就是 PI 控制。关节电机、云台、无人机姿态环里都有它；强化学习运控策略通常只输出目标关节角，由底层 PD 控制器换算成力矩。电机出力已经顶到上限、积分项却还在继续累加，导致明显冲过头，这叫积分饱和，需要做抗饱和处理。",
+   "example": "机械臂关节要转到 30°，当前 25°：P 项按 5° 的误差出力；若因为重力一直停在 29.5° 到不了位，I 项把这 0.5° 越积越大直到补上；快到目标时 D 项看到误差在迅速缩小，提前收力，避免冲过 30°。",
+   "related": [
+    "PD 控制",
+    "串级控制",
+    "刚度与阻尼增益",
+    "积分饱和与抗饱和",
+    "阶跃响应指标（超调 / 调节时间 / 稳态误差）",
+    "位置控制"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Proportional–integral–derivative controller",
+     "url": "https://en.wikipedia.org/wiki/Proportional%E2%80%93integral%E2%80%93derivative_controller"
+    },
+    {
+     "title": "legged_gym legged_robot_config.py（PD 刚度/阻尼与 action_scale 配置）",
+     "url": "https://raw.githubusercontent.com/leggedrobotics/legged_gym/master/legged_gym/envs/base/legged_robot_config.py"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "全身控制",
+   "name_en": "Whole-Body Control",
+   "abbr": "WBC",
+   "aliases": [
+    "全身运动控制",
+    "Whole-body controller",
+    "全身控制器"
+   ],
+   "tier": 1,
+   "one_liner": "把人形或足式机器人全身关节放在一起统一计算，同时完成多个任务的控制方法。",
+   "explanation": "全身控制指把浮动基机器人（身体不固定在地面上，如人形、四足）的所有关节放在一起统一算指令，而不是腿和手臂各管各的。经典框架来自 Sentis 与 Khatib 2005 年的论文：把重心、手、脚、关节限位、接触等写成「任务」或约束并排出优先级，高优先级（如不超限位、不摔倒）优先保证，低优先级只利用剩余的冗余自由度尽量完成；工程上常写成二次规划（QP）或分层 QP，在每个控制周期求解。它重要是因为人形一伸手重心就会移动，腿和躯干必须同时补偿。2024 年前后学习型 WBC 兴起，如 HOVER（ICRA 2025）用一个神经网络策略统一导航、移动操作、桌面操作等多种控制模式。上层 VLA 或遥操作给目标，WBC 负责把它变成全身关节指令。",
+   "example": "人形机器人单手从地上捡箱子：WBC 同时满足「手到箱子」「重心投影留在双脚支撑区内」「关节不超限位」，于是自动弯腰、屈膝，另一只手臂向后摆来配重。",
+   "related": [
+    "学习型全身控制",
+    "任务优先级",
+    "分层二次规划",
+    "零空间控制",
+    "操作空间控制",
+    "HOVER"
+   ],
+   "sources": [
+    {
+     "title": "Sentis & Khatib, Synthesis of Whole-Body Behaviors through Hierarchical Control of Behavioral Primitives (IJHR 2005)",
+     "url": "https://doi.org/10.1142/S0219843605000594"
+    },
+    {
+     "title": "HOVER: Versatile Neural Whole-Body Controller for Humanoid Robots (arXiv 2410.21229)",
+     "url": "https://arxiv.org/abs/2410.21229"
+    },
+    {
+     "title": "A Survey of Behavior Foundation Model: Next-Generation Whole-Body Control System of Humanoid Robots (arXiv 2506.20487)",
+     "url": "https://arxiv.org/abs/2506.20487"
+    }
+   ],
+   "as_of": "2025-03"
+  },
+  {
+   "name_zh": "A* 算法",
+   "name_en": "A* Search",
+   "abbr": "A*",
+   "aliases": [
+    "A星算法",
+    "A-star",
+    "A* 搜索"
+   ],
+   "tier": 2,
+   "one_liner": "按「已走代价 + 到终点的估计代价」挑下一步的最短路径搜索算法。",
+   "explanation": "A* 是在图或栅格地图上找最短路径的搜索算法，1968 年由斯坦福研究院的 Hart、Nilsson、Raphael 为 Shakey 移动机器人项目提出。它每次扩展 f(n)=g(n)+h(n) 最小的节点：g(n) 是从起点走到节点 n 已花的实际代价，h(n) 是从 n 到终点的估计代价（启发函数，如直线距离）。只要 h 从不高估真实代价（称为可采纳），A* 保证找到最短路；h 恒为 0 时退化成 Dijkstra 算法，会向四面八方均匀搜索。它常用于移动机器人全局路径规划和游戏寻路；机械臂的高维关节空间一般改用 RRT 等基于采样的规划。考虑车辆转弯约束的变体叫混合 A*。",
+   "example": "扫地机器人在 5 厘米一格的占据栅格地图上从客厅去卧室：每走一格代价为 1，h 取当前格到卧室的直线距离，A* 绕开被占据的格子得到最短路线，再交给局部规划器去跟踪。",
+   "related": [
+    "Dijkstra 算法",
+    "混合 A*",
+    "路径规划",
+    "代价地图",
+    "全局规划与局部规划",
+    "快速扩展随机树"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: A* search algorithm",
+     "url": "https://en.wikipedia.org/wiki/A*_search_algorithm"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "动作平滑",
+   "name_en": "Action Smoothing (Low-pass Filtering)",
+   "abbr": "",
+   "aliases": [
+    "低通滤波",
+    "动作滤波",
+    "动作平滑正则"
+   ],
+   "tier": 2,
+   "one_liner": "对策略输出的动作滤波或加惩罚，去掉高频抖动，让关节运动连贯。",
+   "explanation": "动作平滑是部署学习型策略时的常见处理。神经网络每一步独立输出动作，相邻两步可能跳变，电机来回抖、费电、发热。常见做法有三类：一是下发前过低通滤波器（只放行低频变化），最简单的是指数移动平均 y_t = α·x_t + (1−α)·y_{t−1}，x 是策略新输出的动作，y 是实际下发的动作，α 越小越平滑；二是训练时加惩罚，如 legged_gym 默认奖励中的 action_rate 项惩罚相邻两步动作之差，CAPS 方法（ICRA 2021）加时间与空间平滑正则，作者报告在四旋翼上功耗降低近 80%；三是一次预测一段动作（动作分块），再做时序集成或插值。代价是滤波会引入延迟（相位滞后），机器人对扰动反应变慢，α 要在平滑和响应之间权衡。",
+   "example": "四足机器人的强化学习策略以 50Hz 输出目标关节角，上真机后腿部高频抖动；加一阶低通滤波后抖动明显减小，但被推时的反应也慢了一点，需要重新调 α。",
+   "related": [
+    "动作分块",
+    "时序集成",
+    "控制频率",
+    "加加速度",
+    "实时动作分块",
+    "PD 控制"
+   ],
+   "sources": [
+    {
+     "title": "Regularizing Action Policies for Smooth Control with Reinforcement Learning (CAPS, arXiv 2012.06644)",
+     "url": "https://arxiv.org/abs/2012.06644"
+    },
+    {
+     "title": "Wikipedia: Low-pass filter",
+     "url": "https://en.wikipedia.org/wiki/Low-pass_filter"
+    },
+    {
+     "title": "legged_gym legged_robot_config.py（action_rate 奖励项）",
+     "url": "https://raw.githubusercontent.com/leggedrobotics/legged_gym/master/legged_gym/envs/base/legged_robot_config.py"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "导纳控制",
+   "name_en": "Admittance Control",
+   "abbr": "",
+   "aliases": [
+    "Admittance controller",
+    "导纳控制器"
+   ],
+   "tier": 2,
+   "one_liner": "测到外力后按设定的质量-阻尼-弹簧关系算出该怎么动，再交给位置环执行。",
+   "explanation": "导纳控制是一种让机器人对外力「顺从」的交互控制方法，理论上源自 Hogan 1985 年阻抗控制论文中阻抗与导纳的对偶关系。它的输入是力、输出是运动：末端六维力传感器测到外力 F，控制器按 F = M·a + D·v + K·(x − x_d) 反算出机器人该如何移动（M、D、K 为虚拟质量、阻尼、刚度，x_d 为原定目标位置），再把修正后的位置或速度指令交给机器人自带的位置环。阻抗控制方向相反：输入位置偏差、输出力或力矩，要求关节能直接控力矩。因此导纳控制适合只开放位置接口、减速比大、本身很「硬」的工业臂；但接触很硬的环境时容易振荡。ROS 2 的 ros2_controllers 自带 admittance_controller，可以做零力拖动。",
+   "example": "在工业臂末端装六维力传感器，开启导纳控制并把刚度 K 设为 0：人手推末端，机器人顺着推力方向移动，松手后在阻尼作用下停住，这就是拖动示教的一种实现。",
+   "related": [
+    "阻抗控制",
+    "柔顺控制",
+    "六维力传感器",
+    "零力拖动",
+    "力控",
+    "位置控制"
+   ],
+   "sources": [
+    {
+     "title": "ros2_controllers: Admittance Controller",
+     "url": "https://control.ros.org/master/doc/ros2_controllers/admittance_controller/doc/userdoc.html"
+    },
+    {
+     "title": "Wikipedia: Impedance control",
+     "url": "https://en.wikipedia.org/wiki/Impedance_control"
+    },
+    {
+     "title": "Hogan, Impedance Control: An Approach to Manipulation, Part I (1985)",
+     "url": "https://doi.org/10.1115/1.3140702"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "人工势场法",
+   "name_en": "Artificial Potential Field",
+   "abbr": "APF",
+   "aliases": [
+    "势场法",
+    "Potential field method"
+   ],
+   "tier": 2,
+   "one_liner": "目标产生吸引力、障碍物产生排斥力，机器人顺着合力走的实时避障方法。",
+   "explanation": "人工势场法由 Khatib 在 1985 年 ICRA、1986 年 IJRR 的论文中提出，用于机械臂和移动机器人的实时避障，当时在 PUMA 560 机械臂上实现。它把空间看成一张势能图：目标处势能最低、产生吸引力，障碍物附近势能高、产生排斥力（通常只在一定距离内生效）。每个控制周期计算势能下降最快的方向（负梯度，即合力方向），让机器人朝这个方向走一小步。优点是计算量很小、能随传感器数据实时更新，也能处理移动障碍；主要缺陷是会陷入局部极小值——吸引力和排斥力恰好抵消时机器人停住或来回震荡，而且不保证路径最短。所以它多用作局部避障层，与 A*、RRT 等全局规划器配合；后来的黎曼运动策略等反应式方法思路与之相近。",
+   "example": "移动机器人要穿过一扇窄门，门框两侧各有排斥场、门后目标有吸引场；门太窄时两侧排斥力加起来抵消了吸引力，机器人停在门前不动，这就是局部极小值。",
+   "related": [
+    "避障",
+    "路径规划",
+    "快速扩展随机树",
+    "A* 算法",
+    "黎曼运动策略",
+    "控制障碍函数"
+   ],
+   "sources": [
+    {
+     "title": "Khatib, Real-Time Obstacle Avoidance for Manipulators and Mobile Robots (IJRR 1986)",
+     "url": "https://doi.org/10.1177/027836498600500106"
+    },
+    {
+     "title": "Wikipedia: Motion planning（Artificial potential fields 一节）",
+     "url": "https://en.wikipedia.org/wiki/Motion_planning"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "平衡控制",
+   "name_en": "Balance Control",
+   "abbr": "",
+   "aliases": [
+    "平衡保持",
+    "姿态平衡控制"
+   ],
+   "tier": 2,
+   "one_liner": "让足式或人形机器人在站立、行走和被推时保持不倒的控制。",
+   "explanation": "平衡控制是腿足机器人最底层的能力：在重力和地面反作用力作用下保证身体不翻倒。传统方法基于简化模型：零力矩点（ZMP，Vukobratović 1968 年引入）是地面反作用力不产生水平力矩的点，只要它留在支撑多边形（着地的脚围成的区域）内，机器人就不会绕脚边翻倒，本田 ASIMO 等早期人形用它规划步态；Pratt 等人 2006 年提出捕获点，回答「被推后脚该落在哪里才能停下来」。受到扰动时，按力度由小到大可以依次用脚踝调整、髋部摆动、迈步来恢复。现在的人形和四足多用强化学习：仿真里随机推机器人，让策略自己学会站稳和迈步，再迁移到真机。在全身控制里，平衡通常是优先级最高的任务之一。",
+   "example": "人形机器人站立时被人从侧面推一把：推力小时靠脚踝发力把重心拉回；推力大到脚踝兜不住时，它向侧面迈一步，把脚落在捕获点附近再站稳。",
+   "related": [
+    "零力矩点",
+    "捕获点",
+    "推恢复",
+    "支撑多边形",
+    "线性倒立摆模型",
+    "踝策略/髋策略/跨步策略"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Zero moment point",
+     "url": "https://en.wikipedia.org/wiki/Zero_moment_point"
+    },
+    {
+     "title": "Pratt et al., Capture Point: A Step toward Humanoid Push Recovery (Humanoids 2006)",
+     "url": "https://doi.org/10.1109/ICHR.2006.321385"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "行为树",
+   "name_en": "Behavior Tree",
+   "abbr": "BT",
+   "aliases": [
+    "Behaviour Tree",
+    "行为树框架"
+   ],
+   "tier": 2,
+   "one_liner": "用树形结构组织动作和条件、决定机器人下一步做什么的任务编排方式。",
+   "explanation": "行为树是组织机器人或游戏角色在多个任务之间切换的一种结构。它先在游戏业流行（2005 年 Damian Isla 在 GDC 讲《光环 2》的 AI 后被广泛采用），后来进入机器人领域。根节点周期性向下发 tick 信号，每个节点返回成功、失败或运行中。叶子是动作节点（如「抓杯子」）和条件节点（如「杯子在视野里吗」）；顺序节点从左到右执行子节点，有一个失败就返回失败；回退（选择）节点从左到右尝试，有一个成功就返回成功，适合写「先试 A，不行再做补救 B」。与有限状态机相比，它不必为每对状态写跳转，增删子树更方便。ROS 2 导航框架 Nav2 就用行为树编排导航与恢复动作，常用 C++ 库是 BehaviorTree.CPP。",
+   "example": "送水机器人的根节点是顺序节点：「导航到桌边」→「检测杯子」→ 回退节点（先「抓杯子」，失败则「调整位置后重抓」）→「递给用户」；某一步返回运行中，下一次 tick 就继续执行这一步。",
+   "related": [
+    "有限状态机",
+    "BehaviorTree.CPP",
+    "Nav2",
+    "任务规划",
+    "原子技能",
+    "失败恢复"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Behavior tree (artificial intelligence, robotics and control)",
+     "url": "https://en.wikipedia.org/wiki/Behavior_tree_(artificial_intelligence,_robotics_and_control)"
+    },
+    {
+     "title": "Colledanchise & Ögren, Behavior Trees in Robotics and AI: An Introduction (arXiv 1709.00084)",
+     "url": "https://arxiv.org/abs/1709.00084"
+    },
+    {
+     "title": "ros-navigation/navigation2 README",
+     "url": "https://github.com/ros-navigation/navigation2"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "串级控制",
+   "name_en": "Cascade Control (Position / Velocity / Current Loops)",
+   "abbr": "",
+   "aliases": [
+    "三环控制",
+    "三闭环",
+    "位置环/速度环/电流环",
+    "级联控制"
+   ],
+   "tier": 2,
+   "one_liner": "位置环套速度环、速度环套电流环，外环输出当内环目标的多层反馈控制。",
+   "explanation": "串级控制把几个反馈回路嵌套起来，外环的输出作为内环的目标值。电机和关节模组里最典型的是三环：最外层位置环比较目标角度与编码器读数，输出目标速度；中间的速度环输出目标电流；最内层电流环调节绕组电压，而电机电流近似正比于输出力矩。以开源驱动器 ODrive 为例，位置环是 P 控制，速度环和电流环都是 PI 控制；跳过位置环就是速度模式，只留电流环就是力矩模式。设计原则是内环比外环快得多，负载突变、电源波动这类扰动先在内环被压住，外环可以把内环近似看成理想执行器。机器人里说的位置控制、速度控制、力矩控制，本质上就是指令从这三环中的哪一层进入；MIT 模式等关节接口则把位置和速度的 PD 项与前馈力矩合成一个力矩指令。",
+   "example": "关节模组收到「转到 90°」：位置环算出「以 2 rad/s 转」，速度环算出「需要 3A 电流」，电流环调电压把电流稳在 3A；负载突然变重时，电流环和速度环先把扰动吃掉，位置环几乎察觉不到。",
+   "related": [
+    "PID 控制",
+    "位置控制",
+    "速度控制",
+    "力矩控制",
+    "磁场定向控制",
+    "MIT 模式"
+   ],
+   "sources": [
+    {
+     "title": "ODrive Documentation: Control Structure and Tuning",
+     "url": "https://docs.odriverobotics.com/v/latest/manual/control.html"
+    },
+    {
+     "title": "Wikipedia: Proportional–integral–derivative controller",
+     "url": "https://en.wikipedia.org/wiki/Proportional%E2%80%93integral%E2%80%93derivative_controller"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "碰撞检查",
+   "name_en": "Collision Checking",
+   "abbr": "",
+   "aliases": [
+    "碰撞检查（规划用）",
+    "碰撞查询",
+    "Collision query"
+   ],
+   "tier": 2,
+   "one_liner": "规划时查询某个姿态或某段路径会不会让机器人撞到自己或环境。",
+   "explanation": "碰撞检查是运动规划里的几何查询：给定机器人的一组关节角（一个构型），先用正运动学算出每根连杆在空间中的位置，再判断这些几何体是否与环境障碍物或机器人自身其他部位相交，也可以返回最近距离和接触点。RRT、PRM 等基于采样的规划器每采一个点、连一条边都要调用它，所以它常占规划耗时的很大一部分。为了快，通常先用包围盒层次结构粗筛，再对凸体用 GJK 等算法精算。开源库 FCL 支持碰撞、距离、连续碰撞检测等查询；MoveIt 同时检查自碰撞和环境碰撞，并用「允许碰撞矩阵」忽略相邻连杆这类必然接触的部位。要区分三个概念：碰撞检查在动作执行前、对模型做；物理引擎里的碰撞检测用于仿真接触；本体安全里的碰撞检测是在真机运动中发现意外撞击。",
+   "example": "机械臂要把杯子放进柜子，RRT 采到一组关节角后做碰撞检查：前臂的胶囊体和柜门的盒子相交，这个点被丢弃；两个合法点之间的连线也要按小步长插值、逐点检查。",
+   "related": [
+    "自碰撞检测",
+    "碰撞检测（物理引擎）",
+    "FCL",
+    "MoveIt",
+    "基于采样的规划",
+    "包围盒"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Motion planning（collision detection 与采样规划）",
+     "url": "https://en.wikipedia.org/wiki/Motion_planning"
+    },
+    {
+     "title": "FCL: The Flexible Collision Library (GitHub)",
+     "url": "https://github.com/flexible-collision-library/fcl"
+    },
+    {
+     "title": "MoveIt 2 Docs: Planning Scene tutorial（collision checking）",
+     "url": "https://moveit.picknik.ai/main/doc/examples/planning_scene/planning_scene_tutorial.html"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "碰撞检测（本体安全）",
+   "name_en": "Collision Detection (Robot Safety)",
+   "abbr": "",
+   "aliases": [
+    "碰撞保护",
+    "无传感器碰撞检测",
+    "Sensorless collision detection",
+    "碰撞灵敏度"
+   ],
+   "tier": 2,
+   "one_liner": "机器人运动中实时发现自己撞到人或物体，并立即停止或退让的安全功能。",
+   "explanation": "这里的碰撞检测是机器人运行时的安全功能：机身一旦意外撞到人或物体，控制器要尽快发现并做出反应，如停止、退让或切到柔顺模式。协作机器人大多不靠皮肤传感器，而是只用本体感知：用动力学模型预测正常运动所需的关节力矩，与电机电流或关节力矩传感器测到的实际力矩比较，差值超过阈值就判为碰撞。De Luca、Haddadin 等人使用的广义动量观测器是经典方法，他们 2017 年在 IEEE T-RO 发表的综述把流程分为检测、定位（哪根连杆被撞）、辨识（撞击力多大）等阶段。厂商界面里的「碰撞灵敏度」就是在调这个阈值：太低容易误报停机，太高则撞人时的力更大。例如 Franka 的 libfranka 可按关节设接触、碰撞两级阈值，超过碰撞阈值机器人停止运动。",
+   "example": "协作臂搬运时手肘碰到旁边工人的肩膀，关节实测力矩比模型预测高出一截并超过阈值，机器人触发停止，工人只感到被轻推了一下；随后需要复位错误才能继续运行。",
+   "related": [
+    "动量观测器",
+    "碰撞反应",
+    "功率与力限制",
+    "保护性停止",
+    "关节力矩传感器",
+    "ISO/TS 15066 协作机器人安全标准"
+   ],
+   "sources": [
+    {
+     "title": "Haddadin, De Luca, Albu-Schäffer, Robot Collisions: A Survey on Detection, Isolation, and Identification (IEEE T-RO 2017)",
+     "url": "https://doi.org/10.1109/TRO.2017.2723903"
+    },
+    {
+     "title": "libfranka robot.h（setCollisionBehavior / automaticErrorRecovery）",
+     "url": "https://raw.githubusercontent.com/frankaemika/libfranka/master/include/franka/robot.h"
+    }
+   ],
+   "as_of": ""
+  },
+  {
+   "name_zh": "柔顺控制",
+   "name_en": "Compliance Control",
+   "abbr": "",
+   "aliases": [
+    "顺应控制",
+    "Compliant control",
+    "主动柔顺控制"
+   ],
+   "tier": 2,
+   "one_liner": "让机器人接触环境时不硬顶、能按设定程度顺着外力让步的一类控制方法。",
+   "explanation": "柔顺控制是让机器人接触环境时能按设定程度顺应外力的一类方法的统称。纯位置控制的机械臂很「硬」：轴孔装配时差一点就可能卡死或压坏零件。柔顺分两类。被动柔顺靠机械结构，如装在手腕上的远中心柔顺装置（RCC）、串联弹性驱动器里的弹簧，不需要传感和计算，但特性做好后改不了。主动柔顺靠力或力矩测量加反馈控制，常见形式有阻抗控制（让机器人表现得像一个参数可调的质量-弹簧-阻尼系统）、导纳控制（测力后修正位置指令）和力位混合控制（一部分方向控力、另一部分方向控位置），参数可以随任务调整。Hogan 1985 年指出只控位置或只控力都不够，应控制两者之间的动态关系，这是主动柔顺的理论基础。打磨、装配、擦桌子、人机协作都离不开它。",
+   "example": "轴孔装配时，机械臂沿插入方向保持位置控制，垂直方向把刚度调低：轴碰到孔边被侧向推开后顺势滑进孔里，而不是卡住或把零件压坏。",
+   "related": [
+    "阻抗控制",
+    "导纳控制",
+    "力位混合控制",
+    "柔顺性",
+    "远中心柔顺装置（RCC）",
+    "串联弹性驱动器"
+   ],
+   "sources": [
+    {
+     "title": "Wikipedia: Force control（passive / active compliance）",
+     "url": "https://en.wikipedia.org/wiki/Force_control"
+    },
+    {
+     "title": "Wikipedia: Impedance control",
+     "url": "https://en.wikipedia.org/wiki/Impedance_control"
+    },
+    {
+     "title": "Hogan, Impedance Control: An Approach to Manipulation, Part I (1985)",
+     "url": "https://doi.org/10.1115/1.3140702"
+    }
+   ],
+   "as_of": ""
+  }
+ ]
+}

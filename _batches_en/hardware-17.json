@@ -1,0 +1,50 @@
+{
+  "batch": "hardware-17",
+  "terms": [
+    {
+      "key": "hardware-17#0",
+      "name_en": "Wire Harness",
+      "aliases": ["Cable Harness"],
+      "one_liner": "The bundled, connectorized assembly of power and signal cables routed through a robot.",
+      "explanation": "A wire harness bundles multiple power, communication, and encoder signal cables along a fixed path and fits connectors on both ends; it's used heavily in both cars and robots. A humanoid robot has dozens of joints, and each joint module needs power plus a connection to a bus such as EtherCAT or CAN. The cables have to pass through joints that keep rotating, and repeated bending and twisting wears them down, breaks conductors, or loosens contacts — a common source of whole-robot failures. So harness design has to account for routing path, bend radius, and how the cable is secured, and it's often paired with hollow-shaft routing (running the cable through a hole in the center of the joint) or a slip ring (letting the cable pass through a joint that spins without limit) to cut down on tangling. How the harness is laid out also affects how far a joint can rotate and how efficient the robot is to assemble.",
+      "example": "A humanoid robot's arm harness usually runs through the hollow shaft at the center of each joint, all the way from the shoulder to the wrist and dexterous hand.",
+      "related": ["Hollow-Shaft Routing", "Slip Ring", "Joint Module", "EtherCAT Bus", "CAN Bus"]
+    },
+    {
+      "key": "hardware-17#1",
+      "name_en": "Wireless (Inductive) Charging",
+      "aliases": ["Inductive Charging"],
+      "one_liner": "Charging a battery across a small gap using electromagnetic induction, with no plug involved.",
+      "explanation": "Wireless charging uses electromagnetic induction (or magnetic resonance) to transfer power between a transmitter coil and a receiver coil, with no physical plug contact needed — it's common on phones and electric toothbrushes. For a robot, lining up precisely with a charging plug during autonomous docking is hard, and plug contacts wear out, collect dust, or get damp; wireless charging only requires the robot to stop at roughly the right spot, which relaxes the positioning accuracy needed and makes it easier to seal the robot against water. The tradeoff is that transfer efficiency is usually lower than wired charging, power is limited, and it generates heat. It's commonly used for autonomous return-to-charge on robot vacuums, AGVs, and inspection robots, and is one way to let a mobile robot run unattended for long stretches.",
+      "example": "A warehouse AGV parks itself over a charging pad on the floor; a transmitter coil under the floor tops up the onboard battery with no cable ever plugged in.",
+      "related": ["Autonomous Return-to-Charge", "Battery Life / Runtime", "Battery Management System (BMS)", "Autonomous Battery Swapping", "Automated Guided Vehicle (AGV)"]
+    },
+    {
+      "key": "hardware-17#2",
+      "name_en": "Worm Gear",
+      "aliases": ["Worm Drive", "Worm Gear Reducer"],
+      "one_liner": "A gear pair where a screw-shaped worm turns a wheel, giving a large reduction ratio and a 90° change in axis.",
+      "explanation": "A worm gear is a classic gear pair: one full turn of the screw-shaped worm advances the meshing worm wheel by only one or a few teeth, so a single stage can produce a reduction ratio of tens to one, while also turning the rotation axis 90 degrees. A common and useful feature is self-locking — an external force applied to the wheel can barely turn the worm backward — so the mechanism holds its position with the power off, and no separate brake is needed. The downside is high sliding friction between the tooth surfaces, which means low efficiency, heat buildup, and essentially no back-drivability, ruling it out for joints that need compliance or force control. In embodied-AI hardware, worm gears mostly show up in dexterous-hand fingers, camera gimbals, and lift mechanisms — small spaces where holding a fixed pose matters — a different tradeoff than harmonic or planetary reducers make.",
+      "example": "Some low-cost dexterous hands drive their fingers with a small motor and a worm gear, so the fingers stay closed around an object even with the power off.",
+      "related": ["Reducer / Gearbox", "Gear Ratio", "Back-Drivability", "Harmonic Reducer", "Planetary Reducer", "Trapezoidal Lead Screw & Self-Locking"]
+    },
+    {
+      "key": "hardware-17#3",
+      "name_en": "Wuji Hand",
+      "aliases": ["Wuji Hand 2"],
+      "one_liner": "A fully direct-drive dexterous hand with 20 actively driven degrees of freedom, made by Shenzhen-based Wuji Tech.",
+      "explanation": "The Wuji Hand is a humanoid dexterous hand made by WUJI TECH (Shenzhen Wuji Technology Co., Ltd.), with 4 degrees of freedom per finger for 20 actively driven degrees of freedom in total. Its defining feature is being fully direct-drive: small motors are mounted directly inside each finger to drive its joints, rather than coupling several joints together through tendons or linkages the way many dexterous hands do. That means every joint can be controlled independently and is back-drivable (an external force can push the joint), which helps with force control and safe contact. Company documentation lists 20-axis control at 1,000 Hz over Ethernet. The first generation reportedly sold for about RMB 50,000, and official demos have shown it spinning a pen, using scissors, and picking up a ball with chopsticks. A second generation, the Wuji Hand 2, was reportedly shown at ICRA 2026. It's often paired with a data glove for teleoperated data collection in dexterous-manipulation research.",
+      "example": "A researcher wears a data glove to teleoperate the Wuji Hand through spinning a pen and clicking a lighter; the collected data is used to train dexterous-manipulation policies.",
+      "related": ["Dexterous Hand", "Fully Direct-Drive Dexterous Hand", "Dexterous Manipulation", "Back-Drivability", "Data Glove", "In-Hand Manipulation"]
+    },
+    {
+      "key": "hardware-17#4",
+      "name_en": "Xiaomi CyberGear Micro-Motor",
+      "aliases": ["CyberGear"],
+      "one_liner": "A cheap, integrated joint-motor module Xiaomi launched in 2023, with 12 N·m of peak torque.",
+      "explanation": "The CyberGear is an integrated joint-motor module Xiaomi launched in August 2023, packing a brushless motor, reducer, encoder, and driver into one module about 80 mm across and weighing 317 g. It delivers 12 N·m of peak torque and 4 N·m of continuous torque, communicates over a CAN bus, and launched at RMB 499; it's reported to be derived from the joint technology used in Xiaomi's CyberDog 2 robot dog. Like other quasi-direct-drive motors, it has a low gear ratio and is back-drivable, which suits it to torque control in legged robots and arms. It entered the market at a price far below comparable products, and many students and hobbyists have used it to build their own quadruped robots, bipedal robots, and desktop arms. Distributor listings indicate it has since been discontinued; comparable alternatives include joint motors from DAMIAO and Unitree.",
+      "example": "A hobbyist builds a small quadruped robot from 12 CyberGear motors, driving each joint by sending MIT-mode commands over the CAN bus.",
+      "related": ["Quasi-Direct Drive", "Joint Module", "MIT Mode", "CAN Bus", "DAMIAO DM-J4310 Joint Motor", "Xiaomi CyberDog"]
+    }
+  ]
+}

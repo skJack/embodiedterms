@@ -1,0 +1,41 @@
+{
+  "batch": "software-20",
+  "terms": [
+    {
+      "key": "software-20#0",
+      "name_en": "Windows Subsystem for Linux 2 (WSL2)",
+      "aliases": ["WSL 2", "WSL"],
+      "one_liner": "Microsoft's official way to run a full Linux environment inside Windows, without dual-booting.",
+      "explanation": "WSL2 is the second version of the Linux subsystem Microsoft provides for Windows 10/11, running a real Linux kernel inside a lightweight virtual machine, which gives it better system-call compatibility and faster file and build performance than the first version. It solves the problem of having only a Windows laptop when almost all robotics software runs on Ubuntu: once installed, you can use apt, Conda, and Docker directly, train models on an NVIDIA GPU through CUDA on WSL, and even display graphical tools like RViz. Its downsides are that USB device access, real-time performance, and network configuration aren't as smooth as native Linux, so connecting to a real robot for debugging often needs extra workarounds.",
+      "example": "Run wsl --install on a Windows laptop to set up Ubuntu 22.04, then install ROS 2 Humble inside it and try the classic turtlesim tutorial.",
+      "related": ["Ubuntu", "ROS 2", "Docker", "CUDA", "Conda", "SSH remote login"]
+    },
+    {
+      "key": "software-20#1",
+      "name_en": "Xenomai",
+      "aliases": [],
+      "one_liner": "An open-source framework that adds hard real-time capability to Linux, common in low-level robot control.",
+      "explanation": "Xenomai is an open-source real-time extension framework for Linux, originally started by Philippe Gerum. Its classic approach is a “dual kernel” design: a real-time kernel (Cobalt) runs alongside ordinary Linux, with real-time tasks scheduled by Cobalt at top priority while Linux runs only when the system is otherwise idle, pushing the timing jitter of a control loop (the variation in exactly when each cycle actually executes) down to the microsecond range. Robot joint control often needs a loop running at 1 kHz or higher that can never run late, which stock Linux cannot reliably guarantee, so Xenomai is commonly paired with an EtherCAT master on an industrial control computer. The other common route is patching Linux with PREEMPT_RT, which is simpler to set up but usually can't match the dual-kernel approach's worst-case latency.",
+      "example": "On an industrial PC, run the IgH EtherCAT master under Xenomai, sending position commands to each joint driver on a robot arm at a 1 kHz cycle.",
+      "related": ["Real-time operating system", "Real-time kernel patch (PREEMPT_RT)", "Hard real-time", "EtherCAT master", "Timing jitter", "Real-time control"]
+    },
+    {
+      "key": "software-20#2",
+      "name_en": "Zero-Copy (Shared-Memory IPC)",
+      "aliases": ["shared-memory communication", "zero-copy communication"],
+      "one_liner": "Passing large data between processes by sharing a memory location instead of copying the content.",
+      "explanation": "Zero-copy refers to inter-process communication (IPC) in which the sender writes data directly into a block of shared memory that both sides can access, and the receiver gets only a reference to that memory rather than a fresh copy of it. On a robot, camera images, depth maps, and point clouds routinely run to tens or hundreds of megabytes per second; if every subscriber has to go through serialization plus a copy, CPU usage and latency both climb noticeably. Eclipse iceoryx is middleware built specifically for this; ROS 2 achieves zero-copy through loaned messages combined with iceoryx or Fast DDS's shared-memory transport, and within a single process, composable nodes can also use intra-process communication. The limitation is that it generally only works on a single machine, and works best when messages are a fixed size.",
+      "example": "Enable Fast DDS shared-memory transport between a camera driver and a detection node in ROS 2, so 1080p images are no longer copied frame by frame, cutting end-to-end latency.",
+      "related": ["iceoryx", "Composable nodes / intra-process communication", "ROS 2", "Data Distribution Service (DDS)", "Middleware", "Control latency"]
+    },
+    {
+      "key": "software-20#3",
+      "name_en": "ZeroMQ",
+      "aliases": ["ØMQ", "0MQ", "ZMQ"],
+      "one_liner": "A lightweight, open-source messaging library that lets programs exchange data in just a few lines.",
+      "explanation": "ZeroMQ is an open-source asynchronous messaging library started by Pieter Hintjens, Martin Sustrik, and others at the company iMatix; its core is libzmq, written in C++, with pyzmq as the Python binding. It needs no separate message broker, and packages common communication patterns into a handful of socket types: request-reply (REQ/REP), publish-subscribe (PUB/SUB), push-pull (PUSH/PULL), and others, usable across processes or across machines. In embodied AI it's commonly used to build a lightweight policy server: a GPU machine runs the model, and the robot sends over observations and gets back actions, without pulling in the whole ROS stack. It only handles moving bytes around — the data format itself still needs a serialization scheme such as msgpack or Protobuf.",
+      "example": "The robot side uses a REQ socket to send camera images and joint state to a remote GPU server, which uses a REP socket to return a chunk of actions.",
+      "related": ["Policy server", "Publish/subscribe", "gRPC", "LCM", "Protocol Buffers", "Middleware"]
+    }
+  ]
+}

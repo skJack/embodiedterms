@@ -1,0 +1,234 @@
+{
+ "batch": "hardware-01",
+ "terms": [
+  {
+   "key": "hardware-01#0",
+   "name_en": "Actuator",
+   "aliases": [],
+   "one_liner": "The part that converts electrical, hydraulic, or pneumatic energy into motion and force — a robot's “muscle.”",
+   "explanation": "An actuator is the part of a robot that actually produces motion. By energy source, actuators are electric (motors), hydraulic, or pneumatic, plus newer types like shape-memory alloys and artificial muscles. Whatever command a controller computes — a target position, velocity, or torque — ultimately has to be carried out by an actuator, and its torque, speed, precision, weight, and heat output directly determine how fast, how heavy, and how finely the robot can move. Most humanoid and quadruped robots today use joint actuator modules built from a motor plus a gearbox; Boston Dynamics' early Atlas used hydraulics before switching to an all-electric version starting in 2024. Common specs for choosing an actuator include peak torque, torque density (torque per unit weight), and backdrivability (whether an outside force can push the joint back). Note: in Chinese, 驱动器 sometimes also means “actuator” (as in a series elastic actuator), but more often refers specifically to the motor-driver electronics that regulate current — the meaning depends on context.",
+   "example": "In April 2024, Boston Dynamics retired the hydraulic Atlas it had used for over a decade and replaced it with a new all-electric Atlas; the company said the new version is stronger and has a wider range of motion than any previous generation.",
+   "related": [
+    "Joint Actuator Module",
+    "Servo Motor",
+    "Speed Reducer / Gearbox",
+    "Hydraulic Actuation",
+    "Torque Density",
+    "Backdrivability"
+   ]
+  },
+  {
+   "key": "hardware-01#1",
+   "name_en": "Battery Runtime",
+   "aliases": [
+    "Battery Endurance",
+    "Battery Life"
+   ],
+   "one_liner": "How long a robot can keep working on a single full battery charge.",
+   "explanation": "Battery runtime is how long a robot can keep operating on one battery (or one full charge), and it depends on battery capacity, the robot's overall weight, motor efficiency, and how demanding the task is — the same robot standing still uses far less power than one walking continuously or carrying a heavy load. Because humanoid robots have to constantly work to stay balanced and have many joints drawing power, their runtime is typically only a few hours, which is one of the main bottlenecks keeping them out of factories and homes. Common fixes include using a bigger battery, cutting power consumption, hot-swappable batteries (swapping packs without powering down), and autonomous return-to-charge or autonomous battery swapping. When reading a manufacturer's runtime figure, it's worth checking what workload it was measured under.",
+   "example": "Unitree's G1 humanoid is rated by the company at about 2 hours of runtime.",
+   "related": [
+    "Battery Management System",
+    "Hot-Swappable Battery",
+    "Autonomous Battery Swapping",
+    "Autonomous Docking and Recharging",
+    "Humanoid Robot"
+   ]
+  },
+  {
+   "key": "hardware-01#2",
+   "name_en": "Dexterous Hand",
+   "aliases": [
+    "Multi-fingered Hand",
+    "Five-fingered Hand"
+   ],
+   "one_liner": "A robotic hand with multiple independently moving fingers, capable of fine manipulation.",
+   "explanation": "A dexterous hand is a multi-fingered end effector mounted on a robot arm, built to mimic the structure of a human hand, typically with 3 to 5 fingers and a dozen to two dozen joints. Compared with a gripper, which can only open and close, it can pinch, grip, twirl a pen, twist open a bottle cap, and reposition an object within the hand itself (in-hand manipulation) — making it a key component for general-purpose manipulation on humanoid robots. The hard part is packing many degrees of freedom into very little space: motors, gearboxes, and sensors all have to fit inside the palm and fingers, usually driven through tendons, linkages, or miniature lead screws; controlling it is also harder because its action space has many dimensions, and collecting training data for it is difficult. Dexterous hands are usually specified by “active degrees of freedom” (the joints actually driven by a motor), which is often fewer than the total number of joints.",
+   "example": "OpenAI's Dactyl project in 2019 used a Shadow Dexterous Hand to solve a Rubik's Cube one-handed.",
+   "related": [
+    "Dexterous Manipulation",
+    "In-hand Manipulation",
+    "End Effector",
+    "Active DoF / Passive DoF",
+    "Shadow Dexterous Hand",
+    "Tendon-Driven Actuation"
+   ]
+  },
+  {
+   "key": "hardware-01#3",
+   "name_en": "End Effector",
+   "aliases": [
+    "EE",
+    "End-of-Arm Tool"
+   ],
+   "one_liner": "The tool mounted at the very tip of a robot arm that actually touches and works on objects.",
+   "explanation": "An end effector is the tool mounted on the last link of a robot arm's kinematic chain, attached through a tool flange — it's what actually makes contact with the environment: grippers, dexterous hands, vacuum suction cups, welding torches, and screwdrivers all count. The arm's job is to bring the end effector to a target position and orientation; the end effector's job is to carry out the specific action — grasping, suctioning, screwing, and so on. In embodied-AI papers, “EEF” often also refers to the end effector's position and orientation: many policies directly output an end-effector pose (an action in task space), which is then converted to joint angles through inverse kinematics, while other policies output joint angles directly. Swap in a different end effector, and both the action space and the tasks the robot can perform change with it.",
+   "example": "The end effector most often paired with a Franka arm is Franka's own Franka Hand, a two-finger parallel gripper.",
+   "related": [
+    "Gripper",
+    "Dexterous Hand",
+    "End-Effector Pose",
+    "Tool Center Point",
+    "Tool Flange",
+    "Inverse Kinematics"
+   ]
+  },
+  {
+   "key": "hardware-01#4",
+   "name_en": "Gripper",
+   "aliases": [
+    "Mechanical Gripper",
+    "Robot Gripper"
+   ],
+   "one_liner": "An end effector that grips objects by opening and closing its fingers — simpler than a dexterous hand.",
+   "explanation": "A gripper is the most common end effector, using two or three fingers that open and close to hold an object. By actuation it's electric or pneumatic; by structure it can be parallel two-finger, three-finger, adaptive/underactuated (where the fingers passively conform to an object's shape), or soft; vacuum suction cups and magnetic grippers are sometimes grouped under the broader term “gripper” too. Its advantages are that it's cheap, reliable, and easy to control, usually needing only a single value — how far open it is — to represent its action, which is why most robot-learning datasets and VLA models are built around grippers. Its limitation is that it can't do fine, multi-finger-coordinated actions like twisting, rotating, or pressing a button, which is where a dexterous hand is needed instead.",
+   "example": "The Robotiq 2F-85 is a common two-finger adaptive electric gripper in both research and industry, with a maximum opening of 85 mm.",
+   "related": [
+    "End Effector",
+    "Parallel Jaw Gripper",
+    "Electric Gripper",
+    "Adaptive / Underactuated Gripper",
+    "Dexterous Hand",
+    "Grasping"
+   ]
+  },
+  {
+   "key": "hardware-01#5",
+   "name_en": "Joint Actuator Module",
+   "aliases": [
+    "Integrated Joint Module",
+    "Joint Motor Module"
+   ],
+   "one_liner": "A robot joint unit that packages a motor, gearbox, encoder, and driver together into one part.",
+   "explanation": "A joint actuator module is the standard way modern humanoid and quadruped robots build a joint: a brushless motor, a gearbox (planetary, harmonic, or RV), an encoder (to measure angle), a driver (to control current), and often even a torque sensor and a brake (which locks the joint when power is cut) are all packaged into a single unit, exposing only power and communication lines — commonly CAN, RS-485, or EtherCAT — to the outside. This lets a robot maker simply bolt the module into the frame and send it position or torque commands, which makes both development and repair much easier. Its torque, speed, weight, backlash (the play between gear teeth), and heat generation determine the robot's movement capability, and it's also one of the biggest cost items in the whole robot. MIT's open-source Mini Cheetah joint design helped popularize low-cost joint actuator modules.",
+   "example": "Unitree's GO-M8010-6 is a common integrated joint motor used in quadruped robots, with a built-in planetary gearbox at roughly a 6.33:1 ratio.",
+   "related": [
+    "Actuator",
+    "Quasi-Direct Drive",
+    "Planetary Gearbox",
+    "Strain Wave Gear (Harmonic Drive)",
+    "Rotary Encoder",
+    "Servo Drive / Motor Driver"
+   ]
+  },
+  {
+   "key": "hardware-01#6",
+   "name_en": "NVIDIA Jetson",
+   "aliases": [
+    "Jetson",
+    "Jetson Series"
+   ],
+   "one_liner": "NVIDIA's family of embedded AI computing platforms built for robots and edge devices.",
+   "explanation": "Jetson is NVIDIA's line of embedded computing platforms, packaging an Arm CPU, an NVIDIA GPU, and memory into a small, low-power core module, paired with a carrier board (which breaks out various I/O) or a developer kit. It lets a robot run neural networks on board without a connection to the cloud, making it one of the most common choices for a robot's onboard compute. The lineup began with the TK1 in 2014, and has since gone through TX1/TX2, Xavier, Nano, and Orin, up to 2025's Thor, built on the Blackwell architecture. All of them run the same JetPack software stack (bundling Ubuntu, CUDA, TensorRT, and more), so a model trained on a server is relatively easy to deploy onto one. The main specs to weigh when choosing a module are compute performance, memory, and power draw.",
+   "example": "Many humanoid and quadruped robots mount a Jetson Orin inside the body as the onboard computer running perception and policy models.",
+   "related": [
+    "NVIDIA Jetson Orin",
+    "NVIDIA Jetson Thor",
+    "Onboard Compute Platform",
+    "On-Device / Edge Deployment",
+    "NVIDIA JetPack SDK",
+    "NVIDIA TensorRT"
+   ]
+  },
+  {
+   "key": "hardware-01#7",
+   "name_en": "NVIDIA Jetson Orin",
+   "aliases": [
+    "AGX Orin",
+    "Orin NX",
+    "Orin Nano",
+    "Jetson AGX Orin"
+   ],
+   "one_liner": "NVIDIA's Ampere-architecture embedded AI module family, launched starting in 2022.",
+   "explanation": "Jetson Orin was the previous flagship generation of the Jetson family, built on Ampere-architecture GPUs, and comes in three performance tiers from highest to lowest — AGX Orin, Orin NX, and Orin Nano — with power draw of roughly 7 to 60 watts. The AGX Orin is rated at up to about 275 TOPS (trillion INT8 operations per second, sparse) of compute. In late 2024, NVIDIA shipped a “Super” mode software update that boosted Orin Nano and Orin NX performance, with the Orin Nano Super developer kit priced at $249. Jetson Orin has been the most common onboard computer on robots over the past few years, capable of running detection, segmentation, SLAM, and small policy models, though it struggles with VLA models that have billions of parameters.",
+   "example": "Unitree's G1 EDU edition offers a Jetson Orin as a compute module for further development.",
+   "related": [
+    "NVIDIA Jetson",
+    "NVIDIA Jetson Thor",
+    "Onboard Compute Platform",
+    "Tera Operations Per Second",
+    "On-Device / Edge Deployment",
+    "NVIDIA JetPack SDK"
+   ]
+  },
+  {
+   "key": "hardware-01#8",
+   "name_en": "NVIDIA Jetson Thor",
+   "aliases": [
+    "Jetson AGX Thor",
+    "Jetson T5000",
+    "Jetson T4000",
+    "Jetson T3000",
+    "Jetson T2000"
+   ],
+   "one_liner": "NVIDIA's Blackwell-based newest embedded compute platform, built especially for humanoid robots.",
+   "explanation": "Jetson Thor is the newest generation of the Jetson family; the Jetson AGX Thor developer kit went on sale in August 2025 for $3,499. Its flagship module, the T5000, uses a Blackwell GPU, a 14-core Arm Neoverse CPU, and 128 GB of memory, rated at up to 2,070 FP4 TFLOPS (sparse), with power draw of 40–130 watts. NVIDIA formally released the T4000 in January 2026, then in July 2026 added the smaller, cheaper T3000 (about 865 FP4 TFLOPS, 32 GB) and T2000 (about 400 TFLOPS, 16 GB), both reportedly shipping in Q1 2027. It's positioned to let humanoid robots run large models like VLA and vision-language models directly on board; NVIDIA describes it as the “deploy” computer in its “three computers” framework.",
+   "example": "NVIDIA's own GR00T N series models list Jetson Thor as one of their target platforms for on-device deployment.",
+   "related": [
+    "NVIDIA Jetson",
+    "NVIDIA Jetson Orin",
+    "Onboard Compute Platform",
+    "On-Device / Edge Deployment",
+    "NVIDIA Three-Computer Solution",
+    "GR00T N1 Series"
+   ]
+  },
+  {
+   "key": "hardware-01#9",
+   "name_en": "Parallel Jaw Gripper",
+   "aliases": [
+    "Parallel Gripper",
+    "Two-Finger Gripper"
+   ],
+   "one_liner": "A gripper whose two fingers stay parallel as they open and close — the simplest and most common design.",
+   "explanation": "A parallel jaw gripper has two opposing fingers that stay parallel to each other as they close together or move apart, much like an open-end wrench. It's mechanically simple, cheap, and grips reliably, and its action is usually described with a single number — the opening width, or simply open/closed — which is why it's the dominant end effector in robot learning: the large majority of data in datasets like Open X-Embodiment and DROID comes from parallel jaw grippers, and models like OpenVLA and π0 output a one-dimensional gripper action too. Grasping research often uses the concept of an antipodal grasp (where the contact forces at two points oppose each other) to analyze whether such a gripper can hold an object securely. Its limitation is that it struggles with tasks needing coordination across multiple fingers or in-hand adjustment.",
+   "example": "On the ALOHA bimanual platform, each arm ends in a two-finger parallel jaw gripper.",
+   "related": [
+    "Gripper",
+    "End Effector",
+    "Antipodal Grasp",
+    "Grasping",
+    "ALOHA (A Low-cost Open-source Hardware System for Bimanual Teleoperation)",
+    "Franka Hand"
+   ]
+  },
+  {
+   "key": "hardware-01#10",
+   "name_en": "Planetary Gearbox",
+   "aliases": [
+    "Planetary Gear Reducer",
+    "Planetary Gear Set"
+   ],
+   "one_liner": "A gearbox that uses a sun gear, planet gears, and a ring gear to turn a motor's fast spin into high torque.",
+   "explanation": "A planetary gearbox is built from a central sun gear, several planet gears orbiting around it, an outer ring gear with internal teeth, and a carrier that connects the planet gears — named for its resemblance to planets orbiting a sun. A motor spins fast but produces little torque; the gearbox trades that speed for torque so the joint has enough force to move a leg or an arm. Its advantages are a compact structure, load sharing across multiple planet gears, and high efficiency per stage; a single stage also typically has a fairly low reduction ratio (often around 3:1 to 10:1), which makes it easy for an external force to push back through it — well suited to legged robots that need force control and impact tolerance. Its downside is that backlash (play between the gear teeth) is usually larger than in a harmonic drive, giving somewhat lower precision. A quasi-direct-drive joint is generally just a motor paired with a single-stage planetary gearbox.",
+   "example": "MIT's Mini Cheetah uses a single-stage planetary gearbox at roughly a 6:1 ratio in its joints.",
+   "related": [
+    "Speed Reducer / Gearbox",
+    "Gear Ratio",
+    "Strain Wave Gear (Harmonic Drive)",
+    "Quasi-Direct Drive",
+    "Backlash",
+    "Joint Actuator Module"
+   ]
+  },
+  {
+   "key": "hardware-01#11",
+   "name_en": "Quasi-Direct Drive",
+   "aliases": [
+    "QDD Motor",
+    "Low-Reduction-Ratio Actuator"
+   ],
+   "one_liner": "A joint design pairing a high-torque motor with a low gear ratio, balancing strength and compliance.",
+   "explanation": "Quasi-direct drive is a joint design approach: it pairs a large-diameter brushless motor with high torque density with just a single low-ratio gearbox stage (usually under 10:1), sitting between fully direct drive (no gearbox at all) and a high-reduction design like a harmonic drive. The low gear ratio gives good backdrivability and low reflected inertia (the motor rotor's inertia as seen at the joint, which grows with the square of the gear ratio), so an outside force can push the joint back, and impacts on landing are less likely to damage the gears; because motor current is roughly proportional to output torque, the joint's force can be estimated and controlled without a dedicated torque sensor. MIT's Cheetah series popularized this “proprioceptive actuator” approach, and today it's used in the leg joints of most quadruped and humanoid robots, including Unitree's — it also suits locomotion policies trained with reinforcement learning particularly well.",
+   "example": "All 12 joints on the MIT Mini Cheetah use the same module: a brushless motor plus a 6:1 single-stage planetary gearbox. Unitree's Go1 uses a similar design in its GO-M8010-6 joint motor, with a 6.33:1 gear ratio.",
+   "related": [
+    "Direct Drive",
+    "Proprioceptive Actuator",
+    "Backdrivability",
+    "Planetary Gearbox",
+    "Joint Actuator Module",
+    "MIT Cheetah Actuator"
+   ]
+  }
+ ]
+}

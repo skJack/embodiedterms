@@ -1,0 +1,113 @@
+{
+  "batch": "data-05",
+  "terms": [
+    {
+      "key": "data-05#0",
+      "name_en": "Multimodal Data",
+      "aliases": ["Omni-modal Data"],
+      "one_liner": "Images, depth, joint state, force and touch, language, and other signals recorded in sync while a robot works.",
+      "explanation": "In embodied AI, multimodal data means multiple signals recorded in sync while a robot performs a task: multi-view RGB images, depth maps, proprioception (the robot's own joint angles, end-effector pose, and other internal state), force or tactile readings, language instructions, and sometimes sound. A camera alone can't see a contact point hidden by the hand, or how much force was used, so fine manipulation often needs signals beyond vision recorded together. RoboMIND, from the Beijing Humanoid Robot Innovation Center and Peking University, is an example: each trajectory is stored as one HDF5 file containing multi-view RGB-D, proprioceptive state, end-effector state, and the teleoperator's own body state; RoboMIND 2.0 added 12,000 tactile-augmented segments. The difficulties are synchronizing all these signals in time, storage size, and how to train when one modality is missing.",
+      "example": "In RoboMIND 2.0's tactile-augmented segments, the same instant carries multi-view RGB-D footage and joint state together with normal and shear forces measured by a Tashan tactile sensor.",
+      "related": ["Multimodal Fusion", "Tactile Data", "Proprioception", "Multi-sensor Time Synchronization / Timestamp Alignment", "Hierarchical Data Format version 5", "RoboMIND (Multi-embodiment Intelligence Normative Data for Robot Manipulation)"]
+    },
+    {
+      "key": "data-05#1",
+      "name_en": "Observation-Action Pair",
+      "aliases": ["State-Action Pair"],
+      "one_liner": "One training sample: what the robot 'saw' at a given moment paired with what it 'did' next.",
+      "explanation": "This is the basic unit of imitation-learning data. At every timestep, an observation o (camera images, joint angles and other proprioceptive state, often with a language instruction attached) and the action a executed at that moment (target joint angles, end-effector displacement, gripper opening) are recorded together; a full demonstration trajectory is a time-ordered sequence of these (o, a) pairs. Behavior cloning treats this as supervised learning: given o, predict a. Strictly speaking, “state” is a complete description of the environment, while “observation” is only the part sensors can actually see, and on a real robot usually only observations are available. Because these samples are sequentially correlated, once a policy drifts even slightly it runs into observations it never saw in training, and the error compounds — this is called compounding error. In a LeRobot dataset, each frame's observation.state, observation.images, and action fields are exactly this structure.",
+      "example": "Recording a demonstration of an SO-101 arm grasping a block at 30 frames per second in LeRobot, every frame stores the camera image, the follower arm's joint readings, and the leader arm's target joint angles at that moment as the action.",
+      "related": ["Observation", "Action Label", "Behavior Cloning", "Trajectory", "Demonstration Data", "Compounding Error"]
+    },
+    {
+      "key": "data-05#2",
+      "name_en": "Recovery and Correction Data",
+      "aliases": ["Recovery Data", "Correction Data"],
+      "one_liner": "Demonstration data specifically recorded to show how a robot gets back on track after starting to go wrong.",
+      "explanation": "Most teleoperated demonstrations are “perfect trajectories” done right the first time, so a policy never sees what a drifted-off state looks like and has no idea how to save itself once it starts going wrong, and the error compounds. Recovery and correction data fills exactly this gap: a policy is left to run on its own, and just as it's about to fail, a human takes over, steers the robot back on track, and finishes the task, with that takeover segment added to the training set. The idea traces back to DAgger (Dataset Aggregation) from 2011, with later variants such as Human-Gated DAgger. A 2025 method called RaC turns it into a dedicated stage after imitation learning: the operator first rewinds the robot to a familiar state, then demonstrates a correction, and on long-horizon tasks such as hanging a shirt or sealing a lunchbox it beats prior methods using roughly one-tenth the collection time.",
+      "example": "In RaC's shirt-hanging task, just as the policy is about to hang the shirt crookedly, the operator takes over, first pulls the arm back to a normal prior pose, then demonstrates hanging it straight on the hanger — that takeover becomes one piece of recovery and correction data.",
+      "related": ["Human Intervention Data", "Failure Recovery", "Dataset Aggregation", "Human-Gated DAgger", "Compounding Error", "RaC: Robot Learning for Long-Horizon Tasks by Scaling Recovery and Correction"]
+    },
+    {
+      "key": "data-05#3",
+      "name_en": "RLDS (Reinforcement Learning Datasets)",
+      "aliases": ["RLDS"],
+      "one_liner": "A Google-proposed standard format and toolchain for organizing sequential-decision data as episodes made of steps.",
+      "explanation": "RLDS is a data ecosystem Google Research released in 2021 for recording, sharing, and processing reinforcement learning, offline RL, and imitation learning data. Data has two levels: an episode carries metadata such as an episode_id and contains a sequence of steps; every step has two required flags, is_first and is_last, plus optional fields such as observation, action, reward, and discount. A companion tool called EnvLogger records the data, and it is published and read through TensorFlow Datasets (TFDS). This lets data from different labs be read with the same code: every sub-dataset in Open X-Embodiment is provided in RLDS episode format, and the training code for Octo and OpenVLA reads it directly. The PyTorch ecosystem has increasingly moved toward LeRobotDataset in recent years, and the RLDS GitHub repository was archived in November 2025.",
+      "example": "Use tfds.load to load the BridgeData V2 subset inside Open X-Embodiment, iterate episode by episode over its steps, and pull out each step's image, language instruction, and action for training.",
+      "related": ["Open X-Embodiment", "TensorFlow Datasets (TFDS)", "TFRecord", "LeRobotDataset", "Hierarchical Data Format version 5", "Episode"]
+    },
+    {
+      "key": "data-05#4",
+      "name_en": "RoboMIND (Multi-embodiment Intelligence Normative Data for Robot Manipulation)",
+      "aliases": ["RoboMIND 2.0"],
+      "one_liner": "A multi-embodiment real-robot manipulation dataset from the Beijing Humanoid Robot Innovation Center and Peking University, collected under a unified protocol.",
+      "explanation": "RoboMIND was released in December 2024 by the Beijing Humanoid Robot Innovation Center, Peking University's School of Computer Science, and the Beijing Academy of Artificial Intelligence, with the paper accepted at RSS 2025. Under a unified collection protocol, it gathered 107,000 demonstrations on four embodiments — Franka, UR5e, an AgileX dual-arm platform, and a humanoid with two dexterous hands — covering 479 tasks and 96 object categories, plus 5,000 failed demonstrations with the reason labeled, and it built a digital-twin environment in Isaac Sim; every trajectory is stored as one HDF5 file. RoboMIND 2.0, from December 2025, expanded to six embodiments, 739 tasks, and more than 310,000 dual-arm trajectories, adding 12,000 tactile segments, 20,000 mobile-manipulation trajectories, and 20,000 simulated trajectories, and proposed a hierarchical dual-system framework called MIND-2. The data is downloadable on ModelScope and Hugging Face.",
+      "example": "A researcher could take only RoboMIND's UR5e single-arm trajectories to train an imitation-learning policy, then compare against the failed demonstrations for the same task to see where the policy tends to go wrong.",
+      "related": ["Cross-Embodiment Data", "Real-Robot Data", "Failure Data", "AgiBot World", "Open X-Embodiment", "Beijing Humanoid Robot Innovation Center"]
+    },
+    {
+      "key": "data-05#5",
+      "name_en": "Robot-free (Embodiment-free) Data Collection",
+      "aliases": ["Embodiment-free Collection"],
+      "one_liner": "Collecting data with no real robot present, by having a human hold or wear a device shaped like the robot's end effector.",
+      "explanation": "Ordinary teleoperation requires a human to operate an actual robot, which is expensive equipment that's hard to bring into a real home. Robot-free collection instead has a person hold or wear a device designed to match the robot's end effector and perform the task directly; a camera and sensors on the device record the footage and motion, which is later converted into robot actions for training. The best example is UMI (Universal Manipulation Interface), proposed by Cheng Chi, Shuran Song, and colleagues in 2024: a handheld gripper with a wrist-mounted GoPro, each demonstration taking about 30 seconds, claimed to let collection start in any home or restaurant within two minutes, with the resulting policy deployable to different robot arms. DexUMI pushes the same idea to dexterous hands, using a hand exoskeleton to align kinematics and then inpainting a robot hand over the human hand in the video. The key is keeping the device's shape, viewpoint, and action capability as close as possible to the real robot, or an embodiment gap is left behind.",
+      "example": "UMI's cup-placement task: collectors carry a handheld gripper and demonstrate placing a cup on a saucer in different locations; back at the lab, that data trains a policy that deploys straight onto a robot arm.",
+      "related": ["Universal Manipulation Interface", "Handheld Gripper Data Collection", "DexUMI: Using Human Hand as the Universal Manipulation Interface for Dexterous Manipulation", "Wearable Data Collection", "Collection-Execution Isomorphism", "Embodiment Gap"]
+    },
+    {
+      "key": "data-05#6",
+      "name_en": "Robotizing Human Videos / Human-to-Robot Video Translation",
+      "aliases": ["Human-to-Robot Video Translation"],
+      "one_liner": "Editing footage of a human doing a task so it looks like a robot doing it, turning it into usable training data.",
+      "explanation": "Human video is plentiful and cheap, but it shows a human hand and arm rather than a robot arm — a large visual embodiment gap — so training a policy on it directly performs poorly. Robotizing human video uses image editing or video generation to swap the human for a robot: first estimate the hand's 3D pose to serve as an action label, then erase the human hand and arm and inpaint the background, and finally overlay a rendered robot arm or gripper following that same trajectory. Stanford's Bohg group published Phantom in 2025, training a policy deployable directly on a real robot using only such edited human video; the same group's Masquerade pretrains a visual encoder on 675,000 frames of edited video. A late-2025 method called H2R-Grounder instead uses a fine-tuned video diffusion model to generate the robot footage directly, requiring no paired human-robot data at all.",
+      "example": "Phantom records video of a human hand sweeping several objects together on a table, erases the hand, overlays a rendered robot arm, and trains a policy directly on this edited video that deploys straight to a real robot.",
+      "related": ["Human Video Data", "Cross-Painting (Robot Embodiment Visual Swap)", "Embodiment Gap", "Hand Pose Estimation", "Egocentric Video", "Phantom: Training Robots Without Robots Using Only Human Videos"]
+    },
+    {
+      "key": "data-05#7",
+      "name_en": "ShapeNet",
+      "aliases": ["ShapeNetCore", "ShapeNetSem"],
+      "one_liner": "A large-scale library of 3D object meshes organized by WordNet categories, with semantic annotations.",
+      "explanation": "ShapeNet was released in 2015 by researchers at Stanford, Princeton, and other institutions, containing more than 3 million 3D models, about 220,000 of which are sorted into 3,135 WordNet categories with annotations for canonical orientation, parts, symmetry planes, and real-world size. The most commonly used subset, ShapeNetCore, has about 51,300 models across 55 common categories; ShapeNetSem has fewer models but finer annotation. It originally served graphics and vision research, and later became a standard object source for robot grasping and simulation — populating a simulator with objects of varied shape at scale, or automatically generating grasp annotations. NVIDIA's ACRONYM grasp dataset uses ShapeNetSem meshes, annotating 17.7 million parallel-jaw grasps inside physics simulation. It is now available through Hugging Face and restricted to non-commercial research and educational use.",
+      "example": "ACRONYM takes cup and bowl meshes from ShapeNetSem and tests a large number of gripper grasp poses on each in simulation, using the successes and failures as training labels for a grasp network.",
+      "related": ["Objaverse", "ACRONYM: A Large-Scale Grasp Dataset Based on Simulation", "Simulation Assets", "YCB Object and Model Set", "PartNet-Mobility", "Domain Randomization"]
+    },
+    {
+      "key": "data-05#8",
+      "name_en": "Tactile Data",
+      "aliases": ["Visuo-tactile Data"],
+      "one_liner": "Pressure, shear force, and contact-surface deformation recorded by a tactile sensor when it touches an object.",
+      "explanation": "Tactile data comes from tactile sensors mounted on a fingertip, palm, or gripper, recording contact location, normal force (how hard something is pressed), shear force (related to slipping), and how the contact surface deforms. Roughly two kinds of sensors exist: visuotactile sensors (such as GelSight and DIGIT) use a built-in camera to photograph the deformation of an elastic gel pad and output something like a photograph, a tactile image; array-style sensors — piezoresistive, capacitive, or magnetic — output a numeric reading per taxel. When the hand blocks the camera's view, or force needs to be controlled precisely (peg insertion, unscrewing a cap, holding something fragile), touch supplies information a camera can't. The difficulty is that sensor models vary and their data doesn't transfer between them, and ground-truth force and slip are hard to label, so Meta's Sparsh used self-supervised pretraining on more than 460,000 unlabeled tactile images. Datasets such as RoboMIND 2.0 now record touch in sync with vision and joint state.",
+      "example": "Pinching a strawberry with a GelSight-equipped gripper, the size of the contact area and the displacement of the tactile image's surface markers reveal how tightly it's being held and whether it has started to slip.",
+      "related": ["Tactile Sensor", "Vision-Based Tactile Sensor", "Tactile Representation Learning", "Visuo-Tactile Fusion", "Multimodal Data", "Slip Detection"]
+    },
+    {
+      "key": "data-05#9",
+      "name_en": "Trajectory / Episode Replay",
+      "aliases": ["Episode Replay", "Action Replay"],
+      "one_liner": "Re-sending a recorded action sequence to a robot or simulator to check whether the data can be reproduced.",
+      "explanation": "Trajectory replay means reading a previously recorded trajectory from a dataset and sending its actions, frame by frame, at the original frequency, to a real robot or a simulator, to see whether the outcome matches what was recorded. It serves three main purposes: quality checking, to confirm that action labels, timestamps, and coordinate frames were not recorded incorrectly — being able to reproduce the original motion means the data is usable for training; checking consistency between robots of the same model; and, in simulation, re-rendering an observation from a different camera viewpoint using the recorded state. Hugging Face's LeRobot provides a lerobot-replay command, which its documentation says is meant to test whether actions are reproducible and whether they transfer between robots of the same model; robomimic's playback_dataset.py can both re-render from state and replay from actions. Note that real-robot replay is open-loop — a small shift in an object's position can make it fail, which does not by itself mean the data is wrong.",
+      "example": "Use lerobot-replay to replay your own recorded demonstration #0 of grasping a block on an SO-101 follower arm; if the motion it produces looks noticeably different from the original recording, that's a sign to check calibration or recording frame rate.",
+      "related": ["Trajectory", "Episode", "Data Quality Inspection", "Open-loop", "LeRobot (Hugging Face)", "robomimic"]
+    },
+    {
+      "key": "data-05#10",
+      "name_en": "Web-scale Vision-Language Data",
+      "aliases": ["Internet-scale Vision-Language Data", "Web Data"],
+      "one_liner": "The vast supply of paired images and text, plus image-based Q&A, collected from the web, teaching a model about the world.",
+      "explanation": "This refers to large-scale image-text pairs collected from web pages, and the image captioning, visual question answering, and object detection data derived from them — for instance LAION-5B, which used CLIP to filter Common Crawl web pages down to 5.85 billion image-text pairs. Vision-language models (VLMs) pretrain on data like this, which is why they recognize a huge range of objects and carry a fair amount of common sense. Robot data is far smaller in scale, covering a limited set of objects and scenes, so VLA models mainly draw on internet-scale knowledge two ways: using a VLM backbone that was itself pretrained on web-scale data, and co-training on a mix of web data and robot data during fine-tuning, so the fine-tuning process doesn't wash out what the model already knew. RT-2 was the first to systematically validate this approach, and π0.5 also lists web data as one of its co-training sources.",
+      "example": "RT-2 fine-tunes on a mix of robot trajectories and web data such as visual question answering, so the model can apply objects and concepts it learned from the web to actions, executing instructions that never appeared in the robot data.",
+      "related": ["Vision-Language Model", "Co-training", "Vision-Language-Action Model", "RT-2: Vision-Language-Action Models Transfer Web Knowledge to Robotic Control", "Catastrophic Forgetting", "Knowledge Insulation"]
+    },
+    {
+      "key": "data-05#11",
+      "name_en": "Whole-Body Teleoperation",
+      "aliases": ["Humanoid Whole-body Teleop"],
+      "one_liner": "One operator simultaneously controls a robot's arms, torso, and legs or base — its whole body at once.",
+      "explanation": "Ordinary teleoperation usually only controls the arm; whole-body teleoperation lets one operator simultaneously direct the robot's upper body, torso, and legs or mobile base, used to collect data for tasks that need the whole body to work together, such as reaching for something while walking or crouching to pick something up. There are two common forms: a mobile manipulation platform, such as Stanford's 2024 Mobile ALOHA, where the operator is physically tethered to the base, controlling both arms with a leader-follower setup and steering the base with their own body; and a humanoid robot, where mocap gear, a VR headset, or an exoskeleton captures the operator's whole-body motion, which is mapped through motion retargeting onto the robot and tracked by a reinforcement-learning-trained whole-body controller that keeps balance, as in OmniH2O (2024) and Stanford's TWIST (2025). The difficulty is that body proportions and balance capability differ between human and robot, and the operator usually has no force feedback either.",
+      "example": "In OmniH2O, an operator can wear just a single VR headset, driving a full-size humanoid's whole-body motion with head and hand pose alone; the recorded data forms the OmniH2O-6 dataset.",
+      "related": ["Teleoperation", "Motion Retargeting", "Whole-Body Control", "OmniH2O: Universal and Dexterous Human-to-Humanoid Whole-Body Teleoperation and Learning", "TWIST: Teleoperated Whole-Body Imitation System", "Mobile ALOHA: Learning Bimanual Mobile Manipulation with Low-Cost Whole-Body Teleoperation"]
+    }
+  ]
+}
