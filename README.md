@@ -26,6 +26,14 @@ VLA、π0、ZMP、谐波减速器、大小脑、数采厂……刚入门具身�
 
 发现错误或想补充词条，欢迎[提 issue](https://github.com/skJack/embodiedterms/issues)，也可以在公众号「可lip说AI」留言。
 
+## 直接拿数据
+
+不想跑脚本的话，网站上有固定网址的导出，每次更新网站会一起更新：
+
+- JSON：[中文](https://embodiedterms.com/downloads/glossary-zh.json) · [英文](https://embodiedterms.com/downloads/glossary-en.json)（全部词条、分类、来源和词条页网址）
+- 纯文本全文（Markdown）：[中文](https://embodiedterms.com/llms-full-zh.txt) · [英文](https://embodiedterms.com/llms-full.txt)
+- 给 AI 读的索引：[llms.txt](https://embodiedterms.com/llms.txt)
+
 ## 目录结构
 
 ```
@@ -36,7 +44,9 @@ _order/drop.json      跨类别的重复（保留哪条、去掉哪条）
 _i18n/en_sections.json  英文的类别名、小节标题和说明
 _tools/               构建、校验、生成网站的脚本
   build.py            按学习顺序汇总 → terms.json、术语表.md、术语表.html（本地单文件版）
-  build_site.py       生成网站 site/：中英两版首页 + 每个词、每个分类的静态页 + sitemap
+  build_site.py       生成网站 site/：中英两版首页、每个词和每个分类的静态页、关于页、sitemap、
+                      结构化数据、分享预览图、llms.txt 和数据导出
+  indexnow.py         部署后把网址推给 Bing 等搜索引擎（IndexNow）
   site/               网站用的样式、脚本、图标
   slugs.json          每个词条固定的网址，已发布，改名也不要改它
   validate_batch.py   校验中文批文件
@@ -101,5 +111,7 @@ A bilingual (Chinese / English) glossary of **2,926 embodied-AI and robotics ter
 Every entry has a one-line definition, a plain-language explanation, an example and source links. Entries are graded into 240 *Essential*, 883 *Common* and 1,803 *Advanced* terms. The English edition is adapted for English readers rather than translated line by line.
 
 Content was researched and drafted with AI assistance. The companies, robots and landmark-models categories, plus all Essential entries, were independently fact-checked. Other entries may contain errors, so check the linked sources before relying on a specific fact. Corrections are welcome via [issues](https://github.com/skJack/embodiedterms/issues).
+
+The data is also published at stable URLs: [JSON](https://embodiedterms.com/downloads/glossary-en.json), [full text as Markdown](https://embodiedterms.com/llms-full.txt) and an [llms.txt](https://embodiedterms.com/llms.txt) index (Chinese versions: `glossary-zh.json`, `llms-full-zh.txt`).
 
 Build locally with `python3 _tools/build.py && python3 _tools/build_site.py`; the site is generated into `site/`. Content is licensed under [CC BY-NC 4.0](LICENSE-CONTENT.md); code under [MIT](LICENSE).
