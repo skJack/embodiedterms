@@ -118,8 +118,24 @@ def link_related(terms):
             k = norm(s)
             if len(k) >= 2 and keep in key2id:
                 idx.setdefault(k, key2id[keep])
+    def find(r):
+        hit = idx.get(norm(r))
+        if hit:
+            return hit
+        # 有些批次把相关词写成「中文名(English)」，整串对不上时在括号处拆开，括号前后各试一次；
+        # 名字本身也可能带括号（「Franka 机械臂（Panda / FR3）(…)」），所以从最后一个左括号往前逐个试
+        s = str(r or "").strip()
+        if s.endswith((")", "）")):
+            for i in range(len(s) - 1, 0, -1):
+                if s[i] in "(（":
+                    for part in (s[:i], s[i + 1:-1]):
+                        k = norm(part)
+                        if len(k) >= 2 and k in idx:
+                            return idx[k]
+        return None
+
     for t in terms:
-        t["related_ids"] = [idx.get(norm(r)) for r in t.get("related") or []]
+        t["related_ids"] = [find(r) for r in t.get("related") or []]
 
 
 def title_of(t):

@@ -1,0 +1,237 @@
+{
+  "batch": "software-21",
+  "terms": [
+    {
+      "key": "software-21#0",
+      "name_en": "Franka Desk",
+      "aliases": [
+        "Desk",
+        "Franka UI"
+      ],
+      "one_liner": "The web interface built into Franka arms, used to unlock joints, activate FCI and build tasks from Apps.",
+      "explanation": "Desk is the web interface served by the Franka arm's controller (Control): enter the robot's IP address in a browser and log in, with nothing to install. The FR3 manual calls the whole web interface Franka UI; Desk is the part for programming, configuring and operating the robot, alongside Settings for system configuration and Watchman for safety rules. Desk was built for programming without code: you chain Apps such as \"Grasp\", \"Put down\" or \"Press button\" into a Task, then teach their parameters by guiding the arm by hand. In robot-learning work it is mostly used for setup. After power-on, click \"Unlock joints\" to release the brakes on all seven joints. On FR3, switch to Execution mode and click \"Activate FCI\" in the system menu; only then can libfranka and tools built on it take over. After changing the gripper, enter the end effector's mass and related parameters in the settings, or gravity compensation will be off when you guide the arm by hand. Only one user holds control at a time (Single Point of Control, SPoC), and panda-py and franky can also unlock the joints and activate FCI from code.",
+      "example": "After power-on, open https://172.16.0.2 in a browser on the computer wired to the controller and log in to Desk. Click \"Unlock joints\" and wait for seven clicks, switch to Execution mode, click \"Activate FCI\" in the system menu, then start your libfranka program.",
+      "related": [
+        "Franka Emika Panda / Franka Research 3",
+        "libfranka / Franka Control Interface (FCI)",
+        "Holding brake",
+        "Teach pendant",
+        "Kinesthetic teaching",
+        "panda-py"
+      ]
+    },
+    {
+      "key": "software-21#1",
+      "name_en": "Polymetis",
+      "aliases": [],
+      "one_liner": "Meta's open-source real-time control framework for Franka arms, where you write controllers in PyTorch.",
+      "explanation": "Polymetis is a robot control framework that Facebook AI Research (now part of Meta) open-sourced in its fairo repository, used mainly with Franka arms. You write controllers in PyTorch, often from building blocks in the bundled torchcontrol library such as impedance control and minimum-jerk trajectories. The client compiles the controller to TorchScript and sends it over gRPC to a server written in C++, which runs it in real time at 1 kHz. The server's other end talks to a hardware client built on libfranka, or to a PyBullet simulation, so the same code runs in simulation and on the real arm. Most newcomers meet it in the DROID code: DROID runs the Polymetis server on a small NUC with a real-time kernel wired directly to the robot, while teleoperation and policies run on another computer. The official repository has had no new commits since February 2023. The libfranka version must match the robot; the DROID docs build from source with 0.9.0 for Panda and 0.10.0 for FR3.",
+      "example": "On a GPU workstation, connect with RobotInterface(ip_address=<NUC IP>), call start_cartesian_impedance() to start an impedance controller, then keep passing the policy's target poses to update_desired_ee_pose(); the server on the NUC tracks them compliantly at 1 kHz.",
+      "related": [
+        "libfranka / Franka Control Interface (FCI)",
+        "Franka Emika Panda / Franka Research 3",
+        "TorchScript / LibTorch",
+        "gRPC",
+        "PREEMPT_RT Real-Time Linux Patch",
+        "DROID dataset",
+        "Intel NUC",
+        "zerorpc"
+      ]
+    },
+    {
+      "key": "software-21#2",
+      "name_en": "Deoxys (deoxys_control)",
+      "aliases": [
+        "deoxys_control"
+      ],
+      "one_liner": "UT Austin's open-source Franka control library, built around operational space control.",
+      "explanation": "Deoxys (repository deoxys_control) is a Franka control library written by Yifeng Zhu at UT Austin's Robot Perception and Learning Lab (RPL) and open-sourced in 2022. It assumes two computers. A GPU desktop runs the Python side, where policies or teleoperation scripts send commands, 20 times per second by default. A NUC with a real-time kernel runs the C++ control program, which interpolates between consecutive commands and drives the arm through libfranka in real time; the two sides exchange Protobuf messages over ZeroMQ. Its focus is task-space impedance control: OSC_POSE is 6-DoF operational space control (also called Cartesian impedance control), with simplified position-only and position-plus-yaw variants alongside joint impedance, joint position and other controllers. It keeps robosuite's interface conventions, which makes moving simulation code to the real arm fairly smooth, and the real-robot experiments of MimicPlay, VoxPoser and MimicGen were built on it. The official install script only guarantees libfranka 0.8.0 and 0.9.0, the Panda versions; FR3 needs at least 0.10.0, which the script explicitly does not guarantee.",
+      "example": "An imitation-learning policy on the desktop outputs an end-effector pose delta every 50 ms and calls robot_interface.control(controller_type=\"OSC_POSE\", action=...) to send it to the NUC, which interpolates and executes it under impedance control; to collect demonstrations, run the SpaceMouse teleoperation script that ships with the repository.",
+      "related": [
+        "libfranka / Franka Control Interface (FCI)",
+        "Operational Space Control (OSC)",
+        "Cartesian Impedance Control",
+        "ZeroMQ",
+        "robosuite",
+        "SpaceMouse teleoperation",
+        "Intel NUC"
+      ]
+    },
+    {
+      "key": "software-21#3",
+      "name_en": "FrankaPy (franka-interface + frankapy)",
+      "aliases": [
+        "franka-interface",
+        "frankapy"
+      ],
+      "one_liner": "CMU's Franka control stack: a C++ side does real-time control, a Python side sends skills over ROS.",
+      "explanation": "FrankaPy is a Franka control stack open-sourced by Oliver Kroemer's group (IAM Lab) at Carnegie Mellon University, and it comes in two halves. franka-interface, written in C++, runs on the Control PC, the real-time-kernel machine wired to the robot, and drives the arm at 1 kHz through libfranka; the Python library frankapy can run on any computer on the same ROS network. Motions are packaged as skills, each combining a trajectory generator, a feedback controller and a termination handler, for example \"follow a minimum-jerk trajectory under Cartesian impedance to a pose and stop on arrival\" or \"stop once the contact force passes a threshold.\" Python calls such as goto_pose serialize the skill parameters with Protobuf and send them to the Control PC as a ROS action, where shared memory hands them to the real-time loop. Sensor data, such as object poses estimated from a camera, can also be streamed over ROS topics into the low-level controller. It depends on ROS 1 (Melodic / Noetic), and its documentation says ROS 2 is not supported yet.",
+      "example": "On a workstation, create fa = FrankaArm() and call fa.goto_pose(target_pose, duration=5); the Control PC moves there with the default minimum-jerk trajectory and Cartesian impedance. For continuous tracking, pass dynamic=True and publish new targets on a ROS topic at 50 Hz, as the official example run_dynamic_pose.py does.",
+      "related": [
+        "libfranka / Franka Control Interface (FCI)",
+        "Robot Operating System (ROS)",
+        "Protocol Buffers (Protobuf)",
+        "Cartesian Impedance Control",
+        "Minimum-Jerk Trajectory",
+        "PREEMPT_RT Real-Time Linux Patch"
+      ]
+    },
+    {
+      "key": "software-21#4",
+      "name_en": "franky",
+      "aliases": [
+        "franky-control",
+        "frankx"
+      ],
+      "one_liner": "A high-level Franka control library: you give targets, and Ruckig plans the trajectory in real time.",
+      "explanation": "franky is a high-level control library for Franka arms with Python and C++ APIs, maintained by Tim Schneider of TU Darmstadt and collaborators. It grew out of frankx, written by Ruckig author Lars Berscheid, which has had no new commits since May 2022. Using libfranka directly means writing your own real-time callback that runs every millisecond; franky wraps that layer. You give it target positions or velocities, and Ruckig computes a time-optimal trajectory within velocity, acceleration and jerk limits on the fly, while the 1 kHz control loop runs in its own thread, so an ordinary Python script can drive the arm. You can change the target mid-motion and it replans from the current state, and you can attach reactions, such as backing off when the end-effector force passes a threshold. It also supports torque control, impedance control, the gripper and the Desk interface. Install it with pip install franky-control, no ROS needed; both Panda and FR3 are supported, with the package picked by the robot's server version. The computer running it still needs a real-time kernel.",
+      "example": "Connect with robot = Robot(\"172.16.0.2\"), set relative_dynamics_factor = 0.05 to scale velocity, acceleration and jerk limits down to 5%, then call robot.move(CartesianMotion(Affine([0.2, 0, 0]), ReferenceType.Relative)) to move the end effector 20 cm along its own x-axis.",
+      "related": [
+        "libfranka / Franka Control Interface (FCI)",
+        "Ruckig",
+        "Jerk",
+        "S-curve velocity profile",
+        "Franka Emika Panda / Franka Research 3",
+        "panda-py"
+      ]
+    },
+    {
+      "key": "software-21#5",
+      "name_en": "panda-py",
+      "aliases": [
+        "panda-python",
+        "panda_py"
+      ],
+      "one_liner": "A Franka Python library from TUM that wraps libfranka and ships ready-made controllers.",
+      "explanation": "panda-py is a Python library developed by Jean Elsner at the Munich Institute of Robotics and Machine Intelligence (MIRMI), Technical University of Munich, described in a tutorial-style paper in SoftwareX in 2023. It is named after Panda, Franka's earlier model, but also works with FR3. It binds almost all of libfranka's low-level API to Python and adds what people usually need: analytical inverse kinematics, moves to a given joint configuration or end-effector pose, 1 kHz state logging, and ready-made controllers for Cartesian impedance, joint position, force and more. Controllers run in the background without being held back by Python's global interpreter lock (GIL), meeting libfranka's real-time requirements while you update their targets from Python at any time. It also ships a Desk client that can unlock the joints and activate FCI from code. Note that pip install panda-python bundles libfranka 0.9.2, which only works with Panda; for FR3, download the matching package for your robot's system version from the GitHub releases page.",
+      "example": "After preparing the robot with desk.unlock() and desk.activate_fci(), start controllers.CartesianImpedance() and, inside a 1 kHz panda.create_context loop, call ctrl.set_control() each step with a new target pose to sweep the end effector back and forth along a sine wave.",
+      "related": [
+        "libfranka / Franka Control Interface (FCI)",
+        "Franka Emika Panda / Franka Research 3",
+        "Cartesian Impedance Control",
+        "Analytical Inverse Kinematics",
+        "Franka Desk",
+        "franky"
+      ]
+    },
+    {
+      "key": "software-21#6",
+      "name_en": "URScript",
+      "aliases": [
+        "UR Script",
+        "Universal Robots script language"
+      ],
+      "one_liner": "The scripting language Universal Robots controllers run directly; programs built on the teach pendant are converted into it too.",
+      "explanation": "URScript is the scripting language Universal Robots (UR) designed for its own robot controllers, letting you control the arm in code without the graphical interface. It has the usual variables, conditionals, loops, functions and threads, plus built-in motion commands such as movej, movel and servoj and functions for reading and writing I/O. When you press Play on a program built in PolyScope, the graphical interface on the teach pendant, it is converted into URScript together with code generated by any URCaps (PolyScope plugins from gripper, camera and other vendors) and handed to the controller to run. An external computer can also bypass PolyScope and send URScript as plain text over TCP to the controller's ports 30001–30003; on e-Series and newer robots the arm must first be switched to remote control mode. One gotcha: sending a new program stops whatever program is currently running. Under the hood, the ur_rtde library and UR's official ROS 2 driver work the same way: they first get a URScript control program running on the controller, then exchange data with it at high rates.",
+      "example": "From Python, open a socket to port 30002 on a UR5e controller and send a URScript program that starts with def, ends with end and has every line in between indented — say, a movej to a ready pose followed by a movel 5 cm downward — and the arm runs it right away, as long as the pendant has been switched to remote control mode.",
+      "related": [
+        "Universal Robots",
+        "Teach Pendant",
+        "RTDE",
+        "MoveJ / MoveL",
+        "Streaming Servo Control",
+        "Robot Controller"
+      ]
+    },
+    {
+      "key": "software-21#7",
+      "name_en": "Kinova Kortex API",
+      "aliases": [
+        "Kortex API",
+        "KORTEX API",
+        "kortex_api"
+      ],
+      "one_liner": "Kinova's official programming interface for its Gen3 robot arms, usable from C++ and Python.",
+      "explanation": "The Kortex API is the official programming interface that the Canadian company Kinova provides for its Gen3 and Gen3 lite arms, usable from C++ or Python. Examples and documentation live in the Kinovarobotics/kortex repository on GitHub, and the Python package is installed from a wheel file downloaded from Kinova's server. Your computer connects to the arm over a wired network, logs in to open a session, and then calls services such as Base and BaseCyclic, with messages encoded as Google Protocol Buffers. There are two control modes. In the default high-level servoing mode you send joint targets, end-effector poses or end-effector velocities over TCP, and a 1 kHz control loop inside the arm's base handles kinematics and trajectories. In low-level servoing your program calls BaseCyclic over UDP and must itself send commands to every joint and read feedback at 1 kHz; Cartesian commands are no longer available, but on the Gen3 the joints can be switched to torque control. Kinova advises using C++ for low-level control because Python cannot reliably hold 1 kHz. Kinova also maintains ROS and ROS 2 drivers, ros_kortex and ros2_kortex.",
+      "example": "In Python, connect a TCPTransport to the Gen3's default address 192.168.1.10, log in, and call the Base service's SendTwistCommand to move the end effector at a set velocity. For 1 kHz torque control, switch to C++, enter low-level servoing, and call BaseCyclic's Refresh in a loop over UDP.",
+      "related": [
+        "Kinova Gen3",
+        "Kinova",
+        "Protocol Buffers",
+        "Software Development Kit",
+        "Torque Control",
+        "Control Frequency"
+      ]
+    },
+    {
+      "key": "software-21#8",
+      "name_en": "UFACTORY xArm Python SDK",
+      "aliases": [
+        "xarm-python-sdk",
+        "XArmAPI",
+        "xArm SDK"
+      ],
+      "one_liner": "UFACTORY's official Python library for controlling its xArm-series robot arms from code.",
+      "explanation": "The xArm Python SDK is the official open-source Python library from Shenzhen-based UFACTORY. It supports the xArm 5/6/7, Lite 6 and 850 arms and installs with pip install xarm-python-sdk. You connect by creating an XArmAPI object with the control box's IP address, then call motion_enable(True) to enable the motors, set_mode() to choose a motion mode, and set_state(0) to make the arm ready to move. Everyday calls include set_position (straight-line move of the end effector), set_servo_angle (joint move) and set_gripper_position (gripper control). Mode 0 is position mode: you give a target and a speed and the controller takes the arm there. Mode 1 is servo mode: you stream targets with set_servo_angle_j and similar calls, and the controller executes only the latest one, which suits teleoperation and other cases where the target keeps changing. There are also modes for joint teaching and velocity control. Watch the units: the defaults are millimeters and degrees, and angles switch to radians only when is_radian=True.",
+      "example": "GELLO's xArm driver calls motion_enable(True), set_mode(1) and set_state(0) to enter servo mode, then runs a 50 Hz loop by default: it reads the current joint angles, caps how far each step moves toward the leader arm's joint angles, sends the result with set_servo_angle_j, and drives the gripper with set_gripper_position.",
+      "related": [
+        "UFACTORY xArm",
+        "Software Development Kit",
+        "Streaming Servo Control",
+        "MoveJ / MoveL",
+        "GELLO",
+        "Leader-Follower Teleoperation"
+      ]
+    },
+    {
+      "key": "software-21#9",
+      "name_en": "Serial Port (UART / USB-to-Serial)",
+      "aliases": [
+        "UART",
+        "COM port",
+        "virtual COM port",
+        "tty device"
+      ],
+      "one_liner": "A long-standing interface that sends data one bit at a time; servos, grippers and microcontrollers usually reach a PC through a USB-to-serial adapter.",
+      "explanation": "A serial port usually means an interface that talks the UART way (universal asynchronous receiver-transmitter): bits go out one at a time, each byte framed by a start bit and a stop bit, and both ends must agree on the same speed — the baud rate, such as 115200 or 1000000 bps — or the data comes out as garbage. UART only defines how the bits are arranged; the voltages on the wire come from an electrical standard: boards often use plain TTL levels, while RS-232 and RS-485 reach farther. PCs usually connect through a USB-to-serial chip or adapter. On Linux it shows up as /dev/ttyUSB0 (converter chips such as FTDI or CH340) or /dev/ttyACM0 (boards that implement the USB communications device class themselves); on Windows it is something like COM3. That is how servo arms connect: Dynamixel servos go through ROBOTIS's U2D2, which accepts both TTL and RS-485 servos but does not power them, and the SO-101 uses a bus-servo driver board for its Feetech servos. Common snags: a regular Linux user may lack permission to open the port, device numbers can change after replugging, and with a U2D2 it's best to lower the USB latency timer from 16 ms to 1 ms.",
+      "example": "When setting up an SO-101, run lerobot-find-port and unplug one arm's USB cable when prompted; the script reports that arm's port (such as /dev/ttyACM0 on Linux, or a name starting with /dev/tty.usbmodem on macOS), which you pass as --robot.port. If Linux denies access, run sudo chmod 666 /dev/ttyACM0 first.",
+      "related": [
+        "RS-485",
+        "ROBOTIS Dynamixel Servo",
+        "Feetech STS3215 Servo",
+        "SO-100 / SO-101 Arm",
+        "Host Computer",
+        "udev Rules"
+      ]
+    },
+    {
+      "key": "software-21#10",
+      "name_en": "udev Rules",
+      "aliases": [
+        "udev",
+        "udev rule files"
+      ],
+      "one_liner": "Linux rules that set device permissions and give devices fixed names, so port numbers don't shuffle after replugging.",
+      "explanation": "udev is Linux's device manager. The kernel names devices such as /dev/ttyUSB0 or /dev/video0 in the order it discovers them, so after replugging or rebooting two arms or two cameras can swap names — an easy way to send commands to the wrong arm. Regular users also often lack permission to open these devices. udev rules are text files ending in .rules placed in /etc/udev/rules.d/. Each line first matches a device by conditions such as ATTRS{idVendor} or ATTRS{serial}, then sets permissions with MODE and GROUP, adds a stable name with SYMLINK, and can even change device settings with ATTR (a serial port's latency, for example). udev never renames the original device node; it only adds a link that points to it. Identical devices have to be told apart by serial number, which udevadm info will show you. After editing, run udevadm control --reload and udevadm trigger to apply the rules. The setup_udev_rules.sh script in RealSense's installation steps simply installs udev rules that give users access to the cameras.",
+      "example": "ALOHA's setup guide has you look up the right master arm's serial number with udevadm info, then add one line to a rules file under /etc/udev/rules.d/ that matches that serial with ATTRS{serial}, names the device with SYMLINK+=\"ttyDXL_master_right\", and sets latency_timer to 1. After reloading, that arm is always /dev/ttyDXL_master_right no matter which USB port it is plugged into.",
+      "related": [
+        "Ubuntu Linux",
+        "Serial Port (UART / USB-to-Serial)",
+        "Driver (Device Driver)",
+        "RealSense Depth Camera (D435i / D405)",
+        "ALOHA",
+        "ROBOTIS Dynamixel Servo"
+      ]
+    },
+    {
+      "key": "software-21#11",
+      "name_en": "Modbus (RTU / TCP)",
+      "aliases": [
+        "Modbus RTU",
+        "Modbus TCP",
+        "Modbus/TCP"
+      ],
+      "one_liner": "A request-and-reply protocol that is a de facto standard for industrial devices; many electric grippers and some dexterous hands take commands through it.",
+      "explanation": "Modbus is a communication protocol Modicon published in 1979, originally designed for PLCs; it later became the de facto common language of industrial devices and is now maintained by the Modbus Organization. It works strictly by request and reply: a master (the client, in newer terminology) sends a request, and a slave (the server) only answers and never speaks first. A device's data is laid out as numbered coils and registers, and each request carries a function code saying what to do — 03 reads holding registers, 06 writes a single register, 16 writes several. There are two common flavors. Modbus RTU runs over a serial line, usually RS-485, with the slave address and a CRC checksum in every frame and up to 247 slaves on one bus. Modbus TCP runs over Ethernet, on port 502 by default, and drops the CRC because the TCP/IP layers underneath already check the data. In embodied AI, the Robotiq 2F-85 gripper and the Inspire RH56 dexterous hand can both be controlled with Modbus RTU over RS-485. It is simple and universal, but polling devices one by one over a slow serial line limits speed, so high-rate joint motor loops usually run on CAN or EtherCAT instead.",
+      "example": "Connect a Robotiq 2F-85 to a PC with a USB-to-RS-485 cable and, following the manual, set 115200 bps, 8 data bits, no parity, 1 stop bit and slave ID 9. Write the action, target position, speed and force to the registers starting at 1000 with function code 16, then read the registers starting at 2000 with function code 03 to get the gripper status, whether it has caught an object, and the finger position.",
+      "related": [
+        "RS-485",
+        "Programmable Logic Controller (PLC)",
+        "Robotiq 2F-85 Gripper",
+        "Inspire RH56 Dexterous Hand",
+        "Controller Area Network (CAN)",
+        "Serial Port (UART / USB-to-Serial)"
+      ]
+    }
+  ]
+}

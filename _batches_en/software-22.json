@@ -1,0 +1,130 @@
+{
+  "batch": "software-22",
+  "terms": [
+    {
+      "key": "software-22#0",
+      "name_en": "MessagePack (msgpack)",
+      "aliases": [
+        "msgpack",
+        "msgpack-numpy"
+      ],
+      "one_liner": "A binary serialization format that works much like JSON but is smaller and faster.",
+      "explanation": "MessagePack is an open binary serialization format developed by Sadayuki Furuhashi for turning in-memory data into bytes that can be sent over a network or written to disk. Its data model is close to JSON's (numbers, strings, arrays, maps), but the encoding is more compact, parsing is faster, and raw bytes can be stored directly. Unlike Protobuf it needs no schema file, at the cost of no field checking; unlike Python's pickle, unpacking never runs code, which makes it safer for data arriving over the network. In Python you install the msgpack package, but it doesn't understand NumPy arrays, so it's often paired with the third-party msgpack-numpy library, which encodes an array as its raw bytes plus dtype and shape. In embodied AI, zerorpc uses it to pack arguments and return values, and openpi's WebSocket policy server and client use it to ship observations and actions. openpi carries its own small module adapted from msgpack-numpy that drops the original library's fallback to pickle for object-dtype arrays.",
+      "example": "An openpi client packs a dict of camera images and joint state (all NumPy arrays) into bytes with msgpack_numpy.Packer and sends it to the policy server over WebSocket; the server restores the arrays with unpackb, runs inference, and packs the action chunk back the same way.",
+      "related": [
+        "Protocol Buffers (Protobuf)",
+        "zerorpc",
+        "openpi (Physical Intelligence)",
+        "WebSocket",
+        "Policy Server (Remote Inference)",
+        "ZeroMQ"
+      ]
+    },
+    {
+      "key": "software-22#1",
+      "name_en": "Remote Procedure Call (RPC)",
+      "aliases": [
+        "RPC"
+      ],
+      "one_liner": "Calling a function that actually runs in another process or on another machine, as if it were local.",
+      "explanation": "A remote procedure call (RPC) lets code call a function in the usual way while the work actually happens in another process, usually on another machine. The client packs the function name and arguments into a message, and the server runs the function and sends back the return value or the error. gRPC and zerorpc are common implementations, and ROS services follow the same request-reply idea. The contrast with publish-subscribe is worth getting straight: pub/sub is a one-to-many, one-way stream where the sender never waits for an answer, which suits continuous sensor data, while RPC is a one-to-one request that expects a result, which suits sending a command or reading the state once. In robot setups it shows up in two places: a laptop calling the robot interface on a control computer (DROID's laptop uses zerorpc to call state and command functions on the NUC), and remote policy inference, where observations go to a GPU server and actions come back. Remote calls are orders of magnitude slower than local ones and can fail along with the network, so 1 kHz low-level control loops stay on the control computer.",
+      "example": "On the robot side, calling policy.infer(obs) on openpi's client looks just like calling a local model; under the hood the observation is packed up and sent to a GPU server, and the predicted action chunk comes back. That's the RPC idea, carried over WebSocket in openpi's case.",
+      "related": [
+        "Publish-Subscribe",
+        "Service (ROS)",
+        "gRPC",
+        "zerorpc",
+        "Policy Server (Remote Inference)",
+        "Middleware"
+      ]
+    },
+    {
+      "key": "software-22#2",
+      "name_en": "zerorpc",
+      "aliases": [
+        "ZeroRPC"
+      ],
+      "one_liner": "A lightweight RPC library on top of ZeroMQ that lets you call methods of a remote Python object in a few lines.",
+      "explanation": "zerorpc is an open-source RPC (remote procedure call) library that dotCloud, the PaaS company that later pivoted to Docker, started building for its internal services in 2010 and open-sourced in 2012. It carries messages over ZeroMQ and serializes arguments and return values with MessagePack; Python and Node.js versions exist and can call each other. Using it takes only a few lines: the server binds an ordinary Python object to a port, and any client that connects can call that object's methods directly. Heartbeats for detecting dropped connections and streamed responses come built in. In embodied AI, most people first meet it in the DROID codebase: the NUC that controls the Franka exposes a robot object wrapping Polymetis (Meta's open-source arm-control framework) through a zerorpc server, and the laptop calls it remotely to read state and send commands. Only types MessagePack understands can cross the wire, so NumPy arrays must be converted to lists first. The project sees little activity now: the newest PyPI release is still 0.6.3, from 2019.",
+      "example": "DROID's run_server.py on the NUC wraps a FrankaRobot object in zerorpc.Server and binds it to port 4242; on the laptop, a zerorpc.Client connects to that address and calls get_robot_state() or update_command() as if the robot were a local object.",
+      "related": [
+        "Remote Procedure Call (RPC)",
+        "ZeroMQ",
+        "MessagePack",
+        "gRPC",
+        "DROID (Distributed Robot Interaction Dataset)",
+        "Intel NUC"
+      ]
+    },
+    {
+      "key": "software-22#3",
+      "name_en": "MoveIt Servo (realtime arm servoing)",
+      "aliases": [
+        "moveit_servo",
+        "Jog Arm"
+      ],
+      "one_liner": "MoveIt 2's realtime servoing module: it takes a continuous stream of velocity or pose commands and drives the arm safely.",
+      "explanation": "MoveIt Servo is the realtime servoing module built into MoveIt 2 (ROS package moveit_servo, formerly known as Jog Arm). Regular MoveIt takes a goal, plans a full trajectory, and then executes it; Servo instead consumes a steady stream of small commands and works out the next joint positions or velocities every cycle, usually handing them to a ros2_control controller. The official docs list three input types — individual joint velocities, an end-effector velocity, and a target end-effector pose (the Humble docs cover only the first two) — and they can come from a gamepad, a 3D mouse, or closed-loop software such as a visual servoing controller. Servo converts end-effector commands into joint commands with an inverse Jacobian or an IK plugin, slows down (and stops if necessary) as the arm nears a singularity or an obstacle, and enforces joint position and velocity limits. The catch: commands need fresh timestamps and must keep arriving — stale ones are ignored and the arm comes to a stop.",
+      "example": "Run the official Panda gamepad demo: joystick readings become end-effector velocity commands streamed to Servo, and the arm follows in real time; steer it toward the table collision objects in the scene and it slows down, then stops.",
+      "related": [
+        "MoveIt Motion Planning Framework",
+        "Visual Servoing",
+        "Teleoperation",
+        "Singular Configuration (Kinematic Singularity)",
+        "Collision Checking",
+        "ros2_control"
+      ]
+    },
+    {
+      "key": "software-22#4",
+      "name_en": "PlaCo (Rhoban planning and control library)",
+      "aliases": [
+        "placo"
+      ],
+      "one_liner": "Rhoban's open-source planning and control library, which expresses IK and whole-body control as tasks solved by a QP.",
+      "explanation": "PlaCo (Planning & Control) is an open-source library from the Rhoban team at the LaBRI lab of the University of Bordeaux, France. It's MIT-licensed, implemented in C++ with Python bindings, and on Linux and macOS installs with a plain pip install placo. Built on the rigid-body dynamics library Pinocchio, it lets you declare tasks and constraints — reach a pose with the end effector, keep the center of mass inside the support polygon, respect joint limits, avoid self-collision — then linearizes them around the current configuration using Jacobians, assembles a quadratic program (QP), and solves for the joint increment. Each task can be a hard constraint that must hold or a weighted soft objective. Beyond inverse kinematics, it offers an inverse-dynamics solver that handles contacts and torque limits, plus a humanoid walking pattern generator based on the linear inverted pendulum; the official examples include Rhoban's own Sigmaban humanoid. Newcomers usually run into it through Open Duck Mini, whose reference-motion generator uses PlaCo to produce the walking motions an RL policy learns to imitate.",
+      "example": "Use the Open Duck reference-motion generator (built on PlaCo) to batch-generate walking reference motions across a range of forward, sideways, and turning speeds, then train a policy in MuJoCo Playground to imitate them.",
+      "related": [
+        "Pinocchio",
+        "Quadratic Programming",
+        "Whole-Body Inverse Kinematics",
+        "Whole-Body Control",
+        "Pink",
+        "Open Duck Mini"
+      ]
+    },
+    {
+      "key": "software-22#5",
+      "name_en": "tyro (type-safe CLI and config generation for Python)",
+      "aliases": [
+        "dcargs"
+      ],
+      "one_liner": "A Python library that builds command-line interfaces and configs automatically from type annotations and dataclasses.",
+      "explanation": "tyro is an open-source Python library by Brent Yi of UC Berkeley (MIT-licensed, formerly named dcargs). Its core function, tyro.cli(), reads the type annotations, defaults, and docstrings of a function or dataclass, generates command-line arguments and help text from them, and hands back a fully populated config object; nested configs and subcommands are supported as well. Where Hydra composes configs mainly from YAML files, tyro configs are plain Python objects, so your IDE can autocomplete them and type checkers can flag mistakes. Brent Yi is also one of the nerfstudio authors, and nerfstudio's training command is built on tyro. In embodied AI, newcomers most often meet it in openpi, whose scripts/train.py uses tyro to pick a preset training config by name and then override individual fields on the command line; some scripts in Isaac-GR00T and ManiSkill use it too.",
+      "example": "In openpi, running uv run scripts/train.py pi05_libero --exp-name=my_run --batch-size=16 selects the preset pi05_libero config and changes only the experiment name and batch size.",
+      "related": [
+        "Hydra (Meta configuration framework)",
+        "draccus (dataclass-based configuration library)",
+        "openpi (Physical Intelligence)",
+        "Nerfstudio / gsplat",
+        "ManiSkill",
+        "Hyperparameter"
+      ]
+    },
+    {
+      "key": "software-22#6",
+      "name_en": "draccus (dataclass-based configuration library)",
+      "aliases": [],
+      "one_liner": "A fork of pyrallis that defines configs as dataclasses and fills them in from the command line and config files.",
+      "explanation": "draccus is a Python configuration library that David Hall (GitHub user dlwh) forked from pyrallis, released under the MIT license. You write your configuration as dataclasses and decorate the main function with @draccus.wrap(); at runtime it reads values from command-line arguments, a config file (YAML by default, JSON also supported), or both, and passes in a populated config object, with nested fields addressed in dot notation. Compared with pyrallis, it adds features such as switching between alternative sub-configs through a type field and pulling other files into a config with !include. Embodied-AI newcomers usually meet it in LeRobot and OpenVLA: when lerobot-train picks a policy with --policy.type=act, that's this mechanism at work, and LeRobot wraps it in its own parser that also lets --policy.path load a pretrained config from the Hugging Face Hub. OpenVLA's training and fine-tuning scripts use @draccus.wrap() directly, and training selects a preset config with --vla.type.",
+      "example": "Running lerobot-train --policy.type=act --dataset.repo_id=lerobot/aloha_mobile_cabinet has draccus fill those two values into the policy and dataset fields of the training config and leave everything else at its default.",
+      "related": [
+        "Hydra (Meta configuration framework)",
+        "tyro (type-safe CLI and config generation for Python)",
+        "LeRobot",
+        "OpenVLA",
+        "Hyperparameter"
+      ]
+    }
+  ]
+}

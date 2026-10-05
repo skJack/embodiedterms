@@ -1,0 +1,24 @@
+{
+  "batch": "hardware-18",
+  "terms": [
+    {
+      "key": "hardware-18#0",
+      "name_en": "Intel NUC (Next Unit of Computing)",
+      "aliases": [
+        "NUC",
+        "ASUS NUC"
+      ],
+      "one_liner": "Intel's palm-sized mini PC line, a common pick for the real-time control computer in robot labs.",
+      "explanation": "NUC (Next Unit of Computing) is a line of mini PCs Intel launched in early 2013, built on a board roughly 10 cm (4 in) square that runs ordinary Windows or Ubuntu. In July 2023 Intel announced it would stop developing NUCs itself and licensed the line non-exclusively to ASUS; newer models carry the ASUS NUC name. Embodied-AI labs often use it as the control computer for a Franka arm: it runs Ubuntu with a real-time kernel, connects to the robot's control box over Ethernet, and hosts control software such as Polymetis, which is built on libfranka. The documentation for Polymetis, Meta's open-source arm-control framework, recommends exactly this split: put the control server on a separate real-time machine wired directly to the robot (a NUC is the example given), and do image processing, planning and GPU work on another computer so none of it disturbs the control loop. DROID's standard hardware list includes a NUC too.",
+      "example": "Every DROID station has a NUC dedicated to the Polymetis server (the hardware list budgets about $500 and links to an NUC11PAHi7 with a Core i7-1165G7). It runs Ubuntu with a real-time kernel patch, connects through an Ethernet switch to the Franka control box and the data-collection laptop, and once set up can run headless with the monitor unplugged.",
+      "related": [
+        "Industrial PC",
+        "Host Computer",
+        "PREEMPT_RT Real-Time Linux Patch",
+        "libfranka / Franka Control Interface (FCI)",
+        "Franka Emika Panda / Franka Research 3",
+        "DROID (Distributed Robot Interaction Dataset)"
+      ]
+    }
+  ]
+}

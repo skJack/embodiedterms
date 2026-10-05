@@ -60,7 +60,7 @@
 "explanation": "libfranka 是 Franka 机械臂（Panda / FR3）官方开源的 C++ 控制库，通过以太网连接机器人的 Franka Control Interface（FCI）。用户在回调函数里每 1 毫秒读一次机器人状态（关节角、速度、外力估计等）并返回一次指令，可选关节力矩、关节位置/速度、笛卡尔位姿/速度等控制模式；因此运行的电脑需要实时内核（如 PREEMPT_RT）保证不丢周期。franka_ros、franka_ros2 是其 ROS 封装。很多机器人学习框架（如 Polymetis、Deoxys）底层都调用它来实现阻抗控制和策略执行。",
 "example": "在装了 PREEMPT_RT 内核的主机上用 libfranka 写一个 1 kHz 力矩回调，实现笛卡尔阻抗控制，让 VLA 策略输出的末端目标位姿被柔顺地跟踪。",
 "related": ["Franka 机械臂（Panda / FR3）(Franka Emika Panda / Franka Research 3)", "力矩控制(Torque Control)", "笛卡尔阻抗控制(Cartesian Impedance Control)", "实时内核补丁(PREEMPT_RT Real-Time Linux Patch)", "RTDE(Real-Time Data Exchange (Universal Robots))", "软件开发工具包(Software Development Kit)"],
-"sources": [{"title": "Franka Control Interface 文档", "url": "https://frankaemika.github.io/docs/"}, {"title": "frankaemika/libfranka (GitHub)", "url": "https://github.com/frankaemika/libfranka"}],
+"sources": [{"title": "Franka Control Interface 文档", "url": "https://frankarobotics.github.io/docs/"}, {"title": "frankaemika/libfranka (GitHub)", "url": "https://github.com/frankaemika/libfranka"}],
 "as_of": ""},
 {"name_zh": "生命周期节点", "name_en": "Lifecycle Node (Managed Node)", "abbr": "", "aliases": ["托管节点", "Managed Node", "LifecycleNode"], "tier": 3,
 "one_liner": "ROS 2 中带标准状态机的节点，可被外部按顺序配置、启动、暂停和关闭。",

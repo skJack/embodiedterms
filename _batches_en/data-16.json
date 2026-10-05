@@ -1,0 +1,24 @@
+{
+  "batch": "data-16",
+  "terms": [
+    {
+      "key": "data-16#0",
+      "name_en": "oculus_reader",
+      "aliases": [
+        "Oculus Reader",
+        "rail-berkeley/oculus_reader"
+      ],
+      "one_liner": "An open-source tool that streams Quest controller poses and button states into Python, widely used for VR teleoperation.",
+      "explanation": "oculus_reader is a small open-source tool released in 2021 by Berkeley's RAIL lab for reading the poses and button states of an Oculus / Meta Quest's two controllers on a computer in real time. It has two halves: an Android app (APK) that runs on the headset and a Python library on the computer. The Python side uses ADB (Android Debug Bridge) to install and launch the APK, then keeps reading the data the app writes to the system log (logcat) and parses it into a 4x4 pose matrix for each controller plus button and trigger states. The headset has to be in developer mode; it can stay on a USB cable, or switch to wireless ADB after an initial USB setup. A teleoperation script then turns changes in controller pose into end-effector motion. DROID, the WidowX collection code behind BridgeData V2, and FurnitureBench all use it. Since May 2026 the original repo has pointed to the original author's own fork for further development and Quest 3 support, which is still marked beta.",
+      "example": "Install ADB and oculus_reader on a laptop, plug in a Quest with developer mode on, create OculusReader() in Python, and poll get_transformations_and_buttons() in a loop. DROID moves the Franka only while the right controller's side grip is held, mapping the change in controller pose to the end effector, and uses how far the index trigger is pressed to open and close the gripper.",
+      "related": [
+        "VR Teleoperation",
+        "VR Headset",
+        "Meta Quest 3 / PICO 4 Ultra XR Headsets",
+        "DROID (Distributed Robot Interaction Dataset)",
+        "BridgeData V2",
+        "FurnitureBench"
+      ]
+    }
+  ]
+}
